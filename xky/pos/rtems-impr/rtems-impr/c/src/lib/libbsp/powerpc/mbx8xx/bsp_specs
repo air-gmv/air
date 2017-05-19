@@ -1,0 +1,13 @@
+%rename endfile old_endfile
+%rename startfile old_startfile
+%rename link old_link
+
+*startfile:
+%{!qrtems: %(old_startfile)} \
+%{!nostdlib: %{qrtems: ecrti%O%s -e start}}
+
+*endfile:
+%{!qrtems: %(old_endfile)} %{qrtems: ecrtn%O%s}
+
+*link:
+%{!qrtems: %(old_link)} %{qrtems: -dc -dp -u __vectors -N}

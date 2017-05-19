@@ -1,0 +1,71 @@
+2011-02-02	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* configure.ac: Require autoconf-2.68, automake-1.11.1.
+
+2010-05-07	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* shared/start/start.S: Finish merging change.
+
+2010-05-07	Michael Walle <michael@walle.cc>
+
+	* shared/start/start.S: Add support for qemu-system-lm32 shutdown
+	device.
+
+2009-11-25	Michael Walle <michael@walle.cc>
+
+	* shared/gdbstub/lm32-stub.c: Fix wrong computation of negative branch
+	targets (thanks to Manfred Scheible <mscheible@husware.de>.
+
+2009-11-24	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* shared/tsmac/tsmac.c: Remove unused vars.
+	Let rtems_tsmac_driver_attach return 1.
+	* shared/console/console.c: Use int as return type of
+	BSP_uart_polled_read.
+
+2009-05-27	Michael Walle <michael@walle.cc>
+
+	* shared/start/start.S: Export crt0 symbol because the debug.S uses
+	that.
+
+2009-05-05	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* shared/start/start.S: Confirmed OK by mwalle.
+
+2009-05-05	Michael Walle <michael@walle.cc>
+
+	* shared/gdbstub/README, shared/gdbstub/gdb_if.h,
+	shared/gdbstub/lm32-debug.S, shared/gdbstub/lm32-stub.c: New files.
+
+2009-04-28	Chris Johns <chrisj@rtems.org>
+
+	* shared/start/start.S: Update for boot_card command line change.
+
+2009-04-06	Michael Walle <michael@walle.cc>
+
+	* shared/start/start.S: Now calls boot_card.
+
+2009-02-26	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* shared/clock/ckinit.c, shared/start/start.S, shared/timer/timer.c:
+	Run better on simulator. Timer is probably not right yet but
+
+2009-02-25	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* shared/clock/ckinit.c: Use shared Clock Driver Template and support
+	fast idle on simulator.
+
+2008-12-05	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* .cvsignore: New file.
+
+2008-12-04	Jukka Pietarinen <jukka.pietarinen@mrf.fi>
+
+	* ChangeLog, Makefile.am, README, acinclude.m4, configure.ac,
+	shared/clock/ckinit.c, shared/clock/clock.h,
+	shared/console/console.c, shared/console/uart.c,
+	shared/console/uart.h, shared/start/start.S,
+	shared/startup/bspstart.c, shared/startup/setvec.c,
+	shared/timer/timer.c, shared/tsmac/dp83848phy.h,
+	shared/tsmac/tsmac.c, shared/tsmac/tsmac.h: New files.
+

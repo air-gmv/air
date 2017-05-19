@@ -1,0 +1,15 @@
+/**
+ * @file
+ *
+ * Linker command file for the IceCube board.
+ */
+
+MEMORY {
+	RAM : ORIGIN = 0x0, LENGTH = 128M
+	ROM : ORIGIN = 0xffe00000, LENGTH = 2M
+	REGS : ORIGIN = 0xf0000000, LENGTH = 64k
+	NIRVANA : ORIGIN = 0x0, LENGTH = 0
+	DPRAM : ORIGIN = 0x0, LENGTH = 0
+}
+
+INCLUDE linkcmds.base
