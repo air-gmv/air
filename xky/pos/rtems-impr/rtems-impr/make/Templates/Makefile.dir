@@ -1,0 +1,11 @@
+#
+#  $Id: Makefile.dir 179 2008-09-17 14:07:38Z hsilva $
+#
+
+include $(RTEMS_MAKEFILE_PATH)/Makefile.inc
+
+include $(RTEMS_CUSTOM)
+include $(RTEMS_ROOT)/make/directory.cfg
+
+SUBDIRS=a b c your-directories-go-here
+

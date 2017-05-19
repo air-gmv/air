@@ -1,0 +1,645 @@
+/**
+ *  @brief This file contains the driver for the APBUART serial port.
+ *  
+ *  The driver is a polled RAW char driver.
+ *  Adapted from the rtems4.8's console and apbuart drivers
+ *
+ *  COPYRIGHT (c) 2011.
+ *  GMV-SKYSOFT
+ *
+ *  The license and distribution terms for this file may be
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.com/license/LICENSE.
+ 
+ *  @author Cl�udio Silva
+ *	
+ */
+ 
+#include <bsp.h>
+#include <rtems/io.h>
+#include <string.h>
+
+#include <amba.h>
+#include <ambapp.h>
+#include <pprintf.h>
+
+#include <ambaext.h>
+#include <IOPuart.h>
+
+
+
+/** 
+ * @brief Uart Driver Internal Structure: One Per Device 
+ */
+typedef struct {
+	volatile ambapp_apb_uart *regs; /** <UART registers: defined in ambapp.h*/
+	int irq;
+	int minor;
+	int scaler;
+	unsigned int baud;	/**< Baudrate*/
+								 
+	int tx_flush;   	/**< Set this to block until all data has 
+						 * placed into the hardware send fifo */
+	int rxblk;      	/**< Make read block until at least 1 char has 
+						 * been received (or taken from software fifo).*/
+	int started;    	/**< Set to 1 when in running mode */	
+	int ascii_mode;		/**< Set to 1 to make \n be printed as \r\n */
+	
+	/** Driver Statistics*/
+	uart_stats stats;
+	
+	/**  Semaphores */
+	rtems_id dev_sem;
+	rtems_id rx_sem;
+	rtems_id tx_sem;
+} uart_priv;
+
+/** Number of UART devices present*/
+#define UART_NO 1
+
+/** Number of devices present on the bus*/
+static int dev_cnt; 
+
+/** Internal Driver Structures*/					
+static uart_priv apbuarts[UART_NO];	
+
+/** System Frequency needed to calculate the baudrate*/
+static unsigned int sys_freq_hz;
+
+/** Plug and Play structure from amba*/
+static amba_confarea_type *amba_bus;    
+
+#ifndef READ_REG
+	#define READ_REG(address) _APBUART_READ_REG((unsigned int)(address))
+  static __inline__ unsigned int _APBUART_READ_REG(unsigned int addr) {
+        unsigned int tmp;
+        asm volatile(" ld [%1], %0 "
+            : "=r"(tmp)
+            : "r"(addr)
+           );
+        return tmp;
+	}
+#endif
+
+/* Uncomment for debug output */
+/*  #define DEBUG 1 
+ #define FUNCDEBUG 1 */
+
+#ifdef DEBUG
+#define DBG(x...) pprintf(x)
+#else
+#define DBG(x...) 
+#endif
+#ifdef FUNCDEBUG
+#define FUNCDBG(x...) pprintf(x)
+#else
+#define FUNCDBG(x...) 
+#endif
+
+
+/**
+ * @fn uart_hw_open(uart_priv *uart)
+ * @param [in] *uart: Device internal structure
+ * @brief Enables the Receiver and Sets the Baudrate
+ */
+static void uart_hw_open(uart_priv *uart){
+	unsigned int scaler;
+	
+	/* Calculate Baudrate */
+	if ( uart->scaler > 0 ) {
+		scaler = uart->scaler;
+	}else{
+		scaler = (((sys_freq_hz*10)/(uart->baud*8))-5)/10;
+	}
+	
+	/* Set new baud rate */
+	uart->regs->scaler = scaler;
+	
+	/* Enable receiver*/
+	uart->regs->ctrl = READ_REG(&uart->regs->ctrl) | UART_CTRL_RE;
+}
+
+/** 
+ * @fn uart_hw_close(uart_priv *uart)
+ * @param [in] *uart: Device internal structure
+ * @brief Clears the control register
+ */
+static void uart_hw_close(uart_priv *uart){
+	/* disable receiver & transmitter & all IRQs */
+	uart->regs->ctrl = 0;
+}
+
+
+/**
+ *
+ * @brief Finds apbuart devices, allocates internal structures and inits 
+ * those structures with the device's information.
+ */
+rtems_device_driver uart_initialize(rtems_device_major_number  major, rtems_device_minor_number  minor,  void *arg)
+{
+	/* Iterator */
+	int i;
+	amba_apb_device dev;
+	amba_bus = &amba_conf;
+
+	FUNCDBG("uart_initialize\n");
+
+	/* Find all APB UART devices */
+	dev_cnt = amba_get_number_apbslv_devices(amba_bus,VENDOR_GAISLER,GAISLER_APBUART);
+	
+	/* Confirm that we have memory for all devices*/
+	if (dev_cnt != UART_NO){
+		
+		/* Failed to find any APBUART cores! */
+		pprintf("UART: Failed to find any APBUART cores\n\r");
+		return -1;
+	}
+	
+	/* zero out internal structures */
+    memset(apbuarts, 0, sizeof(sizeof(uart_priv) * dev_cnt));
+		
+	/* Detect System Frequency from initialized timer */
+	#ifndef SYS_FREQ_HZ
+	#if defined(LEON3)
+	/* LEON3: find timer address via AMBA Plug&Play info */	
+	{
+		amba_apb_device gptimer;
+		LEON3_Timer_Regs_Map *tregs;
+		
+		/* Search for the timer on plug and play infomration */
+		if (amba_find_apbslv(&amba_conf,VENDOR_GAISLER,GAISLER_GPTIMER,&gptimer) == 1 ){
+			
+			/* obtain timer registers */
+			tregs = (LEON3_Timer_Regs_Map *)gptimer.start;
+			
+			/* Calculate System frequency */
+			sys_freq_hz = (tregs->scaler_reload+1)*1000*1000;
+			DBG("BUART: detected %dHZ system frequency\n\r",sys_freq_hz);
+		}else{
+			/* No timer present�. Default to 40MHz */
+			sys_freq_hz = 40000000; 
+			pprintf("UART: Failed to detect system frequency\n\r");
+		}
+		
+	}
+	#else
+	#error CPU not supported for UART driver 
+	#endif
+	#else
+	
+	/* Use hardcoded frequency */
+	sys_freq_hz = SYS_FREQ_HZ;
+	
+	#endif
+	
+	/*Search For Devices*/
+	for(i=0; i<dev_cnt; i++){
+	
+		/* Get AMBA AHB device info from Plug&Play */
+		amba_find_next_apbslv(amba_bus,VENDOR_GAISLER,GAISLER_APBUART,&dev,i);
+		
+		pprintf("APBUART[%d]: at 0x%x irq %d (0x%x)\n\r",i,dev.start,dev.irq,(unsigned int)&apbuarts[i]);
+		
+		/* Fill internal device structure whith device's data  */
+		apbuarts[i].regs = (volatile ambapp_apb_uart *)dev.start;
+		
+		/* UART IRQ*/
+		apbuarts[i].irq = dev.irq;
+		
+		/* Copy device number */
+		apbuarts[i].minor = i;
+		
+		/* Clear HW regs */
+		apbuarts[i].regs->status = 0;
+		apbuarts[i].regs->ctrl = 0;  
+		
+		/* Create device semaphore with count 1 */
+		if ( rtems_semaphore_create(rtems_build_name('A', 'U', 'D', '0'+i),
+		     1,
+		     RTEMS_FIFO|RTEMS_SIMPLE_BINARY_SEMAPHORE|RTEMS_NO_INHERIT_PRIORITY|RTEMS_LOCAL|RTEMS_NO_PRIORITY_CEILING, 
+		     0,
+		     &apbuarts[i].dev_sem) != RTEMS_SUCCESSFUL )
+			return RTEMS_INTERNAL_ERROR;
+		
+		/* Create Transmission semaphore with count 1 */
+		if ( rtems_semaphore_create(rtems_build_name('A', 'U', 'T', '0'+i),
+		     1,
+		     RTEMS_FIFO|RTEMS_SIMPLE_BINARY_SEMAPHORE|RTEMS_NO_INHERIT_PRIORITY|RTEMS_LOCAL|RTEMS_NO_PRIORITY_CEILING, 
+		     0,
+		     &apbuarts[i].tx_sem) != RTEMS_SUCCESSFUL )
+			return RTEMS_INTERNAL_ERROR;
+		
+		/* Create reception semaphore with count 1 */		
+		if ( rtems_semaphore_create(rtems_build_name('A', 'U', 'R', '0'+i),
+		     1,
+		     RTEMS_FIFO|RTEMS_SIMPLE_BINARY_SEMAPHORE|RTEMS_NO_INHERIT_PRIORITY|RTEMS_LOCAL|RTEMS_NO_PRIORITY_CEILING, 
+		     0,
+		     &apbuarts[i].rx_sem) != RTEMS_SUCCESSFUL )
+			return RTEMS_INTERNAL_ERROR;
+
+	}
+	return RTEMS_SUCCESSFUL;
+}
+
+/**
+ *  @brief Sets the device driver structure with default values
+ */
+rtems_device_driver uart_open(rtems_device_major_number major, rtems_device_minor_number minor, void *arg)
+{  
+	uart_priv *uart;
+	
+	FUNCDBG("uart_open: major %d, minor %d\n", major, minor);
+	
+	/* Validate minor */
+	if ( (minor < 0) || (minor >= dev_cnt) ) {
+		DBG("Wrong minor %d\n", minor);
+		return RTEMS_INVALID_NAME;
+	}
+	
+	/* obtain device's internal driver structure*/
+	uart = &apbuarts[minor];
+	
+	/* a device can only be opened once. obtain device's semaphore */
+	if (rtems_semaphore_obtain(uart->dev_sem, RTEMS_NO_WAIT, RTEMS_NO_TIMEOUT) != RTEMS_SUCCESSFUL) {
+		DBG("uart_open: resource in use\n");
+		return RTEMS_RESOURCE_IN_USE;
+	}
+	
+	/* Clear HW regs */
+	uart->regs->status = 0;
+	uart->regs->ctrl = 0;
+	
+	/* 38400 baudrate */
+	uart->scaler = 0; /* use uart->baud */
+	uart->baud = 115200;
+	
+	/* Default to Blocking mode */
+	uart->rxblk = 0;
+	uart->tx_flush = 1;
+
+	/* non-ascii mode */
+	uart->ascii_mode = 0;
+  
+	/* Enable Receiver*/
+	uart_hw_open(uart);
+	uart->started = 1;
+	
+	
+	return RTEMS_SUCCESSFUL;
+}
+
+/**
+ * @brief Resets the control register and releases semaphores.
+ */
+rtems_device_driver uart_close(rtems_device_major_number major, rtems_device_minor_number minor, void *arg)
+{
+	uart_priv *uart = &apbuarts[minor];
+	
+	FUNCDBG("uart_close[%d]:\n",minor);
+	
+	/* disable receiver & transmitter & all IRQs */
+	uart->regs->ctrl = 0;
+
+	/* Software state will be set when open is called again */
+	rtems_semaphore_release(uart->rx_sem);
+	rtems_semaphore_release(uart->tx_sem);
+	uart->started = 0;
+	
+	rtems_semaphore_release(uart->dev_sem);
+	
+	return RTEMS_SUCCESSFUL;
+}
+
+/**
+ * @brief Clears any errors and polls for new characters
+ */
+rtems_device_driver uart_read(rtems_device_major_number major, rtems_device_minor_number minor, void *arg)
+{
+	struct uart_args *rw_args;
+	rtems_status_code rc;
+	uart_priv *uart = &apbuarts[minor];
+	unsigned int count = 0;
+	unsigned int status;
+	unsigned char *buf;
+	unsigned char c;
+	
+	rw_args = (struct uart_args *) arg;
+
+	FUNCDBG("uart_read\n");
+	
+	/*Device has not started*/
+	if(!uart->started)
+		return RTEMS_NOT_CONFIGURED;
+	
+	/*Check data*/
+	buf = (unsigned char *)rw_args->data;
+	
+	/* Verify user arguments */
+	if ( (rw_args->data_len < 1) || !buf )
+		return RTEMS_INVALID_NAME;
+	
+	/*Concurrent access protection*/
+	if (rtems_semaphore_obtain(uart->rx_sem, RTEMS_NO_WAIT, RTEMS_NO_TIMEOUT) != RTEMS_SUCCESSFUL) {
+		
+		if(uart->rxblk){
+			
+			/*We can block, so let's block waiting for the other task to release the rx semaphore*/
+			if ((rc = rtems_semaphore_obtain(uart->rx_sem, RTEMS_WAIT, RTEMS_NO_TIMEOUT)) != RTEMS_SUCCESSFUL) {
+				return rc;
+			}
+		} else{
+		
+			/*We are not allowed to block, let's return*/
+			rw_args->bytes_moved = count;
+			return RTEMS_RESOURCE_IN_USE;
+		}
+	}
+		
+	/* Clear & record any error */
+	status = READ_REG(&uart->regs->status);
+	if ( status & (UART_STATUS_OV|UART_STATUS_PE|UART_STATUS_FE) ){
+		
+		/* Data overrun */
+		if ( status & UART_STATUS_OV ){
+			uart->stats.hw_dovr++;
+		}
+		/* Parity error */
+		if ( status & UART_STATUS_PE ){
+			uart->stats.hw_parity++;
+		}
+		/* Framing error */
+		if ( status & UART_STATUS_FE ){
+			uart->stats.hw_frame++;
+		}
+		
+		/* Clear errors from status register */
+		uart->regs->status = status & ~(UART_STATUS_OV|UART_STATUS_PE|UART_STATUS_FE);
+	}
+
+	
+	do {
+		/* sanity check */
+		if ( (unsigned int)uart < 0x40000000 ) {
+			pprintf("UART %x is screwed\n",uart);
+		}
+		
+		/* Is Data available? */
+		if ( (READ_REG(&uart->regs->status) & UART_STATUS_DR) == 0 ){
+			
+			/*If we already read something or we are on nonblock mode: return*/
+			if ( (count > 0) || (!uart->rxblk) ){
+				
+				/* Return */
+				break; 
+				
+			} else {
+				/*We are on blocking mode: Active Wait for a character*/
+				while((READ_REG(&uart->regs->status) & UART_STATUS_DR) == 0);
+				
+				/* check if there is a character to be read*/
+				if ((READ_REG(&uart->regs->status) & UART_STATUS_DR)!= 0){
+					
+					/* copy character */
+					c = READ_REG(&uart->regs->data);
+					
+					/* insert character into user's buffer */
+					buf[count] = c;
+				}
+			}
+		} else {
+			/*We have data!*/
+			c = READ_REG(&uart->regs->data);
+			
+			/* insert character into user's buffer */
+			buf[count] = c;
+		}
+		
+		/* increment statistics */
+		uart->stats.rx_cnt++;
+		count++;
+		
+	} while (count < rw_args->data_len );
+	
+	/* copy number of bytes read */
+	rw_args->bytes_moved = count;
+	
+	/* release read semaphore */
+	rtems_semaphore_release(uart->rx_sem);
+	
+	if (count == 0)
+		return RTEMS_TIMEOUT; 
+
+	return RTEMS_SUCCESSFUL;
+}
+
+/**
+ * @brief Writes an array of characters.
+ */
+rtems_device_driver uart_write(rtems_device_major_number major, rtems_device_minor_number minor, void *arg)
+{
+	struct uart_args *rw_args;
+	rtems_status_code rc;
+	unsigned int count;
+	char *buf;
+	uart_priv *uart = &apbuarts[minor];
+	
+   
+	rw_args = (struct uart_args *) arg;
+  
+	FUNCDBG("uart_write\n");
+	
+	if(!uart->started)
+		return RTEMS_NOT_CONFIGURED;
+	
+	/*Check input data*/
+	buf = rw_args->data;
+	if ( rw_args->data_len < 1 || !buf )
+		return RTEMS_INVALID_NAME; /* EINVAL */ 
+	
+	count = 0;
+	
+	/*Concurrent access protection, try to obatin semaphore */
+	if (rtems_semaphore_obtain(uart->tx_sem, RTEMS_NO_WAIT, RTEMS_NO_TIMEOUT) != RTEMS_SUCCESSFUL) {
+		DBG("uart_write: semaphore alredy in use\n");
+		
+		/* Check Blocking Behavior*/
+		if(uart->tx_flush){
+		
+			/*We can block, so let's block waiting for the other task to release the tx semaphore*/
+			if ((rc = rtems_semaphore_obtain(uart->tx_sem, RTEMS_WAIT, RTEMS_NO_TIMEOUT)) != RTEMS_SUCCESSFUL) {
+				return rc;
+			}
+		} else{
+		
+			/*We are not allowed to block, let's return*/
+			rw_args->bytes_moved = count;
+			return RTEMS_RESOURCE_IN_USE;
+		}
+	}
+	
+	/* Write until all characters have been written */
+	while( count < rw_args->data_len ) {
+	
+		/* is HW FIFO Full?*/
+		if (((READ_REG(&uart->regs->status) & UART_STATUS_TF) == 0)){ 
+			
+			/* Only write the character if FIFO is empty.*/
+			if(uart->tx_flush || ((READ_REG(&uart->regs->status) & UART_STATUS_TE) == 1)){
+				
+				/* If we can wait or the fifo is already empty*/
+				while((READ_REG(&uart->regs->status) & UART_STATUS_TE) == 0){ /*Wait for empty fifo*/
+					
+					/* Lower bus utilization while waiting for UART */
+					asm volatile ("nop"::);	asm volatile ("nop"::);
+					asm volatile ("nop"::);	asm volatile ("nop"::);
+					asm volatile ("nop"::);	asm volatile ("nop"::);
+					asm volatile ("nop"::);	asm volatile ("nop"::);
+				}
+				
+				/* Copy character to reg */
+				uart->regs->data = (unsigned int)buf[count];
+				
+			} else{
+			
+				/*Return: We are on nonblocking mode and the FIFO is not empty*/
+				break; 
+			}
+			
+		} else{/* HW FIFO is full*/
+			
+			/*Block Mode?*/
+			if(uart->tx_flush){ 
+			
+				 /*Wait for fifo to get empty*/ 
+				continue;
+			} else {
+				
+				/*Return even if we didn't write anything.*/
+				break;
+			}
+		}
+		
+		if(count == 0)
+			/*Enable Transmitter*/
+			uart->regs->ctrl = READ_REG(&uart->regs->ctrl) | UART_CTRL_TE;
+		
+		/* Increment Statistics */
+		uart->stats.tx_cnt++;	
+		
+		/* Increment Count */
+		count++;
+		
+	}
+
+	rw_args->bytes_moved = count;
+	
+	/* Release TX semaphore */
+	rtems_semaphore_release(uart->tx_sem);
+	
+	if (count == 0)
+		return RTEMS_TIMEOUT;
+ 
+	return RTEMS_SUCCESSFUL;
+}
+
+/** 
+ * @brief Changes different device state options.
+ */
+rtems_device_driver uart_control(rtems_device_major_number major, rtems_device_minor_number minor, void *arg)
+{
+	struct uart_ioctl_args *ioarg = (struct uart_ioctl_args *)arg;
+	unsigned int *data = (unsigned int *)ioarg->buffer;
+	uart_priv *uart = &apbuarts[minor];
+	unsigned int baudrate, blocking;
+	uart_stats *stats;
+
+	FUNCDBG("uart_control [%i,%i]\n",major, minor);
+  
+	if (!ioarg)
+		return RTEMS_INVALID_NAME;
+
+  ioarg->ioctl_return = 0;
+	switch(ioarg->command) {
+	
+	/* Enable Receiver*/
+	case UART_START:
+		if ( uart->started )
+			return RTEMS_INVALID_NAME;
+		uart_hw_open(uart);
+		uart->started = 1;
+		break;
+	
+	/* Close Receiver & transmitter */
+	case UART_STOP:
+		if ( !uart->started )
+			return RTEMS_INVALID_NAME;
+		uart_hw_close(uart);
+		uart->started = 0;
+		break;
+	
+	case UART_SET_BAUDRATE:
+		/* Set baud rate of */
+		if ( uart->started )
+			return RTEMS_INVALID_NAME;
+		baudrate = (int)ioarg->buffer;
+		if ( (baudrate < 1) || (baudrate > 115200) ){
+			return RTEMS_INVALID_NAME;
+		}
+		uart->scaler = 0; /* use uart->baud */
+		uart->baud = baudrate;
+		break;
+	
+	case UART_SET_SCALER:
+		if ( uart->started )
+			return RTEMS_INVALID_NAME;
+		/* use uart->scaler not uart->baud */
+		uart->scaler = data[0];
+		break;
+	
+	case UART_SET_BLOCKING:
+		if ( uart->started )
+			return RTEMS_INVALID_NAME;
+		blocking = (unsigned int)ioarg->buffer;
+		uart->rxblk = ( blocking & UART_BLK_RX );
+		uart->tx_flush = ( blocking & UART_BLK_FLUSH );
+		break;
+	
+	case UART_GET_STATS:
+		stats = (void *)ioarg->buffer;
+		if ( !stats )
+			return RTEMS_INVALID_NAME;
+		
+		/* Copy Stats */
+		*stats = uart->stats;
+		break;
+  
+    case UART_CLR_STATS:
+		if ( uart->started )
+			return RTEMS_INVALID_NAME;
+		/* Clear/reset Stats */
+		memset(&uart->stats,0,sizeof(uart->stats));
+		break;
+    
+	case UART_SET_ASCII_MODE:
+		if ( uart->started )
+			return RTEMS_INVALID_NAME;
+		/*Set ASCII Mode*/
+		uart->ascii_mode = (int)ioarg->buffer;
+		break;
+	
+	case UART_SET_LP_MODE:
+		if ( uart->started )
+			return RTEMS_INVALID_NAME;
+		/*set loopback mode*/
+		if( (int)ioarg->buffer){
+			uart->regs->ctrl = READ_REG(&uart->regs->ctrl) | UART_CTRL_LB;
+		} else{
+			uart->regs->ctrl = READ_REG(&uart->regs->ctrl) & ~UART_CTRL_LB;
+		}
+		break;
+   
+	default:
+		return RTEMS_NOT_DEFINED;
+	}
+	return RTEMS_SUCCESSFUL;
+}

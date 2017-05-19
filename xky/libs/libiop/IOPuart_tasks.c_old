@@ -1,0 +1,191 @@
+/** 
+ * @file IOPuart_tasks.c
+ * 
+ *  COPYRIGHT (c) 2011.
+ *  GMV-SKYSOFT 
+ * 
+ * @author Cl�udio Silva
+ * @brief Tasks that write and read from UART
+ * 
+ */
+
+
+
+
+#include <IOPuart.h>
+#include <pprintf.h>
+#include <iop_mms.h>
+
+static IOP_data_t *internal_data;
+static logical_device_t *ldev;
+static physical_device_t *pdev;
+
+request_wrapper_t *extract_request_wrapper(iop_chain_control *ctl);
+reply_wrapper_t *extract_reply_wrapper(iop_chain_control *ctl);
+void append_reply(request_wrapper_t *in, reply_wrapper_t *out);
+
+/**
+ *  @brief Tasks that writes pending write requests to UART
+ *
+ *  Obtains write requests from the chain and writes them to UART
+ */
+rtems_task uart_writer(rtems_task_argument arg){
+	rtems_status_code status;
+	request_wrapper_t *req_wrapper;
+	reply_wrapper_t *reply_wrapper;
+	service_request_t *req;
+	physical_device_t *uart0;
+	struct uart_args w_args;
+	
+	/* Obtain IOP internal data structures */
+	internal_data = iop_get_internal_data();
+	
+	/*Get IO partition data*/
+	ldev = internal_data->ldev;
+	pdev = internal_data->pdev;
+	
+	/* get my physical device structure: UART0 */
+	uart0 = &pdev[UART0];
+	
+	
+	pprintf(" :: IOP - uart-writer start!\n");
+	for(;;){
+
+	    iop_task_sleep(0);
+		
+		/* Iterate while we have write request to be done */
+		while(!iop_chain_is_empty(&uart0->sendqueue)){
+			
+			/* Extract first request wrapper */
+			req_wrapper = extract_request_wrapper(&uart0->sendqueue);
+			
+			/* Extract request from wrapper */
+			req = &req_wrapper->request;
+			
+			status = RTEMS_SUCCESSFUL;
+			
+			w_args.data = &req->generic_data[0];
+			w_args.data_len = req->ssize;
+			
+			/* Write to the device*/
+			uart_write(0, 0, &w_args);
+			if (w_args.bytes_moved < 1){
+				pprintf("Couldn't write\n");
+				status = RTEMS_INTERNAL_ERROR;
+			}
+			
+			/* We want a reply*/
+			if(req_wrapper->doreply){
+				
+				/* Get an empty reply */
+				reply_wrapper = extract_reply_wrapper(&internal_data->empty_replys);
+				
+				/*~Copy status and written size*/
+				reply_wrapper->reply.status = status;
+				reply_wrapper->reply.ssize = w_args.bytes_moved;
+				
+				/* append reply to outgoing queue and release current request*/
+				append_reply(req_wrapper, reply_wrapper);
+			} else{
+			
+				/* Clear Wrapper*/
+				req_wrapper->reply_to = 0;
+				req_wrapper->request.ssize = 0;
+				req_wrapper->milstd_hdr.desc = 0;
+				req_wrapper->timer = 0;
+				
+				iop_chain_append(&internal_data->empty_requests,&req_wrapper->node);
+			
+			}
+		}
+	}
+}
+
+/**
+ *  @brief Task that polls UART for new data packets
+ *
+ *  This tasks polls for new data and places it on a reply structure
+ */
+rtems_task uart_reader(rtems_task_argument arg){
+	
+	/* pointer to the reply wrapper currently being handled */
+	reply_wrapper_t *reply_wrapper;
+	
+	/* accumulator of the number of read bytes */
+	int z;
+
+	/* pointer to the current schedule index */
+	static int *current_schedule;
+	
+	/* pointer to this task's device: UART0 */
+	physical_device_t *uart0;
+	
+	/* UART driver interface*/
+	struct uart_args w_args;
+	
+	/* maximum number of packets that can be read on a single period */
+	int max;
+	
+	/* holds the number of packets that can be read on a single period for all devs */
+	reads_per_period_t *read_config;
+	
+	/* get my physical device structure: UART0 */
+	uart0 = &pdev[UART0];
+
+	/* Get pointer to the current schedule index */
+	current_schedule = &(internal_data->current_schedule);
+	
+	
+	/* obtain read configuration */
+	read_config = iop_get_number_phydev_reads_per_period();
+	
+    pprintf(" :: IOP - uart-reader start!\n");
+    for(;;){
+
+        iop_task_sleep(0);
+
+		/* obtain maximum number of packets that can be read on a single period*/
+		max = read_config[*current_schedule][UART0];
+	
+		/* get a new empty reply wrapper */
+		reply_wrapper = extract_reply_wrapper(&internal_data->empty_replys);
+		
+		/* if previous operation suceeded */
+		if(reply_wrapper != NULL){
+			
+			/* wait until we have accumulated 12 characters*/
+			while(z<12){
+				
+				w_args.data = &reply_wrapper->reply.generic_data[z];
+				w_args.data_len = 12;
+				
+				/* read a character */
+				uart_read(0,0, &w_args);
+				
+				/* if we read something */
+				if (w_args.bytes_moved > 0){
+				
+					/* accumulate read bytes*/
+					z+=w_args.bytes_moved;
+				} else{
+					break;
+				}
+			}
+			
+			/* fill in data size */
+			reply_wrapper->reply.ssize = z;
+			
+			/* operation completed successfully */
+			reply_wrapper->reply.status = RTEMS_SUCCESSFUL;
+			
+			/* UART has no headers*/
+			reply_wrapper->milstd_hdr.desc = 0;
+			
+			/* reset accumulator */
+			z = 0;
+			
+			/* append reply to the device's receieved chain */
+			iop_chain_append(&uart0->rcvqueue, &reply_wrapper->node);
+		}
+	}
+}

@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<IOPartition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="iop.xsd" version="1.0" date="2013-06-05" name="iop_example" request_number="64" time_to_live="5">
+	
+	<RemotePorts>
+		<Port Name="dsampling" LogicalDeviceId="1"/>
+		<Port Name="squeuing" />
+	</RemotePorts>	
+	
+	<LogicalDevices>
+		<Device Id="1" Name="PARSERVER" />
+	</LogicalDevices>	
+	
+	<PhysicalDevices>
+		<Device Id="0" Device="ETH0" Ip="192.168.0.70" MAC="d0:39:72:74:d8:1f" TXD="32" RXD="32">
+			<PhysicalRoute Id="2" PortId="squeuing">
+				<EthHeader Ip="192.168.0.2" MAC="68:05:ca:1f:39:af" Port="14000" />
+			</PhysicalRoute>
+			<LogicalRoute Id="1" LogicalDeviceId="1">
+				<EthHeader Ip="192.168.0.2" MAC="68:05:ca:1f:39:af" Port="13000"/>
+			</LogicalRoute>
+	    </Device>		
+	</PhysicalDevices>
+	
+	<ModuleSchedules>
+		<Schedule ScheduleIdentifier="1">
+		    <DevicesConfiguration>
+			    <Device DeviceId="0" Device="ETH0" Reads="5"/>
+			</DevicesConfiguration>
+			<RoutesConfiguration>
+				<Route RouteId="1" Active="true"/>
+				<Route RouteId="2" Active="true"/>
+			</RoutesConfiguration>
+		</Schedule>
+	</ModuleSchedules>
+</IOPartition>

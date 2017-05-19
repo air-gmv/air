@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="Window_Sched_Ext" targetNamespace="Window_Sched_Ext" elementFormDefault="unqualified">
+	<xs:element name="WinExt">
+		<xs:annotation>
+			<xs:documentation>
+				Defines the core(s) in witch the window will be executed
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="WindowIdentifier" type="xs:integer" use="required"/>
+			<xs:attribute name="Cores" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
+
+
