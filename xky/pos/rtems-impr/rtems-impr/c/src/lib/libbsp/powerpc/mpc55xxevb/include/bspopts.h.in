@@ -1,0 +1,78 @@
+/* include/bspopts.h.in.  Generated from configure.ac by autoheader.  */
+
+/* If defined, use custom settings of for the GW_LCFM board */
+#undef BOARD_GWLCFM
+
+/* If defined, then the BSP Framework will put a non-zero pattern into the
+   RTEMS Workspace and C program heap. This should assist in finding code that
+   assumes memory starts set to zero. */
+#undef BSP_DIRTY_MEMORY
+
+/* If defined, print a message and wait until pressed before resetting board
+   when application exits. */
+#undef BSP_PRESS_KEY_FOR_RESET
+
+/* If defined, reset the board when the application exits. */
+#undef BSP_RESET_BOARD_AT_EXIT
+
+/* Must be defined to be one of MPC55XX_ESCI_A_MINOR or MPC55XX_ESCI_B_MINOR.
+   Determines which device will be registered as /dev/console. */
+#undef CONSOLE_MINOR
+
+/* If defined, the data cache will be enabled after address translation is
+   turned on. */
+#undef DATA_CACHE_ENABLE
+
+/* If defined, the instruction cache will be enabled after address translation
+   is turned on. */
+#undef INSTRUCTION_CACHE_ENABLE
+
+/* specifies the chip type in use (e.g. 5554 for MPC5554) */
+#undef MPC55XX_CHIP_TYPE
+
+/* Must be defined to set the EMIOS prescaler */
+#undef MPC55XX_EMIOS_PRESCALER
+
+/* Must be defined to be the PLL output clock (in Hz) for clock generation */
+#undef MPC55XX_FMPLL_CLK_OUT
+
+/* Must be defined to be the PLL multiplication factor for clock generation */
+#undef MPC55XX_FMPLL_MFD
+
+/* Must be defined to be the PLL predivider factor for clock generation */
+#undef MPC55XX_FMPLL_PREDIV
+
+/* Must be defined to be the external reference clock (in Hz) for clock
+   generation */
+#undef MPC55XX_FMPLL_REF_CLOCK
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* Must be defined to be one of MPC55XX_ESCI_A_MINOR or MPC55XX_ESCI_B_MINOR.
+   Determines which device is used for output by printk(). The printk port
+   always uses polled I/O. Don't open the printk port from RTEMS unless also
+   using polled I/O for the SCI ports. */
+#undef PRINTK_MINOR
+
+/* Define to 1 if you want interrupt-driven I/O for the SCI ports. */
+#undef UARTS_IO_MODE
+
+/* Define to 1 if you want termios support for every port. Termios support is
+   independent of the choice of UART I/O mode. */
+#undef UARTS_USE_TERMIOS
