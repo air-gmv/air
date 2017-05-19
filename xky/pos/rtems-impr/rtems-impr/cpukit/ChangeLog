@@ -1,0 +1,1688 @@
+2008-02-06	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	PR 1277/networking
+	* libnetworking/netinet/in_cksum_i386.h: Use q instead of r in
+	constraint for assembly language. This restricts the register choice
+	to the a-d registers.
+
+2008-02-05	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* posix/Makefile.am: Remove these. They were proposed but never
+	standardized.
+	* posix/src/pthreadgetcputime.c, posix/src/pthreadsetcputime.c: Removed.
+
+2007-12-23	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libcsupport/src/sync.c: Make sync() POSIX-compliant.
+	* libcsupport/src/__gettod.c: Make gettimeofday() POSIX-compliant.
+
+2007-12-21	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	PR 1268/cpukit
+	* libcsupport/include/rtems/assoc.h,
+	rtems/src/semtranslatereturncode.c: There is no
+	rtems_assoc_ptr_by_value method.
+
+2007-12-16	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* configure.ac: Revert Joel's 2007-06-13 NDEBUG patch.
+
+2007-12-11	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* score/src/pheapallocatealigned.c, score/src/pheapgetblocksize.c:
+	Reverse file contents.
+
+2007-12-06	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* httpd/Makefile.am, httpd/preinstall.am,
+	rtems/src/semtranslatereturncode.c: rtems_webserver.h must be
+	installed. It is the initialization interface for both GoAhead and
+	Simple HTTPD.
+
+2007-12-05	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* configure.ac: Remove score/cpu/avr/Makefile, 
+	score/cpu/nios2/Makefile, score/cpu/avr/Makefile.
+	* score/cpu/Makefile.am: Remove avr, nios2, c4x.
+
+2007-12-04	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* score/cpu/nios2, score/cpu/c4x, score/cpu/avr: Remove from
+	  rtems-4-8-branch.
+
+2007-11-27	Glenn Humphrey <glenn.humphrey@OARcorp.com>
+
+	* posix/src/prwlocktimedrdlock.c, posix/src/prwlocktimedwrlock.c,
+	rtems/include/rtems/rtems/barrier.h,
+	score/src/corerwlockobtainread.c, score/src/corerwlockobtainwrite.c,
+	score/src/corerwlockrelease.c: Fixed several implementation errors.
+
+2007-11-27	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* sapi/include/confdefs.h: Add CONFIGURE_APPLICATION_EXTRA_DRIVERS.
+
+2007-11-26	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libcsupport/src/printk.c, score/src/objectget.c: Fix spacing.
+
+2007-11-26	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libcsupport/src/malloc.c: Do not assert on free of bad pointer.
+
+2007-11-26	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* score/include/rtems/score/thread.h: Fix spelling error.
+
+2007-11-06	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	PR 1266/cpukit
+	* posix/src/keycreate.c, posix/src/keyrundestructors.c: Use API instead
+	of class for key indexing.
+
+2007-11-06	Glenn Humphrey <glenn.humphrey@OARcorp.com>
+
+	Miscellaneous changes made after a review against the POSIX spec.
+	* posix/src/pbarrierinit.c, posix/src/prwlockinit.c: If the caller
+	passes a NULL in the attributes parameter, default attributes are used.
+	* posix/src/prwlockdestroy.c: If there is at least one thread
+	waiting, do not allow deletion.
+	* posix/src/prwlockwrlock.c: Corrected parameter passed to the core
+	operation used to obtain a RWLock for writing.
+	* posix/src/pspinlocktranslatereturncode.c,
+	score/include/rtems/score/corespinlock.h,
+	score/src/corespinlockrelease.c: If the current thread is not the
+	holder of the lock, do not allow an unlock and return EPERM.
+	* score/src/corerwlockobtainwrite.c: Corrected to use the operation
+	for queueing with a timeout handler.
+
+2007-11-02	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* score/cpu/sparc/cpu.c, score/cpu/sparc/rtems/score/cpu.h,
+	score/include/rtems/score/context.h, score/src/threadhandler.c: Fix
+	stack so gdb backtrace does not print corrupted frame message after
+	_Thread_Handler. Daniel Hellstrom <daniel@gaisler.com> provided the
+	SPARC implementation and I made it more general.
+
+2007-10-26	Glenn Humphrey <glenn.humphrey@OARcorp.com>
+
+	* libmisc/cpuuse/cpuusagereport.c, rtems/src/ratemonreportstatistics.c:
+	Cleaned up reports and fixed a bug related the printf format which
+	resulted in lack of leading zeroes and misleading magnitude. 
+	* score/src/timespecdivide.c: Fixed bugs related to zero divide case.
+
+2007-10-19	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* telnetd/icmds.c: Add header to file.
+
+2007-10-19	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* libcsupport/src/assoc.c: Removed.  Accidentally included routine
+	also in another file.  Mistake after splitting.
+	* libcsupport/Makefile.am: Reflect file removal.
+
+2007-10-15	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/netdb.h, libnetworking/libc/gethostnamadr.c,
+	libnetworking/libc/getnetnamadr.c: Adjust to POSIX.
+	Minor updates from FreeBSD.
+
+2007-10-11	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* score/include/rtems/score/copyrt.h: Update year.
+
+2007-10-11	Daniel Hellstrom <daniel@gaisler.com>
+
+	* libi2c/libi2c.c, libi2c/libi2c.h: Add message about needing IMFS.
+	Fixed check of status when registering driver. Add use of strerror().
+
+2007-10-04	Keith Robertson <kjrobert@alumni.uwaterloo.ca>,
+	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/ifaddrs.h, libnetworking/libc/getifaddrs.c,
+	libnetworking/libc/if_indextoname.c,
+	libnetworking/libc/if_nameindex.c: New (from FreeBSD)
+	* Makefile.am: Add files above.
+	* libnetworking/net/if.h: Add if_nameindex (from FreeBSD).
+
+2007-09-28	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libmisc/stackchk/check.c: Eliminate output with little information.
+	Always print a blown message using the same routine. Now works with
+	GNAT RTS -fstack-checking if you have patch for the RTEMS specific
+	support in your GCC version.
+
+2007-09-17	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* posix/src/semaphorecreatesupp.c: Fixed warning.
+
+2007-09-17	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libmisc/dumpbuf/dumpbuf.c: Use printk.
+
+2007-09-16	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/net/ppp_defs.h: Include rtems/stdint.h.
+	Use uint32_t for ext_accm.
+
+2007-09-16	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* pppd/auth.c, pppd/demand.c, pppd/ipcp.c, pppd/ipcp.h,
+	pppd/lcp.c, pppd/lcp.h, pppd/magic.c, pppd/magic.h, pppd/options.c,
+	pppd/pppd.h, pppd/sys-rtems.c, pppd/utils.c: Convert to using C99
+	fixed-size types instead of BSD fixed-size types.
+
+2007-09-14	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libmisc/stackchk/check.c: Fix alignment of output.
+
+2007-09-14	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libmisc/monitor/monitor.h: Add network commands that were in the
+	network supplement but not in the code.
+	* libmisc/monitor/mon-network.c: New file.
+
+2007-09-14	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	PR 1261/cpukit
+	* posix/src/semaphorecreatesupp.c: Initialize all fields during
+	semaphore creation.
+
+2007-09-14	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	PR 1260/cpukit
+	* posix/src/pthread.c: Get initial signals blocked from creating
+	thread not from ourselves.
+
+2007-09-14	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* score/src/watchdogtickle.c: Remove tabs.
+
+2007-09-13	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	PR 1259/rtems
+	* rtems/src/taskcreate.c: Initialize is_global in all cases since
+	memory is not guaranteed to be zero.
+
+2007-09-12  Sergei Organov  <osv@javad.com>
+
+	PR 1258/rtems
+	* cpukit/score/src/heapallocatealigned.c (block_allocate): New routine.
+	* cpukit/score/src/heapallocatealigned.c (_Heap_Allocate_aligned):
+	Use block_allocate() instead of _Heap_Block_allocate(). Replace
+	_Heap_Head(the_heap)->next with equivalent _Heap_First(the_heap).
+	* cpukit/score/src/heap.c (_Heap_Allocate): fix comments according
+	to changed block split strategy in _Heap_Allocate_aligned().
+
+2007-09-10	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* libcsupport/src/printk.c: Remove unnecessary comments.
+
+2007-09-10	Thomas Doerfler <Thomas.Doerfler@embedded-brains.de>
+
+	* libmisc/monitor/mon-monitor.c:
+	Corrected linked list of rtems_monitor_commands
+
+2007-09-07	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libcsupport/src/malloc.c: If RTEMS_HEAP_DEBUG is defined, add heap
+	walk on init, malloc, and free. The ability to walk the heap appears
+	to disappeared during the rework of the C Program heap to skip the
+	Region.
+
+2007-09-07	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* score/src/heap.c: Style.
+	* score/src/heapwalk.c: Add more information to prints.
+	* score/src/pheapwalk.c: Do not lock allocator mutex if dispatching
+	is disabled.
+
+2007-09-06	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libcsupport/Makefile.am, libcsupport/src/printk.c:
+	* libcsupport/src/printk_plugin.c: New file.
+	include/rtems/bspIo.h, libmisc/cpuuse/cpuusagereport.c,
+	libmisc/cpuuse/cpuuse.h, libmisc/stackchk/check.c,
+	libmisc/stackchk/stackchk.h: rtems/include/rtems/rtems/ratemon.h,
+	rtems/src/ratemonreportstatistics.c: Added capability to specify
+	your own "printf" routine to various reporting functions.  This
+	added an XXX_with_plugin as the underlying implementation for
+	  + rtems_rate_monotonic_report_statistics
+	  + rtems_stack_checker_report_usage
+	  + rtems_cpu_usage_report
+	As demonstration, the http netdemo can now print out stack
+	and cpu usage reports.
+
+2007-09-06	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* shttpd/compat_rtems.c: Style clean up.
+
+2007-09-06	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* rtems/src/ratemonperiod.c: Clean up.
+	* rtems/src/ratemonreportstatistics.c: Clarify period statistics output.
+
+2007-09-06	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libmisc/monitor/mon-monitor.c: Fix warnings and typo.
+
+2007-09-05	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libmisc/untar/untar.c, libmisc/untar/untar.h: Clean up prototype.
+
+2007-09-05	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libmisc/Makefile.am: Add new files.
+
+2007-09-05	Thomas Doerfler <Thomas.Doerfler@embedded-brains.de>
+
+	* libmisc/monitor/mon-object.c,	
+	* libmisc/monitor/monitor.h, libmisc/monitor/mon-part.c, 
+	* libmisc/monitor/mon-region.c, libmisc/monitor/mon-sema.c, 
+	* libmisc/monitor/mon-task, libmisc/Makefile.am: 
+	Added functionality for osmonweb support
+
+2007-09-04	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libmisc/monitor/mon-monitor.c, libmisc/monitor/mon-object.c,
+	libmisc/monitor/monitor.h: Merge minor parts of Thomas' improvements
+	that are needed by osmonweb.
+
+2007-09-04	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libmisc/untar/untar.c, libmisc/untar/untar.h: Add const to char *.
+	Use printk.
+
+2007-08-28	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* rtems/include/rtems/rtems/clock.h, score/src/threadhandler.c: Fix
+	spacing and spelling.
+
+2007-08-28	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	PR 1256/networking
+	* ftpd/ftpd.c: Fix unaligned access.
+
+2007-08-28	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* posix/Makefile.am: Always build nanosleep.
+
+2007-08-17	Chris Johns <chrisj@rtems.org>
+
+	* libmisc/capture/README: Minor copyright change.
+	* libmisc/capture/capture-cli.c, libmisc/capture/capture.c,
+	libmisc/capture/capture.h: Fixed the memory leak when lots of
+	tasks are being created and deleted. Improved the trigger
+	interface so all task type actions can be caught.
+
+2007-08-13	Chris Johns <chrisj@rtems.org>
+
+	* score/include/rtems/score/object.h: Point the
+	OBJECTS_RTEMS_CLASSES_LAST macro to the last entry.
+
+2007-07-31	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	PR 1248/networking
+	* libnetworking/rtems/rtems_glue.c: Luke Stras <luke@spacequest.com>
+	reported that when no interfaces are successfully attached, the
+	default route is broken and may result in a jump to an illegal
+	address.
+
+2007-07-31	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* score/inline/rtems/score/priority.inl: Use size_t instead of
+	  uint32_t for array index.
+
+2007-07-30	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/netinet/in_cksum_m68k.h: Use __mcoldfire__ to
+	  identify coldfire cpus.
+
+2007-07-30	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* shttpd/log.c: Activate SPLIT_SNPRINTF for gcc <= 4.2.1 and
+	  coldfire.
+
+2007-07-30	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* shttpd/log.c: Add preliminary version of SPLIT_SNPRINTF to
+	  work-around bug m68k/coldfire -fomit-frame-pointer bug
+	  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=32307.
+
+2007-07-27	Chris Johns <chrisj@rtems.org>
+
+	* wrapup/Makefile.am: Create archive from a file for hosts
+	with a limited command line size.
+
+2007-07-26	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* include/rtems/bspIo.h, include/rtems/pci.h:
+	Add extern "C" guards. Reported by
+	Robert S. Grimes <rsg@alum.mit.edu>.
+
+2007-07-24	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libmisc/cpuuse/cpuusagereport.c, libmisc/cpuuse/cpuusagereset.c,
+	score/src/timespecdivide.c: Fix various math and reporting bugs. Now
+	the time appears to be reported correctly and add up to what is
+	expected.
+
+2007-07-24	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* shttpd/Makefile.am: Prefix all non-public symbols with _shttp_.
+	* shttpd/compat_rtems.c: Don't build my_stat for rtems.
+	* shttpd/defs.h: Don't build most of my_* wrappers for rtems.
+
+2007-07-18	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libmisc/Makefile.am, libmisc/cpuuse/cpuusagereport.c,
+	libmisc/cpuuse/cpuusagereset.c: Fix bug where cpu usage calculation
+	was always using uptime not time since last cpu usage reset when
+	using nanoseconds granularity.
+	* libmisc/cpuuse/cpuusagedata.c: New file.
+
+2007-07-13	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libcsupport/src/mount.c: Allow null for output parameter.
+
+2007-07-12	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* shttpd/compat_rtems.c, shttpd/compat_rtems.h: Add port to listen on
+	to shttpd initialization.
+
+2007-07-11	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libcsupport/src/malloc.c: Clean up Malloc debug code.
+	* score/include/rtems/score/heap.h: Spacing.
+	* score/inline/rtems/score/thread.inl:
+	* score/src/heapfree.c. Clean up and add explicit check of the address
+	being freed actually being in the heap.
+	* score/src/heapwalk.c: Switch to printk and do not call abort.
+
+2007-07-06	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libmisc/stackchk/check.c: Make checking the integrity of the pattern
+	area contingent on the stack checker user extension having been
+	initialized.
+
+2007-06-21	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* libnetworking/rtems/rtems_syscall.c: Remove RTEMS versions of send()
+	and recv(). We already had the BSD versions and these conflict
+	sometimes when linking.
+
+2007-06-21	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* libnetworking/rtems/mkrootfs.h, libnetworking/rtems/rtems_bsdnet.h,
+	libnetworking/rtems/rtems_bsdnet_internal.h: Add extern __cplusplus.
+
+2007-06-20	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* sapi/include/confdefs.h: Do not instantiate initialization
+	thas/thread pointer tables for an API that is not configured.
+
+2007-06-20	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* libcsupport/Makefile.am:
+	* libcsupport/src/open_dev_console.c: New file.
+
+2007-06-20	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* score/src/corerwlock.c: Make sure structure is fully initialized.
+	When reused, some fields will not be zero like at initialization.
+
+2007-06-20	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* sapi/include/confdefs.h: POSIX threads use twice the minimum stack
+	size. Account for this.
+
+2007-06-13	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* configure.ac: Add NDEBUG as a command line compilation option.
+
+2007-06-12	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* libmd/.cvsignore: New file.
+
+2007-06-12	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* shttpd/defs.h: Eliminate my_strncasecmp.
+	* shttpd/string.c: Eliminate my_strncasecmp.
+
+2007-06-12	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* wrapup/Makefile.am: Pickup ../libmd/libmd.a.
+	* pppd/Makefile.am: Reflect moving out md*.
+	* pppd/md4.h, pppd/md4.c, pppd/md5.c, pppd/md5.h: Remove (moved to
+	  libmd).
+	* libmd/Makefile.am, libmd/md4.c, libmd/md4.h, libmd/md5.c, 
+	libmd/md5.h, libmd/preinstall.am: New (moved out from pppd).
+	* configure.ac, Makefile.am: Add libmd.
+
+2007-06-12	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* shttpd/defs.h: Eliminate my_strlcpy.
+	* shttpd/string.c: Eliminate my_strlcpy.
+
+2007-06-12	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* shttpd/defs.h: Eliminate my_strdup, my_strndup.
+	* shttpd/string.c: Eliminate my_strdup, my_strndup.
+	* shttpd/Makefile.am: Add -DHAVE_MD5 to use md5 routines from
+	  libmd.a.
+
+2007-06-12	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* wrapup/Makefile.am: Add libmd.a.
+
+2007-06-11	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* pppd/Makefile.am: Remove md5 and md4 from libpppd.a.
+	  Add pppd/libmd.a.
+	* pppd/md4.c: Don't include pppd.h.
+
+2007-06-11	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* shttpd/shttpd.ico, shttpd/resources.rc: Remove (Unused).
+
+2007-06-11	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* shttpd/Makefile.am: Conditionally build on LIBNETWORKING.
+	* shttpd/compat_rtems.h: Include <arpa/inet.h>.
+	Add config.h support.
+
+2007-06-11	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* shttpd/compat_rtems.h: Define closesocket.
+
+2007-06-11	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* shttpd/compat_rtems.h: Add IS_DIRSEP_CHAR.
+
+2007-06-11	Ralf Corsépius <ralf.corsepius@rtems.org>
+	* shttpd/compat_rtems.h, shttpd/compat_rtems.c:
+	Use size_t for stack sizes.
+
+2007-06-11	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* configure.ac, Makefile.am: Add shttpd.
+	* shttpd/Makefile.am: New.
+	* shttpd/auth.c, shttpd/cgi.c, shttpd/compat_rtems.c,
+	shttpd/compat_rtems.h, shttpd/compat_unix.c, shttpd/compat_unix.h,
+	shttpd/compat_win32.c, shttpd/compat_win32.h, shttpd/compat_wince.c,
+	shttpd/compat_wince.h, shttpd/config.c, shttpd/defs.h,
+	shttpd/io_cgi.c, shttpd/io_dir.c, shttpd/io_emb.c, shttpd/io_file.c,
+	shttpd/io.h, shttpd/io_socket.c, shttpd/io_ssl.c, shttpd/llist.h,
+	shttpd/log.c, shttpd/Makefile, shttpd/md5.c, shttpd/md5.h,
+	shttpd/mime_type.c, shttpd/resources.rc, shttpd/shttpd.1,
+	shttpd/shttpd.c, shttpd/shttpd.h, shttpd/shttpd.ico, shttpd/ssl.h,
+	shttpd/standalone.c, shttpd/std_includes.h, shttpd/string.c: 
+	Import from shttpd-1.37.tar.gz.
+
+2007-06-11	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* configure.ac: Remove "pad" from CPU_CONTEXT.
+
+2007-06-05	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* score/src/coremsg.c: Formatting.
+
+2007-05-29	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* score/include/rtems/score/copyrt.h: Update copyright notice.
+
+2007-05-29	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* sapi/Makefile.am, sapi/include/rtems/io.h, sapi/src/io.c: Split into
+	one function per file execpt io.c which contains required
+	initialization methods.
+	* sapi/src/ioclose.c, sapi/src/iocontrol.c, sapi/src/iodata.c,
+	sapi/src/ioinitialize.c, sapi/src/ioopen.c, sapi/src/ioread.c,
+	sapi/src/ioregisterdriver.c, sapi/src/iounregisterdriver.c,
+	sapi/src/iowrite.c: New files.
+
+2007-05-29	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* sapi/include/confdefs.h, sapi/src/io.c: Readded code to copy driver
+	table into Workspace but now it is only done if the application needs
+	extra slots for dynamic driver registration. Cleaned up
+	rtems_io_register_driver and rtems_io_unregister_driver code and
+	added numerous error cases to register.
+
+2007-05-28	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* libmisc/Makefile.am, libmisc/monitor/mon-object.c,
+	libmisc/monitor/monitor.h, sapi/include/confdefs.h,
+	sapi/include/rtems/config.h, sapi/include/rtems/io.h,
+	sapi/src/exinit.c, sapi/src/io.c: Eliminate maximum_drivers
+	configuration parameter since it was used to configure a no longer
+	used feature. Device names are now part of the filesystem not in a
+	table. This also eliminated the variables _IO_Number_of_devices and
+	_IO_Driver_name_table from RTEMS as well as the memory allocation
+	used to populate _IO_Driver_name_table.
+	* libmisc/monitor/mon-dname.c: Removed.
+
+2007-05-23	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* sapi/include/confdefs.h: Add CONFIGURE_MESSAGE_BUFFER_MEMORY so there
+	is less dependence on CONFIGURE_MEMORY_OVERHEAD. Do not arbitrarily
+	add 1 to CONFIGURE_MEMORY_OVERHEAD so we do not waste a kilobyte for
+	unused Workspace. Round the workspace required size to an 8 byte
+	boundary instead of a 0x400 byte one. We may end up needing to add 8
+	bytes again to account for the alignment rounding.
+
+2007-05-23	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	Yu Chen <chyyuu@gmail.com>
+	* score/src/corespinlockwait.c: Per question posted as
+	http://www.rtems.org/ml/rtems-users/2007/may/msg00180.html, changed
+	logical operator to <=.
+
+2007-05-22	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* score/cpu/arm/cpu.c, score/cpu/avr/cpu.c, score/cpu/bfin/cpu.c,
+	score/cpu/c4x/cpu.c, score/cpu/h8300/cpu.c, score/cpu/i386/cpu.c,
+	score/cpu/m68k/cpu.c, score/cpu/mips/cpu.c, score/cpu/nios2/cpu.c,
+	score/cpu/no_cpu/cpu.c, score/cpu/sh/cpu.c, score/cpu/sparc/cpu.c,
+	cpukit/sapi/src/exinit.c: Move copying of CPU Table to shared
+	executive initialization.
+
+2007-05-22	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* score/src/corerwlockrelease.c: Do not dereference NULL.
+
+2007-05-21	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* rtems/Makefile.am, rtems/include/rtems/rtems/barrier.h,
+	rtems/include/rtems/rtems/dpmem.h, rtems/include/rtems/rtems/event.h,
+	rtems/include/rtems/rtems/message.h, rtems/include/rtems/rtems/part.h,
+	rtems/include/rtems/rtems/ratemon.h, rtems/include/rtems/rtems/region.h,
+	rtems/include/rtems/rtems/sem.h, rtems/include/rtems/rtems/tasks.h,
+	rtems/include/rtems/rtems/timer.h, sapi/Makefile.am,
+	sapi/include/rtems/extension.h: Split Classic API data instantiation
+	into individual files. This reduces the size of the BSS section when
+	an optional manager stub is used. Some tests showed about a 600 byte
+	reduction in BSS size.
+	* rtems/src/taskinitusers.c, sapi/src/rtemsapi.c, rtems/src/tasks.c:
+	Eliminated the variables _RTEMS_tasks_User_initialization_tasks and
+	_RTEMS_tasks_Number_of_initialization_tasks because they were only
+	used in one place after initialized. It was a waste of space.
+ 	* rtems/src/barrierdata.c, rtems/src/dpmem.c, rtems/src/dpmemdata.c,
+	rtems/src/eventdata.c, rtems/src/msgdata.c, rtems/src/partdata.c,
+	rtems/src/ratemondata.c, rtems/src/regiondata.c,
+	rtems/src/rtemstimerdata.c, rtems/src/semdata.c, rtems/src/taskdata.c,
+	sapi/src/extensiondata.c: New files.
+
+2007-05-21	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libmisc/Makefile.am, libmisc/cpuuse/README: Split remaining CPU Usage
+	functionality into multiple files to eliminate unnecessary cohesion.
+	Update README.
+	* libmisc/cpuuse/cpuusagereport.c, libmisc/cpuuse/cpuusagereset.c:
+	New files.
+	* libmisc/cpuuse/cpuuse.c: Removed.
+
+2007-05-21	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* rtems/src/ratemonperiod.c: Fix math ordering bug which resulted in a
+	negative value in some circumstances. Also cleaned up to share uptime
+	declaration.
+
+2007-05-17	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* ChangeLog, configure.ac, libcsupport/src/__times.c,
+	libmisc/cpuuse/cpuuse.c, libmisc/stackchk/check.c,
+	rtems/include/rtems/rtems/ratemon.h, rtems/src/ratemongetstatus.c,
+	rtems/src/ratemonperiod.c, rtems/src/ratemonreportstatistics.c,
+	rtems/src/ratemonresetall.c, rtems/src/ratemontimeout.c,
+	score/Makefile.am, score/include/rtems/score/thread.h,
+	score/include/rtems/score/timespec.h, score/src/threaddispatch.c,
+	score/src/threadinitialize.c, score/src/threadtickletimeslice.c,
+	score/src/timespecdivide.c: Add nanoseconds granularity to the rate
+	monotonic period statistics and CPU usage statistics. This capability
+	is enabled by default although may be conditionally disabled by the
+	user. It could be too much overhead on small targets but it does not
+	appear to be bad in early testing. Its impact on code size has not
+	been evaluated either. It is possible that both forms of statistics
+	gathering could be disabled with further tweaking of the conditional
+	compilation.
+	* score/src/timespecdividebyinteger.c: New file.
+
+2007-05-16	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* libmisc/cpuuse/cpuuse.c: Use rtems_object_get_name and eliminate
+	functionally similar code here. Also cleanup print formats.
+
+2007-05-16	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* score/src/objectgetnameasstring.c: Internal threads use string names
+	so in the current RTEMS source string object name can NOT be
+	disabled. It is probably worth considering converting the internal
+	threads to uint32_t style names so all the support for string names
+	can be conditionally disabled.
+
+2007-05-16	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* score/Makefile.am, score/include/rtems/score/timespec.h: Add division
+	and greater than operations for timespecs.
+	* score/src/timespecdivide.c, score/src/timespecgreaterthan.c:
+	New files.
+
+2007-05-16	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* score/src/objectgetnameasstring.c: Remove bogus ifdef
+	RTEMS_POSIX_API.
+
+2007-05-15	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* Makefile.am, preinstall.am, libmisc/Makefile.am, rtems/Makefile.am,
+	rtems/include/rtems.h, rtems/include/rtems/rtems/ratemon.h,
+	rtems/inline/rtems/rtems/ratemon.inl, rtems/src/ratemoncancel.c,
+	rtems/src/ratemoncreate.c, rtems/src/ratemondelete.c,
+	rtems/src/ratemongetstatus.c, rtems/src/ratemonident.c,
+	rtems/src/ratemonperiod.c, rtems/src/ratemontimeout.c,
+	score/Makefile.am, score/include/rtems/score/object.h,
+	score/src/threadhandler.c, wrapup/Makefile.am: Integrate Rate
+	Monotonic Statistics and Period Usage into Rate Monotonic Manager.
+	Added the following directives: rtems_rate_monotonic_get_statistics,
+	rtems_rate_monotonic_reset_statistics,
+	rtems_rate_monotonic_reset_all_statistics,
+	rtems_rate_monotonic_report_statistics, and rtems_object_get_name.
+	Obsoleted the rtems/rtmonuse.h file as a public interface.
+	* rtems/src/ratemongetstatistics.c,
+	rtems/src/ratemonreportstatistics.c, rtems/src/ratemonresetall.c,
+	rtems/src/ratemonresetstatistics.c, rtems/src/rtemsobjectgetname.c,
+	score/src/objectgetnameasstring.c: New files.
+	* libmisc/rtmonuse/rtmonuse.c, libmisc/rtmonuse/rtmonuse.h: Removed.
+
+2007-05-14	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* libcsupport/Makefile.am, libcsupport/src/unixlibc.c: Split off dummry
+	rtems_io_register_name for use on unix.
+	* libcsupport/src/unixlibc_io.c: New file.
+
+2007-05-11	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* score/src/coremsgseize.c: A blocking sender's message size was
+	pulled out of the wrong field in the Wait information structure.
+	* score/src/objectallocate.c: With the new optional manager support,
+	we only stub out the initialization. This makes it possible to attempt
+	to create an object with the information structure only initialized
+	with all zeros.  This ensures we return an error cleanly in this case.
+
+2007-05-11	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* rtems/src/region.c, sapi/src/exinit.c: Now that the Region is
+	an optional manager, we cannot depend on it do initialize the
+	internal Allocator Mutex.  This was always a questionable place to
+	do it, so this is a cleanup.
+
+2007-05-11	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* libmisc/cpuuse/cpuuse.c, libmisc/stackchk/check.c,
+	libmisc/stackchk/stackchk.h: Clean up as side-effect of making them
+	suitable for inclusion in the Users Guide.
+
+2007-05-11	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* ChangeLog: Move all ChangeLog entries for 2006 and earlier to
+	ChangeLog-pre2007.
+	* ChangeLog-pre2007: New file.
+
+2007-05-10	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	PR 1241/rtems
+	* score/src/threadchangepriority.c, score/src/threadqrequeue.c: Close
+	critical section window added with requeueing support.
+
+2007-05-10	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libcsupport/include/rtems/cdefs.h,
+	  libcsupport/include/sys/cdefs.h: Remove.
+	* Makefile.am: Remove libcsupport/include/sys/cdefs.h.
+	* libcsupport/Makefile.am: Remove include/rtems/cdefs.h.
+	* include/rtems/bsd/sys/queue.h, libcsupport/include/sys/ioccom.h,
+	libnetworking/netdb.h, libnetworking/resolv.h,
+	libnetworking/arpa/inet.h, libnetworking/arpa/nameser.h,
+	libnetworking/libc/gethostbydns.c, libnetworking/libc/res_stubs.c,
+	libnetworking/machine/in_cksum.h, libnetworking/net/ethernet.h,
+	libnetworking/net/if.h, libnetworking/net/if_dl.h,
+	libnetworking/netinet/ip.h, libnetworking/netinet/tcp.h,
+	libnetworking/rtems/rtems_bsdnet_internal.h,
+	libnetworking/sys/libkern.h, libnetworking/sys/mount.h,
+	libnetworking/sys/poll.h, libnetworking/sys/socket.h,
+	libnetworking/sys/sysctl.h, libnetworking/sys/syslog.h,
+	libnetworking/sys/uio.h, libnetworking/sys/un.h,
+	librpc/include/rpc/auth.h, librpc/include/rpc/auth_unix.h,
+	librpc/include/rpc/clnt.h, librpc/include/rpc/clnt_soc.h,
+	librpc/include/rpc/pmap_clnt.h, librpc/include/rpc/pmap_prot.h,
+	librpc/include/rpc/pmap_rmt.h, librpc/include/rpc/svc.h,
+	librpc/include/rpc/svc_soc.h, librpc/include/rpc/xdr.h,
+	librpc/include/rpcsvc/ypclnt.h, librpc/include/rpc/rpc_com.h:
+	Include <rtems/bsd/sys/cdefs.h> instead of <sys/cdefs.h>.
+
+2007-05-10	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* Makefile.am: Reflect introduction of
+	  include/rtems/bsd/sys/cdefs.h.
+	* include/rtems/bsd/sys/cdefs.h: New.
+
+2007-05-10	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/Makefile.am: Reflect having removed sys/queue.h.
+	* libnetworking/sys/queue.h: Remove.
+
+2007-05-10	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* librpc/src/xdr/xdr_float.c: Include <rtems/endian.h> instead of
+	<machine/endian.h>.
+	* libnetworking/rtems/rtems_showroute.c, 
+	libnetworking/rtems/rtems_showipstat.c,
+	libnetworking/rtems/rtems_showtcpstat.c,
+	libnetworking/rtems/rtems_showicmpstat.c,
+	libnetworking/rtems/rtems_showmbuf.c,
+	libnetworking/rtems/rtems_showudpstat.c,
+	libnetworking/rtems/rtems_showifstat.c, libnetworking/net/if.c,
+	libnetworking/net/raw_cb.c, libnetworking/net/route.c,
+	libnetworking/net/rtsock.c, libnetworking/net/raw_usrreq.c,
+	libnetworking/netinet/tcp_usrreq.c,
+	libnetworking/netinet/tcp_timer.c, libnetworking/netinet/if_ether.c,
+	libnetworking/netinet/tcp_debug.c, libnetworking/netinet/ip_fw.c,
+	libnetworking/netinet/ip_output.c,
+	libnetworking/netinet/ip_mroute.c, libnetworking/netinet/in_proto.c,
+	libnetworking/netinet/udp_usrreq.c,
+	libnetworking/netinet/tcp_output.c,
+	libnetworking/netinet/tcp_subr.c, libnetworking/netinet/tcp_input.c,
+	libnetworking/netinet/in_rmx.c, libnetworking/netinet/in_pcb.c,
+	libnetworking/netinet/raw_ip.c, libnetworking/netinet/ip_divert.c,
+	libnetworking/netinet/in.c, libnetworking/kern/uipc_socket2.c,
+	libnetworking/kern/kern_sysctl.c, libnetworking/kern/uipc_socket.c,
+	libnetworking/kern/kern_subr.c: Include <rtems/bsd/sys/queue.h>
+	instead of <sys/queue.h>.
+	* libnetworking/sys/socketvar.h, libnetworking/sys/mount.h,
+	libnetworking/sys/sysctl.h, libnetworking/net/raw_cb.h, 
+	libnetworking/net/if.h, libnetworking/net/if_media.h,
+	libnetworking/net/if_var.h, libnetworking/netinet/in_var.h,
+	libnetworking/netinet/in_pcb.h: Include <rtems/bsd/sys/queue.h>
+	instead of <sys/queue.h>.
+	* Makefile.am: Reflect addition of include/rtems/bsd/sys/queue.h.
+	* include/rtems/bsd/sys/queue.h: New (Copied from
+	  libnetworking/sys/queue.h).
+
+2007-05-09	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* libcsupport/include/rtems/libcsupport.h, libcsupport/src/newlibc.c,
+	sapi/Makefile.am, sapi/include/confdefs.h, sapi/src/exinit.c,
+	score/Makefile.am, score/preinstall.am,
+	score/include/rtems/score/userext.h, score/src/chain.c,
+	score/src/userext.c: Switch to newlib reentrancy extension being
+	installed in the initial set instead of using rtems_extension_create.
+	While implementing this, noticed that user extensions and chain code
+	had multiple functions in a single file which is not desirable in the
+	SuperCore and API portions of RTEMS, so split these into multiple
+	files with one function per file. Also noticed that some of user
+	extension code was inlined for no particular reason so moved that to
+	C bodies.  Split executive shutdown from initialization since not
+	every application shuts down.  Moved __fini call to executive shutdown
+	to be more symmetrical with where it is called at startup. 
+	* sapi/src/exshutdown.c, score/src/chainappend.c,
+	score/src/chainextract.c, score/src/chainget.c,
+	score/src/chaininsert.c, score/src/userextaddapiset.c,
+	score/src/userextaddset.c, score/src/userextremoveset.c,
+	score/src/userextthreadbegin.c, score/src/userextthreadcreate.c,
+	score/src/userextthreaddelete.c, score/src/userextthreadrestart.c,
+	score/src/userextthreadstart.c, score/src/userextthreadswitch.c: New
+	files.
+	* score/inline/rtems/score/userext.inl: Removed.
+
+2007-05-09	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* libcsupport/src/error.c, sapi/include/rtems/config.h: Do not
+	reference _Configuration_MP_table if multiprocessing is disabled.
+
+2007-05-09	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* libmisc/monitor/mon-monitor.c, libmisc/monitor/mon-server.c: Do not
+	reference _Configuration_MP_table if multiprocessing is disabled.
+
+2007-05-09	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/machine/endian.h: Remove.
+	* libnetworking/Makefile.am: Remove machine/endian.h.
+	* libnetworking/arpa/nameser_compat.h, libnetworking/netinet/in.h,
+	libnetworking/rtems/rtems_bsdnet_internal.h: Include
+	<rtems/endian.h> instead of <machine/endian.h>.
+	* Makefile.am: Add include/rtems/endian.h.
+	* include/rtems/endian.h: New (Copied from
+	  libnetworking/machine/endian.h).
+
+2007-05-09	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libcsupport/src/readdir.c, libnetworking/net/slcompress.c,
+	pppd/md4.h, pppd/md5.h, pppd/pppd.h,
+	score/cpu/m68k/rtems/score/m68k.h: Include <rtems/stdint.h> instead
+	of <stdint.h>.
+	* libnetworking/machine/endian.h: Remove
+	  CPU_HAS_OWN_HOST_TO_NETWORK_ROUTINES.
+	* NEWS: new.
+
+2007-05-09	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	PR 1243
+	* pppd/auth.c (set_allowed_addrs): Remove bogus dereference. 
+
+2007-05-08	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/machine/endian.h: Convert htons, htonl, ntohs, ntohl
+	to inline functions, using uint[16,32]_t. 
+	* libnetworking/netdb.h: Change netent->n_net to uint32_t to comply
+	with SUSv3.
+	* telnetd/icmds.c: Add HAVE_CONFIG_H magic.
+	* rtems/src/regionprocessqueue.c, score/src/heapresizeblock.c
+	score/src/threadqrequeue.c, ftpd/ftpd.c, libblock/src/show_bdbuf.c:
+	Add HAVE_CONFIG_H magic.
+	* libnetworking/libc/gethostbydns.c, 
+	libnetworking/libc/inet_net_ntop.c,
+	libnetworking/libc/inet_pton.c: Eliminate __P.
+	* librpc/src/rpc/rtime.c: Use uint32_t instead of unsigned long for
+	return value of ntohl (POSIX requirement). 
+	Use UINT32_C macros to avoid overflows on 16bit targets.
+	Eliminate __P.
+	* configure.ac: Check for working PRIxPTR.
+
+2007-05-08	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* score/include/rtems/score/thread.h, score/inline/rtems/score/stack.inl
+	score/src/threadinitialize.c, score/src/threadstackallocate.c:
+	Use size_t for stack sizes.
+
+2007-05-03	Joel Sherrill <joel@OARcorp.com>
+
+	* ChangeLog, libcsupport/src/malloc.c,
+	libcsupport/src/mallocfreespace.c, sapi/include/confdefs.h,
+	score/Makefile.am, score/preinstall.am: malloc never blocks so the
+	Region Manager is quite heavy for implementing this. This patch
+	implements the C Program Heap directly in terms of the new Protected
+	Heap handler. This handler is a direct use of a SuperCore Heap in
+	conjunction with the Allocator Mutex used internally by RTEMS. This
+	saves 3184 bytes on most SPARC test executables.
+	* score/include/rtems/score/protectedheap.h, score/src/pheapallocate.c,
+	score/src/pheapallocatealigned.c, score/src/pheapextend.c,
+	score/src/pheapfree.c, score/src/pheapgetblocksize.c,
+	score/src/pheapgetfreeinfo.c, score/src/pheapgetinfo.c,
+	score/src/pheapinit.c, score/src/pheapresizeblock.c,
+	score/src/pheapwalk.c: New files.
+
+2007-05-03	Joel Sherrill <joel@OARcorp.com>
+
+	* libcsupport/src/rmdir.c: Fixed spacing.
+	* libcsupport/Makefile.am, libcsupport/src/newlibc.c: Split _exit from
+	newlibc.c. It is not required for minimum executing and drops 624
+	from SPARC minimum executable.
+	* libcsupport/src/newlibc_exit.c: New file.
+
+2007-04-17	Joel Sherrill <joel@OARcorp.com>
+
+	* itron/Makefile.am, itron/src/eventflags.c, itron/src/fmempool.c,
+	itron/src/itronintr.c, itron/src/itrontime.c, itron/src/network.c,
+	itron/src/port.c, itron/src/sysmgmt.c, itron/src/task.c,
+	itron/src/vmempool.c, posix/Makefile.am, posix/src/pthread.c,
+	rtems/src/taskinitusers.c, rtems/src/tasks.c,
+	sapi/include/confdefs.h, sapi/src/io.c: Various modification to
+	reduce executable size. Most were refactoring of files. Split ITRON
+	API files. Implemented mechanism to avoid initialization task/thread
+	loop being linked in when that style of task initialization was not
+	being used.
+	* itron/src/acp_por.c, itron/src/act_cyc.c, itron/src/cal_por.c,
+	itron/src/chg_iXX.c, itron/src/clr_flg.c, itron/src/cre_flg.c,
+	itron/src/cre_mpf.c, itron/src/cre_mpl.c, itron/src/cre_por.c,
+	itron/src/def_alm.c, itron/src/def_cyc.c, itron/src/def_exc.c,
+	itron/src/def_int.c, itron/src/def_svc.c, itron/src/del_flg.c,
+	itron/src/del_mpf.c, itron/src/del_mpl.c, itron/src/del_por.c,
+	itron/src/dis_int.c, itron/src/dly_tsk.c, itron/src/ena_int.c,
+	itron/src/fwd_por.c, itron/src/get_blf.c, itron/src/get_blk.c,
+	itron/src/get_tim.c, itron/src/get_ver.c, itron/src/itroninittasks.c,
+	itron/src/loc_cpu.c, itron/src/nget_nod.c, itron/src/nget_ver.c,
+	itron/src/nrea_dat.c, itron/src/nwri_dat.c, itron/src/pacp_por.c,
+	itron/src/pcal_por.c, itron/src/pget_blf.c, itron/src/pget_blk.c,
+	itron/src/pol_flg.c, itron/src/ref_alm.c, itron/src/ref_cfg.c,
+	itron/src/ref_cyc.c, itron/src/ref_flg.c, itron/src/ref_iXX.c,
+	itron/src/ref_mpf.c, itron/src/ref_mpl.c, itron/src/ref_por.c,
+	itron/src/ref_sys.c, itron/src/rel_blf.c, itron/src/rel_blk.c,
+	itron/src/ret_int.c, itron/src/ret_tmr.c, itron/src/ret_wup.c,
+	itron/src/rpl_rdv.c, itron/src/set_flg.c, itron/src/set_tim.c,
+	itron/src/tacp_por.c, itron/src/tcal_por.c, itron/src/tget_blf.c,
+	itron/src/tget_blk.c, itron/src/twai_flg.c, itron/src/unl_cpu.c,
+	itron/src/wai_flg.c, posix/src/pthreadinitthreads.c: New files.
+
+2007-04-17	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* score/include/rtems/score/thread.h: 
+	  Use Context_Control_fp* instead of void* for fp_contexts.
+
+2007-04-16	Joel Sherrill <joel@OARcorp.com>
+
+	PR 1240/filesystem
+	* libfs/src/imfs/imfs_rmnod.c: Fix link when removing a symlink. Memory
+	for filename was not being freed.
+
+2007-04-16	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* pppd/utils.c: Use uintptr_t instead of unsigned long.
+
+2007-04-16	Joel Sherrill <joel@OARcorp.com>
+
+	* itron/src/rsm_tsk.c: Correct error returned.
+
+2007-04-14	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* configure.ac: Redefine LIBPOSIX to !UNIX.
+	* posix/src/usleep.c, libcsupport/src/readlink.c:
+	Update API to SUSv3.
+
+2007-04-13	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* posix/Makefile.am: Unconditionally build src/sleep.c,
+	  src/usleep.c.
+	* posix/src/clockgettime.c: #ifdef CLOCK_MONOTONIC the
+	  CLOCK_MONOTONIC case.
+	* score/inline/rtems/score/tod.inl: Include <sys/time.h>.
+
+2007-04-13	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* posix/Makefile.am: Cosmetics.
+	* configure.ac: Add AM_CONDITIONAL(HAS_PTHREADS).
+	* httpd/Makefile.am: Use HAS_PTHREADS instead of LIBPOSIX.
+
+2007-04-13	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* posix/Makefile.am, wrapup/Makefile.am, configure.ac: Rename
+	  AM_CONDITIONAL(HAS_POSIX) into LIBPOSIX.
+	* posix/src/clockgettime.c, posix/src/clocksettime.c: Don't include 
+	  rtems/posix/time.h.
+	* posix/src/nanosleep.c: Include rtems/score/timespec.h instead of
+	  rtems/posix/time.h.
+	* score/include/rtems/score/object.h: Use size_t for byte sizes.
+
+2007-04-12	Joel Sherrill <joel@OARcorp.com>
+
+	* itron/src/rsm_tsk.c: Correct error returned.
+
+2007-04-09	Thomas Doerfler <Thomas.Doerfler@embedded-brains.de>
+
+	* include/rtems/pci.h: Added device ID for MOTOROLA_HAWK
+
+2007-04-09	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libcsupport/src/newlibc.c: Add __ATTRIBUTE_IMPURE_PTR__ 
+	(Fixes "relocation truncated to fit: R_MIPS_GPREL16" against
+	_impure_ptr bug).
+	Fix abuse of _REENT_INIT().
+
+2007-04-05	Joel Sherrill <joel@OARcorp.com>
+
+	* itron/src/itrontime.c: Fix typo.
+	* score/include/rtems/score/tod.h: Add TOD_TICKS_PER_SECOND macro.
+	* score/src/iterateoverthreads.c: Safely take NULL as argument.
+	* score/src/threaddispatch.c: Formatting.
+
+2007-04-05	Joel Sherrill <joel@OARcorp.com>
+
+	* posix/Makefile.am: Fix formatting.
+
+2007-04-05	Joel Sherrill <joel@OARcorp.com>
+
+	* posix/Makefile.am, posix/include/rtems/posix/time.h,
+	posix/src/adjtime.c, posix/src/alarm.c, posix/src/clockgetres.c,
+	posix/src/condtimedwait.c, posix/src/mqueuetimedreceive.c,
+	posix/src/mqueuetimedsend.c, posix/src/mutextimedlock.c,
+	posix/src/nanosleep.c, posix/src/posixtimespecabsolutetimeout.c,
+	posix/src/pthread.c, posix/src/pthreadcreate.c,
+	posix/src/pthreadsetschedparam.c, posix/src/ptimer1.c,
+	posix/src/sched.c, posix/src/semtimedwait.c,
+	posix/src/sigtimedwait.c, posix/src/ualarm.c,
+	rtems/src/clocktodtoseconds.c, score/Makefile.am,
+	score/preinstall.am, score/include/rtems/score/tod.h,
+	score/inline/rtems/score/tod.inl, score/src/coretod.c,
+	score/src/coretodget.c, score/src/coretodgetuptime.c,
+	score/src/coretodset.c, score/src/coretodtickle.c: Provide timespec
+	manipulation routines in the SuperCore. Use them everywhere possible.
+	This lead to significant cleanup in the API routines and eliminated
+	some of the same code from the POSIX API. At this point, the
+	SuperCore keeps time in POSIX timespec format properly from 1970. You
+	just cannot set it before 1988 in keeping with RTEMS traditional
+	behavior.
+	* score/include/rtems/score/timespec.h, score/src/timespecaddto.c,
+	score/src/timespecfromticks.c, score/src/timespecisvalid.c,
+	score/src/timespeclessthan.c, score/src/timespecsubtract.c,
+	score/src/timespectoticks.c: New files.
+	* posix/src/posixintervaltotimespec.c,
+	posix/src/posixtimespecsubtract.c,
+	posix/src/posixtimespectointerval.c: Removed.
+
+2007-04-04	Joel Sherrill <joel@OARcorp.com>
+
+	* score/Makefile.am, score/include/rtems/score/tod.h,
+	score/inline/rtems/score/tod.inl: Make _TOD_Tickle_ticks a real
+	non-inlined routine. It should only be used once so there is little
+	advantage to inlining it.
+	* score/src/coretodtickle.c: New file.
+
+2007-04-02	Joel Sherrill <joel@OARcorp.com>
+
+	* posix/Makefile.am, score/src/objectgetnoprotection.c: Eliminate some
+	dead code.
+	* posix/src/time.c: Removed.
+
+2007-04-02	Joel Sherrill <joel@OARcorp.com>
+
+	* posix/include/rtems/posix/timer.h, posix/src/alarm.c,
+	posix/src/posixtimespectointerval.c, posix/src/ptimer1.c,
+	posix/src/sysconf.c, posix/src/ualarm.c, rtems/src/clockget.c,
+	rtems/src/clocktodvalidate.c, score/include/rtems/score/tod.h,
+	score/inline/rtems/score/tod.inl, score/src/coretod.c: Eliminate
+	TOD_Ticks_per_second variable.
+
+2007-04-02	Joel Sherrill <joel@OARcorp.com>
+
+	* itron/src/itrontime.c, libcsupport/src/__gettod.c,
+	posix/include/rtems/posix/time.h, posix/include/rtems/posix/timer.h,
+	posix/src/clockgettime.c, posix/src/clocksettime.c,
+	posix/src/nanosleep.c, posix/src/posixtimespecsubtract.c,
+	posix/src/posixtimespectointerval.c, posix/src/ptimer1.c,
+	posix/src/sleep.c, rtems/Makefile.am,
+	rtems/include/rtems/rtems/clock.h, rtems/include/rtems/rtems/timer.h,
+	rtems/include/rtems/rtems/types.h, rtems/src/clockget.c,
+	rtems/src/clockset.c, rtems/src/clocktodtoseconds.c,
+	rtems/src/clocktodvalidate.c, rtems/src/taskwakewhen.c,
+	score/Makefile.am, score/include/rtems/score/tod.h,
+	score/inline/rtems/score/tod.inl, score/src/coretod.c,
+	score/src/coretodset.c: Convert from Classic API style TOD_Control as
+	fundamental time structure to POSIX struct timespec. Add
+	clock_get_uptime().
+	* rtems/src/clockgetuptime.c, score/src/coretodget.c,
+	score/src/coretodgetuptime.c: New files.
+	* score/src/coretodtickle.c, score/src/coretodtoseconds.c,
+	score/src/coretodvalidate.c: Removed.
+
+2007-04-02	Joel Sherrill <joel@OARcorp.com>
+
+	* libcsupport/src/printk.c: Add %p support.
+
+2007-04-02	Joel Sherrill <joel@OARcorp.com>
+
+	* libmisc/stackchk/check.c: Add code to check validity of frame pointer
+	in addition to the pattern area being overwritten. Also do some
+	cleanup.
+
+2007-03-31	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* include/rtems/pci.h: Further stdint.h fixed-size types.
+
+2007-03-30	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* include/rtems/pci.h: Use stdint.h fixed size-types.
+
+2007-03-30	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/Makefile.am: Move libc/send.c to libc_a_SOURCES.
+	* libnetworking/Makefile.am: Move libc/recv.c to libc_a_SOURCES.
+	* libnetworking/Makefile.am: Move libc/res_config.h to
+	  libc_a_SOURCES (File is being used).
+	* libnetworking/libc/iso_addr.c, libnetworking/libc/iso_addr.3:
+	Remove (Unused).
+	* libnetworking/Makefile.am: Remove libc/iso_addr.c, libc/iso_addr.3.
+	* libnetworking/net/ppp-deflate.c, libnetworking/net/bsd-comp.c:
+	Remove (Unused).
+	* libnetworking/Makefile.am: Remove net/ppp-deflate.c, net/bsd-comp.c.
+
+2007-03-30	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/libc/addr2ascii.c, libnetworking/libc/ascii2addr.c,
+	libnetworking/libc/base64.c, libnetworking/libc/ether_addr.c,
+	libnetworking/libc/gethostbydns.c, libnetworking/libc/gethostbyht.c,
+	libnetworking/libc/gethostbynis.c,
+	libnetworking/libc/gethostnamadr.c,
+	libnetworking/libc/gethostname.c, libnetworking/libc/getnetbydns.c,
+	libnetworking/libc/getnetbyht.c, libnetworking/libc/getnetbynis.c,
+	libnetworking/libc/getnetnamadr.c, libnetworking/libc/getproto.c,
+	libnetworking/libc/getprotoent.c, libnetworking/libc/getprotoname.c,
+	libnetworking/libc/getservbyname.c,
+	libnetworking/libc/getservbyport.c, libnetworking/libc/getservent.c,
+	libnetworking/libc/herror.c, libnetworking/libc/inet_addr.c,
+	libnetworking/libc/inet_lnaof.c, libnetworking/libc/inet_makeaddr.c,
+	libnetworking/libc/inet_net_ntop.c,
+	libnetworking/libc/inet_net_pton.c, libnetworking/libc/inet_neta.c,
+	libnetworking/libc/inet_netof.c, libnetworking/libc/inet_network.c,
+	libnetworking/libc/inet_ntoa.c, libnetworking/libc/inet_ntop.c,
+	libnetworking/libc/inet_pton.c, libnetworking/libc/iso_addr.c,
+	libnetworking/libc/linkaddr.c, libnetworking/libc/map_v4v6.c,
+	libnetworking/libc/ns_addr.c, libnetworking/libc/ns_name.c,
+	libnetworking/libc/ns_netint.c, libnetworking/libc/ns_ntoa.c,
+	libnetworking/libc/ns_parse.c, libnetworking/libc/ns_print.c,
+	libnetworking/libc/ns_ttl.c, libnetworking/libc/nsap_addr.c,
+	libnetworking/libc/rcmd.c, libnetworking/libc/recv.c,
+	libnetworking/libc/res_comp.c, libnetworking/libc/res_data.c,
+	libnetworking/libc/res_debug.c, libnetworking/libc/res_init.c,
+	libnetworking/libc/res_mkquery.c, libnetworking/libc/res_mkupdate.c,
+	libnetworking/libc/res_query.c, libnetworking/libc/res_send.c,
+	libnetworking/libc/res_stubs.c, libnetworking/libc/res_update.c,
+	libnetworking/libc/send.c, libnetworking/libc/strsep.c: Eliminate
+	SCCS, LINT. Add HAVE_CONFIG_H.
+	* libcsupport/src/__assert.c: Add HAVE_CONFIG_H.
+
+2007-03-29	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* rtems/include/rtems/rtems/tasks.h: Change rtems_task_argument to
+	  uintptr_t.
+
+2007-03-29	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/netinet/ip_icmp.c, libnetworking/netinet/ip_input.c,
+	libnetworking/netinet/ip_output.c: Further _IP_VHL removal preps.
+
+2007-03-29	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/netinet/ip.h: Add FreeBSD's alignment macros.
+	* libnetworking/net/netisr.h: Partial update from FreeBSD.
+	* libcsupport/src/getpwent.c: Remove bogus cast to long.
+	* libnetworking/libc/strsep.c: Don't build if provided by libc.
+	* libnetworking/libc/rcmd.c: Eliminate __P(). Cosmetics.
+	* libnetworking/sys/select.h: Remove selrecord, selwakeup (Unused).
+	* libnetworking/netinet/ip_output.c: Preps to eliminate _IP_VHL
+	(Abandoned in FreeBSD). Misc mergers from upstream FreeBSD.
+	* libnetworking/netinet/ip_input.c: Preps to eliminate _IP_VHL
+	(Abandoned in FreeBSD). Misc mergers from upstream FreeBSD.
+	* libnetworking/netinet/ip_icmp.c: Preps to eliminate _IP_VHL
+	(Abandoned in FreeBSD).
+	* libnetworking/netinet/tcp_subr.c: Preps to eliminate _IP_VHL
+	(Abandoned in FreeBSD).
+	* libnetworking/netinet/raw_ip.c: Preps to eliminate _IP_VHL
+	(Abandoned in FreeBSD).
+	* libnetworking/netinet/ip_output.c: Partial update from FreeBSD.
+	* libnetworking/netinet/ip_fw.c: Eliminate __P().
+
+2007-03-28	Chris Johns <chrisj@rtems.org>
+
+	* rtems/Makefile.am, rtems/include/rtems/rtems/clock.h,
+	score/include/rtems/score/watchdog.h: Add support for a handler to
+	obtain the number of nanoseconds since the last clock tick. The
+	primary interface for this is rtems_clock_set_nanoseconds_extension.
+	Subsequent commits from Joel will redo the TOD support to use this
+	capability.
+	* rtems/src/clocksetnsecshandler.c: New file.
+
+2007-03-28	Joel Sherrill <joel@OARcorp.com>
+
+	PR 1234/cpukit
+	* libcsupport/Makefile.am: Provide printk() based implementation of
+	__assert() to reduce dependencies in executables.
+	* libcsupport/src/__assert.c: New file.
+
+2007-03-28	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* librpc/src/rpc/clnt_tcp.c (clnttcp_create): 
+	Use uintptr_t for "disrupt". Remove bogus (long) cast.
+	* libnetworking/net/ppp-comp.h: Remove (Unused).
+	* libnetworking/Makefile.am: Remove net/ppp-comp.h.
+	* libnetworking/sys/buf.h: Remove (Unused).
+	* libnetworking/Makefile.am: Remove sys/buf.h.
+	* libnetworking/kern/kern_sysctl.c,
+	libnetworking/kern/uipc_socket2.c: Include <sys/queue.h> instead of
+	<sys/buf.h>.
+	*  libcsupport/include/sys/sockio.h: Partial update from
+	  FreeBSD.
+
+2007-03-28	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/netinet/ip_output.c: Use uint32_t optlen.
+	* libnetworking/netinet/igmp.c: Eliminate __P().
+	* libnetworking/netinet/in.c: Eliminate __P().
+	* libnetworking/netinet/tcp_subr.c: Eliminate __P().
+	* libnetworking/netinet/in_pcb.c: Eliminate __P().
+	* libnetworking/netinet/ip_output.c: Eliminate __P().
+
+2007-03-28	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/sys/protosw.h (pr_usrreqs.pru_attach, 
+	pr_usrreqs.pru_control, pr_usrreqs.pru_rcvd, pr_usrreqs.pru_rcvoob):
+	Change int args to intptr_t because they are casted to pointers.
+	* libnetworking/netinet/tcp_usrreq.c, 
+	libnetworking/kern/uipc_socket2.c: Reflect changes to sys/protosw.h.
+
+2007-03-28	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/rtems/rtems_glue.c: Cast to intptr_t instead of
+	"long", because long is not guaranteed to be castable to char*.
+	* libnetworking/netinet/ip_input.c: Eliminate __P().
+	Change "int next" to "int32_t next" for 16bit targets.
+	* libnetworking/netinet/tcp_input.c: Eliminate __P().
+	* libnetworking/netinet/in_rmx.c: Eliminate __P().
+	* libnetworking/netinet/tcp_usrreq.c: Eliminate __P().
+	* libnetworking/netinet/udp_usrreq.c: Eliminate __P().
+	* libnetworking/nfs/bootp_subr.c: Eliminate __P().
+	* libnetworking/rtems/rtems_bsdnet_internal.h: Eliminate __P().
+	* libnetworking/kern/uipc_domain.c: Eliminate __P().
+
+2007-03-28	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/net/pppcompress.h, libnetworking/net/pppcompress.c:
+	Remove (Abandoned in FreeBSD).
+	* libnetworking/Makefile.am: Remove net/pppcompress.c,
+	net/pppcompress.h.
+	* libnetworking/net/if_ppp.c: Use net/slcompress.h instead of
+	net/pppcompress.h.
+	* libnetworking/net/slcompress.h: Cosmetics from FreeBSD.
+	* libnetworking/net/ppp_tty.c: Use net/slcompress.h instead of
+	net/pppcompress.h.
+
+2007-03-28	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/net/pppcompress.h: Eliminate __P().
+	* libnetworking/net/if_pppvar.h: Cosmetics from FreeBSD.
+	* libnetworking/net/if_llc.h: Update from FreeBSD.
+
+2007-03-27	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* pppd/ccp.c, pppd/options.c: Include <net/ppp_comp.h> instead of
+	  <net/ppp-comp.h>.
+	* libnetworking/net/ppp-comp.h: Include <net/ppp_comp.h>.
+	Warn about using it.
+	* libnetworking/Makefile.am: Add net/ppp_comp.h.
+	* libnetworking/net/ppp_comp.h: New (copy of ppp-comp.h).
+	* libnetworking/net/ppp-comp.h: Eliminate __P(). Cosmetics from
+	  FreeBSD.
+	* libnetworking/machine/in_cksum.h: Eliminate __P().
+	* pppd/auth.c, pppd/cbcp.c, pppd/ccp.c, pppd/chap.c,
+	pppd/chap_ms.c, pppd/chat.c, pppd/demand.c, pppd/fsm.c,
+	pppd/ipcp.c, pppd/lcp.c, pppd/options.c, pppd/rtemsmain.c,
+	pppd/sys-rtems.c, pppd/upap.c, pppd/utils.c:
+	Eliminate __P().
+	* libcsupport/src/scandir.c: Eliminate __P().
+	* pppd/chap.h, pppd/chap_ms.h, pppd/fsm.h, pppd/ipcp.h,
+	pppd/lcp.h, pppd/magic.h, pppd/md4.h, pppd/pppd.h, pppd/upap.h:
+	Eliminate __P().
+	* libnetworking/netinet/ip_mroute.c: Eliminate __P().
+	* libnetworking/netinet/ip_mroute.h: Partial update from FreeBSD.
+	* libnetworking/net/raw_cb.c: Sync with FreeBSD.
+
+2007-03-26	Joel Sherrill <joel@OARcorp.com>
+
+	PR 1231/cpukit
+	* posix/src/adasupp.c, posix/src/clockgetcpuclockid.c,
+	posix/src/clockgetenableattr.c, posix/src/clockgetres.c,
+	posix/src/clockgettime.c, posix/src/clocksetenableattr.c,
+	posix/src/mutex.c, posix/src/mutexattrdestroy.c,
+	posix/src/mutexattrgetprioceiling.c,
+	posix/src/mutexattrgetprotocol.c, posix/src/mutexattrgetpshared.c,
+	posix/src/mutexattrinit.c, posix/src/mutexattrsetprioceiling.c,
+	posix/src/mutexattrsetprotocol.c, posix/src/mutexattrsetpshared.c,
+	posix/src/mutexdefaultattributes.c, posix/src/mutexdestroy.c,
+	posix/src/mutexgetprioceiling.c, posix/src/mutexlock.c,
+	posix/src/mutexlocksupp.c, posix/src/mutexmp.c,
+	posix/src/mutexsetprioceiling.c, posix/src/mutextimedlock.c,
+	posix/src/mutextrylock.c, posix/src/mutexunlock.c,
+	posix/src/nanosleep.c, posix/src/posixintervaltotimespec.c,
+	posix/src/posixtimespecsubtract.c,
+	posix/src/posixtimespectointerval.c,
+	posix/src/psignalclearprocesssignals.c,
+	posix/src/psignalclearsignals.c,
+	posix/src/psignalsetprocesssignals.c,
+	posix/src/psignalunblockthread.c, posix/src/ptimer.c,
+	posix/src/ptimer1.c, posix/src/sched.c, posix/src/time.c: Remove
+	unneeded includes of assert.h
+
+2007-03-26	Joel Sherrill <joel@OARcorp.com>
+
+	* libcsupport/include/rtems/assoc.h: Pick up the include file
+	changes associated with the file splitting.
+
+2007-03-26	Joel Sherrill <joel@OARcorp.com>
+
+	* libcsupport/Makefile.am: Pick up the Makefile changes associated
+	with the file splitting.
+
+2007-03-26	Joel Sherrill <joel@OARcorp.com>
+
+	* libcsupport/src/assoc.c, libcsupport/src/libio.c, 
+	libcsupport/src/write.c: Split files to shrink minimum.exe. Hopefully
+	this will not be deemed necessary to commit to the 4.7 branch.
+	* libcsupport/src/assoclocalbyname.c,
+	libcsupport/src/assoclocalbyremote.c,
+	libcsupport/src/assoclocalbyremotebitfield.c,
+	libcsupport/src/assocnamebylocal.c,
+	libcsupport/src/assocnamebylocalbitfield.c,
+	libcsupport/src/assocnamebyremote.c,
+	libcsupport/src/assocnamebyremotebitfield.c,
+	libcsupport/src/assocptrbylocal.c, libcsupport/src/assocptrbyname.c,
+	libcsupport/src/assocptrbyremote.c,
+	libcsupport/src/assocremotebylocal.c,
+	libcsupport/src/assocremotebylocalbitfield.c,
+	libcsupport/src/assocremotebyname.c, libcsupport/src/libio_init.c,
+	libcsupport/src/write_r.c: New files.
+
+2007-03-26	Joel Sherrill <joel@OARcorp.com>
+
+	* libcsupport/src/__gettod.c: Replace incorrect comment about timezone
+	support and remove deadcode. Replace with comment explaining that
+	behavior is compatible with GNU/Linux per Eric Norum.
+
+2007-03-26	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/net/ppp_defs.h, libnetworking/net/if_ppp.h:
+	Partial update from FreeBSD.
+	* libnetworking/netinet/if_ether.h: Eliminate __P().
+	* libnetworking/netinet/ip_var.h: Eliminate __P().
+	* libnetworking/netinet/in.h: Eliminate __P().
+	* libnetworking/netinet/tcp_var.h: Eliminate __P().
+
+2007-03-25	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/netinet/udp_var.h: Cosmetics from FreeBSD.
+	Remove __P();
+	* libnetworking/netinet/in_pcb.h: More partial updates from FreeBSD.
+
+2007-03-25	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/netinet/in_var.h: Remove __P().
+	* libnetworking/netinet/in_systm.h: Remove __P().
+	* libnetworking/netinet/in_pcb.h: Partial updates from FreeBSD.
+	* libnetworking/sys/socketvar.h: Cosmetics from FreeBSD.
+	* libnetworking/netinet/if_ether.c: Remove __P().
+	* libnetworking/net/raw_cb.h, libnetworking/net/raw_usrreq.c:
+	More updates from FreeBSD.
+	* libnetworking/net/raw_cb.h, libnetworking/net/raw_usrreq.c,
+	libnetworking/net/route.h: Partial update from FreeBSD.
+
+2007-03-24	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/Makefile.am: Remove nfs/krpc.h.
+	* libnetworking/nfs/krpc.h: Remove (Unused).
+	* libnetworking/kern/kern_subr.c: Remove #ifdef'ed vax code.
+	* libnetworking/Makefile.am: Remove nfs/nfs.h.
+	* libnetworking/nfs/nfs.h: Remove (Unused).
+
+2007-03-19	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/sys/buf.h: Remove unused/non-implemented bsd kernel
+	  symbols.
+	* libnetworking/sys/conf.h: Don't include machine/conf.h.
+	Update copyright notice.
+	Remove unused/non-implemented declarations.
+	* libnetworking/Makefile.am: Remove machine/conf.h.
+	* libnetworking/machine/conf.h: Remove.
+
+2007-03-19	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/sys/systm.h: Update copyright notice from FreeBSD.
+	Remove many non-supported/unused declarations.
+
+2007-03-18	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/sys/ucred.h: Remove crcopy, crdup, crfree, crget,
+	  crhold (Unused/non-implemented).
+
+2007-03-18	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/sys/ucred.h: Remove __P().
+	* libnetworking/sys/callout.h: Remove __P().
+	* libnetworking/sys/domain.h: Remove __P().
+	* libnetworking/sys/socketvar.h: Remove __P().
+	* libnetworking/sys/socket.h: Remove __P().
+	* libnetworking/sys/select.h: Remove __P().
+	* libnetworking/sys/kernel.h: Remove __P().
+	* libnetworking/sys/protosw.h: Remove __P().
+	* libnetworking/sys/conf.h: Remove bdevsw, cdevsw, swdevt (Unused).
+	* libnetworking/sys/systm.h: Remove nblkdev, nchrdev,
+	swdevt, nswdev, nswap (Unused).
+
+2007-03-18	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/sys/conf.h: Remove non-implemented/unused symbols.
+	* libnetworking/net/ppp_tty.c: Use struct rtems_termios_linesw
+	instead of struct linesw (PR 1229)
+	* libnetworking/sys/systm.h: Comment out copyin/copyout to work
+	around clash with defines from rtems_bsdnet_internal.h.
+	* score/src/heapwalk.c: include stdlib.h.
+
+2007-03-17	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/sys/buf.h, libnetworking/sys/conf.h:
+	Remove __P().
+	* libnetworking/net/if.h, libnetworking/net/if_ppp.h,
+	libnetworking/sys/signalvar.h, libnetworking/sys/systm.h:
+	Remove __P().
+	* libcsupport/include/rtems/termiostypes.h,
+	libcsupport/src/termios.c: Prefix linesw, struct linesw, nwlinesw
+	with rtems_termios_*.
+	* libnetworking/sys/conf.h: Remove linesw, struct linesw, nlinesw.
+	(Clash with termiostypes.h - PR 1229).
+
+2007-03-16	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* score/include/rtems/score/wkspace.h,
+	score/inline/rtems/score/wkspace.inl, score/src/wkspace.c:
+	Change _Workspace_Handler_initialization and 
+	_Workspace_Allocate_or_fatal_error to using size_t.
+	* libnetworking/sys/rtprio.h: Remove (Unused).
+	* libnetworking/Makefile.am: Remove sys/rtprio.h.
+
+2007-03-14	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/sys/mbuf.h, libnetworking/sys/rtprio.h:
+	Remove __P().
+
+2007-03-13	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libcsupport/src/assocnamebad.c: Remove dead code. Use PRI* macros
+	  to fix warnings.
+	* score/include/rtems/score/stack.h: Use size_t for stack sizes.
+	* score/include/rtems/score/chain.h, score/src/chain.c:
+	Change _Chain_Initialize to using size_t.
+
+2007-03-12	Joel Sherrill <joel@OARcorp.com>
+
+	* libmisc/dumpbuf/dumpbuf.c, libmisc/dumpbuf/dumpbuf.h: Rename
+	Dump_Buffer to rtems_print_buffer.
+
+2007-03-12	Joel Sherrill <joel@OARcorp.com>
+
+	* score/src/heapallocatealigned.c, score/src/threadqrequeue.c: Correct
+	license URL and/or fix mistake in copyright notice. Both of these
+	mistakes appear to be from code submitted after these changes were
+	made previously.
+
+2007-03-10	Joel Sherrill <joel@OARcorp.com>
+
+	PR 1226/cpukit
+	* sapi/include/confdefs.h: CONFIGURE_HAS_OWN_MULTIPROCESSING_TABLE not
+	CONFIGURE_HAS_OWN_MULTIPROCESING_TABLE.
+
+2007-03-08	Joel Sherrill <joel@OARcorp.com>
+
+	* libfs/src/imfs/imfs.h: Fix comment.
+
+2007-03-08	Joel Sherrill <joel@OARcorp.com>
+
+	* libfs/src/imfs/imfs.h: Fix comment.
+
+2007-03-08	Joel Sherrill <joel@OARcorp.com>
+
+	* libmisc/stackchk/check.c, libmisc/stackchk/internal.h,
+	libmisc/stackchk/stackchk.h: Change dump usage to report usage.
+
+2007-03-08	Joel Sherrill <joel@OARcorp.com>
+
+	* rtems/Makefile.am, rtems/src/msgqsend.c, rtems/src/msgqurgent.c:
+	Remove wrapper for message queue send and urgent and implement them
+	directly. There was an unnecessary function call layer in addition to
+	conditions in the shared routine. Directly coding both directives is
+	simpler and should result in smaller code.
+	* rtems/src/msgqsubmit.c: Removed.
+
+2007-03-05	Joel Sherrill <joel@OARcorp.com>
+
+	PR 1222/cpukit
+	* score/Makefile.am, score/include/rtems/score/coremutex.h,
+	score/include/rtems/score/threadq.h,
+	score/inline/rtems/score/coremutex.inl, score/src/coremsgsubmit.c,
+	score/src/coremutexsurrender.c, score/src/threadchangepriority.c,
+	score/src/threadclearstate.c, score/src/threadhandler.c,
+	score/src/threadinitialize.c, score/src/threadqdequeuefifo.c,
+	score/src/threadqdequeuepriority.c, score/src/threadqenqueue.c,
+	score/src/threadqenqueuefifo.c, score/src/threadqenqueuepriority.c,
+	score/src/threadqextractfifo.c, score/src/threadqextractpriority.c,
+	score/src/threadsetstate.c: Enhance so that when the prioirity of a
+	thread that is blocked on a priority based thread queue is changed,
+	that its placement in the queue is reevaluated based upon the new
+	priority. This enhancement includes modifications to the SuperCore as
+	well as new test cases.
+	* score/src/threadqrequeue.c: New file.
+
+2007-03-05	Joel Sherrill <joel@OARcorp.com>
+
+	* sapi/src/exinit.c: Fix spacing.
+
+2007-03-05	Joel Sherrill <joel@OARcorp.com>
+
+	PR 1221/cpukit
+	* posix/src/pthreadequal.c: Fix critical section nesting.
+
+2007-02-22	Ralf Corsepius <ralf.corsepius@rtems.org>
+
+	* libcsupport/Makefile.am: Move getpagesize.c to newlib-only
+	  compiled files.
+
+2007-02-21	Ralf Corsepius <ralf.corsepius@rtems.org>
+
+	* wrapup/Makefile.am: Use MKDIR_P instead of mkdir_p.
+
+2007-02-16	Ralf Corsepius <ralf.corsepius@rtems.org>
+
+	* score/Makefile.am: Remove macros/README.
+
+2007-02-11	Ralf Corsepius <ralf.corsepius@rtems.org>
+
+	* score/include/rtems/score/heap.h, score/src/heap.c,
+	score/src/heapallocatealigned.c, score/src/heapresizeblock.c:
+	More size_t for heap-sizes.
+	* score/include/rtems/score/heap.h, score/src/heap.c,
+	score/src/heapallocate.c, score/src/heapextend.c: Use size_t for
+	heap-sizes.
+	* libnetworking/resolv.h: Typo fixes. Remove __P().
+
+2007-02-09	Ralf Corsepius <ralf.corsepius@rtems.org>
+
+	* rtems/include/rtems/rtems/tasks.h, rtems/src/taskcreate.c:
+	Use size_t for stack-sizes.
+
+2007-02-07	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/vm/vm_extern.h: Remove non-implemented/unused
+	  functions.
+	* configure.ac: Check for intmax_t, uintptr_t, intptr_t,
+	pthread.h, pthread_rwlock_t, pthread_barrier_t, pthread_spinlock_t.
+
+2007-02-06	Till Straumann <strauman@slac.stanford.edu>
+
+	* libcsupport/src/gxx_wrappers.c: fix PR#690. Supply
+	taskvar dtor to plug memory leak. Applied patch attached
+	to PR#690.
+
+2007-02-06	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libcsupport/src/getpagesize.c: New (moved from posix/src).
+	* posix/src/getpagesize.c: Removed.
+	* posix/Makefile.am: Remove references to getpagesize.c.
+	* libcsupport/Makefile.am: Add getpagesize.c.
+
+2007-02-06	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* posix/src/sysconf.c: Add support for _SC_PAGESIZE (PR 1215).
+	* posix/src/mqueuesendsupp.c: Remove cast to make broken const cast
+	  visible.
+	* score/inline/rtems/score/coremsg.inl: More size_t and consts.
+
+2007-02-06	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* rtems/src/msgqsend.c: Use size_t for sizes.
+	* rtems/src/msgqurgent.c: Use size_t for sizes.
+	* rtems/src/msgqbroadcast.c: Use size_t for sizes.
+	* rtems/src/msgmp.c: Use size_t for sizes.
+	* rtems/src/msgqsubmit.c: Use size_t for sizes.
+	* rtems/include/rtems/rtems/msgmp.h: Use size_t for sizes.
+	* rtems/include/rtems/rtems/message.h: Use size_t for sizes.
+	* score/inline/rtems/score/coremsg.inl: Use size_t for sizes.
+
+2007-02-06	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* itron/src/trcv_mbf.c: Use size_t for sizes.
+	* libmisc/monitor/mon-object.c: Use size_t for sizes.
+	* libmisc/monitor/mon-server.c: Use size_t for sizes.
+	* libmisc/monitor/monitor.h: Use size_t for sizes.
+	* libmisc/mw-fb/mw_uid.c: Use size_t for sizes.
+	* rtems/include/rtems/rtems/message.h: Use size_t for sizes.
+	* rtems/src/msgqreceive.c: Use size_t for sizes.
+	* posix/src/mqueuerecvsupp.c: Use size_t for sizes.
+	* score/src/coremsgseize.c: Use size_t for sizes.
+
+2007-02-05	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* posix/include/rtems/posix/mqueue.h: Use size_t for sizes.
+	* posix/src/mqueuesendsupp.c: Use size_t for sizes.
+	* score/include/rtems/score/coremsg.h: Use size_t for sizes.
+	* score/src/coremsgbroadcast.c: Use size_t for sizes.
+	* score/src/coremsgsubmit.c: Use size_t for sizes.
+
+2007-01-30	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libblock/src/show_bdbuf.c: Use inttypes.h macros.
+
+2007-01-29	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libmisc/mw-fb/mw_fb.h: Eliminate __u32, __u16.
+
+2007-01-28	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libnetworking/libc/gethostbyht.c: Remove warning on unused vars.
+	Remove isblank (supposed to be provided by libc).
+
+2007-01-27	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* libblock/src/show_bdbuf.c: Convert from DOS to UNIX.
+
+2007-01-27	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* score/include/rtems/system.h: Remove __RTEMS_MAJOR__,
+	 __RTEMS_MINOR__, __RTEMS_REVISION__ (moved to cpuopt.h).
+	* configure.ac: Dynamically derive __ __RTEMS_MAJOR__,
+	__RTEMS_MINOR__, __RTEMS_REVISION__ from _RTEMS_VERSION.
+	Add __RTEMS_MAJOR__, __RTEMS_MINOR__,__RTEMS_REVISION__ to cpuopt.h.
+
+2007-01-26	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* score/include/rtems/system.h:
+	#define __RTEMS_MINOR__ 7 (BZ 1206).
+
+2007-01-20      Thomas Doerfler <Thomas.Doerfler@embedded-brains.de>
+
+	* libblock/src/bdbuf.c, libblock/include/bdbuf.h: 
+	export some internal variables to make them available in
+	"show_bdbuf" monitor add-on
+
+2007-01-16	Till Straumann <strauman@slac.stanford.edu>
+
+	* libnetworking/rtems/rtems_mii_ioctl.c,
+	libnetworking/rtems/rtems_mii_ioctl.h,
+	libnetworking/rtems/rtems_mii_ioctl_kern.c,
+	libi2c/libi2c.c, libi2c/libi2c.h:
+	Added SLAC/Stanford Authorship Note / Copyright + Liability Disclaimer.
+
+2007-01-09	Joel Sherrill <joel@OARcorp.com>
+
+	* libcsupport/src/error.c: rtems_progname is no longer defined in
+	the BSP startup since it never held a meaningful value.
+
+2007-01-02	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* posix/include/aio.h: s/aoi_lio_opcode/aio_lio_opcode/ 
+	(BZ 1203).

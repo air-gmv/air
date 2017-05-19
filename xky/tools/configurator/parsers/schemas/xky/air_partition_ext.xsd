@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="PartitionExt" targetNamespace="PartitionExt" elementFormDefault="unqualified">
+	<!-- ======================================================================= 
+	AIR partition extension elements  
+	======================================================================== -->
+	<xs:element name="air_partition_ext">
+		<xs:annotation>
+			<xs:documentation>
+				  Partition level configuration for AIR systems:
+				    - partition personality
+			  </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="type"/>
+				<xs:element ref="cache"/>
+				<xs:element ref="properties" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="module_services"/>
+				<xs:element ref="async_traps" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="sync_traps" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="trap_virt" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="devices" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="air_partition_personality" type="air_partition_personality_type" use="required"/>
+			<xs:attribute name="uses_middleware" type="xs:boolean" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="async_traps" type="xs:string"/>
+	<xs:element name="sync_traps" type="xs:string"/>
+	<xs:element name="trap_virt" type="xs:string"/>
+	<xs:element name="type">
+		<xs:complexType>
+			<xs:attribute name="IOP" type="xs:boolean" use="optional" default="false"/>
+			<xs:attribute name="iop_config_file" type="xs:string" use="optional" default=""/>
+			<xs:attribute name="test" type="test_type" use="optional" default="NONE"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="cache">
+		<xs:complexType>
+			<xs:attribute name="permission" type="xs:boolean" use="optional" default="true"/>
+			<xs:attribute name="data" type="xs:boolean" use="optional" default="true"/>
+			<xs:attribute name="code" type="xs:boolean" use="optional" default="true"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="properties">
+		<xs:complexType>
+            <xs:attribute name="cores" type="xs:integer" use="optional" default="1" />
+			<xs:attribute name="localtime" type="xs:boolean" use="optional" default="false"/>
+			<xs:attribute name="supervisor" type="xs:boolean" use="optional" default="false"/>
+			<xs:attribute name="tod_sync" type="xs:boolean" use="optional" default="false"/>
+			<xs:attribute name="user_libs" type="xs:string" use="optional" default=""/>
+            <xs:attribute name="SystemControl" type="xs:boolean" use="optional" default="false" />
+			<!--should be an enumeration of values, but is not due to implementation compliance
+      in the future this will be an element with sons that store the lib's name-->
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="module_services">
+		<xs:complexType>
+			<xs:attribute name="cache_control" type="xs:boolean" use="optional" default="true"/>
+			<xs:attribute name="fp_control" type="xs:boolean" use="optional" default="true"/>
+			<xs:attribute name="tod_set" type="xs:boolean" use="optional" default="false"/>
+			<xs:attribute name="set_part_mode" type="xs:boolean" use="optional" default="false"/>
+		</xs:complexType>
+	</xs:element>
+    <xs:element name="devices">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="device" minOccurs="1" maxOccurs="unbounded" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="device">
+        <xs:complexType>
+            <xs:attribute name="name" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+	<!-- ======================================================================= 
+	type definitions for this extension  
+	======================================================================== -->
+	<xs:simpleType name="test_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NONE"/>
+			<xs:enumeration value="TEST_GMV_UNT"/>
+			<xs:enumeration value="TEST_GMV_INT"/>
+			<xs:enumeration value="TEST_GMV_VAL"/>
+			<xs:enumeration value="TEST_EDI_UNT"/>
+			<xs:enumeration value="TEST_EDI_INT"/>
+			<xs:enumeration value="TEST_EDI_VAL"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="air_partition_personality_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="RTEMSIMPR"/>
+			<xs:enumeration value="RTEMS481"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

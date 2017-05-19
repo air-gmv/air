@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ARINC_653_Module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ModuleName="mms">
+
+  <Partition Criticality="LEVEL_A" EntryPoint="entry_func" PartitionIdentifier="10" PartitionName="master" SystemPartition="true">
+    <PartitionConfiguration Personality="BARE" Cores="1">
+       <Libs>LIBXKY; LIBPRINTF</Libs>
+       <Cache>CODE; DATA</Cache>
+       <Memory Size="0x100000" />
+       <Permissions>CACHE_CONTROL; SET_PARTITION_MODE;</Permissions>
+    </PartitionConfiguration>   
+  </Partition>
+  
+  <Partition Criticality="LEVEL_A" EntryPoint="entry_func" PartitionIdentifier="1" PartitionName="p1" SystemPartition="false">
+    <PartitionConfiguration Personality="BARE" Cores="1">
+       <Libs>LIBXKY; LIBPRINTF</Libs>
+       <Cache>CODE; DATA</Cache>
+       <Memory Size="0x100000" />
+       <Permissions>CACHE_CONTROL; SET_PARTITION_MODE;</Permissions>
+     </PartitionConfiguration>   
+  </Partition>
+  
+  <Partition Criticality="LEVEL_A" EntryPoint="entry_func" PartitionIdentifier="2" PartitionName="p2" SystemPartition="false">
+     <PartitionConfiguration Personality="BARE" Cores="1">
+        <Libs>LIBXKY; LIBPRINTF</Libs>
+        <Cache>CODE; DATA</Cache>
+        <Memory Size="0x100000" />
+        <Permissions>CACHE_CONTROL; SET_PARTITION_MODE;</Permissions>
+     </PartitionConfiguration>   
+  </Partition>
+  
+  <Partition Criticality="LEVEL_A" EntryPoint="entry_func" PartitionIdentifier="3" PartitionName="p3" SystemPartition="false">
+     <PartitionConfiguration Personality="BARE" Cores="1">
+     <Libs>LIBXKY; LIBPRINTF</Libs>
+     <Cache>CODE; DATA</Cache>
+     <Memory Size="0x100000" />
+     <Permissions>CACHE_CONTROL; SET_PARTITION_MODE;</Permissions>
+      </PartitionConfiguration>   
+  </Partition>
+  
+  <Module_Schedule InitialModuleSchedule="true" MajorFrameSeconds="3.0000" ScheduleIdentifier="1" ScheduleName="schedA">
+    <Partition_Schedule PartitionIdentifier="10" PartitionName="master" PeriodDurationSeconds="1.0000" PeriodSeconds="3.0000" SetModuleSchedule="true">
+      <Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="1.0000" WindowIdentifier="110" WindowStartSeconds="0.0000"/>
+    </Partition_Schedule>
+    <Partition_Schedule PartitionIdentifier="1" PartitionName="p1" PeriodDurationSeconds="1.0000" PeriodSeconds="3.0000">
+      <Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="1.0000" WindowIdentifier="11" WindowStartSeconds="1.0000"/>
+    </Partition_Schedule>
+    <Partition_Schedule PartitionIdentifier="2" PartitionName="p2" PeriodDurationSeconds="1.0000" PeriodSeconds="3.0000">
+      <Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="1.0000" WindowIdentifier="12" WindowStartSeconds="2.0000"/>
+    </Partition_Schedule>
+  </Module_Schedule>
+
+  <Module_Schedule InitialModuleSchedule="false" MajorFrameSeconds="1.5000" ScheduleIdentifier="2" ScheduleName="schedB">
+    <Partition_Schedule PartitionIdentifier="10" PartitionName="master" PeriodDurationSeconds="0.5000" PeriodSeconds="1.5000" SetModuleSchedule="true">
+      <Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="0.5000" WindowIdentifier="210" WindowStartSeconds="0.0000"/>
+    </Partition_Schedule>
+    <Partition_Schedule PartitionIdentifier="2" PartitionName="p2" PeriodDurationSeconds="0.5000" PeriodSeconds="1.5000">
+      <Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="0.5000" WindowIdentifier="22" WindowStartSeconds="0.5000"/>
+    </Partition_Schedule>
+    <Partition_Schedule PartitionIdentifier="3" PartitionName="p3" PeriodDurationSeconds="0.5000" PeriodSeconds="1.5000">
+      <Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="0.5000" WindowIdentifier="23" WindowStartSeconds="1.0000"/>
+    </Partition_Schedule>
+  </Module_Schedule>
+
+  <XKY_Configuration TicksPerSecond="100" RequiredCores="1"/>
+</ARINC_653_Module>

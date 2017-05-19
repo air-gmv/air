@@ -1,0 +1,316 @@
+2007-12-06	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* shared/include/grcan_spwrtc.h: Removed.
+
+2007-12-05	Daniel Hellstrom <daniel@gaisler.com>
+
+	* Makefile.am: i2c should be on branch as well as CVS head.
+	* shared/i2c/i2cmst.c, shared/include/i2cmst.h: New files.
+
+2007-12-05	Daniel Hellstrom <daniel@gaisler.com>
+
+	* shared/include/ambapp.h: Sync head and 4.8 branch.
+
+2007-11-30	Daniel Hellstrom <daniel@gaisler.com>
+
+	* shared/include/grspw.h, shared/spw/grspw.c: GRSPW SpaceWire Driver.
+	Fixes typecast to volatile integer instead of to integer. Added
+	scanning for GRSPW2 Core, The GRSPW2 core is run in legacy mode.
+
+2007-11-30	Daniel Hellstrom <daniel@gaisler.com>
+
+	* shared/can/occan.c: LEON2/3 OCCAN CAN driver. Fixes typecast to
+	volatile integer where needed. Fixes bug where closing the driver and
+	opening it again could make the driver not starting transmission due
+	to the software fifo was not cleared.
+
+2007-11-30	Daniel Hellstrom <daniel@gaisler.com>
+
+	* shared/can/grcan.c, shared/can/grcan_rasta.c,
+	shared/include/ambapp.h: GRCAN CAN driver. Fixes Interrupt
+	enabling/disabling in the driver, interrupt may not be restored
+	correctly. Implements the baud rate calculation routine. Removed
+	unnecessary printk. Fixed scanning to support GRCAN and GRHCAN
+	hardware. Added GRCAN device number to ambapp.h.
+
+2007-10-11	Daniel Hellstrom <daniel@gaisler.com>
+
+	* shared/can/occan.c: Fixes bug in OC-CAN baud rate calculator. The
+	BTR1 8-bit value was swapped.
+
+2007-09-21	Daniel Hellstrom <daniel@gaisler.com>
+
+	* shared/can/occan.c: Fix warning on Diab compiler.
+
+2007-09-19	Daniel Hellstrom <daniel@gaisler.com>
+
+	* shared/can/occan.c: Fix Reenable command and fix typo.
+
+2007-09-18	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* shared/1553/b1553brm.c, shared/can/grcan.c: Remove include of sched.h
+
+2007-09-13	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* shared/spw/grspw.c: Remove include of sched.h. It does not appear to
+	be needed and is unavailable when POSIX is disabled.
+
+2007-09-12	Daniel Hellstrom <daniel@gaisler.com>
+
+	* shared/can/grcan.c, shared/include/debug_defs.h, shared/spw/grspw.c:
+	Remove use of DEBUG_printf.
+
+2007-09-07	Daniel Hellstrom <daniel@gaisler.com>
+
+	* shared/1553/b1553brm.c, shared/can/grcan.c, shared/can/grcan_rasta.c,
+	shared/can/occan.c, shared/spw/grspw.c, shared/spw/grspw_pci.c,
+	shared/uart/apbuart.c: Remove warnings.
+
+2007-09-06	Daniel Hellstrom <daniel@gaisler.com>
+
+	* shared/pci/pcifinddevice.c: New file.
+
+2007-09-06	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* shared/uart/apbuart.c: Fix some warnings.
+
+2007-09-06	Daniel Hellstrom <daniel@gaisler.com>
+
+	New drivers: PCI, b1553BRM, SpaceWire(GRSPW), CAN (GRCAN,OC_CAN),
+	Raw UART.
+	* shared/1553/b1553brm.c, shared/1553/b1553brm_pci.c,
+	shared/1553/b1553brm_rasta.c, shared/can/grcan.c,
+	shared/can/grcan_rasta.c, shared/can/occan.c, shared/can/occan_pci.c,
+	shared/spw/grspw.c, shared/spw/grspw_pci.c, shared/spw/grspw_rasta.c,
+	shared/uart/apbuart.c, shared/uart/apbuart_pci.c,
+	shared/uart/apbuart_rasta.c: New files missed in previous commit.
+
+2007-09-06	Daniel Hellstrom <daniel@gaisler.com>
+
+	* Makefile.am: Add the following new drivers: PCI, b1553BRM,
+	SpaceWire(GRSPW), CAN (GRCAN,OC_CAN), Raw UART.
+	* shared/include/apbuart.h, shared/include/apbuart_pci.h,
+	shared/include/apbuart_rasta.h, shared/include/b1553brm.h,
+	shared/include/b1553brm_pci.h, shared/include/b1553brm_rasta.h,
+	shared/include/debug_defs.h, shared/include/grcan.h,
+	shared/include/grcan_rasta.h, shared/include/grcan_spwrtc.h,
+	shared/include/grspw.h, shared/include/grspw_pci.h,
+	shared/include/grspw_rasta.h, shared/include/occan.h,
+	shared/include/occan_pci.h, shared/include/pci.h: New files.
+
+
+2007-09-05	Daniel Hellstrom <daniel@gaisler.com>
+
+	* shared/bspstart.c: LEON2 and LEON3 Data cache snooping detection on
+	startup, for drivers. (LEON2,3 are configurable processors, they can
+	be with or without DCache snooping. Caches without snooping needs the
+	drivers to flush cache or use the sparc instruction lda to force
+	cache miss...)
+
+2007-09-05	Daniel Hellstrom <daniel@gaisler.com>
+
+	* shared/amba/ambapp.c, shared/include/ambapp.h: New files.
+
+2007-09-05	Daniel Hellstrom <daniel@gaisler.com>
+
+	* Makefile.am: LEON3 AMBA PnP bus scanning moved to shared/amba/amba.c
+	and shared/include/ambapp.h. The AMBA scanning was improved to take
+	account for PnP info address translation. This is useful when
+	scanning remote AMBA busses for example when a board connected with
+	PCI has an AMBA bus that needs to be scanned, before the addresses
+	was hard coded. Also, LEON2 now have AMBA PnP bus scanning support.
+	By using the new AMBA scanning routines it is possible to isolate the
+	AMBA scanning code to ambapp.c, however existing drivers should be
+	updated to use them in order to save space.
+
+2007-05-15	Joel Sherrill <joel.sherrill@oarcorp.com>
+
+	* shared/bspstart.c: Add include <rtems/bspIo.h> to remove warning.
+
+2007-05-09	Joel Sherrill <joel.sherrill@OARcorp.com>
+
+	* shared/bspstart.c, shared/gnatcommon.c: Remove debug print methods
+	that are redundant with prntk and replace their use with printk.
+
+2007-04-17	Joel Sherrill <joel@OARcorp.com>
+
+	* erc32/tools/runtest.in, leon2/tools/runtest.in,
+	leon3/tools/runtest.in: Do not run pppd.exe from batch mode script.
+
+2007-03-11	Joel Sherrill <joel@OARcorp.com>
+
+	* shared/bspstart.c: Remove assignments of
+	Cpu_table.do_zero_of_workspace to TRUE since TRUE is the default
+	value in boot_card.c
+
+2006-12-02	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* configure.ac: New BUG-REPORT address.
+
+2006-11-16	Joel Sherrill <joel@OARcorp.com>
+
+	* shared/bspstart.c, shared/start.S: Use common clock driver template
+	and eliminate all fast idle code specific to this BSP. This
+	eliminates a fair amount of code in the BSP clock driver and
+	bsp_startup. The LEON3 has to do a scan of the AMBA bus to find the
+	timer so I added the new hook Clock_driver_support_find_timer to
+	support this. In general, there was some clean up to the file headers
+	of various files.
+
+2006-10-17	Ralf Corsépius <ralf.corsepius@rtems.org>
+
+	* configure.ac: Require autoconf-2.60. Require automake-1.10.
+
+2006-01-10	Joel Sherrill <joel@OARcorp.com>
+
+	* shared/start.S: Add include of bspopts.h so SIS quirks will trigger.
+
+2006-01-09	Ralf Corsepius <ralf.corsepius@rtems.org>
+
+	* shared/start.S: Backport from rtems-4-6-branch.
+
+2005-10-16	Ralf Corsepius <ralf.corsepius@rtems.org>
+
+	* Makefile.am: Merge-in shared/Makefile.am.
+	* ChangeLog: Merge-in shared/ChangeLog.
+	* configure.ac: Remove shared/Makefile.am.
+
+2005-09-02	Joel Sherrill <joel@OARcorp.com>
+
+	PR 821/bsps
+	* shared/start.S: Workaround -- just avoid copying non-existent
+	initialized data in ROM to RAM.
+
+2004-09-24	Ralf Corsepius <ralf.corsepius@rtems.org>
+
+	* configure.ac: Require automake > 1.9.
+
+2004-04-01	Ralf Corsepius <ralf.corsepius@rtems.org>
+
+	* shared/start.S: Include <rtems/asm.h> instead of <asm.h>.
+
+2004-03-31	Ralf Corsepius <ralf.corsepius@rtems.org>
+
+	* shared/bspstart.c, shared/gnatcommon.c: Convert to using c99 fixed
+	size types.
+
+2004-02-12	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* configure.ac: RTEMS_CHECK_BSPDIR([$RTEMS_BSP_FAMILY]).
+	* acinclude.m4: Regenerate.
+
+2004-01-13	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* Makefile.am: Use @RTEMS_BSP_FAMILY@ instead of
+	$(RTEMS_BSP_FAMILY).
+
+2003-12-12	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* configure.ac: Require automake >= 1.8, autoconf >= 2.59.
+
+2003-12-03	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* shared/Makefile.am: Cosmetics.
+
+2003-10-20	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* acinclude.m4: Reflect changes to bootstrap.
+	* configure.ac: Remove RTEMS_CHECK_CUSTON_BSP.
+
+2003-09-26	Joel Sherrill <joel@OARcorp.com>
+
+	* shared/bspstart.c: Obsoleting HP PA-RISC port and removing all
+	references.
+
+2003-09-04	Joel Sherrill <joel@OARcorp.com>
+
+	* shared/bspclean.c, shared/bspstart.c: URL for license changed.
+
+2003-08-18	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* Makefile.am: Reflect having moved aclocal/.
+
+2003-08-16	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* Makefile.am, shared/Makefile.am: Reflect having moved automake/.
+
+2003-08-11	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* configure.ac: Use rtems-bugs@rtems.com as bug report email
+	address.
+
+2003-03-06	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* configure.ac: Remove AC_CONFIG_AUX_DIR.
+
+2003-02-11	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* configure.ac: AM_INIT_AUTOMAKE([1.7.2]).
+	* configure.ac: AC_PREREQ(2.57).
+
+2002-12-06	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* configure.ac: Remove RTEMS_CHECK_BSP_CACHE.
+
+2002-11-01	Joel Sherrill <joel@OARcorp.com>
+
+	* shared/gnatcommon.c: Removed warnings.
+
+2002-10-21	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* .cvsignore: Reformat. Add autom4te*cache. Remove autom4te.cache.
+
+2002-03-27	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* Makefile.am, shared/Makefile.am: Remove AUTOMAKE_OPTIONS.
+	* configure.ac: AC_INIT(package,_RTEMS_VERSION,_RTEMS_BUGS).
+	AM_INIT_AUTOMAKE([no-define foreign 1.6]).
+
+2001-10-11	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* .cvsignore: Add autom4te.cache for autoconf > 2.52.
+	* configure.ac: New file, generated from configure.in by autoupdate.
+	* configure.in: Remove.
+
+2001-10-09	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* acinclude.m4: New file.
+	* configure.in: Use RTEMS_BSP_SUBDIR.
+
+2000-11-13	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* Makefile.am: Cleanup.
+
+2000-11-13	Jiri Gaisler <jgais@ws.estec.esa.nl>
+
+	* shared/ChangeLog, shared/.cvsignore, shared/Makefile.am,
+	shared/bspclean.c, shared/bspstart.c, shared/gnatcommon.c,
+	shared/start.S: New files.  Largely moved from ERC32 BSP to be able
+	to be shared with LEON and other SPARC BSPs.
+	* Makefile.am, configure.in: Added shared directory as part of
+	enhancing ERC32 and adding LEON.
+
+2000-11-09	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* Makefile.am: Use ... instead of RTEMS_TOPdir in ACLOCAL_AMFLAGS.
+
+2000-11-02	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* Makefile.am: Switch to ACLOCAL_AMFLAGS = -I
+	$(RTEMS_TOPdir)/aclocal.
+
+2000-10-27	Ralf Corsepius <corsepiu@faw.uni-ulm.de>
+
+	* Makefile.am: ACLOCAL_AMFLAGS= -I $(RTEMS_TOPdir)/macros. Switch to
+	GNU canonicalization.
+
+2000-08-10	Joel Sherrill <joel@OARcorp.com>
+
+	* ChangeLog: New file.
+
+2000-04-23	Jiri Gaisler <jiri@gaisler.com>
+
+	* shared/start.S: Modificatins to preserve the current CWP and
+	adjust the WIM accordingly. This improves compatibility with the
+	remote debugger and the mkprom prom-builder.
+
