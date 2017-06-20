@@ -1,0 +1,13 @@
+diff --git a/xky/Makefile.inc b/xky/Makefile.inc
+index fa5e227..2708cb1 100755
+--- a/xky/Makefile.inc
++++ b/xky/Makefile.inc
+@@ -96,7 +96,7 @@ endef
+ 
+ # rtems-impr definitions
+ RTEMS_DIRECTORY=rtems-impr
+-RTEMS_TARGET=sparc-rtems4.8
++RTEMS_TARGET=sparc-rtems
+ RTEMS_BSP=leon3
+ RTEMS_EXTERNAL_LIBRARY=edilib/library
+ 
