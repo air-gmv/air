@@ -96,7 +96,7 @@ endef
 
 # rtems-impr definitions
 RTEMS_DIRECTORY=rtems-impr
-RTEMS_TARGET=sparc-rtems4.8
+RTEMS_TARGET=sparc-rtems
 RTEMS_BSP=leon3
 RTEMS_EXTERNAL_LIBRARY=edilib/library
 
