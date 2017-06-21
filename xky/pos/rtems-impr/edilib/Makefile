@@ -1,7 +1,7 @@
 # definition of the compiler, archiver and ranlib (in the future, this should be obtained by searching in the cross-compiler definitions)
-CC = sparc-rtems-gcc
-AR = sparc-rtems-ar
-RANLIB = sparc-rtems-ranlib
+CC = sparc-rtems4.8-gcc
+AR = sparc-rtems4.8-ar
+RANLIB = sparc-rtems4.8-ranlib
 
 # change this directory for your path to the RTEMS directory (change this line for your specific settings)
 RTEMS_SOURCE_PATH = /rtems/mcoutinho/rtems/rtems-impr
