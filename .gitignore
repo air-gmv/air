@@ -1,0 +1,25 @@
+# C compiled files
+*.exe
+*.o
+*.num
+*.ralf
+
+# Makefiles
+Makefile
+
+# Python configurator
+*.pyc
+
+# Install directory
+xky/install
+
+# Examples generated files
+xky/examples/**/config
+xky/examples/**/init.c
+xky/examples/**/linkcmds.inc
+xky/examples/**/rtems_config.h
+xky/examples/**/.config
+
+
+# Eclipse
+.project
