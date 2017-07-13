@@ -3,6 +3,7 @@
 *.o
 *.num
 *.ralf
+*.txt
 
 # Makefiles
 Makefile

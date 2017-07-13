@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ARINC_653_Module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ModuleName="bare">
+
+  <!-- Partition 0  -->  
+  <Partition PartitionIdentifier="1" PartitionName="p0" 
+    Criticality="LEVEL_A" EntryPoint="entry_point" SystemPartition="false">
+    <PartitionConfiguration Personality="RTEMS" Cores="1">
+        <Libs>LIBXKY; LIBPRINTF</Libs>
+        <Devices></Devices>
+        <Cache>CODE; DATA</Cache>
+        <Memory Size="0x100000" />
+        <Permissions>
+          CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
+        </Permissions>
+    </PartitionConfiguration>     
+  </Partition>
+
+
+  <!-- Schedule 1 -->
+  <Module_Schedule ScheduleIdentifier="1" ScheduleName="test_sched"
+    InitialModuleSchedule="true" MajorFrameSeconds="1.0">
+    <Partition_Schedule PartitionIdentifier="1" PartitionName="p0" 
+      PeriodDurationSeconds="0.3" PeriodSeconds="1.0">
+      <Window_Schedule WindowIdentifier="1" PartitionPeriodStart="true" 
+        WindowDurationSeconds="0.3"  WindowStartSeconds="0.0"/>
+    </Partition_Schedule>
+  </Module_Schedule>
+
+  
+  <!-- Module configuration -->
+  <XKY_Configuration TicksPerSecond="200" RequiredCores="1"/>
+</ARINC_653_Module>
