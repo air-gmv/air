@@ -22,8 +22,9 @@ include/iop_mms.h\
 include/iop_support.h\
 drivers/amba/include/ambaext.h\
 drivers/greth/include/iop_greth.h\
-../../pmk/core/include/xky.h\
+drivers/gr1553/include/IOPgr1553b.h\
 ../libprintf/include/pprintf.h\
+../../pmk/core/include/xky.h\
 ../../pmk/arch/sparc/include/xky_arch.h
 
 LIBRARY_HEADERS=\
@@ -38,7 +39,8 @@ include/iop_headers.h\
 include/iop_mms.h\
 include/iop_support.h\
 drivers/amba/include/ambaext.h\
-drivers/greth/include/iop_greth.h
+drivers/greth/include/iop_greth.h\
+drivers/gr1553/include/IOPgr1553b.h
 
 RTEMS_MAKEFILE_PATH=\
 ../../install/pos/$(RTEMS_DIRECTORY)/$(RTEMS_DIRECTORY)-install/$(RTEMS_TARGET)/$(RTEMS_BSP)
@@ -60,7 +62,8 @@ TARGET_CPPFLAGS+=\
 -I../../pmk/arch/sparc/include\
 -Idrivers/greth/include\
 -Iinclude\
--I../libprintf/include
+-I../libprintf/include\
+-Idrivers/gr1553/include
 
 
 SOURCE_FILES=\
@@ -73,7 +76,8 @@ mms.c\
 router.c\
 support.c\
 drivers/amba/ambaext.c\
-drivers/greth/iop_greth.c
+drivers/greth/iop_greth.c\
+drivers/gr1553/IOPgr1553b.c
 
 
 OBJECT_FILES=\
