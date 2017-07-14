@@ -42,7 +42,7 @@ def ShowInstallInfo(logger):
 def Run(args, os_configuration, logger):
 
     # show info
-    if args.info: ShowInstallInfo(logger)
+    if args.info: ShowInstallInfo(logger)  # doesnt show
 
     # clean previous configuration files
     if args.xml_file == 'clean' or args.xml_file == 'clear': clearConfiguration(logger)
