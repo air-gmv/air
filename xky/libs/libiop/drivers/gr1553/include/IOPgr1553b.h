@@ -49,7 +49,9 @@ extern "C" {
 
 #include <rtems.h>
 #include <stdint.h>
+#include <iop.h>
 #include <IOPmilstd_config.h>
+
 
 /**
  * @brief The GR1553B register mapping
