@@ -176,6 +176,7 @@ class IOParser(object):
 
         # extract the device name
         regex_match = match(PHYSICAL_DEVICE_PATTERN, pdevice.device)
+        repr(regex_match)
         if not regex_match:
             self.logger.error(LOG_UNSUPPORTED_DEVICE, xml.sourceline, pdevice.device)
             return False
