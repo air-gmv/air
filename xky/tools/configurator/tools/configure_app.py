@@ -42,7 +42,7 @@ def ShowInstallInfo(logger):
 def Run(args, os_configuration, logger):
 
     # show info
-    if args.info: ShowInstallInfo(logger)  # doesnt show
+    if args.info: ShowInstallInfo(logger)
 
     # clean previous configuration files
     if args.xml_file == 'clean' or args.xml_file == 'clear': clearConfiguration(logger)
@@ -64,9 +64,10 @@ def Run(args, os_configuration, logger):
     # parse module
     from parsers.xky.parser import xkyParser
 
+    print("  PARSING configs")
     app_configuration = xkyParser(os_configuration, logger)
     app_configuration.parse(args.xml_file)
-
+    print("  done PARSING configs")
     # sanity check
     if logger.total_errors > 0:
         logger.error(' :: XML configuration contains errors...')
