@@ -128,7 +128,7 @@ arch_configure = xky_sparc.get_sparc_configuration
 
 # IOP devices and definitions
 iop = IOP(defines=[],
-          devices=['greth0', 'greth1', 'gr1553b0', 'grspw0', 'grspw1', 'grspw2', 'grspw3', 'grspw4'],
+          devices=['greth0', 'greth1', 'gr1553b0','grspw0'],
           drivers=['amba', 'greth', 'gr1553', 'grspw', 'mil1553'],
           alias=dict(eth0='greth0',eth1='greth1'),
           arch=iop_arch)
