@@ -21,9 +21,9 @@
 #define _USERCONFIG_H
 
 #include <IOPlibio.h>
+
+#ifdef	__SPW_H__
 #include <IOPgrspw.h>
-#include <IOPmil1553brm.h>
-#include <IOPgr1553b.h>
 
 /**
  * @brief gets SpW internal driver structure 
@@ -73,6 +73,11 @@ void * get_spw_memend();
  */
 int get_spw_memsize();
 
+#endif
+
+#ifdef __MIL1553BRM_H__
+#include <IOPmil1553brm.h>
+
 /**
  * @brief gets BRM internal driver structure 
  * @return pointer to BRM internal per core driver structure
@@ -103,10 +108,15 @@ void * get_milstd_memend();
  */
 milstd_config_t * get_milstd_config();
 
+#endif
+
+#ifdef __GR1553B_H__
+#include <IOPgr1553b.h>
+
 void *iop_get_grb_rt_mem();
 
 grb_priv *iop_grb_get_priv_mem(void);
 
-
+#endif
 
 #endif
