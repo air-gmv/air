@@ -11,7 +11,7 @@
 	</LogicalDevices>	
 	
 	<PhysicalDevices>
-		<Device Id="0" Device="ETH0" Ip="192.168.0.70" MAC="d0:39:72:74:d8:1f" TXD="32" RXD="32">
+		<Device Id="0" Device="CPSW" Ip="192.168.0.70" MAC="d0:39:72:74:d8:1f" TXD="32" RXD="32">
 			<PhysicalRoute Id="2" PortId="squeuing">
 				<EthHeader Ip="192.168.0.2" MAC="68:05:ca:1f:39:af" Port="14000" />
 			</PhysicalRoute>

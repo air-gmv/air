@@ -141,6 +141,8 @@ class IOParser(object):
     # @param self object pointer
     # @param xml logical device xml node
     def parse_physical_device(self, xml):
+	
+        print("     PARSING physical device")
 
         # clear previous errors and warnings
         self.logger.clear_errors(0)
@@ -150,6 +152,7 @@ class IOParser(object):
         pdevice.id = xml.parse_attr(PHYSICAL_DEVICE_ID, VALID_IDENTIFIER_TYPE, True, self.logger)
         pdevice.device = xml.parse_attr(PHYSICAL_DEVICE_NAME, VALID_NAME_TYPE, True, self.logger)
 
+        print(pdevice.device)
         # sanity check
         if self.logger.check_errors(): return False
 
@@ -158,32 +161,39 @@ class IOParser(object):
 
         # get device alias
         try:
+            print("alias0: ", pdevice.device)
+            print("alias: ", self.iop_configuration.alias[pdevice.device])
             alias = self.iop_configuration.alias[pdevice.device]
             pdevice.device = alias
+
         except:
             pass
 
+        print("dev: ", pdevice.device)
         # check for redefinitions
         if any(pdevice == other for other in self.physical_devices):
             self.logger.error(LOG_REDEFINITION, xml.sourceline, pdevice)
             return False
 
+        print("BEFORE")
         # check if the device is valid
         bsp_devices = self.iop_configuration.devices
         if pdevice.device not in bsp_devices:
             self.logger.error(LOG_UNSUPPORTED_DEVICE, xml.sourceline, pdevice.device)
             return False
 
+        print("AFTER", self.iop_configuration.devices)
         # extract the device name
         regex_match = match(PHYSICAL_DEVICE_PATTERN, pdevice.device)
-        repr(regex_match)
         if not regex_match:
             self.logger.error(LOG_UNSUPPORTED_DEVICE, xml.sourceline, pdevice.device)
             return False
 
+        print("BEFORE")
         pdevice.type  = regex_match.group('type').upper()
         pdevice.minor = regex_match.group('minor').upper()
 
+        print("AFTER", pdevice.type)
         # check if a parser for that device is available
         if pdevice.type not in iop_supported_devices.keys():
             self.logger.error(LOG_UNSUPPORTED_DEVICE, xml.sourceline, pdevice.device)
@@ -215,6 +225,7 @@ class IOParser(object):
             pdevice.idx = len(self.physical_devices)
             self.physical_devices.append(pdevice)
 
+        print("     done PARSING physical device")
         return rc
 
     ## Parse routes
