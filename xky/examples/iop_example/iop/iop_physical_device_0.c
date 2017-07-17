@@ -7,7 +7,7 @@
  * ============================================================================
  */
 #include <iop.h>
-#include <iop_greth.h>
+#include <iop_cpsw.h>
 #include <eth_support.h>
 
 /**
@@ -19,46 +19,28 @@ static iop_buffer_t iop_buffers[64];
 static uint8_t iop_buffers_storage[64 * IOP_BUFFER_SIZE];
 
 /**
- * @brief TX descriptor to IOP buffer mapping
+ * @brief CPSW control structure
  */
-static iop_buffer_t *tx_iop_buffer[32];
-/**
- * @brief RX descriptor to IOP buffer mapping
- */
-static iop_buffer_t *rx_iop_buffer[32];
-
-/**
- * @brief RX and TX descriptor table
- * @warning this should be 2048, but we need 3072 to ensure the 0x400 alignment
- */
-static uint8_t descriptor_table[3072];
-
-/** @brief  GRETH control structure*/
-static greth_softc_t greth_driver = \
+static cpsw_device_t cpsw_driver = \
 {
     .iop_buffers            = iop_buffers,
     .iop_buffers_storage    = iop_buffers_storage,
-
-    /** @note descriptor table address are split and aligned at the runtime */
-    .txdesc = descriptor_table,
-    .rxdesc = descriptor_table,
-
-    .tx_iop_buffer = tx_iop_buffer,
-    .rx_iop_buffer = rx_iop_buffer
 };
 
-/** @brief GRETH driver configuration */
+/**
+ * @brief CPSW driver configuration
+ */
 static iop_eth_device_t device_configuration = \
 {
     /* device configuration */
     .dev        = {
 
-        .driver         = (void *)&greth_driver,
-        .init           = greth_initialize,
-        .open           = greth_open,
-        .read           = greth_read,
-        .write          = greth_write,
-        .close          = greth_close,
+        .driver         = (void *)&cpsw_driver,
+        .init           = cpsw_initialize,
+        .open           = cpsw_open,
+        .read           = cpsw_read,
+        .write          = cpsw_write,
+        .close          = cpsw_close,
     },
 
     /* ethernet configuration */

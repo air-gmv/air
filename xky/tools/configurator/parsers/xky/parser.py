@@ -444,12 +444,12 @@ class xkyParser(a653parser):
                                                            self.logger)
 
 
-        print("   PARSING iop file")
+        print("   PARSING iop file attr")
         # get IOP configuration if available
         partition.iop_file = xml_config_node.parse_attr(PARTITION_EXTENSION_IOP,
                                                         VALID_XKY_FILE, False, self.logger, '')
 
-        print("   done PARSING iop file")
+        print("   done PARSING iop file attr")
 
         # check IOP is supported
         if not self.os_configuration.is_iop_supported() and partition.iop_file != '':
