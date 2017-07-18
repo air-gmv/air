@@ -321,7 +321,7 @@ static rtems_status_code iop_init_ports() {
 
         /* check return code */
         if (p_rc != XKY_NO_ERROR && p_rc != XKY_NO_ACTION) {
-            iop_debug("    - error %i creating port %s\n", port->name, lrc);
+            iop_debug("    - error %i creating port %s\n", p_rc, port->name);
             rc = RTEMS_INTERNAL_ERROR;
         }
     }
