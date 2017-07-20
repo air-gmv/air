@@ -24,7 +24,7 @@ static iop_physical_device_t *physical_device_list[1] = \
 };
 
 /**
- * @brief Physical devices list
+ * @brief Logical devices list
  */
 static iop_logical_device_t *logical_device_list[1] = \
 {
@@ -33,6 +33,9 @@ static iop_logical_device_t *logical_device_list[1] = \
 
 static iop_wrapper_t requests_storage[1024];
 
+/**
+ * @brief IOP buffers
+ */
 static iop_buffer_t iop_buffers[1024];
 static uint8_t iop_buffers_storage[1024 * IOP_BUFFER_SIZE];
 
