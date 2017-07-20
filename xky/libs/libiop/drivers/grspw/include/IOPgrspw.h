@@ -251,41 +251,17 @@ typedef struct {
 #define SPACEWIRE_IOCTRL_STOP                65
 /**@}*/
 
-rtems_device_driver spw_initialize(
-        rtems_device_major_number  major,
-        rtems_device_minor_number  minor,
-        void                    * arg
-        );
+rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver spw_open(
-        rtems_device_major_number major,
-        rtems_device_minor_number minor,
-        void                    * arg
-        );
+rtems_device_driver spw_open(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver spw_close(
-        rtems_device_major_number major,
-        rtems_device_minor_number minor,
-        void                    * arg
-        );
+rtems_device_driver spw_close(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver spw_read(
-        rtems_device_major_number major,
-        rtems_device_minor_number minor,
-        void                    * arg
-        );
+rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver spw_write(
-        rtems_device_major_number major,
-        rtems_device_minor_number minor,
-        void                    * arg
-        );
+rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg );
 
-rtems_device_driver spw_control(
-        rtems_device_major_number major,
-        rtems_device_minor_number minor,
-        void                    * arg
-        );
+rtems_device_driver spw_control(iop_device_driver_t *iop_dev, void *arg);
 
 #ifdef __cplusplus
 }

@@ -518,7 +518,7 @@ static void spw_check_tx(SPW_DEV *pDev){
 rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
 	
-	iop_spw_device_t *device = (iop_spw_device_t)iop_dev;
+	iop_spw_device_t *device = (iop_spw_device_t *)iop_dev;
 	SPW_DEV *pDev = (SPW_DEV *)(device->dev.driver);
 	
 	/*configuration that is being implemented*/
@@ -696,7 +696,7 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 rtems_device_driver spw_open(iop_device_driver_t *iop_dev, void *arg)
 {		
 	/*Current SpW device*/
-	iop_spw_device_t *device = (iop_spw_device_t)iop_dev;
+	iop_spw_device_t *device = (iop_spw_device_t *)iop_dev;
 	SPW_DEV *pDev = (SPW_DEV *)(device->dev.driver);
 	//SPACEWIRE_DBGC(DBGSPW_IOCALLS, "open [%i,%i]\n", major, minor);
 	
@@ -761,7 +761,7 @@ rtems_device_driver spw_open(iop_device_driver_t *iop_dev, void *arg)
 rtems_device_driver spw_close(iop_device_driver_t *iop_dev, void *arg)
 {   
 	/*Current SpW device*/
-	iop_spw_device_t *device = (iop_spw_device_t)iop_dev;
+	iop_spw_device_t *device = (iop_spw_device_t *)iop_dev;
 	SPW_DEV *pDev = (SPW_DEV *)(device->dev.driver);
 	
 	//SPACEWIRE_DBGC(DBGSPW_IOCALLS, "close [%i,%i]\n", major, minor);
@@ -799,7 +799,7 @@ rtems_device_driver spw_close(iop_device_driver_t *iop_dev, void *arg)
 rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg)
 {
 	/*Current SpW device*/
-	iop_spw_device_t *device = (iop_spw_device_t)iop_dev;
+	iop_spw_device_t *device = (iop_spw_device_t *)iop_dev;
 	SPW_DEV *pDev = (SPW_DEV *)(device->dev.driver);
 	
 	/*User IO arguments*/
@@ -878,7 +878,7 @@ rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg)
 rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 {   
 	/*Current SpW device*/
-	iop_spw_device_t *device = (iop_spw_device_t)iop_dev;
+	iop_spw_device_t *device = (iop_spw_device_t *)iop_dev;
 	SPW_DEV *pDev = (SPW_DEV *)(device->dev.driver);
 	
 	/*User IO arguments: buffer and count*/
