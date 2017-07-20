@@ -107,6 +107,9 @@ extern iop_port_t remote_ports[${len(iop_configuration.ports)}];
 </%def>
 
 <%def name="IopBuffersStorage(size)">\
+/**
+ * @brief IOP buffers
+ */
 static iop_buffer_t iop_buffers[${size}];
 static uint8_t iop_buffers_storage[${size} * IOP_BUFFER_SIZE];
 </%def>

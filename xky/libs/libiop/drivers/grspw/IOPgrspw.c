@@ -80,14 +80,23 @@ static int spw_cores;
 /*Number of SpW2 cores */
 static int spw_cores2;
 
+/*Number of SpW2 with DMA cores */
+static int spw_cores2_dma;
+
+/*Counter with the number of ports already initialized */
+static int cores_init = 0;
+
+/*used to create semaphore names*/
+static char c = 'a';
+
 /*Number of user configured cores*/
 static int configured_cores = 0;
 
 /* System Frequency*/
 static unsigned int sys_freq_khz;
 
-/* Array of per device structures*/
-static SPW_DEV *spw_devs;
+/* Array of per device structures @TODO SIZE HARDCODED lumm*/	
+static SPW_DEV spw_dev;
 
 /* Pointer to user configuration*/
 static spw_user_config *user_config;
@@ -492,7 +501,6 @@ static void spw_check_tx(SPW_DEV *pDev){
 	return;
 }
 
-
 /** 
  *  \brief Initializes the SPW cores
  *
@@ -506,18 +514,11 @@ static void spw_check_tx(SPW_DEV *pDev){
  *     - RTEMS_SUCESSFULL operation completed successfully
  *	
  **/
-rtems_device_driver spw_initialize(rtems_device_major_number  major,
-										  rtems_device_minor_number  minor,
-										  void *arg)
-{	
-	/*iterator through spw cores*/
-	int i;
+rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
+{
 	
-	/*used to create semaphore names*/
-	char c;
-	
-	/*SpaceWire device being handled*/
-	SPW_DEV *pDev;
+	iop_spw_device_t *device = (iop_spw_device_t)iop_dev;
+	SPW_DEV *pDev = (SPW_DEV *)(device->dev.driver);
 	
 	/*configuration that is being implemented*/
 	spw_user_config *config;
@@ -527,175 +528,152 @@ rtems_device_driver spw_initialize(rtems_device_major_number  major,
 	
 	/*Get amba bus configuration*/
 	amba_bus = &amba_conf;
-
-	/* get number of SPW cores*/
-	spw_cores = get_number_spw_cores();
-	spw_cores2 = get_number_spw2_cores();
-	
-	/*Check number of SPW cores*/
-	if ( (spw_cores+spw_cores2) < 1 ){
-		
-		/* No SPW cores around... */
-		return RTEMS_TOO_MANY;
-	}
 	
 	/* get memory for the internal structure */
-	spw_devs = get_spw_devs();
+	// spw_dev = get_spw_dev();
+	
+	spw_cores = amba_get_number_apbslv_devices(amba_bus,VENDOR_GAISLER,GAISLER_SPACEWIRE);
+	spw_cores2 = amba_get_number_apbslv_devices(amba_bus,VENDOR_GAISLER,GAISLER_GRSPW2);
+	spw_cores2_dma = amba_get_number_apbslv_devices(amba_bus,VENDOR_GAISLER,GAISLER_GRSPW2_DMA);
 	
 	/* zero out all memory */
-	memset(spw_devs,0,(spw_cores+spw_cores2) * sizeof(SPW_DEV));
-	
-	/*get default configuration*/
-	defconf = get_spw_defconfig();
+	//memset(spw_dev,0,sizeof(SPW_DEV));
 	
 	/*get user configuration*/
-	user_config = get_spw_config();
+	user_config = (spw_user_config *) &device->nodeaddr;
 	
-	/* loop all found spacewire cores */
-	for(minor=0; minor<(spw_cores+spw_cores2); minor++){
-		
-		/*obtain device's structure*/
-		pDev = &spw_devs[minor];
-		
-		/* find device's plug and play information*/
-		if ( spw_cores > minor ) {
+	// TODO
+	/*get default configuration*/
+	defconf = user_config;
+	
+	if (amba_find_next_apbslv(amba_bus,VENDOR_GAISLER,GAISLER_SPACEWIRE,&dev,cores_init)) {
 			
-			/*Find Version 1 SPW cores*/
-			amba_find_next_apbslv(amba_bus,VENDOR_GAISLER,GAISLER_SPACEWIRE,&dev,minor);
-			
-			/** @todo check for amba_find_next_apbslv return code */
-			
-			/*store core version in device's structure*/
-			pDev->core_ver = 1;
-			
-		} else {
-			
-			/*Find Version 2 SPW cores*/
-			amba_find_next_apbslv(amba_bus,VENDOR_GAISLER,GAISLER_GRSPW2,&dev,minor-spw_cores);
-			
-			/** @todo check for amba_find_next_apbslv return code */
-			
-			/*store core version in device's structure*/
-			pDev->core_ver = 2;
-		}
+		/*store core version in device's structure*/
+		pDev->core_ver = 1;
+	} else if (amba_find_next_apbslv(amba_bus,VENDOR_GAISLER,GAISLER_GRSPW2,&dev,cores_init)) {
 		
-		/* Pointer to device's memory mapped registers*/
-		pDev->regs = (LEON3_SPACEWIRE_Regs_Map *)dev.start;
+		/*store core version in device's structure*/
+		pDev->core_ver = 2;
+	} else if (amba_find_next_apbslv(amba_bus,VENDOR_GAISLER,GAISLER_GRSPW2_DMA,&dev,cores_init)) {
 		
-		/* store IRQ channel used by the spw device*/
-		pDev->irq = dev.irq;
+		/*store core version in device's structure*/
+		pDev->core_ver = 3;
+	} else {
+		iop_debug("    GRSPW device not found...\n");
+		return RTEMS_INTERNAL_ERROR;
+	}
 		
-		/* store device minor number*/
-		pDev->minor = minor;
-		
-		/* This device has not started (yet)*/
-		pDev->open = 0;
-		
-		SPACEWIRE_DBG("spacewire core at [0x%x]\n", (unsigned int) pDev->regs);
+	/* Pointer to device's memory mapped registers*/
+	pDev->regs = (LEON3_SPACEWIRE_Regs_Map *)dev.start;
+	
+	/* store IRQ channel used by the spw device*/
+	pDev->irq = dev.irq;
+	
+	/* store device minor number*/
+	pDev->minor = cores_init;
+	
+	cores_init++;
+	
+	/* This device has not started (yet)*/
+	pDev->open = 0;
+	
+	SPACEWIRE_DBG("spacewire core at [0x%x]\n", (unsigned int) pDev->regs);
 
-		/* non configured cores are configured using default configuration */
-		if(minor >= configured_cores)
-		{
-			/* This core was not configured by the user. Use defaults*/
-			config = defconf;
-
-		} else {
+	/* non configured cores are configured using default configuration */
+	if(minor >= configured_cores)
+	{
+		/* This core was not configured by the user. Use defaults*/
+		config = defconf;
 		
-			/* Use user's configurations for this core*/
-			config = &user_config[minor];
-		}
-			
-		/* Configuration options defined by the user.
-		 * These options don't need to be written to the Hardware
-		 */
-		pDev->config.rm_prot_id = config->rm_prot_id;
-		pDev->config.rxmaxlen = config->rxmaxlen;
-		pDev->config.retry = config->retry;
-		pDev->txdbufsize = config->txdbufsize;
-		pDev->txhbufsize = config->txhbufsize;
-		pDev->rxbufsize = config->rxbufsize;
+	} else {
+	
+		/* Use user's configurations for this core*/
+		config = user_config;
+	}
 		
-		/*Check user defined descriptor count against its limits*/
-		if(config->txdesccnt > 64){	
-			/*maximum number of allowed tx descriptors*/
-			pDev->txbufcnt = 64;
-		} else{
-			pDev->txbufcnt = config->txdesccnt;
-		}
-		
-		/*Check user defined descriptor count against its limits*/
-		if(config->rxdesccnt > 128){	
-			/*maximum number of allowed rx descriptors*/
-			pDev->rxbufcnt = 128;
-		} else{
-			pDev->rxbufcnt = config->rxdesccnt;
-		}
-		
-		/*	This set of options is defined by the partition supplier
-		 *	For the moment we will let them here. If latter we see
-		 *	that we need to configure this, we place these on a outside struct
-		 * TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-		 */
-		 
-		/*Blocking Behavior*/
-		pDev->config.tx_blocking = 0;
-		pDev->config.tx_block_on_full = 0;
-		pDev->config.rx_blocking = 0;
-		
-		/*Error Behavior: Currently Not Defined*/
-		pDev->config.check_rmap_err = 0;
-		pDev->config.disable_err = 1;
-		pDev->config.link_err_irq = 0; 
-		pDev->config.event_id = 0; 
-		
-		/*Pointers to data and header buffers*/
-		pDev->ptr_rxbuf0 = 0;
-		pDev->ptr_txdbuf0 = 0;
-		pDev->ptr_txhbuf0 = 0;
-						
-		#ifdef SPW_STATIC_MEM
-			SPW_CALC_MEMOFS(spw_cores,minor,&pDev->membase,&pDev->memend,&pDev->mem_bdtable);
-		#endif
-		
-		/*Allocate Descritors and data buffers*/
-		if (spw_buffer_alloc(pDev)) {
-				pprintf("NO MORE MEMORY FOR SPW!!!!!!\n");
-				return RTEMS_NO_MEMORY;	
-		}
-				
+	/* Configuration options defined by the user.
+	 * These options don't need to be written to the Hardware
+	 */
+	pDev->config.rm_prot_id = config->rm_prot_id;
+	pDev->config.rxmaxlen = config->rxmaxlen;
+	pDev->config.retry = config->retry;
+	pDev->txdbufsize = config->txdbufsize;
+	pDev->txhbufsize = config->txhbufsize;
+	pDev->rxbufsize = config->rxbufsize;
+	
+	/*Check user defined descriptor count against its limits*/
+	if(config->txdesccnt > 64){	
+		/*maximum number of allowed tx descriptors*/
+		pDev->txbufcnt = 64;
+	} else{
+		pDev->txbufcnt = config->txdesccnt;
 	}
 	
-	c = 'a';
+	/*Check user defined descriptor count against its limits*/
+	if(config->rxdesccnt > 128){	
+		/*maximum number of allowed rx descriptors*/
+		pDev->rxbufcnt = 128;
+	} else{
+		pDev->rxbufcnt = config->rxdesccnt;
+	}
+	
+	/*	This set of options is defined by the partition supplier
+	 *	For the moment we will let them here. If latter we see
+	 *	that we need to configure this, we place these on a outside struct
+	 * TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+	 */
+	 
+	/*Blocking Behavior*/
+	pDev->config.tx_blocking = 0;
+	pDev->config.tx_block_on_full = 0;
+	pDev->config.rx_blocking = 0;
+	
+	/*Error Behavior: Currently Not Defined*/
+	pDev->config.check_rmap_err = 0;
+	pDev->config.disable_err = 1;
+	pDev->config.link_err_irq = 0; 
+	pDev->config.event_id = 0; 
+	
+	/*Pointers to data and header buffers*/
+	pDev->ptr_rxbuf0 = 0;
+	pDev->ptr_txdbuf0 = 0;
+	pDev->ptr_txhbuf0 = 0;
+					
+	#ifdef SPW_STATIC_MEM
+		SPW_CALC_MEMOFS(spw_cores,minor,&pDev->membase,&pDev->memend,&pDev->mem_bdtable);
+	#endif
+	
+	/*Allocate Descritors and data buffers*/
+	if (spw_buffer_alloc(pDev)) {
+			pprintf("NO MORE MEMORY FOR SPW!!!!!!\n");
+			return RTEMS_NO_MEMORY;	
+	}
+	
 	/**** Initialize Hardware and semaphores ****/
-	/*iterate through all cores*/
-	for (i = 0; i < spw_cores+spw_cores2; i++) {
-		pDev = &spw_devs[i];
-		
-		/*Create TX semaphore*/
-		rtems_semaphore_create(
-				rtems_build_name('T', 'x', 'S', c), 
-				0, 
-				RTEMS_FIFO | RTEMS_SIMPLE_BINARY_SEMAPHORE | RTEMS_NO_INHERIT_PRIORITY | \
-				RTEMS_NO_PRIORITY_CEILING, 
-				0, 
-				&(pDev->txsp));
-				
-		/*Create RX semaphore*/
-		rtems_semaphore_create(
-				rtems_build_name('R', 'x', 'S', c), 
-				0, 
-				RTEMS_FIFO | RTEMS_SIMPLE_BINARY_SEMAPHORE | RTEMS_NO_INHERIT_PRIORITY | \
-				RTEMS_NO_PRIORITY_CEILING, 
-				0, 
-				&(pDev->rxsp));
-		c++;
-		
-		/*Initialize Hardware*/
-		spw_hw_init(pDev);
-		
-		/*Startup Hardware*/
-		//spw_hw_startup(pDev,-1);
-	}
+	/*Create TX semaphore*/
+	rtems_semaphore_create(
+			rtems_build_name('T', 'x', 'S', c), 
+			0, 
+			RTEMS_FIFO | RTEMS_SIMPLE_BINARY_SEMAPHORE | RTEMS_NO_INHERIT_PRIORITY | \
+			RTEMS_NO_PRIORITY_CEILING, 
+			0, 
+			&(pDev->txsp));
+			
+	/*Create RX semaphore*/
+	rtems_semaphore_create(
+			rtems_build_name('R', 'x', 'S', c), 
+			0, 
+			RTEMS_FIFO | RTEMS_SIMPLE_BINARY_SEMAPHORE | RTEMS_NO_INHERIT_PRIORITY | \
+			RTEMS_NO_PRIORITY_CEILING, 
+			0, 
+			&(pDev->rxsp));
+	c++;
+	
+	/*Initialize Hardware*/
+	spw_hw_init(pDev);
+	
+	/*Startup Hardware*/
+	//spw_hw_startup(pDev,-1);
 	
 	return RTEMS_SUCCESSFUL;
 }
@@ -714,20 +692,18 @@ rtems_device_driver spw_initialize(rtems_device_major_number  major,
  *		- RTEMS_SUCCESSFUL if the operation completed sucessfully
  *	
  **/
-rtems_device_driver spw_open(rtems_device_major_number major,
-									rtems_device_minor_number minor,
-									void * arg) 
+rtems_device_driver spw_open(iop_device_driver_t *iop_dev, void *arg)
 {		
 	/*Current SpW device*/
-	SPW_DEV *pDev;
-	SPACEWIRE_DBGC(DBGSPW_IOCALLS, "open [%i,%i]\n", major, minor);
+	iop_spw_device_t *device = (iop_spw_device_t)iop_dev;
+	SPW_DEV *pDev = (SPW_DEV *)(device->dev.driver);
+	//SPACEWIRE_DBGC(DBGSPW_IOCALLS, "open [%i,%i]\n", major, minor);
 	
 	/*Check if device exists*/
-	if ( minor >= (spw_cores+spw_cores2) ) {
+	if ( minor >= (spw_cores+spw_cores2+spw_cores2_dma) ) {
 			SPACEWIRE_DBG("minor %i too big\n", minor);
 			return RTEMS_INVALID_NUMBER;
 	}
-	pDev = &spw_devs[minor];
 	
 	/*Check if device was already opened*/
 	if ( pDev->open )
@@ -781,14 +757,13 @@ rtems_device_driver spw_open(rtems_device_major_number major,
  *		- RTEMS_SUCCESSFUL if the operation completed sucessfully
  *
  **/	
-rtems_device_driver spw_close(rtems_device_major_number major,
-									 rtems_device_minor_number minor,
-									 void * arg)
+rtems_device_driver spw_close(iop_device_driver_t *iop_dev, void *arg)
 {   
 	/*Current SpW device*/
-	SPW_DEV *pDev = &spw_devs[minor];
+	iop_spw_device_t *device = (iop_spw_device_t)iop_dev;
+	SPW_DEV *pDev = (SPW_DEV *)(device->dev.driver);
 	
-	SPACEWIRE_DBGC(DBGSPW_IOCALLS, "close [%i,%i]\n", major, minor);
+	//SPACEWIRE_DBGC(DBGSPW_IOCALLS, "close [%i,%i]\n", major, minor);
 	
 	/*Delete Semaphores*/
 	// rtems_semaphore_delete(pDev->txsp);
@@ -820,12 +795,11 @@ rtems_device_driver spw_close(rtems_device_major_number major,
  *		- RTEMS_RESOURCE_IN_USE: There is no data to be read and we can't block
  *
  **/	
-rtems_device_driver spw_read(rtems_device_major_number major,
-									rtems_device_minor_number minor,
-									void  * arg)
+rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg)
 {
 	/*Current SpW device*/
-	SPW_DEV *pDev = &spw_devs[minor];
+	iop_spw_device_t *device = (iop_spw_device_t)iop_dev;
+	SPW_DEV *pDev = (SPW_DEV *)(device->dev.driver);
 	
 	/*User IO arguments*/
 	libio_rw_args_t *rw_args;
@@ -845,7 +819,7 @@ rtems_device_driver spw_read(rtems_device_major_number major,
 		return RTEMS_INVALID_NAME;
 	}
 	
-	SPACEWIRE_DBGC(DBGSPW_IOCALLS, "read  [%i,%i]: buf:0x%x len:%i \n", major, minor, (unsigned int)rw_args->data, rw_args->data_len);
+	//SPACEWIRE_DBGC(DBGSPW_IOCALLS, "read  [%i,%i]: buf:0x%x len:%i \n", major, minor, (unsigned int)rw_args->data, rw_args->data_len);
 	
 	/*Check for errors*/
 	spw_hw_handle_errors(pDev);
@@ -900,12 +874,11 @@ rtems_device_driver spw_read(rtems_device_major_number major,
  *		- RTEMS_RESOURCE_IN_USE: Write buffers are full and we can't block waiting
  *
  **/	
-rtems_device_driver spw_write(rtems_device_major_number major,
-									 rtems_device_minor_number minor,
-									 void  * arg)
+rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 {   
 	/*Current SpW device*/
-	SPW_DEV *pDev = &spw_devs[minor];
+	iop_spw_device_t *device = (iop_spw_device_t)iop_dev;
+	SPW_DEV *pDev = (SPW_DEV *)(device->dev.driver);
 	
 	/*User IO arguments: buffer and count*/
 	libio_rw_args_t *rw_args;
@@ -956,7 +929,7 @@ rtems_device_driver spw_control(
         void                    * arg
         )
 {
-        SPW_DEV *pDev = &spw_devs[minor];
+        SPW_DEV *pDev = &spw_dev[minor];
         spw_ioctl_pkt_send *args;
         unsigned int tmp,nodeaddr,nodemask;
         int timeout;
