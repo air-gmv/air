@@ -9,13 +9,9 @@
  */
 
 #include <rtems.h>
-#include <rtems/libio.h>
-#include <rtems/bspIo.h>
-#include <stdio.h>
 
-#include <drvmgr/drvmgr.h>
-#include <drvmgr/ambapp_bus.h>
-#include <bsp/grspw_router.h>
+#include <iop.h>
+#include <IOPgrspw_router.h>
 
 #define ROUTER_DBG(args...)
 
@@ -57,23 +53,11 @@ struct router_priv {
 	int nports;
 };
 
-static rtems_device_driver router_initialize(
-        rtems_device_major_number  major,
-        rtems_device_minor_number  minor,
-        void                    * arg
-        );
+static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg);
 
-static rtems_device_driver router_open(
-        rtems_device_major_number major,
-        rtems_device_minor_number minor,
-        void                    * arg
-        );
+static rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg);
 
-static rtems_device_driver router_close(
-        rtems_device_major_number major,
-        rtems_device_minor_number minor,
-        void                    * arg
-        );
+static rtems_device_driver router_close(iop_device_driver_t *iop_dev, void *arg);
 
 static rtems_device_driver router_control(
         rtems_device_major_number major,
@@ -322,117 +306,117 @@ static int router_tc_read(struct router_priv *priv, unsigned int *tc)
 	return 0;
 }
 
-static rtems_device_driver router_control(
-	rtems_device_major_number major,
-	rtems_device_minor_number minor,
-	void                    * arg
-	)
-{
-	struct router_priv *priv;
-	struct drvmgr_dev *dev;
-	rtems_libio_ioctl_args_t *ioarg = (rtems_libio_ioctl_args_t *) arg;
-	void *argp = (void *)ioarg->buffer;
-
-	if ( drvmgr_get_dev(&router_drv_info.general, minor, &dev) ) {
-		ROUTER_DBG("Wrong minor %d\n", minor);
-		return RTEMS_INVALID_NAME;
-	}
-	priv = (struct router_priv *)dev->priv;
-
-	ioarg->ioctl_return = 0;
-	switch (ioarg->command) {
-
-	/* Get Hardware support/information available */
-	case GRSPWR_IOCTL_HWINFO:
-	{
-		struct router_hw_info *hwinfo = argp;
-		router_hwinfo(priv, hwinfo);
-		break;
-	}
-
-	/* Set Router Configuration */
-	case GRSPWR_IOCTL_CFG_SET:
-	{
-		struct router_config *cfg = argp;
-		return router_config_set(priv, cfg);
-	}
-
-	/* Read Router Configuration */
-	case GRSPWR_IOCTL_CFG_GET:
-	{
-		struct router_config *cfg = argp;
-		router_config_read(priv, cfg);
-		break;
-	}
-
-	/* Routes */
-	case GRSPWR_IOCTL_ROUTES_SET:
-	{
-		struct router_routes *routes = argp;
-		return router_routes_set(priv, routes);
-	}
-
-	case GRSPWR_IOCTL_ROUTES_GET:
-	{
-		struct router_routes *routes = argp;
-		router_routes_read(priv, routes);
-		break;
-	}
-
-	/* Port Setup */
-	case GRSPWR_IOCTL_PS_SET:
-	{
-		struct router_ps *ps = argp;
-		return router_ps_set(priv, ps);
-	}
-
-	case GRSPWR_IOCTL_PS_GET:
-	{
-		struct router_ps *ps = argp;
-		router_ps_read(priv, ps);
-		break;
-	}
-
-	/* Set configuration write enable */
-	case GRSPWR_IOCTL_WE_SET:
-	{
-		return router_we_set(priv, (int)argp);
-	}
-
-	/* Set/Get Port Control/Status */
-	case GRSPWR_IOCTL_PORT:
-	{
-		struct router_port *port = argp;
-		int result;
-		if ( (result=router_port_ctrl(priv, port)) )
-			return result;
-		break;
-	}
-
-	/* Set Router Configuration/Status Register */
-	case GRSPWR_IOCTL_CFGSTS_SET:
-	{
-		return router_cfgsts_set(priv, (int)argp);
-	}
-
-	/* Get Router Configuration/Status Register */
-	case GRSPWR_IOCTL_CFGSTS_GET:
-	{
-		unsigned int *cfgsts = argp;
-		router_cfgsts_read(priv, cfgsts);
-		break;
-	}
-
-	/* Get Current Time-Code Register */
-	case GRSPWR_IOCTL_TC_GET:
-	{
-		unsigned int *tc = argp;
-		router_tc_read(priv, tc);
-		break;
-	}
-
-	default: return RTEMS_NOT_IMPLEMENTED;
-	}
-
-	return 0;
-}
+//static rtems_device_driver router_control(
+//	rtems_device_major_number major,
+//	rtems_device_minor_number minor,
+//	void                    * arg
+//	)
+//{
+//	struct router_priv *priv;
+//	struct drvmgr_dev *dev;
+//	rtems_libio_ioctl_args_t *ioarg = (rtems_libio_ioctl_args_t *) arg;
+//	void *argp = (void *)ioarg->buffer;
+//
+//	if ( drvmgr_get_dev(&router_drv_info.general, minor, &dev) ) {
+//		ROUTER_DBG("Wrong minor %d\n", minor);
+//		return RTEMS_INVALID_NAME;
+//	}
+//	priv = (struct router_priv *)dev->priv;
+//
+//	ioarg->ioctl_return = 0;
+//	switch (ioarg->command) {
+//
+//	/* Get Hardware support/information available */
+//	case GRSPWR_IOCTL_HWINFO:
+//	{
+//		struct router_hw_info *hwinfo = argp;
+//		router_hwinfo(priv, hwinfo);
+//		break;
+//	}
+//
+//	/* Set Router Configuration */
+//	case GRSPWR_IOCTL_CFG_SET:
+//	{
+//		struct router_config *cfg = argp;
+//		return router_config_set(priv, cfg);
+//	}
+//
+//	/* Read Router Configuration */
+//	case GRSPWR_IOCTL_CFG_GET:
+//	{
+//		struct router_config *cfg = argp;
+//		router_config_read(priv, cfg);
+//		break;
+//	}
+//
+//	/* Routes */
+//	case GRSPWR_IOCTL_ROUTES_SET:
+//	{
+//		struct router_routes *routes = argp;
+//		return router_routes_set(priv, routes);
+//	}
+//
+//	case GRSPWR_IOCTL_ROUTES_GET:
+//	{
+//		struct router_routes *routes = argp;
+//		router_routes_read(priv, routes);
+//		break;
+//	}
+//
+//	/* Port Setup */
+//	case GRSPWR_IOCTL_PS_SET:
+//	{
+//		struct router_ps *ps = argp;
+//		return router_ps_set(priv, ps);
+//	}
+//
+//	case GRSPWR_IOCTL_PS_GET:
+//	{
+//		struct router_ps *ps = argp;
+//		router_ps_read(priv, ps);
+//		break;
+//	}
+//
+//	/* Set configuration write enable */
+//	case GRSPWR_IOCTL_WE_SET:
+//	{
+//		return router_we_set(priv, (int)argp);
+//	}
+//
+//	/* Set/Get Port Control/Status */
+//	case GRSPWR_IOCTL_PORT:
+//	{
+//		struct router_port *port = argp;
+//		int result;
+//		if ( (result=router_port_ctrl(priv, port)) )
+//			return result;
+//		break;
+//	}
+//
+//	/* Set Router Configuration/Status Register */
+//	case GRSPWR_IOCTL_CFGSTS_SET:
+//	{
+//		return router_cfgsts_set(priv, (int)argp);
+//	}
+//
+//	/* Get Router Configuration/Status Register */
+//	case GRSPWR_IOCTL_CFGSTS_GET:
+//	{
+//		unsigned int *cfgsts = argp;
+//		router_cfgsts_read(priv, cfgsts);
+//		break;
+//	}
+//
+//	/* Get Current Time-Code Register */
+//	case GRSPWR_IOCTL_TC_GET:
+//	{
+//		unsigned int *tc = argp;
+//		router_tc_read(priv, tc);
+//		break;
+//	}
+//
+//	default: return RTEMS_NOT_IMPLEMENTED;
+//	}
+//
+//	return 0;
+//}

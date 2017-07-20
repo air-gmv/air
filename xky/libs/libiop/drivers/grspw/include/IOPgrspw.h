@@ -22,6 +22,7 @@
 #ifndef __SPW_H__
 #define __SPW_H__
 
+#include <iop.h>
 #include <ambapp.h>
 
 #ifdef __cplusplus

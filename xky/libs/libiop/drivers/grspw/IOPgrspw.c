@@ -581,7 +581,7 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 	SPACEWIRE_DBG("spacewire core at [0x%x]\n", (unsigned int) pDev->regs);
 
 	/* non configured cores are configured using default configuration */
-	if(minor >= configured_cores)
+	if(pDev->minor >= configured_cores)
 	{
 		/* This core was not configured by the user. Use defaults*/
 		config = defconf;
@@ -641,7 +641,7 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 	pDev->ptr_txhbuf0 = 0;
 					
 	#ifdef SPW_STATIC_MEM
-		SPW_CALC_MEMOFS(spw_cores,minor,&pDev->membase,&pDev->memend,&pDev->mem_bdtable);
+		SPW_CALC_MEMOFS(spw_cores,pDev->minor,&pDev->membase,&pDev->memend,&pDev->mem_bdtable);
 	#endif
 	
 	/*Allocate Descritors and data buffers*/
@@ -701,8 +701,8 @@ rtems_device_driver spw_open(iop_device_driver_t *iop_dev, void *arg)
 	//SPACEWIRE_DBGC(DBGSPW_IOCALLS, "open [%i,%i]\n", major, minor);
 	
 	/*Check if device exists*/
-	if ( minor >= (spw_cores+spw_cores2+spw_cores2_dma) ) {
-			SPACEWIRE_DBG("minor %i too big\n", minor);
+	if ( pDev->minor >= (spw_cores+spw_cores2+spw_cores2_dma) ) {
+			SPACEWIRE_DBG("minor %i too big\n", pDev->minor);
 			return RTEMS_INVALID_NUMBER;
 	}
 	
@@ -885,7 +885,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 	libio_rw_args_t *rw_args;
 	rw_args = (libio_rw_args_t *) arg;
 	
-	SPACEWIRE_DBGC(DBGSPW_IOCALLS, "write [%i,%i]: buf:0x%x len:%i\n", major, minor, (unsigned int)rw_args->data, rw_args->data_len);
+	//SPACEWIRE_DBGC(DBGSPW_IOCALLS, "write [%i,%i]: buf:0x%x len:%i\n", major, minor, (unsigned int)rw_args->data, rw_args->data_len);
 
 	/* is link up? */
 	if ( !pDev->running ) {
@@ -1407,7 +1407,7 @@ static int spw_hw_init(SPW_DEV *pDev)
         pDev->tx = (SPACEWIRE_TXBD *) ((int)pDev->rx + SPACEWIRE_BDTABLE_ALIGMENT);
 	}
 	#endif
-    SPACEWIRE_DBG("hw_init [minor %i]\n", pDev->minor);
+        SPACEWIRE_DBG("hw_init [minor %i]\n", pDev->minor);
     
 	/*Check if the RMAP sub core is present*/
 	pDev->config.is_rmap = ctrl & SPW_CTRL_RA;
