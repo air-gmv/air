@@ -8,9 +8,13 @@
  * http://www.rtems.org/license/LICENSE.
  */
 
+#include <bsp.h>
+#include <xky.h>
 #include <rtems.h>
 
-#include <iop.h>
+#include <amba.h>
+#include <ambapp.h>
+
 #include <IOPgrspw_router.h>
 #include <spw_support.h>
 
@@ -85,7 +89,7 @@ static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void 
 	memset(&apbgreth, 0, sizeof(amba_apb_device));
 	
 	/* Scan for MAC AHB slave interface */
-	device_found = amba_find_apbslv(&amba_conf, VENDOR_GAISLER, GAISLER_SPW_ROUTER, &apbgreth);
+	device_found = amba_find_apbslv(&amba_conf, VENDOR_GAISLER, GAISLER_GRSPW_ROUTER, &apbgreth);
 									
 	if (device_found != 1){
 	    iop_debug("    GRETH device not found...\n");
@@ -106,7 +110,7 @@ static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void 
 }
 
 static rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
-	
+{	
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
 	struct router_priv *priv = (struct router_priv *)(device->dev.driver);
 

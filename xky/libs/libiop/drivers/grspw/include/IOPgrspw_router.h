@@ -12,6 +12,9 @@
 #ifndef __GRSPW_ROUTER_H__
 #define __GRSPW_ROUTER_H__
 
+#include <iop.h>
+#include <ambapp.h>
+
 /* Hardware Information */
 struct router_hw_info {
 	unsigned char nports_spw;
