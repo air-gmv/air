@@ -154,6 +154,8 @@ static rtems_status_code iop_init_drivers(void){
 
         /* get physical device */
         iop_physical_device_t *pdev = get_physical_device(i);
+		
+		iop_debug(*pdev);
 
         /* initialize device */
         if (pdev->driver->init != NULL) {
