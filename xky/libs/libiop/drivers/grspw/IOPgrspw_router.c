@@ -12,6 +12,7 @@
 
 #include <iop.h>
 #include <IOPgrspw_router.h>
+#include <spw_support.h>
 
 #define ROUTER_DBG(args...)
 
@@ -52,18 +53,6 @@ struct router_priv {
 	struct router_hw_info hwinfo;
 	int nports;
 };
-
-static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg);
-
-static rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg);
-
-static rtems_device_driver router_close(iop_device_driver_t *iop_dev, void *arg);
-
-static rtems_device_driver router_control(
-        rtems_device_major_number major,
-        rtems_device_minor_number minor,
-        void                    * arg
-        );
 
 #define ROUTER_DRIVER_TABLE_ENTRY \
   { router_initialize, \

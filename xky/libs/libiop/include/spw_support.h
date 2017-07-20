@@ -42,6 +42,14 @@ typedef struct {
 } iop_spw_device_t;
 
 /**
+ * @brief SpaceWire router device
+ */
+typedef struct {
+	
+	iop_device_driver_t dev;
+} iop_spw_router_device_t;
+
+/**
  *  @brief Task that writes pending write requests to ETH0
  *  @param [in] arg: not used
  *
