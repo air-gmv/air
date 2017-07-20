@@ -101,6 +101,7 @@ extern "C"
 #define GAISLER_FTAHBRAM  0x50
 #define GAISLER_FTMCTRL   0x54
 #define GAISLER_BRM       0x72
+#define GAISLER_GRSPW2_DMA 0x8a
 
 
    /* European Space Agency device id's */

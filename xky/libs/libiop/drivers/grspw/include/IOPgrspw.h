@@ -98,10 +98,10 @@ typedef struct {
  * @brief Structure containing the user defined part of the SpW configuration
  */ 
 typedef struct {
-	int nodeaddr;				/** node address:Y ou have to set nodeaddr and nodemask together*/
-	int nodemask;				/** Node Mask*/
-	int destkey;				/** Destination key*/
-	int clkdiv; 				/** Clock Divisor: contains both CLKDIVSTART and CLKDIVRUN */
+	unsigned int nodeaddr;				/** node address:Y ou have to set nodeaddr and nodemask together*/
+	unsigned int nodemask;				/** Node Mask*/
+	unsigned int destkey;				/** Destination key*/
+	unsigned int clkdiv; 				/** Clock Divisor: contains both CLKDIVSTART and CLKDIVRUN */
 	
 	unsigned int rxmaxlen;		/** Maximum length allowed, in bytes, in packet reception */
 	unsigned int promiscuous;	/** Promiscous mode: dump the whole packet in memory without removing anything */
