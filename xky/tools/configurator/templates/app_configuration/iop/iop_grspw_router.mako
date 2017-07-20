@@ -23,48 +23,16 @@
 
 ${iop_template.RemotePortList(iop_configuration)}\
 
-${iop_template.IopBuffersStorage(2 * device.setup.txbufcnt + device.setup.rxbufcnt)}\
-
-/**
- * @brief TX header descriptor to IOP buffer mapping
- */
-static iop_buffer_t *tx_headers_iop_buffer[${device.setup.txbufcnt}];
-/**
- * @brief TX descriptor to IOP buffer mapping
- */
-static iop_buffer_t *tx_data_iop_buffer[${device.setup.txbufcnt}];
-/**
- * @brief RX descriptor to IOP buffer mapping
- */
-static iop_buffer_t *rx_iop_buffer[${device.setup.rxbufcnt}];
-
-/**
- * @brief RX and TX descriptor table
- * @warning this should be 2048, but we need 3072 to ensure the 0x400 alignment
- */
-static uint8_t descriptor_table[3072];
-
 /** @brief  GRSPW control structure*/
-static SPW_DEV grspw_driver = ${'\\'}
-{
-    .iop_buffers            = iop_buffers,
-    .iop_buffers_storage    = iop_buffers_storage,
-
-    /** @note descriptor table address are split and aligned at the runtime */
-    .txdesc = descriptor_table,
-    .rxdesc = descriptor_table,
-
-    .tx_iop_buffer = tx_iop_buffer,
-    .rx_iop_buffer = rx_iop_buffer
-};
+static router_priv grspw_router_driver = ${'\\'}{};
 
 /** @brief GRSPW driver configuration */
-static iop_spw_device_t device_configuration = ${'\\'}
+static iop_spw_router_device_t device_configuration = ${'\\'}
 {
     /* device configuration */
     .dev        = {
 
-        .driver         = (void *)&spw_driver,
+        .driver         = (void *)&spw_router_driver,
         .init           = spw_initialize,
         .open           = spw_open,
         .read           = spw_read,
