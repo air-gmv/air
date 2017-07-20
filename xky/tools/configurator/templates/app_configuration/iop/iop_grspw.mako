@@ -73,8 +73,6 @@ static iop_spw_device_t device_configuration = ${'\\'}
     },
 
     /* ethernet??? configuration */
-    .ip         	= { ${', '.join(device.setup.ip)} },
-    .mac        	= { ${', '.join(['0x{0}'.format(o) for o in device.setup.mac])} },
 	.nodeaddr		= ${device.setup.nodeaddr},
 	.nodemask;		= ${device.setup.nodemask},
 	.destkey;		= ${device.setup.destkey},

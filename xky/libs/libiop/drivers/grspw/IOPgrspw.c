@@ -35,13 +35,16 @@
 
 #define SPW_DONT_BYPASS_CACHE
 
-#include <bsp.h>
-#include <string.h>
+#define GRSPW_SUPPORTED
 
+#include <bsp.h>
+#include <xky.h>
+#include <rtems.h>
+#include <string.h>
 #include <amba.h>
 #include <ambapp.h>
-
 #include <ambaext.h>
+
 #include <pprintf.h>
 #include <IOPlibio.h>
 #include <IOPgrspw.h>
