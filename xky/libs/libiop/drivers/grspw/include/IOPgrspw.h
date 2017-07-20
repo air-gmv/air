@@ -22,6 +22,7 @@
 #ifndef __SPW_H__
 #define __SPW_H__
 
+#include <iop.h>
 #include <ambapp.h>
 
 #ifdef __cplusplus
@@ -29,6 +30,90 @@ extern "C" {
 #endif
 
 #define SPW_LINKERR_EVENT RTEMS_EVENT_0
+
+#define MEM_READ(addr) _MEM_READ((void *)(addr))
+#define SPW_READ(addr) _SPW_READ((void *)(addr))
+#define SPW_WRITE(addr,v) *addr=v
+
+#define SPW_REG(c,r) (c->regs->r)
+#define SPW_REG_CTRL(c) SPW_REG(c,ctrl)
+#define SPW_REG_STATUS(c) SPW_REG(c,status)
+#define SPW_REG_NODEADDR(c) SPW_REG(c,nodeaddr)
+
+#define SPW_CTRL_READ(c)      SPW_READ(&SPW_REG_CTRL(c))
+#define SPW_CTRL_WRITE(c,v)   SPW_WRITE(&SPW_REG_CTRL(c),v)
+#define SPW_STATUS_READ(c)    SPW_READ(&SPW_REG_STATUS(c))
+#define SPW_STATUS_WRITE(c,v) SPW_WRITE(&SPW_REG_STATUS(c),v)
+
+#define SPW_LINKSTATE(c) (((c) >> 21) & 0x7)
+
+#define SPW_RXBD_LENGTH 0x1ffffff
+#define SPW_RXBD_EN (1 << 25)
+#define SPW_RXBD_WR (1 << 26)
+#define SPW_RXBD_IE (1 << 27)
+
+#define SPW_RXBD_EEP (1 << 28)
+#define SPW_RXBD_EHC (1 << 29)
+#define SPW_RXBD_EDC (1 << 30)
+#define SPW_RXBD_ETR (1 << 31)
+
+#define SPW_RXBD_ERROR (SPW_RXBD_EEP | \
+                        SPW_RXBD_ETR)
+
+#define SPW_RXBD_RMAPERROR (SPW_RXBD_EHC | SPW_RXBD_EDC)
+
+#define SPW_TXBD_LENGTH 0xffffff
+
+#define SPW_TXBD_EN (1 << 12)
+#define SPW_TXBD_WR (1 << 13)
+#define SPW_TXBD_IE (1 << 14)
+#define SPW_TXBD_LE (1 << 15)
+
+#define SPW_TXBD_ERROR (SPW_TXBD_LE)
+
+#define SPW_CTRL_LINKDISABLED (1 << 0)
+#define SPW_CTRL_LINKSTART    (1 << 1)
+#define SPW_CTRL_AUTOSTART    (1 << 2)
+#define SPW_CTRL_IE           (1 << 3)
+#define SPW_CTRL_TI           (1 << 4)
+#define SPW_CTRL_PM           (1 << 5)
+#define SPW_CTRL_RESET        (1 << 6)
+#define SPW_CTRL_TQ           (1 << 8)
+#define SPW_CTRL_LI           (1 << 9)
+#define SPW_CTRL_TT           (1 << 10)
+#define SPW_CTRL_TR           (1 << 11)
+#define SPW_CTRL_RE           (1 << 16)
+#define SPW_CTRL_RD           (1 << 17)
+
+#define SPW_CTRL_RC           (1 << 29)
+#define SPW_CTRL_RX           (1 << 30)
+#define SPW_CTRL_RA           (1 << 31)
+
+#define SPW_STATUS_TO (1 << 0)
+#define SPW_STATUS_CE (1 << 1)
+#define SPW_STATUS_ER (1 << 2)
+#define SPW_STATUS_DE (1 << 3)
+#define SPW_STATUS_PE (1 << 4)
+#define SPW_STATUS_WE (1 << 6)
+#define SPW_STATUS_IA (1 << 7)
+#define SPW_STATUS_EE (1 << 8)
+
+#define SPW_DMACTRL_TXEN (1 << 0)
+#define SPW_DMACTRL_RXEN (1 << 1)
+#define SPW_DMACTRL_TXIE (1 << 2)
+#define SPW_DMACTRL_RXIE (1 << 3)
+#define SPW_DMACTRL_AI   (1 << 4)
+#define SPW_DMACTRL_PS   (1 << 5)
+#define SPW_DMACTRL_PR   (1 << 6)
+#define SPW_DMACTRL_TA   (1 << 7)
+#define SPW_DMACTRL_RA   (1 << 8)
+#define SPW_DMACTRL_AT   (1 << 9)
+#define SPW_DMACTRL_RX   (1 << 10)
+#define SPW_DMACTRL_RD   (1 << 11)
+#define SPW_DMACTRL_NS   (1 << 12)
+
+#define SPW_PREPAREMASK_TX (SPW_DMACTRL_RXEN | SPW_DMACTRL_PS | SPW_DMACTRL_TA | SPW_DMACTRL_RA | SPW_DMACTRL_RD | SPW_DMACTRL_NS)
+#define SPW_PREPAREMASK_RX (SPW_DMACTRL_TXEN | SPW_DMACTRL_PR | SPW_DMACTRL_TA | SPW_DMACTRL_RA)
 
 typedef struct {
    unsigned int hlen;
@@ -98,10 +183,10 @@ typedef struct {
  * @brief Structure containing the user defined part of the SpW configuration
  */ 
 typedef struct {
-	int nodeaddr;				/** node address:Y ou have to set nodeaddr and nodemask together*/
-	int nodemask;				/** Node Mask*/
-	int destkey;				/** Destination key*/
-	int clkdiv; 				/** Clock Divisor: contains both CLKDIVSTART and CLKDIVRUN */
+	unsigned int nodeaddr;				/** node address:Y ou have to set nodeaddr and nodemask together*/
+	unsigned int nodemask;				/** Node Mask*/
+	unsigned int destkey;				/** Destination key*/
+	unsigned int clkdiv; 				/** Clock Divisor: contains both CLKDIVSTART and CLKDIVRUN */
 	
 	unsigned int rxmaxlen;		/** Maximum length allowed, in bytes, in packet reception */
 	unsigned int promiscuous;	/** Promiscous mode: dump the whole packet in memory without removing anything */
@@ -148,7 +233,7 @@ typedef struct {
  */
 typedef struct {
    volatile unsigned int ctrl;	/** Control Resgister*/
-   volatile unsigned int addr;	/** Pointer to data buffer*/
+   uint32_t *addr;	/** Pointer to data buffer*/
 } SPACEWIRE_RXBD;
 
 /**
@@ -156,9 +241,9 @@ typedef struct {
  */
 typedef struct {
    volatile unsigned int ctrl;			/** Control Register*/
-   volatile unsigned int addr_header;	/** Address to header buffer*/
+   uint32_t *addr_header;	/** Address to header buffer*/
    volatile unsigned int len;			/** Data control and Header */
-   volatile unsigned int addr_data;		/** Address to data buffer*/
+   uint32_t *addr_data;		/** Address to data buffer*/
 } SPACEWIRE_TXBD;
 
 /**
@@ -200,15 +285,14 @@ typedef struct {
    /* semaphores*/
    rtems_id txsp;				/** Sempahore id for write: Not used*/
    rtems_id rxsp;				/** Sempahore id for read: Not used*/
-   
-   SPACEWIRE_RXBD *rx;			/** Pointer to the RX descriptor table*/
-   SPACEWIRE_TXBD *tx;			/** Pointer to the TX descriptor table*/
 
-#ifdef SPW_STATIC_MEM
-   unsigned int membase, memend, mem_bdtable; 	/** User Allocated memory areas*/
-#else
-   unsigned char _rxtable[1024*3];	/** Memory area used for the descriptor tables*/
-#endif
+	uint32_t *bdtable;		/** Pointer to the descriptor table */
+   
+   SPACEWIRE_TXBD *tx;			/** Pointer to the RX descriptor table*/
+   SPACEWIRE_RXBD *rx;			/** Pointer to the TX descriptor table*/
+
+	iop_buffer_t *iop_buffers;
+	uint8_t *iop_buffers_storage;
 
    LEON3_SPACEWIRE_Regs_Map *regs;				/** Map if this device's registers*/
 } SPW_DEV;
@@ -251,41 +335,17 @@ typedef struct {
 #define SPACEWIRE_IOCTRL_STOP                65
 /**@}*/
 
-rtems_device_driver spw_initialize(
-        rtems_device_major_number  major,
-        rtems_device_minor_number  minor,
-        void                    * arg
-        );
+rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver spw_open(
-        rtems_device_major_number major,
-        rtems_device_minor_number minor,
-        void                    * arg
-        );
+rtems_device_driver spw_open(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver spw_close(
-        rtems_device_major_number major,
-        rtems_device_minor_number minor,
-        void                    * arg
-        );
+rtems_device_driver spw_close(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver spw_read(
-        rtems_device_major_number major,
-        rtems_device_minor_number minor,
-        void                    * arg
-        );
+rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver spw_write(
-        rtems_device_major_number major,
-        rtems_device_minor_number minor,
-        void                    * arg
-        );
+rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg );
 
-rtems_device_driver spw_control(
-        rtems_device_major_number major,
-        rtems_device_minor_number minor,
-        void                    * arg
-        );
+rtems_device_driver spw_control(iop_device_driver_t *iop_dev, void *arg);
 
 #ifdef __cplusplus
 }
