@@ -38,7 +38,7 @@ extern "C" {
 #define _MEM_READ(address) (*(volatile unsigned char *)(address))
 #else
 
-static unsigned int _SPW_READ(void *addr) {
+unsigned int _SPW_READ(void *addr) {
 	unsigned int tmp;
 	__asm__ __volatile__ (" lda [%1]1, %0 "
 							: "=r"(tmp)
@@ -47,7 +47,7 @@ static unsigned int _SPW_READ(void *addr) {
 	return tmp;
 }
 
-static unsigned int _MEM_READ(void *addr) {
+unsigned int _MEM_READ(void *addr) {
 	unsigned int tmp;
 	__asm__ __volatile__ (" lduba [%1]1, %0 "
 							: "=r"(tmp)
@@ -374,19 +374,19 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg );
 
 rtems_device_driver spw_control(iop_device_driver_t *iop_dev, void *arg);
 
-static int spw_hw_init(SPW_DEV *pDev);
-static int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, char *hdr, unsigned int dlen, char *data);
-static int spw_hw_receive(SPW_DEV *pDev, char *hdr, char *b, int c);
-static int spw_hw_startup (SPW_DEV *pDev, int timeout);
-static int spw_hw_stop (SPW_DEV *pDev, int rx, int tx);
-static int spw_hw_waitlink (SPW_DEV *pDev, int timeout);
-static void spw_hw_reset(SPW_DEV *pDev);
-static void spw_hw_sync_config(SPW_DEV *pDev);
-static void spw_hw_handle_errors(SPW_DEV *pDev);
+int spw_hw_init(SPW_DEV *pDev);
+int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, char *hdr, unsigned int dlen, char *data);
+int spw_hw_receive(SPW_DEV *pDev, char *hdr, char *b, int c);
+int spw_hw_startup (SPW_DEV *pDev, int timeout);
+int spw_hw_stop (SPW_DEV *pDev, int rx, int tx);
+int spw_hw_waitlink (SPW_DEV *pDev, int timeout);
+void spw_hw_reset(SPW_DEV *pDev);
+void spw_hw_sync_config(SPW_DEV *pDev);
+void spw_hw_handle_errors(SPW_DEV *pDev);
 
-static void check_rx_errors(SPW_DEV *pDev, int ctrl);
-static void spw_rxnext(SPW_DEV *pDev);
-static void spw_check_tx(SPW_DEV *pDev);
+void check_rx_errors(SPW_DEV *pDev, int ctrl);
+void spw_rxnext(SPW_DEV *pDev);
+void spw_check_tx(SPW_DEV *pDev);
 
 #ifdef __cplusplus
 }
