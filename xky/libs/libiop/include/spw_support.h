@@ -50,6 +50,29 @@ typedef struct {
 } iop_spw_router_device_t;
 
 /**
+ * @brief Pre-build the SPW header
+ * @param buf pointer to the SPW header
+ */
+void spw_prebuild_header(udp_header_t *buf);
+/**
+ * @brief Compare two spacewire headers
+ * @param wrapper Received packet
+ * @param header Router header
+ * @return true if header match, false otherwise
+ */
+uint32_t spw_compare_header(iop_wrapper_t *wrapper, iop_header_t *header);
+/**
+ * @brief Copy and Complete spacewire header
+ * @param iop_dev IO device
+ * @param wrapper IOP wrapper with the packet
+ * @param header route header
+ */
+void spw_copy_header(
+        iop_physical_device_t *iop_dev,
+        iop_wrapper_t *wrapper,
+        iop_header_t *header);
+		
+/**
  *  @brief Task that writes pending write requests to ETH0
  *  @param [in] arg: not used
  *
