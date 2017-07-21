@@ -33,8 +33,10 @@ GRSPW_WAIT				= 'Wait'
 GRSPW_TIMEOUT			= 'Timeout'
 GRSPW_READS             = 'Reads'
 
+VALID_EN                    = [ parserutils.str2int, lambda x : 0 <= x <= 1 ]
 VALID_XD	            = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
 VALID_READS	            = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
+VALID_TIMER                 = [ parserutils.str2int, lambda x : 0 <= x <= 50 ] 
 
 # GRETH physical device setup
 class GRETHPhySetup(object):
@@ -83,9 +85,9 @@ class GRSPWPhySetup(object):
         self.init_timeout   = 5
 
 
-#    def details(self):
-#        return 'GRSPW Physical Device Setup (Mac: {0} Ip: {1} TXD - {2} RXD - {3})'\
-#            .format(':'.join(self.mac), '.'.join(self.ip), self.txd_count, self.rxd_count)
+    def details(self):
+        return 'GRSPW Physical Device Setup (Node Address: {0} Node Mask: {1} Destiny Key - {2} Promiscuous - {3})'\
+            .format(self.nodeaddr, self.nodemask, self.destkey, self.promiscuous)
 
 # GRSPW Schedule device setup
 class GRSPWSchSetup(object):
@@ -154,18 +156,18 @@ def phy_grspw(iop_parser, xml, pdevice):
     setup.destkey       = xml.parse_attr(GRSPW_DEST, VALID_XD, True, iop_parser.logger)
     setup.clkdiv        = xml.parse_attr(GRSPW_CLK, VALID_XD, True, iop_parser.logger)
     setup.rxmaxlen      = xml.parse_attr(GRSPW_RXMAX, VALID_XD, True, iop_parser.logger)
-    setup.promiscuous   = xml.parse_attr(GRSPW_PRO, VALID_XD, True, iop_parser.logger)
-    setup.rmapen        = xml.parse_attr(GRSPW_RMAP, VALID_XD, True, iop_parser.logger)
+    setup.promiscuous   = xml.parse_attr(GRSPW_PRO, VALID_EN, True, iop_parser.logger)
+    setup.rmapen        = xml.parse_attr(GRSPW_RMAP, VALID_EN, True, iop_parser.logger)
     setup.rmapbufdis    = xml.parse_attr(GRSPW_RMAPBUF, VALID_XD, True, iop_parser.logger)
-    setup.rm_prot_id    = xml.parse_attr(GRSPW_RMPROTID, VALID_XD, True, iop_parser.logger)
+    setup.rm_prot_id    = xml.parse_attr(GRSPW_RMPROTID, VALID_EN, True, iop_parser.logger)
     setup.txdbufsize    = xml.parse_attr(GRSPW_TXDSIZE, VALID_XD, True, iop_parser.logger)
     setup.txhbufsize    = xml.parse_attr(GRSPW_TXHSIZE, VALID_XD, True, iop_parser.logger)
     setup.rxbufsize     = xml.parse_attr(GRSPW_RXSIZE, VALID_XD, True, iop_parser.logger)
     setup.txdesccnt     = xml.parse_attr(GRSPW_TXD, VALID_XD, True, iop_parser.logger)
     setup.rxdesccnt     = xml.parse_attr(GRSPW_RXD, VALID_XD, True, iop_parser.logger)
-    setup.retry         = xml.parse_attr(GRSPW_RETRY, VALID_XD, True, iop_parser.logger)
-    setup.wait_ticks    = xml.parse_attr(GRSPW_WAIT, VALID_XD, True, iop_parser.logger)
-    setup.init_timeout  = xml.parse_attr(GRSPW_TIMEOUT, VALID_XD, True, iop_parser.logger)
+    setup.retry         = xml.parse_attr(GRSPW_RETRY, VALID_TIMER, True, iop_parser.logger)
+    setup.wait_ticks    = xml.parse_attr(GRSPW_WAIT, VALID_TIMER, True, iop_parser.logger)
+    setup.init_timeout  = xml.parse_attr(GRSPW_TIMEOUT, VALID_TIMER, True, iop_parser.logger)
 
     # sanity check
     if iop_parser.logger.check_errors(): return False
