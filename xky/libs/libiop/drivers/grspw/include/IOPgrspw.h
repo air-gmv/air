@@ -31,33 +31,6 @@ extern "C" {
 
 #define SPW_LINKERR_EVENT RTEMS_EVENT_0
 
-
-
-#ifdef SPW_DONT_BYPASS_CACHE
-#define _SPW_READ(address) (*(volatile unsigned int *)(address))
-#define _MEM_READ(address) (*(volatile unsigned char *)(address))
-#else
-
-unsigned int _SPW_READ(void *addr) {
-	unsigned int tmp;
-	__asm__ __volatile__ (" lda [%1]1, %0 "
-							: "=r"(tmp)
-							: "r"(addr)
-						  );
-	return tmp;
-}
-
-unsigned int _MEM_READ(void *addr) {
-	unsigned int tmp;
-	__asm__ __volatile__ (" lduba [%1]1, %0 "
-							: "=r"(tmp)
-							: "r"(addr)
-					     );
-	return tmp;        
-
-}
-#endif
-
 #define MEM_READ(addr) _MEM_READ((void *)(addr))
 #define SPW_READ(addr) _SPW_READ((void *)(addr))
 #define SPW_WRITE(addr,v) *addr=v
@@ -373,20 +346,6 @@ rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg);
 rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg );
 
 rtems_device_driver spw_control(iop_device_driver_t *iop_dev, void *arg);
-
-int spw_hw_init(SPW_DEV *pDev);
-int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, char *hdr, unsigned int dlen, char *data);
-int spw_hw_receive(SPW_DEV *pDev, char *hdr, char *b, int c);
-int spw_hw_startup (SPW_DEV *pDev, int timeout);
-int spw_hw_stop (SPW_DEV *pDev, int rx, int tx);
-int spw_hw_waitlink (SPW_DEV *pDev, int timeout);
-void spw_hw_reset(SPW_DEV *pDev);
-void spw_hw_sync_config(SPW_DEV *pDev);
-void spw_hw_handle_errors(SPW_DEV *pDev);
-
-void check_rx_errors(SPW_DEV *pDev, int ctrl);
-void spw_rxnext(SPW_DEV *pDev);
-void spw_check_tx(SPW_DEV *pDev);
 
 #ifdef __cplusplus
 }
