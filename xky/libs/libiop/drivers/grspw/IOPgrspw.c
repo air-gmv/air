@@ -108,6 +108,45 @@ static spw_user_config *defconf;
 /* Pointer to amba bus structure*/
 static amba_confarea_type *amba_bus;
 
+#ifdef SPW_DONT_BYPASS_CACHE
+#define _SPW_READ(address) (*(volatile unsigned int *)(address))
+#define _MEM_READ(address) (*(volatile unsigned char *)(address))
+#else
+
+static unsigned int _SPW_READ(void *addr) {
+	unsigned int tmp;
+	__asm__ __volatile__ (" lda [%1]1, %0 "
+							: "=r"(tmp)
+							: "r"(addr)
+						  );
+	return tmp;
+}
+
+static unsigned int _MEM_READ(void *addr) {
+	unsigned int tmp;
+	__asm__ __volatile__ (" lduba [%1]1, %0 "
+							: "=r"(tmp)
+							: "r"(addr)
+					     );
+	return tmp;        
+
+}
+#endif
+
+static int spw_hw_init(SPW_DEV *pDev);
+static int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, char *hdr, unsigned int dlen, char *data);
+static int spw_hw_receive(SPW_DEV *pDev, char *hdr, char *b, int c);
+static int spw_hw_startup (SPW_DEV *pDev, int timeout);
+static int spw_hw_stop (SPW_DEV *pDev, int rx, int tx);
+static int spw_hw_waitlink (SPW_DEV *pDev, int timeout);
+static void spw_hw_reset(SPW_DEV *pDev);
+static void spw_hw_sync_config(SPW_DEV *pDev);
+static void spw_hw_handle_errors(SPW_DEV *pDev);
+
+static void check_rx_errors(SPW_DEV *pDev, int ctrl);
+static void spw_rxnext(SPW_DEV *pDev);
+static void spw_check_tx(SPW_DEV *pDev);
+
 int spw_get_conf_size(void);
 
 
