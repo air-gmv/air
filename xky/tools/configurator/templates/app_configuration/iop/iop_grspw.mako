@@ -23,20 +23,20 @@
 
 ${iop_template.RemotePortList(iop_configuration)}\
 
-${iop_template.IopBuffersStorage(2 * device.setup.txbufcnt + device.setup.rxbufcnt)}\
+${iop_template.IopBuffersStorage(2 * device.setup.txdesccnt + device.setup.rxdesccnt)}\
 
 /**
  * @brief TX header descriptor to IOP buffer mapping
  */
-static iop_buffer_t *tx_headers_iop_buffer[${device.setup.txbufcnt}];
+static iop_buffer_t *tx_headers_iop_buffer[${device.setup.txdesccnt}];
 /**
  * @brief TX descriptor to IOP buffer mapping
  */
-static iop_buffer_t *tx_data_iop_buffer[${device.setup.txbufcnt}];
+static iop_buffer_t *tx_data_iop_buffer[${device.setup.txdesccnt}];
 /**
  * @brief RX descriptor to IOP buffer mapping
  */
-static iop_buffer_t *rx_iop_buffer[${device.setup.rxbufcnt}];
+static iop_buffer_t *rx_iop_buffer[${device.setup.rxdesccnt}];
 
 /**
  * @brief RX and TX descriptor table
@@ -84,9 +84,10 @@ static iop_spw_device_t device_configuration = ${'\\'}
 	.rmapbufdis;	= ${device.setup.rmapbufdis},
 	.rm_prot_id;	= ${device.setup.rm_prot_id},
 	
-	.txdbufsize;	= ${device.setup.txdbufsize},
-	.txhbufsize;	= ${device.setup.txhbufsize},
-	.rxbufsize;		= ${device.setup.rxbufsize},
+/* The buffer size is in the var IOP_BUFFER_SIZE declared in iop.h */
+//	.txdbufsize;	= ${device.setup.txdbufsize},
+//	.txhbufsize;	= ${device.setup.txhbufsize},
+//	.rxbufsize;		= ${device.setup.rxbufsize},
 	.txdesccnt;		= ${device.setup.txdesccnt},
 	.rxdesccnt;		= ${device.setup.rxdesccnt},
 	
