@@ -53,7 +53,7 @@ typedef struct {
  * @brief Pre-build the SPW header
  * @param buf pointer to the SPW header
  */
-void spw_prebuild_header(udp_header_t *buf);
+void spw_prebuild_header(spw_header_t *buf);
 /**
  * @brief Compare two spacewire headers
  * @param wrapper Received packet
