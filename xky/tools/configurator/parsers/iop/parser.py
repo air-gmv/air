@@ -46,6 +46,7 @@ class IOParser(object):
 
     def get_physical_device(self, pd_id):
 
+        print("PHY DEVS", self.physical_devices)
         pdevices = [pd for pd in self.physical_devices if pd.id == pd_id]
         return pdevices[0] if len(pdevices) == 1 else None
 
@@ -215,11 +216,15 @@ class IOParser(object):
         xml_routes = xml.parse_tag(ROUTE_PHYSICAL, 1, maxint, self.logger)
         for xml_route in xml_routes:
             rc &= self.parse_device_routes(xml_route, pdevice)
+            print(rc)
 
         # Parse Logical Routing
         xml_routes = xml.parse_tag(ROUTE_LOGICAL, 1, maxint, self.logger)
         for xml_route in xml_routes:
             rc &= self.parse_device_routes(xml_route, pdevice)
+            print(rc)
+            
+        print("PHYDEV?", rc)
 
         if rc:
             pdevice.idx = len(self.physical_devices)
@@ -246,6 +251,7 @@ class IOParser(object):
             if self.logger.check_errors(): return False
 
             # check if remote port exists
+            print("PHY PORT ID: ", port_id)
             route.port = self.get_remote_port(port_id)
             if route.port is None:
                 self.logger.error(LOG_UNDEFINED, xml.sourceline, REMOTE_PORT_STR.format(port_id))
@@ -265,6 +271,7 @@ class IOParser(object):
 
             # check if logical device exists
             ldevice = self.get_logical_device(ld_id)
+            print("LOGICAL DEV is ", ldevice)
             if ldevice is None:
                 self.logger.error(LOG_UNDEFINED, xml.sourceline, LOGICAL_DEVICE_STR.format(ld_id, '---'))
                 return False
@@ -438,6 +445,8 @@ class IOParser(object):
 
             # check if device exists
             pdevice  = self.get_physical_device(pd_id)
+
+            print("BEFORE PARSING PDEV SCHED", pdevice)
             if pdevice is None:
                 self.logger.error(LOG_UNDEFINED, xml_device.sourceline, PHYSICAL_DEVICE_STR.format(pd_id, '---'))
                 rc = False

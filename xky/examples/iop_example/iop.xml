@@ -11,20 +11,20 @@
 	</LogicalDevices>	
 	
 	<PhysicalDevices>
-		<Device Id="0" Device="CPSW" Ip="192.168.0.70" MAC="d0:39:72:74:d8:1f" TXD="32" RXD="32">
+		<Device Id="0" Device="GRSPW0" Addr="1" Mask="1" Dest="4" Clk="1" RXmax="32" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32" TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="5">
 			<PhysicalRoute Id="2" PortId="squeuing">
 				<EthHeader Ip="192.168.0.2" MAC="68:05:ca:1f:39:af" Port="14000" />
 			</PhysicalRoute>
 			<LogicalRoute Id="1" LogicalDeviceId="1">
 				<EthHeader Ip="192.168.0.2" MAC="68:05:ca:1f:39:af" Port="13000"/>
 			</LogicalRoute>
-	    </Device>		
+	        </Device>		
 	</PhysicalDevices>
 	
 	<ModuleSchedules>
 		<Schedule ScheduleIdentifier="1">
 		    <DevicesConfiguration>
-			    <Device DeviceId="0" Device="ETH0" Reads="5"/>
+			    <Device DeviceId="0" Device="GRSPW0" Reads="5"/>
 			</DevicesConfiguration>
 			<RoutesConfiguration>
 				<Route RouteId="1" Active="true"/>

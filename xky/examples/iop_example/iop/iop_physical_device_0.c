@@ -15,6 +15,9 @@
  */
 extern iop_port_t remote_ports[2];
 
+/**
+ * @brief IOP buffers
+ */
 static iop_buffer_t iop_buffers[64];
 static uint8_t iop_buffers_storage[64 * IOP_BUFFER_SIZE];
 
