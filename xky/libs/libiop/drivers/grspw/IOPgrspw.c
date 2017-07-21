@@ -108,115 +108,6 @@ static spw_user_config *defconf;
 /* Pointer to amba bus structure*/
 static amba_confarea_type *amba_bus;
 
-#ifdef SPW_DONT_BYPASS_CACHE
-#define _SPW_READ(address) (*(volatile unsigned int *)(address))
-#define _MEM_READ(address) (*(volatile unsigned char *)(address))
-#else
-
-static unsigned int _SPW_READ(void *addr) {
-	unsigned int tmp;
-	__asm__ __volatile__ (" lda [%1]1, %0 "
-							: "=r"(tmp)
-							: "r"(addr)
-						  );
-	return tmp;
-}
-
-static unsigned int _MEM_READ(void *addr) {
-	unsigned int tmp;
-	__asm__ __volatile__ (" lduba [%1]1, %0 "
-							: "=r"(tmp)
-							: "r"(addr)
-					     );
-	return tmp;        
-
-}
-#endif
-
-#define MEM_READ(addr) _MEM_READ((void *)(addr))
-#define SPW_READ(addr) _SPW_READ((void *)(addr))
-#define SPW_WRITE(addr,v) *addr=v
-
-#define SPW_REG(c,r) (c->regs->r)
-#define SPW_REG_CTRL(c) SPW_REG(c,ctrl)
-#define SPW_REG_STATUS(c) SPW_REG(c,status)
-#define SPW_REG_NODEADDR(c) SPW_REG(c,nodeaddr)
-
-#define SPW_CTRL_READ(c)      SPW_READ(&SPW_REG_CTRL(c))
-#define SPW_CTRL_WRITE(c,v)   SPW_WRITE(&SPW_REG_CTRL(c),v)
-#define SPW_STATUS_READ(c)    SPW_READ(&SPW_REG_STATUS(c))
-#define SPW_STATUS_WRITE(c,v) SPW_WRITE(&SPW_REG_STATUS(c),v)
-
-#define SPW_LINKSTATE(c) (((c) >> 21) & 0x7)
-
-#define SPW_RXBD_LENGTH 0x1ffffff
-#define SPW_RXBD_EN (1 << 25)
-#define SPW_RXBD_WR (1 << 26)
-#define SPW_RXBD_IE (1 << 27)
-
-#define SPW_RXBD_EEP (1 << 28)
-#define SPW_RXBD_EHC (1 << 29)
-#define SPW_RXBD_EDC (1 << 30)
-#define SPW_RXBD_ETR (1 << 31)
-
-#define SPW_RXBD_ERROR (SPW_RXBD_EEP | \
-                        SPW_RXBD_ETR)
-
-#define SPW_RXBD_RMAPERROR (SPW_RXBD_EHC | SPW_RXBD_EDC)
-
-#define SPW_TXBD_LENGTH 0xffffff
-
-#define SPW_TXBD_EN (1 << 12)
-#define SPW_TXBD_WR (1 << 13)
-#define SPW_TXBD_IE (1 << 14)
-#define SPW_TXBD_LE (1 << 15)
-
-#define SPW_TXBD_ERROR (SPW_TXBD_LE)
-
-#define SPW_CTRL_LINKDISABLED (1 << 0)
-#define SPW_CTRL_LINKSTART    (1 << 1)
-#define SPW_CTRL_AUTOSTART    (1 << 2)
-#define SPW_CTRL_IE           (1 << 3)
-#define SPW_CTRL_TI           (1 << 4)
-#define SPW_CTRL_PM           (1 << 5)
-#define SPW_CTRL_RESET        (1 << 6)
-#define SPW_CTRL_TQ           (1 << 8)
-#define SPW_CTRL_LI           (1 << 9)
-#define SPW_CTRL_TT           (1 << 10)
-#define SPW_CTRL_TR           (1 << 11)
-#define SPW_CTRL_RE           (1 << 16)
-#define SPW_CTRL_RD           (1 << 17)
-
-#define SPW_CTRL_RC           (1 << 29)
-#define SPW_CTRL_RX           (1 << 30)
-#define SPW_CTRL_RA           (1 << 31)
-
-#define SPW_STATUS_TO (1 << 0)
-#define SPW_STATUS_CE (1 << 1)
-#define SPW_STATUS_ER (1 << 2)
-#define SPW_STATUS_DE (1 << 3)
-#define SPW_STATUS_PE (1 << 4)
-#define SPW_STATUS_WE (1 << 6)
-#define SPW_STATUS_IA (1 << 7)
-#define SPW_STATUS_EE (1 << 8)
-
-#define SPW_DMACTRL_TXEN (1 << 0)
-#define SPW_DMACTRL_RXEN (1 << 1)
-#define SPW_DMACTRL_TXIE (1 << 2)
-#define SPW_DMACTRL_RXIE (1 << 3)
-#define SPW_DMACTRL_AI   (1 << 4)
-#define SPW_DMACTRL_PS   (1 << 5)
-#define SPW_DMACTRL_PR   (1 << 6)
-#define SPW_DMACTRL_TA   (1 << 7)
-#define SPW_DMACTRL_RA   (1 << 8)
-#define SPW_DMACTRL_AT   (1 << 9)
-#define SPW_DMACTRL_RX   (1 << 10)
-#define SPW_DMACTRL_RD   (1 << 11)
-#define SPW_DMACTRL_NS   (1 << 12)
-
-#define SPW_PREPAREMASK_TX (SPW_DMACTRL_RXEN | SPW_DMACTRL_PS | SPW_DMACTRL_TA | SPW_DMACTRL_RA | SPW_DMACTRL_RD | SPW_DMACTRL_NS)
-#define SPW_PREPAREMASK_RX (SPW_DMACTRL_TXEN | SPW_DMACTRL_PR | SPW_DMACTRL_TA | SPW_DMACTRL_RA)
-
 int spw_get_conf_size(void);
 
 
@@ -284,58 +175,6 @@ static unsigned int spw_calc_timer64(int freq_khz){
 static unsigned int spw_calc_disconnect(int freq_khz){
 	unsigned int disconnect = ((freq_khz*85+99999)/100000) - 3;
 	return disconnect & 0x3ff;
-}
-
-/**
- * @brief Allocates the available buffer memory based on the configuraion
- * @param [in] pDev device's internal structure
- * @return 0 if allocation was successful.\n -1 If there isn't enought memory
- */
-static int spw_buffer_alloc(SPW_DEV *pDev){
-	char *memend;
-	int spwsize;
-	
-	#ifndef SPW_STATIC_MEM
-		memend = get_spw_memend();
-		spwsize = get_spw_memsize();
-		
-		/*Pointer to the beginning of RX buffer memory area*/
-		pDev->ptr_rxbuf0 = (char *) get_spw_mem() + pDev->minor*spwsize;
-		
-		/*Pointer to the beginning of TX data buffer memory area*/
-		pDev->ptr_txdbuf0 = pDev->ptr_rxbuf0 + pDev->rxbufsize * pDev->rxbufcnt;
-		
-		/*Pointer to the beginning of TX header buffer memory area*/
-		pDev->ptr_txhbuf0 = pDev->ptr_txdbuf0 + pDev->txdbufsize * pDev->txbufcnt;
-		
-		if(pDev->ptr_txhbuf0 > memend){
-			return -1;
-		}
-		
-		return 0;
-		
-	#else
-		/*This needs to be better evaluated once we have the Rasta HW
-		 *TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-		 *This is here for compatilbility propouses with rasta hardware*/
-		 
-		/*Check if the size of the obtained memory area is less than required*/
-        if ( (pDev->membase + pDev->rxbufsize*pDev->rxbufcnt + pDev->txdbufsize*pDev->txbufcnt) >= pDev->memend ) {
-            return -1;
-        }
-		
-		/*Pointer to the beginning of RX buffer memory area*/
-        pDev->ptr_rxbuf0  = (char *) pDev->membase;
-		
-		/*Pointer to the beginning of TX data buffer memory area*/
-        pDev->ptr_txdbuf0 = pDev->ptr_rxbuf0 + pDev->rxbufsize * pDev->rxbufcnt;
-		
-		/*Pointer to the beginning of TX header buffer memory area*/
-        pDev->ptr_txhbuf0 = pDev->ptr_txdbuf0 + pDev->txdbufsize * pDev->txbufcnt;
-		
-        return 0;
-	#endif
-
 }
 
 /**
@@ -625,16 +464,11 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 	pDev->ptr_rxbuf0 = 0;
 	pDev->ptr_txdbuf0 = 0;
 	pDev->ptr_txhbuf0 = 0;
-					
-	#ifdef SPW_STATIC_MEM
-		SPW_CALC_MEMOFS(spw_cores,pDev->minor,&pDev->membase,&pDev->memend,&pDev->mem_bdtable);
-	#endif
 	
 	/*Allocate Descritors and data buffers*/
-	if (spw_buffer_alloc(pDev)) {
-			pprintf("NO MORE MEMORY FOR SPW!!!!!!\n");
-			return RTEMS_NO_MEMORY;	
-	}
+	setup_iop_buffers(pDev->iop_buffers,
+					pDev->iop_buffers_storage,
+					2 * pDev->txbufcnt + pDev->rxbufcnt);
 	
 	/**** Initialize Hardware and semaphores ****/
 	/*Create TX semaphore*/
@@ -1376,24 +1210,12 @@ static int spw_hw_init(SPW_DEV *pDev)
 	ctrl = SPW_CTRL_READ(pDev);
 
 	/**Each descritor table has to be 0x400 aligned and has 0x400 of size*/
-	#ifdef SPW_STATIC_MEM
-	{
-		/*Beginning of the RX descriptor table. 0x400 alignement ensured by the user*/
-        pDev->rx = (SPACEWIRE_RXBD *) pDev->mem_bdtable;
-		
-		/*Beginning of the RX descriptor table. 0x400 aligned*/
-        pDev->tx = (SPACEWIRE_RXBD *) pDev->mem_bdtable + SPACEWIRE_BDTABLE_ALIGMENT;
-	}
-	#else
-	{
-		/*Beginning of the RX descriptor table. 0x400 aligned*/
-        pDev->rx = (SPACEWIRE_RXBD *) SPW_ALIGN(&pDev->_rxtable[0], SPACEWIRE_BDTABLE_ALIGMENT);
-		
-		/*Beginning of the RX descriptor table. 0x400 aligned*/
-        pDev->tx = (SPACEWIRE_TXBD *) ((int)pDev->rx + SPACEWIRE_BDTABLE_ALIGMENT);
-	}
-	#endif
-        SPACEWIRE_DBG("hw_init [minor %i]\n", pDev->minor);
+	/*Beginning of the RX descriptor table. 0x400 alignement ensured by the user*/
+     pDev->rx = (SPACEWIRE_RXBD *) pDev->bdtable;
+	
+	/*Beginning of the TX descriptor table. 0x400 aligned*/
+     pDev->tx = (SPACEWIRE_TXBD *) pDev->bdtable + SPACEWIRE_BDTABLE_ALIGMENT;
+     SPACEWIRE_DBG("hw_init [minor %i]\n", pDev->minor);
     
 	/*Check if the RMAP sub core is present*/
 	pDev->config.is_rmap = ctrl & SPW_CTRL_RA;
