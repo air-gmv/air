@@ -201,7 +201,8 @@ void route_reply(iop_physical_device_t *pdev, iop_wrapper_t *wrapper) {
 /**
  * @brief Task that routes requests
  */
-rtems_task pre_router(rtems_task_argument arg){
+//rtems_task pre_router(rtems_task_argument arg){
+void pre_router(){
 
     iop_debug(" :: IOP - pre-router start!\n");
 
@@ -241,7 +242,7 @@ rtems_task pre_router(rtems_task_argument arg){
  *  @brief Task that routes replies
  *  Translates replies from physical to logical devices
  */
-rtems_task pos_router(rtems_task_argument arg){
+void pos_router(){
 
     iop_debug(" :: IOP - pos-router start!\n");
 
