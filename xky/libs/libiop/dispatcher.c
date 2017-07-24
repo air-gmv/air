@@ -318,7 +318,7 @@ static void process_request_port(iop_port_t *port){
  *  Since this is the first task to run in each partition release point, it 
  *  also updates the request and reply timers.
  */
-rtems_task pre_dispatcher(rtems_task_argument arg){
+void pre_dispatcher(){
 
 
     uint32_t i;
@@ -379,7 +379,7 @@ rtems_task pre_dispatcher(rtems_task_argument arg){
  *  again. In every retry a timer is incremented. When this timer reaches
  *  a user defined values, the reply is freed.
  */
-rtems_task pos_dispatcher(rtems_task_argument arg){
+void pos_dispatcher(){
 
     iop_wrapper_t *reply_wrapper;
     iop_chain_control error;
