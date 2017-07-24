@@ -178,12 +178,20 @@ static rtems_status_code iop_init_worker_tasks(void){
 
     iop_debug(" :: creating & launching worker tasks\n");
 
+    int i;
+    iop_physical_device_t devs[usr_configuration.physical_devices.length];
+    for(i =0; i < usr_configuration.physical_devices.length; i++){
+    	devs[i] = get_physical_device(i);
+    }
     for(;;)
     {
     	pre_dispatcher();
     	pre_router();
-    	dev->writer_task();
-    	dev->reader_task();
+    	/* run all the device drivers writer and reader functions */
+    	for(i = 0; i < usr_configuration.physical_devices.length; i++){
+    		devs[i]->writer_task();
+    		devs[i]->reader_task();
+    	}
     	pos_dispatcher();
     	pos_router();
 
@@ -327,7 +335,7 @@ static rtems_status_code iop_init_ports() {
 
         /* check return code */
         if (p_rc != XKY_NO_ERROR && p_rc != XKY_NO_ACTION) {
-            iop_debug("    - error %i creating port %s\n", port->name, lrc);
+            iop_debug("    - error %i creating port %s\n", p_rc, port->name);
             rc = RTEMS_INTERNAL_ERROR;
         }
     }
