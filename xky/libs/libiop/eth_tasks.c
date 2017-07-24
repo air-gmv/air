@@ -96,7 +96,7 @@ void eth_writer(){
  */
 
 
-void eth_reader(){
+void eth_reader(rtems_task_argument arg){
 
     iop_debug(" :: IOP - eth-reader start!\n");
 
