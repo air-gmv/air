@@ -123,7 +123,7 @@ uint32_t eth_validate_packet(
  *  If the user didn't request a reply then the write will be retried until the
  *  request times out.
  */
-rtems_task eth_writer(rtems_task_argument arg);
+void eth_writer();
 
 /**
  *  @brief Task that polls eth0 for new data packets
@@ -139,6 +139,6 @@ rtems_task eth_writer(rtems_task_argument arg);
  *  Failed reads are reported to FDIR
  *
  */
-rtems_task eth_reader(rtems_task_argument arg);
+void eth_reader();
 
 #endif /* __ETH_SUPPORT_H__ */
