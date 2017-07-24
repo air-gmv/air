@@ -30,7 +30,7 @@
  *  If the user didn't request a reply then the write will be retried until the
  *  request times out.
  */
-rtems_task eth_writer(rtems_task_argument arg){
+void eth_writer(){
 
     iop_debug(" :: IOP - eth-writer start!\n");
 
@@ -96,7 +96,7 @@ rtems_task eth_writer(rtems_task_argument arg){
  */
 
 
-rtems_task eth_reader(rtems_task_argument arg){
+void eth_reader(){
 
     iop_debug(" :: IOP - eth-reader start!\n");
 
