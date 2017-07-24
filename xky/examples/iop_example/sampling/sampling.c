@@ -28,6 +28,22 @@ SAMPLING_PORT_ID_TYPE SEND_PORT;
  *			outputs a simple string via a sampling port		* 
 ------------------------------------------------------------*/
 
+void error_message(RETURN_CODE_TYPE rc){
+
+	switch(rc){
+		case INVALID_CONFIG:
+			pprintf("WRITE_SAMPLING_MESSAGE error Invalid Config\n");
+		break;
+		case INVALID_PARAM:
+			pprintf("WRITE_SAMPLING_MESSAGE error Invalid Param\n");
+		break;
+		case INVALID_MODE:
+			pprintf("WRITE_SAMPLING_MESSAGE error Invalid Mode\n");
+		break;
+	}
+}
+
+
 void test(PARTITION_ID_TYPE self_id) {
 
     int i = 0;
@@ -44,7 +60,8 @@ void test(PARTITION_ID_TYPE self_id) {
 		pprintf ("Partition %d sending: %s..\n", self_id, message);
 		WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )message, 17, &rc );
 		if (NO_ERROR != rc) {
-			pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
+			//pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
+			error_message(rc);
 		}
 		
 		/*identify the string with an integer index*/
@@ -57,7 +74,6 @@ void test(PARTITION_ID_TYPE self_id) {
 		rtems_task_wake_after(0.7 * tps);
 	}
 }
-
 
 int entry_func() {
 

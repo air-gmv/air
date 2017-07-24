@@ -30,12 +30,12 @@
  *  If the user didn't request a reply then the write will be retried until the
  *  request times out.
  */
-void eth_writer(){
+void eth_writer(iop_physical_device_t *pdev){
 
     iop_debug(" :: IOP - eth-writer start!\n");
 
     /* get task physical device */
-    iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
+//    iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
 
     /* initialize error chain (packets to be re-sent) */
     iop_chain_control error;
@@ -96,12 +96,12 @@ void eth_writer(){
  */
 
 
-void eth_reader(rtems_task_argument arg){
+void eth_reader(iop_physical_device_t *pdev){
 
     iop_debug(" :: IOP - eth-reader start!\n");
 
     /* get task physical device */
-    iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
+//    iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
 
     /* initialize error chain (packets to be resent) */
     iop_chain_control error;

@@ -179,7 +179,7 @@ static rtems_status_code iop_init_worker_tasks(void){
     iop_debug(" :: creating & launching worker tasks\n");
 
     int i;
-    iop_physical_device_t devs[usr_configuration.physical_devices.length];
+    iop_physical_device_t *devs[usr_configuration.physical_devices.length];
     for(i =0; i < usr_configuration.physical_devices.length; i++){
     	devs[i] = get_physical_device(i);
     }
@@ -189,8 +189,8 @@ static rtems_status_code iop_init_worker_tasks(void){
     	pre_router();
     	/* run all the device drivers writer and reader functions */
     	for(i = 0; i < usr_configuration.physical_devices.length; i++){
-    		devs[i]->writer_task();
-    		devs[i]->reader_task();
+    		devs[i]->writer_task(devs[i]);
+    		devs[i]->reader_task(devs[i]);
     	}
     	pos_dispatcher();
     	pos_router();
