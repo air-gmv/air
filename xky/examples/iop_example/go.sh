@@ -2,7 +2,7 @@
 #make clean
 #make
 echo Copying files to remote computer...
-sshpass -p "latitudee5440" scp executable/XKYAPP.exe ngmp@83.240.244.231:~/xky/examples/iop_example/executable/CPSW.exe
+sshpass -p "latitudee5440" scp executable/XKYAPP.exe ngmp@83.240.244.231:~/xky/examples/iop_example/executable/GRSPW.exe
 #sshpass -p "latitudee5440" scp p0/p0.exe ngmp@83.240.244.231:~/xky/examples/hello_world/p0VM/p0_408.exe
 #sshpass -p "latitudee5440" scp p0/p0.num ngmp@83.240.244.231:~/xky/examples/hello_world/p0VM/p0_408.num
 echo Files copied
