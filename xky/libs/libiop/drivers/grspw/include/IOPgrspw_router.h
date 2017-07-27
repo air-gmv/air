@@ -73,6 +73,12 @@ typedef struct{
 #define ROUTER_PORTFLG_GET_CTRL	0x02
 #define ROUTER_PORTFLG_SET_STS	0x04
 #define ROUTER_PORTFLG_GET_STS	0x08
+typedef struct{
+	unsigned int flag;
+	int port;
+	unsigned int ctrl;
+	unsigned int sts;
+} router_port;
 
 typedef struct {
 	char devName[32];
