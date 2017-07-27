@@ -602,6 +602,7 @@ uint32_t greth_read(iop_device_driver_t *iop_dev, void *arg) {
     iop_wrapper_t *wrapper = (iop_wrapper_t *)arg;
     iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
     greth_softc_t *sc = (greth_softc_t *)device->dev.driver;
+    iop_debug("GRETH driver has received something and will do a read!\n");
 	
     /* check if driver was initialized */
 	if(!sc->started) {
@@ -638,7 +639,7 @@ uint32_t greth_write(iop_device_driver_t *iop_dev, void *arg) {
     iop_wrapper_t *wrapper = (iop_wrapper_t *)arg;
     iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
     greth_softc_t *sc = (greth_softc_t *)device->dev.driver;
-	
+	iop_debug("GRETH driver has received something and will do a write!\n");
 
 	if(!sc->started)
 		return RTEMS_NOT_CONFIGURED;
