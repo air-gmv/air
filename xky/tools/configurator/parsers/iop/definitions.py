@@ -58,6 +58,9 @@ ETHHEADER_IP					= 'Ip'
 ETHHEADER_MAC					= 'MAC'
 ETHHEADER_PORT					= 'Port'
 
+#SPW Header
+SPWHEADER                       = 'SpwHeader'
+SPWHEADER_ADDRESS               = 'Address'
 
 
 import utils.parser as parserutils
@@ -68,6 +71,7 @@ VALID_DEVICE_ID_TYPE	= [ parserutils.str2int, lambda x : x >= 0 ]
 VALID_PORT			    = [ parserutils.str2int, lambda x : x > 0]
 VALID_IP			    = [ lambda x: str(x).strip().split('.'), lambda x: len(x) == 4 ]
 VALID_MAC			    = [ lambda x: str(x).strip().split(':'), lambda x: len(x) == 6 ]
+VALID_SPW_ADDRESS       = [ parserutils.str2intList, lambda x: 0 < len(x) < 32]
 VALID_FLOAT_TYPE		= [ parserutils.str2float, lambda x : x >= 0 ]
 VALID_DECIMAL_TYPE		= [ parserutils.str2int, lambda x : x >= 0 ]
 VALID_BOOLEAN_TYPE		= [ parserutils.str2bool, lambda x : isinstance(x, bool) ]
@@ -77,6 +81,7 @@ VALID_DIRECTION_TYPE 	= [ str, lambda x : x in [ REMOTE_PORT_SRC, REMOTE_PORT_DS
 LOGICAL_DEVICE_STR      = 'Logical Device (Id: {0}, Name: {1})'
 PHYSICAL_DEVICE_STR     = 'Physical Device (Id: {0}, Device: {1})'
 ETH_HEADER_STR          = 'Ethernet Header (Mac: {0}, Ip: {1}, Port: {2})'
+SPW_HEADER_STR          = 'SpaceWire Header (Address: {0})'
 REMOTE_PORT_STR         = 'Remote Port (Name: {0})'
 ROUTE_STR               = 'Route (Id: {0})'
 ROUTE_PHYSICAL_STR      = 'Physical Route (Id: {0})'
@@ -222,6 +227,28 @@ class EthHeader(object):
 
     def __str__(self):
         return ETH_HEADER_STR.format(':'.join(self.mac), '.'.join(self.ip), self.port)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def details(self):
+        return self.__str__()
+        
+## SpaceWire Header
+class SpwHeader(object):
+
+    def __init__(self):
+        self.address
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and \
+               self.address == other.address
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __str__(self):
+        return SPW_HEADER_STR.format(self.address)
 
     def __repr__(self):
         return self.__str__()

@@ -314,6 +314,11 @@ class IOParser(object):
             xml_header = xml.parse_tag(ETHHEADER, 1, 1, self.logger)
             if self.logger.check_errors(): return None
             return self.parse_eth_header(xml_header)
+            
+        elif pdevice.type == SPW:
+            xml_header = xml.parse_tag(SPWHEADER, 1, 1, self.logger)
+            if self.logger.check_errors(): return None
+            return self.parse_spw_header(xml_header)
 
         # invalid header
         return None
@@ -336,7 +341,22 @@ class IOParser(object):
         if self.logger.check_errors(): return False
         return header
 
+    ## Parse SpaceWire Header
+    # @param self object pointer
+    # @param xml SpaceWire Header xml node
+    def parse_spw_header(self, xml):
 
+        # clear previous errors and warnings
+        self.logger.clear_errors(3)
+
+        # parse attributes
+        header = SpwHeader()
+        header.address = xml.parse_attr(SPWHEADER_ADDRESS, VALID_SPW_ADDRESS, True, self.logger)
+
+        # sanity check
+        if self.logger.check_errors(): return False
+        return header
+        
     def parse_schedule(self, xml):
 
         # clear previous errors and warnings
