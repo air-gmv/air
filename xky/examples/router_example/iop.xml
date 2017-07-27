@@ -18,12 +18,16 @@
 			<LogicalRoute Id="10" LogicalDeviceId="3">
 				<SpwHeader Address="12"/>
 			</LogicalRoute>
-			<PhysicalRoute Id="11" PortId="1"/>
+			<PhysicalRoute Id="11" PortId="1">
+				<SpwHeader Address="1"/>
+			</PhysicalRoute>
 	    </Device>
 		<Device Id="2" Device="GRSPW2" Addr="2" Mask="1" Dest="4" Clk="1" 
 				RXmax="32" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32" 
 				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="5">
 			<PhysicalRoute Id="20" PortId="2"/>
+				<SpwHeader Address="2"/>
+			</PhysicalRoute>
 	</PhysicalDevices>
 	
 	<ModuleSchedules>
