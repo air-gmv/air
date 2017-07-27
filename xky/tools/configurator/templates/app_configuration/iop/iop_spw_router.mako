@@ -23,7 +23,7 @@
 #include <routing_table.h>
 
 /** @brief  GRSPW control structure*/
-static router_priv spwrtr_driver = ${'\\'}
+static router_priv_t spwrtr_driver = ${'\\'}
 {
 	/* Router tables */
 	.routes = rtr_routes,
