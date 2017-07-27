@@ -5,18 +5,34 @@
  * @brief Physical devices
  */
 extern iop_physical_device_t physical_device_0;
+extern iop_physical_device_t physical_device_1;
+extern iop_physical_device_t physical_device_2;
+extern iop_physical_device_t physical_device_3;
+extern iop_physical_device_t physical_device_4;
 
 /**
  * @brief Routes Headers
  */
-static iop_header_t route_header[1] = \
+static iop_header_t route_header[4] = \
 {
     {
-        .eth_header = {
-            .dst_ip      = { 192,168,0,2},
-            .dst_mac     = { 0x68,0x05,0xca,0x1f,0x39,0xaf},
-            .dst_port    = HTONS(13000),
-            .src_port    = HTONS(13000)
+        .spw_header = {
+            .hdr         = { 0x01,0x0A }
+        }
+    },
+    {
+        .spw_header = {
+            .hdr         = {  }
+        }
+    },
+    {
+        .spw_header = {
+            .hdr         = {  }
+        }
+    },
+    {
+        .spw_header = {
+            .hdr         = {  }
         }
     }
 };
@@ -26,18 +42,39 @@ static iop_header_t route_header[1] = \
  */
 static uint32_t route_schedule_0[1] = \
     { 1 };
+static uint32_t route_schedule_1[1] = \
+    { 1 };
+static uint32_t route_schedule_2[1] = \
+    { 1 };
+static uint32_t route_schedule_3[1] = \
+    { 1 };
 
 
 
 /**
  * @brief Routes Configuration
  */
-static iop_logical_route_t logical_routes[1] = \
+static iop_logical_route_t logical_routes[4] = \
 {
     {
         .schedule   = route_schedule_0,
         .header     = &route_header[0],
-        .device     = &physical_device_0
+        .device     = &physical_device_1
+    },
+    {
+        .schedule   = route_schedule_1,
+        .header     = &route_header[1],
+        .device     = &physical_device_2
+    },
+    {
+        .schedule   = route_schedule_2,
+        .header     = &route_header[2],
+        .device     = &physical_device_3
+    },
+    {
+        .schedule   = route_schedule_3,
+        .header     = &route_header[3],
+        .device     = &physical_device_4
     }
 };
 
@@ -47,7 +84,7 @@ static iop_logical_route_t logical_routes[1] = \
 iop_logical_device_t logical_device_0 = \
 {
     .routes = {
-        .length     = 1,
+        .length     = 4,
         .elements   = logical_routes
     },
 };
