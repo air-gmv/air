@@ -4,7 +4,7 @@
  *  COPYRIGHT (c) 2011.
  *  GMV-SKYSOFT 
  * 
- * @author Cl�udio Silva
+ * @author Cláudio Silva
  *
  * @brief IO Partition initialization procedures
  *
@@ -373,9 +373,10 @@ rtems_status_code IOPinit() {
 	}
 	
 	/* initialize IOP tasks*/
-	if(iop_init_worker_tasks() != RTEMS_SUCCESSFUL){
-		iop_raise_error(CANT_CREATE_TASK);
-	}
+//	if(iop_init_worker_tasks() != RTEMS_SUCCESSFUL){
+//		iop_raise_error(CANT_CREATE_TASK);
+//	}
+	iop_init_worker_tasks();
 
 	return RTEMS_SUCCESSFUL;
 }
