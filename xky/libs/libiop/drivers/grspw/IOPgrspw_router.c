@@ -23,6 +23,19 @@
 #define REG_READ(adr) (*(volatile unsigned int *)(adr))
 #define REG_WRITE(adr, value) (*(volatile unsigned int *)(adr) = (value))
 
+static void router_hwinfo(router_priv_t *priv,	struct router_hw_info *hwinfo);
+static int router_config_set(router_priv_t *priv, router_config_t *cfg);
+static int router_config_read(router_priv_t *priv, router_config_t *cfg);
+static int router_routes_set(router_priv_t *priv, router_routes *routes);
+static int router_routes_read(router_priv_t *priv, router_routes *routes);
+static int router_ps_set(router_priv_t *priv, router_ps *ps);
+static int router_ps_read(router_priv_t *priv, router_ps *ps);
+static int router_we_set(router_priv_t *priv, int we);
+static int router_port_ctrl(router_priv_t *priv, router_port *port);
+static int router_cfgsts_set(router_priv_t *priv, unsigned int cfgsts);
+static int router_cfgsts_read(router_priv_t *priv, unsigned int *cfgsts);
+static int router_tc_read(router_priv_t *priv, unsigned int *tc);
+
 /* SpaceWire registry fields */
 struct router_regs {
 	unsigned int resv1;		/* 0x000 */
@@ -49,7 +62,7 @@ struct router_regs {
 	unsigned int pkti[31];		/* 0xD84 */
 };
 
-static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
+rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
 	int device_found = 0;
 	
@@ -103,7 +116,7 @@ static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void 
 	return RTEMS_SUCCESSFUL;
 }
 
-static rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
+rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
 {	
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
 	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
@@ -117,7 +130,7 @@ static rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
 	return RTEMS_SUCCESSFUL;
 }
 
-static rtems_device_driver router_close(iop_device_driver_t *iop_dev, void *arg)
+rtems_device_driver router_close(iop_device_driver_t *iop_dev, void *arg)
 {
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
 	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
@@ -294,7 +307,7 @@ static int router_tc_read(router_priv_t *priv, unsigned int *tc)
 	return 0;
 }
 
-//static rtems_device_driver router_control(
+//rtems_device_driver router_control(
 //	rtems_device_major_number major,
 //	rtems_device_minor_number minor,
 //	void                    * arg
