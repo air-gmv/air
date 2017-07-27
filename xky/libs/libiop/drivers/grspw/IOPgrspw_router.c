@@ -155,7 +155,7 @@ static int router_config_set(
 	/* Write Timer Reload Register */
 	if ( cfg->flags & ROUTER_FLG_TRLD ) {
 		for (i=0; i<=priv->nports; i++)
-			REG_WRITE(&priv->regs->treload[i], priv->timer_reload[i]);
+			REG_WRITE(&priv->regs->treload[i], priv->timer_reload->timeout[i]);
 	}
 
 	return 0;
@@ -172,7 +172,7 @@ static int router_config_read(
 	cfg->idiv = REG_READ(&priv->regs->idiv) & 0xff;
 	cfg->timer_prescaler = REG_READ(&priv->regs->tprescaler);
 	for (i=0; i<=priv->nports; i++)
-		cfg->timer_reload[i] = REG_READ(&priv->regs->treload[i]);
+		priv->timer_reload->timeout[i] = REG_READ(&priv->regs->treload[i]);
 
 	return 0;
 }

@@ -108,6 +108,7 @@ struct router_ps rtr_ps =
 
 struct port_timer ps_timer =
 {
+	.timeout = 
 	{
 		0x0000010000, 0x0000010000, 0x0000010000, 0x0000010000,  /* Port timeout for ports 0-31 */
 		0x0000010000, 0x0000010000, 0x0000010000, 0x0000010000,
@@ -118,5 +119,6 @@ struct port_timer ps_timer =
 		0x0000010000, 0x0000010000, 0x0000010000, 0x0000010000,
 		0x0000010000, 0x0000010000, 0x0000010000, 0x0000010000,
 	}
+}
 
 #endif

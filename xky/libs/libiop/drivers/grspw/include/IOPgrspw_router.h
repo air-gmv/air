@@ -63,6 +63,11 @@ struct router_ps {
 	unsigned int ps_logical[224]; /* Port setup for locgical addresses 32-255 */
 };
 
+/* Physical ports timeout */
+struct port_timer {
+	unsigned int timeout[32];
+};
+
 /* Set/Get Port Control/Status */
 #define ROUTER_PORTFLG_SET_CTRL	0x01
 #define ROUTER_PORTFLG_GET_CTRL	0x02
