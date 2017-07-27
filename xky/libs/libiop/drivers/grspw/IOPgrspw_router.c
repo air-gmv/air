@@ -55,25 +55,10 @@ struct router_priv {
 	int open;
 	struct router_hw_info hwinfo;
 	int nports;
-	struct router_routes *routes_p;
-	struct router_ps *ps_p;
+	struct router_routes *routes;
+	struct router_ps *ps;
+	struct port_timer *timer_reload;
 };
-
-#define ROUTER_DRIVER_TABLE_ENTRY \
-  { router_initialize, \
-    router_open, \
-    router_close, \
-    NULL, \
-    NULL, \
-    router_control }
-
-static void router_hwinfo(
-	struct router_priv *priv,
-	struct router_hw_info *hwinfo);
-
-static rtems_driver_address_table router_driver = ROUTER_DRIVER_TABLE_ENTRY;
-static int router_driver_io_registered = 0;
-static rtems_device_major_number router_driver_io_major = 0;
 
 static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
@@ -113,7 +98,7 @@ static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void 
 		return RTEMS_INTERNAL_ERROR;
 	}
 	
-	if ( router_ps_set(priv, struct priv->ps) ) {
+	if ( router_ps_set(priv, priv->ps) ) {
 		return RTEMS_INTERNAL_ERROR;
 	}
 	

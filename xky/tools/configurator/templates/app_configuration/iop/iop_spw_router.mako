@@ -42,8 +42,8 @@ static iop_spw_router_device_t device_configuration = ${'\\'}
         .driver         = (void *)&spwrtr_driver,
         .init           = router_initialize,
         .open           = router_open,
-//        .read           = spw_read,
-//        .write          = spw_write,
+        .read           = NULL,
+        .write          = NULL,
         .close          = router_close,
     },
 
