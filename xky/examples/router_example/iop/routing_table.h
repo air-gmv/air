@@ -13,7 +13,7 @@
 #ifndef __RTRTBL_H__
 #define __RTRTBL_H__
 
-struct router_routes rtr_routes =
+static struct router_routes rtr_routes =
 {
 	.route =
 	{
@@ -54,7 +54,7 @@ struct router_routes rtr_routes =
 	}
 };
 
-struct router_ps rtr_ps =
+static struct router_ps rtr_ps =
 {
 	.ps = /* Loopback... */
 	{
@@ -106,9 +106,9 @@ struct router_ps rtr_ps =
 	},
 };
 
-struct port_timer ps_timer =
+static struct port_timer ps_timer =
 {
-	.timeout = 
+	.timeout =
 	{
 		0x0000010000, 0x0000010000, 0x0000010000, 0x0000010000,  /* Port timeout for ports 0-31 */
 		0x0000010000, 0x0000010000, 0x0000010000, 0x0000010000,
