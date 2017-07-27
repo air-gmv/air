@@ -212,6 +212,12 @@ static void process_remote_port(iop_port_t *port){
             if (port->type == XKY_SAMPLING_PORT) {
                 rc = XKY_NOT_AVAILABLE;
             }
+			
+			int j;
+			iop_debug("MESSAGE: ");
+			for ( j=0; j<size; j++){
+				iop_debug("%x ", *(message+j));
+			} iop_debug("\n");
 
         } else {
 

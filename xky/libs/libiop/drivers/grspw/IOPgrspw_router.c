@@ -23,6 +23,19 @@
 #define REG_READ(adr) (*(volatile unsigned int *)(adr))
 #define REG_WRITE(adr, value) (*(volatile unsigned int *)(adr) = (value))
 
+static void router_hwinfo(router_priv_t *priv,	struct router_hw_info *hwinfo);
+static int router_config_set(router_priv_t *priv, router_config_t *cfg);
+static int router_config_read(router_priv_t *priv, router_config_t *cfg);
+static int router_routes_set(router_priv_t *priv, router_routes *routes);
+static int router_routes_read(router_priv_t *priv, router_routes *routes);
+static int router_ps_set(router_priv_t *priv, router_ps *ps);
+static int router_ps_read(router_priv_t *priv, router_ps *ps);
+static int router_we_set(router_priv_t *priv, int we);
+static int router_port_ctrl(router_priv_t *priv, router_port *port);
+static int router_cfgsts_set(router_priv_t *priv, unsigned int cfgsts);
+static int router_cfgsts_read(router_priv_t *priv, unsigned int *cfgsts);
+static int router_tc_read(router_priv_t *priv, unsigned int *tc);
+
 /* SpaceWire registry fields */
 struct router_regs {
 	unsigned int resv1;		/* 0x000 */
@@ -49,11 +62,11 @@ struct router_regs {
 	unsigned int pkti[31];		/* 0xD84 */
 };
 
-static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
+rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
 	int device_found = 0;
 	
-	amba_apb_device apbgreth;
+	amba_ahb_device ahbspwrtr;
 	
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
 	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
@@ -63,17 +76,17 @@ static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void 
 
 	router_config_t *cfg = (router_config_t *) &device->flags;
 	
-	memset(&apbgreth, 0, sizeof(amba_apb_device));
+	memset(&ahbspwrtr, 0, sizeof(amba_ahb_device));
 	
 	/* Scan for MAC AHB slave interface */
-	device_found = amba_find_apbslv(&amba_conf, VENDOR_GAISLER, GAISLER_GRSPW_ROUTER, &apbgreth);
+	device_found = amba_find_ahbslv(&amba_conf, VENDOR_GAISLER, GAISLER_SPW_ROUTER, &ahbspwrtr);
 									
 	if (device_found != 1){
-	    iop_debug("    GRETH device not found...\n");
+	    iop_debug("    SPWRTR device not found...\n");
 		return RTEMS_INTERNAL_ERROR;
 	}
 	
-	priv->regs = (struct router_regs *)apbgreth.start;
+	priv->regs = (struct router_regs *)ahbspwrtr.start;
 
 	/* Register character device in registered region */
 	router_hwinfo(priv, &priv->hwinfo);
@@ -103,13 +116,28 @@ static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void 
 	return RTEMS_SUCCESSFUL;
 }
 
-static rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
+rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
 {	
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
 	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
 
+	int i;
+	
 	if ( !priv || priv->open ) {
 		return RTEMS_RESOURCE_IN_USE;
+	}
+	
+	router_config_t *cfg;
+	router_config_read(priv, cfg);
+	
+	iop_debug("   Printing router config:  ");
+	for(i = 0; i < sizeof(router_config_t); i++) {
+		iop_debug("%x\n", *(cfg + i));
+	}
+	
+	iop_debug("   Printing router hwinfo:  ");
+	for(i = 0; i < sizeof(struct router_hw_info); i++) {
+		iop_debug("%x\n", *(&(priv->hwinfo) + i));
 	}
 	
 	priv->open = 1;
@@ -117,7 +145,7 @@ static rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
 	return RTEMS_SUCCESSFUL;
 }
 
-static rtems_device_driver router_close(iop_device_driver_t *iop_dev, void *arg)
+rtems_device_driver router_close(iop_device_driver_t *iop_dev, void *arg)
 {
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
 	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
@@ -160,7 +188,7 @@ static int router_config_set(
 
 	/* Write only configuration bits in Config register */
 	if ( cfg->flags & ROUTER_FLG_CFG ) {
-		REG_WRITE(&priv->regs->cfgsts, cfg->config & ~0x4);
+		REG_WRITE(&priv->regs->cfgsts, (cfg->config << 2));
 	}
 
 	/* Write Instance ID to Version Register */
@@ -294,7 +322,7 @@ static int router_tc_read(router_priv_t *priv, unsigned int *tc)
 	return 0;
 }
 
-//static rtems_device_driver router_control(
+//rtems_device_driver router_control(
 //	rtems_device_major_number major,
 //	rtems_device_minor_number minor,
 //	void                    * arg
@@ -408,3 +436,6 @@ static int router_tc_read(router_priv_t *priv, unsigned int *tc)
 //
 //	return 0;
 //}
+
+rtems_device_driver router_write(iop_device_driver_t *iop_dev, void *arg){}
+rtems_device_driver router_read(iop_device_driver_t *iop_dev, void *arg){}
