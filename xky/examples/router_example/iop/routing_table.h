@@ -9,11 +9,13 @@
  *
  *
  */
-
+ 
 #ifndef __RTRTBL_H__
 #define __RTRTBL_H__
 
-static router_routes rtr_routes =
+#include <IOPgrspw_router.h>
+
+static router_routes routes =
 {
 	.route =
 	{
@@ -54,7 +56,7 @@ static router_routes rtr_routes =
 	}
 };
 
-static router_ps rtr_ps =
+static router_ps ps =
 {
 	.ps = /* Loopback... */
 	{
@@ -106,7 +108,7 @@ static router_ps rtr_ps =
 	},
 };
 
-static port_timer ps_timer =
+static port_timer timer_reload =
 {
 	.timeout =
 	{
