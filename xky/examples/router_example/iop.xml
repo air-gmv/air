@@ -2,7 +2,7 @@
 <IOPartition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="iop.xsd" version="1.0" date="2013-06-05" name="iop_example" request_number="64" time_to_live="5">
 	
 	<RemotePorts>
-		<Port Name="dsampling" LogicalDeviceId="1"/>
+		<Port Name="dsampling" LogicalDeviceId="3"/>
 		<Port Name="squeuing" />
 	</RemotePorts>	
 	
@@ -11,17 +11,19 @@
 	</LogicalDevices>	
 	
 	<PhysicalDevices>
-		<Device Id="0" Device="SPWRTR" Flags="11111" Config="10000" Idd="1" Idiv="1"/>
+		<Device Id="0" Device="SPWRTR" Flags="11111" Config="10000" Idd="1" Idiv="1">
 		<Device Id="1" Device="GRSPW1" Addr="1" Mask="1" Dest="4" Clk="1" 
 				RXmax="32" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32" 
 				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="5">
-			<LogicalRoute Id="1" LogicalDeviceId="3">
+			<LogicalRoute Id="10" LogicalDeviceId="3">
 				<SpwHeader Address="12"/>
 			</LogicalRoute>
+			<PhysicalRoute Id="11" PortId="1"/>
 	    </Device>
 		<Device Id="2" Device="GRSPW2" Addr="2" Mask="1" Dest="4" Clk="1" 
 				RXmax="32" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32" 
-				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="5"/>
+				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="5">
+			<PhysicalRoute Id="20" PortId="2"/>
 	</PhysicalDevices>
 	
 	<ModuleSchedules>
@@ -32,7 +34,9 @@
 			    <Device DeviceId="2" Reads="5"/>
 			</DevicesConfiguration>
 			<RoutesConfiguration>
-				<Route RouteId="1" Active="true"/>
+				<Route RouteId="10" Active="true"/>
+				<Route RouteId="11" Active="false"/>
+				<Route RouteId="20" Active="false"/>
 			</RoutesConfiguration>
 		</Schedule>
 	</ModuleSchedules>
