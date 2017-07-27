@@ -33,10 +33,18 @@ GRSPW_WAIT				= 'Wait'
 GRSPW_TIMEOUT			= 'Timeout'
 GRSPW_READS             = 'Reads'
 
+SPWRTR_FLAGS            = 'Flags'
+SPWRTR_CONFIG           = 'Config'
+SPWRTR_IID              = 'Idd'
+SPWRTR_IDIV             = 'Idiv'
+
 VALID_EN                    = [ parserutils.str2int, lambda x : 0 <= x <= 1 ]
-VALID_XD	            = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
-VALID_READS	            = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
-VALID_TIMER                 = [ parserutils.str2int, lambda x : 0 <= x <= 50 ] 
+VALID_XD	                = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
+VALID_READS	                = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
+VALID_TIMER                 = [ parserutils.str2int, lambda x : 0 <= x <= 50 ]
+VALID_MASK                  = [ lambda x : len(x) <= 32 ]
+VALID_SPW                   = [ lambda x : str(x).split(), lambda x : 0 <= int(x) <= 9 ]
+
 
 # GRETH physical device setup
 class GRETHPhySetup(object):
@@ -99,6 +107,29 @@ class GRSPWSchSetup(object):
     def details(self):
         return 'GRSPW Schedule Setup (Reads - {0})'.format(self.reads)
 
+# SPWRTR physical device setup
+class SPWRTRPhySetup(object):
+
+    def __init__(self):
+        self.flags  = 0
+        self.config = 0
+        self.iid    = 0
+        self.idiv   = 0
+
+    def details(self):
+        return 'SPWRTR Physical Device Setup (Flags: {0} Config: {1} IID: {2} IDIV: {3})'\
+            .format(self.flags, self.config, self.iid, self.idiv)
+
+# SPWRTR Schedule device setup
+class SPWRTRSchSetup(object):
+
+    def __init__(self):
+        self.device = None
+        self.reads  = ''            # number of reads per period
+
+    def details(self):
+        return 'SPWRTR Schedule Setup (Reads - {0})'.format(self.reads)
+
 ## Greth physical device setup
 # @param iop_parser IOP parser object
 # @param xml XML setup node
@@ -151,8 +182,8 @@ def phy_grspw(iop_parser, xml, pdevice):
 
     # parse setup
     setup               = GRSPWPhySetup()
-    setup.nodeaddr      = xml.parse_attr(GRSPW_ADDR, VALID_XD, True, iop_parser.logger)
-    setup.nodemask      = xml.parse_attr(GRSPW_MASK, VALID_XD, True, iop_parser.logger)
+    setup.nodeaddr      = xml.parse_attr(GRSPW_ADDR, VALID_SPW, True, iop_parser.logger)
+    setup.nodemask      = xml.parse_attr(GRSPW_MASK, VALID_MASK, True, iop_parser.logger)
     setup.destkey       = xml.parse_attr(GRSPW_DEST, VALID_XD, True, iop_parser.logger)
     setup.clkdiv        = xml.parse_attr(GRSPW_CLK, VALID_XD, True, iop_parser.logger)
     setup.rxmaxlen      = xml.parse_attr(GRSPW_RXMAX, VALID_XD, True, iop_parser.logger)
@@ -185,6 +216,47 @@ def sch_grspw(iop_parser, xml, pdevice):
 
     # parse setup
     setup       = GRSPWSchSetup()
+    setup.reads = xml.parse_attr(GRSPW_READS, VALID_READS, True, iop_parser.logger)
+
+    # sanity check
+    if iop_parser.logger.check_errors(): return None
+
+    # parse complete
+    setup.device = pdevice
+    return setup
+    
+## SPWRTR physical device setup
+# @param iop_parser IOP parser object
+# @param xml XML setup node
+# @param pdevice current physical device
+def phy_spwrtr(iop_parser, xml, pdevice):
+
+    # clear previous errors and warnings
+    iop_parser.logger.clear_errors(0)
+
+    # parse setup
+    setup               = SPWRTRPhySetup()
+    setup.flags         = xml.parse_attr(SPWRTR_FLAGS, VALID_MASK, True, iop_parser.logger)
+    setup.config        = xml.parse_attr(SPWRTR_CONFIG, VALID_MASK, True, iop_parser.logger)
+    setup.iid           = xml.parse_attr(SPWRTR_IID, VALID_XD, True, iop_parser.logger)
+    setup.idiv          = xml.parse_attr(SPWRTR_IDIV, VALID_XD, True, iop_parser.logger)
+
+    # sanity check
+    if iop_parser.logger.check_errors(): return False
+    pdevice.setup = setup
+    return True
+
+## SPWRTR schedule device setup
+# @param iop_parser IOP parser object
+# @param xml XML setup node
+# @param pdevice current physical device
+def sch_spwrtr(iop_parser, xml, pdevice):
+
+    # clear previous errors and warnings
+    iop_parser.logger.clear_errors(0)
+
+    # parse setup
+    setup       = SPWRTRSchSetup()
     setup.reads = xml.parse_attr(GRSPW_READS, VALID_READS, True, iop_parser.logger)
 
     # sanity check
