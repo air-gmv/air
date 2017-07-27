@@ -47,6 +47,11 @@ typedef struct {
 typedef struct {
 	
 	iop_device_driver_t dev;
+	unsigned int flags;
+	unsigned int config;
+	unsigned int iid;
+	unsigned int idiv;
+
 } iop_spw_router_device_t;
 
 /**

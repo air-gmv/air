@@ -67,7 +67,7 @@ static iop_spw_device_t device_configuration = ${'\\'}
         .close          = spw_close,
     },
 
-    /* ethernet??? configuration */
+    /* spacewire configuration */
 	.nodeaddr		= ${device.setup.nodeaddr},
 	.nodemask		= ${device.setup.nodemask},
 	.destkey		= ${device.setup.destkey},
