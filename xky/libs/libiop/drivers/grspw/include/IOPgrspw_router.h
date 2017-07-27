@@ -155,28 +155,28 @@ static rtems_device_driver router_close(iop_device_driver_t *iop_dev, void *arg)
 
 static rtems_device_driver router_control(iop_device_driver_t *iop_dev, void *arg);
 
-static void router_hwinfo(struct router_priv *priv,	struct router_hw_info *hwinfo);
+static void router_hwinfo(router_priv_t *priv,	struct router_hw_info *hwinfo);
 
-static int router_config_set(struct router_priv *priv, struct router_config *cfg);
+static int router_config_set(router_priv_t *priv, struct router_config *cfg);
 
-static int router_config_read(struct router_priv *priv, struct router_config *cfg);
+static int router_config_read(router_priv_t *priv, struct router_config *cfg);
 
-static int router_routes_set(struct router_priv *priv, struct router_routes *routes);
+static int router_routes_set(router_priv_t *priv, struct router_routes *routes);
 
-static int router_routes_read(struct router_priv *priv, struct router_routes *routes);
+static int router_routes_read(router_priv_t *priv, struct router_routes *routes);
 
-static int router_ps_set(struct router_priv *priv, struct router_ps *ps);
+static int router_ps_set(router_priv_t *priv, struct router_ps *ps);
 
-static int router_ps_read(struct router_priv *priv, struct router_ps *ps);
+static int router_ps_read(router_priv_t *priv, struct router_ps *ps);
 
-static int router_we_set(struct router_priv *priv, int we);
+static int router_we_set(router_priv_t *priv, int we);
 
-static int router_port_ctrl(struct router_priv *priv, struct router_port *port);
+static int router_port_ctrl(router_priv_t *priv, struct router_port *port);
 
-static int router_cfgsts_set(struct router_priv *priv, unsigned int cfgsts);
+static int router_cfgsts_set(router_priv_t *priv, unsigned int cfgsts);
 
-static int router_cfgsts_read(struct router_priv *priv, unsigned int *cfgsts);
+static int router_cfgsts_read(router_priv_t *priv, unsigned int *cfgsts);
 
-static int router_tc_read(struct router_priv *priv, unsigned int *tc);
+static int router_tc_read(router_priv_t *priv, unsigned int *tc);
 
 #endif
