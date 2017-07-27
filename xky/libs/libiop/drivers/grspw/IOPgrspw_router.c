@@ -24,12 +24,7 @@
 #define REG_WRITE(adr, value) (*(volatile unsigned int *)(adr) = (value))
 
 /* Set/Get Port Control/Status */
-struct router_port {
-	unsigned int flag;
-	int port;
-	unsigned int ctrl;
-	unsigned int sts;
-};
+router_port router_port;
 
 /* SpaceWire registry fields */
 struct router_regs {
@@ -206,14 +201,14 @@ static int router_config_read(
 	cfg->idiv = REG_READ(&priv->regs->idiv) & 0xff;
 	cfg->timer_prescaler = REG_READ(&priv->regs->tprescaler);
 	for (i=0; i<=priv->nports; i++)
-		priv->timer_reload->timeout[i] = REG_READ(&priv->regs->treload[i]);
+		priv->timer_reload.timeout[i] = REG_READ(&priv->regs->treload[i]);
 
 	return 0;
 }
 
 static int router_routes_set(
 	router_priv_t *priv,
-	struct router_routes *routes)
+	router_routes *routes)
 {
 	int i;
 	for (i=0; i<224; i++)
@@ -223,7 +218,7 @@ static int router_routes_set(
 
 static int router_routes_read(
 	router_priv_t *priv,
-	struct router_routes *routes)
+	router_routes *routes)
 {
 	int i;
 	for (i=0; i<224; i++)
@@ -231,7 +226,7 @@ static int router_routes_read(
 	return 0;
 }
 
-static int router_ps_set(router_priv_t *priv, struct router_ps *ps)
+static int router_ps_set(router_priv_t *priv, router_ps *ps)
 {
 	int i;
 	unsigned int *p = &ps->ps[0];
@@ -240,7 +235,7 @@ static int router_ps_set(router_priv_t *priv, struct router_ps *ps)
 	return 0;
 }
 
-static int router_ps_read(router_priv_t *priv, struct router_ps *ps)
+static int router_ps_read(router_priv_t *priv, router_ps *ps)
 {
 	int i;
 	unsigned int *p = &ps->ps[0];
@@ -256,7 +251,7 @@ static int router_we_set(router_priv_t *priv, int we)
 	return 0;
 }
 
-static int router_port_ctrl(router_priv_t *priv, struct router_port *port)
+static int router_port_ctrl(router_priv_t *priv, router_port *port)
 {
 	unsigned int ctrl, sts;
 
@@ -348,13 +343,13 @@ static int router_tc_read(router_priv_t *priv, unsigned int *tc)
 //	/* Routes */
 //	case GRSPWR_IOCTL_ROUTES_SET:
 //	{
-//		struct router_routes *routes = argp;
+//		router_routes *routes = argp;
 //		return router_routes_set(priv, routes);
 //	}
 //
 //	case GRSPWR_IOCTL_ROUTES_GET:
 //	{
-//		struct router_routes *routes = argp;
+//		router_routes *routes = argp;
 //		router_routes_read(priv, routes);
 //		break;
 //	}
@@ -362,13 +357,13 @@ static int router_tc_read(router_priv_t *priv, unsigned int *tc)
 //	/* Port Setup */
 //	case GRSPWR_IOCTL_PS_SET:
 //	{
-//		struct router_ps *ps = argp;
+//		router_ps *ps = argp;
 //		return router_ps_set(priv, ps);
 //	}
 //
 //	case GRSPWR_IOCTL_PS_GET:
 //	{
-//		struct router_ps *ps = argp;
+//		router_ps *ps = argp;
 //		router_ps_read(priv, ps);
 //		break;
 //	}
