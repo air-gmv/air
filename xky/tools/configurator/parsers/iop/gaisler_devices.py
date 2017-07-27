@@ -42,8 +42,8 @@ VALID_EN                    = [ parserutils.str2int, lambda x : 0 <= x <= 1 ]
 VALID_XD	                = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
 VALID_READS	                = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
 VALID_TIMER                 = [ parserutils.str2int, lambda x : 0 <= x <= 50 ]
-VALID_MASK                  = [ parserutils.str2int , lambda x : len(str(x)) <= 32 ]
-VALID_SPW                   = [ lambda x : str(x).split(), lambda x : 0 <= int(x) <= 9 ]
+VALID_MASK                  = [ parserutils.str2int, lambda x : len(str(x)) <= 32 ]
+VALID_SPW                   = [ parserutils.str2int, lambda x : 0 <= x <= 999999 ]
 
 
 # GRETH physical device setup
