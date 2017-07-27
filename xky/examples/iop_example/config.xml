@@ -12,7 +12,7 @@
         <Libs>LIBXKY; LIBIOP; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
-        <Memory Size="0x100000" />
+        <Memory Size="0x400000" />
         <Permissions>
           CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
         </Permissions>
@@ -28,7 +28,7 @@
         <Libs>LIBXKY; IMASPEX; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
-        <Memory Size="0x100000" />
+        <Memory Size="0x400000" />
         <Permissions>
             CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
         </Permissions>
@@ -44,7 +44,7 @@
         <Libs>LIBXKY; IMASPEX; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
-        <Memory Size="0x100000" />
+        <Memory Size="0x400000" ></Memory>
         <Permissions>
           CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
         </Permissions>
@@ -96,5 +96,5 @@
   </Connection_Table>
   
   <!-- Module configuration -->
-  <XKY_Configuration TicksPerSecond="200" RequiredCores="1"/>
+  <XKY_Configuration TicksPerSecond="1000" RequiredCores="1"/>
 </ARINC_653_Module>
