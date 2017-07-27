@@ -18,13 +18,20 @@
  * ============================================================================
  */
 #include <iop.h>
-#include <iop_grspw.h>
+#include <IOPgrspw_router.h>
 #include <spw_support.h>
+#include <routing_table.h>
 
 ${iop_template.RemotePortList(iop_configuration)}\
 
 /** @brief  GRSPW control structure*/
-static router_priv grspw_router_driver = ${'\\'}{};
+static router_priv spwrtr_driver = ${'\\'}
+{
+	/* Router tables */
+	struct router_routes *routes = rtr_routes;
+	struct router_ps *ps = rtr_ps;
+	struct port_timer *timer_reload = ps_timer; 
+};
 
 /** @brief GRSPW driver configuration */
 static iop_spw_router_device_t device_configuration = ${'\\'}
@@ -32,16 +39,19 @@ static iop_spw_router_device_t device_configuration = ${'\\'}
     /* device configuration */
     .dev        = {
 
-        .driver         = (void *)&spw_router_driver,
-        .init           = spw_initialize,
-        .open           = spw_open,
-        .read           = spw_read,
-        .write          = spw_write,
-        .close          = spw_close,
+        .driver         = (void *)&spwrtr_driver,
+        .init           = router_initialize,
+        .open           = router_open,
+//        .read           = spw_read,
+//        .write          = spw_write,
+        .close          = router_close,
     },
 
-    /* ethernet??? configuration */
-	
+    /* spacewire router configuration configuration */
+	.flags		= ${device.setup.flags},
+	.config		= ${device.setup.config},
+	.iid		= ${device.setup.iid},
+	.idiv		= ${device.setup.idiv}
 };
 
 ${iop_template.PhysicalDevice(iop_configuration, device, device_functions)}\

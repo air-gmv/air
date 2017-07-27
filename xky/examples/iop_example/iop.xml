@@ -18,7 +18,7 @@
 			<LogicalRoute Id="1" LogicalDeviceId="1">
 				<EthHeader Ip="192.168.0.2" MAC="68:05:ca:1f:39:af" Port="13000"/>
 			</LogicalRoute>
-	        </Device>		
+	    </Device>
 	</PhysicalDevices>
 	
 	<ModuleSchedules>

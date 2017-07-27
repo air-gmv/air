@@ -50,12 +50,13 @@ struct router_regs {
 
 struct router_priv {
 	char devName[32];
-	struct drvmgr_dev *dev;
 	struct router_regs *regs;
 	int minor;
 	int open;
 	struct router_hw_info hwinfo;
 	int nports;
+	struct router_routes *routes_p;
+	struct router_ps *ps_p;
 };
 
 #define ROUTER_DRIVER_TABLE_ENTRY \
@@ -85,6 +86,8 @@ static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void 
 	
 	char prefix[32];
 	rtems_status_code status;
+
+	struct router_config *cfg = (struct router_config *) &device->flags;
 	
 	memset(&apbgreth, 0, sizeof(amba_apb_device));
 	
@@ -101,6 +104,23 @@ static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void 
 	/* Register character device in registered region */
 	router_hwinfo(priv, &priv->hwinfo);
 	priv->open = 0;
+
+	if ( router_we_set(priv, 1) ) {
+		return RTEMS_INTERNAL_ERROR;
+	}
+	
+	if ( router_config_set(priv, cfg) ) {
+		return RTEMS_INTERNAL_ERROR;
+	}
+	
+	if ( router_ps_set(priv, struct priv->ps) ) {
+		return RTEMS_INTERNAL_ERROR;
+	}
+	
+	if ( router_routes_set(priv, priv->routes) ) {
+		return RTEMS_INTERNAL_ERROR;
+	}
+	
 	priv->nports = priv->hwinfo.nports_spw + priv->hwinfo.nports_amba +
 			priv->hwinfo.nports_fifo;
 	if ( (priv->nports < 2) || (priv->nports > 32) )
@@ -117,7 +137,7 @@ static rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
 	if ( !priv || priv->open ) {
 		return RTEMS_RESOURCE_IN_USE;
 	}
-
+	
 	priv->open = 1;
 
 	return RTEMS_SUCCESSFUL;
@@ -187,7 +207,7 @@ static int router_config_set(
 	/* Write Timer Reload Register */
 	if ( cfg->flags & ROUTER_FLG_TRLD ) {
 		for (i=0; i<=priv->nports; i++)
-			REG_WRITE(&priv->regs->treload[i], cfg->timer_reload[i]);
+			REG_WRITE(&priv->regs->treload[i], priv->timer_reload[i]);
 	}
 
 	return 0;
@@ -247,6 +267,7 @@ static int router_ps_read(struct router_priv *priv, struct router_ps *ps)
 	return 0;
 }
 
+/* Configuration writer enable */
 static int router_we_set(struct router_priv *priv, int we)
 {
 	REG_WRITE(&priv->regs->cfgwe, we & 0x1);
