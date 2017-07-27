@@ -129,28 +129,4 @@ rtems_device_driver router_close(iop_device_driver_t *iop_dev, void *arg);
 
 rtems_device_driver router_control(iop_device_driver_t *iop_dev, void *arg);
 
-static void router_hwinfo(router_priv_t *priv,	struct router_hw_info *hwinfo);
-
-static int router_config_set(router_priv_t *priv, router_config_t *cfg);
-
-static int router_config_read(router_priv_t *priv, router_config_t *cfg);
-
-static int router_routes_set(router_priv_t *priv, router_routes *routes);
-
-static int router_routes_read(router_priv_t *priv, router_routes *routes);
-
-static int router_ps_set(router_priv_t *priv, router_ps *ps);
-
-static int router_ps_read(router_priv_t *priv, router_ps *ps);
-
-static int router_we_set(router_priv_t *priv, int we);
-
-static int router_port_ctrl(router_priv_t *priv, router_port *port);
-
-static int router_cfgsts_set(router_priv_t *priv, unsigned int cfgsts);
-
-static int router_cfgsts_read(router_priv_t *priv, unsigned int *cfgsts);
-
-static int router_tc_read(router_priv_t *priv, unsigned int *tc);
-
 #endif
