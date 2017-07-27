@@ -23,6 +23,40 @@
 #define REG_READ(adr) (*(volatile unsigned int *)(adr))
 #define REG_WRITE(adr, value) (*(volatile unsigned int *)(adr) = (value))
 
+/* Set/Get Port Control/Status */
+struct router_port {
+	unsigned int flag;
+	int port;
+	unsigned int ctrl;
+	unsigned int sts;
+};
+
+/* SpaceWire registry fields */
+struct router_regs {
+	unsigned int resv1;		/* 0x000 */
+	unsigned int psetup[255];	/* 0x004 */
+	unsigned int resv2[32];		/* 0x400 */
+	unsigned int routes[224];	/* 0x480 */
+	unsigned int pctrl[32];		/* 0x800 */
+	unsigned int psts[32];		/* 0x880 */
+	unsigned int treload[32];	/* 0x900 */
+	unsigned int resv3[32];		/* 0x980 */
+	unsigned int cfgsts;		/* 0xA00 */
+	unsigned int timecode;		/* 0xA04 */
+	unsigned int ver;		/* 0xA08 */
+	unsigned int idiv;		/* 0xA0C */
+	unsigned int cfgwe;		/* 0xA10 */
+	unsigned int tprescaler;	/* 0xA14 */
+	unsigned int resv4[123];	/* 0xA18 */
+	unsigned int charo[31];		/* 0xC04 */
+	unsigned int resv5;		/* 0xC80 */
+	unsigned int chari[31];		/* 0xC84 */
+	unsigned int resv6;		/* 0xD00 */
+	unsigned int pkto[31];		/* 0xD04 */
+	unsigned int resv7;		/* 0xD80 */
+	unsigned int pkti[31];		/* 0xD84 */
+};
+
 static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
 	int device_found = 0;
@@ -35,7 +69,7 @@ static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void 
 	char prefix[32];
 	rtems_status_code status;
 
-	struct router_config *cfg = (struct router_config *) &device->flags;
+	router_config_t *cfg = (router_config_t *) &device->flags;
 	
 	memset(&apbgreth, 0, sizeof(amba_apb_device));
 	
@@ -123,7 +157,7 @@ static void router_hwinfo(
 
 static int router_config_set(
 	router_priv_t *priv,
-	struct router_config *cfg)
+	router_config_t *cfg)
 {
 	int i;
 
@@ -163,7 +197,7 @@ static int router_config_set(
 
 static int router_config_read(
 	router_priv_t *priv,
-	struct router_config *cfg)
+	router_config_t *cfg)
 {
 	int i;
 
@@ -299,14 +333,14 @@ static int router_tc_read(router_priv_t *priv, unsigned int *tc)
 //	/* Set Router Configuration */
 //	case GRSPWR_IOCTL_CFG_SET:
 //	{
-//		struct router_config *cfg = argp;
+//		router_config_t *cfg = argp;
 //		return router_config_set(priv, cfg);
 //	}
 //
 //	/* Read Router Configuration */
 //	case GRSPWR_IOCTL_CFG_GET:
 //	{
-//		struct router_config *cfg = argp;
+//		router_config_t *cfg = argp;
 //		router_config_read(priv, cfg);
 //		break;
 //	}
