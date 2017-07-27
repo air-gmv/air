@@ -18,7 +18,6 @@
  * ============================================================================
  */
 #include <iop.h>
-#include <IOPgrspw_router.h>
 #include <spw_support.h>
 #include <routing_table.h>
 
@@ -26,9 +25,9 @@
 static router_priv_t spwrtr_driver = ${'\\'}
 {
 	/* Router tables */
-	.routes = rtr_routes,
-	.ps = rtr_ps,
-	.timer_reload = ps_timer
+	.routes = &routes,
+	.ps = &ps,
+	.timer_reload = &timer_reload
 };
 
 /** @brief GRSPW driver configuration */
