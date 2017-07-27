@@ -40,10 +40,9 @@ SPWRTR_IDIV             = 'Idiv'
 
 VALID_EN                    = [ parserutils.str2int, lambda x : 0 <= x <= 1 ]
 VALID_XD	                = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
-VALID_READS	                = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
-VALID_TIMER                 = [ parserutils.str2int, lambda x : 0 <= x <= 50 ]
+VALID_READS	                = [ parserutils.str2int, lambda x : 0 <= x <= 2048 ]
+VALID_TIMER                 = [ parserutils.str2int, lambda x : -1 <= x <= 50 ]
 VALID_MASK                  = [ parserutils.str2int, lambda x : len(str(x)) <= 32 ]
-VALID_SPW                   = [ parserutils.str2int, lambda x : 0 <= x <= 999999 ]
 
 
 # GRETH physical device setup
@@ -118,7 +117,7 @@ class SPWRTRPhySetup(object):
 
     def details(self):
         return 'SPWRTR Physical Device Setup (Flags: {0} Config: {1} IID: {2} IDIV: {3})'\
-            .format(self.flags, self.config, self.iid, self.idiv)
+            .format(bin(self.flags), bin(self.config), self.iid, self.idiv)
 
 # SPWRTR Schedule device setup
 class SPWRTRSchSetup(object):
@@ -182,7 +181,7 @@ def phy_grspw(iop_parser, xml, pdevice):
 
     # parse setup
     setup               = GRSPWPhySetup()
-    setup.nodeaddr      = xml.parse_attr(GRSPW_ADDR, VALID_SPW, True, iop_parser.logger)
+    setup.nodeaddr      = xml.parse_attr(GRSPW_ADDR, VALID_SPW_ADDRESS, True, iop_parser.logger)
     setup.nodemask      = xml.parse_attr(GRSPW_MASK, VALID_MASK, True, iop_parser.logger)
     setup.destkey       = xml.parse_attr(GRSPW_DEST, VALID_XD, True, iop_parser.logger)
     setup.clkdiv        = xml.parse_attr(GRSPW_CLK, VALID_XD, True, iop_parser.logger)

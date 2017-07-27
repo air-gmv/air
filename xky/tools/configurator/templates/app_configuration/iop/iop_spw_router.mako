@@ -1,8 +1,8 @@
 <%
     # device functions
     device_functions = dict(
-          reader_task='NULL',
-          writer_task='NULL',
+          reader_task='spwrtr_reader',
+          writer_task='spwrtr_writer',
 
           header_prebuild='NULL',
           header_compare='NULL',
@@ -26,9 +26,9 @@
 static router_priv_t spwrtr_driver = ${'\\'}
 {
 	/* Router tables */
-	.routes = rtr_routes,
-	.ps = rtr_ps,
-	.timer_reload = ps_timer
+	.routes = &routes,
+	.ps = &ps,
+	.timer_reload = &timer_reload
 };
 
 /** @brief GRSPW driver configuration */
