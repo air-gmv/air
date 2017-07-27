@@ -11,17 +11,24 @@
 	</LogicalDevices>	
 	
 	<PhysicalDevices>
-		<Device Id="0" Device="SPWRTR" Flags="11111" Config="10000" Idd="1" Idiv="1"/>
+		<Device Id="0" Device="SPWRTR" Flags="11111" Config="10000" Idd="1" Idiv="1">
+			<PhysicalRoute/>
+			<LogicalRoute/>
+		</Device>
 		<Device Id="1" Device="GRSPW1" Addr="1" Mask="1" Dest="4" Clk="1" 
 				RXmax="32" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32" 
 				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="5">
 			<LogicalRoute Id="1" LogicalDeviceId="1">
 				<SpwHeader Address="12"/>
 			</LogicalRoute>
+			<PhysicalRoute/>
 	    </Device>
 		<Device Id="2" Device="GRSPW2" Addr="2" Mask="1" Dest="4" Clk="1" 
 				RXmax="32" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32" 
-				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="5"/>
+				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="5">
+			<PhysicalRoute/>
+			<LogicalRoute/>
+		</Device>
 	</PhysicalDevices>
 	
 	<ModuleSchedules>
