@@ -1,12 +1,12 @@
 <%
     # device functions
     device_functions = dict(
-          reader_task=NULL,
-          writer_task=NULL,
+          reader_task='NULL',
+          writer_task='NULL',
 
-          header_prebuild=NULL,
-          header_compare=NULL,
-          header_copy=NULL)
+          header_prebuild='NULL',
+          header_compare='NULL',
+          header_copy='NULL')
 %>\
 <%namespace name="iop_template" file="/iop_templates.mako"/>\
 /*
