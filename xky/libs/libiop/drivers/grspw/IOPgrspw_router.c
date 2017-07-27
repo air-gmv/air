@@ -23,6 +23,8 @@
 #define REG_READ(adr) (*(volatile unsigned int *)(adr))
 #define REG_WRITE(adr, value) (*(volatile unsigned int *)(adr) = (value))
 
+router_priv_t router_priv;
+
 static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
 	int device_found = 0;

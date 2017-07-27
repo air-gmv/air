@@ -106,7 +106,7 @@ struct router_regs {
 	unsigned int pkti[31];		/* 0xD84 */
 };
 
-struct router_priv {
+typedef struct {
 	char devName[32];
 	struct router_regs *regs;
 	int minor;
@@ -116,7 +116,7 @@ struct router_priv {
 	struct router_routes *routes;
 	struct router_ps *ps;
 	struct port_timer *timer_reload;
-};
+} router_priv_t;
 
 /* Get Hardware support/information available */
 #define GRSPWR_IOCTL_HWINFO	0x01	/* OUT:    struct router_hw_info */
