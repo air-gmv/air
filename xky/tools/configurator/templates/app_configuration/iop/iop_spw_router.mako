@@ -1,12 +1,12 @@
 <%
     # device functions
     device_functions = dict(
-          reader_task='spw_reader',
-          writer_task='spw_writer',
+          reader_task=NULL,
+          writer_task=NULL,
 
-          header_prebuild='spw_prebuild_header',
-          header_compare='spw_compare_header',
-          header_copy='spw_copy_header')
+          header_prebuild=NULL,
+          header_compare=NULL,
+          header_copy=NULL)
 %>\
 <%namespace name="iop_template" file="/iop_templates.mako"/>\
 /*
@@ -22,15 +22,13 @@
 #include <spw_support.h>
 #include <routing_table.h>
 
-${iop_template.RemotePortList(iop_configuration)}\
-
 /** @brief  GRSPW control structure*/
 static router_priv spwrtr_driver = ${'\\'}
 {
 	/* Router tables */
-	struct router_routes *routes = rtr_routes;
-	struct router_ps *ps = rtr_ps;
-	struct port_timer *timer_reload = ps_timer; 
+	.routes = rtr_routes,
+	.ps = rtr_ps,
+	.timer_reload = ps_timer
 };
 
 /** @brief GRSPW driver configuration */
