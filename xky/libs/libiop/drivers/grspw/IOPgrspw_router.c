@@ -23,6 +23,7 @@
 #define REG_READ(adr) (*(volatile unsigned int *)(adr))
 #define REG_WRITE(adr, value) (*(volatile unsigned int *)(adr) = (value))
 
+/* SpaceWire registry fields */
 struct router_regs {
 	unsigned int resv1;		/* 0x000 */
 	unsigned int psetup[255];	/* 0x004 */
@@ -48,32 +49,6 @@ struct router_regs {
 	unsigned int pkti[31];		/* 0xD84 */
 };
 
-struct router_priv {
-	char devName[32];
-	struct drvmgr_dev *dev;
-	struct router_regs *regs;
-	int minor;
-	int open;
-	struct router_hw_info hwinfo;
-	int nports;
-};
-
-#define ROUTER_DRIVER_TABLE_ENTRY \
-  { router_initialize, \
-    router_open, \
-    router_close, \
-    NULL, \
-    NULL, \
-    router_control }
-
-static void router_hwinfo(
-	struct router_priv *priv,
-	struct router_hw_info *hwinfo);
-
-static rtems_driver_address_table router_driver = ROUTER_DRIVER_TABLE_ENTRY;
-static int router_driver_io_registered = 0;
-static rtems_device_major_number router_driver_io_major = 0;
-
 static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
 	int device_found = 0;
@@ -81,10 +56,12 @@ static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void 
 	amba_apb_device apbgreth;
 	
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
-	struct router_priv *priv = (struct router_priv *)(device->dev.driver);
+	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
 	
 	char prefix[32];
 	rtems_status_code status;
+
+	router_config_t *cfg = (router_config_t *) &device->flags;
 	
 	memset(&apbgreth, 0, sizeof(amba_apb_device));
 	
@@ -101,6 +78,23 @@ static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void 
 	/* Register character device in registered region */
 	router_hwinfo(priv, &priv->hwinfo);
 	priv->open = 0;
+
+	if ( router_we_set(priv, 1) ) {
+		return RTEMS_INTERNAL_ERROR;
+	}
+	
+	if ( router_config_set(priv, cfg) ) {
+		return RTEMS_INTERNAL_ERROR;
+	}
+	
+	if ( router_ps_set(priv, priv->ps) ) {
+		return RTEMS_INTERNAL_ERROR;
+	}
+	
+	if ( router_routes_set(priv, priv->routes) ) {
+		return RTEMS_INTERNAL_ERROR;
+	}
+	
 	priv->nports = priv->hwinfo.nports_spw + priv->hwinfo.nports_amba +
 			priv->hwinfo.nports_fifo;
 	if ( (priv->nports < 2) || (priv->nports > 32) )
@@ -112,12 +106,12 @@ static rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void 
 static rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
 {	
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
-	struct router_priv *priv = (struct router_priv *)(device->dev.driver);
+	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
 
 	if ( !priv || priv->open ) {
 		return RTEMS_RESOURCE_IN_USE;
 	}
-
+	
 	priv->open = 1;
 
 	return RTEMS_SUCCESSFUL;
@@ -126,7 +120,7 @@ static rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
 static rtems_device_driver router_close(iop_device_driver_t *iop_dev, void *arg)
 {
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
-	struct router_priv *priv = (struct router_priv *)(device->dev.driver);
+	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
 
 	priv->open = 0;
 
@@ -134,7 +128,7 @@ static rtems_device_driver router_close(iop_device_driver_t *iop_dev, void *arg)
 }
 
 static void router_hwinfo(
-	struct router_priv *priv,
+	router_priv_t *priv,
 	struct router_hw_info *hwinfo)
 {
 	unsigned int tmp;
@@ -154,8 +148,8 @@ static void router_hwinfo(
 }
 
 static int router_config_set(
-	struct router_priv *priv,
-	struct router_config *cfg)
+	router_priv_t *priv,
+	router_config_t *cfg)
 {
 	int i;
 
@@ -187,15 +181,15 @@ static int router_config_set(
 	/* Write Timer Reload Register */
 	if ( cfg->flags & ROUTER_FLG_TRLD ) {
 		for (i=0; i<=priv->nports; i++)
-			REG_WRITE(&priv->regs->treload[i], cfg->timer_reload[i]);
+			REG_WRITE(&priv->regs->treload[i], priv->timer_reload->timeout[i]);
 	}
 
 	return 0;
 }
 
 static int router_config_read(
-	struct router_priv *priv,
-	struct router_config *cfg)
+	router_priv_t *priv,
+	router_config_t *cfg)
 {
 	int i;
 
@@ -204,14 +198,14 @@ static int router_config_read(
 	cfg->idiv = REG_READ(&priv->regs->idiv) & 0xff;
 	cfg->timer_prescaler = REG_READ(&priv->regs->tprescaler);
 	for (i=0; i<=priv->nports; i++)
-		cfg->timer_reload[i] = REG_READ(&priv->regs->treload[i]);
+		priv->timer_reload->timeout[i] = REG_READ(&priv->regs->treload[i]);
 
 	return 0;
 }
 
 static int router_routes_set(
-	struct router_priv *priv,
-	struct router_routes *routes)
+	router_priv_t *priv,
+	router_routes *routes)
 {
 	int i;
 	for (i=0; i<224; i++)
@@ -220,8 +214,8 @@ static int router_routes_set(
 }
 
 static int router_routes_read(
-	struct router_priv *priv,
-	struct router_routes *routes)
+	router_priv_t *priv,
+	router_routes *routes)
 {
 	int i;
 	for (i=0; i<224; i++)
@@ -229,7 +223,7 @@ static int router_routes_read(
 	return 0;
 }
 
-static int router_ps_set(struct router_priv *priv, struct router_ps *ps)
+static int router_ps_set(router_priv_t *priv, router_ps *ps)
 {
 	int i;
 	unsigned int *p = &ps->ps[0];
@@ -238,7 +232,7 @@ static int router_ps_set(struct router_priv *priv, struct router_ps *ps)
 	return 0;
 }
 
-static int router_ps_read(struct router_priv *priv, struct router_ps *ps)
+static int router_ps_read(router_priv_t *priv, router_ps *ps)
 {
 	int i;
 	unsigned int *p = &ps->ps[0];
@@ -247,13 +241,14 @@ static int router_ps_read(struct router_priv *priv, struct router_ps *ps)
 	return 0;
 }
 
-static int router_we_set(struct router_priv *priv, int we)
+/* Configuration writer enable */
+static int router_we_set(router_priv_t *priv, int we)
 {
 	REG_WRITE(&priv->regs->cfgwe, we & 0x1);
 	return 0;
 }
 
-static int router_port_ctrl(struct router_priv *priv, struct router_port *port)
+static int router_port_ctrl(router_priv_t *priv, router_port *port)
 {
 	unsigned int ctrl, sts;
 
@@ -281,19 +276,19 @@ static int router_port_ctrl(struct router_priv *priv, struct router_port *port)
 	return 0;
 }
 
-static int router_cfgsts_set(struct router_priv *priv, unsigned int cfgsts)
+static int router_cfgsts_set(router_priv_t *priv, unsigned int cfgsts)
 {
 	REG_WRITE(&priv->regs->cfgsts, cfgsts);
 	return 0;
 }
 
-static int router_cfgsts_read(struct router_priv *priv, unsigned int *cfgsts)
+static int router_cfgsts_read(router_priv_t *priv, unsigned int *cfgsts)
 {
 	*cfgsts = REG_READ(&priv->regs->cfgsts);
 	return 0;
 }
 
-static int router_tc_read(struct router_priv *priv, unsigned int *tc)
+static int router_tc_read(router_priv_t *priv, unsigned int *tc)
 {
 	*tc = REG_READ(&priv->regs->timecode);
 	return 0;
@@ -305,7 +300,7 @@ static int router_tc_read(struct router_priv *priv, unsigned int *tc)
 //	void                    * arg
 //	)
 //{
-//	struct router_priv *priv;
+//	router_priv_t *priv;
 //	struct drvmgr_dev *dev;
 //	rtems_libio_ioctl_args_t *ioarg = (rtems_libio_ioctl_args_t *) arg;
 //	void *argp = (void *)ioarg->buffer;
@@ -314,7 +309,7 @@ static int router_tc_read(struct router_priv *priv, unsigned int *tc)
 //		ROUTER_DBG("Wrong minor %d\n", minor);
 //		return RTEMS_INVALID_NAME;
 //	}
-//	priv = (struct router_priv *)dev->priv;
+//	priv = (router_priv_t *)dev->priv;
 //
 //	ioarg->ioctl_return = 0;
 //	switch (ioarg->command) {
@@ -330,14 +325,14 @@ static int router_tc_read(struct router_priv *priv, unsigned int *tc)
 //	/* Set Router Configuration */
 //	case GRSPWR_IOCTL_CFG_SET:
 //	{
-//		struct router_config *cfg = argp;
+//		router_config_t *cfg = argp;
 //		return router_config_set(priv, cfg);
 //	}
 //
 //	/* Read Router Configuration */
 //	case GRSPWR_IOCTL_CFG_GET:
 //	{
-//		struct router_config *cfg = argp;
+//		router_config_t *cfg = argp;
 //		router_config_read(priv, cfg);
 //		break;
 //	}
@@ -345,13 +340,13 @@ static int router_tc_read(struct router_priv *priv, unsigned int *tc)
 //	/* Routes */
 //	case GRSPWR_IOCTL_ROUTES_SET:
 //	{
-//		struct router_routes *routes = argp;
+//		router_routes *routes = argp;
 //		return router_routes_set(priv, routes);
 //	}
 //
 //	case GRSPWR_IOCTL_ROUTES_GET:
 //	{
-//		struct router_routes *routes = argp;
+//		router_routes *routes = argp;
 //		router_routes_read(priv, routes);
 //		break;
 //	}
@@ -359,13 +354,13 @@ static int router_tc_read(struct router_priv *priv, unsigned int *tc)
 //	/* Port Setup */
 //	case GRSPWR_IOCTL_PS_SET:
 //	{
-//		struct router_ps *ps = argp;
+//		router_ps *ps = argp;
 //		return router_ps_set(priv, ps);
 //	}
 //
 //	case GRSPWR_IOCTL_PS_GET:
 //	{
-//		struct router_ps *ps = argp;
+//		router_ps *ps = argp;
 //		router_ps_read(priv, ps);
 //		break;
 //	}
@@ -379,7 +374,7 @@ static int router_tc_read(struct router_priv *priv, unsigned int *tc)
 //	/* Set/Get Port Control/Status */
 //	case GRSPWR_IOCTL_PORT:
 //	{
-//		struct router_port *port = argp;
+//		router_port *port = argp;
 //		int result;
 //		if ( (result=router_port_ctrl(priv, port)) )
 //			return result;
