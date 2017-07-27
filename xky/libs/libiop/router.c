@@ -21,6 +21,7 @@
 #include <iop_support.h>
 #include <iop_mms.h>
 #include <string.h>
+#include <iop_functions.h>
 
 
 static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
@@ -204,37 +205,33 @@ void route_reply(iop_physical_device_t *pdev, iop_wrapper_t *wrapper) {
 //rtems_task pre_router(rtems_task_argument arg){
 void pre_router(){
 
-    iop_debug(" :: IOP - pre-router start!\n");
+    //iop_debug(" :: IOP - pre-router start!\n");
 
-    /* main loop */
-    for (;;) {
+	/* wait for next partition release point */
+	//iop_task_sleep(0);
 
-        /* wait for next partition release point */
-        iop_task_sleep(0);
-
-        iop_debug(" :: IOP - pre-router running!\n");
+	iop_debug(" :: IOP - pre-router running!\n");
 
 
-        /* loop through all logical devices */
-        int i;
-        for (i = 0; i < usr_configuration.logical_devices.length; ++i) {
+	/* loop through all logical devices */
+	int i;
+	for (i = 0; i < usr_configuration.logical_devices.length; ++i) {
 
-            /* get logical device */
-            iop_logical_device_t *ldev =
-                    ((iop_logical_device_t **)
-                            usr_configuration.logical_devices.elements)[i];
+		/* get logical device */
+		iop_logical_device_t *ldev =
+				((iop_logical_device_t **)
+						usr_configuration.logical_devices.elements)[i];
 
-            /* this logical device has write requests pending */
-            while (!iop_chain_is_empty(&ldev->sendqueue)){
+		/* this logical device has write requests pending */
+		while (!iop_chain_is_empty(&ldev->sendqueue)){
 
-                /* extract first request wrapper from send queue */
-                iop_wrapper_t *req_wrapper =
-                        obtain_wrapper(&ldev->sendqueue);
+			/* extract first request wrapper from send queue */
+			iop_wrapper_t *req_wrapper =
+					obtain_wrapper(&ldev->sendqueue);
 
-                /* apply routing information to current request */
-                route_request(ldev, req_wrapper);
-            }
-        }
+			/* apply routing information to current request */
+			route_request(ldev, req_wrapper);
+		}
 	}
 }
 
@@ -244,35 +241,32 @@ void pre_router(){
  */
 void pos_router(){
 
-    iop_debug(" :: IOP - pos-router start!\n");
+    //iop_debug(" :: IOP - pos-router start!\n");
 
-    /* main loop */
-    for (;;) {
+	int i;
 
-        int i;
+	// OLD MAIN LOOP
+	/* wait for next partition release point */
+	//iop_task_sleep(0);
 
-        /* wait for next partition release point */
-        iop_task_sleep(0);
+	iop_debug(" :: IOP - pos-router running!\n");
 
-        iop_debug(" :: IOP - pos-router running!\n");
+	/* iterate over all physical devices */
+	for (i = 0; i < usr_configuration.physical_devices.length; ++i) {
 
-        /* iterate over all physical devices */
-        for (i = 0; i < usr_configuration.physical_devices.length; ++i) {
+		/* get physical device */
+		iop_physical_device_t *pdev =
+				((iop_physical_device_t **)
+						usr_configuration.physical_devices.elements)[i];
 
-            /* get physical device */
-            iop_physical_device_t *pdev =
-                    ((iop_physical_device_t **)
-                            usr_configuration.physical_devices.elements)[i];
+		/* See if data was received on this device from HW */
+		while (!iop_chain_is_empty(&pdev->rcvqueue)){
 
-            /* See if data was received on this device from HW */
-            while (!iop_chain_is_empty(&pdev->rcvqueue)){
+			/* extract first request wrapper from send queue */
+			iop_wrapper_t *reply_wrapper = obtain_wrapper(&pdev->rcvqueue);
 
-                /* extract first request wrapper from send queue */
-                iop_wrapper_t *reply_wrapper = obtain_wrapper(&pdev->rcvqueue);
-
-                /* apply routing information to this data */
-                route_reply(pdev, reply_wrapper);
-            }
-        }
-    }
+			/* apply routing information to this data */
+			route_reply(pdev, reply_wrapper);
+		}
+	}
 }

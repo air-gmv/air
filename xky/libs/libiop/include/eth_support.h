@@ -108,10 +108,6 @@ uint32_t eth_validate_packet(
 #define eth_get_packet_type(buf) \
         (((ethII_header_t *)get_header((buf)))->type)
 
-
-
-
-
 /**
  *  @brief Task that writes pending write requests to ETH0
  *  @param [in] arg: not used

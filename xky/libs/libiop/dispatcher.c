@@ -12,6 +12,7 @@
 #include <iop_mms.h>
 #include <iop_error.h>
 #include <iop_support.h>
+#include <dispatcher.h>
 
 /* reference time for window execution time */
 extern rtems_interval last_task_ticks;
@@ -323,50 +324,48 @@ void pre_dispatcher(){
 
     uint32_t i;
 
-    iop_debug(" :: IOP - pre-dispatcher start!\n");
+    //iop_debug(" :: IOP - pre-dispatcher start!\n");
 
-    for(;;){
+    // OLD MAIN LOOP
+	/* wait for next partition release point */
+	//iop_task_sleep(1);
 
-        /* wait for next partition release point */
-        iop_task_sleep(1);
+	iop_debug(" :: IOP - pre-dispatcher running!\n");
 
-        iop_debug(" :: IOP - pre-dispatcher running!\n");
+	/* Get execution window reference time */
+	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &last_task_ticks);
+	//iop_debug("  :: IOP - pre-dispatcher read this time %d\n", last_task_ticks);
 
-        /* Get execution window reference time */
-        rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &last_task_ticks);
+	/* check for schedule changes */
+	iop_change_schedule();
 
-        /* check for schedule changes */
-        iop_change_schedule();
+	/* update requests and replies timers */
+	update_timers();
+	/* iterate over all remote ports*/
+	for (i = 0; i < usr_configuration.remote_ports.length; ++i){
 
-        /* update requests and replies timers */
-        update_timers();
+		/* get port */
+		iop_port_t *port = get_remote_port(i);
+		/* only receive data from destination ports (linked to a device) */
+		if(port->device != NULL){
 
-        /* iterate over all remote ports*/
-        for (i = 0; i < usr_configuration.remote_ports.length; ++i){
-
-            /* get port */
-            iop_port_t *port = get_remote_port(i);
-
-            /* only receive data from destination ports (linked to a device) */
-            if(port->device != NULL){
-
-                /* obtain and process data from current port */
-                process_remote_port(port);
-            }
-        }
-
-        /* iterate over all request ports*/
-        for (i = 0; i < usr_configuration.request_ports.length; i += 2){
-
-            /* get port */
-            iop_port_t *port =
-                    &((iop_port_t *)
-                            usr_configuration.request_ports.elements)[i];
-
-            /* obtain request data from current port */
-            process_request_port(port);
-        }
-    }
+			/* obtain and process data from current port */
+			process_remote_port(port);
+		}
+	}
+	iop_debug("Iterating over all requests:\n");
+	/* iterate over all request ports*/
+	for (i = 0; i < usr_configuration.request_ports.length; i += 2){
+		iop_debug(" Request number: %d", i);
+		/* get port */
+		iop_port_t *port =
+				&((iop_port_t *)
+						usr_configuration.request_ports.elements)[i];
+		iop_debug(" %s\n", port->name);
+		/* obtain request data from current port */
+		process_request_port(port);
+		iop_debug(" Processed port request\n");
+	}
 }
 
 /**
@@ -381,49 +380,48 @@ void pre_dispatcher(){
  */
 void pos_dispatcher(){
 
-    iop_wrapper_t *reply_wrapper;
-    iop_chain_control error;
-    iop_chain_initialize_empty(&error);
+//    iop_wrapper_t *reply_wrapper;
+//    iop_chain_control error;
+//    iop_chain_initialize_empty(&error);
 
     /* main task */
-    iop_debug(" :: IOP - pos-dispatcher start!\n");
-    for(;;){
+    //iop_debug(" :: IOP - pos-dispatcher start!\n");
 
-        /* wait for next partition release point */
-        iop_task_sleep(0);
+    //OLD MAIN LOOP
+	/* wait for next partition release point */
+	//iop_task_sleep(0);
 
-        iop_debug(" :: IOP - pos-dispatcher running!\n");
+	iop_debug(" :: IOP - pos-dispatcher running!\n");
 
-        /* verify if the number of retries was exceeded */
-        //update_reply_timers(&error, usr_configuration.time_to_live);
+	/* verify if the number of retries was exceeded */
+	//update_reply_timers(&error, usr_configuration.time_to_live);
 
-        /* retry to send failed replies: see if there are failed replies *
-        while (!iop_chain_is_empty(&error)) {
+	/* retry to send failed replies: see if there are failed replies *
+	while (!iop_chain_is_empty(&error)) {
 
-            /* extract reply from failed reply chain *
-            reply_wrapper = extract_reply_wrapper(&error);
+		/* extract reply from failed reply chain *
+		reply_wrapper = extract_reply_wrapper(&error);
 
-            /* append previously failed reply to the pending reply chain *
-            iop_chain_append(&usr_configuration.pending_replys,
-                                        &reply_wrapper->node);
-        }
+		/* append previously failed reply to the pending reply chain *
+		iop_chain_append(&usr_configuration.pending_replys,
+									&reply_wrapper->node);
+	}
 
-        /* while there are replies to be sent in the pending reply chain *
-        while (!iop_chain_is_empty(&usr_configuration.pending_replys)) {
+	/* while there are replies to be sent in the pending reply chain *
+	while (!iop_chain_is_empty(&usr_configuration.pending_replys)) {
 
-            /* Get a reply wrapper from the pending replies chain *
-            reply_wrapper = extract_reply_wrapper(&usr_configuration.pending_replys);
+		/* Get a reply wrapper from the pending replies chain *
+		reply_wrapper = extract_reply_wrapper(&usr_configuration.pending_replys);
 
-            /* send reply *
-            int rc = send_reply(reply_wrapper);
+		/* send reply *
+		int rc = send_reply(reply_wrapper);
 
-            /* there was an error while sending the reply *
-            if (rc == 0){
+		/* there was an error while sending the reply *
+		if (rc == 0){
 
-                /* add the reply to the temporary error chain *
-                iop_chain_append(&error, &reply_wrapper->node);
-            }
-        }
-        */
-    }
+			/* add the reply to the temporary error chain *
+			iop_chain_append(&error, &reply_wrapper->node);
+		}
+	}
+	*/
 }

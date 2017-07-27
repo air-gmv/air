@@ -44,40 +44,38 @@ void eth_writer(iop_physical_device_t *pdev){
     /* get underlying driver */
     iop_eth_device_t *eth_driver = (iop_eth_device_t *)pdev->driver;
 
-    /* main task loop */
-    for(;;){
 
-        /* wait for next partition release point */
-        iop_task_sleep(0);
+    // OLD MAIN LOOP
+	/* wait for next partition release point */
+	//iop_task_sleep(0);
 
-        iop_debug(" :: IOP - eth-writer running!\n");
+	iop_debug(" :: IOP - eth-writer running!\n");
 
-        /* empty send queue */
-        while (!iop_chain_is_empty(&pdev->sendqueue)) {
+	/* empty send queue */
+	while (!iop_chain_is_empty(&pdev->sendqueue)) {
 
-            iop_wrapper_t *wrapper = obtain_wrapper(&pdev->sendqueue);
+		iop_wrapper_t *wrapper = obtain_wrapper(&pdev->sendqueue);
 
-            /* write to the device */
-            if (eth_driver->dev.write((iop_device_driver_t *)eth_driver,
-                wrapper) == RTEMS_SUCCESSFUL){
+		/* write to the device */
+		if (eth_driver->dev.write((iop_device_driver_t *)eth_driver,
+			wrapper) == RTEMS_SUCCESSFUL){
 
-                release_wrapper(wrapper);
+			release_wrapper(wrapper);
 
-            /* error sending packet */
-            } else {
+		/* error sending packet */
+		} else {
 
-                iop_chain_append(&error, &wrapper->node);
-                iop_raise_error(HW_WRITE_ERROR);
-            }
-        }
+			iop_chain_append(&error, &wrapper->node);
+			iop_raise_error(HW_WRITE_ERROR);
+		}
+	}
 
-        /* re-queue failed transmissions */
-        while (!iop_chain_is_empty(&error)) {
+	/* re-queue failed transmissions */
+	while (!iop_chain_is_empty(&error)) {
 
-            iop_wrapper_t *wrapper = obtain_wrapper(&error);
-            iop_chain_append(&pdev->sendqueue, &wrapper->node);
-        }
-    }
+		iop_wrapper_t *wrapper = obtain_wrapper(&error);
+		iop_chain_append(&pdev->sendqueue, &wrapper->node);
+	}
 }
 
 /**
@@ -110,55 +108,53 @@ void eth_reader(iop_physical_device_t *pdev){
     /* get underlying driver */
     iop_eth_device_t *driver = (iop_eth_device_t *)pdev->driver;
 
-    /* main task loop */
-    for (;;) {
 
-        /* wait for next partition release point */
-        iop_task_sleep(0);
+    // OLD MAIN LOOP
+	/* wait for next partition release point */
+	//iop_task_sleep(0);
 
-        iop_debug(" :: IOP - eth-reader running!\n");
+	iop_debug(" :: IOP - eth-reader running!\n");
 
-        uint32_t i;
-        uint32_t skip;
-        uint32_t reads = pdev->reads_per_period[xky_schedule.current_schedule_index];
-        for (i = 0; i < reads; ++i){
+	uint32_t i;
+	uint32_t skip;
+	uint32_t reads = pdev->reads_per_period[xky_schedule.current_schedule_index];
+	for (i = 0; i < reads; ++i){
 
-            /* get an empty reply wrapper */
-            iop_wrapper_t *wrapper = obtain_free_wrapper();
+		/* get an empty reply wrapper */
+		iop_wrapper_t *wrapper = obtain_free_wrapper();
 
-            /* sanity check */
-            if (wrapper == NULL) {
-                iop_raise_error(OUT_OF_MEMORY);
-                break;
-            }
+		/* sanity check */
+		if (wrapper == NULL) {
+			iop_raise_error(OUT_OF_MEMORY);
+			break;
+		}
 
-            /* read from the device */
-            if (driver->dev.read((iop_device_driver_t *)driver, wrapper) == 0) {
-                switch (eth_get_packet_type(wrapper->buffer)) {
+		/* read from the device */
+		if (driver->dev.read((iop_device_driver_t *)driver, wrapper) == 0) {
+			switch (eth_get_packet_type(wrapper->buffer)) {
 
-                    /* ARP packet */
-                    case HTONS(ETH_HDR_ARP_TYPE):
-                        eth_send_arp_reply(driver, wrapper);
-                        break;
+				/* ARP packet */
+				case HTONS(ETH_HDR_ARP_TYPE):
+					eth_send_arp_reply(driver, wrapper);
+					break;
 
-                    /* IPv4 packet */
-                    case HTONS(ETH_HDR_IP_TYPE):
+				/* IPv4 packet */
+				case HTONS(ETH_HDR_IP_TYPE):
 
-                        /* check if it valid UDP packet for us */
-                        if (eth_validate_packet(driver, wrapper)) {
-                            iop_chain_append(&pdev->rcvqueue, &wrapper->node);
-                            wrapper = NULL;
-                        }
-                        break;
-                }
-            }
-
+					/* check if it valid UDP packet for us */
+					if (eth_validate_packet(driver, wrapper)) {
+						iop_chain_append(&pdev->rcvqueue, &wrapper->node);
+						wrapper = NULL;
+					}
+					break;
+			}
+		}
 
 
-            /* free wrapper if it wasn't used */
-            if (wrapper != NULL) {
-                release_wrapper(wrapper);
-            }
-        }
-    }
+
+		/* free wrapper if it wasn't used */
+		if (wrapper != NULL) {
+			release_wrapper(wrapper);
+		}
+	}
 }
