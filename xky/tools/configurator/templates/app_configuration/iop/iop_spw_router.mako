@@ -18,6 +18,7 @@
  * ============================================================================
  */
 #include <iop.h>
+#include <IOPgrspw_router.h>
 #include <spw_support.h>
 #include <routing_table.h>
 
