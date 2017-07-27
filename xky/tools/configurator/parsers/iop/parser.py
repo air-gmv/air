@@ -211,6 +211,8 @@ class IOParser(object):
             return False
 
         self.logger.information(1, pdevice.setup.details())
+        
+        print('BEFORE parsing physical routing')
 
         # Parse physical Routing
         xml_routes = xml.parse_tag(ROUTE_PHYSICAL, 1, maxint, self.logger)
@@ -218,6 +220,7 @@ class IOParser(object):
             rc &= self.parse_device_routes(xml_route, pdevice)
             print(rc)
 
+        print('AFTER parsing physical routing and BEFORE logical')
         # Parse Logical Routing
         xml_routes = xml.parse_tag(ROUTE_LOGICAL, 1, maxint, self.logger)
         for xml_route in xml_routes:

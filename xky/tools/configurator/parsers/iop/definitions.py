@@ -238,7 +238,7 @@ class EthHeader(object):
 class SpwHeader(object):
 
     def __init__(self):
-        self.address
+        self.address     = 0
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and \
