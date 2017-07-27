@@ -87,9 +87,9 @@ typedef struct {
 	int open;
 	struct router_hw_info hwinfo;
 	int nports;
-	struct router_routes *routes;
-	struct router_ps *ps;
-	struct port_timer *timer_reload;
+	router_routes *routes;
+	router_ps *ps;
+	port_timer *timer_reload;
 } router_priv_t;
 
 /* Get Hardware support/information available */
@@ -100,12 +100,12 @@ typedef struct {
 #define GRSPWR_IOCTL_CFG_GET	0x03	/* OUT:    router_config_t */
 
 /* Routes */
-#define GRSPWR_IOCTL_ROUTES_SET	0x04	/* IN:     struct router_routes */
-#define GRSPWR_IOCTL_ROUTES_GET	0x05	/* OUT:    struct router_routes */
+#define GRSPWR_IOCTL_ROUTES_SET	0x04	/* IN:     router_routes */
+#define GRSPWR_IOCTL_ROUTES_GET	0x05	/* OUT:    router_routes */
 
 /* Port Setup */
-#define GRSPWR_IOCTL_PS_SET	0x06	/* IN:     struct router_ps */
-#define GRSPWR_IOCTL_PS_GET	0x07	/* OUT:    struct router_ps */
+#define GRSPWR_IOCTL_PS_SET	0x06	/* IN:     router_ps */
+#define GRSPWR_IOCTL_PS_GET	0x07	/* OUT:    router_ps */
 
 /* Set configuration write enable */
 #define GRSPWR_IOCTL_WE_SET	0x08	/* INT:    int */
@@ -135,17 +135,17 @@ static int router_config_set(router_priv_t *priv, router_config_t *cfg);
 
 static int router_config_read(router_priv_t *priv, router_config_t *cfg);
 
-static int router_routes_set(router_priv_t *priv, struct router_routes *routes);
+static int router_routes_set(router_priv_t *priv, router_routes *routes);
 
-static int router_routes_read(router_priv_t *priv, struct router_routes *routes);
+static int router_routes_read(router_priv_t *priv, router_routes *routes);
 
-static int router_ps_set(router_priv_t *priv, struct router_ps *ps);
+static int router_ps_set(router_priv_t *priv, router_ps *ps);
 
-static int router_ps_read(router_priv_t *priv, struct router_ps *ps);
+static int router_ps_read(router_priv_t *priv, router_ps *ps);
 
 static int router_we_set(router_priv_t *priv, int we);
 
-static int router_port_ctrl(router_priv_t *priv, struct router_port *port);
+static int router_port_ctrl(router_priv_t *priv, router_port *port);
 
 static int router_cfgsts_set(router_priv_t *priv, unsigned int cfgsts);
 
