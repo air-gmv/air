@@ -23,9 +23,6 @@
 #define REG_READ(adr) (*(volatile unsigned int *)(adr))
 #define REG_WRITE(adr, value) (*(volatile unsigned int *)(adr) = (value))
 
-/* Set/Get Port Control/Status */
-router_port router_port;
-
 /* SpaceWire registry fields */
 struct router_regs {
 	unsigned int resv1;		/* 0x000 */
@@ -377,7 +374,7 @@ static int router_tc_read(router_priv_t *priv, unsigned int *tc)
 //	/* Set/Get Port Control/Status */
 //	case GRSPWR_IOCTL_PORT:
 //	{
-//		struct router_port *port = argp;
+//		router_port *port = argp;
 //		int result;
 //		if ( (result=router_port_ctrl(priv, port)) )
 //			return result;
