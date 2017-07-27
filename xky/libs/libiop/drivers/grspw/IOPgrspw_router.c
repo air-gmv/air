@@ -201,7 +201,7 @@ static int router_config_read(
 	cfg->idiv = REG_READ(&priv->regs->idiv) & 0xff;
 	cfg->timer_prescaler = REG_READ(&priv->regs->tprescaler);
 	for (i=0; i<=priv->nports; i++)
-		priv->timer_reload.timeout[i] = REG_READ(&priv->regs->treload[i]);
+		priv->timer_reload->timeout[i] = REG_READ(&priv->regs->treload[i]);
 
 	return 0;
 }
