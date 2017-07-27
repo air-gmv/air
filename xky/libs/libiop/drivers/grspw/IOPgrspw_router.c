@@ -125,6 +125,12 @@ rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
 		return RTEMS_RESOURCE_IN_USE;
 	}
 	
+	router_config_t *cfg;
+	router_config_read(priv, cfg);
+	
+	iop_debug("   Printing router config:  ");
+	iop_debug(*cfg);
+	
 	priv->open = 1;
 
 	return RTEMS_SUCCESSFUL;
