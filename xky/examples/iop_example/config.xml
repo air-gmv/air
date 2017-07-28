@@ -43,8 +43,10 @@
     <PartitionConfiguration Personality="RTEMS" Cores="1">
         <Libs>LIBXKY; IMASPEX; LIBPRINTF</Libs>
         <Devices></Devices>
-        <Cache>CODE; DATA</Cache>
-        <Memory Size="0x400000" ></Memory>
+        <Cache>
+        	CODE; DATA
+        </Cache>
+        <Memory Size="0x400000" />
         <Permissions>
           CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
         </Permissions>
