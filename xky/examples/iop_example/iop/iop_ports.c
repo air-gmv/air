@@ -32,7 +32,7 @@ static xky_queuing_port_configuration_t queuing_ports[] = {
 static xky_sampling_port_configuration_t sampling_ports[] = {
     {
         .max_message_size   = 1024,
-        .refresh_period     = 200,
+        .refresh_period     = 1000,
         .port_direction     = XKY_DESTINATION_PORT,
     },
 };
