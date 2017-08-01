@@ -6,7 +6,7 @@
  *
  * 	@ingroup TASKS
  *
- *	@author Cl�udio Silva
+ *	@author Claudio Silva
  *
  * 	@brief Tasks that write and read from GRETH
  *
@@ -17,6 +17,8 @@
 #include <iop_error.h>
 #include <iop_support.h>
 #include <eth_support.h>
+
+#include <debug_functions.h>
 
 
 /**
@@ -31,8 +33,6 @@
  *  request times out.
  */
 void eth_writer(iop_physical_device_t *pdev){
-
-    iop_debug(" :: IOP - eth-writer start!\n");
 
     /* get task physical device */
 //    iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
@@ -51,10 +51,19 @@ void eth_writer(iop_physical_device_t *pdev){
 
 	iop_debug(" :: IOP - eth-writer running!\n");
 
+	rtems_interval time;
+	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
+	char preamble[] = " eth-writer time: ";
+	append_to_message(msg_ptr, preamble, 72);
+	append_time_to_message(msg_ptr, time, 72+18);
+	append_to_message(msg_ptr, msg_relay, 98);
+
 	/* empty send queue */
 	while (!iop_chain_is_empty(&pdev->sendqueue)) {
 
 		iop_wrapper_t *wrapper = obtain_wrapper(&pdev->sendqueue);
+		uint8_t *message = (uint8_t *)
+		                ((uintptr_t)wrapper->buffer->v_addr + sizeof(iop_header_t));
 
 		/* write to the device */
 		if (eth_driver->dev.write((iop_device_driver_t *)eth_driver,
@@ -95,9 +104,6 @@ void eth_writer(iop_physical_device_t *pdev){
 
 
 void eth_reader(iop_physical_device_t *pdev){
-
-    iop_debug(" :: IOP - eth-reader start!\n");
-
     /* get task physical device */
 //    iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
 
@@ -114,6 +120,12 @@ void eth_reader(iop_physical_device_t *pdev){
 	//iop_task_sleep(0);
 
 	iop_debug(" :: IOP - eth-reader running!\n");
+
+	rtems_interval time;
+	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
+	char preamble[] = " eth-reader time: ";
+	append_to_message(&msg_relay, preamble, 0);
+	append_time_to_message(&msg_relay, time, 0+18);
 
 	uint32_t i;
 	uint32_t skip;
