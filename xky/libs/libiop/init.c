@@ -178,22 +178,51 @@ static void iop_main_loop(void){
 
     iop_debug(" :: creating & launching worker tasks\n");
 
-    int i;
+    int i, msg_offset = 0;
+    rtems_interval begin, predi, prero, write,
+		readt, posdi, posro;
     iop_physical_device_t *devs[usr_configuration.physical_devices.length];
     for(i =0; i < usr_configuration.physical_devices.length; i++){
     	devs[i] = get_physical_device(i);
     }
     for(;;)
     {
+    	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &begin);
     	pre_dispatcher();
+    	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &predi);
     	pre_router();
+    	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &prero);
     	/* run all the device drivers writer and reader functions */
     	for(i = 0; i < usr_configuration.physical_devices.length; i++){
     		devs[i]->writer_task(devs[i]);
+    		rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &write);
     		devs[i]->reader_task(devs[i]);
+    		rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &readt);
     	}
     	pos_dispatcher();
+    	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &posdi);
     	pos_router();
+    	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &posro);
+
+    	msg_offset = 0;
+    	append_to_message(&msg_main, " Ticks begin: ", 0);
+    	append_time_to_message(&msg_main, begin, 14);
+    	msg_offset = 22;
+    	append_to_message(&msg_main, " Ticks predi: ", msg_offset);
+    	append_time_to_message(&msg_main, predi, msg_offset + 14);
+    	msg_offset = 22*2;
+    	append_to_message(&msg_main, " Ticks write: ", msg_offset);
+		append_time_to_message(&msg_main, write, msg_offset + 14);
+		msg_offset = 22*3;
+		append_to_message(&msg_main, " Ticks readt: ", msg_offset);
+		append_time_to_message(&msg_main, readt, msg_offset + 14);
+		msg_offset = 22*4;
+		append_to_message(&msg_main, " Ticks posdi: ", msg_offset);
+		append_time_to_message(&msg_main, posdi, msg_offset + 14);
+		msg_offset = 22*5;
+		append_to_message(&msg_main, " Ticks posro: ", msg_offset);
+		append_time_to_message(&msg_main, posro, msg_offset + 14);
+    	iop_debug("Relay: %s\n", msg_main);
 
     }
 
