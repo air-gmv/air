@@ -65,14 +65,13 @@ typedef struct {
 
 } iop_buffer_t;
 
-#ifdef IOP_SPECIAL_DEBUG
-#undef IOP_SPECIAL_DEBUG
-#endif
-
-#ifdef IOP_SPECIAL_DEBUG
+/*
+ * GMVS
+ */
 uint8_t *msg_ptr;
 char msg_relay[256];
-#endif
+char msg_main[256];
+
 
 /**
  *
