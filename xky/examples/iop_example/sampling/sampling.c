@@ -58,7 +58,7 @@ void test(PARTITION_ID_TYPE self_id) {
 	while(1) {
 
 		pprintf ("Partition %d sending: %s..\n", self_id, message);
-		WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )message, 17, &rc );
+		WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )message, 1024, &rc );
 		if (NO_ERROR != rc) {
 			//pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
 			error_message(rc);

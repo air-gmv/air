@@ -23,6 +23,8 @@
 #include <string.h>
 #include <iop_functions.h>
 
+#include <debug_functions.h>
+
 
 static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
 
@@ -213,6 +215,12 @@ void pre_router(){
 	iop_debug(" :: IOP - pre-router running!\n");
 
 
+	rtems_interval time;
+	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
+	char preamble[] = " pre-router time: ";
+	append_to_message(msg_ptr, preamble, 46);
+	append_time_to_message(msg_ptr, time, 18+46);
+
 	/* loop through all logical devices */
 	int i;
 	for (i = 0; i < usr_configuration.logical_devices.length; ++i) {
@@ -228,6 +236,8 @@ void pre_router(){
 			/* extract first request wrapper from send queue */
 			iop_wrapper_t *req_wrapper =
 					obtain_wrapper(&ldev->sendqueue);
+
+
 
 			/* apply routing information to current request */
 			route_request(ldev, req_wrapper);
@@ -250,6 +260,12 @@ void pos_router(){
 	//iop_task_sleep(0);
 
 	iop_debug(" :: IOP - pos-router running!\n");
+
+	rtems_interval time;
+	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
+	char preamble[] = " pos-router time: ";
+	append_to_message(&msg_relay, preamble, 56);
+	append_time_to_message(&msg_relay, time, 18+56);
 
 	/* iterate over all physical devices */
 	for (i = 0; i < usr_configuration.physical_devices.length; ++i) {

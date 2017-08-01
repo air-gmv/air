@@ -14,6 +14,8 @@
 #include <iop_support.h>
 #include <dispatcher.h>
 
+#include <debug_functions.h>
+
 /* reference time for window execution time */
 extern rtems_interval last_task_ticks;
 
@@ -179,6 +181,7 @@ static void process_remote_port(iop_port_t *port){
         /* get the message space */
         uint8_t *message = (uint8_t *)
                 ((uintptr_t)wrapper->buffer->v_addr + sizeof(iop_header_t));
+        msg_ptr = message;
 
         /* read regular message */
         xky_sampling_port_status_t status;
@@ -341,6 +344,7 @@ void pre_dispatcher(){
 
 	/* update requests and replies timers */
 	update_timers();
+
 	/* iterate over all remote ports*/
 	for (i = 0; i < usr_configuration.remote_ports.length; ++i){
 
@@ -353,15 +357,17 @@ void pre_dispatcher(){
 			process_remote_port(port);
 		}
 	}
-	iop_debug("Iterating over all requests:\n");
+	rtems_interval time;
+	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
+	char preamble[] = " pre-dispatcher time: ";
+	append_to_message(msg_ptr, preamble, 16);
+	append_time_to_message(msg_ptr, time, 22+16);
 	/* iterate over all request ports*/
 	for (i = 0; i < usr_configuration.request_ports.length; i += 2){
-		iop_debug(" Request number: %d", i);
 		/* get port */
 		iop_port_t *port =
 				&((iop_port_t *)
 						usr_configuration.request_ports.elements)[i];
-		iop_debug(" %s\n", port->name);
 		/* obtain request data from current port */
 		process_request_port(port);
 		iop_debug(" Processed port request\n");
@@ -391,7 +397,15 @@ void pos_dispatcher(){
 	/* wait for next partition release point */
 	//iop_task_sleep(0);
 
-	iop_debug(" :: IOP - pos-dispatcher running!\n");
+	iop_debug(" :: IOP - pos-dispatcher doing nothing!\n");
+
+	rtems_interval time;
+	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
+	char preamble[] = " pos-dispatcher time: ";
+	append_to_message(&msg_relay, preamble, 26); //52
+	append_time_to_message(&msg_relay, time, 22+26);//22+52
+	iop_debug("Relay at dispatcher: %s\n", msg_relay);
+
 
 	/* verify if the number of retries was exceeded */
 	//update_reply_timers(&error, usr_configuration.time_to_live);
