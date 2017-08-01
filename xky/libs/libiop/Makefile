@@ -32,7 +32,8 @@ drivers/grspw/include/IOPgrspw.h\
 drivers/mil1553/include/IOPmil1553brm.h\
 ../../pmk/core/include/xky.h\
 ../../pmk/arch/sparc/include/xky_arch.h\
-../libprintf/include/pprintf.h
+../libprintf/include/pprintf.h\
+include/debug_functions.h
 
 LIBRARY_HEADERS=\
 include/IOPdriverconfig_interface.h\
@@ -54,7 +55,7 @@ drivers/gr1553/include/IOPgr1553b_config.h\
 drivers/gr1553/include/IOPgr1553bc.h\
 drivers/gr1553/include/IOPgr1553rt.h\
 drivers/grspw/include/IOPgrspw.h\
-drivers/mil1553/include/IOPmil1553brm.h
+drivers/mil1553/include/IOPmil1553brm.h\
 
 RTEMS_MAKEFILE_PATH=\
 ../../install/pos/$(RTEMS_DIRECTORY)/$(RTEMS_DIRECTORY)-install/$(RTEMS_TARGET)/$(RTEMS_BSP)
@@ -71,7 +72,6 @@ include $(PROJECT_ROOT)/make/leaf.cfg
 
 TARGET_CPPFLAGS+=\
 -B$(RTEMS_MAKEFILE_PATH)/lib\
--D IOP_NEEDS_DEBUG\
 -I../../pmk/core/include\
 -Idrivers/grspw/include\
 -Idrivers/amba/include\
@@ -81,7 +81,7 @@ TARGET_CPPFLAGS+=\
 -Idrivers/mil1553/include\
 -Iinclude\
 -I../libprintf/include
-
+#-D IOP_NEEDS_DEBUG\
 
 SOURCE_FILES=\
 dispatcher.c\
@@ -99,7 +99,8 @@ drivers/gr1553/IOPgr1553b_config.c\
 drivers/gr1553/IOPgr1553bc.c\
 drivers/gr1553/IOPgr1553rt.c\
 drivers/grspw/IOPgrspw.c\
-drivers/mil1553/IOPmil1553brm.c
+drivers/mil1553/IOPmil1553brm.c\
+debug_functions.c
 
 
 OBJECT_FILES=\

@@ -174,7 +174,7 @@ static rtems_status_code iop_init_drivers(void){
  *  \brief Initializes IOP tasks
  *  
  */
-static rtems_status_code iop_init_worker_tasks(void){
+static void iop_main_loop(void){
 
     iop_debug(" :: creating & launching worker tasks\n");
 
@@ -196,112 +196,6 @@ static rtems_status_code iop_init_worker_tasks(void){
     	pos_router();
 
     }
-
-//    int i;
-//    rtems_name task_name;
-//    rtems_status_code rc;
-//    rtems_id pred_task_id, prer_task_id, posd_task_id, posr_task_id;
-//
-//    /* create pre-dispatcher task */
-//    task_name = rtems_build_name( 'P', 'R', 'E', 'D');
-//    if ((rc = rtems_task_create(task_name, 10, 4096, RTEMS_DEFAULT_MODES,
-//        RTEMS_DEFAULT_ATTRIBUTES, &pred_task_id)) != RTEMS_SUCCESSFUL) {
-//
-//        return rc;
-//    }
-//
-//    /* create pre-router task */
-//    task_name = rtems_build_name( 'P', 'R', 'E', 'R');
-//    if ((rc = rtems_task_create(task_name, 11, 4096, RTEMS_DEFAULT_MODES,
-//        RTEMS_DEFAULT_ATTRIBUTES, &prer_task_id)) != RTEMS_SUCCESSFUL) {
-//
-//        return rc;
-//    }
-//
-//    /* create device writer and reader tasks */
-//    for (i = 0; i < usr_configuration.physical_devices.length; ++i) {
-//
-//        /* get device pointer */
-//        iop_physical_device_t *dev = get_physical_device(i);
-//
-//        /* create device writer task */
-//        task_name = rtems_build_name( 'W', 'R', 'T', (char)i);
-//        if ((rc = rtems_task_create(task_name, 12, 4096, RTEMS_DEFAULT_MODES,
-//            RTEMS_DEFAULT_ATTRIBUTES, &dev->writer_id)) != RTEMS_SUCCESSFUL) {
-//
-//            return rc;
-//        }
-//
-//        /* create device reader task */
-//        task_name = rtems_build_name( 'R', 'D', ' ', (char)i);
-//        if ((rc = rtems_task_create(task_name, 20, 4096, RTEMS_DEFAULT_MODES,
-//            RTEMS_DEFAULT_ATTRIBUTES, &dev->reader_id)) != RTEMS_SUCCESSFUL) {
-//
-//            return rc;
-//        }
-//    }
-//
-//    /* create pos-dispatcher task */
-//    task_name = rtems_build_name( 'P', 'O', 'S', 'D');
-//    if (usr_configuration.request_ports.length > 0 &&
-//        (rc = rtems_task_create(task_name, 40, 4096, RTEMS_DEFAULT_MODES,
-//        RTEMS_DEFAULT_ATTRIBUTES, &posd_task_id)) != RTEMS_SUCCESSFUL) {
-//        return rc;
-//    }
-//
-//    /* create pos-router task */
-//    task_name = rtems_build_name( 'P', 'O', 'S', 'R');
-//    if ((rc = rtems_task_create(task_name, 41, 4096, RTEMS_DEFAULT_MODES,
-//        RTEMS_DEFAULT_ATTRIBUTES, &posr_task_id)) != RTEMS_SUCCESSFUL) {
-//
-//        return rc;
-//    }
-//
-//
-//    /* start pre-dispatcher task */
-//    if ((rc = rtems_task_start(pred_task_id, pre_dispatcher,
-//        (rtems_task_argument)NULL)) != RTEMS_SUCCESSFUL) {
-//        return rc;
-//    }
-//
-//    /* start pre-router task */
-//    if ((rc = rtems_task_start(prer_task_id, pre_router,
-//        (rtems_task_argument)NULL)) != RTEMS_SUCCESSFUL) {
-//        return rc;
-//    }
-//
-//    /* start device tasks */
-//    for (i = 0; i < usr_configuration.physical_devices.length; ++i) {
-//
-//        /* get device pointer */
-//        iop_physical_device_t *dev = get_physical_device(i);
-//
-//        /* start device reader task */
-//        if ((rc = rtems_task_start(dev->reader_id, dev->reader_task,
-//            (rtems_task_argument)dev)) != RTEMS_SUCCESSFUL) {
-//            return rc;
-//        }
-//
-//        /* start device writer task */
-//        if ((rc = rtems_task_start(dev->writer_id, dev->writer_task,
-//            (rtems_task_argument)dev)) != RTEMS_SUCCESSFUL) {
-//            return rc;
-//        }
-//    }
-//
-//    /* start pos-dispatcher task */
-//    if (usr_configuration.request_ports.length > 0 &&
-//        (rc = rtems_task_start(posd_task_id, pos_dispatcher,
-//        (rtems_task_argument)NULL)) != RTEMS_SUCCESSFUL) {
-//        return rc;
-//    }
-//
-//
-//    /* start pos-router task */
-//    if ((rc = rtems_task_start(posr_task_id, pos_router,
-//        (rtems_task_argument)NULL)) != RTEMS_SUCCESSFUL) {
-//        return rc;
-//    }
 
     return RTEMS_SUCCESSFUL;
 }
@@ -376,7 +270,7 @@ rtems_status_code IOPinit() {
 //	if(iop_init_worker_tasks() != RTEMS_SUCCESSFUL){
 //		iop_raise_error(CANT_CREATE_TASK);
 //	}
-	iop_init_worker_tasks();
+	iop_main_loop();
 
 	return RTEMS_SUCCESSFUL;
 }
