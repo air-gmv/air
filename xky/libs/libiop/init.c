@@ -178,51 +178,104 @@ static void iop_main_loop(void){
 
     iop_debug(" :: creating & launching worker tasks\n");
 
-    int i, msg_offset = 0;
+    int i, msg_offset = 12, j = 0;
+    int offset_ed = 0, offset_er = 0;
+    char ed_msg[4] = "ED0 ";
+    char er_msg[4] = "ER0 ";
+//    char w_msg[3] = "W0 ";
+    char msg_trail_ed[256];
+    char msg_trail_er[256];
+    int len = 0, last_len = -1, new_message = 0;
+//    char msg_trail_w[256];
+
     rtems_interval begin, predi, prero, write,
 		readt, posdi, posro;
+
     iop_physical_device_t *devs[usr_configuration.physical_devices.length];
     for(i =0; i < usr_configuration.physical_devices.length; i++){
     	devs[i] = get_physical_device(i);
     }
+
     for(;;)
     {
-    	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &begin);
+
+//    	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &begin);
     	pre_dispatcher();
-    	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &predi);
+    	len = home_made_strlen(msg_ptr);
+    	if(len != last_len){
+    		last_len = len;
+    		new_message = 1;
+    	}else{
+    		new_message = 0;
+    	}
+		if(new_message){
+			rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &predi);
+			append_to_message(msg_trail_ed, ed_msg, offset_ed);
+			append_time_to_message(msg_trail_ed, predi, 4 + offset_ed);
+			append_to_message(msg_trail_ed, " ", offset_ed + 4 + 8);
+			offset_ed += 13;
+		}
+
     	pre_router();
-    	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &prero);
-    	/* run all the device drivers writer and reader functions */
+
+    	if(new_message){
+    		rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &prero);
+    		append_to_message(msg_trail_er, er_msg, offset_er);
+			append_time_to_message(msg_trail_er, prero, 4 + offset_er);
+			append_to_message(msg_trail_er, " ", offset_er + 4 + 8);
+			offset_er += 13;
+			append_to_message(msg_ptr, msg_trail_ed, msg_offset);
+			append_to_message(msg_ptr, msg_trail_er, msg_offset + offset_ed);
+			offset_er +=12;
+			msg_offset += 12;
+    	}
+
+
+		/* run all the device drivers writer and reader functions */
     	for(i = 0; i < usr_configuration.physical_devices.length; i++){
     		devs[i]->writer_task(devs[i]);
-    		rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &write);
+//    		rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &write);
+//    		append_to_message(msg_trail_w, w_msg, offset);
+//    		append_time_to_message(msg_trail_w, write, 3 + offset);
+//    		append_to_message(msg_trail_w, " ", offset + 3 + 8);
+//    		offset += 12;
+
     		devs[i]->reader_task(devs[i]);
-    		rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &readt);
+//    		rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &readt);
     	}
     	pos_dispatcher();
-    	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &posdi);
+//    	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &posdi);
     	pos_router();
-    	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &posro);
+//    	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &posro);
 
-    	msg_offset = 0;
-    	append_to_message(&msg_main, " Ticks begin: ", 0);
-    	append_time_to_message(&msg_main, begin, 14);
-    	msg_offset = 22;
-    	append_to_message(&msg_main, " Ticks predi: ", msg_offset);
-    	append_time_to_message(&msg_main, predi, msg_offset + 14);
-    	msg_offset = 22*2;
-    	append_to_message(&msg_main, " Ticks write: ", msg_offset);
-		append_time_to_message(&msg_main, write, msg_offset + 14);
-		msg_offset = 22*3;
-		append_to_message(&msg_main, " Ticks readt: ", msg_offset);
-		append_time_to_message(&msg_main, readt, msg_offset + 14);
-		msg_offset = 22*4;
-		append_to_message(&msg_main, " Ticks posdi: ", msg_offset);
-		append_time_to_message(&msg_main, posdi, msg_offset + 14);
-		msg_offset = 22*5;
-		append_to_message(&msg_main, " Ticks posro: ", msg_offset);
-		append_time_to_message(&msg_main, posro, msg_offset + 14);
-    	iop_debug("Relay: %s\n", msg_main);
+//    	msg_offset = 0;
+//    	append_to_message(&msg_main, " Ticks begin: ", 0);
+//    	append_time_to_message(&msg_main, begin, 14);
+//    	msg_offset = 22;
+//    	append_to_message(&msg_main, " Ticks predi: ", msg_offset);
+//    	append_time_to_message(&msg_main, predi, msg_offset + 14);
+//    	msg_offset = 22*2;
+//    	append_to_message(&msg_main, " Ticks write: ", msg_offset);
+//		append_time_to_message(&msg_main, write, msg_offset + 14);
+//		msg_offset = 22*3;
+//		append_to_message(&msg_main, " Ticks readt: ", msg_offset);
+//		append_time_to_message(&msg_main, readt, msg_offset + 14);
+//		msg_offset = 22*4;
+//		append_to_message(&msg_main, " Ticks posdi: ", msg_offset);
+//		append_time_to_message(&msg_main, posdi, msg_offset + 14);
+//		msg_offset = 22*5;
+//		append_to_message(&msg_main, " Ticks posro: ", msg_offset);
+//		append_time_to_message(&msg_main, posro, msg_offset + 14);
+//    	iop_debug("Relay: %s\n", msg_main);
+    	if(new_message){
+			if(j == 10)
+				j =0;
+			ed_msg[2] = 0x30 + j;
+			er_msg[2] = 0x30 + j;
+	//    	w_msg[1]  = 0x30 + j;
+
+			j++;
+    	}
 
     }
 

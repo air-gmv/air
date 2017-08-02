@@ -18,6 +18,46 @@
  
 #include <pprintf.h>
 
+/*
+ * gmvs
+ * Garbage due to lazyness
+ *
+ * */
+
+void append_to_message(uint8_t *msg_ptr_, char * to_append, int offset){
+
+	int i;
+	//strlen
+	for( i = 0; to_append[i] != '\0'; i++);
+	int length = i;
+
+
+	for(i = 0; i < length; i++){
+		msg_ptr_[offset+i] = to_append[i];
+	}
+	msg_ptr_[offset + length] = '\0';
+}
+
+void append_time_to_message(uint8_t *msg_ptr_, rtems_interval time, int offset){
+
+	int i, length = 8;
+	char time_tag[] = "00000000";
+	for(i = length-1; time > 0 && i > 0; i--){
+		int digit = time%10;
+		time_tag[i] = digit + '0';
+		time /= 10;
+	}
+	for(i = 0; i < length; i++){
+		msg_ptr_[offset+i] = time_tag[i];
+	}
+	msg_ptr_[offset + length] = '\0';
+}
+
+
+
+/*
+ * end of garbage
+ * */
 
 
 
@@ -46,30 +86,37 @@ void error_message(RETURN_CODE_TYPE rc){
 
 void test(PARTITION_ID_TYPE self_id) {
 
-    int i = 0;
-	char message[18]= "This is sample 0\0";
+    int i = 0, offset = 0;;
+	char message[256];
+	char sample[3] = "S0 ";
 
 	/* get the number of ticks per second */
 	int tps = 1000000 / xky_syscall_get_us_per_tick();
 	pprintf("TPS %i\n", tps);
 
 	RETURN_CODE_TYPE rc = NO_ERROR;
+	rtems_interval time;
 
 	while(1) {
 
-		pprintf ("Partition %d sending: %s..\n", self_id, message);
+		rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
+		append_to_message(message, sample, offset);
+		append_time_to_message(message, time, 3 + offset);
+		append_to_message(message, " ", offset + 3 + 8);
+
+		pprintf ("Partition %d at time %d sending: %s\n", self_id, time, message);
 		WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )message, 1024, &rc );
 		if (NO_ERROR != rc) {
 			//pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
 			error_message(rc);
 		}
-		
+		offset += 12;
 		/*identify the string with an integer index*/
 		i++;
 		if (i == 10) {
 			i=0;
 		}
-		message[15] = 0x30 + i;
+		sample[1] = 0x30 + i;
 		
 		rtems_task_wake_after(0.7 * tps);
 	}

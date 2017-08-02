@@ -69,8 +69,8 @@ typedef struct {
  * GMVS
  */
 uint8_t *msg_ptr;
-char msg_relay[256];
-char msg_main[256];
+//char msg_relay[256];
+//char msg_main[256];
 
 
 /**
