@@ -51,14 +51,14 @@ void eth_writer(iop_physical_device_t *pdev){
 
 	iop_debug(" :: IOP - eth-writer running!\n");
 
-	rtems_interval time;
-	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
-	char preamble[] = " eth-writer time: ";
-	append_to_message(msg_ptr, preamble, 72);
-	append_time_to_message(msg_ptr, time, 72+18);
-
-	append_to_message(msg_ptr, msg_relay, 98); //98
-	append_to_message(msg_ptr, msg_main, 180);
+//	rtems_interval time;
+//	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
+//	char preamble[] = " eth-writer time: ";
+//	append_to_message(msg_ptr, preamble, 72);
+//	append_time_to_message(msg_ptr, time, 72+18);
+//
+//	append_to_message(msg_ptr, msg_relay, 98); //98
+//	append_to_message(msg_ptr, msg_main, 180);
 
 	/* empty send queue */
 	while (!iop_chain_is_empty(&pdev->sendqueue)) {
@@ -123,11 +123,11 @@ void eth_reader(iop_physical_device_t *pdev){
 
 	iop_debug(" :: IOP - eth-reader running!\n");
 
-	rtems_interval time;
-	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
-	char preamble[] = " eth-reader time: ";
-	append_to_message(&msg_relay, preamble, 0);
-	append_time_to_message(&msg_relay, time, 0+18);
+//	rtems_interval time;
+//	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
+//	char preamble[] = " eth-reader time: ";
+//	append_to_message(&msg_relay, preamble, 0);
+//	append_time_to_message(&msg_relay, time, 0+18);
 
 	uint32_t i;
 	uint32_t skip;

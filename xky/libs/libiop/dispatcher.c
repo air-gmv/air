@@ -346,6 +346,7 @@ void pre_dispatcher(){
 	update_timers();
 
 	/* iterate over all remote ports*/
+
 	for (i = 0; i < usr_configuration.remote_ports.length; ++i){
 
 		/* get port */
@@ -357,11 +358,13 @@ void pre_dispatcher(){
 			process_remote_port(port);
 		}
 	}
-	rtems_interval time;
-	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
-	char preamble[] = " pre-dispatcher time: ";
-	append_to_message(msg_ptr, preamble, 16);
-	append_time_to_message(msg_ptr, time, 22+16);
+
+//	rtems_interval time_d;
+//	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time_d);
+//	char preamble[] = " pre-dispatcher time: ";
+//	append_to_message(msg_ptr, preamble, 16);
+//	append_time_to_message(msg_ptr, time, 22+16);
+
 	/* iterate over all request ports*/
 	for (i = 0; i < usr_configuration.request_ports.length; i += 2){
 		/* get port */
@@ -399,12 +402,12 @@ void pos_dispatcher(){
 
 	iop_debug(" :: IOP - pos-dispatcher doing nothing!\n");
 
-	rtems_interval time;
-	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
-	char preamble[] = " pos-dispatcher time: ";
-	append_to_message(&msg_relay, preamble, 26); //52
-	append_time_to_message(&msg_relay, time, 22+26);//22+52
-	iop_debug("Relay at dispatcher: %s\n", msg_relay);
+//	rtems_interval time;
+//	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
+//	char preamble[] = " pos-dispatcher time: ";
+//	append_to_message(&msg_relay, preamble, 26); //52
+//	append_time_to_message(&msg_relay, time, 22+26);//22+52
+//	iop_debug("Relay at dispatcher: %s\n", msg_relay);
 
 
 	/* verify if the number of retries was exceeded */
