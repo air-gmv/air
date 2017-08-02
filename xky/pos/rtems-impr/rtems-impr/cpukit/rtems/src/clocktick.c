@@ -105,6 +105,8 @@ void rtems_time_travel(long ticks)
    _Context_Switch_necessary = TRUE;
 }
 
+/* FIXME GMVS return something on this function. At least a RTEMS_SUCCESSFUL*/
+
 rtems_status_code rtems_clock_update(long ticks)
 {
    if(ticks == 1)

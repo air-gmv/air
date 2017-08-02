@@ -25,7 +25,7 @@ void append_time_to_message(uint8_t *msg_ptr_, rtems_interval time, int offset){
 
 	int i, length = 8;
 	char time_tag[] = "00000000";
-	for(i = length; time > 0 && i > 0; i--){
+	for(i = length-1; time > 0 && i > 0; i--){
 		int digit = time%10;
 		time_tag[i] = digit + '0';
 		time /= 10;
@@ -34,4 +34,11 @@ void append_time_to_message(uint8_t *msg_ptr_, rtems_interval time, int offset){
 		msg_ptr_[offset+i] = time_tag[i];
 	}
 	msg_ptr_[offset + length] = '\0';
+}
+
+
+int home_made_strlen(char *str){
+	int i = 0;
+	for( i = 0; str[i] != '\0'; i++);
+	return i;
 }
