@@ -65,17 +65,7 @@ typedef struct {
 
 } iop_buffer_t;
 
-/*
- * GMVS
- */
-uint8_t *msg_ptr;
-//char msg_relay[256];
-//char msg_main[256];
 
-
-/**
- *
- */
 typedef struct {
 
     iop_chain_node node;            /**< RTEMS Chain Node */

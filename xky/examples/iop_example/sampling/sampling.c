@@ -87,7 +87,6 @@ void error_message(RETURN_CODE_TYPE rc){
 void test(PARTITION_ID_TYPE self_id) {
 
     int i = 0, offset = 0;;
-	char message[256];
 	char sample[3] = "S0 ";
 
 	/* get the number of ticks per second */
@@ -100,12 +99,12 @@ void test(PARTITION_ID_TYPE self_id) {
 	while(1) {
 
 		rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
-		append_to_message(message, sample, offset);
-		append_time_to_message(message, time, 3 + offset);
-		append_to_message(message, " ", offset + 3 + 8);
+//		append_to_message(message, sample, offset);
+//		append_time_to_message(message, time, 3 + offset);
+//		append_to_message(message, " ", offset + 3 + 8);
 
-		pprintf ("Partition %d at time %d sending: %s\n", self_id, time, message);
-		WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )message, 1024, &rc );
+		pprintf ("Partition %d at time %d sending: %s\n", self_id, time, sample);
+		WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )sample, 1024, &rc );
 		if (NO_ERROR != rc) {
 			//pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
 			error_message(rc);
