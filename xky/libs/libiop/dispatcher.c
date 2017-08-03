@@ -181,7 +181,6 @@ static void process_remote_port(iop_port_t *port){
         /* get the message space */
         uint8_t *message = (uint8_t *)
                 ((uintptr_t)wrapper->buffer->v_addr + sizeof(iop_header_t));
-        msg_ptr = message;
 
         /* read regular message */
         xky_sampling_port_status_t status;
@@ -223,6 +222,7 @@ static void process_remote_port(iop_port_t *port){
             release_wrapper(wrapper);
             rc = XKY_NOT_AVAILABLE;
         }
+        rtems_task_wake_after(1);
     }
 }
 
