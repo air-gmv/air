@@ -6,7 +6,7 @@
  *
  * 	@ingroup TASKS
  *
- *	@author Cl�udio Silva
+ *	@author Claudio Silva
  *
  * 	@brief Tasks that write and read from GRETH
  *
@@ -17,7 +17,6 @@
 #include <iop_error.h>
 #include <iop_support.h>
 #include <eth_support.h>
-
 
 /**
  *  @brief Task that writes pending write requests to ETH0
@@ -30,12 +29,9 @@
  *  If the user didn't request a reply then the write will be retried until the
  *  request times out.
  */
-rtems_task eth_writer(rtems_task_argument arg){
-
-    iop_debug(" :: IOP - eth-writer start!\n");
+void eth_writer(iop_physical_device_t *pdev){
 
     /* get task physical device */
-    iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
 
     /* initialize error chain (packets to be re-sent) */
     iop_chain_control error;
@@ -44,40 +40,35 @@ rtems_task eth_writer(rtems_task_argument arg){
     /* get underlying driver */
     iop_eth_device_t *eth_driver = (iop_eth_device_t *)pdev->driver;
 
-    /* main task loop */
-    for(;;){
+	iop_debug(" :: IOP - eth-writer running!\n");
 
-        /* wait for next partition release point */
-        iop_task_sleep(0);
+	/* empty send queue */
+	while (!iop_chain_is_empty(&pdev->sendqueue)) {
 
-        iop_debug(" :: IOP - eth-writer running!\n");
+		iop_wrapper_t *wrapper = obtain_wrapper(&pdev->sendqueue);
+		uint8_t *message = (uint8_t *)
+		                ((uintptr_t)wrapper->buffer->v_addr + sizeof(iop_header_t));
 
-        /* empty send queue */
-        while (!iop_chain_is_empty(&pdev->sendqueue)) {
+		/* write to the device */
+		if (eth_driver->dev.write((iop_device_driver_t *)eth_driver,
+			wrapper) == RTEMS_SUCCESSFUL){
 
-            iop_wrapper_t *wrapper = obtain_wrapper(&pdev->sendqueue);
+			release_wrapper(wrapper);
 
-            /* write to the device */
-            if (eth_driver->dev.write((iop_device_driver_t *)eth_driver,
-                wrapper) == RTEMS_SUCCESSFUL){
+		/* error sending packet */
+		} else {
 
-                release_wrapper(wrapper);
+			iop_chain_append(&error, &wrapper->node);
+			iop_raise_error(HW_WRITE_ERROR);
+		}
+	}
 
-            /* error sending packet */
-            } else {
+	/* re-queue failed transmissions */
+	while (!iop_chain_is_empty(&error)) {
 
-                iop_chain_append(&error, &wrapper->node);
-                iop_raise_error(HW_WRITE_ERROR);
-            }
-        }
-
-        /* re-queue failed transmissions */
-        while (!iop_chain_is_empty(&error)) {
-
-            iop_wrapper_t *wrapper = obtain_wrapper(&error);
-            iop_chain_append(&pdev->sendqueue, &wrapper->node);
-        }
-    }
+		iop_wrapper_t *wrapper = obtain_wrapper(&error);
+		iop_chain_append(&pdev->sendqueue, &wrapper->node);
+	}
 }
 
 /**
@@ -96,12 +87,9 @@ rtems_task eth_writer(rtems_task_argument arg){
  */
 
 
-rtems_task eth_reader(rtems_task_argument arg){
-
-    iop_debug(" :: IOP - eth-reader start!\n");
-
+void eth_reader(iop_physical_device_t *pdev){
     /* get task physical device */
-    iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
+//    iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
 
     /* initialize error chain (packets to be resent) */
     iop_chain_control error;
@@ -110,55 +98,46 @@ rtems_task eth_reader(rtems_task_argument arg){
     /* get underlying driver */
     iop_eth_device_t *driver = (iop_eth_device_t *)pdev->driver;
 
-    /* main task loop */
-    for (;;) {
+	iop_debug(" :: IOP - eth-reader running!\n");
 
-        /* wait for next partition release point */
-        iop_task_sleep(0);
+	uint32_t i;
+	uint32_t skip;
+	uint32_t reads = pdev->reads_per_period[xky_schedule.current_schedule_index];
+	for (i = 0; i < reads; ++i){
 
-        iop_debug(" :: IOP - eth-reader running!\n");
+		/* get an empty reply wrapper */
+		iop_wrapper_t *wrapper = obtain_free_wrapper();
 
-        uint32_t i;
-        uint32_t skip;
-        uint32_t reads = pdev->reads_per_period[xky_schedule.current_schedule_index];
-        for (i = 0; i < reads; ++i){
+		/* sanity check */
+		if (wrapper == NULL) {
+			iop_raise_error(OUT_OF_MEMORY);
+			break;
+		}
 
-            /* get an empty reply wrapper */
-            iop_wrapper_t *wrapper = obtain_free_wrapper();
+		/* read from the device */
+		if (driver->dev.read((iop_device_driver_t *)driver, wrapper) == 0) {
+			switch (eth_get_packet_type(wrapper->buffer)) {
 
-            /* sanity check */
-            if (wrapper == NULL) {
-                iop_raise_error(OUT_OF_MEMORY);
-                break;
-            }
+				/* ARP packet */
+				case HTONS(ETH_HDR_ARP_TYPE):
+					eth_send_arp_reply(driver, wrapper);
+					break;
 
-            /* read from the device */
-            if (driver->dev.read((iop_device_driver_t *)driver, wrapper) == 0) {
-                switch (eth_get_packet_type(wrapper->buffer)) {
+				/* IPv4 packet */
+				case HTONS(ETH_HDR_IP_TYPE):
 
-                    /* ARP packet */
-                    case HTONS(ETH_HDR_ARP_TYPE):
-                        eth_send_arp_reply(driver, wrapper);
-                        break;
+					/* check if it valid UDP packet for us */
+					if (eth_validate_packet(driver, wrapper)) {
+						iop_chain_append(&pdev->rcvqueue, &wrapper->node);
+						wrapper = NULL;
+					}
+					break;
+			}
+		}
 
-                    /* IPv4 packet */
-                    case HTONS(ETH_HDR_IP_TYPE):
-
-                        /* check if it valid UDP packet for us */
-                        if (eth_validate_packet(driver, wrapper)) {
-                            iop_chain_append(&pdev->rcvqueue, &wrapper->node);
-                            wrapper = NULL;
-                        }
-                        break;
-                }
-            }
-
-
-
-            /* free wrapper if it wasn't used */
-            if (wrapper != NULL) {
-                release_wrapper(wrapper);
-            }
-        }
-    }
+		/* free wrapper if it wasn't used */
+		if (wrapper != NULL) {
+			release_wrapper(wrapper);
+		}
+	}
 }

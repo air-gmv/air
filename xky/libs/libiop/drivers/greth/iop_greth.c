@@ -485,7 +485,6 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
 
     /* get the size of the packet to send */
     uint16_t len = (uint16_t)get_buffer_size(wrapper->buffer);
-
     /* ignore long packets */
     if (len < IOP_BUFFER_SIZE) {
 
@@ -618,11 +617,11 @@ uint32_t greth_read(iop_device_driver_t *iop_dev, void *arg) {
 		
 		/* Are we allowed to block?*/
 		if (sc->rx_blocking) {
-			
+		
 			/* wait a moment for any RX descriptors to get available */
 			rtems_task_wake_after(sc->wait_ticks);
 		} else {
-			
+		
 			/* We can't block waiting, so we return */
 			return RTEMS_RESOURCE_IN_USE;
 		}
@@ -638,7 +637,6 @@ uint32_t greth_write(iop_device_driver_t *iop_dev, void *arg) {
     iop_wrapper_t *wrapper = (iop_wrapper_t *)arg;
     iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
     greth_softc_t *sc = (greth_softc_t *)device->dev.driver;
-	
 
 	if(!sc->started)
 		return RTEMS_NOT_CONFIGURED;
