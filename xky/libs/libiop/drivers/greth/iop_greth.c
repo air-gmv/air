@@ -617,11 +617,11 @@ uint32_t greth_read(iop_device_driver_t *iop_dev, void *arg) {
 		
 		/* Are we allowed to block?*/
 		if (sc->rx_blocking) {
-			
+		
 			/* wait a moment for any RX descriptors to get available */
 			rtems_task_wake_after(sc->wait_ticks);
 		} else {
-			
+		
 			/* We can't block waiting, so we return */
 			return RTEMS_RESOURCE_IN_USE;
 		}

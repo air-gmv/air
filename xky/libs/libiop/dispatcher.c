@@ -14,8 +14,6 @@
 #include <iop_support.h>
 #include <dispatcher.h>
 
-#include <debug_functions.h>
-
 /* reference time for window execution time */
 extern rtems_interval last_task_ticks;
 
@@ -327,12 +325,6 @@ void pre_dispatcher(){
 
     uint32_t i;
 
-    //iop_debug(" :: IOP - pre-dispatcher start!\n");
-
-    // OLD MAIN LOOP
-	/* wait for next partition release point */
-	//iop_task_sleep(1);
-
 	iop_debug(" :: IOP - pre-dispatcher running!\n");
 
 	/* Get execution window reference time */
@@ -358,13 +350,6 @@ void pre_dispatcher(){
 			process_remote_port(port);
 		}
 	}
-
-//	rtems_interval time_d;
-//	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time_d);
-//	char preamble[] = " pre-dispatcher time: ";
-//	append_to_message(msg_ptr, preamble, 16);
-//	append_time_to_message(msg_ptr, time, 22+16);
-
 	/* iterate over all request ports*/
 	for (i = 0; i < usr_configuration.request_ports.length; i += 2){
 		/* get port */

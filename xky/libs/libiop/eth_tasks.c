@@ -18,9 +18,6 @@
 #include <iop_support.h>
 #include <eth_support.h>
 
-#include <debug_functions.h>
-
-
 /**
  *  @brief Task that writes pending write requests to ETH0
  *  @param [in] arg: not used
@@ -35,7 +32,6 @@
 void eth_writer(iop_physical_device_t *pdev){
 
     /* get task physical device */
-//    iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
 
     /* initialize error chain (packets to be re-sent) */
     iop_chain_control error;
@@ -44,21 +40,7 @@ void eth_writer(iop_physical_device_t *pdev){
     /* get underlying driver */
     iop_eth_device_t *eth_driver = (iop_eth_device_t *)pdev->driver;
 
-
-    // OLD MAIN LOOP
-	/* wait for next partition release point */
-	//iop_task_sleep(0);
-
 	iop_debug(" :: IOP - eth-writer running!\n");
-
-//	rtems_interval time;
-//	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
-//	char preamble[] = " eth-writer time: ";
-//	append_to_message(msg_ptr, preamble, 72);
-//	append_time_to_message(msg_ptr, time, 72+18);
-//
-//	append_to_message(msg_ptr, msg_relay, 98); //98
-//	append_to_message(msg_ptr, msg_main, 180);
 
 	/* empty send queue */
 	while (!iop_chain_is_empty(&pdev->sendqueue)) {
@@ -116,18 +98,7 @@ void eth_reader(iop_physical_device_t *pdev){
     /* get underlying driver */
     iop_eth_device_t *driver = (iop_eth_device_t *)pdev->driver;
 
-
-    // OLD MAIN LOOP
-	/* wait for next partition release point */
-	//iop_task_sleep(0);
-
 	iop_debug(" :: IOP - eth-reader running!\n");
-
-//	rtems_interval time;
-//	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
-//	char preamble[] = " eth-reader time: ";
-//	append_to_message(&msg_relay, preamble, 0);
-//	append_time_to_message(&msg_relay, time, 0+18);
 
 	uint32_t i;
 	uint32_t skip;
@@ -163,8 +134,6 @@ void eth_reader(iop_physical_device_t *pdev){
 					break;
 			}
 		}
-
-
 
 		/* free wrapper if it wasn't used */
 		if (wrapper != NULL) {
