@@ -23,9 +23,6 @@
 #include <string.h>
 #include <iop_functions.h>
 
-#include <debug_functions.h>
-
-
 static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
 
 
@@ -207,19 +204,7 @@ void route_reply(iop_physical_device_t *pdev, iop_wrapper_t *wrapper) {
 //rtems_task pre_router(rtems_task_argument arg){
 void pre_router(){
 
-    //iop_debug(" :: IOP - pre-router start!\n");
-
-	/* wait for next partition release point */
-	//iop_task_sleep(0);
-
 	iop_debug(" :: IOP - pre-router running!\n");
-
-
-//	rtems_interval time;
-//	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
-//	char preamble[] = " pre-router time: ";
-//	append_to_message(msg_ptr, preamble, 46);
-//	append_time_to_message(msg_ptr, time, 18+46);
 
 	/* loop through all logical devices */
 	int i;
@@ -251,21 +236,9 @@ void pre_router(){
  */
 void pos_router(){
 
-    //iop_debug(" :: IOP - pos-router start!\n");
-
 	int i;
 
-	// OLD MAIN LOOP
-	/* wait for next partition release point */
-	//iop_task_sleep(0);
-
 	iop_debug(" :: IOP - pos-router running!\n");
-
-//	rtems_interval time;
-//	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
-//	char preamble[] = " pos-router time: ";
-//	append_to_message(&msg_relay, preamble, 56);
-//	append_time_to_message(&msg_relay, time, 18+56);
 
 	/* iterate over all physical devices */
 	for (i = 0; i < usr_configuration.physical_devices.length; ++i) {
