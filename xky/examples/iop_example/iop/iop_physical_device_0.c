@@ -62,7 +62,7 @@ static iop_eth_device_t device_configuration = \
     },
 
     /* ethernet configuration */
-    .ip         = { 192, 168, 0, 70 },
+    .ip         = { 192, 168, 0, 17 },
     .mac        = { 0xd0, 0x39, 0x72, 0x74, 0xd8, 0x1f },
     .rx_count   = 32,
     .tx_count   = 32
@@ -81,8 +81,8 @@ static iop_header_t route_header[1] = \
 {
         {
         .eth_header = {
-            .dst_ip      = { 192,168,0,2},
-            .dst_mac     = { 0x68,0x05,0xca,0x1f,0x39,0xaf},
+            .dst_ip      = { 192,168,0,3},
+            .dst_mac     = { 0x00,0x50,0xbf,0x50,0x07,0x0d},
             .dst_port    = HTONS(14000),
             .src_port    = HTONS(14000)
         }

@@ -65,9 +65,7 @@ typedef struct {
 
 } iop_buffer_t;
 
-/**
- *
- */
+
 typedef struct {
 
     iop_chain_node node;            /**< RTEMS Chain Node */
@@ -271,6 +269,8 @@ typedef struct {
  * and linked against the IOP library to compile the IO Partition
  */
 extern iop_configuration_t usr_configuration;
+
+static void iop_main_loop(void);
 
 
 #ifdef IOP_NEEDS_DEBUG
