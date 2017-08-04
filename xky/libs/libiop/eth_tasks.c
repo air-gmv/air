@@ -66,7 +66,7 @@ void eth_writer(iop_physical_device_t *pdev){
 		iop_wrapper_t *wrapper = obtain_wrapper(&pdev->sendqueue);
 		uint8_t *message = (uint8_t *)
 		                ((uintptr_t)wrapper->buffer->v_addr + sizeof(iop_header_t));
-		iop_debug("Message from port: %s", message);
+
 		/* write to the device */
 		if (eth_driver->dev.write((iop_device_driver_t *)eth_driver,
 			wrapper) == RTEMS_SUCCESSFUL){
