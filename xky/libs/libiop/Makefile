@@ -33,7 +33,6 @@ drivers/mil1553/include/IOPmil1553brm.h\
 ../../pmk/core/include/xky.h\
 ../../pmk/arch/sparc/include/xky_arch.h\
 ../libprintf/include/pprintf.h\
-include/debug_functions.h
 
 LIBRARY_HEADERS=\
 include/IOPdriverconfig_interface.h\
@@ -100,8 +99,6 @@ drivers/gr1553/IOPgr1553bc.c\
 drivers/gr1553/IOPgr1553rt.c\
 drivers/grspw/IOPgrspw.c\
 drivers/mil1553/IOPmil1553brm.c\
-debug_functions.c
-
 
 OBJECT_FILES=\
 $(patsubst %.c,$(TARGET_BUILD)/%.o,\
