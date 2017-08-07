@@ -63,7 +63,7 @@ static iop_eth_device_t device_configuration = \
 
     /* ethernet configuration */
     .ip         = { 192, 168, 0, 17 },
-    .mac        = { 0xd0, 0x39, 0x72, 0x74, 0xd8, 0x1f },
+    .mac        = { 0x00, 0x50, 0xC2, 0x75, 0xa0, 0x60 },
     .rx_count   = 32,
     .tx_count   = 32
 };

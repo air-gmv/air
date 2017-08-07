@@ -24,15 +24,9 @@ include/iop_mms.h\
 include/iop_support.h\
 drivers/amba/include/ambaext.h\
 drivers/greth/include/iop_greth.h\
-drivers/gr1553/include/IOPgr1553b.h\
-drivers/gr1553/include/IOPgr1553b_config.h\
-drivers/gr1553/include/IOPgr1553bc.h\
-drivers/gr1553/include/IOPgr1553rt.h\
-drivers/grspw/include/IOPgrspw.h\
-drivers/mil1553/include/IOPmil1553brm.h\
-../../pmk/core/include/xky.h\
 ../../pmk/arch/sparc/include/xky_arch.h\
 ../libprintf/include/pprintf.h\
+../../pmk/core/include/xky.h
 
 LIBRARY_HEADERS=\
 include/IOPdriverconfig_interface.h\
@@ -48,13 +42,7 @@ include/iop_headers.h\
 include/iop_mms.h\
 include/iop_support.h\
 drivers/amba/include/ambaext.h\
-drivers/greth/include/iop_greth.h\
-drivers/gr1553/include/IOPgr1553b.h\
-drivers/gr1553/include/IOPgr1553b_config.h\
-drivers/gr1553/include/IOPgr1553bc.h\
-drivers/gr1553/include/IOPgr1553rt.h\
-drivers/grspw/include/IOPgrspw.h\
-drivers/mil1553/include/IOPmil1553brm.h\
+drivers/greth/include/iop_greth.h
 
 RTEMS_MAKEFILE_PATH=\
 ../../install/pos/$(RTEMS_DIRECTORY)/$(RTEMS_DIRECTORY)-install/$(RTEMS_TARGET)/$(RTEMS_BSP)
@@ -72,15 +60,12 @@ include $(PROJECT_ROOT)/make/leaf.cfg
 TARGET_CPPFLAGS+=\
 -B$(RTEMS_MAKEFILE_PATH)/lib\
 -I../../pmk/core/include\
--Idrivers/grspw/include\
 -Idrivers/amba/include\
--Idrivers/gr1553/include\
--Idrivers/greth/include\
 -I../../pmk/arch/sparc/include\
--Idrivers/mil1553/include\
+-Idrivers/greth/include\
 -Iinclude\
 -I../libprintf/include
-#-D IOP_NEEDS_DEBUG\
+
 
 SOURCE_FILES=\
 dispatcher.c\
@@ -88,17 +73,13 @@ error.c\
 eth_support.c\
 eth_tasks.c\
 init.c\
+libiop_main.c\
 mms.c\
 router.c\
 support.c\
 drivers/amba/ambaext.c\
-drivers/greth/iop_greth.c\
-drivers/gr1553/IOPgr1553b.c\
-drivers/gr1553/IOPgr1553b_config.c\
-drivers/gr1553/IOPgr1553bc.c\
-drivers/gr1553/IOPgr1553rt.c\
-drivers/grspw/IOPgrspw.c\
-drivers/mil1553/IOPmil1553brm.c\
+drivers/greth/iop_greth.c
+
 
 OBJECT_FILES=\
 $(patsubst %.c,$(TARGET_BUILD)/%.o,\
