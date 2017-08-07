@@ -1,4 +1,5 @@
 #include <iop.h>
+#include <iop_support.h>
 
 /**
  *  \return RTEMS_SUCCESSFUL if the operation was completed correctly
@@ -8,7 +9,7 @@
  *
  */
 
-static void iop_main_loop(void){
+void iop_main_loop(void){
 
     iop_debug(" :: creating & launching worker tasks\n");
 
