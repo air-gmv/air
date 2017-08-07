@@ -270,7 +270,7 @@ typedef struct {
  */
 extern iop_configuration_t usr_configuration;
 
-static void iop_main_loop(void);
+void iop_main_loop(void);
 
 
 #ifdef IOP_NEEDS_DEBUG
