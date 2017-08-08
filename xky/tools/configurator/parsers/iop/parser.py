@@ -142,7 +142,7 @@ class IOParser(object):
     # @param self object pointer
     # @param xml logical device xml node
     def parse_physical_device(self, xml):
-	
+
         print("     PARSING physical device")
 
         # clear previous errors and warnings
@@ -211,8 +211,14 @@ class IOParser(object):
             return False
 
         self.logger.information(1, pdevice.setup.details())
-        
+
         print('BEFORE parsing physical routing')
+
+        if ( pdevice.type == RTR ):
+            pdevice.idx = len(self.physical_devices)
+            self.physical_devices.append(pdevice)
+            print("     done PARSING SPWRTR device")
+            return True
 
         # Parse physical Routing
         xml_routes = xml.parse_tag(ROUTE_PHYSICAL, 1, maxint, self.logger)
@@ -226,7 +232,7 @@ class IOParser(object):
         for xml_route in xml_routes:
             rc &= self.parse_device_routes(xml_route, pdevice)
             print(rc)
-            
+
         print("PHYDEV?", rc)
 
         if rc:
@@ -317,7 +323,7 @@ class IOParser(object):
             xml_header = xml.parse_tag(ETHHEADER, 1, 1, self.logger)
             if self.logger.check_errors(): return None
             return self.parse_eth_header(xml_header)
-            
+
         elif pdevice.type == SPW:
             xml_header = xml.parse_tag(SPWHEADER, 1, 1, self.logger)
             if self.logger.check_errors(): return None
@@ -359,7 +365,7 @@ class IOParser(object):
         # sanity check
         if self.logger.check_errors(): return False
         return header
-        
+
     def parse_schedule(self, xml):
 
         # clear previous errors and warnings

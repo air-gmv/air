@@ -35,10 +35,10 @@ static iop_spw_router_device_t device_configuration = \
     },
 
     /* spacewire router configuration configuration */
-	.flags		= 11111,
-	.config		= 10000,
+	.flags		= 31,
+	.config		= 14,
 	.iid		= 1,
-	.idiv		= 1
+	.idiv		= 9
 };
 
 /**
@@ -48,15 +48,37 @@ static uint32_t reads_per_period[] = \
     { 5 };
 
 /**
+ * @brief Routes Headers
+ */
+static iop_header_t route_header[0] = \
+{
+};
+
+/**
+ * @brief Routes Scheduling
+ */
+
+/**
+ * @brief Routes Configuration
+ */
+static iop_physical_route_t physical_routes[0] =\
+{
+};
+
+/**
  * @brief Pysical Device configuration
  */
 iop_physical_device_t physical_device_0 =\
 {
     .driver             = (iop_device_driver_t *)&device_configuration,
+    .routes             = {
+        .length         = 0,
+        .elements       = physical_routes
+     },
     .reads_per_period   = reads_per_period,
 
-    .reader_task        = NULL,
-    .writer_task        = NULL,
+    .reader_task        = spwrtr_reader,
+    .writer_task        = spwrtr_writer,
     .header_prebuild    = NULL,
     .header_compare     = NULL,
     .header_copy        = NULL,
