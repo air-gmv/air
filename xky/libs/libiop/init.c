@@ -155,7 +155,8 @@ static rtems_status_code iop_init_drivers(void){
         /* get physical device */
         iop_physical_device_t *pdev = get_physical_device(i);
 		
-		iop_debug(*pdev);
+		char *init_func = &(pdev->driver->init);
+		iop_debug("  :: IOP - physical devices  %x\n", *(init_func));
 
         /* initialize device */
         if (pdev->driver->init != NULL) {
@@ -263,13 +264,13 @@ static rtems_status_code iop_init_worker_tasks(void){
 
         /* get device pointer */
         iop_physical_device_t *dev = get_physical_device(i);
-
+		
         /* start device reader task */
         if ((rc = rtems_task_start(dev->reader_id, dev->reader_task,
             (rtems_task_argument)dev)) != RTEMS_SUCCESSFUL) {
             return rc;
         }
-
+		
         /* start device writer task */
         if ((rc = rtems_task_start(dev->writer_id, dev->writer_task,
             (rtems_task_argument)dev)) != RTEMS_SUCCESSFUL) {
@@ -323,7 +324,7 @@ static rtems_status_code iop_init_ports() {
 
         /* check return code */
         if (p_rc != XKY_NO_ERROR && p_rc != XKY_NO_ACTION) {
-            iop_debug("    - error %i creating port %s\n", port->name, lrc);
+            iop_debug("    - error %i creating port %s\n", p_rc, port->name);
             rc = RTEMS_INTERNAL_ERROR;
         }
     }

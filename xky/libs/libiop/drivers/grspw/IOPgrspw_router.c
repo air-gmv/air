@@ -66,7 +66,7 @@ rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
 	int device_found = 0;
 	
-	amba_apb_device apbgreth;
+	amba_ahb_device ahbspwrtr;
 	
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
 	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
@@ -76,17 +76,17 @@ rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 
 	router_config_t *cfg = (router_config_t *) &device->flags;
 	
-	memset(&apbgreth, 0, sizeof(amba_apb_device));
+	memset(&ahbspwrtr, 0, sizeof(amba_ahb_device));
 	
 	/* Scan for MAC AHB slave interface */
-	device_found = amba_find_apbslv(&amba_conf, VENDOR_GAISLER, GAISLER_GRSPW_ROUTER, &apbgreth);
+	device_found = amba_find_ahbslv(&amba_conf, VENDOR_GAISLER, GAISLER_GRSPW_ROUTER, &ahbspwrtr);
 									
 	if (device_found != 1){
-	    iop_debug("    GRETH device not found...\n");
+	    iop_debug("    SPWRTR device not found...\n");
 		return RTEMS_INTERNAL_ERROR;
 	}
 	
-	priv->regs = (struct router_regs *)apbgreth.start;
+	priv->regs = (struct router_regs *)ahbspwrtr.start;
 
 	/* Register character device in registered region */
 	router_hwinfo(priv, &priv->hwinfo);
@@ -121,6 +121,8 @@ rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
 	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
 
+	int i;
+	
 	if ( !priv || priv->open ) {
 		return RTEMS_RESOURCE_IN_USE;
 	}
@@ -129,7 +131,14 @@ rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
 	router_config_read(priv, cfg);
 	
 	iop_debug("   Printing router config:  ");
-	iop_debug(*cfg);
+	for(i = 0; i < sizeof(router_config_t); i++) {
+		iop_debug("%x\n", *(cfg + i));
+	}
+	
+	iop_debug("   Printing router hwinfo:  ");
+	for(i = 0; i < sizeof(struct router_hw_info); i++) {
+		iop_debug("%x\n", *(&(priv->hwinfo) + i));
+	}
 	
 	priv->open = 1;
 
@@ -179,7 +188,7 @@ static int router_config_set(
 
 	/* Write only configuration bits in Config register */
 	if ( cfg->flags & ROUTER_FLG_CFG ) {
-		REG_WRITE(&priv->regs->cfgsts, cfg->config & ~0x4);
+		REG_WRITE(&priv->regs->cfgsts, (cfg->config << 2));
 	}
 
 	/* Write Instance ID to Version Register */
@@ -427,3 +436,6 @@ static int router_tc_read(router_priv_t *priv, unsigned int *tc)
 //
 //	return 0;
 //}
+
+rtems_device_driver router_write(iop_device_driver_t *iop_dev, void *arg){}
+rtems_device_driver router_read(iop_device_driver_t *iop_dev, void *arg){}

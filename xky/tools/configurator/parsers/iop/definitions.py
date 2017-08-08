@@ -2,10 +2,12 @@
 SPW = 'SPW'
 MIL = 'MIL'
 ETH = 'ETH'
+RTR = 'SPWRTR'
 
 SUPPORTED_DEVICES 	=   {	SPW : ['GRSPW'],
                         	MIL : ['GR1553B', 'BRM1553'],
-                        	ETH : ['GRETH'] }
+                        	ETH : ['GRETH'],
+                            RTR : ['SPWRTR']   }
 
 IOP_PORT_TYPE		= { 'SamplingPort' : 'IOP_SAMPLING_PORT',
 						'QueuingPort'  : 'IOP_QUEUING_PORT'   }
@@ -71,7 +73,7 @@ VALID_DEVICE_ID_TYPE	= [ parserutils.str2int, lambda x : x >= 0 ]
 VALID_PORT			    = [ parserutils.str2int, lambda x : x > 0]
 VALID_IP			    = [ lambda x: str(x).strip().split('.'), lambda x: len(x) == 4 ]
 VALID_MAC			    = [ lambda x: str(x).strip().split(':'), lambda x: len(x) == 6 ]
-VALID_SPW_ADDRESS       = [ parserutils.str2intList, lambda x: 0 < len(x) < 32]
+VALID_SPW_ADDRESS       = [ lambda x: str(x).strip().split(','), lambda x: len(x) <= 32 ]
 VALID_FLOAT_TYPE		= [ parserutils.str2float, lambda x : x >= 0 ]
 VALID_DECIMAL_TYPE		= [ parserutils.str2int, lambda x : x >= 0 ]
 VALID_BOOLEAN_TYPE		= [ parserutils.str2bool, lambda x : isinstance(x, bool) ]
