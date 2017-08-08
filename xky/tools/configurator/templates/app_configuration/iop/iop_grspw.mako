@@ -68,7 +68,7 @@ static iop_spw_device_t device_configuration = ${'\\'}
     },
 
     /* spacewire configuration */
-	.nodeaddr		= ${device.setup.nodeaddr},
+	.nodeaddr		= { ${', '.join(device.setup.nodeaddr)} },
 	.nodemask		= ${device.setup.nodemask},
 	.destkey		= ${device.setup.destkey},
 	.clkdiv		= ${device.setup.clkdiv},
@@ -80,9 +80,9 @@ static iop_spw_device_t device_configuration = ${'\\'}
 	.rm_prot_id	= ${device.setup.rm_prot_id},
 	
 /* The buffer size is in the var IOP_BUFFER_SIZE declared in iop.h */
-//	.txdbufsize	= ${device.setup.txdbufsize},
-//	.txhbufsize	= ${device.setup.txhbufsize},
-//	.rxbufsize		= ${device.setup.rxbufsize},
+	.txdbufsize	= 1520,
+	.txhbufsize	= 1520,
+	.rxbufsize		= 1520,
 	.txdesccnt		= ${device.setup.txdesccnt},
 	.rxdesccnt		= ${device.setup.rxdesccnt},
 	

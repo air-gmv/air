@@ -19,8 +19,6 @@
 
 #include <ambapp.h>
 
-#define GAISLER_GR1553B      0x04d
-
 int amba_find_next_ahbslv (amba_confarea_type * amba_conf, int vendor, int device,
 						   amba_ahb_device * dev, int index);
 

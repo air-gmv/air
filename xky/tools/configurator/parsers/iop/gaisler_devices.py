@@ -41,7 +41,7 @@ SPWRTR_IDIV             = 'Idiv'
 VALID_EN                    = [ parserutils.str2int, lambda x : 0 <= x <= 1 ]
 VALID_XD	                = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
 VALID_READS	                = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
-VALID_TIMER                 = [ parserutils.str2int, lambda x : 0 <= x <= 50 ]
+VALID_TIMER                 = [ parserutils.str2int, lambda x : -1 <= x <= 50 ]
 VALID_MASK                  = [ parserutils.str2int, lambda x : len(str(x)) <= 32 ]
 
 
@@ -117,7 +117,7 @@ class SPWRTRPhySetup(object):
 
     def details(self):
         return 'SPWRTR Physical Device Setup (Flags: {0} Config: {1} IID: {2} IDIV: {3})'\
-            .format(self.flags, self.config, self.iid, self.idiv)
+            .format(bin(self.flags), bin(self.config), self.iid, self.idiv)
 
 # SPWRTR Schedule device setup
 class SPWRTRSchSetup(object):

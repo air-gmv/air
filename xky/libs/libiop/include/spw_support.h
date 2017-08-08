@@ -106,4 +106,9 @@ rtems_task spw_writer(rtems_task_argument arg);
  */
 rtems_task spw_reader(rtems_task_argument arg);
 
+/* These do nothing */
+rtems_task spwrtr_reader(rtems_task_argument arg);
+
+rtems_task spwrtr_writer(rtems_task_argument arg);
+
 #endif /* __ETH_SUPPORT_H__ */

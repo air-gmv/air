@@ -129,4 +129,8 @@ rtems_device_driver router_close(iop_device_driver_t *iop_dev, void *arg);
 
 rtems_device_driver router_control(iop_device_driver_t *iop_dev, void *arg);
 
+rtems_device_driver router_write(iop_device_driver_t *iop_dev, void *arg);
+
+rtems_device_driver router_read(iop_device_driver_t *iop_dev, void *arg);
+
 #endif

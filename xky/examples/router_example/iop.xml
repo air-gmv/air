@@ -1,32 +1,48 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <IOPartition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="iop.xsd" version="1.0" date="2013-06-05" name="iop_example" request_number="64" time_to_live="5">
-	
+
 	<RemotePorts>
-		<Port Name="dsampling" LogicalDeviceId="3"/>
+		<Port Name="dsampling" LogicalDeviceId="0"/>
 		<Port Name="squeuing" />
-	</RemotePorts>	
-	
+	</RemotePorts>
+
 	<LogicalDevices>
-		<Device Id="3" Name="ROUTER" />
-	</LogicalDevices>	
-	
+		<Device Id="0" Name="ROUTER" />
+	</LogicalDevices>
+
 	<PhysicalDevices>
-		<Device Id="0" Device="SPWRTR" Flags="11111" Config="10000" Idd="1" Idiv="1"/>
-		<Device Id="1" Device="GRSPW1" Addr="1" Mask="1" Dest="4" Clk="1" 
-				RXmax="32" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32" 
-				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="5">
-			<LogicalRoute Id="10" LogicalDeviceId="3">
-				<SpwHeader Address="12"/>
+		<!--  SpaceWire Router config. No Routes are necessary.
+							**CONFIG REGISTRY**
+			SPWPORTS AMBAPORTS FIFOPORTS RESERVED RE AD LS SA TF ME TA PP
+			31:27	 26:22	   21:17	 16:8	  7  6  5  4  3  2  1  0
+			Only 2 to 7 writtable on the N2X. For more info see board data sheet
+			IDIV necessary to set the init bitrate at 10MBits/s. see SPW faq
+
+			Promiscuous(PRO) should be 0 while using router
+		-->
+		<Device Id="0" Device="SPWRTR" Flags="0x1f" Config="0b001110" Idd="1" Idiv="9"/>
+		<Device Id="1" Device="GRSPW1" Addr="9" Mask="1" Dest="4" Clk="1"
+				RXmax="32" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
+				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
+			<PhysicalRoute Id="10" PortId="squeuing">
+				<SpwHeader Address="9"/>
+			</PhysicalRoute>
+			<LogicalRoute Id="11" LogicalDeviceId="0">
+				<SpwHeader Address="0x00,0x01,0x0A"/>
 			</LogicalRoute>
-			<PhysicalRoute Id="11" PortId="1"/>
-	    </Device>
-		<Device Id="2" Device="GRSPW2" Addr="2" Mask="1" Dest="4" Clk="1" 
-				RXmax="32" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32" 
-				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="5">
-			<PhysicalRoute Id="20" PortId="2"/>
+		</Device>
+		<Device Id="2" Device="GRSPW2" Addr="10" Mask="1" Dest="4" Clk="1"
+				RXmax="32" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
+				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
+			<PhysicalRoute Id="20" PortId="squeuing">
+				<SpwHeader Address="10"/>
+			</PhysicalRoute>
+			<LogicalRoute Id="21" LogicalDeviceId="0">
+				<SpwHeader Address=""/>
+			</LogicalRoute>
 		</Device>
 	</PhysicalDevices>
-	
+
 	<ModuleSchedules>
 		<Schedule ScheduleIdentifier="1">
 		    <DevicesConfiguration>
@@ -35,9 +51,10 @@
 			    <Device DeviceId="2" Reads="5"/>
 			</DevicesConfiguration>
 			<RoutesConfiguration>
-				<Route RouteId="10" Active="true"/>
-				<Route RouteId="11" Active="false"/>
-				<Route RouteId="20" Active="false"/>
+				<Route RouteId="10" Active="false"/>
+				<Route RouteId="11" Active="true"/>
+				<Route RouteId="20" Active="true"/>
+				<Route RouteId="21" Active="false"/>
 			</RoutesConfiguration>
 		</Schedule>
 	</ModuleSchedules>

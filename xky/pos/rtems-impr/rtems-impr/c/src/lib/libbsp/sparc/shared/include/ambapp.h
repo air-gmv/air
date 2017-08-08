@@ -46,7 +46,7 @@ extern "C"
 #define AMBA_APB_CONF_WORDS 2
 #define AMBA_AHB_MASTERS 16
 #define AMBA_AHB_SLAVES 16
-#define AMBA_APB_SLAVES 16
+#define AMBA_APB_SLAVES 32
 #define AMBA_APBUARTS 8
 
    /* Vendor codes */
@@ -98,6 +98,7 @@ extern "C"
 #define GAISLER_GRADCDAC  0x36
 #define GAISLER_GRPULSE   0x37
 #define GAISLER_GRTIMER   0x38
+#define GAISLER_GR1553B   0x4d
 #define GAISLER_FTAHBRAM  0x50
 #define GAISLER_FTMCTRL   0x54
 #define GAISLER_BRM       0x72
