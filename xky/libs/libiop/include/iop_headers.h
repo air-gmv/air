@@ -14,7 +14,7 @@
  */
 typedef struct  {
 
-    uint16_t hlen;              /**< Header Length */
+//    uint16_t hlen;              /**< Header Length */
     uint8_t hdr[32];            /**< Header */
 
 }  __attribute__((packed)) spw_header_t;

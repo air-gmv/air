@@ -44,6 +44,11 @@
 #include <iop_support.h>
 #include <iop_error.h>
 
+#ifdef IOP_NEEDS_DEBUG
+#include <ambapp.h>
+#include <amba.h>
+#endif
+
 /**
  * @brief Initializes the free wrappers chain queues
  */
@@ -140,6 +145,44 @@ static void iop_init_devs() {
 static rtems_status_code iop_init_drivers(void){
 
     iop_debug(" :: IOP - device drivers\n");
+	
+#ifdef IOP_NEEDS_DEBUG
+	/* Pointer to amba bus structure*/
+	amba_confarea_type *amba_bus;
+	
+	/*Get amba bus configuration*/
+	amba_bus = &amba_conf;
+	iop_debug("amba_conf->ahbmst: %d\n", amba_bus->ahbmst.devnr);
+	iop_debug("amba_conf->ahbslv: %d\n", amba_bus->ahbslv.devnr);
+	iop_debug("amba_conf->apbslv: %d\n", amba_bus->apbslv.devnr);
+	
+	unsigned int conf;
+	int k;
+	for(k = 0; k < amba_bus->ahbmst.devnr; k++)
+    {
+        /* get the configuration area */
+        conf = amba_get_confword(amba_bus->ahbmst , k , 0);
+
+		iop_debug("ahbmst:%d  AMBA VENDOR: 0x%x   AMBA DEV: 0x%x   conf: 0x%x\n",
+					k, amba_vendor(conf), amba_device(conf), conf);
+    }
+	for(k = 0; k < amba_bus->ahbslv.devnr; k++)
+    {
+        /* get the configuration area */
+        conf = amba_get_confword(amba_bus->ahbslv , k , 0);
+
+		iop_debug("ahbslv:%d  AMBA VENDOR: 0x%x   AMBA DEV: 0x%x   conf: 0x%x\n",
+					k, amba_vendor(conf), amba_device(conf), conf);
+    }
+	for(k = 0; k < amba_bus->apbslv.devnr; k++)
+    {
+        /* get the configuration area */
+        conf = amba_get_confword(amba_bus->apbslv , k , 0);
+
+		iop_debug("apbslv:%d  AMBA VENDOR: 0x%x   AMBA DEV: 0x%x   conf: 0x%x\n",
+					k, amba_vendor(conf), amba_device(conf), conf);
+    }
+#endif
 
     int i;
     rtems_status_code rc = RTEMS_SUCCESSFUL;
@@ -149,6 +192,9 @@ static rtems_status_code iop_init_drivers(void){
 
         /* get physical device */
         iop_physical_device_t *pdev = get_physical_device(i);
+		
+		char *init_func = &(pdev->driver->init);
+		iop_debug("  :: IOP - physical devices  %x\n", *(init_func));
 
         /* initialize device */
         if (pdev->driver->init != NULL) {
