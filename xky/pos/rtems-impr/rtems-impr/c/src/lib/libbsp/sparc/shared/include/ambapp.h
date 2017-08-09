@@ -60,20 +60,20 @@ extern "C"
 #define VENDOR_OPENCORES 8
 
    /* Gaisler Research device id's */
-#define GAISLER_LEON3     0x03
-#define GAISLER_LEON3DSU  0x04
-#define GAISLER_ETHAHB    0x05
-#define GAISLER_APBMST    0x06
-#define GAISLER_AHBUART   0x07
-#define GAISLER_SRCTRL    0x08
-#define GAISLER_SDCTRL    0x09
-#define GAISLER_APBUART   0x0C
+#define GAISLER_LEON3		0x03
+#define GAISLER_LEON3DSU	0x04
+#define GAISLER_ETHAHB		0x05
+#define GAISLER_APBMST		0x06
+#define GAISLER_AHBUART		0x07
+#define GAISLER_SRCTRL		0x08
+#define GAISLER_SDCTRL		0x09
+#define GAISLER_APBUART		0x0C
 
    /**
     * @brief determine the GAISLOR vendor IRQ map for AMBA bus
     **/
-#define GAISLER_IRQMP     0x0D
-#define GAISLER_AHBRAM    0x0E
+#define GAISLER_IRQMP		0x0D
+#define GAISLER_AHBRAM		0x0E
 
    /**
     * @brief determine the GAISLOR vendor General Purpose Timer
@@ -107,13 +107,13 @@ extern "C"
 
 
    /* European Space Agency device id's */
-#define ESA_LEON2        0x2
-#define ESA_MCTRL        0xF
-#define ESA_SPW2         0x12
+#define ESA_LEON2			0x2
+#define ESA_MCTRL			0xF
+#define ESA_SPW2			0x12
 
    /* Opencores device id's */
-#define OPENCORES_PCIBR  0x4
-#define OPENCORES_ETHMAC 0x5
+#define OPENCORES_PCIBR		0x4
+#define OPENCORES_ETHMAC	0x5
 
    /*
     *

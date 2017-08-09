@@ -55,19 +55,19 @@
   <Module_Schedule ScheduleIdentifier="1" ScheduleName="schedule"
     InitialModuleSchedule="true" MajorFrameSeconds="1.0">
     <Partition_Schedule PartitionIdentifier="1" PartitionName="sampling" 
-      PeriodDurationSeconds="0.2" PeriodSeconds="1.0">
+      PeriodDurationSeconds="0.3" PeriodSeconds="1.0">
       <Window_Schedule WindowIdentifier="1" PartitionPeriodStart="true" 
-        WindowDurationSeconds="0.2"  WindowStartSeconds="0.0"/>
+        WindowDurationSeconds="0.3"  WindowStartSeconds="0.0"/>
     </Partition_Schedule>
      <Partition_Schedule PartitionIdentifier="2" PartitionName="queuing" 
-      PeriodDurationSeconds="0.2" PeriodSeconds="1.0">
+      PeriodDurationSeconds="0.3" PeriodSeconds="1.0">
       <Window_Schedule WindowIdentifier="2" PartitionPeriodStart="true" 
-        WindowDurationSeconds="0.2" WindowStartSeconds="0.2"/>
+        WindowDurationSeconds="0.3" WindowStartSeconds="0.3"/>
     </Partition_Schedule>
     <Partition_Schedule PartitionIdentifier="3" PartitionName="iop" 
-      PeriodDurationSeconds="0.6" PeriodSeconds="1.0">
+      PeriodDurationSeconds="0.4" PeriodSeconds="1.0">
       <Window_Schedule WindowIdentifier="3" PartitionPeriodStart="true" 
-        WindowDurationSeconds="0.6" WindowStartSeconds="0.4"/>
+        WindowDurationSeconds="0.4" WindowStartSeconds="0.6"/>
     </Partition_Schedule>
   </Module_Schedule>
 
@@ -96,5 +96,5 @@
   </Connection_Table>
   
   <!-- Module configuration -->
-  <XKY_Configuration TicksPerSecond="1000" RequiredCores="1"/>
+  <XKY_Configuration TicksPerSecond="200" RequiredCores="1"/>
 </ARINC_653_Module>
