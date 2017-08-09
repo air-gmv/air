@@ -10,67 +10,10 @@
 #include <IOPgrspw.h>
 #include <spw_support.h>
 
->>>>>>> 0a924f0799a09d9f4e65b65a2d2cda1647614e32
 /**
  * @brief IOP remote ports
  */
 extern iop_port_t remote_ports[2];
-<<<<<<< HEAD
-
-static iop_buffer_t iop_buffers[64];
-static uint8_t iop_buffers_storage[64 * IOP_BUFFER_SIZE];
-
-/**
- * @brief TX descriptor to IOP buffer mapping
- */
-static iop_buffer_t *tx_iop_buffer[32];
-/**
- * @brief RX descriptor to IOP buffer mapping
- */
-static iop_buffer_t *rx_iop_buffer[32];
-
-/**
- * @brief RX and TX descriptor table
- * @warning this should be 2048, but we need 3072 to ensure the 0x400 alignment
- */
-static uint8_t descriptor_table[3072];
-
-/** @brief  GRETH control structure*/
-static greth_softc_t greth_driver = \
-{
-    .iop_buffers            = iop_buffers,
-    .iop_buffers_storage    = iop_buffers_storage,
-
-    /** @note descriptor table address are split and aligned at the runtime */
-    .txdesc = descriptor_table,
-    .rxdesc = descriptor_table,
-
-    .tx_iop_buffer = tx_iop_buffer,
-    .rx_iop_buffer = rx_iop_buffer
-};
-
-/** @brief GRETH driver configuration */
-static iop_eth_device_t device_configuration = \
-{
-    /* device configuration */
-    .dev        = {
-
-        .driver         = (void *)&greth_driver,
-        .init           = greth_initialize,
-        .open           = greth_open,
-        .read           = greth_read,
-        .write          = greth_write,
-        .close          = greth_close,
-    },
-
-    /* ethernet configuration */
-    .ip         = { 192, 168, 0, 17 },
-    .mac        = { 0x00, 0x50, 0xC2, 0x75, 0xa0, 0x60 },
-    .rx_count   = 32,
-    .tx_count   = 32
-};
-
-=======
 
 /**
  * @brief IOP buffers
@@ -120,54 +63,45 @@ static iop_spw_device_t device_configuration = \
         .close          = spw_close,
     },
 
-    /* ethernet??? configuration */
-	.nodeaddr		= 1,
+    /* spacewire configuration */
+	.nodeaddr		= { 10 },
 	.nodemask		= 1,
 	.destkey		= 4,
 	.clkdiv		= 1,
 	
 	.rxmaxlen		= 32,
-	.promiscuous	= 1,
+	.promiscuous	= 0,
 	.rmapen		= 0,
 	.rmapbufdis	= 32,
 	.rm_prot_id	= 0,
 	
 /* The buffer size is in the var IOP_BUFFER_SIZE declared in iop.h */
-//	.txdbufsize	= 32,
-//	.txhbufsize	= 32,
-//	.rxbufsize		= 32,
+	.txdbufsize	= 1520,
+	.txhbufsize	= 1520,
+	.rxbufsize		= 1520,
 	.txdesccnt		= 32,
 	.rxdesccnt		= 32,
 	
 	.retry			= 0,
 	.wait_ticks	= 0,
 	
-	.init_timeout	= 5
+	.init_timeout	= -1
 };
 
->>>>>>> 0a924f0799a09d9f4e65b65a2d2cda1647614e32
 /**
  * @brief Device Scheduling
  */
 static uint32_t reads_per_period[] = \
-    { 5 };
+    { 1 };
 
 /**
  * @brief Routes Headers
  */
 static iop_header_t route_header[1] = \
 {
-        {
-        .eth_header = {
-<<<<<<< HEAD
-            .dst_ip      = { 192,168,0,3},
-            .dst_mac     = { 0x00,0x50,0xbf,0x50,0x07,0x0d},
-=======
-            .dst_ip      = { 192,168,0,2},
-            .dst_mac     = { 0x68,0x05,0xca,0x1f,0x39,0xaf},
->>>>>>> 0a924f0799a09d9f4e65b65a2d2cda1647614e32
-            .dst_port    = HTONS(14000),
-            .src_port    = HTONS(14000)
+    {
+        .spw_header = {
+            .hdr         = { 10 }
         }
     }
 };
@@ -193,7 +127,7 @@ static iop_physical_route_t physical_routes[1] =\
 /**
  * @brief Pysical Device configuration
  */
-iop_physical_device_t physical_device_0 =\
+iop_physical_device_t physical_device_2 =\
 {
     .driver             = (iop_device_driver_t *)&device_configuration,
     .routes             = {
@@ -202,17 +136,9 @@ iop_physical_device_t physical_device_0 =\
      },
     .reads_per_period   = reads_per_period,
 
-<<<<<<< HEAD
-    .reader_task        = eth_reader,
-    .writer_task        = eth_writer,
-    .header_prebuild    = eth_prebuild_header,
-    .header_compare     = eth_compare_header,
-    .header_copy        = eth_copy_header,
-=======
     .reader_task        = spw_reader,
     .writer_task        = spw_writer,
     .header_prebuild    = spw_prebuild_header,
     .header_compare     = spw_compare_header,
     .header_copy        = spw_copy_header,
->>>>>>> 0a924f0799a09d9f4e65b65a2d2cda1647614e32
 };
