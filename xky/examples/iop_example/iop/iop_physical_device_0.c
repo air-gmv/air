@@ -9,7 +9,6 @@
 #include <iop.h>
 #include <iop_greth.h>
 #include <eth_support.h>
-
 /**
  * @brief IOP remote ports
  */
