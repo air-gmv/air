@@ -16,15 +16,19 @@ extern iop_logical_device_t logical_device_0;
 extern iop_physical_device_t physical_device_0;
 extern iop_physical_device_t physical_device_1;
 extern iop_physical_device_t physical_device_2;
+extern iop_physical_device_t physical_device_3;
+extern iop_physical_device_t physical_device_4;
 
 /**
  * @brief Physical devices list
  */
-static iop_physical_device_t *physical_device_list[3] = \
+static iop_physical_device_t *physical_device_list[5] = \
 {
     &physical_device_0,
     &physical_device_1,
     &physical_device_2,
+    &physical_device_3,
+    &physical_device_4,
 };
 
 /**
@@ -55,7 +59,7 @@ iop_configuration_t usr_configuration = {
     .wrappers_count           = 1024,
 
     .physical_devices       = {
-        .length             = 3,
+        .length             = 5,
         .elements           = physical_device_list
      },
     .logical_devices       = {

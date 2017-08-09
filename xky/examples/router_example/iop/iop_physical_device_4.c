@@ -64,7 +64,7 @@ static iop_spw_device_t device_configuration = \
     },
 
     /* spacewire configuration */
-	.nodeaddr		= { 9 },
+	.nodeaddr		= { 10 },
 	.nodemask		= 1,
 	.destkey		= 4,
 	.clkdiv		= 1,
@@ -101,7 +101,7 @@ static iop_header_t route_header[1] = \
 {
     {
         .spw_header = {
-            .hdr         = { 9 }
+            .hdr         = { 12 }
         }
     }
 };
@@ -127,7 +127,7 @@ static iop_physical_route_t physical_routes[1] =\
 /**
  * @brief Pysical Device configuration
  */
-iop_physical_device_t physical_device_1 =\
+iop_physical_device_t physical_device_4 =\
 {
     .driver             = (iop_device_driver_t *)&device_configuration,
     .routes             = {

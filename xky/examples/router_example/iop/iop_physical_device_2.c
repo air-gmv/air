@@ -70,7 +70,7 @@ static iop_spw_device_t device_configuration = \
 	.clkdiv		= 1,
 	
 	.rxmaxlen		= 32,
-	.promiscuous	= 1,
+	.promiscuous	= 0,
 	.rmapen		= 0,
 	.rmapbufdis	= 32,
 	.rm_prot_id	= 0,
@@ -92,7 +92,7 @@ static iop_spw_device_t device_configuration = \
  * @brief Device Scheduling
  */
 static uint32_t reads_per_period[] = \
-    { 5 };
+    { 1 };
 
 /**
  * @brief Routes Headers

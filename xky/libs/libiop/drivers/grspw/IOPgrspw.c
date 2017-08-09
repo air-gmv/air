@@ -45,7 +45,7 @@
 #include <ambapp.h>
 #include <ambaext.h>
 
-#include <pprintf.h>
+//#include <iop_debug.h>
 #include <IOPlibio.h>
 #include <IOPgrspw.h>
 #include <spw_support.h>
@@ -56,14 +56,14 @@
 #define DBGSPW_RX 4
 #define DBGSPW_IOCTRL 1
 #define DBGSPW_DUMP 16
-#define DEBUG_SPACEWIRE_FLAGS (DBGSPW_IOCALLS | DBGSPW_TX | DBGSPW_RX )
+#define DEBUG_SPACEWIRE_FLAGS (DBGSPW_IOCALLS | DBGSPW_TX | DBGSPW_RX | DBGSPW_DUMP)
 
-/* #define DEBUG_SPACEWIRE_ONOFF */
+#define DEBUG_SPACEWIRE_ONOFF
  
 #ifdef DEBUG_SPACEWIRE_ONOFF
-#define SPACEWIRE_DBG(fmt, args...)    do { { pprintf(" : %03d @ %18s()]:" fmt , __LINE__,__FUNCTION__,## args); }} while(0)
-#define SPACEWIRE_DBG2(fmt)            do { { pprintf(" : %03d @ %18s()]:" fmt , __LINE__,__FUNCTION__); }} while(0)
-#define SPACEWIRE_DBGC(c,fmt, args...) do { if (DEBUG_SPACEWIRE_FLAGS & c) { pprintf(" : %03d @ %18s()]:" fmt , __LINE__,__FUNCTION__,## args);  }} while(0)
+#define SPACEWIRE_DBG(fmt, args...)    do { { iop_debug(" : %03d @ %18s()]:" fmt , __LINE__,__FUNCTION__,## args); }} while(0)
+#define SPACEWIRE_DBG2(fmt)            do { { iop_debug(" : %03d @ %18s()]:" fmt , __LINE__,__FUNCTION__); }} while(0)
+#define SPACEWIRE_DBGC(c,fmt, args...) do { if (DEBUG_SPACEWIRE_FLAGS & c) { iop_debug(" : %03d @ %18s()]:" fmt , __LINE__,__FUNCTION__,## args);  }} while(0)
 #else
 #define SPACEWIRE_DBG(fmt, args...)
 #define SPACEWIRE_DBG2(fmt, args...)
@@ -182,7 +182,7 @@ void set_sys_freq(){
 			}else{
 				/*Use default frequency:40Mhz*/
 				sys_freq_khz = 40000; 
-				pprintf("SPW: Failed to detect system frequency\n\r");
+				iop_debug("SPW: Failed to detect system frequency\n\r");
 			}
 			
 		}
@@ -394,62 +394,12 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 	/*Get amba bus configuration*/
 	amba_bus = &amba_conf;
 	
-	iop_debug("amba_conf->ahbmst: %d\n", amba_bus->ahbmst.devnr);
-	iop_debug("amba_conf->ahbslv: %d\n", amba_bus->ahbslv.devnr);
-	iop_debug("amba_conf->apbslv: %d\n", amba_bus->apbslv.devnr);
-	
-	unsigned int conf;
-	int i;
-	for(i = 0; i < amba_bus->ahbmst.devnr; i++)
-    {
-        /* get the configuration area */
-        conf = amba_get_confword(amba_bus->ahbmst , i , 0);
-
-		iop_debug("ahbmst:%d  AMBA VENDOR: 0x%x   AMBA DEV: 0x%x   conf: 0x%x\n",
-					i, amba_vendor(conf), amba_device(conf), conf);
-    }
-	for(i = 0; i < amba_bus->ahbslv.devnr; i++)
-    {
-        /* get the configuration area */
-        conf = amba_get_confword(amba_bus->ahbslv , i , 0);
-
-		iop_debug("ahbslv:%d  AMBA VENDOR: 0x%x   AMBA DEV: 0x%x   conf: 0x%x\n",
-					i, amba_vendor(conf), amba_device(conf), conf);
-    }
-	for(i = 0; i < amba_bus->apbslv.devnr; i++)
-    {
-        /* get the configuration area */
-        conf = amba_get_confword(amba_bus->apbslv , i , 0);
-
-		iop_debug("apbslv:%d  AMBA VENDOR: 0x%x   AMBA DEV: 0x%x   conf: 0x%x\n",
-					i, amba_vendor(conf), amba_device(conf), conf);
-    }
-	
-	iop_debug("on grspw\n");
-	amba_apb_device apbdev;
-	memset(&apbdev, 0, sizeof(amba_apb_device));
-	int device_found = 0;
-	device_found = amba_find_apbslv(amba_bus, VENDOR_GAISLER, GAISLER_GR1553B,
-									&dev);
-									
-	if (device_found){
-	    iop_debug("    MIL device found on apb...\n");
-	}
-	
-	amba_ahb_device ahb_dev;
-	memset(&ahb_dev, 0, sizeof(amba_ahb_device));
-	device_found = amba_find_ahbslv(amba_bus, VENDOR_GAISLER, GAISLER_GR1553B,
-									&dev);
-	
-	if (device_found){
-	    iop_debug("    MIL device found on ahp...\n");
-	}
 	/* get memory for the internal structure */
 	// spw_dev = get_spw_dev();
 	
 	spw_cores = amba_get_number_apbslv_devices(amba_bus,VENDOR_GAISLER,GAISLER_SPACEWIRE);
 	spw_cores2 = amba_get_number_apbslv_devices(amba_bus,VENDOR_GAISLER,GAISLER_GRSPW2);
-	spw_cores2_dma = amba_get_number_apbslv_devices(amba_bus,VENDOR_GAISLER,GAISLER_GRSPW2_DMA);
+	spw_cores2_dma = amba_get_number_apbslv_devices(amba_bus,VENDOR_GAISLER,GAISLER_SPW2_DMA);
 	
 	iop_debug("n of spw dma cores: %d\n", spw_cores2_dma);
 	/* zero out all memory */
@@ -470,7 +420,7 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 		
 		/*store core version in device's structure*/
 		pDev->core_ver = 2;
-	} else if (amba_find_next_apbslv(amba_bus,VENDOR_GAISLER,GAISLER_GRSPW2_DMA,&dev,cores_init)) {
+	} else if (amba_find_next_apbslv(amba_bus,VENDOR_GAISLER,GAISLER_SPW2_DMA,&dev,cores_init)) {
 		
 		/*store core version in device's structure*/
 		pDev->core_ver = 3;
@@ -760,11 +710,11 @@ rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg)
 		int k;
 		for (k = 0; k < count; k++){
 			if (k % 16 == 0) {
-					pprintf ("\n");
+					iop_debug ("\n");
 			}
-			pprintf ("%.2x(%c) ", rw_args->data[k] & 0xff, isprint(rw_args->data[k] & 0xff) ? rw_args->data[k] & 0xff : ' ');
+			iop_debug ("%.2x(%c) ", rw_args->data[k] & 0xff, isprint(rw_args->data[k] & 0xff) ? rw_args->data[k] & 0xff : ' ');
 		}
-		pprintf ("\n");
+		iop_debug ("\n");
 	}
 #endif
 */
@@ -1436,7 +1386,7 @@ static void spw_hw_sync_config(SPW_DEV *pDev){
 		/*Obtain node address*/
 		pDev->config.nodeaddr = 0xFF & tmp;
 		
-		pprintf("Node Address: %d\n", pDev->config.nodeaddr);
+		iop_debug("Node Address: %d\n", pDev->config.nodeaddr);
 		
 		/*Obtain node mask*/
 		pDev->config.nodemask = 0xFF & (tmp>>8);
@@ -1712,16 +1662,7 @@ static int spw_hw_stop (SPW_DEV *pDev, int rx, int tx) {
  * @return Number of bytes that were written
  */
 int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, char *hdr, unsigned int dlen, char *data) {
-	
-	int j = 0;
-	iop_debug("       %dWRAPPER->BUFFER: ", j);
-	for (j = 0; j <  hlen; j++) {
-		iop_debug("%x ", *(hdr+j));
-	} iop_debug("\n       size: %d\n", j);
-	for (j = 0; j <  dlen; j++) {
-		iop_debug("%x ", *(data+j));
-	} iop_debug("\n       size: %d\n", j);
-	
+
 	/*DMA control register contentes*/
 	unsigned int dmactrl;
 	
@@ -1760,21 +1701,21 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, char *hdr, unsigned int dlen, 
 #ifdef DEBUG_SPACEWIRE_ONOFF  
 	if (DEBUG_SPACEWIRE_FLAGS & DBGSPW_DUMP) {
 			for (k = 0; k < hlen; k++){
-					if (k % 16 == 0) {
-							pprintf ("\n");
+					if (k % 18 == 0) {
+							iop_debug ("\n");
 					}
-					pprintf ("%.2x(%c) ",txh[k] & 0xff,isprint(txh[k] & 0xff) ? txh[k] & 0xff : ' ');
+					iop_debug ("%.2x(%x) ",txh[k] & 0xff,isprint(txh[k] & 0xff) ? txh[k] & 0xff : ' ');
 			}
-			pprintf ("\n");
+			iop_debug ("\n");
 	}
 	if (DEBUG_SPACEWIRE_FLAGS & DBGSPW_DUMP) {
 			for (k = 0; k < dlen; k++){
-					if (k % 16 == 0) {
-							pprintf ("\n");
+					if (k % 18 == 0) {
+							iop_debug ("\n");
 					}
-					pprintf ("%.2x(%c) ",txd[k] & 0xff,isprint(txd[k] & 0xff) ? txd[k] & 0xff : ' ');
+					iop_debug ("%.2x(%x) ",txd[k] & 0xff,isprint(txd[k] & 0xff) ? txd[k] & 0xff : ' ');
 			}
-			pprintf ("\n");
+			iop_debug ("\n");
 	}
 #endif
 	
@@ -1833,7 +1774,6 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, char *hdr, unsigned int dlen, 
 		}
 	}
 	SPACEWIRE_DBGC(DBGSPW_TX, "0x%x: transmitted <%i> bytes\n", (unsigned int) pDev->regs, dlen+hlen);
-	iop_debug("0x%x: transmitted <%i> bytes\n", (unsigned int) pDev->regs, dlen+hlen);
 	
 	/*Return total data size that was written into the bus = header + data*/
 	return hlen + dlen;
