@@ -28,11 +28,11 @@
 				<SpwHeader Address="9"/>
 			</PhysicalRoute>
 			<LogicalRoute Id="11" LogicalDeviceId="0">
-				<SpwHeader Address="0x00,0x01,0x0A"/>
+				<SpwHeader Address="0x01,0x0A"/>
 			</LogicalRoute>
 		</Device>
 		<Device Id="2" Device="GRSPW2" Addr="10" Mask="1" Dest="4" Clk="1"
-				RXmax="32" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
+				RXmax="32" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
 				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
 			<PhysicalRoute Id="20" PortId="squeuing">
 				<SpwHeader Address="10"/>
@@ -41,20 +41,46 @@
 				<SpwHeader Address=""/>
 			</LogicalRoute>
 		</Device>
+		<Device Id="3" Device="GRSPW3" Addr="10" Mask="1" Dest="4" Clk="1"
+				RXmax="32" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
+				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
+			<PhysicalRoute Id="30" PortId="squeuing">
+				<SpwHeader Address="11"/>
+			</PhysicalRoute>
+			<LogicalRoute Id="31" LogicalDeviceId="0">
+				<SpwHeader Address=""/>
+			</LogicalRoute>
+		</Device>
+		<Device Id="4" Device="GRSPW4" Addr="10" Mask="1" Dest="4" Clk="1"
+				RXmax="32" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
+				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
+			<PhysicalRoute Id="40" PortId="squeuing">
+				<SpwHeader Address="12"/>
+			</PhysicalRoute>
+			<LogicalRoute Id="41" LogicalDeviceId="0">
+				<SpwHeader Address=""/>
+			</LogicalRoute>
+		</Device>
 	</PhysicalDevices>
 
 	<ModuleSchedules>
 		<Schedule ScheduleIdentifier="1">
 		    <DevicesConfiguration>
-			    <Device DeviceId="0" Device="SPWRTR" Reads="5"/>
-			    <Device DeviceId="1" Reads="5"/>
-			    <Device DeviceId="2" Reads="5"/>
+			    <Device DeviceId="0" Device="SPWRTR" Reads="0"/>
+			    <Device DeviceId="1" Reads="1"/>
+			    <Device DeviceId="2" Reads="1"/>
+			    <Device DeviceId="3" Reads="1"/>
+			    <Device DeviceId="4" Reads="1"/>
 			</DevicesConfiguration>
 			<RoutesConfiguration>
-				<Route RouteId="10" Active="false"/>
+				<Route RouteId="10" Active="true"/>
 				<Route RouteId="11" Active="true"/>
 				<Route RouteId="20" Active="true"/>
-				<Route RouteId="21" Active="false"/>
+				<Route RouteId="21" Active="true"/>
+				<Route RouteId="30" Active="true"/>
+				<Route RouteId="31" Active="true"/>
+				<Route RouteId="40" Active="true"/>
+				<Route RouteId="41" Active="true"/>
 			</RoutesConfiguration>
 		</Schedule>
 	</ModuleSchedules>

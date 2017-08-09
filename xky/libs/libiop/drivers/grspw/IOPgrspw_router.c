@@ -79,7 +79,7 @@ rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 	memset(&ahbspwrtr, 0, sizeof(amba_ahb_device));
 	
 	/* Scan for MAC AHB slave interface */
-	device_found = amba_find_ahbslv(&amba_conf, VENDOR_GAISLER, GAISLER_GRSPW_ROUTER, &ahbspwrtr);
+	device_found = amba_find_ahbslv(&amba_conf, VENDOR_GAISLER, GAISLER_SPW_ROUTER, &ahbspwrtr);
 									
 	if (device_found != 1){
 	    iop_debug("    SPWRTR device not found...\n");
