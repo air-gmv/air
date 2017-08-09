@@ -45,7 +45,7 @@ static iop_spw_router_device_t device_configuration = \
  * @brief Device Scheduling
  */
 static uint32_t reads_per_period[] = \
-    { 5 };
+    { 0 };
 
 /**
  * @brief Routes Headers
