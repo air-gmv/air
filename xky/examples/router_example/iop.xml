@@ -21,8 +21,8 @@
 			Promiscuous(PRO) should be 0 while using router
 		-->
 		<Device Id="0" Device="SPWRTR" Flags="0x1f" Config="0b001110" Idd="1" Idiv="9"/>
-		<Device Id="1" Device="GRSPW1" Addr="9" Mask="1" Dest="4" Clk="1"
-				RXmax="32" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
+		<Device Id="1" Device="GRSPW1" Addr="9" Mask="1" Dest="0" Clk="1"
+				RXmax="64" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
 				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
 			<PhysicalRoute Id="10" PortId="squeuing">
 				<SpwHeader Address="9"/>
@@ -31,8 +31,8 @@
 				<SpwHeader Address="0x01,0x0A"/>
 			</LogicalRoute>
 		</Device>
-		<Device Id="2" Device="GRSPW2" Addr="10" Mask="1" Dest="4" Clk="1"
-				RXmax="32" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
+		<Device Id="2" Device="GRSPW2" Addr="10" Mask="1" Dest="0" Clk="1"
+				RXmax="64" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
 				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
 			<PhysicalRoute Id="20" PortId="squeuing">
 				<SpwHeader Address="10"/>
@@ -41,8 +41,8 @@
 				<SpwHeader Address=""/>
 			</LogicalRoute>
 		</Device>
-		<Device Id="3" Device="GRSPW3" Addr="10" Mask="1" Dest="4" Clk="1"
-				RXmax="32" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
+		<Device Id="3" Device="GRSPW3" Addr="10" Mask="1" Dest="0" Clk="1"
+				RXmax="64" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
 				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
 			<PhysicalRoute Id="30" PortId="squeuing">
 				<SpwHeader Address="11"/>
@@ -51,8 +51,8 @@
 				<SpwHeader Address=""/>
 			</LogicalRoute>
 		</Device>
-		<Device Id="4" Device="GRSPW4" Addr="10" Mask="1" Dest="4" Clk="1"
-				RXmax="32" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
+		<Device Id="4" Device="GRSPW4" Addr="10" Mask="1" Dest="0" Clk="1"
+				RXmax="64" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
 				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
 			<PhysicalRoute Id="40" PortId="squeuing">
 				<SpwHeader Address="12"/>
@@ -76,11 +76,11 @@
 				<Route RouteId="10" Active="true"/>
 				<Route RouteId="11" Active="true"/>
 				<Route RouteId="20" Active="true"/>
-				<Route RouteId="21" Active="true"/>
+				<Route RouteId="21" Active="false"/>
 				<Route RouteId="30" Active="true"/>
-				<Route RouteId="31" Active="true"/>
+				<Route RouteId="31" Active="false"/>
 				<Route RouteId="40" Active="true"/>
-				<Route RouteId="41" Active="true"/>
+				<Route RouteId="41" Active="false"/>
 			</RoutesConfiguration>
 		</Schedule>
 	</ModuleSchedules>
