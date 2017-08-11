@@ -253,7 +253,7 @@ void amba_scan(amba_confarea_type * amba_conf , unsigned int ioarea ,
             cfg_area = (unsigned int *) ( apbmst | AMBA_CONF_AREA );
 
             /* iterate for the APB slave devices */
-            for(j = 0; ( amba_conf->apbslv.devnr < AMBA_APB_SLAVES ) && ( j < AMBA_APB_SLAVES ); j++)
+            for(j = 0; ( amba_conf->apbslv.devnr < AMBA_APB_SLAVES ) && ( j < AMBA_APB_SLAVES/2 ); j++)
             {
                 /* insert the APB device */
                 amba_insert_apb_device(&amba_conf->apbslv , cfg_area , apbmst);
