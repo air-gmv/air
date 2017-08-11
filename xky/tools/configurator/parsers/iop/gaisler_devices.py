@@ -39,7 +39,7 @@ SPWRTR_IID              = 'Idd'
 SPWRTR_IDIV             = 'Idiv'
 
 VALID_EN                    = [ parserutils.str2int, lambda x : 0 <= x <= 1 ]
-VALID_XD	                = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
+VALID_XD	                = [ parserutils.str2int, lambda x : 0 <= x <= 2048 ]
 VALID_READS	                = [ parserutils.str2int, lambda x : 0 <= x <= 2048 ]
 VALID_TIMER                 = [ parserutils.str2int, lambda x : -1 <= x <= 50 ]
 VALID_MASK                  = [ parserutils.str2int, lambda x : len(str(x)) <= 32 ]
