@@ -49,7 +49,7 @@ IOP = namedtuple('xkyIOP', ['defines', 'devices', 'drivers', 'alias', 'arch'])
 MIN_STATE_ID = 0		              # match health_monitor.h definition
 MAX_STATE_ID = 7		              # match health_monitor.h definition
 MIN_ERROR_ID = 0		              # match health_monitor.h definition
-MAX_ERROR_ID = 16	                  # match health_monitor.h definition
+MAX_ERROR_ID = 21	                  # match health_monitor.h definition
 
 ## Permissions definitions ##
 PERMISSION_SUPERVISOR           = 'SUPERVISOR'

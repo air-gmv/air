@@ -93,6 +93,14 @@ HMErrorsDefinitions = \
     dict(code='USR5_ERROR', description='user defined error 5'),
     dict(code='USR6_ERROR', description='user defined error 6'),
     dict(code='USR7_ERROR', description='user defined error 7'),
+    dict(code='USR4_ERROR', description='user defined error 8'),
+    dict(code='USR5_ERROR', description='user defined error 9'),
+    dict(code='USR6_ERROR', description='user defined error 10'),
+    dict(code='USR7_ERROR', description='user defined error 11'),
+    dict(code='USR4_ERROR', description='user defined error 12'),
+    dict(code='USR5_ERROR', description='user defined error 13'),
+    dict(code='USR6_ERROR', description='user defined error 14'),
+    dict(code='USR7_ERROR', description='user defined error 15'),
 ]
 
 ## Shared Memory
