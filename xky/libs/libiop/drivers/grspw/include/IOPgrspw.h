@@ -270,13 +270,13 @@ typedef struct {
    /* statistics */
    spw_stats stat;				/** SpW core statistics*/
    
-   char *ptr_rxbuf0;			/** Pointer to the beginning of the RX buffer memory area*/
-   char *ptr_txdbuf0;			/** Pointer to the beginning of the TX data buffer memory area*/
-   char *ptr_txhbuf0;			/** Pointer to the beginning of the TX header buffer memory area*/
+   uint8_t *ptr_rxbuf0;			/** Pointer to the beginning of the RX buffer memory area*/
+   uint8_t *ptr_txdbuf0;			/** Pointer to the beginning of the TX data buffer memory area*/
+   uint8_t *ptr_txhbuf0;			/** Pointer to the beginning of the TX header buffer memory area*/
 
    unsigned int irq;			/** IRQ*/
    int minor;					/** minor number of this device*/
-   int core_ver;				/** SpW core version: 1 or 2*/
+   int core_ver;				/** SpW core version: 1, 2 or 3*/
    int open;					/** Was this device opened*/
    int running;					/** Is the core running*/
    unsigned int core_freq_khz;	/** Core frequency*/
@@ -286,7 +286,7 @@ typedef struct {
    rtems_id txsp;				/** Sempahore id for write: Not used*/
    rtems_id rxsp;				/** Sempahore id for read: Not used*/
 
-	uint32_t *bdtable;		/** Pointer to the descriptor table */
+	uint8_t *bdtable;		/** Pointer to the descriptor table */
    
    SPACEWIRE_TXBD *tx;			/** Pointer to the RX descriptor table*/
    SPACEWIRE_RXBD *rx;			/** Pointer to the TX descriptor table*/

@@ -79,41 +79,44 @@
 #define CPU_SPARC_HAS_SNOOPING 0      /*TODO*/
 
 /*Number of SpW cores*/
-static int spw_cores;
+int spw_cores;
 
 /*Number of SpW2 cores */
-static int spw_cores2;
+int spw_cores2;
 
 /*Number of SpW2 with DMA cores */
-static int spw_cores2_dma;
+int spw_cores2_dma;
 
 /*Counter with the number of ports already initialized */
-static int cores_init = 0;
+int cores_init = 0;
 
 /*used to create semaphore names*/
-static char c = 'a';
+char c = 'a';
 
 /*Number of user configured cores*/
-static int configured_cores = 0;
+int configured_cores = 0;
 
 /* System Frequency*/
-static unsigned int sys_freq_khz;
+unsigned int sys_freq_khz;
 
 /* Pointer to user configuration*/
-static spw_user_config *user_config;
+spw_user_config *user_config;
 
 /* Pointer to the default configuration*/
-static spw_user_config *defconf;
+spw_user_config *defconf;
 
 /* Pointer to amba bus structure*/
-static amba_confarea_type *amba_bus;
+amba_confarea_type *amba_bus;
+
+/* Global physical device for debuging purposes */
+SPW_DEV *_pDev;
 
 #ifdef SPW_DONT_BYPASS_CACHE
 #define _SPW_READ(address) (*(volatile unsigned int *)(address))
 #define _MEM_READ(address) (*(volatile unsigned char *)(address))
 #else
 
-static unsigned int _SPW_READ(void *addr) {
+unsigned int _SPW_READ(void *addr) {
 	unsigned int tmp;
 	__asm__ __volatile__ (" lda [%1]1, %0 "
 							: "=r"(tmp)
@@ -122,7 +125,7 @@ static unsigned int _SPW_READ(void *addr) {
 	return tmp;
 }
 
-static unsigned int _MEM_READ(void *addr) {
+unsigned int _MEM_READ(void *addr) {
 	unsigned int tmp;
 	__asm__ __volatile__ (" lduba [%1]1, %0 "
 							: "=r"(tmp)
@@ -133,19 +136,19 @@ static unsigned int _MEM_READ(void *addr) {
 }
 #endif
 
-static int spw_hw_init(SPW_DEV *pDev);
-static int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, char *hdr, unsigned int dlen, char *data);
-static int spw_hw_receive(SPW_DEV *pDev, char *hdr, char *b, int c);
-static int spw_hw_startup (SPW_DEV *pDev, int timeout);
-static int spw_hw_stop (SPW_DEV *pDev, int rx, int tx);
-static int spw_hw_waitlink (SPW_DEV *pDev, int timeout);
-static void spw_hw_reset(SPW_DEV *pDev);
-static void spw_hw_sync_config(SPW_DEV *pDev);
-static void spw_hw_handle_errors(SPW_DEV *pDev);
+int spw_hw_init(SPW_DEV *pDev);
+int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, uint8_t *hdr, unsigned int dlen, uint8_t *data);
+int spw_hw_receive(SPW_DEV *pDev, uint8_t *hdr, uint8_t *b, int c);
+int spw_hw_startup (SPW_DEV *pDev, int timeout);
+int spw_hw_stop (SPW_DEV *pDev, int rx, int tx);
+int spw_hw_waitlink (SPW_DEV *pDev, int timeout);
+void spw_hw_reset(SPW_DEV *pDev);
+void spw_hw_sync_config(SPW_DEV *pDev);
+void spw_hw_handle_errors(SPW_DEV *pDev);
 
-static void check_rx_errors(SPW_DEV *pDev, int ctrl);
-static void spw_rxnext(SPW_DEV *pDev);
-static void spw_check_tx(SPW_DEV *pDev);
+void check_rx_errors(SPW_DEV *pDev, int ctrl);
+void spw_rxnext(SPW_DEV *pDev);
+void spw_check_tx(SPW_DEV *pDev);
 
 int spw_get_conf_size(void);
 
@@ -201,7 +204,7 @@ void set_sys_freq(){
  * @param [in] freq_khz system frequency in KHz
  * @return Number of clock cycles needed to make 6.4us
  */
-static unsigned int spw_calc_timer64(int freq_khz){
+unsigned int spw_calc_timer64(int freq_khz){
 	unsigned int timer64 = (freq_khz*64+9999)/10000;
 	return timer64 & 0xfff;
 }
@@ -211,7 +214,7 @@ static unsigned int spw_calc_timer64(int freq_khz){
  * @param [in] freq_khz system frequency in KHz
  * @return Number of clock cycles needed to make 6.4us
  */
-static unsigned int spw_calc_disconnect(int freq_khz){
+unsigned int spw_calc_disconnect(int freq_khz){
 	unsigned int disconnect = ((freq_khz*85+99999)/100000) - 3;
 	return disconnect & 0x3ff;
 }
@@ -224,7 +227,7 @@ static unsigned int spw_calc_disconnect(int freq_khz){
  * errors. Link errors are reported to FDIR if link_err_irq is selected on the
  * configuration. Every error is added to the statistics.
  */
-static void spw_hw_handle_errors(SPW_DEV *pDev){
+void spw_hw_handle_errors(SPW_DEV *pDev){
 	/*DMA control register contents*/
 	int dmactrl;
 	
@@ -251,7 +254,8 @@ static void spw_hw_handle_errors(SPW_DEV *pDev){
 		if (status & (SPW_STATUS_CE | SPW_STATUS_ER | SPW_STATUS_DE | SPW_STATUS_PE | SPW_STATUS_WE)) {
 			
 			/*Send an event to the error handler task TODO: replace by rtems-edi error handler*/
-			rtems_event_send(pDev->config.event_id, SPW_LINKERR_EVENT);
+			//rtems_event_send(pDev->config.event_id, SPW_LINKERR_EVENT);
+			iop_debug(" :: GRSPW AND ERROR OCCURED\n");
 			
 			/*If the "disable SpW link on error" option is activated*/
 			if (pDev->config.disable_err) {
@@ -303,7 +307,7 @@ static void spw_hw_handle_errors(SPW_DEV *pDev){
  * there was an error while sending the data, the write operation is retried
  * and the error reported.
  */
-static void spw_check_tx(SPW_DEV *pDev){
+void spw_check_tx(SPW_DEV *pDev){
 	/*Control Register Contents*/
 	int ctrl;
 	
@@ -401,7 +405,6 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 	spw_cores2 = amba_get_number_apbslv_devices(amba_bus,VENDOR_GAISLER,GAISLER_GRSPW2);
 	spw_cores2_dma = amba_get_number_apbslv_devices(amba_bus,VENDOR_GAISLER,GAISLER_SPW2_DMA);
 	
-	iop_debug("n of spw dma cores: %d\n", spw_cores2_dma);
 	/* zero out all memory */
 	//memset(spw_dev,0,sizeof(SPW_DEV));
 	
@@ -505,9 +508,9 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 					2 * pDev->txbufcnt + pDev->rxbufcnt);
 					
 	/*Pointers to data and header buffers*/
-	pDev->ptr_rxbuf0 = (char *)pDev->iop_buffers[0].v_addr;
-	pDev->ptr_txhbuf0 = (char *)pDev->iop_buffers[pDev->rxbufcnt].v_addr;
-	pDev->ptr_txdbuf0 = (char *)pDev->iop_buffers[pDev->rxbufcnt + pDev->txbufcnt].v_addr;
+	pDev->ptr_rxbuf0 = (uint8_t *)pDev->iop_buffers[0].v_addr;
+	pDev->ptr_txhbuf0 = (uint8_t *)pDev->iop_buffers[pDev->rxbufcnt].v_addr;
+	pDev->ptr_txdbuf0 = (uint8_t *)pDev->iop_buffers[pDev->rxbufcnt + pDev->txbufcnt].v_addr;
 	
 	/**** Initialize Hardware and semaphores ****/
 	/*Create TX semaphore*/
@@ -602,6 +605,7 @@ rtems_device_driver spw_open(iop_device_driver_t *iop_dev, void *arg)
 	
 	pDev->running = 1;
 	
+	_pDev = pDev;
 	return RTEMS_SUCCESSFUL;
 }
 
@@ -682,14 +686,12 @@ rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg)
 	
 	/*Check for errors*/
 	spw_hw_handle_errors(pDev);
-	
-	iop_debug("INSIDE READER\n");
 
 	/*While we have read no data*/
 	while ((count = spw_hw_receive(pDev, ((uint8_t *)iop_buffer->v_addr + iop_buffer->header_off),
 			((uint8_t *)iop_buffer->v_addr + iop_buffer->payload_off), iop_buffer->payload_size)) == 0) {
 		
-		iop_debug("RTEMS_RESOURCE_IN_USE: %d\n", count);
+		iop_debug(" :count: %d\n", count);
 		/*Are we allowed to block?*/
 		if (pDev->config.rx_blocking) {
 			SPACEWIRE_DBG2("Rx blocking\n");
@@ -724,10 +726,6 @@ rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg)
 	/*We were able to read something, return success*/
 	return RTEMS_SUCCESSFUL;    
 }
-
-/** Struct to save
-
-
 /** 
  *  \brief writes data to a SpW device with a specific minor number
  *
@@ -774,7 +772,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 	
 	/* try to send data while its possible*/
 	int data_sent = 0;
-	while ((data_sent = spw_hw_send(pDev, iop_buffer->header_size - iop_buffer->header_off, ((char *)iop_buffer->v_addr + iop_buffer->header_off), iop_buffer->payload_size, ((char *)iop_buffer->v_addr + iop_buffer->payload_off)) ) == 0) {
+	while ((data_sent = spw_hw_send(pDev, iop_buffer->header_size - iop_buffer->header_off, ((uint8_t *)iop_buffer->v_addr + iop_buffer->header_off), iop_buffer->payload_size, ((uint8_t *)iop_buffer->v_addr + iop_buffer->payload_off)) ) == 0) {
 	
 		/* Can we block?*/
 		if (pDev->config.tx_block_on_full == 1) { 
@@ -1223,7 +1221,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
  * 	- 1 if the operation was successful.
  * 	- 0 Value was not written to HW
  */
-static int spw_set_rxmaxlen(SPW_DEV *pDev) {
+int spw_set_rxmaxlen(SPW_DEV *pDev) {
 	
 	/* Maximum reception packet size*/
 	unsigned int rxmax;
@@ -1251,7 +1249,7 @@ static int spw_set_rxmaxlen(SPW_DEV *pDev) {
  * @return 
  * 	- 0 the operation was successful.
  */
-static int spw_hw_init(SPW_DEV *pDev) 
+int spw_hw_init(SPW_DEV *pDev) 
 {
    /*Control register contents*/
 	unsigned int ctrl;
@@ -1261,10 +1259,10 @@ static int spw_hw_init(SPW_DEV *pDev)
 
 	/**Each descritor table has to be 0x400 aligned and has 0x400 of size*/
 	/*Beginning of the RX descriptor table. 0x400 alignement ensured by the user*/
-    pDev->rx = (SPACEWIRE_RXBD *) pDev->bdtable;
+    pDev->rx = (SPACEWIRE_RXBD *) ( ((uint32_t)pDev->bdtable + 1024) & ~(1024-1) );
 	
 	/*Beginning of the TX descriptor table. 0x400 aligned*/
-    pDev->tx = (SPACEWIRE_TXBD *) pDev->bdtable + SPACEWIRE_BDTABLE_ALIGMENT;
+    pDev->tx = (SPACEWIRE_TXBD *) ( (((uint32_t)pDev->bdtable + 1024) & ~(1024-1)) + 1024 );
     SPACEWIRE_DBG("hw_init [minor %i]\n", pDev->minor);
     
 	/*Check if the RMAP sub core is present*/
@@ -1288,7 +1286,7 @@ static int spw_hw_init(SPW_DEV *pDev)
  * 	- 0 if the operation was successful.
  * 	- 1 Timeout was reached and the Link is not ready
  */
-static int spw_hw_waitlink (SPW_DEV *pDev, int timeout) {
+int spw_hw_waitlink (SPW_DEV *pDev, int timeout) {
 	
 	/*ticks counter*/
 	int j;
@@ -1342,7 +1340,7 @@ static int spw_hw_waitlink (SPW_DEV *pDev, int timeout) {
  * @brief Resets the SpW HW core
  * @param [in] pDev device's internal structure
  */
-static void spw_hw_reset(SPW_DEV *pDev){
+void spw_hw_reset(SPW_DEV *pDev){
 	
 	/*Reset SpW core*/
 	SPW_CTRL_WRITE(pDev, SPW_CTRL_RESET);
@@ -1351,6 +1349,18 @@ static void spw_hw_reset(SPW_DEV *pDev){
 	SPW_STATUS_WRITE(pDev, SPW_STATUS_TO | SPW_STATUS_CE | SPW_STATUS_ER 
 					| SPW_STATUS_DE | SPW_STATUS_PE | SPW_STATUS_WE 
 					| SPW_STATUS_IA | SPW_STATUS_EE);
+					
+	/* Add extra writes to make sure we wait the number of clocks required
+	 * after reset
+	 */
+	SPW_STATUS_WRITE(pDev, SPW_STATUS_TO | SPW_STATUS_CE | SPW_STATUS_ER | SPW_STATUS_DE | SPW_STATUS_PE | 
+		SPW_STATUS_WE | SPW_STATUS_IA | SPW_STATUS_EE); /*clear status*/
+	SPW_STATUS_WRITE(pDev, SPW_STATUS_TO | SPW_STATUS_CE | SPW_STATUS_ER | SPW_STATUS_DE | SPW_STATUS_PE | 
+		SPW_STATUS_WE | SPW_STATUS_IA | SPW_STATUS_EE); /*clear status*/
+	SPW_STATUS_WRITE(pDev, SPW_STATUS_TO | SPW_STATUS_CE | SPW_STATUS_ER | SPW_STATUS_DE | SPW_STATUS_PE | 
+		SPW_STATUS_WE | SPW_STATUS_IA | SPW_STATUS_EE); /*clear status*/
+	SPW_STATUS_WRITE(pDev, SPW_STATUS_TO | SPW_STATUS_CE | SPW_STATUS_ER | SPW_STATUS_DE | SPW_STATUS_PE | 
+		SPW_STATUS_WE | SPW_STATUS_IA | SPW_STATUS_EE); /*clear status*/
 	
 	/*Start link finite state machine*/
 	SPW_CTRL_WRITE(pDev, SPW_CTRL_LINKSTART); 
@@ -1361,7 +1371,7 @@ static void spw_hw_reset(SPW_DEV *pDev){
  * @brief Reads the core capabilities and writes the user configuration to the HW
  * @param [in] pDev device's internal structure
  */
-static void spw_hw_sync_config(SPW_DEV *pDev){
+void spw_hw_sync_config(SPW_DEV *pDev){
 	/*used to temporarly contain register values*/
 	unsigned int tmp;
 	
@@ -1525,7 +1535,7 @@ static void spw_hw_sync_config(SPW_DEV *pDev){
  *  This fucntion clears the status registers, distrubtes the buffer memory
  *  through all descriptors and enables transmission and reception
  */
-static int spw_hw_startup (SPW_DEV *pDev, int timeout){
+int spw_hw_startup (SPW_DEV *pDev, int timeout){
 	
 	/*iterates through buffers*/
 	int i;
@@ -1564,10 +1574,10 @@ static int spw_hw_startup (SPW_DEV *pDev, int timeout){
 		pDev->tx[i].ctrl = 0;
 		
 		/*Set tx header buffer pointers*/
-		pDev->tx[i].addr_header = (uint32_t)xky_syscall_get_physical_addr(((unsigned int)&pDev->ptr_txhbuf0[0]) + (i * pDev->txhbufsize));
+		pDev->tx[i].addr_header = (uint32_t *)((uintptr_t)&pDev->ptr_txhbuf0[0]) + (i * pDev->txhbufsize);
 		
 		/*Set tx data buffer pointers*/
-		pDev->tx[i].addr_data = (uint32_t)xky_syscall_get_physical_addr(((unsigned int)&pDev->ptr_txdbuf0[0]) + (i * pDev->txdbufsize));
+		pDev->tx[i].addr_data = (uint32_t *)((uintptr_t)&pDev->ptr_txdbuf0[0]) + (i * pDev->txdbufsize);
 	}
 	
 	/*Current TX descriptor*/
@@ -1594,8 +1604,10 @@ static int spw_hw_startup (SPW_DEV *pDev, int timeout){
 		}
 		
 		/*Set rx data buffer pointers*/
-		pDev->rx[i].addr = (uint32_t)xky_syscall_get_physical_addr(((unsigned int)&pDev->ptr_rxbuf0[0]) + (i * pDev->rxbufsize));
+		pDev->rx[i].addr = (uint32_t *)((uintptr_t)&pDev->ptr_rxbuf0[0]) + (i * pDev->rxbufsize);
 	}
+	
+	iop_debug("\t ****1 pDev->rx[0].addr = 0x%x\n", pDev->rx[0].addr);
 	
 	/*Current RX descriptor. It will be used on next read call*/
 	pDev->rxcur = 0;
@@ -1607,16 +1619,18 @@ static int spw_hw_startup (SPW_DEV *pDev, int timeout){
 	spw_set_rxmaxlen(pDev);
 	
 	/*write pointer to the beginning of TX descritor table in respective register*/
-	SPW_WRITE(&pDev->regs->dma0txdesc, (uint32_t)xky_syscall_get_physical_addr((unsigned int) pDev->tx));
+	SPW_WRITE(&pDev->regs->dma0txdesc, (uint32_t *)xky_syscall_get_physical_addr((uintptr_t) pDev->tx));
 	
 	/*write pointer to the beginning of RX descritor table in respective register*/
-	SPW_WRITE(&pDev->regs->dma0rxdesc, (uint32_t)xky_syscall_get_physical_addr((unsigned int) pDev->rx));
+	SPW_WRITE(&pDev->regs->dma0rxdesc, (uint32_t *)xky_syscall_get_physical_addr((uintptr_t) pDev->rx));
 	
 	/*Read DMA Control register*/
 	dmactrl = SPW_READ(&pDev->regs->dma0ctrl);
 	
 	/*Enable RX*/
 	SPW_WRITE(&pDev->regs->dma0ctrl, (dmactrl & SPW_PREPAREMASK_RX) | SPW_DMACTRL_RD | SPW_DMACTRL_RXEN | SPW_DMACTRL_NS);
+	
+	iop_debug("\t dmaCTRL: 0x%x\t pDev->regs->dma0ctrl: 0x%x\n", dmactrl, pDev->regs->dma0ctrl);
 	
 	SPACEWIRE_DBGC(DBGSPW_TX,"0x%x: setup complete\n", (unsigned int)pDev->regs);
 	
@@ -1629,7 +1643,7 @@ static int spw_hw_startup (SPW_DEV *pDev, int timeout){
  * @param [in] pDev device's internal structure
  * @return RTEMS_SUCCESSFUL
  */
-static int spw_hw_stop (SPW_DEV *pDev, int rx, int tx) {
+int spw_hw_stop (SPW_DEV *pDev, int rx, int tx) {
 	/*DMA control register contents*/
 	unsigned int dmactrl;
 
@@ -1661,7 +1675,7 @@ static int spw_hw_stop (SPW_DEV *pDev, int rx, int tx) {
  * @param [in] *data pointer containing data
  * @return Number of bytes that were written
  */
-int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, char *hdr, unsigned int dlen, char *data) {
+int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, uint8_t *hdr, unsigned int dlen, uint8_t *data) {
 
 	/*DMA control register contentes*/
 	unsigned int dmactrl;
@@ -1679,10 +1693,10 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, char *hdr, unsigned int dlen, 
 	unsigned int cur = pDev->tx_cur;
 	
 	/*Pointer to header buffer*/
-	char *txh = pDev->ptr_txhbuf0 + (cur * pDev->txhbufsize);
+	uint8_t *txh = pDev->ptr_txhbuf0 + (cur * pDev->txhbufsize);
 
 	/*Pointer to data buffer*/
-	char *txd = pDev->ptr_txdbuf0 + (cur * pDev->txdbufsize);
+	uint8_t *txd = pDev->ptr_txdbuf0 + (cur * pDev->txdbufsize);
 	
 	/*Read Control register*/
 	ctrl = SPW_READ((volatile void *)&pDev->tx[cur].ctrl);
@@ -1704,7 +1718,7 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, char *hdr, unsigned int dlen, 
 					if (k % 18 == 0) {
 							iop_debug ("\n");
 					}
-					iop_debug ("%.2x(%x) ",txh[k] & 0xff,isprint(txh[k] & 0xff) ? txh[k] & 0xff : ' ');
+					iop_debug ("%.0x(%x) ",txh[k] & 0xff,isprint(txh[k] & 0xff) ? txh[k] & 0xff : ' ');
 			}
 			iop_debug ("\n");
 	}
@@ -1713,20 +1727,26 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, char *hdr, unsigned int dlen, 
 					if (k % 18 == 0) {
 							iop_debug ("\n");
 					}
-					iop_debug ("%.2x(%x) ",txd[k] & 0xff,isprint(txd[k] & 0xff) ? txd[k] & 0xff : ' ');
+					iop_debug ("%.0x(%x) ",txd[k] & 0xff,isprint(txd[k] & 0xff) ? txd[k] & 0xff : ' ');
 			}
 			iop_debug ("\n");
 	}
 #endif
 	
 	/* Setup header address on descriptor*/
-	pDev->tx[cur].addr_header = (uint32_t)xky_syscall_get_physical_addr((unsigned int)txh);
+	pDev->tx[cur].addr_header = (uint32_t *)txh;
 	
 	/* insert data size*/
 	pDev->tx[cur].len = dlen;
 	
 	/* setup data address in descriptor*/
-	pDev->tx[cur].addr_data = (uint32_t)xky_syscall_get_physical_addr((unsigned int)txd);
+	pDev->tx[cur].addr_data = (uint32_t *)txd;
+	
+	iop_debug("\n\tDescriptor virtual addresses\n");
+	iop_debug("\t  tx[%d].addr_header: 0x%x\n", cur, pDev->tx[cur].addr_header);
+	iop_debug("\t  tx[%d].len: %d\n", cur, pDev->tx[cur].len);
+	iop_debug("\t  tx[%d].addr_data: 0x%x\n", cur, pDev->tx[cur].addr_data);
+	iop_debug("\t  tx[%d].ctrl: 0x%x\n", cur, pDev->tx[cur].ctrl);
 	
 	/* Is this the last descriptor*/
 	if (pDev->tx_cur == (pDev->txbufcnt - 1) ) {
@@ -1739,12 +1759,19 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, char *hdr, unsigned int dlen, 
 		/* enable descriptor and insert header length*/
 		pDev->tx[cur].ctrl = SPW_TXBD_EN | hlen;
 	}
-	
+	iop_debug("\t  tx[%d].ctrl: 0x%x\n", cur, pDev->tx[cur].ctrl);
 	/* Read DMA control register*/	
 	dmactrl = SPW_READ(&pDev->regs->dma0ctrl);
 	
+	iop_debug("\tDMA registries before write\n");
+	iop_debug("\t  pDev->regs->dma0ctrl: 0x%x\n", pDev->regs->dma0ctrl);
+	
 	/* Enable TX*/
 	SPW_WRITE(&pDev->regs->dma0ctrl, (dmactrl & SPW_PREPAREMASK_TX) | SPW_DMACTRL_TXEN);
+	
+	iop_debug("\tDMA registries after write\n");
+	iop_debug("\t  pDev->regs->dma0ctrl: 0x%x\n", pDev->regs->dma0ctrl);
+	
 	
 	/* Increment current descriptor*/
 	pDev->tx_cur = (pDev->tx_cur + 1) % pDev->txbufcnt;
@@ -1786,9 +1813,8 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, char *hdr, unsigned int dlen, 
  * @param [in] *b pointer for the data buffer 
  * @return Number of bytes that were received
  */
-static int spw_hw_receive(SPW_DEV *pDev, char *hdr, char *b, int c) {
+int spw_hw_receive(SPW_DEV *pDev, uint8_t *hdr, uint8_t *b, int c) {
 	
-	iop_debug("ENTERED hw_receive. data len: %d\n", c);
 	/*Real size of the received data*/
 	unsigned int len;
 	
@@ -1808,7 +1834,7 @@ static int spw_hw_receive(SPW_DEV *pDev, char *hdr, char *b, int c) {
 	int i;
 	
 	/*Pointer to current buffer*/
-	char *rxb;  
+	uint8_t *rxb;  
     
 	/** -In promiscous mode the packet is completly dumped in the Rx buffer
 	 *	-If remove protocol id option is activated, the protocol id and
@@ -1845,9 +1871,12 @@ static int spw_hw_receive(SPW_DEV *pDev, char *hdr, char *b, int c) {
 	/*Read descriptor control word*/
 	ctrl = SPW_READ((volatile void *)&pDev->rx[cur].ctrl);
 	
+	iop_debug("\tDMA registries\n");
+	iop_debug("\t  pDev->regs->dma0ctrl: 0x%x\n", pDev->regs->dma0ctrl);
+	
+	iop_debug("\t rx->ctrl: 0x%x, &rx: 0x%x\n", ctrl, &pDev->rx[cur]);
 	/*Check if the descriptor is enabled*/
 	if (ctrl & SPW_RXBD_EN) {
-		iop_debug("ctrl: %x & SPW_RXBD_EN: %x == true\n", ctrl, SPW_RXBD_EN);
 		/*Descriptor is enabled, so we didn't received anything*/
 		return rxlen;
 	}
@@ -1884,10 +1913,10 @@ static int spw_hw_receive(SPW_DEV *pDev, char *hdr, char *b, int c) {
 			
 			/*We cannot exceed what the user requested*/
 			iop_debug("RXLEN exceeds user request rxlen: %x > user: %x\n", rxlen, c);
-			rxlen = 0;
+			rxlen = c;
 		}
 		
-		iop_debug("gonna start");
+		iop_debug("\n********************gonna start************************\n");
 	   /**
 		* If CPU has snooping we can use memcpy directly;
 		* else, we copy character by character using a alternate call (lduba  []1)
@@ -1938,7 +1967,7 @@ static int spw_hw_receive(SPW_DEV *pDev, char *hdr, char *b, int c) {
  * @brief Enables the last used descriptor
  * @param [in] pDev device's internal structure
  */
-static void spw_rxnext(SPW_DEV *pDev) {
+void spw_rxnext(SPW_DEV *pDev) {
 
 	/*DMA control register contents*/
 	unsigned int dmactrl;
@@ -1985,7 +2014,7 @@ static void spw_rxnext(SPW_DEV *pDev) {
  * @param [in] pDev device's internal structure
  * @param [in] ctrl Control Register contents
  */
-static void check_rx_errors(SPW_DEV *pDev, int ctrl) {
+void check_rx_errors(SPW_DEV *pDev, int ctrl) {
     /*Check different errors and increment its statistics*/
 	if (ctrl & SPW_RXBD_EEP) {
 		pDev->stat.rx_eep_err++;
