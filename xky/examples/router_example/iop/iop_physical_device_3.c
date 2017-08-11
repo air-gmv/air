@@ -66,10 +66,10 @@ static iop_spw_device_t device_configuration = \
     /* spacewire configuration */
 	.nodeaddr		= { 10 },
 	.nodemask		= 1,
-	.destkey		= 4,
+	.destkey		= 0,
 	.clkdiv		= 1,
 	
-	.rxmaxlen		= 32,
+	.rxmaxlen		= 64,
 	.promiscuous	= 0,
 	.rmapen		= 0,
 	.rmapbufdis	= 32,

@@ -21,7 +21,7 @@ void iop_main_loop(void){
     iop_physical_device_t *devs[usr_configuration.physical_devices.length];
     for(i =0; i < usr_configuration.physical_devices.length; i++){
     	devs[i] = get_physical_device(i);
-    }
+    } iop_debug(" :: Number of physical_devices %d\n", i);
 
     for(;;)
     {
