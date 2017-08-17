@@ -233,7 +233,7 @@ typedef struct {
  */
 typedef struct {
    volatile unsigned int ctrl;	/** Control Resgister*/
-   uint32_t *addr;	/** Pointer to data buffer*/
+   uint8_t *addr;	/** Pointer to data buffer*/
 } SPACEWIRE_RXBD;
 
 /**
@@ -241,9 +241,9 @@ typedef struct {
  */
 typedef struct {
    volatile unsigned int ctrl;			/** Control Register*/
-   uint32_t *addr_header;	/** Address to header buffer*/
+   uint8_t *addr_header;	/** Address to header buffer*/
    volatile unsigned int len;			/** Data control and Header */
-   uint32_t *addr_data;		/** Address to data buffer*/
+   uint8_t *addr_data;		/** Address to data buffer*/
 } SPACEWIRE_TXBD;
 
 /**
