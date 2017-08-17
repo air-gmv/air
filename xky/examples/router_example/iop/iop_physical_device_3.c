@@ -22,15 +22,6 @@ static iop_buffer_t iop_buffers[96];
 static uint8_t iop_buffers_storage[96 * IOP_BUFFER_SIZE];
 
 /**
- * @brief TX descriptor to IOP buffer mapping
- */
-static iop_buffer_t *tx_iop_buffer[32];
-/**
- * @brief RX descriptor to IOP buffer mapping
- */
-static iop_buffer_t *rx_iop_buffer[32];
-
-/**
  * @brief RX and TX descriptor table
  * @warning this should be 2048, but we need 3072 to ensure the 0x400 alignment
  */
@@ -43,10 +34,7 @@ static SPW_DEV spw_driver = \
     .iop_buffers_storage    = iop_buffers_storage,
 
     /** @note descriptor table address are split and aligned at the runtime */
-    .bdtable = descriptor_table,
-
-    .tx = tx_iop_buffer,
-    .rx = rx_iop_buffer
+    .bdtable = descriptor_table
 };
 
 /** @brief GRSPW driver configuration */

@@ -28,7 +28,7 @@
 				<SpwHeader Address="9"/>
 			</PhysicalRoute>
 			<LogicalRoute Id="11" LogicalDeviceId="0">
-				<SpwHeader Address="0x01,0x0A"/>
+				<SpwHeader Address=""/>
 			</LogicalRoute>
 		</Device>
 		<Device Id="2" Device="GRSPW2" Addr="10" Mask="1" Dest="0" Clk="1"
@@ -38,7 +38,7 @@
 				<SpwHeader Address="10"/>
 			</PhysicalRoute>
 			<LogicalRoute Id="21" LogicalDeviceId="0">
-				<SpwHeader Address=""/>
+				<SpwHeader Address="0x01,0x09"/>
 			</LogicalRoute>
 		</Device>
 		<Device Id="3" Device="GRSPW3" Addr="10" Mask="1" Dest="0" Clk="1"
@@ -74,9 +74,9 @@
 			</DevicesConfiguration>
 			<RoutesConfiguration>
 				<Route RouteId="10" Active="true"/>
-				<Route RouteId="11" Active="true"/>
+				<Route RouteId="11" Active="false"/>
 				<Route RouteId="20" Active="true"/>
-				<Route RouteId="21" Active="false"/>
+				<Route RouteId="21" Active="true"/>
 				<Route RouteId="30" Active="true"/>
 				<Route RouteId="31" Active="false"/>
 				<Route RouteId="40" Active="true"/>
