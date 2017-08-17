@@ -11,7 +11,7 @@ OUTPUT_ARCH(sparc)
 MEMORY
 {
     rom     : ORIGIN = 0x00000000, LENGTH = 0x00000000
-    ram     : ORIGIN = ${'0x{:08X}'.format(mmap.kernel_space[0])}, LENGTH = ${'0x{:08X}'.format(mmap.kernel_space[1])}
+    ram     : ORIGIN = ${'0x{0:08X}'.format(mmap.kernel_space[0])}, LENGTH = ${'0x{0:08X}'.format(mmap.kernel_space[1])}
 }
 
 ENTRY(pmk_trap_table)

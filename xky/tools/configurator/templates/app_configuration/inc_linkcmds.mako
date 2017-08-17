@@ -13,5 +13,5 @@
 MEMORY
 {
     rom     : ORIGIN = 0x00000000, LENGTH = 0x00000000
-    ram     : ORIGIN = ${'0x{:08X}'.format(partition.memory_vaddr)}, LENGTH = ${'0x{:08X}'.format(partition.memory_size)}
+    ram     : ORIGIN = ${'0x{0:08X}'.format(partition.memory_vaddr)}, LENGTH = ${'0x{0:08X}'.format(partition.memory_size)}
 }
