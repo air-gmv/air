@@ -81,7 +81,7 @@ ${'\t'}@$(XKY_TOOLS)/partition_assembler${'\\'}
 % for i, partition in enumerate(app_configuration.partitions):
 ${'\t\t{0} {1} {2}{3}'.format(
     os.path.join('..', partition.directory, partition.executable),
-    '0x{:08x}'.format(partition.memory_vaddr), '0x{:08x}'.format(partition.memory_size),
+    '0x{0:08x}'.format(partition.memory_vaddr), '0x{0:08x}'.format(partition.memory_size),
     '\\' if i < len(app_configuration.partitions) - 1 else '')}
 % endfor
 
