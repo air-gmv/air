@@ -1574,10 +1574,10 @@ int spw_hw_startup (SPW_DEV *pDev, int timeout){
 		pDev->tx[i].ctrl = 0;
 		
 		/*Set tx header buffer pointers*/
-		pDev->tx[i].addr_header = (uint32_t *)((uintptr_t)&pDev->ptr_txhbuf0[0]) + (i * pDev->txhbufsize);
+		pDev->tx[i].addr_header = (uint8_t *)xky_syscall_get_physical_addr((&pDev->ptr_txhbuf0[0]) + (i * pDev->txhbufsize));
 		
 		/*Set tx data buffer pointers*/
-		pDev->tx[i].addr_data = (uint32_t *)((uintptr_t)&pDev->ptr_txdbuf0[0]) + (i * pDev->txdbufsize);
+		pDev->tx[i].addr_data = (uint8_t *)xky_syscall_get_physical_addr((&pDev->ptr_txdbuf0[0]) + (i * pDev->txdbufsize));
 	}
 	
 	/*Current TX descriptor*/
@@ -1604,7 +1604,7 @@ int spw_hw_startup (SPW_DEV *pDev, int timeout){
 		}
 		
 		/*Set rx data buffer pointers*/
-		pDev->rx[i].addr = (uint32_t *)((uintptr_t)&pDev->ptr_rxbuf0[0]) + (i * pDev->rxbufsize);
+		pDev->rx[i].addr = (uint8_t *)xky_syscall_get_physical_addr((&pDev->ptr_rxbuf0[0]) + (i * pDev->rxbufsize));
 	}
 	
 	iop_debug("\t ****1 pDev->rx[0].addr = 0x%x\n", pDev->rx[0].addr);
@@ -1619,10 +1619,10 @@ int spw_hw_startup (SPW_DEV *pDev, int timeout){
 	spw_set_rxmaxlen(pDev);
 	
 	/*write pointer to the beginning of TX descritor table in respective register*/
-	SPW_WRITE(&pDev->regs->dma0txdesc, (uint32_t *)xky_syscall_get_physical_addr((uintptr_t) pDev->tx));
+	SPW_WRITE(&pDev->regs->dma0txdesc, (uint8_t *)xky_syscall_get_physical_addr((uintptr_t) pDev->tx));
 	
 	/*write pointer to the beginning of RX descritor table in respective register*/
-	SPW_WRITE(&pDev->regs->dma0rxdesc, (uint32_t *)xky_syscall_get_physical_addr((uintptr_t) pDev->rx));
+	SPW_WRITE(&pDev->regs->dma0rxdesc, (uint8_t *)xky_syscall_get_physical_addr((uintptr_t) pDev->rx));
 	
 	/*Read DMA Control register*/
 	dmactrl = SPW_READ(&pDev->regs->dma0ctrl);
@@ -1707,10 +1707,10 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, uint8_t *hdr, unsigned int dle
 	}
 	
 	/*Copy data*/
-	memcpy(&txd[0], data, dlen);
+	memcpy(txd, data, dlen);
 	
 	/*Copy header*/
-	memcpy(&txh[0], hdr, hlen);
+	memcpy(txh, hdr, hlen);
 	
 #ifdef DEBUG_SPACEWIRE_ONOFF  
 	if (DEBUG_SPACEWIRE_FLAGS & DBGSPW_DUMP) {
@@ -1734,13 +1734,13 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, uint8_t *hdr, unsigned int dle
 #endif
 	
 	/* Setup header address on descriptor*/
-	pDev->tx[cur].addr_header = (uint32_t *)txh;
-	
+	pDev->tx[cur].addr_header = (uint8_t *)xky_syscall_get_physical_addr((uintptr_t)txh);
+	iop_debug("pDev->tx[cur].addr_header : 0x%x = txh : 0x%x\n", pDev->tx[cur].addr_header, txh);
 	/* insert data size*/
 	pDev->tx[cur].len = dlen;
 	
 	/* setup data address in descriptor*/
-	pDev->tx[cur].addr_data = (uint32_t *)txd;
+	pDev->tx[cur].addr_data = (uint8_t *)xky_syscall_get_physical_addr((uintptr_t)txd);
 	
 	iop_debug("\n\tDescriptor virtual addresses\n");
 	iop_debug("\t  tx[%d].addr_header: 0x%x\n", cur, pDev->tx[cur].addr_header);
@@ -1748,6 +1748,12 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, uint8_t *hdr, unsigned int dle
 	iop_debug("\t  tx[%d].addr_data: 0x%x\n", cur, pDev->tx[cur].addr_data);
 	iop_debug("\t  tx[%d].ctrl: 0x%x\n", cur, pDev->tx[cur].ctrl);
 	
+/*	iop_debug("********** tx[%d].data ************\n\t", pDev->tx_cur);
+	for (k = 0; k < pDev->tx[cur].len; k++) {
+		uint8_t *buf = pDev->tx[cur].addr_data;
+		iop_debug("0x%x ", *(xky_syscall_get_virtual_addr(buf + k)));
+	} iop_debug("\t THE END at 0x%x\n", pDev->tx[cur].addr_data + k);
+*/	
 	/* Is this the last descriptor*/
 	if (pDev->tx_cur == (pDev->txbufcnt - 1) ) {
 	
