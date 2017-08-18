@@ -36,34 +36,36 @@ static int router_cfgsts_set(router_priv_t *priv, unsigned int cfgsts);
 static int router_cfgsts_read(router_priv_t *priv, unsigned int *cfgsts);
 static int router_tc_read(router_priv_t *priv, unsigned int *tc);
 
-/* SpaceWire registry fields */
-struct router_regs {
-	unsigned int resv1;		/* 0x000 */
-	unsigned int psetup[255];	/* 0x004 */
-	unsigned int resv2[32];		/* 0x400 */
-	unsigned int routes[224];	/* 0x480 */
-	unsigned int pctrl[32];		/* 0x800 */
-	unsigned int psts[32];		/* 0x880 */
-	unsigned int treload[32];	/* 0x900 */
-	unsigned int resv3[32];		/* 0x980 */
-	unsigned int cfgsts;		/* 0xA00 */
-	unsigned int timecode;		/* 0xA04 */
-	unsigned int ver;		/* 0xA08 */
-	unsigned int idiv;		/* 0xA0C */
-	unsigned int cfgwe;		/* 0xA10 */
-	unsigned int tprescaler;	/* 0xA14 */
-	unsigned int resv4[123];	/* 0xA18 */
-	unsigned int charo[31];		/* 0xC04 */
-	unsigned int resv5;		/* 0xC80 */
-	unsigned int chari[31];		/* 0xC84 */
-	unsigned int resv6;		/* 0xD00 */
-	unsigned int pkto[31];		/* 0xD04 */
-	unsigned int resv7;		/* 0xD80 */
-	unsigned int pkti[31];		/* 0xD84 */
-};
-
 rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
+	iop_debug("   :: INSIDE ROUTER INIT\n");
+	    /* APB device configuration word */
+    unsigned int conf;
+	int i;
+    /* APB slave mem bar */
+    unsigned int iobar;
+	amba_confarea_type * amba_conf2 = &amba_conf;
+	/* iterate through the APB slave devices */
+    for(i = 0; i < amba_conf2->ahbslv.devnr; i++)
+    {
+        /* get the configuration area */
+        conf = amba_get_confword(amba_conf2->ahbslv , i , 0);
+
+        /* check the device vendor */
+        if(( amba_vendor(conf) == VENDOR_GAISLER ) && ( amba_device(conf) == GAISLER_SPW_ROUTER ))
+        {
+			iop_debug("      :: device nr %d\n", i);
+            /* get the io mem bar */
+            iobar = amba_ahb_get_membar(amba_conf2->ahbslv , i, 0);
+
+			iop_debug("      :: iobar: 0x%x\n", iobar);
+            /* get the device start address */
+			iop_debug("      :: dev->start[0]: 0x%x\n", amba_iobar_start(*(amba_conf2->ahbslv.addr[i]) , iobar));
+            /* get the devide interrupt number */
+			iop_debug("      :: dev->irq: 0x%x\n", amba_irq(conf));
+        }
+    }
+	
 	int device_found = 0;
 	
 	amba_ahb_device ahbspwrtr;
@@ -74,7 +76,17 @@ rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 	char prefix[32];
 	rtems_status_code status;
 
-	router_config_t *cfg = (router_config_t *) &device->flags;
+	router_config_t *cfg = &priv->config;
+	
+	cfg->flags = device->flags;
+	cfg->config = device->config;
+	cfg->iid = device->iid;
+	cfg->idiv = device->idiv;
+	cfg->timer_prescaler = device->prescaler;
+	
+	int j;
+	for (j=0; j<32; j++)
+		cfg->timer_reload[j] = priv->timer_reload->timeout[j];	
 	
 	memset(&ahbspwrtr, 0, sizeof(amba_ahb_device));
 	
@@ -86,32 +98,46 @@ rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 		return RTEMS_INTERNAL_ERROR;
 	}
 	
-	priv->regs = (struct router_regs *)ahbspwrtr.start;
+	priv->regs = (struct router_regs *)0xFF880000;
 
 	/* Register character device in registered region */
 	router_hwinfo(priv, &priv->hwinfo);
+	router_print_hwinfo(&priv->hwinfo);
 	priv->open = 0;
 
-	if ( router_we_set(priv, 1) ) {
+	priv->nports = priv->hwinfo.nports_spw + priv->hwinfo.nports_amba +
+			priv->hwinfo.nports_fifo;
+	if ( (priv->nports < 2) || (priv->nports > 32) ) {
+		iop_debug("    :: RTEMS_INTERNAL_ERROR at priv->nports = %d\n", priv->nports);
+		return RTEMS_INTERNAL_ERROR;
+	}
+	
+	if ( router_we_set(priv, 0) ) {
+		iop_debug("    :: RTEMS_INTERNAL_ERROR at router_we_set\n");
 		return RTEMS_INTERNAL_ERROR;
 	}
 	
 	if ( router_config_set(priv, cfg) ) {
+		iop_debug("    :: RTEMS_INTERNAL_ERROR at router_config_set\n");
 		return RTEMS_INTERNAL_ERROR;
+	}
+	router_port port;
+	port.flag = ROUTER_PORTFLG_GET_CTRL | ROUTER_PORTFLG_GET_STS;
+	for (j=0; j < 32; j++) {
+		port.port = j;
+		router_port_ctrl(priv, &port);
+		iop_debug(" port[%d]: CTRL: 0x%08x  STATUS: 0x%08x\n", j, port.ctrl, port.sts);
 	}
 	
 	if ( router_ps_set(priv, priv->ps) ) {
+		iop_debug("    :: RTEMS_INTERNAL_ERROR at router_ps_set\n");
 		return RTEMS_INTERNAL_ERROR;
 	}
 	
 	if ( router_routes_set(priv, priv->routes) ) {
+		iop_debug("    :: RTEMS_INTERNAL_ERROR at router_routes_set\n");
 		return RTEMS_INTERNAL_ERROR;
 	}
-	
-	priv->nports = priv->hwinfo.nports_spw + priv->hwinfo.nports_amba +
-			priv->hwinfo.nports_fifo;
-	if ( (priv->nports < 2) || (priv->nports > 32) )
-		return RTEMS_INTERNAL_ERROR;
 
 	return RTEMS_SUCCESSFUL;
 }
@@ -123,21 +149,24 @@ rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
 
 	int i;
 	
+	iop_debug("   :: 1 INSIDE ROUTER OPEN***************\n");
+	
 	if ( !priv || priv->open ) {
 		return RTEMS_RESOURCE_IN_USE;
 	}
 	
-	router_config_t *cfg;
-	router_config_read(priv, cfg);
+	iop_debug("   :: 2 INSIDE ROUTER OPEN***************\n");
+	router_config_t cfg;
+	router_config_read(priv, &cfg);
 	
 	iop_debug("   Printing router config:  ");
 	for(i = 0; i < sizeof(router_config_t); i++) {
-		iop_debug("%x\n", *(cfg + i));
+	//	iop_debug("%x\n", *(&cfg + i));
 	}
 	
 	iop_debug("   Printing router hwinfo:  ");
 	for(i = 0; i < sizeof(struct router_hw_info); i++) {
-		iop_debug("%x\n", *(&(priv->hwinfo) + i));
+	//	iop_debug("%x\n", *(&(priv->hwinfo) + i));
 	}
 	
 	priv->open = 1;
@@ -160,6 +189,8 @@ static void router_hwinfo(
 	struct router_hw_info *hwinfo)
 {
 	unsigned int tmp;
+	
+	iop_debug("     :: Router configuration status: %x\n", priv->regs->cfgsts);
 
 	tmp = REG_READ(&priv->regs->cfgsts);
 	hwinfo->nports_spw   = (tmp >> 27) & 0x1f;
@@ -173,6 +204,20 @@ static void router_hwinfo(
 	hwinfo->ver_minor   = (tmp >> 16) & 0xff;
 	hwinfo->ver_patch   = (tmp >>  8) & 0xff;
 	hwinfo->iid         = (tmp >>  0) & 0xff;
+}
+
+void router_print_hwinfo(struct router_hw_info *hwinfo)
+{
+	iop_debug("Hardware Configuration of SpaceWire Router:\n");
+	iop_debug(" Number of SpW ports:           %d\n", hwinfo->nports_spw);
+	iop_debug(" Number of AMBA ports:          %d\n", hwinfo->nports_amba);
+	iop_debug(" Number of FIFO ports:          %d\n", hwinfo->nports_fifo);
+	iop_debug(" Timers available:              %s\n", hwinfo->timers_avail ? "YES" : "NO");
+	iop_debug(" Plug and Play available:       %s\n", hwinfo->pnp_avail ? "YES" : "NO");
+	iop_debug(" MAJOR Version:                 %d\n", hwinfo->ver_major);
+	iop_debug(" MINOR Version:                 %d\n", hwinfo->ver_minor);
+	iop_debug(" PATCH Version:                 %d\n", hwinfo->ver_patch);
+	iop_debug(" Current Instance ID:           %d\n", hwinfo->iid);
 }
 
 static int router_config_set(
@@ -209,7 +254,7 @@ static int router_config_set(
 	/* Write Timer Reload Register */
 	if ( cfg->flags & ROUTER_FLG_TRLD ) {
 		for (i=0; i<=priv->nports; i++)
-			REG_WRITE(&priv->regs->treload[i], priv->timer_reload->timeout[i]);
+			REG_WRITE(&priv->regs->treload[i], cfg->timer_reload[i]);
 	}
 
 	return 0;
@@ -256,7 +301,7 @@ static int router_ps_set(router_priv_t *priv, router_ps *ps)
 	int i;
 	unsigned int *p = &ps->ps[0];
 	for (i=0; i<255; i++,p++) 
-		REG_WRITE(&priv->regs->psetup[i], *p);
+		REG_WRITE(&priv->regs->psetup[i], *(p));
 	return 0;
 }
 
@@ -265,7 +310,7 @@ static int router_ps_read(router_priv_t *priv, router_ps *ps)
 	int i;
 	unsigned int *p = &ps->ps[0];
 	for (i=0; i<255; i++,p++) 
-		REG_WRITE(&priv->regs->psetup[i], *p);
+		REG_WRITE(&priv->regs->psetup[i], *(p));
 	return 0;
 }
 

@@ -20,7 +20,7 @@
 
 			Promiscuous(PRO) should be 0 while using router
 		-->
-		<Device Id="0" Device="SPWRTR" Flags="0x1f" Config="0b001110" Idd="1" Idiv="9"/>
+		<Device Id="0" Device="SPWRTR" Flags="0x1f" Config="0b001110" Idd="1" Idiv="9" Prescaler="1"/>
 		<Device Id="1" Device="GRSPW1" Addr="9" Mask="1" Dest="0" Clk="1"
 				RXmax="64" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
 				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
