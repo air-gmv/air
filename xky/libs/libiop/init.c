@@ -206,6 +206,8 @@ static rtems_status_code iop_init_drivers(void){
         if (pdev->driver->init != NULL) {
             drc = pdev->driver->init(pdev->driver, NULL);
         }
+		
+		iop_debug("   :: drc = %d\n", drc);
 
         /* open device */
         if (RTEMS_SUCCESSFUL == drc && pdev->driver->open != NULL) {

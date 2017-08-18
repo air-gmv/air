@@ -239,6 +239,21 @@ extern "C"
     */
    int amba_find_apbslv(amba_confarea_type * amba_conf , int vendor , int device ,
                         amba_apb_device * dev);
+						
+						
+	/**
+    *  @brief get first AHB slave device of the specified vendor&device id
+    *
+    *  @param[in] amba_conf AMBA P&P device info is placed here.
+    *  @param[in] vendor vendor of the amba device
+    *  @param[in] device device to search for
+    *  @param[out] dev places in this address the information of the device
+    *  (if any found)
+    *
+    *  @return returns 1 if the device was found and 0 otherwise
+    */					
+	int amba_find_ahbslv(amba_confarea_type * amba_conf , int vendor , int device ,
+                     amba_ahb_device * dev);
 
 
    /******** AMBA DEVICES *******/

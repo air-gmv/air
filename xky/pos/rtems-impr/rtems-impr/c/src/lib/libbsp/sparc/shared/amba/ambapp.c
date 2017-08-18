@@ -334,7 +334,7 @@ int amba_find_ahbslv(amba_confarea_type * amba_conf , int vendor , int device ,
         if(( amba_vendor(conf) == vendor ) && ( amba_device(conf) == device ))
         {
             /* get the io mem bar */
-            iobar = amba_apb_get_membar(amba_conf->ahbslv , i);
+            iobar = amba_ahb_get_membar(amba_conf->ahbslv , i, 0);
 
             /* get the device start address */
             dev->start[0] = amba_iobar_start(*(amba_conf->ahbslv.addr[i]) , iobar);

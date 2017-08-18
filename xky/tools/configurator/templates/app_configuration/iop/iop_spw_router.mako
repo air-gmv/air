@@ -46,10 +46,11 @@ static iop_spw_router_device_t device_configuration = ${'\\'}
     },
 
     /* spacewire router configuration configuration */
-	.flags		= ${device.setup.flags},
-	.config		= ${device.setup.config},
-	.iid		= ${device.setup.iid},
-	.idiv		= ${device.setup.idiv}
+	.flags			= ${device.setup.flags},
+	.config			= ${device.setup.config},
+	.iid			= ${device.setup.iid},
+	.idiv			= ${device.setup.idiv},
+	.prescaler		= ${device.setup.prescaler}
 };
 
 ${iop_template.PhysicalDevice(iop_configuration, device, device_functions)}\

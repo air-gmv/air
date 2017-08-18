@@ -37,6 +37,7 @@ SPWRTR_FLAGS            = 'Flags'
 SPWRTR_CONFIG           = 'Config'
 SPWRTR_IID              = 'Idd'
 SPWRTR_IDIV             = 'Idiv'
+SPWRTR_PRESCALER        = 'Prescaler'
 
 VALID_EN                    = [ parserutils.str2int, lambda x : 0 <= x <= 1 ]
 VALID_XD	                = [ parserutils.str2int, lambda x : 0 <= x <= 2048 ]
@@ -114,10 +115,11 @@ class SPWRTRPhySetup(object):
         self.config = 0
         self.iid    = 0
         self.idiv   = 0
+        self.prescaler = 1
 
     def details(self):
-        return 'SPWRTR Physical Device Setup (Flags: {0} Config: {1} IID: {2} IDIV: {3})'\
-            .format(bin(self.flags), bin(self.config), self.iid, self.idiv)
+        return 'SPWRTR Physical Device Setup (Flags: {0} Config: {1} IID: {2} IDIV: {3} PRESCALER: {4})'\
+            .format(bin(self.flags), bin(self.config), self.iid, self.idiv, self.prescaler)
 
 # SPWRTR Schedule device setup
 class SPWRTRSchSetup(object):
@@ -239,6 +241,7 @@ def phy_spwrtr(iop_parser, xml, pdevice):
     setup.config        = xml.parse_attr(SPWRTR_CONFIG, VALID_MASK, True, iop_parser.logger)
     setup.iid           = xml.parse_attr(SPWRTR_IID, VALID_XD, True, iop_parser.logger)
     setup.idiv          = xml.parse_attr(SPWRTR_IDIV, VALID_XD, True, iop_parser.logger)
+    setup.prescaler     = xml.parse_attr(SPWRTR_PRESCALER, VALID_XD, True, iop_parser.logger)
 
     # sanity check
     if iop_parser.logger.check_errors(): return False

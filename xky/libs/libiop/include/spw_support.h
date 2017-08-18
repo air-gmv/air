@@ -51,6 +51,7 @@ typedef struct {
 	unsigned int config;
 	unsigned int iid;
 	unsigned int idiv;
+	unsigned int prescaler;
 
 } iop_spw_router_device_t;
 
