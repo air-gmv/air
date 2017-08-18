@@ -108,8 +108,8 @@ spw_user_config *defconf;
 /* Pointer to amba bus structure*/
 amba_confarea_type *amba_bus;
 
-/* Global physical device for debuging purposes */
-SPW_DEV *_pDev;
+/* Global var for debuging purposes */
+void *MURTA;
 
 #ifdef SPW_DONT_BYPASS_CACHE
 #define _SPW_READ(address) (*(volatile unsigned int *)(address))
@@ -557,6 +557,8 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
  **/
 rtems_device_driver spw_open(iop_device_driver_t *iop_dev, void *arg)
 {		
+
+	iop_debug("   :: INSIDE SPW OPEN\n");
 	/*Current SpW device*/
 	iop_spw_device_t *device = (iop_spw_device_t *)iop_dev;
 	SPW_DEV *pDev = (SPW_DEV *)(device->dev.driver);
@@ -605,7 +607,6 @@ rtems_device_driver spw_open(iop_device_driver_t *iop_dev, void *arg)
 	
 	pDev->running = 1;
 	
-	_pDev = pDev;
 	return RTEMS_SUCCESSFUL;
 }
 
@@ -1259,10 +1260,10 @@ int spw_hw_init(SPW_DEV *pDev)
 
 	/**Each descritor table has to be 0x400 aligned and has 0x400 of size*/
 	/*Beginning of the RX descriptor table. 0x400 alignement ensured by the user*/
-    pDev->rx = (SPACEWIRE_RXBD *) ( ((uint32_t)pDev->bdtable + 1024) & ~(1024-1) );
+    pDev->rx = (SPACEWIRE_RXBD *) ( ((unsigned int)pDev->bdtable + 1024) & ~(1024-1) );
 	
 	/*Beginning of the TX descriptor table. 0x400 aligned*/
-    pDev->tx = (SPACEWIRE_TXBD *) ( (((uint32_t)pDev->bdtable + 1024) & ~(1024-1)) + 1024 );
+    pDev->tx = (SPACEWIRE_TXBD *) ( (((unsigned int)pDev->bdtable + 1024) & ~(1024-1)) + 1024 );
     SPACEWIRE_DBG("hw_init [minor %i]\n", pDev->minor);
     
 	/*Check if the RMAP sub core is present*/
@@ -1574,10 +1575,10 @@ int spw_hw_startup (SPW_DEV *pDev, int timeout){
 		pDev->tx[i].ctrl = 0;
 		
 		/*Set tx header buffer pointers*/
-		pDev->tx[i].addr_header = (uint8_t *)xky_syscall_get_physical_addr((&pDev->ptr_txhbuf0[0]) + (i * pDev->txhbufsize));
+		pDev->tx[i].addr_header = (uint8_t *)xky_syscall_get_physical_addr((xky_uptr_t)((&pDev->ptr_txhbuf0[0]) + (i * pDev->txhbufsize)));
 		
 		/*Set tx data buffer pointers*/
-		pDev->tx[i].addr_data = (uint8_t *)xky_syscall_get_physical_addr((&pDev->ptr_txdbuf0[0]) + (i * pDev->txdbufsize));
+		pDev->tx[i].addr_data = (uint8_t *)xky_syscall_get_physical_addr((xky_uptr_t)((&pDev->ptr_txdbuf0[0]) + (i * pDev->txdbufsize)));
 	}
 	
 	/*Current TX descriptor*/
@@ -1604,7 +1605,7 @@ int spw_hw_startup (SPW_DEV *pDev, int timeout){
 		}
 		
 		/*Set rx data buffer pointers*/
-		pDev->rx[i].addr = (uint8_t *)xky_syscall_get_physical_addr((&pDev->ptr_rxbuf0[0]) + (i * pDev->rxbufsize));
+		pDev->rx[i].addr = (uint8_t *)xky_syscall_get_physical_addr((xky_uptr_t)((&pDev->ptr_rxbuf0[0]) + (i * pDev->rxbufsize)));
 	}
 	
 	iop_debug("\t ****1 pDev->rx[0].addr = 0x%x\n", pDev->rx[0].addr);
@@ -1877,10 +1878,19 @@ int spw_hw_receive(SPW_DEV *pDev, uint8_t *hdr, uint8_t *b, int c) {
 	/*Read descriptor control word*/
 	ctrl = SPW_READ((volatile void *)&pDev->rx[cur].ctrl);
 	
+/*	int j;
+	iop_debug("Iterating through all rx descriptors. Init at %d\n", cur);
+	for (j = 0; j < 32; j++)
+		iop_debug("%d: %x ", j, pDev->rx[j].ctrl);
+*/	
 	iop_debug("\tDMA registries\n");
 	iop_debug("\t  pDev->regs->dma0ctrl: 0x%x\n", pDev->regs->dma0ctrl);
 	
 	iop_debug("\t rx->ctrl: 0x%x, &rx: 0x%x\n", ctrl, &pDev->rx[cur]);
+	iop_debug("\t rx phy mem: 0x%x\n", (uint8_t *)xky_syscall_get_physical_addr((uintptr_t) &pDev->rx[0]));
+	
+	MURTA = (void *)&pDev->rx[cur].addr;
+	
 	/*Check if the descriptor is enabled*/
 	if (ctrl & SPW_RXBD_EN) {
 		/*Descriptor is enabled, so we didn't received anything*/
