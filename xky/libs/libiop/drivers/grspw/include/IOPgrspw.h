@@ -232,7 +232,7 @@ typedef struct {
  * @brief composes a RX descriptor
  */
 typedef struct {
-   volatile unsigned int ctrl;	/** Control Resgister*/
+   volatile uint32_t ctrl;	/** Control Resgister*/
    uint8_t *addr;	/** Pointer to data buffer*/
 } SPACEWIRE_RXBD;
 
@@ -240,9 +240,9 @@ typedef struct {
  * @brief TX descriptor
  */
 typedef struct {
-   volatile unsigned int ctrl;			/** Control Register*/
+   volatile uint32_t ctrl;			/** Control Register*/
    uint8_t *addr_header;	/** Address to header buffer*/
-   volatile unsigned int len;			/** Data control and Header */
+   volatile uint32_t len;			/** Data control and Header */
    uint8_t *addr_data;		/** Address to data buffer*/
 } SPACEWIRE_TXBD;
 
