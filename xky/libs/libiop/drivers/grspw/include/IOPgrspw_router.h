@@ -15,6 +15,32 @@
 #include <iop.h>
 #include <ambapp.h>
 
+/* SpaceWire registry fields */
+struct router_regs {
+	unsigned int resv1;		/* 0x000 */
+	unsigned int psetup[255];	/* 0x004 */
+	unsigned int resv2[32];		/* 0x400 */
+	unsigned int routes[224];	/* 0x480 */
+	unsigned int pctrl[32];		/* 0x800 */
+	unsigned int psts[32];		/* 0x880 */
+	unsigned int treload[32];	/* 0x900 */
+	unsigned int resv3[32];		/* 0x980 */
+	unsigned int cfgsts;		/* 0xA00 */
+	unsigned int timecode;		/* 0xA04 */
+	unsigned int ver;		/* 0xA08 */
+	unsigned int idiv;		/* 0xA0C */
+	unsigned int cfgwe;		/* 0xA10 */
+	unsigned int tprescaler;	/* 0xA14 */
+	unsigned int resv4[123];	/* 0xA18 */
+	unsigned int charo[31];		/* 0xC04 */
+	unsigned int resv5;		/* 0xC80 */
+	unsigned int chari[31];		/* 0xC84 */
+	unsigned int resv6;		/* 0xD00 */
+	unsigned int pkto[31];		/* 0xD04 */
+	unsigned int resv7;		/* 0xD80 */
+	unsigned int pkti[31];		/* 0xD84 */
+};
+
 /* Hardware Information */
 struct router_hw_info {
 	unsigned char nports_spw;
@@ -90,6 +116,7 @@ typedef struct {
 	router_routes *routes;
 	router_ps *ps;
 	port_timer *timer_reload;
+	router_config_t config;
 } router_priv_t;
 
 /* Get Hardware support/information available */

@@ -35,10 +35,11 @@ static iop_spw_router_device_t device_configuration = \
     },
 
     /* spacewire router configuration configuration */
-	.flags		= 31,
-	.config		= 14,
-	.iid		= 1,
-	.idiv		= 9
+	.flags			= ROUTER_FLG_CFG | ROUTER_FLG_IID,
+	.config			= 0x10,
+	.iid			= 1,
+	.idiv			= 9,
+	.prescaler		= 1
 };
 
 /**
