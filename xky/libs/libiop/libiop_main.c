@@ -15,9 +15,6 @@ void iop_main_loop(void){
 
     int i;
 
-    rtems_interval begin, predi, prero, write,
-		readt, posdi, posro;
-
     iop_physical_device_t *devs[usr_configuration.physical_devices.length];
     for(i =0; i < usr_configuration.physical_devices.length; i++){
     	devs[i] = get_physical_device(i);
