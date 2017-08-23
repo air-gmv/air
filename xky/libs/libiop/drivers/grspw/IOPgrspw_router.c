@@ -18,7 +18,13 @@
 #include <IOPgrspw_router.h>
 #include <spw_support.h>
 
-#define ROUTER_DBG(args...)
+#ifdef DEBUG_SPWRTR
+#define ROUTER_DBG(fmt, args...)    do { { iop_debug(" : %03d @ %18s()]:" fmt , __LINE__,__FUNCTION__,## args); }} while(0)
+#define ROUTER_DBG2(fmt)            do { { iop_debug(" : %03d @ %18s()]:" fmt , __LINE__,__FUNCTION__); }} while(0)
+#else
+#define ROUTER_DBG(fmt, args...)
+#define ROUTER_DBG2(fmt)
+#endif
 
 #define REG_READ(adr) (*(volatile unsigned int *)(adr))
 #define REG_WRITE(adr, value) (*(volatile unsigned int *)(adr) = (value))
@@ -38,33 +44,6 @@ static int router_tc_read(router_priv_t *priv, unsigned int *tc);
 
 rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
-	iop_debug("   :: INSIDE ROUTER INIT\n");
-	    /* APB device configuration word */
-    unsigned int conf;
-	int i;
-    /* APB slave mem bar */
-    unsigned int iobar;
-	amba_confarea_type * amba_conf2 = &amba_conf;
-	/* iterate through the APB slave devices */
-    for(i = 0; i < amba_conf2->ahbslv.devnr; i++)
-    {
-        /* get the configuration area */
-        conf = amba_get_confword(amba_conf2->ahbslv , i , 0);
-
-        /* check the device vendor */
-        if(( amba_vendor(conf) == VENDOR_GAISLER ) && ( amba_device(conf) == GAISLER_SPW_ROUTER ))
-        {
-			iop_debug("      :: device nr %d\n", i);
-            /* get the io mem bar */
-            iobar = amba_ahb_get_membar(amba_conf2->ahbslv , i, 0);
-
-			iop_debug("      :: iobar: 0x%x\n", iobar);
-            /* get the device start address */
-			iop_debug("      :: dev->start[0]: 0x%x\n", amba_iobar_start(*(amba_conf2->ahbslv.addr[i]) , iobar));
-            /* get the devide interrupt number */
-			iop_debug("      :: dev->irq: 0x%x\n", amba_irq(conf));
-        }
-    }
 	
 	int device_found = 0;
 	
@@ -94,11 +73,13 @@ rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 	device_found = amba_find_ahbslv(&amba_conf, VENDOR_GAISLER, GAISLER_SPW_ROUTER, &ahbspwrtr);
 									
 	if (device_found != 1){
-	    iop_debug("    SPWRTR device not found...\n");
+	    ROUTER_DBG2("SPWRTR device not found...\n");
 		return RTEMS_INTERNAL_ERROR;
 	}
 	
 	priv->regs = (struct router_regs *)0xFF880000;
+	
+	ROUTER_DBG("spacewire router at [0x%x]\n", (unsigned int) priv->regs);
 
 	/* Register character device in registered region */
 	router_hwinfo(priv, &priv->hwinfo);
@@ -108,34 +89,34 @@ rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 	priv->nports = priv->hwinfo.nports_spw + priv->hwinfo.nports_amba +
 			priv->hwinfo.nports_fifo;
 	if ( (priv->nports < 2) || (priv->nports > 32) ) {
-		iop_debug("    :: RTEMS_INTERNAL_ERROR at priv->nports = %d\n", priv->nports);
+		ROUTER_DBG("RTEMS_INTERNAL_ERROR at priv->nports = %d\n", priv->nports);
 		return RTEMS_INTERNAL_ERROR;
 	}
 	
 	if ( router_we_set(priv, 0) ) {
-		iop_debug("    :: RTEMS_INTERNAL_ERROR at router_we_set\n");
+		ROUTER_DBG2("RTEMS_INTERNAL_ERROR at router_we_set\n");
 		return RTEMS_INTERNAL_ERROR;
 	}
 	
 	if ( router_config_set(priv, cfg) ) {
-		iop_debug("    :: RTEMS_INTERNAL_ERROR at router_config_set\n");
+		ROUTER_DBG2("RTEMS_INTERNAL_ERROR at router_config_set\n");
 		return RTEMS_INTERNAL_ERROR;
 	}
 	router_port port;
 	port.flag = ROUTER_PORTFLG_GET_CTRL | ROUTER_PORTFLG_GET_STS;
-	for (j=0; j < 32; j++) {
+	for (j=0; j < priv->nports; j++) {
 		port.port = j;
 		router_port_ctrl(priv, &port);
-		iop_debug(" port[%d]: CTRL: 0x%08x  STATUS: 0x%08x\n", j, port.ctrl, port.sts);
+		iop_debug(" port[%2d]: CTRL: 0x%08x  STATUS: 0x%08x\n", j, port.ctrl, port.sts);
 	}
 	
 	if ( router_ps_set(priv, priv->ps) ) {
-		iop_debug("    :: RTEMS_INTERNAL_ERROR at router_ps_set\n");
+		ROUTER_DBG2("RTEMS_INTERNAL_ERROR at router_ps_set\n");
 		return RTEMS_INTERNAL_ERROR;
 	}
 	
 	if ( router_routes_set(priv, priv->routes) ) {
-		iop_debug("    :: RTEMS_INTERNAL_ERROR at router_routes_set\n");
+		ROUTER_DBG2("RTEMS_INTERNAL_ERROR at router_routes_set\n");
 		return RTEMS_INTERNAL_ERROR;
 	}
 
@@ -149,24 +130,9 @@ rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
 
 	int i;
 	
-	iop_debug("   :: 1 INSIDE ROUTER OPEN***************\n");
-	
 	if ( !priv || priv->open ) {
+		ROUTER_DBG2("Router failed to initialize\n");
 		return RTEMS_RESOURCE_IN_USE;
-	}
-	
-	iop_debug("   :: 2 INSIDE ROUTER OPEN***************\n");
-	router_config_t cfg;
-	router_config_read(priv, &cfg);
-	
-	iop_debug("   Printing router config:  ");
-	for(i = 0; i < sizeof(router_config_t); i++) {
-	//	iop_debug("%x\n", *(&cfg + i));
-	}
-	
-	iop_debug("   Printing router hwinfo:  ");
-	for(i = 0; i < sizeof(struct router_hw_info); i++) {
-	//	iop_debug("%x\n", *(&(priv->hwinfo) + i));
 	}
 	
 	priv->open = 1;
@@ -190,8 +156,6 @@ static void router_hwinfo(
 {
 	unsigned int tmp;
 	
-	iop_debug("     :: Router configuration status: %x\n", priv->regs->cfgsts);
-
 	tmp = REG_READ(&priv->regs->cfgsts);
 	hwinfo->nports_spw   = (tmp >> 27) & 0x1f;
 	hwinfo->nports_amba  = (tmp >> 22) & 0x1f;
@@ -208,16 +172,16 @@ static void router_hwinfo(
 
 void router_print_hwinfo(struct router_hw_info *hwinfo)
 {
-	iop_debug("Hardware Configuration of SpaceWire Router:\n");
-	iop_debug(" Number of SpW ports:           %d\n", hwinfo->nports_spw);
-	iop_debug(" Number of AMBA ports:          %d\n", hwinfo->nports_amba);
-	iop_debug(" Number of FIFO ports:          %d\n", hwinfo->nports_fifo);
-	iop_debug(" Timers available:              %s\n", hwinfo->timers_avail ? "YES" : "NO");
-	iop_debug(" Plug and Play available:       %s\n", hwinfo->pnp_avail ? "YES" : "NO");
-	iop_debug(" MAJOR Version:                 %d\n", hwinfo->ver_major);
-	iop_debug(" MINOR Version:                 %d\n", hwinfo->ver_minor);
-	iop_debug(" PATCH Version:                 %d\n", hwinfo->ver_patch);
-	iop_debug(" Current Instance ID:           %d\n", hwinfo->iid);
+	iop_debug(" Hardware Configuration of SpaceWire Router:\n");
+	iop_debug("  Number of SpW ports:           %d\n", hwinfo->nports_spw);
+	iop_debug("  Number of AMBA ports:          %d\n", hwinfo->nports_amba);
+	iop_debug("  Number of FIFO ports:          %d\n", hwinfo->nports_fifo);
+	iop_debug("  Timers available:              %s\n", hwinfo->timers_avail ? "YES" : "NO");
+	iop_debug("  Plug and Play available:       %s\n", hwinfo->pnp_avail ? "YES" : "NO");
+	iop_debug("  MAJOR Version:                 %d\n", hwinfo->ver_major);
+	iop_debug("  MINOR Version:                 %d\n", hwinfo->ver_minor);
+	iop_debug("  PATCH Version:                 %d\n", hwinfo->ver_patch);
+	iop_debug("  Current Instance ID:           %d\n", hwinfo->iid);
 }
 
 static int router_config_set(
