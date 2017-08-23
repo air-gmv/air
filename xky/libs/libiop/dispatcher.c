@@ -325,7 +325,7 @@ void pre_dispatcher(){
 
     uint32_t i;
 
-	iop_debug(" :: IOP - pre-dispatcher running!\n");
+	iop_debug("\n :: IOP - pre-dispatcher running!\n");
 
 	/* Get execution window reference time */
 	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &last_task_ticks);
@@ -385,7 +385,7 @@ void pos_dispatcher(){
 	/* wait for next partition release point */
 	//iop_task_sleep(0);
 
-	iop_debug(" :: IOP - pos-dispatcher doing nothing!\n");
+	iop_debug("\n :: IOP - pos-dispatcher doing nothing!\n");
 
 //	rtems_interval time;
 //	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);

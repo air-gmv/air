@@ -3,6 +3,7 @@
     device_functions = dict(
           reader_task='eth_reader',
           writer_task='eth_writer',
+		  
           header_prebuild='eth_prebuild_header',
           header_compare='eth_compare_header',
           header_copy='eth_copy_header')

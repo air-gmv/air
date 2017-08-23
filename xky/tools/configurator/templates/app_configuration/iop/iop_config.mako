@@ -29,7 +29,7 @@ static iop_physical_device_t *physical_device_list[${len(iop_configuration.physi
 };
 
 /**
- * @brief Physical devices list
+ * @brief Logical devices list
  */
 static iop_logical_device_t *logical_device_list[${len(iop_configuration.logical_devices)}] = ${'\\'}
 {

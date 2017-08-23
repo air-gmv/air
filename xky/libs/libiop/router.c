@@ -1,9 +1,9 @@
-/** 
+/**
  * @file router.c
- * 
+ *
  *  COPYRIGHT (c) 2011-2014
- *  GMV-SKYSOFT 
- * 
+ *  GMV-SKYSOFT
+ *
  * @author cdcs
  *
  * @brief Tasks and auxiliary functions that route requests between physical
@@ -128,10 +128,32 @@ void route_request(iop_logical_device_t *ldev, iop_wrapper_t *wrapper){
                 wrapper->timer = original->timer;
                 copy_iop_buffer(wrapper->buffer, original->buffer);
             }
+			
+#ifdef ROUTER_DEBUG
+			int j = 0;
+			iop_debug("%dWRAPPER->BUFFER: ", j);
+			for (j = 0; j <  wrapper->buffer->header_size + wrapper->buffer->payload_size; j++) {
+				iop_debug("%x ", *((uint8_t *)wrapper->buffer->v_addr+j));
+				if (j == wrapper->buffer->header_size - 1)
+					iop_debug(" | size: %d\n", j+1);
+			} iop_debug("\nsize: %d\n", j);
 
+			iop_debug("%dROUTER HEADER: ", j);
+			spw_header_t *spw_header = (spw_header_t *)route->header;
+			for(j = 0; j < sizeof(iop_header_t); j++) {
+				iop_debug("%x ", (*spw_header).hdr[j]);
+			} iop_debug("\nsize: %d\n", j);
+#endif
             /* setup route header */
             route->device->header_copy(route->device, wrapper, route->header);
-
+#ifdef ROUTER_DEBUG			
+			iop_debug("%dWRAPPER->BUFFER: ", j);
+			for (j = 0; j <  wrapper->buffer->header_size + wrapper->buffer->payload_size; j++) {
+				iop_debug("%x ", *((uint8_t *)wrapper->buffer->v_addr+j));
+				if (j == wrapper->buffer->header_size - 1)
+					iop_debug(" | size: %d\n", j+1);
+			} iop_debug("\nsize: %d\n", j);
+#endif			
             /* append request with header to the physical device's queue*/
             iop_chain_append(&route->device->sendqueue, &wrapper->node);
         }
@@ -153,23 +175,23 @@ void route_request(iop_logical_device_t *ldev, iop_wrapper_t *wrapper){
  *  This function is used to route data received in a given bus to logical
  *  devices or remote ports. The function iterates over all routes defined
  *  for the bus where the data was received. It checks if the current route
- *  is active and if the route applies to the current data. 
+ *  is active and if the route applies to the current data.
  *  A certain route is applicable to a set of data if the data header
- *  coincides with the header defined in the the route. 
- *  
- *  When the headers coincide, the data is appended to the target logical 
- *  device or send directly to queuing port. This destination depends if the 
- *  route is aimed at the remote port or requets system. 
+ *  coincides with the header defined in the the route.
+ *
+ *  When the headers coincide, the data is appended to the target logical
+ *  device or send directly to queuing port. This destination depends if the
+ *  route is aimed at the remote port or requets system.
  *
  *  If no routes are applicable to a set of data, then the data is discarded.
  *	@see compare_headers
  */
 void route_reply(iop_physical_device_t *pdev, iop_wrapper_t *wrapper) {
-	
+
 	if (pdev == NULL || wrapper == NULL){
 		return;
 	}
-	
+
     /* iterate all routes for this device */
     int i;
     for (i = 0; i < pdev->routes.length; ++i){
@@ -204,7 +226,7 @@ void route_reply(iop_physical_device_t *pdev, iop_wrapper_t *wrapper) {
 //rtems_task pre_router(rtems_task_argument arg){
 void pre_router(){
 
-	iop_debug(" :: IOP - pre-router running!\n");
+	iop_debug("\n :: IOP - pre-router running!\n");
 
 	/* loop through all logical devices */
 	int i;
@@ -238,7 +260,7 @@ void pos_router(){
 
 	int i;
 
-	iop_debug(" :: IOP - pos-router running!\n");
+	iop_debug("\n :: IOP - pos-router running!\n");
 
 	/* iterate over all physical devices */
 	for (i = 0; i < usr_configuration.physical_devices.length; ++i) {

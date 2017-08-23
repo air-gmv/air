@@ -60,60 +60,59 @@ extern "C"
 #define VENDOR_OPENCORES 8
 
    /* Gaisler Research device id's */
-#define GAISLER_LEON3     0x03
-#define GAISLER_LEON3DSU  0x04
-#define GAISLER_ETHAHB    0x05
-#define GAISLER_APBMST    0x06
-#define GAISLER_AHBUART   0x07
-#define GAISLER_SRCTRL    0x08
-#define GAISLER_SDCTRL    0x09
-#define GAISLER_APBUART   0x0C
+#define GAISLER_LEON3		0x03
+#define GAISLER_LEON3DSU	0x04
+#define GAISLER_ETHAHB		0x05
+#define GAISLER_APBMST		0x06
+#define GAISLER_AHBUART		0x07
+#define GAISLER_SRCTRL		0x08
+#define GAISLER_SDCTRL		0x09
+#define GAISLER_APBUART		0x0C
 
    /**
     * @brief determine the GAISLOR vendor IRQ map for AMBA bus
     **/
-#define GAISLER_IRQMP     0x0D
-#define GAISLER_AHBRAM    0x0E
+#define GAISLER_IRQMP		0x0D
+#define GAISLER_AHBRAM		0x0E
 
    /**
     * @brief determine the GAISLOR vendor General Purpose Timer
     **/
-#define GAISLER_GPTIMER   0x11
+#define GAISLER_GPTIMER		0x11
 
-#define GAISLER_PCITRG    0x12
-#define GAISLER_PCISBRG   0x13
-#define GAISLER_PCIFBRG   0x14
-#define GAISLER_PCITRACE  0x15
-#define GAISLER_DMACTRL   0x16
-#define GAISLER_OCCAN     0x19
-#define GAISLER_PIOPORT   0x1A
-#define GAISLER_ETHMAC    0x1D
-#define GAISLER_SPACEWIRE 0x1f
-#define GAISLER_AHB2AHB   0x20
-#define GAISLER_I2CMST    0x28
-#define GAISLER_GRSPW2    0x29
-#define GAISLER_GRCAN     0x34
-#define GAISLER_GRHCAN    0x3d
-#define GAISLER_GRFIFO    0x35
-#define GAISLER_GRADCDAC  0x36
-#define GAISLER_GRPULSE   0x37
-#define GAISLER_GRTIMER   0x38
-#define GAISLER_GR1553B   0x4d
-#define GAISLER_FTAHBRAM  0x50
-#define GAISLER_FTMCTRL   0x54
-#define GAISLER_BRM       0x72
-#define GAISLER_SPW2_DMA  0x08a
-#define GAISLER_SPW_ROUTER 0x08b
-
+#define GAISLER_PCITRG		0x12
+#define GAISLER_PCISBRG		0x13
+#define GAISLER_PCIFBRG		0x14
+#define GAISLER_PCITRACE	0x15
+#define GAISLER_DMACTRL		0x16
+#define GAISLER_OCCAN		0x19
+#define GAISLER_PIOPORT		0x1A
+#define GAISLER_ETHMAC		0x1D
+#define GAISLER_SPACEWIRE	0x1f
+#define GAISLER_AHB2AHB		0x20
+#define GAISLER_I2CMST		0x28
+#define GAISLER_GRSPW2		0x29
+#define GAISLER_GRCAN		0x34
+#define GAISLER_GRHCAN		0x3d
+#define GAISLER_GRFIFO		0x35
+#define GAISLER_GRADCDAC	0x36
+#define GAISLER_GRPULSE		0x37
+#define GAISLER_GRTIMER		0x38
+#define GAISLER_GR1553B		0x4d
+#define GAISLER_FTAHBRAM	0x50
+#define GAISLER_FTMCTRL		0x54
+#define GAISLER_BRM			0x72
+#define GAISLER_SPW2_DMA	0x8a
+#define GAISLER_SPW_ROUTER	0x08b
 
    /* European Space Agency device id's */
-#define ESA_LEON2        0x2
-#define ESA_MCTRL        0xF
-#define ESA_SPW2         0x12
+#define ESA_LEON2			0x2
+#define ESA_MCTRL			0xF
+#define ESA_SPW2			0x12
 
    /* Opencores device id's */
-#define OPENCORES_PCIBR  0x4
-#define OPENCORES_ETHMAC 0x5
+#define OPENCORES_PCIBR		0x4
+#define OPENCORES_ETHMAC	0x5
 
    /*
     *
@@ -239,6 +238,21 @@ extern "C"
     */
    int amba_find_apbslv(amba_confarea_type * amba_conf , int vendor , int device ,
                         amba_apb_device * dev);
+						
+						
+	/**
+    *  @brief get first AHB slave device of the specified vendor&device id
+    *
+    *  @param[in] amba_conf AMBA P&P device info is placed here.
+    *  @param[in] vendor vendor of the amba device
+    *  @param[in] device device to search for
+    *  @param[out] dev places in this address the information of the device
+    *  (if any found)
+    *
+    *  @return returns 1 if the device was found and 0 otherwise
+    */					
+	int amba_find_ahbslv(amba_confarea_type * amba_conf , int vendor , int device ,
+                     amba_ahb_device * dev);
 
 
    /******** AMBA DEVICES *******/
