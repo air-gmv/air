@@ -8,6 +8,7 @@
 # Makefiles
 Makefile
 *.inc
+Makefile.rej
 
 # Python configurator
 *.pyc

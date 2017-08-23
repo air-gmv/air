@@ -253,7 +253,7 @@ void amba_scan(amba_confarea_type * amba_conf , unsigned int ioarea ,
             cfg_area = (unsigned int *) ( apbmst | AMBA_CONF_AREA );
 
             /* iterate for the APB slave devices */
-            for(j = 0; ( amba_conf->apbslv.devnr < AMBA_APB_SLAVES ) && ( j < AMBA_APB_SLAVES/2 ); j++)
+            for(j = 0; ( amba_conf->apbslv.devnr < AMBA_APB_SLAVES ) && ( j < (AMBA_APB_SLAVES/2) ); j++)
             {
                 /* insert the APB device */
                 amba_insert_apb_device(&amba_conf->apbslv , cfg_area , apbmst);
@@ -308,6 +308,48 @@ int amba_find_apbslv(amba_confarea_type * amba_conf , int vendor , int device ,
     return 0;
 }
 
+
+/**** AHB Slaves ****/
+
+int amba_find_ahbslv(amba_confarea_type * amba_conf , int vendor , int device ,
+                     amba_ahb_device * dev)
+{
+    /* APB device configuration word */
+    unsigned int conf;
+
+    /* APB slave mem bar */
+    unsigned int iobar;
+
+    /* iterator index through the APB slave devices */
+    int i;
+
+
+    /* iterate through the APB slave devices */
+    for(i = 0; i < amba_conf->ahbslv.devnr; i++)
+    {
+        /* get the configuration area */
+        conf = amba_get_confword(amba_conf->ahbslv , i , 0);
+
+        /* check the device vendor */
+        if(( amba_vendor(conf) == vendor ) && ( amba_device(conf) == device ))
+        {
+            /* get the io mem bar */
+            iobar = amba_ahb_get_membar(amba_conf->ahbslv , i, 0);
+
+            /* get the device start address */
+            dev->start[0] = amba_iobar_start(*(amba_conf->ahbslv.addr[i]) , iobar);
+
+            /* get the devide interrupt number */
+            dev->irq = amba_irq(conf);
+
+            /* found the device */
+            return 1;
+        }
+    }
+
+    /* did not find the device */
+    return 0;
+}
 
 /**  
  *  @}

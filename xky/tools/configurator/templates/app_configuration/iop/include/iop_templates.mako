@@ -18,9 +18,15 @@ ${ds[0].reads if len(ds) > 0 else '0'}${',' if i < len(iop_configuration.schedul
  */
 static iop_header_t route_header[${len(pdevice.routes)}] = ${'\\'}
 {
-% for i, route in enumerate(pdevice.routes):
-    ${IopHeader(route.header)}${',' if i < len(pdevice.routes) - 1 else ''}
-% endfor
+% if pdevice.type == 'ETH':
+	% for i, route in enumerate(pdevice.routes):
+${EhtHeader(route.header)}${',' if i < len(pdevice.routes) - 1 else ''}
+	% endfor
+% elif pdevice.type == 'SPW':
+	% for i, route in enumerate(pdevice.routes):
+${SpwHeader(route.header)}${',' if i < len(pdevice.routes) - 1 else ''}
+	% endfor
+% endif
 };
 
 /**
@@ -95,10 +101,10 @@ extern iop_logical_device_t logical_device_${device.idx};
 extern iop_port_t remote_ports[${len(iop_configuration.ports)}];
 </%def>
 
-<%def name="IopHeader(header)">\
+<%def name="EhtHeader(header)">\
     {
         .eth_header = {
-            .dst_ip      = { ${','.join(header.ip)}},
+            .dst_ip      = { ${','.join(header.ip)} },
             .dst_mac     = { ${','.join(['0x{0}'.format(o) for o in header.mac ])}},
             .dst_port    = HTONS(${header.port}),
             .src_port    = HTONS(${header.port})
@@ -106,7 +112,18 @@ extern iop_port_t remote_ports[${len(iop_configuration.ports)}];
     }\
 </%def>
 
+<%def name="SpwHeader(header)">\
+    {
+        .spw_header = {
+            .hdr         = { ${','.join(header.address)} }
+        }
+    }\
+</%def>
+
 <%def name="IopBuffersStorage(size)">\
+/**
+ * @brief IOP buffers
+ */
 static iop_buffer_t iop_buffers[${size}];
 static uint8_t iop_buffers_storage[${size} * IOP_BUFFER_SIZE];
 </%def>
