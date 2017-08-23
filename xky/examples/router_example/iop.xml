@@ -17,12 +17,10 @@
 			31:27	 26:22	   21:17	 16:8	  7  6  5  4  3  2  1  0
 			Only 2 to 7 writtable on the N2X. For more info see board data sheet
 			IDIV necessary to set the init bitrate at 10MBits/s. see SPW faq
-
-			Promiscuous(PRO) should be 0 while using router
 		-->
 		<Device Id="0" Device="SPWRTR" Flags="0x1f" Config="0b001110" Idd="1" Idiv="9" Prescaler="1"/>
 		<Device Id="1" Device="GRSPW1" Addr="9" Mask="1" Dest="0" Clk="1"
-				RXmax="64" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
+				RXmax="64" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
 				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
 			<PhysicalRoute Id="10" PortId="squeuing">
 				<SpwHeader Address="9"/>
@@ -32,13 +30,13 @@
 			</LogicalRoute>
 		</Device>
 		<Device Id="2" Device="GRSPW2" Addr="10" Mask="1" Dest="0" Clk="1"
-				RXmax="64" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
+				RXmax="64" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
 				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
 			<PhysicalRoute Id="20" PortId="squeuing">
 				<SpwHeader Address="10"/>
 			</PhysicalRoute>
 			<LogicalRoute Id="21" LogicalDeviceId="0">
-				<SpwHeader Address="0x01,0x09"/>
+				<SpwHeader Address="0x01,0x02,0x09"/>
 			</LogicalRoute>
 		</Device>
 		<Device Id="3" Device="GRSPW3" Addr="10" Mask="1" Dest="0" Clk="1"
