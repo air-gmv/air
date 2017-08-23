@@ -46,6 +46,7 @@ class IOParser(object):
 
     def get_physical_device(self, pd_id):
 
+        print("PHY DEVS", self.physical_devices)
         pdevices = [pd for pd in self.physical_devices if pd.id == pd_id]
         return pdevices[0] if len(pdevices) == 1 else None
 
@@ -142,6 +143,8 @@ class IOParser(object):
     # @param xml logical device xml node
     def parse_physical_device(self, xml):
 
+        print("     PARSING physical device")
+
         # clear previous errors and warnings
         self.logger.clear_errors(0)
 
@@ -150,6 +153,7 @@ class IOParser(object):
         pdevice.id = xml.parse_attr(PHYSICAL_DEVICE_ID, VALID_IDENTIFIER_TYPE, True, self.logger)
         pdevice.device = xml.parse_attr(PHYSICAL_DEVICE_NAME, VALID_NAME_TYPE, True, self.logger)
 
+        print(pdevice.device)
         # sanity check
         if self.logger.check_errors(): return False
 
@@ -158,31 +162,39 @@ class IOParser(object):
 
         # get device alias
         try:
+            print("alias0: ", pdevice.device)
+            print("alias: ", self.iop_configuration.alias[pdevice.device])
             alias = self.iop_configuration.alias[pdevice.device]
             pdevice.device = alias
+
         except:
             pass
 
+        print("dev: ", pdevice.device)
         # check for redefinitions
         if any(pdevice == other for other in self.physical_devices):
             self.logger.error(LOG_REDEFINITION, xml.sourceline, pdevice)
             return False
 
+        print("BEFORE")
         # check if the device is valid
         bsp_devices = self.iop_configuration.devices
         if pdevice.device not in bsp_devices:
             self.logger.error(LOG_UNSUPPORTED_DEVICE, xml.sourceline, pdevice.device)
             return False
 
+        print("AFTER", self.iop_configuration.devices)
         # extract the device name
         regex_match = match(PHYSICAL_DEVICE_PATTERN, pdevice.device)
         if not regex_match:
             self.logger.error(LOG_UNSUPPORTED_DEVICE, xml.sourceline, pdevice.device)
             return False
 
+        print("BEFORE")
         pdevice.type  = regex_match.group('type').upper()
         pdevice.minor = regex_match.group('minor').upper()
 
+        print("AFTER", pdevice.type)
         # check if a parser for that device is available
         if pdevice.type not in iop_supported_devices.keys():
             self.logger.error(LOG_UNSUPPORTED_DEVICE, xml.sourceline, pdevice.device)
@@ -200,20 +212,34 @@ class IOParser(object):
 
         self.logger.information(1, pdevice.setup.details())
 
+        print('BEFORE parsing physical routing')
+
+        if ( pdevice.type == RTR ):
+            pdevice.idx = len(self.physical_devices)
+            self.physical_devices.append(pdevice)
+            print("     done PARSING SPWRTR device")
+            return True
+
         # Parse physical Routing
         xml_routes = xml.parse_tag(ROUTE_PHYSICAL, 1, maxint, self.logger)
         for xml_route in xml_routes:
             rc &= self.parse_device_routes(xml_route, pdevice)
+            print(rc)
 
+        print('AFTER parsing physical routing and BEFORE logical')
         # Parse Logical Routing
         xml_routes = xml.parse_tag(ROUTE_LOGICAL, 1, maxint, self.logger)
         for xml_route in xml_routes:
             rc &= self.parse_device_routes(xml_route, pdevice)
+            print(rc)
+
+        print("PHYDEV?", rc)
 
         if rc:
             pdevice.idx = len(self.physical_devices)
             self.physical_devices.append(pdevice)
 
+        print("     done PARSING physical device")
         return rc
 
     ## Parse routes
@@ -234,6 +260,7 @@ class IOParser(object):
             if self.logger.check_errors(): return False
 
             # check if remote port exists
+            print("PHY PORT ID: ", port_id)
             route.port = self.get_remote_port(port_id)
             if route.port is None:
                 self.logger.error(LOG_UNDEFINED, xml.sourceline, REMOTE_PORT_STR.format(port_id))
@@ -253,6 +280,7 @@ class IOParser(object):
 
             # check if logical device exists
             ldevice = self.get_logical_device(ld_id)
+            print("LOGICAL DEV is ", ldevice)
             if ldevice is None:
                 self.logger.error(LOG_UNDEFINED, xml.sourceline, LOGICAL_DEVICE_STR.format(ld_id, '---'))
                 return False
@@ -296,6 +324,11 @@ class IOParser(object):
             if self.logger.check_errors(): return None
             return self.parse_eth_header(xml_header)
 
+        elif pdevice.type == SPW:
+            xml_header = xml.parse_tag(SPWHEADER, 1, 1, self.logger)
+            if self.logger.check_errors(): return None
+            return self.parse_spw_header(xml_header)
+
         # invalid header
         return None
 
@@ -317,6 +350,21 @@ class IOParser(object):
         if self.logger.check_errors(): return False
         return header
 
+    ## Parse SpaceWire Header
+    # @param self object pointer
+    # @param xml SpaceWire Header xml node
+    def parse_spw_header(self, xml):
+
+        # clear previous errors and warnings
+        self.logger.clear_errors(3)
+
+        # parse attributes
+        header = SpwHeader()
+        header.address = xml.parse_attr(SPWHEADER_ADDRESS, VALID_SPW_ADDRESS, True, self.logger)
+
+        # sanity check
+        if self.logger.check_errors(): return False
+        return header
 
     def parse_schedule(self, xml):
 
@@ -426,6 +474,8 @@ class IOParser(object):
 
             # check if device exists
             pdevice  = self.get_physical_device(pd_id)
+
+            print("BEFORE PARSING PDEV SCHED", pdevice)
             if pdevice is None:
                 self.logger.error(LOG_UNDEFINED, xml_device.sourceline, PHYSICAL_DEVICE_STR.format(pd_id, '---'))
                 rc = False

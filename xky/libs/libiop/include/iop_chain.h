@@ -177,7 +177,7 @@ static inline void iop_chain_initialize(
     count = number_nodes;
 
     /* start at the chain head */
-    current = iop_chain_head(chain);
+    current = (Chain_Node *)iop_chain_head(chain);
 
     /* initialize the permanent null field of the chain */
     chain->permanent_null = NULL;
@@ -203,7 +203,7 @@ static inline void iop_chain_initialize(
     }
 
     /* the last node next is the tail of the chain */
-    current->next = iop_chain_tail(chain);
+    current->next = (Chain_Node *)iop_chain_tail(chain);
 
     /* set the last element of the chain */
     chain->last = current;
