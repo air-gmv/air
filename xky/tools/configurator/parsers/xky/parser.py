@@ -443,9 +443,13 @@ class xkyParser(a653parser):
                                                            self.os_configuration.validate_personalities(), True,
                                                            self.logger)
 
+
+        print("   PARSING iop file attr")
         # get IOP configuration if available
         partition.iop_file = xml_config_node.parse_attr(PARTITION_EXTENSION_IOP,
                                                         VALID_XKY_FILE, False, self.logger, '')
+
+        print("   done PARSING iop file attr")
 
         # check IOP is supported
         if not self.os_configuration.is_iop_supported() and partition.iop_file != '':
@@ -680,15 +684,18 @@ class xkyParser(a653parser):
 
     def parse_other(self, xml):
 
+        print("   PARSING sm")
         # parse shared memory areas
         self.logger.event(0, LOG_EVENT_SHARED_MEMORY)
         xml_partitions = xml.parse_tag(SHM_EXTENSION, 0, sys.maxint, self.logger)
         for xml_node in xml_partitions: self.parse_shared_memory(xml_node)
         self.compute_shared_memory_addresses()
 
+        print("   PARSING scheduling")
         # set schedule indexes
         for i, schedule in enumerate(self.schedules): schedule.index = i
 
+        print("   PARSING partitions")
         # parse IOP configurations
         for partition in self.partitions:
             partition.iop = None
