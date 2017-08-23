@@ -54,21 +54,23 @@ rtems_task spw_writer(rtems_task_argument arg){
 		if ( (error = spw_driver->dev.write((iop_device_driver_t *)spw_driver,
 			wrapper)) == RTEMS_SUCCESSFUL){
 				
-
 			uint32_t j;
-			iop_debug("\t:: spw_tasks:writer: ?success?: head_off: %d, head_size: %d, load_off: %d, load_size %d:   ",
-					wrapper->buffer->header_off, wrapper->buffer->header_size, wrapper->buffer->payload_off, wrapper->buffer->payload_size);
+			iop_debug(" : spw_tasks :: spw_writer:head_off: %d, head_size: %d, load_off: %d, load_size %d\n",
+					wrapper->buffer->header_off, wrapper->buffer->header_size, wrapper->buffer->payload_off, wrapper->buffer->payload_size+1);
 			
-			iop_debug("\n\t<header> ");
+			iop_debug("  <header> ");
 			for (j = wrapper->buffer->header_off; j < sizeof(iop_header_t); j++)
 				iop_debug("%x ", *((uint8_t *)wrapper->buffer->v_addr+j));
 			iop_debug("<header/>\n");
-			
+			iop_debug("  <payload> ");
+			for (j = wrapper->buffer->payload_off-1; j < sizeof(iop_header_t) + wrapper->buffer->payload_size; j++)
+				iop_debug("%x ", *((uint8_t *)wrapper->buffer->v_addr+j));
+			iop_debug("<payload/>\n");
 			release_wrapper(wrapper);
 
 		/* error sending packet */
 		} else {
-			iop_debug("\tERROR WRITING : %d", error);
+			iop_debug(" :: ERROR writing : %d", error);
 			iop_chain_append(&error, &wrapper->node);
 			iop_raise_error(HW_WRITE_ERROR);
 		}
@@ -129,16 +131,10 @@ rtems_task spw_reader(rtems_task_argument arg){
 		/* read from the device */
 		if (driver->dev.read((iop_device_driver_t *)driver, wrapper) == RTEMS_SUCCESSFUL) {
 			uint32_t j;
-			iop_debug("\tMESSAGE RECEIVED");
-			uint32_t size = wrapper->buffer->header_size;
-			iop_debug("\n HEADER:   ");
-			for (j = 0; j < size; j++)
-				iop_debug("%x", (uintptr_t)wrapper->buffer->v_addr+j);
-			iop_debug("   HEADER ENDED\n MESSAGE:   ");	
-			size += wrapper->buffer->payload_size;
-			for (j; j < size; j++)
-				iop_debug("%x", (uintptr_t)wrapper->buffer->v_addr+j);
-			iop_debug("   ENDED\n");
+			iop_debug(" : spw_tasks :: spw_reader:message with %dB\n  <payload> ", wrapper->buffer->payload_size);
+			for (j = 0; j < wrapper->buffer->payload_size; j++)
+				iop_debug("%x ", *((uint8_t *)wrapper->buffer->v_addr+j));
+			iop_debug("<payload/>\n");
 			
 			iop_chain_append(&pdev->rcvqueue, &wrapper->node);
 			wrapper = NULL;
