@@ -58,8 +58,6 @@
 #define DBGSPW_DUMP 16
 #define DEBUG_SPACEWIRE_FLAGS (DBGSPW_IOCALLS | DBGSPW_TX | DBGSPW_RX | DBGSPW_DUMP)
 
-#define DEBUG_SPACEWIRE_ONOFF
- 
 #ifdef DEBUG_SPACEWIRE_ONOFF
 #define SPACEWIRE_DBG(fmt, args...)    do { { iop_debug(" : %03d @ %18s()]:" fmt , __LINE__,__FUNCTION__,## args); }} while(0)
 #define SPACEWIRE_DBG2(fmt)            do { { iop_debug(" : %03d @ %18s()]:" fmt , __LINE__,__FUNCTION__); }} while(0)
@@ -138,7 +136,7 @@ unsigned int _MEM_READ(void *addr) {
 
 int spw_hw_init(SPW_DEV *pDev);
 int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, uint8_t *hdr, unsigned int dlen, uint8_t *data);
-int spw_hw_receive(SPW_DEV *pDev, uint8_t *hdr, uint8_t *b, int c);
+int spw_hw_receive(SPW_DEV *pDev, uint8_t *b, int c);
 int spw_hw_startup (SPW_DEV *pDev, int timeout);
 int spw_hw_stop (SPW_DEV *pDev, int rx, int tx);
 int spw_hw_waitlink (SPW_DEV *pDev, int timeout);
@@ -255,7 +253,7 @@ void spw_hw_handle_errors(SPW_DEV *pDev){
 			
 			/*Send an event to the error handler task TODO: replace by rtems-edi error handler*/
 			//rtems_event_send(pDev->config.event_id, SPW_LINKERR_EVENT);
-			iop_debug(" :: GRSPW AND ERROR OCCURED\n");
+			SPACEWIRE_DBG2("Error handler\n");
 			
 			/*If the "disable SpW link on error" option is activated*/
 			if (pDev->config.disable_err) {
@@ -428,7 +426,7 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 		/*store core version in device's structure*/
 		pDev->core_ver = 3;
 	} else {
-		iop_debug("    GRSPW device not found...\n");
+		SPACEWIRE_DBG2("GRSPW device not found...\n");
 		return RTEMS_INTERNAL_ERROR;
 	}
 	/* Pointer to device's memory mapped registers*/
@@ -509,8 +507,8 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 					
 	/*Pointers to data and header buffers*/
 	pDev->ptr_rxbuf0 = (uint8_t *)pDev->iop_buffers[0].v_addr;
-	pDev->ptr_txhbuf0 = (uint8_t *)pDev->iop_buffers[pDev->rxbufcnt].v_addr;
-	pDev->ptr_txdbuf0 = (uint8_t *)pDev->iop_buffers[pDev->rxbufcnt + pDev->txbufcnt].v_addr;
+	pDev->ptr_txdbuf0 = (uint8_t *)pDev->iop_buffers[pDev->rxbufcnt].v_addr;
+	pDev->ptr_txhbuf0 = (uint8_t *)pDev->iop_buffers[pDev->rxbufcnt + pDev->txbufcnt].v_addr;
 	
 	/**** Initialize Hardware and semaphores ****/
 	/*Create TX semaphore*/
@@ -556,9 +554,8 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
  *	
  **/
 rtems_device_driver spw_open(iop_device_driver_t *iop_dev, void *arg)
-{		
-
-	iop_debug("   :: INSIDE SPW OPEN\n");
+{
+	
 	/*Current SpW device*/
 	iop_spw_device_t *device = (iop_spw_device_t *)iop_dev;
 	SPW_DEV *pDev = (SPW_DEV *)(device->dev.driver);
@@ -670,7 +667,7 @@ rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg)
     iop_wrapper_t *wrapper = (iop_wrapper_t *)arg;
 	iop_buffer_t *iop_buffer = wrapper->buffer;
 	
-	/*Number of packtes received*/
+	/*Number of bytes received*/
 	unsigned int count = 0;
 	
 	/* is link up? */
@@ -689,10 +686,8 @@ rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg)
 	spw_hw_handle_errors(pDev);
 
 	/*While we have read no data*/
-	while ((count = spw_hw_receive(pDev, ((uint8_t *)iop_buffer->v_addr + iop_buffer->header_off),
-			((uint8_t *)iop_buffer->v_addr + iop_buffer->payload_off), iop_buffer->payload_size)) == 0) {
+	while ((count = spw_hw_receive(pDev, ((uint8_t *)iop_buffer->v_addr), iop_buffer->payload_size)) == 0) {
 		
-		iop_debug(" :count: %d\n", count);
 		/*Are we allowed to block?*/
 		if (pDev->config.rx_blocking) {
 			SPACEWIRE_DBG2("Rx blocking\n");
@@ -705,22 +700,21 @@ rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg)
 			return RTEMS_RESOURCE_IN_USE;
 		}
 	}
-	
-	iop_debug("count: %d\n", count);
-/*	
+
+	iop_buffer->payload_size = count;
 #ifdef DEBUG_SPACEWIRE_ONOFF  
 	if (DEBUG_SPACEWIRE_FLAGS & DBGSPW_DUMP) {
 		int k;
 		for (k = 0; k < count; k++){
-			if (k % 16 == 0) {
+			if (k % 18 == 0) {
 					iop_debug ("\n");
 			}
-			iop_debug ("%.2x(%c) ", rw_args->data[k] & 0xff, isprint(rw_args->data[k] & 0xff) ? rw_args->data[k] & 0xff : ' ');
+			iop_debug ("%.0x(%x) ", *((uint8_t *)iop_buffer->v_addr + k) & 0xff, isprint(*((uint8_t *)iop_buffer->v_addr + k) & 0xff) ? *((uint8_t *)iop_buffer->v_addr + k) & 0xff : ' ');
 		}
 		iop_debug ("\n");
 	}
 #endif
-*/
+
 //	/*Write number of bytes that were written to the user's buffer*/
 //	rw_args->bytes_moved = count;
 	
@@ -732,7 +726,7 @@ rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg)
  *
  *  \param [in]  major : not used
  *  \param [in]  minor : minor number of the device to write to
- *  \param [in]  arg : #libio_rw_args_t with data buffer and data length
+ *  \param [in]  arg : #iop_wrapper_t with data buffer and data length
  *
  *  \return Status of the operation:
  *		- RTEMS_SUCCESSFUL if the operation completed sucessfully
@@ -773,7 +767,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 	
 	/* try to send data while its possible*/
 	int data_sent = 0;
-	while ((data_sent = spw_hw_send(pDev, iop_buffer->header_size - iop_buffer->header_off, ((uint8_t *)iop_buffer->v_addr + iop_buffer->header_off), iop_buffer->payload_size, ((uint8_t *)iop_buffer->v_addr + iop_buffer->payload_off)) ) == 0) {
+	while ((data_sent = spw_hw_send(pDev, iop_buffer->header_size - iop_buffer->header_off, ((uint8_t *)iop_buffer->v_addr + iop_buffer->header_off), iop_buffer->payload_size + 1, ((uint8_t *)iop_buffer->v_addr + iop_buffer->payload_off - 1)) ) == 0) {
 	
 		/* Can we block?*/
 		if (pDev->config.tx_block_on_full == 1) { 
@@ -1264,8 +1258,11 @@ int spw_hw_init(SPW_DEV *pDev)
 	
 	/*Beginning of the TX descriptor table. 0x400 aligned*/
     pDev->tx = (SPACEWIRE_TXBD *) ( (((unsigned int)pDev->bdtable + 1024) & ~(1024-1)) + 1024 );
-    SPACEWIRE_DBG("hw_init [minor %i]\n", pDev->minor);
-    
+
+	SPACEWIRE_DBG("pDev->rx : 0x%x = (physical)0x%x\n   pDev->tx : 0x%x = (physical)0x%x\n",
+			pDev->rx, (unsigned int)xky_syscall_get_physical_addr((uintptr_t)pDev->rx),
+			pDev->tx, (unsigned int)xky_syscall_get_physical_addr((uintptr_t)pDev->tx));
+				
 	/*Check if the RMAP sub core is present*/
 	pDev->config.is_rmap = ctrl & SPW_CTRL_RA;
 	
@@ -1575,10 +1572,10 @@ int spw_hw_startup (SPW_DEV *pDev, int timeout){
 		pDev->tx[i].ctrl = 0;
 		
 		/*Set tx header buffer pointers*/
-		pDev->tx[i].addr_header = (uint8_t *)xky_syscall_get_physical_addr((xky_uptr_t)((&pDev->ptr_txhbuf0[0]) + (i * pDev->txhbufsize)));
+		pDev->tx[i].addr_header = pDev->iop_buffers[pDev->rxbufcnt + pDev->txbufcnt + i].p_addr;
 		
 		/*Set tx data buffer pointers*/
-		pDev->tx[i].addr_data = (uint8_t *)xky_syscall_get_physical_addr((xky_uptr_t)((&pDev->ptr_txdbuf0[0]) + (i * pDev->txdbufsize)));
+		pDev->tx[i].addr_data = pDev->iop_buffers[pDev->rxbufcnt + i].p_addr;
 	}
 	
 	/*Current TX descriptor*/
@@ -1605,10 +1602,8 @@ int spw_hw_startup (SPW_DEV *pDev, int timeout){
 		}
 		
 		/*Set rx data buffer pointers*/
-		pDev->rx[i].addr = (uint8_t *)xky_syscall_get_physical_addr((xky_uptr_t)((&pDev->ptr_rxbuf0[0]) + (i * pDev->rxbufsize)));
+		pDev->rx[i].addr =  pDev->iop_buffers[i].p_addr;
 	}
-	
-	iop_debug("\t ****1 pDev->rx[0].addr = 0x%x\n", pDev->rx[0].addr);
 	
 	/*Current RX descriptor. It will be used on next read call*/
 	pDev->rxcur = 0;
@@ -1631,7 +1626,7 @@ int spw_hw_startup (SPW_DEV *pDev, int timeout){
 	/*Enable RX*/
 	SPW_WRITE(&pDev->regs->dma0ctrl, (dmactrl & SPW_PREPAREMASK_RX) | SPW_DMACTRL_RD | SPW_DMACTRL_RXEN | SPW_DMACTRL_NS);
 	
-	iop_debug("\t dmaCTRL: 0x%x\t pDev->regs->dma0ctrl: 0x%x\n", dmactrl, pDev->regs->dma0ctrl);
+	SPACEWIRE_DBG("dma->ctrl: 0x%x\t pDev->regs->dma0ctrl: 0x%x\n", dmactrl, pDev->regs->dma0ctrl);
 	
 	SPACEWIRE_DBGC(DBGSPW_TX,"0x%x: setup complete\n", (unsigned int)pDev->regs);
 	
@@ -1736,25 +1731,21 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, uint8_t *hdr, unsigned int dle
 	
 	/* Setup header address on descriptor*/
 	pDev->tx[cur].addr_header = (uint8_t *)xky_syscall_get_physical_addr((uintptr_t)txh);
-	iop_debug("pDev->tx[cur].addr_header : 0x%x = txh : 0x%x\n", pDev->tx[cur].addr_header, txh);
+
 	/* insert data size*/
 	pDev->tx[cur].len = dlen;
 	
 	/* setup data address in descriptor*/
 	pDev->tx[cur].addr_data = (uint8_t *)xky_syscall_get_physical_addr((uintptr_t)txd);
-	
-	iop_debug("\n\tDescriptor virtual addresses\n");
-	iop_debug("\t  tx[%d].addr_header: 0x%x\n", cur, pDev->tx[cur].addr_header);
-	iop_debug("\t  tx[%d].len: %d\n", cur, pDev->tx[cur].len);
-	iop_debug("\t  tx[%d].addr_data: 0x%x\n", cur, pDev->tx[cur].addr_data);
-	iop_debug("\t  tx[%d].ctrl: 0x%x\n", cur, pDev->tx[cur].ctrl);
-	
-/*	iop_debug("********** tx[%d].data ************\n\t", pDev->tx_cur);
-	for (k = 0; k < pDev->tx[cur].len; k++) {
-		uint8_t *buf = pDev->tx[cur].addr_data;
-		iop_debug("0x%x ", *(xky_syscall_get_virtual_addr(buf + k)));
-	} iop_debug("\t THE END at 0x%x\n", pDev->tx[cur].addr_data + k);
-*/	
+
+#ifdef DEBUG_SPACEWIRE_ONOFF	
+	iop_debug("\n Descriptor virtual addresses\n");
+	iop_debug("  tx[%d].addr_header: 0x%x\n", cur, pDev->tx[cur].addr_header);
+	iop_debug("  tx[%d].len: %d\n", cur, pDev->tx[cur].len);
+	iop_debug("  tx[%d].addr_data: 0x%x\n", cur, pDev->tx[cur].addr_data);
+	iop_debug("  tx[%d].ctrl: 0x%x\n", cur, pDev->tx[cur].ctrl);
+#endif
+
 	/* Is this the last descriptor*/
 	if (pDev->tx_cur == (pDev->txbufcnt - 1) ) {
 	
@@ -1766,19 +1757,21 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, uint8_t *hdr, unsigned int dle
 		/* enable descriptor and insert header length*/
 		pDev->tx[cur].ctrl = SPW_TXBD_EN | hlen;
 	}
-	iop_debug("\t  tx[%d].ctrl: 0x%x\n", cur, pDev->tx[cur].ctrl);
 	/* Read DMA control register*/	
 	dmactrl = SPW_READ(&pDev->regs->dma0ctrl);
-	
-	iop_debug("\tDMA registries before write\n");
-	iop_debug("\t  pDev->regs->dma0ctrl: 0x%x\n", pDev->regs->dma0ctrl);
-	
+
+#ifdef DEBUG_SPACEWIRE_ONOFF
+	iop_debug("  tx[%d].ctrl: 0x%x\n", cur, pDev->tx[cur].ctrl);
+	iop_debug(" DMA registries before write\n");
+	iop_debug("  pDev->regs->dma0ctrl: 0x%x\n", pDev->regs->dma0ctrl);
+#endif
 	/* Enable TX*/
 	SPW_WRITE(&pDev->regs->dma0ctrl, (dmactrl & SPW_PREPAREMASK_TX) | SPW_DMACTRL_TXEN);
 	
-	iop_debug("\tDMA registries after write\n");
-	iop_debug("\t  pDev->regs->dma0ctrl: 0x%x\n", pDev->regs->dma0ctrl);
-	
+#ifdef DEBUG_SPACEWIRE_ONOFF
+	iop_debug(" DMA registries after write\n");
+	iop_debug("  pDev->regs->dma0ctrl: 0x%x\n", pDev->regs->dma0ctrl);
+#endif
 	
 	/* Increment current descriptor*/
 	pDev->tx_cur = (pDev->tx_cur + 1) % pDev->txbufcnt;
@@ -1820,7 +1813,7 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, uint8_t *hdr, unsigned int dle
  * @param [in] *b pointer for the data buffer 
  * @return Number of bytes that were received
  */
-int spw_hw_receive(SPW_DEV *pDev, uint8_t *hdr, uint8_t *b, int c) {
+int spw_hw_receive(SPW_DEV *pDev, uint8_t *b, int c) {
 	
 	/*Real size of the received data*/
 	unsigned int len;
@@ -1857,11 +1850,6 @@ int spw_hw_receive(SPW_DEV *pDev, uint8_t *hdr, uint8_t *b, int c) {
 		
 		/* skip source address and protocol id */
 		dump_start_len = 2; 
-	} else {
-		
-		/* default: skip only source address. WHEN USING ROUTERS, THERE 
-				SHOULD BE NO HEADER.*/
-		dump_start_len = 0; 
 	}
     
 	/* We haven't received nothing yet*/
@@ -1874,22 +1862,10 @@ int spw_hw_receive(SPW_DEV *pDev, uint8_t *hdr, uint8_t *b, int c) {
 	rxb = pDev->ptr_rxbuf0 + (cur * pDev->rxbufsize);
 
 	SPACEWIRE_DBGC(DBGSPW_RX, "0x%x: waitin packet at pos %i\n", (unsigned int) pDev->regs, cur);
+	SPACEWIRE_DBG("pDev->rx[%d].ctrl: 0x%x\n", cur, pDev->rx[cur].ctrl);
 	
 	/*Read descriptor control word*/
 	ctrl = SPW_READ((volatile void *)&pDev->rx[cur].ctrl);
-	
-/*	int j;
-	iop_debug("Iterating through all rx descriptors. Init at %d\n", cur);
-	for (j = 0; j < 32; j++)
-		iop_debug("%d: %x ", j, pDev->rx[j].ctrl);
-*/	
-	iop_debug("\tDMA registries\n");
-	iop_debug("\t  pDev->regs->dma0ctrl: 0x%x\n", pDev->regs->dma0ctrl);
-	
-	iop_debug("\t rx->ctrl: 0x%x, &rx: 0x%x\n", ctrl, &pDev->rx[cur]);
-	iop_debug("\t rx phy mem: 0x%x\n", (uint8_t *)xky_syscall_get_physical_addr((uintptr_t) &pDev->rx[0]));
-	
-	MURTA = (void *)&pDev->rx[cur].addr;
 	
 	/*Check if the descriptor is enabled*/
 	if (ctrl & SPW_RXBD_EN) {
@@ -1902,8 +1878,6 @@ int spw_hw_receive(SPW_DEV *pDev, uint8_t *hdr, uint8_t *b, int c) {
 	/*Obtain the real size of received data*/
 	len = SPW_RXBD_LENGTH & ctrl;
 	
-	iop_debug("ctrl: %x, len: %d \n", ctrl, len);
-	
 	/*Check for errors*/
 	if (!((ctrl & SPW_RXBD_ERROR) || (pDev->config.check_rmap_err && (ctrl & SPW_RXBD_RMAPERROR)))) {
 		
@@ -1915,24 +1889,28 @@ int spw_hw_receive(SPW_DEV *pDev, uint8_t *hdr, uint8_t *b, int c) {
 		/*should we dump something from the packet?*/
 		pDev->rxbufcur = dump_start_len;
 
+		if (c == 0)
+			c = IOP_BUFFER_SIZE;
+		
+		/*Check if the received size (len) exceeds what the user requested (c)*/
+		if (len > c) {
+			
+			/*We cannot exceed what the user requested*/
+			iop_debug("RXLEN exceeds user request rxlen: %x > user: %x\n", rxlen, c);
+			len = c;
+		}
 		
 		/*obtain the data size to be copied = real data size - dumped size*/
 		rxlen = len - pDev->rxbufcur;
 		
-		SPACEWIRE_DBGC(DBGSPW_RX, "C %i\n", c);
-		SPACEWIRE_DBGC(DBGSPW_RX, "Dump %i\n", dump_start_len);
-		SPACEWIRE_DBGC(DBGSPW_RX, "Bufcur %i\n", pDev->rxbufcur);
-		SPACEWIRE_DBGC(DBGSPW_RX, "Rxlen %i\n", rxlen );
-		
-		/*Check if the received size (rxlen) exceeds what the user requested (c)*/
-		if (rxlen > c) {
-			
-			/*We cannot exceed what the user requested*/
-			iop_debug("RXLEN exceeds user request rxlen: %x > user: %x\n", rxlen, c);
-			rxlen = c;
-		}
-		
-		iop_debug("\n********************gonna start************************\n");
+#ifdef DEBUG_SPACEWIRE_ONOFF
+
+		iop_debug("  C %i\n", c);
+		iop_debug("  Dump %i\n", dump_start_len);
+		iop_debug("  Bufcur %i\n", pDev->rxbufcur);
+		iop_debug("  Rxlen %i\n", rxlen );
+#endif
+
 	   /**
 		* If CPU has snooping we can use memcpy directly;
 		* else, we copy character by character using a alternate call (lduba  []1)
@@ -1940,15 +1918,9 @@ int spw_hw_receive(SPW_DEV *pDev, uint8_t *hdr, uint8_t *b, int c) {
 		if(rxlen > 0){
 			if (CPU_SPARC_HAS_SNOOPING) {
 				
-				/* Copy header */
-				memcpy(hdr, rxb, 1);
-				
 				/*Copy received data to user's buffer*/
 				memcpy(b, rxb+pDev->rxbufcur, rxlen);
 			} else {
-				
-				hdr[0] = MEM_READ(rxb);
-				
 				/*Iterate through received buffer*/
 				for(i = 0; i < rxlen; i++) {
 				
@@ -1972,8 +1944,6 @@ int spw_hw_receive(SPW_DEV *pDev, uint8_t *hdr, uint8_t *b, int c) {
 		spw_rxnext(pDev);
 	}
 	
-	
-	iop_debug("IM HERE and rxlen is : %d \n", rxlen);
 	/*Return the size of transfered data*/
 	return rxlen;
 }

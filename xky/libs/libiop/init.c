@@ -155,16 +155,11 @@ static rtems_status_code iop_init_drivers(void){
 
         /* get physical device */
         iop_physical_device_t *pdev = get_physical_device(i);
-		
-		char *init_func = &(pdev->driver->init);
-		iop_debug("  :: IOP - physical devices  %x\n", *(init_func));
 
         /* initialize device */
         if (pdev->driver->init != NULL) {
             drc = pdev->driver->init(pdev->driver, NULL);
         }
-		
-		iop_debug("   :: drc = %d\n", drc);
 
         /* open device */
         if (RTEMS_SUCCESSFUL == drc && pdev->driver->open != NULL) {
