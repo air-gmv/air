@@ -36,7 +36,7 @@ $(XKY_LIBS)/imaspex/imaspex.a\
 $(XKY_LIBS)/libxky/libxky.a\
 
 # The RTEMS_MAKEFILE_PATH is defined by the user for the specific CPU and BSP
-RTEMS_MAKEFILE_PATH=$(XKY_POS)/rtems-impr/rtems-impr-install/sparc-rtems/leon3
+RTEMS_MAKEFILE_PATH=$(XKY_POS)/rtems-impr/rtems-impr-install/sparc-rtems4.8/leon3
 RTEMS_EXTERNAL_LIBRARY_PATH=\
 $(XKY_POS)/rtems-impr/edilib/library\
 

@@ -12,7 +12,7 @@
 #include <rtems/rtems/tasks.h> 
 #include <rtems/rtems/sem.h> 
 #include <rtems/rtems/clock.h> 
- 
+#include <rtems/cpuuse.h>  
 #include <a653.h>
 #include <imaspex.h>
  
@@ -29,36 +29,54 @@ SAMPLING_PORT_ID_TYPE SEND_PORT;
 ------------------------------------------------------------*/
 
 void test2(PARTITION_ID_TYPE self_id) {
+  rtems_name        name_1, name_2;
+  rtems_id          period_1, period_2;
+  rtems_status_code status;
 
-    int i = 0;
-	char message[18]= "This is p0 message 0\0";
+  name_2 = rtems_build_name( 'P', 'E', 'R', '2' );
+  name_1 = rtems_build_name( 'P', 'E', 'R', '1' );
 
-	/* get the number of ticks per second */
-	int tps = 1000000 / xky_syscall_get_us_per_tick();
-	pprintf("PO: TPS %i\n", tps);
+  status=  rtems_rate_monotonic_create( name_1, &period_1 );
+  status=  rtems_rate_monotonic_create( name_2, &period_2 );
+  	    if( RTEMS_SUCCESSFUL != status ) {
+			pprintf("create failed with status: %d\n", status);
 
-	RETURN_CODE_TYPE rc = NO_ERROR;
+      }
 
-	//while(1) {
+  while ( 1 ) {
 
-		//pprintf ("PO:Partition %d with message: %s..\n", self_id, message);
-		
-		/*
-		WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )message, 17, &rc );
-		if (NO_ERROR != rc) {
-			pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
-		}
-		*/
-		/*identify the string with an integer index*/
-		i++;
-		if (i == 10) {
-			i=0;
-		}
-		
-		message[15] = 0x30 + i;
-		
-	//rtems_task_wake_after(7 * tps);
-	//}
+
+      status = rtems_rate_monotonic_period( period_1, 100 );
+	    if( RTEMS_SUCCESSFUL != status ) {
+			pprintf("RM failed with status: %d\n", status);
+
+      }
+
+	  status = rtems_rate_monotonic_period( period_2, 40 );
+	    if( RTEMS_SUCCESSFUL != status ) {
+			pprintf("RM failed with status: %d\n", status);
+
+      }
+      
+
+	 pprintf("  *  Perform first set of actions between clock     *  ticks 0 and 39 of every 100 ticks.     \n");
+
+    status = rtems_rate_monotonic_period( period_2, 30 );
+	    if( RTEMS_SUCCESSFUL != status ) {
+			pprintf("RM2 failed with status: %d\n", status);
+      }
+
+    pprintf("  Perform second set of actions between clock 40 and 69 iss the period_2 period.     \n");
+
+
+    (void) rtems_rate_monotonic_cancel( period_2 );
+  }
+
+  /* missed period so delete period and SELF */
+
+  (void ) rtems_rate_monotonic_delete( period_2 );
+ // (void ) task_delete( SELF );
+
 }
 
 
@@ -80,14 +98,14 @@ int producer() {
 		//pprintf("GET_PARTITION_ID error %d\n", rc);
 	}
 	
-	for (;;)
-	{
+	//for (;;)
+	//{
 	  pprintf("In partition PO loop t20\n");
 	  rtems_task_wake_after(20);
   	  pprintf("P0 : Waking up\n");
-	}
+	//}
 	
-	/*Creating Source sampling Port
+	/*Creating Source sampling Port */
 	SAMPLING_PORT_NAME_TYPE NAME = "ssampling";
 	MESSAGE_SIZE_TYPE SIZE = 1024;
 	SYSTEM_TIME_TYPE PERIOD= 1000000000ll;
@@ -106,6 +124,8 @@ int producer() {
 	if (NO_ERROR != rc) {
 		pprintf("SET_PARTITION_MODE error %d\n", rc);
 	}
-	*/
+	
 	return RTEMS_SUCCESSFUL;
 }
+
+
