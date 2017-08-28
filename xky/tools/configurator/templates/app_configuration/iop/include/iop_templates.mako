@@ -20,7 +20,7 @@ static iop_header_t route_header[${len(pdevice.routes)}] = ${'\\'}
 {
 % if pdevice.type == 'ETH':
 	% for i, route in enumerate(pdevice.routes):
-${EhtHeader(route.header)}${',' if i < len(pdevice.routes) - 1 else ''}
+${EthHeader(route.header)}${',' if i < len(pdevice.routes) - 1 else ''}
 	% endfor
 % elif pdevice.type == 'SPW':
 	% for i, route in enumerate(pdevice.routes):
@@ -101,7 +101,7 @@ extern iop_logical_device_t logical_device_${device.idx};
 extern iop_port_t remote_ports[${len(iop_configuration.ports)}];
 </%def>
 
-<%def name="EhtHeader(header)">\
+<%def name="EthHeader(header)">\
     {
         .eth_header = {
             .dst_ip      = { ${','.join(header.ip)} },
