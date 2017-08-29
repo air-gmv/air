@@ -58,7 +58,7 @@ static iop_spw_device_t device_configuration = \
 	.clkdiv		= 1,
 	
 	.rxmaxlen		= 64,
-	.promiscuous	= 0,
+	.promiscuous	= 1,
 	.rmapen		= 0,
 	.rmapbufdis	= 32,
 	.rm_prot_id	= 0,

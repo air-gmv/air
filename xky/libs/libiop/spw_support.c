@@ -47,12 +47,5 @@ void spw_copy_header(
 
 uint32_t spw_compare_header(iop_wrapper_t *wrapper, iop_header_t *header) {
 
-    spw_header_t *src = (spw_header_t *)header;
-    spw_header_t *rcv = (spw_header_t *)get_header(wrapper->buffer);
-
-    if (rcv->hdr != src->hdr) {
-        return 0;
-    }
-
     return 1;
 }
