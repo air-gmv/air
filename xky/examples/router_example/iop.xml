@@ -36,11 +36,11 @@
 				<SpwHeader Address="10"/>
 			</PhysicalRoute>
 			<LogicalRoute Id="21" LogicalDeviceId="0">
-				<SpwHeader Address="0x01,0x02,0x09"/>
+				<SpwHeader Address="0x01,0x09"/>
 			</LogicalRoute>
 		</Device>
-		<Device Id="3" Device="GRSPW3" Addr="10" Mask="1" Dest="0" Clk="1"
-				RXmax="64" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
+		<Device Id="3" Device="GRSPW3" Addr="11" Mask="1" Dest="0" Clk="1"
+				RXmax="64" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
 				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
 			<PhysicalRoute Id="30" PortId="squeuing">
 				<SpwHeader Address="11"/>
@@ -49,8 +49,8 @@
 				<SpwHeader Address=""/>
 			</LogicalRoute>
 		</Device>
-		<Device Id="4" Device="GRSPW4" Addr="10" Mask="1" Dest="0" Clk="1"
-				RXmax="64" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
+		<Device Id="4" Device="GRSPW4" Addr="12" Mask="1" Dest="0" Clk="1"
+				RXmax="64" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
 				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
 			<PhysicalRoute Id="40" PortId="squeuing">
 				<SpwHeader Address="12"/>
