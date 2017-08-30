@@ -45,6 +45,7 @@ static int router_tc_read(router_priv_t *priv, unsigned int *tc);
 rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
 	
+	clock_gating_enable(&amba_conf, GATE_SPWR);
 	int device_found = 0;
 	
 	amba_ahb_device ahbspwrtr;
@@ -102,6 +103,8 @@ rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 		ROUTER_DBG2("RTEMS_INTERNAL_ERROR at router_config_set\n");
 		return RTEMS_INTERNAL_ERROR;
 	}
+	iop_debug("   Router config/status reg: 0x%x\n", REG_READ(&priv->regs->cfgsts));
+	
 	router_port port;
 	port.flag = ROUTER_PORTFLG_GET_CTRL | ROUTER_PORTFLG_GET_STS;
 	for (j=0; j < priv->nports; j++) {
