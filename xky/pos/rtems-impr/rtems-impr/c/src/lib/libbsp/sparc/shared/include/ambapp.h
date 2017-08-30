@@ -92,6 +92,7 @@ extern "C"
 #define GAISLER_AHB2AHB		0x20
 #define GAISLER_I2CMST		0x28
 #define GAISLER_GRSPW2		0x29
+#define GAISLER_CLKGATE		0x2C
 #define GAISLER_GRCAN		0x34
 #define GAISLER_GRHCAN		0x3d
 #define GAISLER_GRFIFO		0x35
