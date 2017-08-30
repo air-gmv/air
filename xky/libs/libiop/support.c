@@ -152,3 +152,49 @@ void update_timers() {
     }
 }
 
+/**
+ * @brief Enable device with clock gating
+ * @param clk_amba_bus AMBA bus where the clock gating is located
+ * @param core_to_enable Which device to enable.
+ *        Available devices are: ETH0, ETH1, SPWR, PCI and 1553
+ */
+void clock_gating_enable(amba_confarea_type* clk_amba_bus, clock_gating_device core_to_enable)
+{
+    /* Amba APB device */
+    amba_apb_device ambadev;
+
+    /* Get AMBA AHB device info from Plug&Play */
+    if(amba_find_next_apbslv(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE,&ambadev, 0) == 0){
+
+        /* Device not found */
+		iop_debug("    Clock Gating unit not found!\n");
+        return;
+    }
+
+    /* From LEON4 UM:
+     * To enable the clock for a core, the following procedure should be applied
+     * 1. Write a 1 to the corresponding bit in the unlock register
+     * 2. Write a 1 to the corresponding bit in the core reset register
+     * 3. Write a 1 to the corresponding bit in the clock enable register
+     * 4. Write a 0 to the corresponding bit in the core reset register
+     * 5. Write a 0 to the corresponding bit in the unlock register
+     * /
+
+    /* Copy pointer to device's memory mapped registers */
+    struct clkgate_regs *gate_regs = (void *)ambadev.start;
+
+    /* 1. Unlock the GR1553 gate to allow enabling it */
+    SET_BIT_REG(&gate_regs->unlock, core_to_enable);
+
+    /* 2. Reset the GR1553 gate */
+    SET_BIT_REG(&gate_regs->core_reset, core_to_enable);
+
+    /* 3. Enable the GR1553 gate */
+    SET_BIT_REG(&gate_regs->clock_enable, core_to_enable);
+
+    /* 4. Clear the GR1553 gate reset*/
+    CLEAR_BIT_REG(&gate_regs->core_reset, core_to_enable);
+
+    /* 5. Lock the GR1553 gate */
+    CLEAR_BIT_REG(&gate_regs->unlock, core_to_enable);
+}
