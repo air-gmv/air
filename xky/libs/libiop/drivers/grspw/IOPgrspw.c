@@ -45,7 +45,6 @@
 #include <ambapp.h>
 #include <ambaext.h>
 
-//#include <iop_debug.h>
 #include <IOPlibio.h>
 #include <IOPgrspw.h>
 #include <spw_support.h>
@@ -1844,14 +1843,17 @@ int spw_hw_receive(SPW_DEV *pDev, uint8_t *b, int c) {
     if ( pDev->config.promiscuous ) {
 		
 		/* make sure address and prot can be read in promiscuous mode */
-		dump_start_len = 1;  /** @todo SpaceWire Routing with promiscous mode*/
-		
+		dump_start_len = 0;
 	} else if (pDev->config.rm_prot_id) {
 		
 		/* skip source address and protocol id */
 		dump_start_len = 2; 
+	} else {
+		
+		/* skip source address */
+		dump_start_len = 1; 
 	}
-    
+	
 	/* We haven't received nothing yet*/
 	rxlen = 0;
 	
