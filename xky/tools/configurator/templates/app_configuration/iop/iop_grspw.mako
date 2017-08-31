@@ -56,26 +56,26 @@ static iop_spw_device_t device_configuration = ${'\\'}
     },
 
     /* spacewire configuration */
-	.nodeaddr		= { ${', '.join(device.setup.nodeaddr)} },
+	.nodeaddr		= { ${device.setup.nodeaddr} },
 	.nodemask		= ${device.setup.nodemask},
 	.destkey		= ${device.setup.destkey},
-	.clkdiv		= ${device.setup.clkdiv},
+	.clkdiv			= ${device.setup.clkdiv},
 	
 	.rxmaxlen		= ${device.setup.rxmaxlen},
-	.promiscuous	= ${device.setup.promiscuous},
-	.rmapen		= ${device.setup.rmapen},
-	.rmapbufdis	= ${device.setup.rmapbufdis},
-	.rm_prot_id	= ${device.setup.rm_prot_id},
+	.promiscuous		= ${device.setup.promiscuous},
+	.rmapen			= ${device.setup.rmapen},
+	.rmapbufdis		= ${device.setup.rmapbufdis},
+	.rm_prot_id		= ${device.setup.rm_prot_id},
 	
 /* The buffer size is in the var IOP_BUFFER_SIZE declared in iop.h */
-	.txdbufsize	= 1520,
-	.txhbufsize	= 1520,
-	.rxbufsize		= 1520,
+	.txdbufsize		= IOP_BUFFER_SIZE,
+	.txhbufsize		= IOP_BUFFER_SIZE,
+	.rxbufsize		= IOP_BUFFER_SIZE,
 	.txdesccnt		= ${device.setup.txdesccnt},
 	.rxdesccnt		= ${device.setup.rxdesccnt},
 	
 	.retry			= ${device.setup.retry},
-	.wait_ticks	= ${device.setup.wait_ticks},
+	.wait_ticks		= ${device.setup.wait_ticks},
 	
 	.init_timeout	= ${device.setup.init_timeout}
 };

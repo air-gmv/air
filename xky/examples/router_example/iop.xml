@@ -16,12 +16,33 @@
 			SPWPORTS AMBAPORTS FIFOPORTS RESERVED RE AD LS SA TF ME TA PP
 			31:27	 26:22	   21:17	 16:8	  7  6  5  4  3  2  1  0
 			Only 2 to 7 writtable on the N2X. For more info see board data sheet
-			IDIV necessary to set the init bitrate at 10MBits/s. see SPW faq
+			IDIV=9 necessary to set the init bitrate at 10MBits/s on the N2X. see SPW faq
 		-->
 		<Device Id="0" Device="SPWRTR" Flags="0x1f" Config="0b001110" Idd="1" Idiv="9" Prescaler="1"/>
-		<Device Id="1" Device="GRSPW1" Addr="9" Mask="1" Dest="0" Clk="1"
-				RXmax="64" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
-				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
+		<!--  AMBA ports configuration
+		Important fields:
+			RXmax: maximum number of allowed bytes on the reception (N2X maximum is 0x1FFFFFC).
+					xky however limits this to 1520
+			PRO: Promiscuous mode. Set to 1 to ignore checking of the header byte and keep it in the msg
+			Timeout unused for SPW2 w/ DMA (N2X case)
+			RMAP = 0. At the moment RMAP not used. Dest also belongs to RMAP.
+			ProtID = 0. Not used at the moment.
+			TXD: number of transmition descriptors. Maximum = 64.
+			RXD: number of reception descriptors. Maximum = 128.
+			(T|R)Xsize unused on xky. Size of the buffer is always 1520.
+			Addr and Mask should be left as they are. Only in promiscuous mode they have not
+				meaning. They are used to confirm the header.
+			The Clk (Clkdivisor) is not used in the N2X.
+			Retry: if the data was marked to be sent but wasn't, retry to send.
+			Wait: not used, as the driver never goes into blocking mode.
+		PHYSICAL ROUTES:
+			SpwHeader Address does nothing, because the header was already checked in hw.
+		LOGICAL ROUTES:
+			SpwHeader Address containts the header to be attached to the msg.
+		-->
+		<Device Id="1" Device="GRSPW1" Addr="9" Mask="0xff" Dest="0" Clk="1"
+				RXmax="1520" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="-1"
+				TXHsize="-1" RXsize="-1" TXD="64" RXD="128" Retry="1" Wait="0" Timeout="-1">
 			<PhysicalRoute Id="10" PortId="squeuing">
 				<SpwHeader Address="9"/>
 			</PhysicalRoute>
@@ -29,19 +50,19 @@
 				<SpwHeader Address=""/>
 			</LogicalRoute>
 		</Device>
-		<Device Id="2" Device="GRSPW2" Addr="10" Mask="1" Dest="0" Clk="1"
-				RXmax="64" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
-				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
+		<Device Id="2" Device="GRSPW2" Addr="10" Mask="0xff" Dest="0" Clk="1"
+				RXmax="1520" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="-1"
+				TXHsize="-1" RXsize="-1" TXD="64" RXD="128" Retry="1" Wait="0" Timeout="-1">
 			<PhysicalRoute Id="20" PortId="squeuing">
 				<SpwHeader Address="10"/>
 			</PhysicalRoute>
 			<LogicalRoute Id="21" LogicalDeviceId="0">
-				<SpwHeader Address="0x01,0x09"/>
+				<SpwHeader Address="0x01,0x0B"/>
 			</LogicalRoute>
 		</Device>
-		<Device Id="3" Device="GRSPW3" Addr="11" Mask="1" Dest="0" Clk="1"
-				RXmax="64" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
-				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
+		<Device Id="3" Device="GRSPW3" Addr="11" Mask="0xff" Dest="0" Clk="1"
+				RXmax="1520" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="-1"
+				TXHsize="-1" RXsize="-1" TXD="64" RXD="128" Retry="1" Wait="0" Timeout="-1">
 			<PhysicalRoute Id="30" PortId="squeuing">
 				<SpwHeader Address="11"/>
 			</PhysicalRoute>
@@ -49,14 +70,14 @@
 				<SpwHeader Address=""/>
 			</LogicalRoute>
 		</Device>
-		<Device Id="4" Device="GRSPW4" Addr="12" Mask="1" Dest="0" Clk="1"
-				RXmax="64" PRO="1" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="32"
-				TXHsize="32" RXsize="32" TXD="32" RXD="32" Retry="0" Wait="0" Timeout="-1">
+		<Device Id="4" Device="GRSPW4" Addr="12" Mask="0xff" Dest="0" Clk="1"
+				RXmax="1520" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="-1"
+				TXHsize="-1" RXsize="-1" TXD="64" RXD="128" Retry="1" Wait="0" Timeout="-1">
 			<PhysicalRoute Id="40" PortId="squeuing">
 				<SpwHeader Address="12"/>
 			</PhysicalRoute>
 			<LogicalRoute Id="41" LogicalDeviceId="0">
-				<SpwHeader Address=""/>
+				<SpwHeader Address="0x02,0x0C"/>
 			</LogicalRoute>
 		</Device>
 	</PhysicalDevices>
@@ -71,6 +92,9 @@
 			    <Device DeviceId="4" Reads="1"/>
 			</DevicesConfiguration>
 			<RoutesConfiguration>
+				<!--
+					Routes must be Active in order to receive or transmit.
+				-->
 				<Route RouteId="10" Active="true"/>
 				<Route RouteId="11" Active="false"/>
 				<Route RouteId="20" Active="true"/>
@@ -78,7 +102,7 @@
 				<Route RouteId="30" Active="true"/>
 				<Route RouteId="31" Active="false"/>
 				<Route RouteId="40" Active="true"/>
-				<Route RouteId="41" Active="false"/>
+				<Route RouteId="41" Active="true"/>
 			</RoutesConfiguration>
 		</Schedule>
 	</ModuleSchedules>
