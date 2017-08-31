@@ -5,9 +5,9 @@
   <Partition PartitionIdentifier="3" PartitionName="iop" 
     Criticality="LEVEL_A" EntryPoint="empty" SystemPartition="false">
     <Sampling_Port Name="dsampling"
-      Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+      Direction="DESTINATION" MaxMessageSize="1520" RefreshRateSeconds="1.0"/>
     <Queuing_Port Name="squeuing" 
-      Direction="SOURCE" MaxMessageSize="1024" MaxNbMessages="32" />
+      Direction="SOURCE" MaxMessageSize="1520" MaxNbMessages="32" />
     <PartitionConfiguration Personality="RTEMS" IOP="iop.xml" Cores="1">
         <Libs>LIBXKY; LIBIOP; LIBPRINTF</Libs>
         <Devices></Devices>
@@ -23,7 +23,7 @@
   <Partition PartitionIdentifier="1" PartitionName="sampling"
     Criticality="LEVEL_A" EntryPoint="entry_func" SystemPartition="false">
     <Sampling_Port Name="ssampling" 
-      Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+      Direction="SOURCE" MaxMessageSize="1520" RefreshRateSeconds="1.0"/>
     <PartitionConfiguration Personality="RTEMS" Cores="1">
         <Libs>LIBXKY; IMASPEX; LIBPRINTF</Libs>
         <Devices></Devices>
@@ -39,7 +39,7 @@
   <Partition PartitionIdentifier="2" PartitionName="queuing"
     Criticality="LEVEL_A" EntryPoint="entry_func"  SystemPartition="false">
     <Queuing_Port  Name="dqueuing"
-      Direction="DESTINATION" MaxMessageSize="1024" MaxNbMessages="32" />
+      Direction="DESTINATION" MaxMessageSize="1520" MaxNbMessages="32" />
     <PartitionConfiguration Personality="RTEMS" Cores="1">
         <Libs>LIBXKY; IMASPEX; LIBPRINTF</Libs>
         <Devices></Devices>

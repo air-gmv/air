@@ -55,7 +55,7 @@ int entry_func() {
 	
 	PARTITION_ID_TYPE self_id;
 
-	CREATE_QUEUING_PORT("dqueuing", 1024, 32, DESTINATION, FIFO, &qpid, &rc );
+	CREATE_QUEUING_PORT("dqueuing", 1520, 32, DESTINATION, FIFO, &qpid, &rc );
 	if(NO_ERROR != rc){
 		pprintf("CREATE_QUEUING_PORT error %d\n", rc);
 	} 

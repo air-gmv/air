@@ -274,7 +274,7 @@ void iop_main_loop(void);
 
 //#define DEBUG_SPWRTR
 //#define DEBUG_SPACEWIRE_ONOFF
-#define IOP_NEEDS_DEBUG
+//#define IOP_NEEDS_DEBUG
 #ifdef IOP_NEEDS_DEBUG
 #include <pprintf.h>
 #define iop_debug(fmt ...)              pprintf(fmt)

@@ -40,11 +40,12 @@ SPWRTR_IDIV             = 'Idiv'
 SPWRTR_PRESCALER        = 'Prescaler'
 
 VALID_EN                    = [ parserutils.str2int, lambda x : 0 <= x <= 1 ]
-VALID_XD	                = [ parserutils.str2int, lambda x : 0 <= x <= 2048 ]
+VALID_XD	                = [ parserutils.str2int, lambda x : 0 <= x <= 128 ]
 VALID_READS	                = [ parserutils.str2int, lambda x : 0 <= x <= 2048 ]
 VALID_TIMER                 = [ parserutils.str2int, lambda x : -1 <= x <= 50 ]
-VALID_MASK                  = [ parserutils.str2int, lambda x : len(str(x)) <= 32 ]
-
+VALID_MASK                  = [ parserutils.str2int, lambda x : 0 <= x <= 255 ]
+VALID_NODE_ADDRESS          = [ parserutils.str2int, lambda x : -1 <= x <= 31 ]
+VALID_RXMAX                 = [ parserutils.str2int, lambda x : 4 <= x <= 1520 ]
 
 # GRETH physical device setup
 class GRETHPhySetup(object):
@@ -74,8 +75,8 @@ class GRETHSchSetup(object):
 class GRSPWPhySetup(object):
 
     def __init__(self):
-        self.nodeaddr       = 0
-        self.nodemask       = 0
+        self.nodeaddr       = -1
+        self.nodemask       = 0xff
         self.destkey        = 0
         self.clkdiv         = 1
         self.rxmaxlen       = 0
@@ -83,14 +84,15 @@ class GRSPWPhySetup(object):
         self.rmapen         = 0
         self.rmapbufdis     = 0
         self.rm_prot_id     = 1
-        self.txdbufsize     = 0
-        self.txhbufsize     = 0
-        self.rxbufsize      = 0
+# currently set to IOP_BUFFER_SIZE @TODO
+#        self.txdbufsize     = 0
+#        self.txhbufsize     = 0
+#        self.rxbufsize      = 0
         self.txdesccnt      = 0
         self.rxdesccnt      = 0
         self.retry          = 0
         self.wait_ticks     = 0
-        self.init_timeout   = 5
+        self.init_timeout   = -1
 
 
     def details(self):
@@ -183,18 +185,18 @@ def phy_grspw(iop_parser, xml, pdevice):
 
     # parse setup
     setup               = GRSPWPhySetup()
-    setup.nodeaddr      = xml.parse_attr(GRSPW_ADDR, VALID_SPW_ADDRESS, True, iop_parser.logger)
+    setup.nodeaddr      = xml.parse_attr(GRSPW_ADDR, VALID_NODE_ADDRESS, True, iop_parser.logger)
     setup.nodemask      = xml.parse_attr(GRSPW_MASK, VALID_MASK, True, iop_parser.logger)
     setup.destkey       = xml.parse_attr(GRSPW_DEST, VALID_XD, True, iop_parser.logger)
     setup.clkdiv        = xml.parse_attr(GRSPW_CLK, VALID_XD, True, iop_parser.logger)
-    setup.rxmaxlen      = xml.parse_attr(GRSPW_RXMAX, VALID_XD, True, iop_parser.logger)
+    setup.rxmaxlen      = xml.parse_attr(GRSPW_RXMAX, VALID_RXMAX, True, iop_parser.logger)
     setup.promiscuous   = xml.parse_attr(GRSPW_PRO, VALID_EN, True, iop_parser.logger)
     setup.rmapen        = xml.parse_attr(GRSPW_RMAP, VALID_EN, True, iop_parser.logger)
     setup.rmapbufdis    = xml.parse_attr(GRSPW_RMAPBUF, VALID_XD, True, iop_parser.logger)
     setup.rm_prot_id    = xml.parse_attr(GRSPW_RMPROTID, VALID_EN, True, iop_parser.logger)
-    setup.txdbufsize    = xml.parse_attr(GRSPW_TXDSIZE, VALID_XD, True, iop_parser.logger)
-    setup.txhbufsize    = xml.parse_attr(GRSPW_TXHSIZE, VALID_XD, True, iop_parser.logger)
-    setup.rxbufsize     = xml.parse_attr(GRSPW_RXSIZE, VALID_XD, True, iop_parser.logger)
+#    setup.txdbufsize    = xml.parse_attr(GRSPW_TXDSIZE, VALID_XD, True, iop_parser.logger)
+#    setup.txhbufsize    = xml.parse_attr(GRSPW_TXHSIZE, VALID_XD, True, iop_parser.logger)
+#    setup.rxbufsize     = xml.parse_attr(GRSPW_RXSIZE, VALID_XD, True, iop_parser.logger)
     setup.txdesccnt     = xml.parse_attr(GRSPW_TXD, VALID_XD, True, iop_parser.logger)
     setup.rxdesccnt     = xml.parse_attr(GRSPW_RXD, VALID_XD, True, iop_parser.logger)
     setup.retry         = xml.parse_attr(GRSPW_RETRY, VALID_TIMER, True, iop_parser.logger)
