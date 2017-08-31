@@ -107,7 +107,7 @@ rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 	
 	router_port port;
 	port.flag = ROUTER_PORTFLG_GET_CTRL | ROUTER_PORTFLG_GET_STS;
-	for (j=0; j < priv->nports; j++) {
+	for (j=0; j < priv->nports + 1; j++) {
 		port.port = j;
 		router_port_ctrl(priv, &port);
 		iop_debug(" port[%2d]: CTRL: 0x%08x  STATUS: 0x%08x\n", j, port.ctrl, port.sts);

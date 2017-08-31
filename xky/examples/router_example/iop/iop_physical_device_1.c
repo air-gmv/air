@@ -18,8 +18,8 @@ extern iop_port_t remote_ports[2];
 /**
  * @brief IOP buffers
  */
-static iop_buffer_t iop_buffers[96];
-static uint8_t iop_buffers_storage[96 * IOP_BUFFER_SIZE];
+static iop_buffer_t iop_buffers[256];
+static uint8_t iop_buffers_storage[256 * IOP_BUFFER_SIZE];
 
 /**
  * @brief RX and TX descriptor table
@@ -53,25 +53,25 @@ static iop_spw_device_t device_configuration = \
 
     /* spacewire configuration */
 	.nodeaddr		= { 9 },
-	.nodemask		= 1,
+	.nodemask		= 255,
 	.destkey		= 0,
-	.clkdiv		= 1,
+	.clkdiv			= 1,
 	
-	.rxmaxlen		= 64,
-	.promiscuous	= 1,
-	.rmapen		= 0,
-	.rmapbufdis	= 32,
-	.rm_prot_id	= 0,
+	.rxmaxlen		= 1520,
+	.promiscuous		= 0,
+	.rmapen			= 0,
+	.rmapbufdis		= 32,
+	.rm_prot_id		= 0,
 	
 /* The buffer size is in the var IOP_BUFFER_SIZE declared in iop.h */
-	.txdbufsize	= 1520,
-	.txhbufsize	= 1520,
-	.rxbufsize		= 1520,
-	.txdesccnt		= 32,
-	.rxdesccnt		= 32,
+	.txdbufsize		= IOP_BUFFER_SIZE,
+	.txhbufsize		= IOP_BUFFER_SIZE,
+	.rxbufsize		= IOP_BUFFER_SIZE,
+	.txdesccnt		= 64,
+	.rxdesccnt		= 128,
 	
-	.retry			= 0,
-	.wait_ticks	= 0,
+	.retry			= 1,
+	.wait_ticks		= 0,
 	
 	.init_timeout	= -1
 };
