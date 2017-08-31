@@ -19,7 +19,7 @@ extern iop_logical_device_t logical_device_0;
  */
 static xky_queuing_port_configuration_t queuing_ports[] = {
     {
-        .max_message_size   = 1024,
+        .max_message_size   = 1520,
         .max_nb_message     = 32,
         .port_direction     = XKY_SOURCE_PORT,
         .port_discipline    = 0
@@ -31,7 +31,7 @@ static xky_queuing_port_configuration_t queuing_ports[] = {
  */
 static xky_sampling_port_configuration_t sampling_ports[] = {
     {
-        .max_message_size   = 1024,
+        .max_message_size   = 1520,
         .refresh_period     = 200,
         .port_direction     = XKY_DESTINATION_PORT,
     },
