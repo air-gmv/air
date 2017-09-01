@@ -1,20 +1,20 @@
-/**
- * @file
- * @ingroup can
- * @brief Gaisler wrapper to OpenCores CAN - driver interface
- */
-
-/*
+/*  Gaisler wrapper to OpenCores CAN, driver interface
+ *
  *  COPYRIGHT (c) 2007.
- *  Cobham Gaisler AB.
+ *  Gaisler Research.
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.org/license/LICENSE.
+ *  http://www.rtems.com/license/LICENSE.
+ *
+ *  Author: Daniel Hellström, Gaisler Research AB, www.gaisler.com
  */
 
-#ifndef __OCCAN_DRIVER_H__
-#define __OCCAN_DRIVER_H__
+
+#ifndef __OCCAN_H__
+#define __OCCAN_H__
+
+#include <ambapp.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -147,7 +147,7 @@ struct occan_afilter {
 #define OCCAN_BLK_MODE_RX 0x1
 #define OCCAN_BLK_MODE_TX 0x2
 
-void occan_register_drv (void);
+int occan_register(struct ambapp_bus *bus);
 
 
 #define OCCAN_SPEED_500K 500000
