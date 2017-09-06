@@ -17,12 +17,9 @@
 #include <leon.h>
 #include <ambapp.h>
 #include <occan.h>
-#include <grlib.h>
-
-#include <iop.h>
-#include <ambapp.h>
 
 /* RTEMS -> ERRNO decoding table
+
 rtems_assoc_t errno_assoc[] = {
     { "OK",                 RTEMS_SUCCESSFUL,                0 },
     { "BUSY",               RTEMS_RESOURCE_IN_USE,           EBUSY },
@@ -63,7 +60,7 @@ rtems_assoc_t errno_assoc[] = {
 #endif
 
 #ifndef OCCAN_REG_INT
-	#define OCCAN_REG_INT(handler,irq,arg) set_vector(handler,irq+0x10,1)
+	#define OCCAN_REG_INT(handler,irq,arg) set_vector(handler,irq+0x10)
   #undef  OCCAN_DEFINE_INTHANDLER
   #define OCCAN_DEFINE_INTHANDLER
 #endif
@@ -79,26 +76,25 @@ rtems_assoc_t errno_assoc[] = {
 #define DEFAULT_EXTENDED_MODE 1
 #define DEFAULT_RX_FIFO_LEN 64
 #define DEFAULT_TX_FIFO_LEN 64
-#define FIFO_MAX_LEN 1024
 
 /* not implemented yet */
 #undef REDUNDANT_CHANNELS
 
-///* Define common debug macros */
+/* Define common debug macros */
 //#ifdef DEBUG
-//	#define iop_debug(fmt, vargs...) iop_debug(fmt, ## vargs )
+//	#define DBG(fmt, vargs...) iop_debug(fmt, ## vargs )
 //#else
-//	#define iop_debug(fmt, vargs...)
+//	#define DBG(fmt, vargs...)
 //#endif
 
 /* fifo interface */
 typedef struct {
-	int count; /* Number of elements on the fifo */
+	int cnt;
 	int ovcnt; /* overwrite count */
 	int full; /* 1 = base contain cnt CANMsgs, tail==head */
-	int head, base, tail; /* Next space to be filled if an element is inserted in the fifo */
-	int size; /* fifo size determined by the user. Must be less than the max_size */
-	CANMsg data[FIFO_MAX_LEN]; /* Circular buffer */
+	CANMsg *tail, *head;
+	CANMsg *base;
+	char fifoarea[0];
 } occan_fifo;
 
 /* PELICAN */
@@ -247,7 +243,8 @@ typedef struct {
 /********** FIFO INTERFACE **********/
 static void occan_fifo_put(occan_fifo *fifo);
 static CANMsg *occan_fifo_put_claim(occan_fifo *fifo, int force);
-static occan_fifo *occan_fifo_init(int cnt);
+static occan_fifo *occan_fifo_create(int cnt);
+static void occan_fifo_free(occan_fifo *fifo);
 static int occan_fifo_full(occan_fifo *fifo);
 static int occan_fifo_empty(occan_fifo *fifo);
 static void occan_fifo_get(occan_fifo *fifo);
@@ -281,7 +278,7 @@ static void occan_interrupt_handler(rtems_vector_number v);
 #endif
 static int can_cores;
 static occan_priv *cans;
-static struct ambapp_bus *amba_bus;
+static amba_confarea_type *amba_bus;
 static unsigned int sys_freq_hz;
 
 
@@ -294,7 +291,7 @@ static unsigned int sys_freq_hz;
  #define READ_REG(address) _OCCAN_REG_READ((unsigned int)(address))
  static __inline__ unsigned char _OCCAN_REG_READ(unsigned int addr) {
         unsigned char tmp;
-        __asm__ (" lduba [%1]1, %0 "
+        asm(" lduba [%1]1, %0 "
             : "=r"(tmp)
             : "r"(addr)
            );
@@ -398,7 +395,7 @@ static void pelican_init(occan_priv *priv){
 }
 
 static void pelican_open(occan_priv *priv){
-	/* unsigned char tmp; */
+	unsigned char tmp;
 	int ret;
 
 	/* Set defaults */
@@ -429,11 +426,11 @@ static void pelican_open(occan_priv *priv){
 	priv->regs->inten = 0;
 
 	/* clear pending interrupts by reading */
-	/* tmp = */ READ_REG(&priv->regs->intflags);
+	tmp = READ_REG(&priv->regs->intflags);
 }
 
 static int pelican_start(occan_priv *priv){
-	/* unsigned char tmp; */
+	unsigned char tmp;
 	/* Start HW communication */
 
 	if ( !priv->rxfifo || !priv->txfifo )
@@ -449,7 +446,7 @@ static int pelican_start(occan_priv *priv){
 	priv->status = 0;
 
 	/* clear pending interrupts */
-	/* tmp = */ READ_REG(&priv->regs->intflags);
+	tmp = READ_REG(&priv->regs->intflags);
 
 	/* clear error counters */
 	priv->regs->rx_err_cnt = 0;
@@ -467,7 +464,7 @@ static int pelican_start(occan_priv *priv){
 	/* set the speed regs of the CAN core */
 	occan_set_speedregs(priv,&priv->timing);
 
-	iop_debug("OCCAN: start: set timing regs btr0: 0x%x, btr1: 0x%x\n\r",READ_REG(&priv->regs->bustim0),READ_REG(&priv->regs->bustim1));
+	DBG("OCCAN: start: set timing regs btr0: 0x%x, btr1: 0x%x\n\r",READ_REG(&priv->regs->bustim0),READ_REG(&priv->regs->bustim1));
 
 	/* Set default acceptance filter */
 	pelican_set_accept(priv,priv->acode,priv->amask);
@@ -745,7 +742,7 @@ static void occan_stat_print(occan_stats *stats){
 static int occan_calc_speedregs(unsigned int clock_hz, unsigned int rate, occan_speed_regs *result){
 	int best_error = 1000000000;
 	int error;
-	int best_tseg=0, best_brp=0, brp=0;
+	int best_tseg=0, best_brp=0, best_rate=0, brp=0;
 	int tseg=0, tseg1=0, tseg2=0;
 	int sjw = 0;
 	int clock = clock_hz / 2;
@@ -789,6 +786,7 @@ static int occan_calc_speedregs(unsigned int clock_hz, unsigned int rate, occan_
 			best_error = error;
 			best_tseg = tseg/2;
 			best_brp = brp-1;
+			best_rate = clock/(brp*(1+tseg/2));
 		}
 	}
 
@@ -856,13 +854,19 @@ static int pelican_speed_auto(occan_priv *priv){
 	unsigned int speed;
 	unsigned char tmp;
 	while ( (speed=pelican_speed_auto_steplist[i]) > 0){
+
 		/* Reset core */
 		priv->regs->mode = PELICAN_MOD_RESET;
+
 		/* tell int handler about the auto speed detection test */
+
+
 		/* wait for a moment (10ms) */
 		/*usleep(10000);*/
+
 		/* No acceptance filter */
 		pelican_set_accept(priv);
+
 		/* calc timing params for this */
 		if ( occan_calc_speedregs(sys_freq_hz,speed,&timing) ){
 			/* failed to get good timings for this frequency
@@ -870,24 +874,34 @@ static int pelican_speed_auto(occan_priv *priv){
 			 */
 			 continue;
 		}
+
 		timing.sam = 0;
+
 		/* set timing params for this speed */
 		occan_set_speedregs(priv,&timing);
+
 		/* Empty previous messages in hardware RX fifo */
 		/*
 		while( READ_REG(&priv->regs->) ){
+
 		}
 		*/
+
 		/* Clear pending interrupts */
 		tmp = READ_REG(&priv->regs->intflags);
+
 		/* enable RX & ERR interrupt */
 		priv->regs->inten =
+
 		/* Get out of reset state */
 		priv->regs->mode = PELICAN_MOD_LISTEN;
+
 		/* wait for frames or errors */
 		while(1){
 			/* sleep 10ms */
+
 		}
+
 	}
 #endif
 }
@@ -895,7 +909,7 @@ static int pelican_speed_auto(occan_priv *priv){
 
 static rtems_device_driver occan_initialize(rtems_device_major_number major, rtems_device_minor_number unused, void *arg){
 	int dev_cnt,minor,subcore_cnt,devi,subi,subcores;
-	struct ambapp_ahb_info ambadev;
+	amba_ahb_device ambadev;
 	occan_priv *can;
 	char fs_name[20];
 	rtems_status_code status;
@@ -903,8 +917,7 @@ static rtems_device_driver occan_initialize(rtems_device_major_number major, rte
 	strcpy(fs_name,OCCAN_DEVNAME);
 
 	/* find device on amba bus */
-	dev_cnt = amba_find_ahbslv(amba_bus, VENDOR_GAISLER,
-                                                   GAISLER_CANAHB);
+	dev_cnt = amba_get_number_ahbslv_devices(amba_bus,VENDOR_GAISLER,GAISLER_OCCAN);
 	if ( dev_cnt < 1 ){
 		/* Failed to find any CAN cores! */
 		iop_debug("OCCAN: Failed to find any CAN cores\n\r");
@@ -916,14 +929,13 @@ static rtems_device_driver occan_initialize(rtems_device_major_number major, rte
 #if defined(LEON3)
 	/* LEON3: find timer address via AMBA Plug&Play info */
 	{
-		struct ambapp_apb_info gptimer;
-		struct gptimer_regs *tregs;
+		amba_apb_device gptimer;
+		LEON3_Timer_Regs_Map *tregs;
 
-		if ( ambapp_find_apbslv(&ambapp_plb, VENDOR_GAISLER,
-                                        GAISLER_GPTIMER, &gptimer) == 1 ){
-			tregs = (struct gptimer_regs *)gptimer.start;
+		if ( amba_find_apbslv(&amba_conf,VENDOR_GAISLER,GAISLER_GPTIMER,&gptimer) == 1 ){
+			tregs = (LEON3_Timer_Regs_Map *)gptimer.start;
 			sys_freq_hz = (tregs->scaler_reload+1)*1000*1000;
-			iop_debug("OCCAN: detected %dHZ system frequency\n\r",sys_freq_hz);
+			DBG("OCCAN: detected %dHZ system frequency\n\r",sys_freq_hz);
 		}else{
 			sys_freq_hz = 40000000; /* Default to 40MHz */
 			iop_debug("OCCAN: Failed to detect system frequency\n\r");
@@ -944,7 +956,7 @@ static rtems_device_driver occan_initialize(rtems_device_major_number major, rte
 	sys_freq_hz = SYS_FREQ_HZ;
 #endif
 
-	iop_debug("OCCAN: Detected %dHz system frequency\n\r",sys_freq_hz);
+	DBG("OCCAN: Detected %dHz system frequency\n\r",sys_freq_hz);
 
 	/* OCCAN speciality:
 	 *  Mulitple cores are supported through the same amba AHB interface.
@@ -956,8 +968,7 @@ static rtems_device_driver occan_initialize(rtems_device_major_number major, rte
 	 */
 
 	for(subcore_cnt=devi=0; devi<dev_cnt; devi++){
-		ambapp_find_ahbslv_next(amba_bus, VENDOR_GAISLER,
-                                        GAISLER_CANAHB, &ambadev, devi);
+		amba_find_next_ahbslv(amba_bus,VENDOR_GAISLER,GAISLER_OCCAN,&ambadev,devi);
 		subcore_cnt += (ambadev.ver & 0x7)+1;
 	}
 
@@ -971,10 +982,9 @@ static rtems_device_driver occan_initialize(rtems_device_major_number major, rte
 	for(devi=0; devi<dev_cnt; devi++){
 
 		/* Get AHB device info */
-		ambapp_find_ahbslv_next(amba_bus, VENDOR_GAISLER,
-                                        GAISLER_CANAHB, &ambadev, devi);
+		amba_find_next_ahbslv(amba_bus,VENDOR_GAISLER,GAISLER_OCCAN,&ambadev,devi);
 		subcores = (ambadev.ver & 0x7)+1;
-		iop_debug("OCCAN: on dev %d found %d sub cores\n\r",devi,subcores);
+		DBG("OCCAN: on dev %d found %d sub cores\n\r",devi,subcores);
 
 		/* loop all subcores, at least 1 */
 		for(subi=0; subi<subcores; subi++){
@@ -1055,7 +1065,7 @@ static rtems_device_driver occan_initialize(rtems_device_major_number major, rte
 static rtems_device_driver occan_open(rtems_device_major_number major, rtems_device_minor_number minor, void *arg){
 	occan_priv *can;
 
-	iop_debug("OCCAN: Opening %d\n\r",minor);
+	DBG("OCCAN: Opening %d\n\r",minor);
 
 	if ( minor >= can_cores )
 		return RTEMS_UNSATISFIED; /* NODEV */
@@ -1073,13 +1083,13 @@ static rtems_device_driver occan_open(rtems_device_major_number major, rtems_dev
 	rtems_semaphore_release(can->devsem);
 
 	/* allocate fifos */
-	can->rxfifo = occan_fifo_init(DEFAULT_RX_FIFO_LEN);
+	can->rxfifo = occan_fifo_create(DEFAULT_RX_FIFO_LEN);
 	if ( !can->rxfifo ){
 		can->open = 0;
 		return RTEMS_NO_MEMORY; /* ENOMEM */
 	}
 
-	can->txfifo = occan_fifo_init(DEFAULT_TX_FIFO_LEN);
+	can->txfifo = occan_fifo_create(DEFAULT_TX_FIFO_LEN);
 	if ( !can->txfifo ){
 		occan_fifo_free(can->rxfifo);
 		can->rxfifo= NULL;
@@ -1087,7 +1097,7 @@ static rtems_device_driver occan_open(rtems_device_major_number major, rtems_dev
 		return RTEMS_NO_MEMORY; /* ENOMEM */
 	}
 
-	iop_debug("OCCAN: Opening %d success\n\r",minor);
+	DBG("OCCAN: Opening %d success\n\r",minor);
 
 	can->started = 0;
 	can->channel = 0; /* Default to first can link */
@@ -1110,7 +1120,7 @@ static rtems_device_driver occan_open(rtems_device_major_number major, rtems_dev
 static rtems_device_driver occan_close(rtems_device_major_number major, rtems_device_minor_number minor, void *arg){
 	occan_priv *can = &cans[minor];
 
-	iop_debug("OCCAN: Closing %d\n\r",minor);
+	DBG("OCCAN: Closing %d\n\r",minor);
 
 	/* stop if running */
 	if ( can->started )
@@ -1137,21 +1147,21 @@ static rtems_device_driver occan_read(rtems_device_major_number major, rtems_dev
 	int left;
 
 	if ( !can->started ){
-		iop_debug("OCCAN: cannot read from minor %d when not started\n\r",minor);
+		DBG("OCCAN: cannot read from minor %d when not started\n\r",minor);
 		return RTEMS_RESOURCE_IN_USE; /* -EBUSY*/
 	}
 
 	/* does at least one message fit */
 	left = rw_args->count;
 	if ( left < sizeof(CANMsg) ){
-		iop_debug("OCCAN: minor %d length of buffer must be at least %d, our is %d\n\r",minor,sizeof(CANMsg),left);
+		DBG("OCCAN: minor %d length of buffer must be at least %d, our is %d\n\r",minor,sizeof(CANMsg),left);
 		return  RTEMS_INVALID_NAME; /* -EINVAL */
 	}
 
 	/* get pointer to start where to put CAN messages */
 	dstmsg = (CANMsg *)rw_args->buffer;
 	if ( !dstmsg ){
-		iop_debug("OCCAN: minor %d read: input buffer is NULL\n\r",minor);
+		DBG("OCCAN: minor %d read: input buffer is NULL\n\r",minor);
 		return  RTEMS_INVALID_NAME; /* -EINVAL */
 	}
 
@@ -1163,7 +1173,7 @@ static rtems_device_driver occan_read(rtems_device_major_number major, rtems_dev
 		/* A bus off interrupt may have occured after checking can->started */
 		if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
 			rtems_interrupt_enable(oldLevel);
-			iop_debug("OCCAN: read is cancelled due to a BUS OFF error\n\r");
+			DBG("OCCAN: read is cancelled due to a BUS OFF error\n\r");
 			rw_args->bytes_moved = rw_args->count-left;
 			return RTEMS_IO_ERROR; /* EIO */
 		}
@@ -1184,14 +1194,14 @@ static rtems_device_driver occan_read(rtems_device_major_number major, rtems_dev
 			/* turn on interrupts again */
 			rtems_interrupt_enable(oldLevel);
 
-			iop_debug("OCCAN: Waiting for RX int\n\r");
+			DBG("OCCAN: Waiting for RX int\n\r");
 
 			/* wait for incomming messages */
 			rtems_semaphore_obtain(can->rxsem,RTEMS_WAIT,RTEMS_NO_TIMEOUT);
 
 			/* did we get woken up by a BUS OFF error? */
 			if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
-				iop_debug("OCCAN: Blocking read got woken up by BUS OFF error\n\r");
+				DBG("OCCAN: Blocking read got woken up by BUS OFF error\n\r");
 				/* At this point it should not matter how many messages we handled */
 				rw_args->bytes_moved = rw_args->count-left;
 				return RTEMS_IO_ERROR; /* EIO */
@@ -1218,7 +1228,7 @@ static rtems_device_driver occan_read(rtems_device_major_number major, rtems_dev
 	/* save number of read bytes. */
 	rw_args->bytes_moved = rw_args->count-left;
 	if ( rw_args->bytes_moved == 0 ){
-		iop_debug("OCCAN: minor %d read would block, returning\n\r",minor);
+		DBG("OCCAN: minor %d read would block, returning\n\r",minor);
 		return RTEMS_TIMEOUT; /* ETIMEDOUT should be EAGAIN/EWOULDBLOCK */
 	}
 	return RTEMS_SUCCESSFUL;
@@ -1231,7 +1241,7 @@ static rtems_device_driver occan_write(rtems_device_major_number major, rtems_de
 	rtems_interrupt_level oldLevel;
 	int left;
 
-	iop_debug("OCCAN: Writing %d bytes from 0x%lx (%d)\n\r",rw_args->count,rw_args->buffer,sizeof(CANMsg));
+	DBG("OCCAN: Writing %d bytes from 0x%lx (%d)\n\r",rw_args->count,rw_args->buffer,sizeof(CANMsg));
 
 	if ( !can->started )
 		return RTEMS_RESOURCE_IN_USE; /* EBUSY */
@@ -1277,7 +1287,7 @@ static rtems_device_driver occan_write(rtems_device_major_number major, rtems_de
 			/* bump stat counters */
 			can->stats.tx_msgs++;
 
-			iop_debug("OCCAN: Sending direct via HW\n\r");
+			DBG("OCCAN: Sending direct via HW\n\r");
 		}
 	}
 
@@ -1290,7 +1300,7 @@ static rtems_device_driver occan_write(rtems_device_major_number major, rtems_de
 		fifo_msg = occan_fifo_put_claim(can->txfifo,0);
 		if ( !fifo_msg ){
 
-			iop_debug("OCCAN: FIFO is full\n\r");
+			DBG("OCCAN: FIFO is full\n\r");
 			/* Block only if no messages previously sent
 			 * and no in blocking mode
 			 */
@@ -1305,13 +1315,13 @@ static rtems_device_driver occan_write(rtems_device_major_number major, rtems_de
 			*/
 			rtems_interrupt_enable(oldLevel);
 
-			iop_debug("OCCAN: Waiting for tx int\n\r");
+			DBG("OCCAN: Waiting for tx int\n\r");
 
 			rtems_semaphore_obtain(can->txsem, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
 
 			/* did we get woken up by a BUS OFF error? */
 			if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
-				iop_debug("OCCAN: Blocking write got woken up by BUS OFF error or RESET event\n\r");
+				DBG("OCCAN: Blocking write got woken up by BUS OFF error or RESET event\n\r");
 				/* At this point it should not matter how many messages we handled */
 				rw_args->bytes_moved = rw_args->count-left;
 				return RTEMS_IO_ERROR; /* EIO */
@@ -1330,7 +1340,7 @@ static rtems_device_driver occan_write(rtems_device_major_number major, rtems_de
 					/* bump stat counters */
 					can->stats.tx_msgs++;
 
-					iop_debug("OCCAN: Sending direct2 via HW\n\r");
+					DBG("OCCAN: Sending direct2 via HW\n\r");
 				}
 			}
 			continue;
@@ -1342,7 +1352,7 @@ static rtems_device_driver occan_write(rtems_device_major_number major, rtems_de
 		/* tell interrupt handler about the message */
 		occan_fifo_put(can->txfifo);
 
-		iop_debug("OCCAN: Put info fifo SW\n\r");
+		DBG("OCCAN: Put info fifo SW\n\r");
 
 		/* Prepare insert of next message */
 		msg++;
@@ -1352,7 +1362,7 @@ static rtems_device_driver occan_write(rtems_device_major_number major, rtems_de
 	rtems_interrupt_enable(oldLevel);
 
 	rw_args->bytes_moved = rw_args->count-left;
-	iop_debug("OCCAN: Sent %d\n\r",rw_args->bytes_moved);
+	DBG("OCCAN: Sent %d\n\r",rw_args->bytes_moved);
 
 	if ( left == rw_args->count )
 		return RTEMS_TIMEOUT; /* ETIMEDOUT should be EAGAIN/EWOULDBLOCK */
@@ -1369,7 +1379,7 @@ static rtems_device_driver occan_ioctl(rtems_device_major_number major, rtems_de
 	occan_stats *dststats;
 	unsigned int rxcnt,txcnt;
 
-	iop_debug("OCCAN: IOCTL %d\n\r",ioarg->command);
+	DBG("OCCAN: IOCTL %d\n\r",ioarg->command);
 
 	ioarg->ioctl_return = 0;
 	switch(ioarg->command){
@@ -1443,8 +1453,8 @@ static rtems_device_driver occan_ioctl(rtems_device_major_number major, rtems_de
 			occan_fifo_free(can->txfifo);
 
 			/* allocate new buffers */
-			can->rxfifo = occan_fifo_init(rxcnt);
-			can->txfifo = occan_fifo_init(txcnt);
+			can->rxfifo = occan_fifo_create(rxcnt);
+			can->txfifo = occan_fifo_create(txcnt);
 
 			if ( !can->rxfifo || !can->txfifo )
 				return RTEMS_NO_MEMORY; /* ENOMEM */
@@ -1696,7 +1706,7 @@ static void occan_interrupt(occan_priv *can){
 		if ( iflags & PELICAN_IF_DOVR){
 			can->status |= OCCAN_STATUS_OVERRUN;
 			can->stats.err_dovr++;
-			iop_debug("OCCAN_INT: DOVR\n\r");
+			DBG("OCCAN_INT: DOVR\n\r");
 		}
 
 		if ( iflags & PELICAN_IF_ERRP){
@@ -1720,7 +1730,7 @@ static void occan_interrupt(occan_priv *can){
 			arbcode = READ_REG(&regs->arbcode);
 			can->stats.err_arb_bitnum[arbcode & PELICAN_ARB_BITS]++;
 			can->stats.err_arb++;
-			iop_debug("OCCAN_INT: ARB (0x%x)\n\r",arbcode & PELICAN_ARB_BITS);
+			DBG("OCCAN_INT: ARB (0x%x)\n\r",arbcode & PELICAN_ARB_BITS);
 		}
 
 		if ( iflags & PELICAN_IF_BUS){
@@ -1787,9 +1797,7 @@ static void occan_interrupt_handler(rtems_vector_number v){
 
 static rtems_driver_address_table occan_driver = OCCAN_DRIVER_TABLE_ENTRY;
 
-int OCCAN_PREFIX(_register)(struct ambapp_bus *bus);
-
-int OCCAN_PREFIX(_register)(struct ambapp_bus *bus){
+int OCCAN_PREFIX(_register)(amba_confarea_type *bus){
 	rtems_status_code r;
 	rtems_device_major_number m;
 
@@ -1798,7 +1806,7 @@ int OCCAN_PREFIX(_register)(struct ambapp_bus *bus){
 		return 1;
 
   if ((r = rtems_io_register_driver(0, &occan_driver, &m)) == RTEMS_SUCCESSFUL) {
-		iop_debug("OCCAN driver successfully registered, major: %d\n\r", m);
+		DBG("OCCAN driver successfully registered, major: %d\n\r", m);
 	}else{
 		switch(r) {
 			case RTEMS_TOO_MANY:
@@ -1820,38 +1828,32 @@ int OCCAN_PREFIX(_register)(struct ambapp_bus *bus){
  * FIFO IMPLEMENTATION
  */
 
-static occan_fifo *occan_fifo_init(int user_size, occan_fifo *fifo){
-	/* If the user is asking for a too big fifo
-	 * it gets reduced to the maximum define size */
-	if(user_size > FIFO_MAX_LEN)
-		user_size = FIFO_MAX_LEN;
-	fifo = \
-	{
-		{
-			.count = 0,
-			.full = 0,
-			.ovcnt = 0,
-			.head = 0,
-			.base = 0,
-			.tail = 0,
-			.max_size = FIFO_MAX_LEN,
-			.size = user_size
-		}
-	};
-
+static occan_fifo *occan_fifo_create(int cnt){
+	occan_fifo *fifo;
+	fifo = malloc(sizeof(occan_fifo)+cnt*sizeof(CANMsg));
 	if ( fifo ){
+		fifo->cnt = cnt;
+		fifo->full = 0;
+		fifo->ovcnt = 0;
+		fifo->base = (CANMsg *)&fifo->fifoarea[0];
+		fifo->tail = fifo->head = fifo->base;
 		/* clear CAN Messages */
-		memset(fifo->data,0,FIFO_MAX_LEN* sizeof(CANMsg));
+		memset(fifo->base,0,cnt * sizeof(CANMsg));
 	}
 	return fifo;
 }
 
+static void occan_fifo_free(occan_fifo *fifo){
+	if ( fifo )
+		free(fifo);
+}
+
 static int occan_fifo_full(occan_fifo *fifo){
-	return (fifo->count == fifo->size);
+	return fifo->full;
 }
 
 static int occan_fifo_empty(occan_fifo *fifo){
-	return (fifo->count == 0);
+	return (!fifo->full) && (fifo->head == fifo->tail);
 }
 
 /* Stage 1 - get buffer to fill (never fails if force!=0) */
@@ -1860,7 +1862,7 @@ static CANMsg *occan_fifo_put_claim(occan_fifo *fifo, int force){
 		return NULL;
 
 	if ( occan_fifo_full(fifo) ){
-\
+
 		if ( !force )
 			return NULL;
 
@@ -1869,7 +1871,7 @@ static CANMsg *occan_fifo_put_claim(occan_fifo *fifo, int force){
 		occan_fifo_get(fifo);
 	}
 
-	return fifo->data[fifo->base];
+	return fifo->head;
 }
 
 /* Stage 2 - increment indexes */
@@ -1878,15 +1880,7 @@ static void occan_fifo_put(occan_fifo *fifo){
 		return;
 
 	/* wrap around */
-//	fifo->head = (fifo->head >= &fifo->base[fifo->cnt-1])? fifo->base : fifo->head+1;
-
-	if(fifo->head >= fifo->base + fifo->count+1)
-	{
-		fifo->head = fifo->base;
-	}else
-	{
-		fifo->head = fifo->head +1;
-	}
+	fifo->head = (fifo->head >= &fifo->base[fifo->cnt-1])? fifo->base : fifo->head+1;
 
 	if ( fifo->head == fifo->tail )
 		fifo->full = 1;
@@ -1909,23 +1903,13 @@ static void occan_fifo_get(occan_fifo *fifo){
 		return;
 
 	/* increment indexes */
-	if(fifo->tail >= fifo->base + fifo->count-1)
-	{
-		fifo->tail = fifo->base;
-	}else
-	{
-		fifo->tail = fifo->tail + 1;
-	}
+	fifo->tail = (fifo->tail >= &fifo->base[fifo->cnt-1])? fifo->base : fifo->tail+1;
 	fifo->full = 0;
 }
 
 static void occan_fifo_clr(occan_fifo *fifo){
   fifo->full  = 0;
   fifo->ovcnt = 0;
-  fifo->base = 0;
-  if ( fifo ){
-  		/* clear CAN Messages */
-  		memset(fifo->data,0,1024* sizeof(CANMsg));
-  	}
+  fifo->head  = fifo->tail = fifo->base;
 }
 

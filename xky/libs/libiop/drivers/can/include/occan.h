@@ -147,7 +147,7 @@ struct occan_afilter {
 #define OCCAN_BLK_MODE_RX 0x1
 #define OCCAN_BLK_MODE_TX 0x2
 
-int occan_register(struct ambapp_bus *bus);
+int occan_register(amba_confarea_type *bus);
 
 
 #define OCCAN_SPEED_500K 500000
@@ -158,8 +158,38 @@ int occan_register(struct ambapp_bus *bus);
 #define OCCAN_SPEED_25K  25000
 #define OCCAN_SPEED_10K  10000
 
+/**
+ * @brief Paramameter block for read/write.
+ *
+ * It must include 'offset' instead of using iop's offset since we can have
+ * multiple outstanding i/o's on a device.
+ */
+typedef struct {
+  char                   *buffer;
+  uint32_t                count;
+  uint32_t                flags;
+  uint32_t                bytes_moved;
+} rtems_libio_rw_args_t;
+
+/**
+ * @brief Parameter block for open/close.
+ */
+typedef struct {
+  uint32_t                flags;
+  uint32_t                mode;
+} rtems_libio_open_close_args_t;
+
+/**
+ * @brief Parameter block for ioctl.
+ */
+typedef struct {
+  uint32_t                command;
+  void                   *buffer;
+  uint32_t                ioctl_return;
+} rtems_libio_ioctl_args_t;
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif //__OCCAN_H__

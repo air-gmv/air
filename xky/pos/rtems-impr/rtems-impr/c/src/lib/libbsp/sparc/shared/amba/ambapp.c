@@ -35,8 +35,8 @@
  *  @{
  */
 
-#include <bsp.h>
 #include <ambapp.h>
+#include <bsp.h>
 
 /**
  *  @brief insert an amba device
@@ -311,44 +311,67 @@ int amba_find_apbslv(amba_confarea_type * amba_conf , int vendor , int device ,
 
 /**** AHB Slaves ****/
 
-int amba_find_ahbslv(amba_confarea_type * amba_conf , int vendor , int device ,
-                     amba_ahb_device * dev)
+
+struct ambapp_dev_find_match_arg {
+	int			index;
+	int			count;
+	int			type;
+	void		*dev;
+};
+
+/* AMBA PP find routines */
+int amba_dev_find_match(struct ambapp_dev *dev, int index, void *arg)
 {
-    /* APB device configuration word */
-    unsigned int conf;
+	struct ambapp_dev_find_match_arg *p = arg;
 
-    /* APB slave mem bar */
-    unsigned int iobar;
+	if (p->index == 0) {
+		/* Found controller, stop */
+		if (p->type == DEV_APB_SLV) {
+			p->dev = (struct ambapp_apb_info *)p->dev;
+			p->dev = DEV_TO_APB(dev);
+			p->dev = ((struct ambapp_apb_info *)p->dev)+1;
+		} else {
+			p->dev = (struct ambapp_ahb_info *)p->dev;
+			p->dev = DEV_TO_AHB(dev);
+			p->dev = ((struct ambapp_ahb_info *)p->dev)+1;
+		}
+		p->count--;
+		if (p->count < 1)
+			return 1;
+	} else {
+		p->index--;
+	}
+	return 0;
+}
 
-    /* iterator index through the APB slave devices */
-    int i;
+int amba_find_ahbslvs_next(struct ambapp_bus *abus, int vendor, int device, struct ambapp_ahb_info *dev, int index, int maxno)
+{
+	struct ambapp_dev_find_match_arg arg;
 
+	arg.index = index;
+	arg.count = maxno;
+	arg.type = DEV_AHB_SLV; /* AHB SLV */
+	arg.dev = dev;
 
-    /* iterate through the APB slave devices */
-    for(i = 0; i < amba_conf->ahbslv.devnr; i++)
-    {
-        /* get the configuration area */
-        conf = amba_get_confword(amba_conf->ahbslv , i , 0);
+	amba_for_each(abus, (OPTIONS_ALL|OPTIONS_AHB_SLVS), vendor, device,
+			amba_dev_find_match, &arg);
 
-        /* check the device vendor */
-        if(( amba_vendor(conf) == vendor ) && ( amba_device(conf) == device ))
-        {
-            /* get the io mem bar */
-            iobar = amba_ahb_get_membar(amba_conf->ahbslv , i, 0);
+	return maxno - arg.count;
+}
 
-            /* get the device start address */
-            dev->start[0] = amba_iobar_start(*(amba_conf->ahbslv.addr[i]) , iobar);
+int amba_find_ahbslv(struct ambapp_bus *abus, int vendor, int device, struct ambapp_ahb_info *dev)
+{
+	return amba_find_ahbslvs_next(abus, vendor, device, dev, 0, 1);
+}
 
-            /* get the devide interrupt number */
-            dev->irq = amba_irq(conf);
+int amba_find_ahbslv_next(struct ambapp_bus *abus, int vendor, int device, struct ambapp_ahb_info *dev, int index)
+{
+	return amba_find_ahbslvs_next(abus, vendor, device, dev, index, 1);
+}
 
-            /* found the device */
-            return 1;
-        }
-    }
-
-    /* did not find the device */
-    return 0;
+int amba_find_ahbslvs(struct ambapp_bus *abus, int vendor, int device, struct ambapp_ahb_info *dev, int maxno)
+{
+	return amba_find_ahbslvs_next(abus, vendor, device, dev, 0, maxno);
 }
 
 /**  
