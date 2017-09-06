@@ -104,8 +104,27 @@ extern "C"
 #define GAISLER_BRM			0x72
 #define GAISLER_SPW2_DMA	0x8a
 #define GAISLER_SPW_ROUTER	0x08b
+#define GAISLER_CANAHB      0x019
 
-   /* European Space Agency device id's */
+/* Options to ambapp_for_each */
+#define OPTIONS_AHB_MSTS	0x00000001
+#define OPTIONS_AHB_SLVS	0x00000002
+#define OPTIONS_APB_SLVS	0x00000004
+#define OPTIONS_ALL_DEVS	(OPTIONS_AHB_MSTS|OPTIONS_AHB_SLVS|OPTIONS_APB_SLVS)
+
+#define OPTIONS_FREE		0x00000010
+#define OPTIONS_ALLOCATED	0x00000020
+#define OPTIONS_ALL		(OPTIONS_FREE|OPTIONS_ALLOCATED)
+
+/* Depth first search, Defualt is breath first search. */
+#define OPTIONS_DEPTH_FIRST	0x00000100
+
+#define DEV_AHB_NONE 0
+#define DEV_AHB_MST  1
+#define DEV_AHB_SLV  2
+#define DEV_APB_SLV 3
+
+/* European Space Agency device id's */
 #define ESA_LEON2			0x2
 #define ESA_MCTRL			0xF
 #define ESA_SPW2			0x12
@@ -147,15 +166,43 @@ extern "C"
 
 #define AMBA_TYPE_AHBIO_ADDR(addr,base_ioarea) ((unsigned int)(base_ioarea) | ((addr) >> 12))
 
+#define AMBAPP_FLAG_FFACT_DIR	0x100	/* Frequency factor direction, 0=down, 1=up */
+#define AMBAPP_FLAG_FFACT	0x0f0	/* Frequency factor against top bus */
+#define AMBAPP_FLAG_MBUS	0x00c
+#define AMBAPP_FLAG_SBUS	0x003
+
+/* Get APB or AHB information from a AMBA device */
+#define DEV_TO_APB(adev) ((struct ambapp_apb_info *)((adev)->devinfo))
+#define DEV_TO_AHB(adev) ((struct ambapp_ahb_info *)((adev)->devinfo))
+#define DEV_TO_COMMON(adev) ((struct ambapp_common_info *)((adev)->devinfo))
+/* Convert address of ambapp_apb_info/ambapp_ahb_info into ambapp_dev */
+#define APB_TO_DEV(apb_info) ((struct ambapp_dev *)(unsigned int(apb_info) - \
+				offsetof(struct ambapp_dev, devinfo)))
+#define AHB_TO_DEV(ahb_info) ((struct ambapp_dev *)(unsigned int(ahb_info) - \
+				offsetof(struct ambapp_dev, devinfo)))
+
+
+	struct ambapp_dev {
+		struct ambapp_dev *next;	/* Next */
+		struct ambapp_dev *prev;	/* Previous Device. If (this ==
+						 * rev->child) prev is bus bridge */
+		struct ambapp_dev *children;	/* Points to first device on sub-bus */
+		void *owner;			/* Owner of this AMBA device */
+		unsigned char dev_type;		/* AHB MST, AHB SLV or APB SLV*/
+		unsigned char vendor;		/* Vendor ID */
+		unsigned short device;		/* Device ID */
+		int devinfo[0];			/* Device info (APB/AHB dep. on type) */
+	};
    /*
     *  Types and structure used for AMBA Plug & Play bus scanning
     *
     */
-   typedef struct amba_device_table
-   {
-      volatile int devnr; /* numbrer of devices on AHB or APB bus */
-      unsigned int *addr[AMBA_AHB_MASTERS]; /* addresses to the devices configuration tables */
-   } amba_device_table;
+
+	typedef struct
+	{
+		volatile int devnr; /* numbrer of devices on AHB or APB bus */
+		unsigned int *addr[AMBA_AHB_MASTERS]; /* addresses to the devices configuration tables */
+	} amba_device_table;
 
    typedef struct
    {
@@ -194,6 +241,34 @@ extern "C"
       unsigned int start[4] , irq , ver;
    } amba_ahb_device;
 
+   /* Structure from RTEMS4.10 */
+
+   struct ambapp_ahb_info {
+	   /* COMMON */
+	   unsigned char irq;
+	   unsigned char ver;
+	   unsigned char ahbidx;	/* AHB Bus Index */
+
+	   /* AHB SPECIFIC */
+	   unsigned int start[4];
+	   unsigned int mask[4];
+	   char type[4];		/* type[N] Determine type of start[N]-mask[N],
+   				 * 2=AHB Memory Space, 3=AHB I/O Space */
+	   unsigned int custom[3];
+   };
+
+   struct ambapp_apb_info {
+   	/* COMMON */
+   	unsigned char irq;
+   	unsigned char ver;
+   	unsigned char ahbidx;	/* AHB Bus Index */
+
+   	/* APB SPECIFIC */
+   	unsigned int start;
+   	unsigned int mask;
+   };
+
+   /*End of structures from RTEMS4.10 */
 
    /**
     *  @brief Translate an address based on the mapping information
@@ -239,23 +314,21 @@ extern "C"
    int amba_find_apbslv(amba_confarea_type * amba_conf , int vendor , int device ,
                         amba_apb_device * dev);
 						
+
+   /**
+       *  @brief get first AHB slave device of the specified vendor&device id
+       *
+       *  @param[in] amba_conf AMBA P&P device info is placed here.
+       *  @param[in] vendor vendor of the amba device
+       *  @param[in] device device to search for
+       *  @param[out] dev places in this address the information of the device
+       *  (if any found)
+       *
+       *  @return returns 1 if the device was found and 0 otherwise
+       */
+//   int amba_find_ahbslv(struct ambapp_bus *abus, int vendor, int device, struct ambapp_ahb_info *dev);
 						
-	/**
-    *  @brief get first AHB slave device of the specified vendor&device id
-    *
-    *  @param[in] amba_conf AMBA P&P device info is placed here.
-    *  @param[in] vendor vendor of the amba device
-    *  @param[in] device device to search for
-    *  @param[out] dev places in this address the information of the device
-    *  (if any found)
-    *
-    *  @return returns 1 if the device was found and 0 otherwise
-    */					
-	int amba_find_ahbslv(amba_confarea_type * amba_conf , int vendor , int device ,
-                     amba_ahb_device * dev);
-
-
-   /******** AMBA DEVICES *******/
+	/******** AMBA DEVICES *******/
 
    /**
     * ESA MEMORY CONTROLLER
