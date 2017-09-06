@@ -1898,7 +1898,7 @@ int spw_hw_receive(SPW_DEV *pDev, uint8_t *b, int c) {
 		if (len > c) {
 			
 			/*We cannot exceed what the user requested*/
-			iop_debug("RXLEN exceeds user request rxlen: %x > user: %x\n", rxlen, c);
+			iop_debug("Received packet lenght exceeds user requested: %i > user: %i\n", len, c);
 			len = c;
 		}
 		
