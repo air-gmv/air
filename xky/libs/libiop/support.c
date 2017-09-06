@@ -48,6 +48,14 @@ void copy_iop_buffer(iop_buffer_t *dst, iop_buffer_t *src) {
 void release_wrapper(iop_wrapper_t *wrapper) {
 
     wrapper->timer = 0;
+    iop_buffer_t *buf = wrapper->buffer;
+    memset(buf->v_addr, 0, buf->payload_size);
+    buf->header_off = 0;
+    buf->header_size = 0;
+    buf->payload_off = 0;
+    buf->payload_size = 0;
+    buf->size = 0;
+
     iop_chain_append(&usr_configuration.free_wrappers, &wrapper->node);
 }
 
