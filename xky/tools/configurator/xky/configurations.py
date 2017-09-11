@@ -109,10 +109,11 @@ class Configuration(object):
     # @param self object pointer
     # @param arch target architecture
     # @param bsp target board support package
-    def __init__(self, arch, bsp):
+    def __init__(self, arch, bsp, host):
 
         self.arch = arch.lower()
         self.bsp = bsp.lower()
+        self.host = host
         self.debug_mode = False
 
         # get supported pos
@@ -186,7 +187,13 @@ class Configuration(object):
     ##
     # @brief Gets the target compiler
     def get_target_compiler(self):
-        return supported_architectures[self.arch][self.bsp].kernel_compiler
+        compiler = supported_architectures[self.arch][self.bsp].kernel_compiler
+        compiler['CC'] = self.host + compiler['CC']
+        compiler['CXX'] = self.host + compiler['CXX']
+        compiler['LD'] = self.host + compiler['LD']
+        compiler['AR'] = self.host + compiler['AR']
+        compiler['RANLIB'] = self.host + compiler['RANLIB']
+        return compiler
 
     ##
     # @brief Gets the kernel ASM generator files
