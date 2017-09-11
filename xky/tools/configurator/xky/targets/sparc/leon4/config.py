@@ -24,11 +24,11 @@ cores = 4
 
 # Kernel Compiler
 kernel_compiler = dict(
-    CC="sparc-rtems4.11-gcc --pipe",
-    CXX="sparc-rtems4.11-g++ --pipe",
-    LD="sparc-rtems4.11-gcc --pipe",
-    AR="sparc-rtems4.11-ar",
-    RANLIB="sparc-rtems4.11-ranlib",
+    CC="-gcc --pipe",
+    CXX="-g++ --pipe",
+    LD="-gcc --pipe",
+    AR="-ar",
+    RANLIB="-ranlib",
     CFLAGS="",
     CPPFLAGS="-mcpu=v8 -msoft-float -mflat -fno-builtin -nodefaultlibs -gdwarf-2 -O2 -Wall",
     CXXFLAGS="",
