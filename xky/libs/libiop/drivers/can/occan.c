@@ -8,6 +8,9 @@
  *  http://www.rtems.com/license/LICENSE.
  *
  *  Author: Daniel Hellström, Gaisler Research AB, www.gaisler.com
+ *
+ *  Modified: Guilherme Sanches (gmvs@gmv.com)
+ *  Modifications introduced to integrate the driver on AIR
  */
 
 //#include <rtems/libio.h>
@@ -17,6 +20,9 @@
 #include <leon.h>
 #include <ambapp.h>
 #include <occan.h>
+
+#include <iop.h>
+#include <xky.h>
 
 /* RTEMS -> ERRNO decoding table
 
@@ -82,9 +88,9 @@ rtems_assoc_t errno_assoc[] = {
 
 /* Define common debug macros */
 //#ifdef DEBUG
-//	#define DBG(fmt, vargs...) iop_debug(fmt, ## vargs )
+//	#define iop_debug(fmt, vargs...) iop_debug(fmt, ## vargs )
 //#else
-//	#define DBG(fmt, vargs...)
+//	#define iop_debug(fmt, vargs...)
 //#endif
 
 /* fifo interface */
@@ -210,35 +216,6 @@ typedef struct {
 	unsigned char btr0;
 	unsigned char btr1;
 } occan_speed_regs;
-
-typedef struct {
-	/* hardware shortcuts */
-	pelican_regs *regs;
-	int irq;
-	occan_speed_regs timing;
-	int channel; /* 0=default, 1=second bus */
-	int single_mode;
-
-	/* driver state */
-	rtems_id devsem;
-	rtems_id txsem;
-	rtems_id rxsem;
-	int open;
-	int started;
-	int rxblk;
-	int txblk;
-	unsigned int status;
-	occan_stats stats;
-
-	/* rx&tx fifos */
-	occan_fifo *rxfifo;
-	occan_fifo *txfifo;
-
-	/* Config */
-	unsigned int speed; /* speed in HZ */
-	unsigned char acode[4];
-	unsigned char amask[4];
-} occan_priv;
 
 /********** FIFO INTERFACE **********/
 static void occan_fifo_put(occan_fifo *fifo);
@@ -464,7 +441,7 @@ static int pelican_start(occan_priv *priv){
 	/* set the speed regs of the CAN core */
 	occan_set_speedregs(priv,&priv->timing);
 
-	DBG("OCCAN: start: set timing regs btr0: 0x%x, btr1: 0x%x\n\r",READ_REG(&priv->regs->bustim0),READ_REG(&priv->regs->bustim1));
+	iop_debug("OCCAN: start: set timing regs btr0: 0x%x, btr1: 0x%x\n\r",READ_REG(&priv->regs->bustim0),READ_REG(&priv->regs->bustim1));
 
 	/* Set default acceptance filter */
 	pelican_set_accept(priv,priv->acode,priv->amask);
@@ -935,7 +912,7 @@ static rtems_device_driver occan_initialize(rtems_device_major_number major, rte
 		if ( amba_find_apbslv(&amba_conf,VENDOR_GAISLER,GAISLER_GPTIMER,&gptimer) == 1 ){
 			tregs = (LEON3_Timer_Regs_Map *)gptimer.start;
 			sys_freq_hz = (tregs->scaler_reload+1)*1000*1000;
-			DBG("OCCAN: detected %dHZ system frequency\n\r",sys_freq_hz);
+			iop_debug("OCCAN: detected %dHZ system frequency\n\r",sys_freq_hz);
 		}else{
 			sys_freq_hz = 40000000; /* Default to 40MHz */
 			iop_debug("OCCAN: Failed to detect system frequency\n\r");
@@ -956,7 +933,7 @@ static rtems_device_driver occan_initialize(rtems_device_major_number major, rte
 	sys_freq_hz = SYS_FREQ_HZ;
 #endif
 
-	DBG("OCCAN: Detected %dHz system frequency\n\r",sys_freq_hz);
+	iop_debug("OCCAN: Detected %dHz system frequency\n\r",sys_freq_hz);
 
 	/* OCCAN speciality:
 	 *  Mulitple cores are supported through the same amba AHB interface.
@@ -984,7 +961,7 @@ static rtems_device_driver occan_initialize(rtems_device_major_number major, rte
 		/* Get AHB device info */
 		amba_find_next_ahbslv(amba_bus,VENDOR_GAISLER,GAISLER_OCCAN,&ambadev,devi);
 		subcores = (ambadev.ver & 0x7)+1;
-		DBG("OCCAN: on dev %d found %d sub cores\n\r",devi,subcores);
+		iop_debug("OCCAN: on dev %d found %d sub cores\n\r",devi,subcores);
 
 		/* loop all subcores, at least 1 */
 		for(subi=0; subi<subcores; subi++){
@@ -1065,7 +1042,7 @@ static rtems_device_driver occan_initialize(rtems_device_major_number major, rte
 static rtems_device_driver occan_open(rtems_device_major_number major, rtems_device_minor_number minor, void *arg){
 	occan_priv *can;
 
-	DBG("OCCAN: Opening %d\n\r",minor);
+	iop_debug("OCCAN: Opening %d\n\r",minor);
 
 	if ( minor >= can_cores )
 		return RTEMS_UNSATISFIED; /* NODEV */
@@ -1097,7 +1074,7 @@ static rtems_device_driver occan_open(rtems_device_major_number major, rtems_dev
 		return RTEMS_NO_MEMORY; /* ENOMEM */
 	}
 
-	DBG("OCCAN: Opening %d success\n\r",minor);
+	iop_debug("OCCAN: Opening %d success\n\r",minor);
 
 	can->started = 0;
 	can->channel = 0; /* Default to first can link */
@@ -1120,7 +1097,7 @@ static rtems_device_driver occan_open(rtems_device_major_number major, rtems_dev
 static rtems_device_driver occan_close(rtems_device_major_number major, rtems_device_minor_number minor, void *arg){
 	occan_priv *can = &cans[minor];
 
-	DBG("OCCAN: Closing %d\n\r",minor);
+	iop_debug("OCCAN: Closing %d\n\r",minor);
 
 	/* stop if running */
 	if ( can->started )
@@ -1139,29 +1116,32 @@ static rtems_device_driver occan_close(rtems_device_major_number major, rtems_de
 	return RTEMS_SUCCESSFUL;
 }
 
-static rtems_device_driver occan_read(rtems_device_major_number major, rtems_device_minor_number minor, void *arg){
-	occan_priv *can = &cans[minor];
-	rtems_libio_rw_args_t *rw_args=(rtems_libio_rw_args_t *) arg;
+static rtems_device_driver occan_read(iop_device_driver_t *iop_dev,  void *arg){
+
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
+	occan_priv *can = (occan_priv *) device->dev.driver;
+//	rtems_libio_rw_args_t *rw_args=(rtems_libio_rw_args_t *) arg;
+	iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
 	CANMsg *dstmsg, *srcmsg;
 	rtems_interrupt_level oldLevel;
 	int left;
 
 	if ( !can->started ){
-		DBG("OCCAN: cannot read from minor %d when not started\n\r",minor);
+		iop_debug("OCCAN: cannot read when not started\n\r");
 		return RTEMS_RESOURCE_IN_USE; /* -EBUSY*/
 	}
 
 	/* does at least one message fit */
 	left = rw_args->count;
 	if ( left < sizeof(CANMsg) ){
-		DBG("OCCAN: minor %d length of buffer must be at least %d, our is %d\n\r",minor,sizeof(CANMsg),left);
+		iop_debug("OCCAN: buffer must be at least %d, our is %d\n\r",sizeof(CANMsg),left);
 		return  RTEMS_INVALID_NAME; /* -EINVAL */
 	}
 
 	/* get pointer to start where to put CAN messages */
 	dstmsg = (CANMsg *)rw_args->buffer;
 	if ( !dstmsg ){
-		DBG("OCCAN: minor %d read: input buffer is NULL\n\r",minor);
+		iop_debug("OCCAN: input buffer is NULL\n\r");
 		return  RTEMS_INVALID_NAME; /* -EINVAL */
 	}
 
@@ -1173,7 +1153,7 @@ static rtems_device_driver occan_read(rtems_device_major_number major, rtems_dev
 		/* A bus off interrupt may have occured after checking can->started */
 		if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
 			rtems_interrupt_enable(oldLevel);
-			DBG("OCCAN: read is cancelled due to a BUS OFF error\n\r");
+			iop_debug("OCCAN: read is cancelled due to a BUS OFF error\n\r");
 			rw_args->bytes_moved = rw_args->count-left;
 			return RTEMS_IO_ERROR; /* EIO */
 		}
@@ -1194,14 +1174,14 @@ static rtems_device_driver occan_read(rtems_device_major_number major, rtems_dev
 			/* turn on interrupts again */
 			rtems_interrupt_enable(oldLevel);
 
-			DBG("OCCAN: Waiting for RX int\n\r");
+			iop_debug("OCCAN: Waiting for RX int\n\r");
 
 			/* wait for incomming messages */
 			rtems_semaphore_obtain(can->rxsem,RTEMS_WAIT,RTEMS_NO_TIMEOUT);
 
 			/* did we get woken up by a BUS OFF error? */
 			if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
-				DBG("OCCAN: Blocking read got woken up by BUS OFF error\n\r");
+				iop_debug("OCCAN: Blocking read got woken up by BUS OFF error\n\r");
 				/* At this point it should not matter how many messages we handled */
 				rw_args->bytes_moved = rw_args->count-left;
 				return RTEMS_IO_ERROR; /* EIO */
@@ -1228,23 +1208,31 @@ static rtems_device_driver occan_read(rtems_device_major_number major, rtems_dev
 	/* save number of read bytes. */
 	rw_args->bytes_moved = rw_args->count-left;
 	if ( rw_args->bytes_moved == 0 ){
-		DBG("OCCAN: minor %d read would block, returning\n\r",minor);
+		iop_debug("OCCAN: minor %d read would block, returning\n\r",minor);
 		return RTEMS_TIMEOUT; /* ETIMEDOUT should be EAGAIN/EWOULDBLOCK */
 	}
 	return RTEMS_SUCCESSFUL;
 }
 
-static rtems_device_driver occan_write(rtems_device_major_number major, rtems_device_minor_number minor, void *arg){
-	occan_priv *can = &cans[minor];
-	rtems_libio_rw_args_t *rw_args=(rtems_libio_rw_args_t *) arg;
+static rtems_device_driver occan_write(iop_device_driver_t *iop_dev, void *arg){
+//	occan_priv *can = &cans[minor];
+	iop_wrapper_t *rw_args=(iop_wrapper_t *) arg;
 	CANMsg *msg,*fifo_msg;
 	rtems_interrupt_level oldLevel;
 	int left;
+	occan_priv *can = (occan_priv *) iop_dev;
 
-	DBG("OCCAN: Writing %d bytes from 0x%lx (%d)\n\r",rw_args->count,rw_args->buffer,sizeof(CANMsg));
+	iop_debug("OCCAN: Writing %d bytes from 0x%lx (%d)\n\r",rw_args->count,rw_args->buffer,sizeof(CANMsg));
 
 	if ( !can->started )
 		return RTEMS_RESOURCE_IN_USE; /* EBUSY */
+
+	/* Verify argument's consistency */
+	if(rw_args == NULL ||
+			rw_args->buffer == NULL ||
+			rw_args->buffer->payload_size == 0){
+		return RTEMS_INAVLID_NAME;
+	}
 
 	left = rw_args->count;
 	if ( (left < sizeof(CANMsg)) || (!rw_args->buffer) ){
@@ -1287,7 +1275,7 @@ static rtems_device_driver occan_write(rtems_device_major_number major, rtems_de
 			/* bump stat counters */
 			can->stats.tx_msgs++;
 
-			DBG("OCCAN: Sending direct via HW\n\r");
+			iop_debug("OCCAN: Sending direct via HW\n\r");
 		}
 	}
 
@@ -1300,7 +1288,7 @@ static rtems_device_driver occan_write(rtems_device_major_number major, rtems_de
 		fifo_msg = occan_fifo_put_claim(can->txfifo,0);
 		if ( !fifo_msg ){
 
-			DBG("OCCAN: FIFO is full\n\r");
+			iop_debug("OCCAN: FIFO is full\n\r");
 			/* Block only if no messages previously sent
 			 * and no in blocking mode
 			 */
@@ -1315,13 +1303,13 @@ static rtems_device_driver occan_write(rtems_device_major_number major, rtems_de
 			*/
 			rtems_interrupt_enable(oldLevel);
 
-			DBG("OCCAN: Waiting for tx int\n\r");
+			iop_debug("OCCAN: Waiting for tx int\n\r");
 
 			rtems_semaphore_obtain(can->txsem, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
 
 			/* did we get woken up by a BUS OFF error? */
 			if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
-				DBG("OCCAN: Blocking write got woken up by BUS OFF error or RESET event\n\r");
+				iop_debug("OCCAN: Blocking write got woken up by BUS OFF error or RESET event\n\r");
 				/* At this point it should not matter how many messages we handled */
 				rw_args->bytes_moved = rw_args->count-left;
 				return RTEMS_IO_ERROR; /* EIO */
@@ -1340,7 +1328,7 @@ static rtems_device_driver occan_write(rtems_device_major_number major, rtems_de
 					/* bump stat counters */
 					can->stats.tx_msgs++;
 
-					DBG("OCCAN: Sending direct2 via HW\n\r");
+					iop_debug("OCCAN: Sending direct2 via HW\n\r");
 				}
 			}
 			continue;
@@ -1352,7 +1340,7 @@ static rtems_device_driver occan_write(rtems_device_major_number major, rtems_de
 		/* tell interrupt handler about the message */
 		occan_fifo_put(can->txfifo);
 
-		DBG("OCCAN: Put info fifo SW\n\r");
+		iop_debug("OCCAN: Put info fifo SW\n\r");
 
 		/* Prepare insert of next message */
 		msg++;
@@ -1362,7 +1350,7 @@ static rtems_device_driver occan_write(rtems_device_major_number major, rtems_de
 	rtems_interrupt_enable(oldLevel);
 
 	rw_args->bytes_moved = rw_args->count-left;
-	DBG("OCCAN: Sent %d\n\r",rw_args->bytes_moved);
+	iop_debug("OCCAN: Sent %d\n\r",rw_args->bytes_moved);
 
 	if ( left == rw_args->count )
 		return RTEMS_TIMEOUT; /* ETIMEDOUT should be EAGAIN/EWOULDBLOCK */
@@ -1379,7 +1367,7 @@ static rtems_device_driver occan_ioctl(rtems_device_major_number major, rtems_de
 	occan_stats *dststats;
 	unsigned int rxcnt,txcnt;
 
-	DBG("OCCAN: IOCTL %d\n\r",ioarg->command);
+	iop_debug("OCCAN: IOCTL %d\n\r",ioarg->command);
 
 	ioarg->ioctl_return = 0;
 	switch(ioarg->command){
@@ -1706,7 +1694,7 @@ static void occan_interrupt(occan_priv *can){
 		if ( iflags & PELICAN_IF_DOVR){
 			can->status |= OCCAN_STATUS_OVERRUN;
 			can->stats.err_dovr++;
-			DBG("OCCAN_INT: DOVR\n\r");
+			iop_debug("OCCAN_INT: DOVR\n\r");
 		}
 
 		if ( iflags & PELICAN_IF_ERRP){
@@ -1730,7 +1718,7 @@ static void occan_interrupt(occan_priv *can){
 			arbcode = READ_REG(&regs->arbcode);
 			can->stats.err_arb_bitnum[arbcode & PELICAN_ARB_BITS]++;
 			can->stats.err_arb++;
-			DBG("OCCAN_INT: ARB (0x%x)\n\r",arbcode & PELICAN_ARB_BITS);
+			iop_debug("OCCAN_INT: ARB (0x%x)\n\r",arbcode & PELICAN_ARB_BITS);
 		}
 
 		if ( iflags & PELICAN_IF_BUS){
@@ -1806,7 +1794,7 @@ int OCCAN_PREFIX(_register)(amba_confarea_type *bus){
 		return 1;
 
   if ((r = rtems_io_register_driver(0, &occan_driver, &m)) == RTEMS_SUCCESSFUL) {
-		DBG("OCCAN driver successfully registered, major: %d\n\r", m);
+		iop_debug("OCCAN driver successfully registered, major: %d\n\r", m);
 	}else{
 		switch(r) {
 			case RTEMS_TOO_MANY:
