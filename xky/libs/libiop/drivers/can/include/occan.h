@@ -31,6 +31,35 @@ typedef struct {
 } CANMsg;
 
 typedef struct {
+	/* hardware shortcuts */
+	pelican_regs *regs;
+	int irq;
+	occan_speed_regs timing;
+	int channel; /* 0=default, 1=second bus */
+	int single_mode;
+
+	/* driver state */
+	rtems_id devsem;
+	rtems_id txsem;
+	rtems_id rxsem;
+	int open;
+	int started;
+	int rxblk;
+	int txblk;
+	unsigned int status;
+	occan_stats stats;
+
+	/* rx&tx fifos */
+	occan_fifo *rxfifo;
+	occan_fifo *txfifo;
+
+	/* Config */
+	unsigned int speed; /* speed in HZ */
+	unsigned char acode[4];
+	unsigned char amask[4];
+} occan_priv;
+
+typedef struct {
 	/* tx/rx stats */
 	unsigned int rx_msgs;
 	unsigned int tx_msgs;
