@@ -9,7 +9,6 @@ extern iop_port_t remote_ports[3];
  * @brief Logical devices
  */
 extern iop_logical_device_t logical_device_0;
-extern iop_logical_device_t logical_device_1;
 
 /**
  * @brief Physical devices
@@ -30,7 +29,6 @@ static iop_physical_device_t *physical_device_list[1] = \
 static iop_logical_device_t *logical_device_list[2] = \
 {
     &logical_device_0,
-    &logical_device_1,
 };
 
 static iop_wrapper_t requests_storage[1024];
@@ -50,13 +48,13 @@ iop_configuration_t usr_configuration = {
     .wrappers               = requests_storage,
     .iop_buffers            = iop_buffers,
     .iop_buffers_storage    = iop_buffers_storage,
-    .wrappers_count           = 1024,
+    .wrappers_count         = 1024,
 
     .physical_devices       = {
         .length             = 1,
         .elements           = physical_device_list
      },
-    .logical_devices       = {
+    .logical_devices        = {
         .length             = 2,
         .elements           = logical_device_list
      },

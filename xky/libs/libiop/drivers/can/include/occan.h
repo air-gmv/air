@@ -7,7 +7,7 @@
  *  found in the file LICENSE in this distribution or at
  *  http://www.rtems.com/license/LICENSE.
  *
- *  Author: Daniel Hellström, Gaisler Research AB, www.gaisler.com
+ *  Author: Daniel Hellstr��m, Gaisler Research AB, www.gaisler.com
  */
 
 
@@ -16,9 +16,49 @@
 
 #include <ambapp.h>
 
+#include <can_support.h>
+#include <iop.h>
+#include <xky.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/* default to byte regs */
+#ifndef OCCAN_WORD_REGS
+ #define OCCAN_BYTE_REGS
+#else
+ #undef OCCAN_BYTE_REGS
+#endif
+
+#ifndef OCCAN_PREFIX
+ #define OCCAN_PREFIX(name) occan##name
+#endif
+
+#if !defined(OCCAN_DEVNAME) || !defined(OCCAN_DEVNAME_NO)
+ #undef OCCAN_DEVNAME
+ #undef OCCAN_DEVNAME_NO
+ #define OCCAN_DEVNAME "/dev/occan0"
+ #define OCCAN_DEVNAME_NO(devstr,no) ((devstr)[10]='0'+(no))
+#endif
+
+#ifndef OCCAN_REG_INT
+	#define OCCAN_REG_INT(handler,irq,arg) set_vector(handler,irq+0x10)
+  #undef  OCCAN_DEFINE_INTHANDLER
+  #define OCCAN_DEFINE_INTHANDLER
+#endif
+
+/* Default to 40MHz system clock */
+/*#ifndef SYS_FREQ_HZ
+ #define SYS_FREQ_HZ 40000000
+#endif*/
+
+#define OCCAN_WORD_REG_OFS 0x80
+#define OCCAN_NCORE_OFS 0x100
+#define DEFAULT_CLKDIV 0x7
+#define DEFAULT_EXTENDED_MODE 1
+#define DEFAULT_RX_FIFO_LEN 64
+#define DEFAULT_TX_FIFO_LEN 64
 
 /* CAN MESSAGE */
 typedef struct {
@@ -30,34 +70,129 @@ typedef struct {
 	unsigned int id;
 } CANMsg;
 
+/* PELICAN */
+#ifdef OCCAN_BYTE_REGS
 typedef struct {
-	/* hardware shortcuts */
-	pelican_regs *regs;
-	int irq;
-	occan_speed_regs timing;
-	int channel; /* 0=default, 1=second bus */
-	int single_mode;
+	unsigned char
+		mode,
+		cmd,
+		status,
+		intflags,
+		inten,
+		resv0,
+		bustim0,
+		bustim1,
+		unused0[2],
+		resv1,
+		arbcode,
+		errcode,
+		errwarn,
+		rx_err_cnt,
+		tx_err_cnt,
+		rx_fi_xff; /* this is also acceptance code 0 in reset mode */
+		union{
+			struct {
+				unsigned char id[2];
+				unsigned char data[8];
+				unsigned char next_in_fifo[2];
+			} rx_sff;
+			struct {
+				unsigned char id[4];
+				unsigned char data[8];
+			} rx_eff;
+			struct {
+				unsigned char id[2];
+				unsigned char data[8];
+				unsigned char unused[2];
+			} tx_sff;
+			struct {
+				unsigned char id[4];
+				unsigned char data[8];
+			} tx_eff;
+			struct {
+				unsigned char code[3];
+				unsigned char mask[4];
+			} rst_accept;
+		} msg;
+		unsigned char rx_msg_cnt;
+		unsigned char unused1;
+		unsigned char clkdiv;
+} pelican_regs;
+#else
+typedef struct {
+	unsigned char
+		mode, unused0[3],
+		cmd, unused1[3],
+		status, unused2[3],
+		intflags, unused3[3],
+		inten, unused4[3],
+		resv0, unused5[3],
+		bustim0, unused6[3],
+		bustim1, unused7[3],
+		unused8[8],
+		resv1,unused9[3],
+		arbcode,unused10[3],
+		errcode,unused11[3],
+		errwarn,unused12[3],
+		rx_err_cnt,unused13[3],
+		tx_err_cnt,unused14[3],
+		rx_fi_xff, unused15[3]; /* this is also acceptance code 0 in reset mode */
+		/* make sure to use pointers when writing (byte access) to these registers */
+		union{
+			struct {
+				unsigned int id[2];
+				unsigned int data[8];
+				unsigned int next_in_fifo[2];
+			} rx_sff;
+			struct {
+				unsigned int id[4];
+				unsigned int data[8];
+			} rx_eff;
+			struct {
+				unsigned int id[2];
+				unsigned int data[8];
+			} tx_sff;
+			struct {
+				unsigned int id[4];
+				unsigned int data[8];
+			} tx_eff;
+			struct {
+				unsigned int code[3];
+				unsigned int mask[4];
+			} rst_accept;
+		} msg;
+		unsigned char rx_msg_cnt,unused16[3];
+		unsigned char unused17[4];
+		unsigned char clkdiv,unused18[3];
+} pelican_regs;
+#endif
 
-	/* driver state */
-	rtems_id devsem;
-	rtems_id txsem;
-	rtems_id rxsem;
-	int open;
-	int started;
-	int rxblk;
-	int txblk;
-	unsigned int status;
-	occan_stats stats;
+/* fifo interface */
+typedef struct {
+	int cnt;
+	int ovcnt; /* overwrite count */
+	int full; /* 1 = base contain cnt CANMsgs, tail==head */
+	CANMsg *tail, *head;
+	CANMsg *base;
+	char fifoarea[1024];
+} occan_fifo;
 
-	/* rx&tx fifos */
-	occan_fifo *rxfifo;
-	occan_fifo *txfifo;
+#define MAX_TSEG2 7
+#define MAX_TSEG1 15
 
-	/* Config */
-	unsigned int speed; /* speed in HZ */
-	unsigned char acode[4];
-	unsigned char amask[4];
-} occan_priv;
+#if 0
+typedef struct {
+	unsigned char brp;
+	unsigned char sjw;
+	unsigned char tseg1;
+	unsigned char tseg2;
+	unsigned char sam;
+} occan_speed_regs;
+#endif
+typedef struct {
+	unsigned char btr0;
+	unsigned char btr1;
+} occan_speed_regs;
 
 typedef struct {
 	/* tx/rx stats */
@@ -109,6 +244,45 @@ typedef struct {
 
 } occan_stats;
 
+typedef struct {
+	/* hardware shortcuts */
+	pelican_regs *regs;
+	int irq;
+	occan_speed_regs timing;
+	int channel; /* 0=default, 1=second bus */
+	int single_mode;
+
+	/* driver state */
+	rtems_id devsem;
+	rtems_id txsem;
+	rtems_id rxsem;
+	int open;
+	int started;
+	int rxblk;
+	int txblk;
+	unsigned int status;
+	occan_stats stats;
+
+	/* rx&tx fifos */
+	/* Probably this should be changed
+	 * for the tx and rx _iop_buffer */
+	occan_fifo *rxfifo;
+	occan_fifo *txfifo;
+
+	/* Config */
+	unsigned int speed; /* speed in HZ */
+	unsigned char acode[4];
+	unsigned char amask[4];
+
+	/* IOP standard buffers */
+	iop_buffer_t *iop_buffers;
+	uint8_t *iop_duffers_storage;
+
+	iop_buffer_t **tx_iop_buffer;
+	iop_buffer_t **rx_iop_buffer;
+
+} occan_priv;
+
 /* indexes into occan_stats.err_bus_segs[index] */
 #define OCCAN_SEG_ID28 0x02 /* ID field bit 28:21 */
 #define OCCAN_SEG_ID20 0x06 /* ID field bit 20:18 */
@@ -159,13 +333,6 @@ typedef struct {
 #define OCCAN_IOC_SET_BUFLEN 11
 #define OCCAN_IOC_SET_BTRS 12
 
-
-struct occan_afilter {
-	unsigned char code[4];
-	unsigned char mask[4];
-	int single_mode;
-};
-
 #define OCCAN_STATUS_RESET 0x01
 #define OCCAN_STATUS_OVERRUN 0x02
 #define OCCAN_STATUS_WARN 0x04
@@ -178,7 +345,7 @@ struct occan_afilter {
 
 int occan_register(amba_confarea_type *bus);
 
-
+// TODO change this to an enum
 #define OCCAN_SPEED_500K 500000
 #define OCCAN_SPEED_250K 250000
 #define OCCAN_SPEED_125K 125000
@@ -186,6 +353,35 @@ int occan_register(amba_confarea_type *bus);
 #define OCCAN_SPEED_50K  50000
 #define OCCAN_SPEED_25K  25000
 #define OCCAN_SPEED_10K  10000
+/**** Hardware related Interface ****/
+static int occan_calc_speedregs(unsigned int clock_hz, unsigned int rate, occan_speed_regs *result);
+static int occan_set_speedregs(occan_priv *priv, occan_speed_regs *timing);
+static int pelican_speed_auto(occan_priv *priv);
+static void pelican_init(occan_priv *priv);
+static void pelican_open(occan_priv *priv);
+static int pelican_start(occan_priv *priv);
+static void pelican_stop(occan_priv *priv);
+static int pelican_send(occan_priv *can, CANMsg *msg);
+static void pelican_set_accept(occan_priv *priv, unsigned char *acode, unsigned char *amask);
+static void occan_interrupt(occan_priv *can);
+#ifdef DEBUG_PRINT_REGMAP
+static void pelican_regadr_print(pelican_regs *regs);
+#endif
+
+/***** Driver related interface *****/
+uint32_t occan_ioctl(iop_can_device_t *device, void *arg);
+uint32_t occan_write(iop_device_driver_t *iop_dev, void *arg);
+uint32_t occan_read(iop_device_driver_t *iop_dev, void *arg);
+uint32_t occan_close(iop_device_driver_t *iop_dev, void *arg);
+uint32_t occan_open(iop_device_driver_t *iop_dev, void *arg);
+uint32_t occan_initialize(iop_device_driver_t *iop_dev, void *arg);
+#ifdef OCCAN_DEFINE_INTHANDLER
+static void occan_interrupt_handler(rtems_vector_number v);
+#endif
+static int can_cores;
+static amba_confarea_type *amba_bus;
+static unsigned int sys_freq_hz;
+
 
 /**
  * @brief Paramameter block for read/write.
