@@ -7,8 +7,8 @@
  * ============================================================================
  */
 #include <iop.h>
-#include <iop_greth.h>
-#include <eth_support.h>
+#include <occan.h>
+#include <can_support.h>
 
 /**
  * @brief IOP remote ports
@@ -37,8 +37,12 @@ static iop_buffer_t *rx_iop_buffer[32];
 static uint8_t descriptor_table[3072];
 
 /** @brief  GRETH control structure*/
-static greth_softc_t greth_driver = \
+static occan_priv occan_driver = \
 {
+	.speed = 250000, // TODO maybe use a enum in the future
+	.acode = {0, 0, 0, 0},
+	.amask = {0, 0, 0, 0},
+
     .iop_buffers            = iop_buffers,
     .iop_buffers_storage    = iop_buffers_storage,
 
@@ -51,24 +55,22 @@ static greth_softc_t greth_driver = \
 };
 
 /** @brief GRETH driver configuration */
-static iop_eth_device_t device_configuration = \
+static iop_can_device_t device_configuration = \
 {
     /* device configuration */
     .dev        = {
 
-        .driver         = (void *)&greth_driver,
-        .init           = greth_initialize,
-        .open           = greth_open,
-        .read           = greth_read,
-        .write          = greth_write,
-        .close          = greth_close,
+        .driver         = (void *)&occan_driver,
+        .init           = occan_initialize,
+        .open           = occan_open,
+        .read           = occan_read,
+        .write          = occan_write,
+        .close          = occan_close,
     },
-
-    /* ethernet configuration */
-    .ip         = { 192, 168, 0, 17 },
-    .mac        = { 0x00, 0x50, 0xC2, 0x75, 0xa0, 0x60 },
-    .rx_count   = 32,
-    .tx_count   = 32
+    .dev_name ="/dev/occan0",
+	.count = 0,
+	.flags = 0,
+	.bytes_moved = 0,
 };
 
 /**
@@ -80,24 +82,16 @@ static uint32_t reads_per_period[] = \
 /**
  * @brief Routes Headers
  */
-static iop_header_t route_header[2] = \
+static iop_header_t route_header[1] = \
 {
-    {
-        .eth_header = {
-            .dst_ip      = { 192,168,0,3 },
-            .dst_mac     = { 0x00,0x50,0xbf,0x50,0x07,0x0d},
-            .dst_port    = HTONS(14000),
-            .src_port    = HTONS(14000)
-        }
-    },
-    {
-        .eth_header = {
-            .dst_ip      = { 192,168,0,3 },
-            .dst_mac     = { 0x00,0x50,0xbf,0x50,0x07,0x0d},
-            .dst_port    = HTONS(14000),
-            .src_port    = HTONS(14000)
-        }
-    }
+	{
+		.can_header = {
+			.extended = 0,
+			.rtre = 0,
+			.sshot = 0,
+			.id = 2,
+		},
+	}
 };
 
 /**
@@ -105,24 +99,17 @@ static iop_header_t route_header[2] = \
  */
 static uint32_t route_schedule_0[1] = \
     { 1 };
-static uint32_t route_schedule_1[1] = \
-    { 1 };
 
 /**
  * @brief Routes Configuration
  */
-static iop_physical_route_t physical_routes[2] =\
+static iop_physical_route_t physical_routes[1] =\
 {
     {
         .schedule   = route_schedule_0,
         .header     = &route_header[0],
         .port       = &remote_ports[2]
     },
-    {
-        .schedule   = route_schedule_1,
-        .header     = &route_header[1],
-        .port       = &remote_ports[1]
-    }
 };
 
 /**
@@ -137,9 +124,9 @@ iop_physical_device_t physical_device_0 =\
      },
     .reads_per_period   = reads_per_period,
 
-    .reader_task        = eth_reader,
-    .writer_task        = eth_writer,
-    .header_prebuild    = eth_prebuild_header,
-    .header_compare     = eth_compare_header,
-    .header_copy        = eth_copy_header,
+    .reader_task        = can_reader,
+    .writer_task        = can_write,
+    .header_prebuild    = can_prebuild_header,
+    .header_compare     = can_compare_header,
+    .header_copy        = can_copy_header,
 };

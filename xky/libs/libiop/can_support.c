@@ -16,6 +16,10 @@ void can_compared_header(){
 
 }
 
-void can_compare_id(){
+void can_compare_header(){
+
+}
+
+void can_prebuild_header(){
 
 }
