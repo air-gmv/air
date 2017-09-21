@@ -13,7 +13,6 @@
  * @brief Logical devices
  */
 extern iop_logical_device_t logical_device_0;
-extern iop_logical_device_t logical_device_1;
 
 /**
  * @brief Queuing ports configurations
