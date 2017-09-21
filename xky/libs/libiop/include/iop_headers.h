@@ -13,7 +13,6 @@
  * @brief SPW Header
  */
 typedef struct  {
-
 //    uint16_t hlen;              /**< Header Length */
     uint8_t hdr[32];            /**< Header */
 
@@ -33,7 +32,6 @@ typedef struct {
  * @brief Eth header (UDP Packet complete header)
  */
 typedef struct  {
-
     /* EthII header */
     uint8_t dst_mac[6];       /**< destination ethernet address*/
     uint8_t src_mac[6];        /**< source ethernet address*/
@@ -59,17 +57,24 @@ typedef struct  {
 
 }  __attribute__((packed)) eth_header_t;
 
+typedef struct {
+	char extended;		/* CANBUS extended id option */
+	char rtr;	 		/* Remote Transmission request */
+	char sshot;			/* Single shot option*/
+//	unsigned char len;	/* payload length from 1-8 bytes */
+	unsigned int id;	/* Remote device identifier */
+} __attribute__((packet)) can_header_t;
+
 /**
  * @brief IOP generic header
  *
  * This header is a union of all supported headers
  */
 typedef union {
-
-
     milstd_header_t milstd_hdr;     /**< MILSTD 1553b header        */
     spw_header_t spw_header;        /**< SPW header                 */
     eth_header_t eth_header;        /**< UDP packet header          */
+    can_header_t can_header;		/**< CAN frame header		    */
 
 } __attribute__((packed)) iop_header_t;
 

@@ -45,7 +45,7 @@ void can_write(iop_physical_device_t *pdev)
 }
 
 
-void can_read(iop_physical_device_t *pdev)
+void can_reader(iop_physical_device_t *pdev)
 {
 	/* Initialize error control chain (packets to be resent) */
 	iop_chain_control error;
