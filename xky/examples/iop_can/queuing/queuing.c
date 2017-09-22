@@ -21,12 +21,10 @@
 
 QUEUING_PORT_ID_TYPE qpid;
 
-
-/*---------------------------------------------------------	
- *		function: test																				*
- *			prints a simple string 															* 
+/*---------------------------------------------------------
+ *		function: test										*
+ *			prints a simple string 							*
 ------------------------------------------------------------*/
-
 
 void test(PARTITION_ID_TYPE self_id) {
 	char msg[1024]="empty\0";
@@ -42,9 +40,7 @@ void test(PARTITION_ID_TYPE self_id) {
 	}
 }
 
-
 int entry_func() {
-
 
 	RETURN_CODE_TYPE rc;
 

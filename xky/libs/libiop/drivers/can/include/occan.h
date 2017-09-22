@@ -167,16 +167,6 @@ typedef struct {
 } pelican_regs;
 #endif
 
-/* fifo interface */
-typedef struct {
-	int cnt;
-	int ovcnt; /* overwrite count */
-	int full; /* 1 = base contain cnt CANMsgs, tail==head */
-	CANMsg *tail, *head;
-	CANMsg *base;
-	char fifoarea[1024];
-} occan_fifo;
-
 #define MAX_TSEG2 7
 #define MAX_TSEG1 15
 
@@ -263,20 +253,18 @@ typedef struct {
 	unsigned int status;
 	occan_stats stats;
 
-	/* rx&tx fifos */
-	/* Probably this should be changed
-	 * for the tx and rx _iop_buffer */
-	occan_fifo *rxfifo;
-	occan_fifo *txfifo;
-
 	/* Config */
 	unsigned int speed; /* speed in HZ */
-	unsigned char acode[4];
-	unsigned char amask[4];
+	unsigned char code[4];
+	unsigned char mask[4];
+
+	/* IOP descriptors */
+	unsigned int tx_ptr;
+	unsigned int rx_ptr;
 
 	/* IOP standard buffers */
 	iop_buffer_t *iop_buffers;
-	uint8_t *iop_duffers_storage;
+	uint8_t *iop_buffers_storage;
 
 	iop_buffer_t **tx_iop_buffer;
 	iop_buffer_t **rx_iop_buffer;
