@@ -1,8 +1,10 @@
 ## @package parsers.iop.ti_devices
 #  @author pfnf
+#  @modified by gmvs
 #  @brief Functions to parse ti devices
 
 __author__ = 'pfnf'
+__modifier__ = 'gmvs'
 
 from definitions import *
 from utils.parser import str2int
