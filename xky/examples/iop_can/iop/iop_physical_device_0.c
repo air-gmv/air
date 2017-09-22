@@ -13,7 +13,7 @@
 /**
  * @brief IOP remote ports
  */
-extern iop_port_t remote_ports[3];
+extern iop_port_t remote_ports[2];
 
 /**
  * @brief IOP buffers
@@ -34,21 +34,21 @@ static iop_buffer_t *rx_iop_buffer[32];
  * @brief RX and TX descriptor table
  * @warning this should be 2048, but we need 3072 to ensure the 0x400 alignment
  */
-static uint8_t descriptor_table[3072];
+//static uint8_t descriptor_table[3072];
 
 /** @brief  GRETH control structure*/
 static occan_priv occan_driver = \
 {
 	.speed = 250000, // TODO maybe use a enum in the future
-	.acode = {0, 0, 0, 0},
-	.amask = {0, 0, 0, 0},
+	.code = {0, 0, 0, 0},
+	.mask = {0, 0, 0, 0},
 
     .iop_buffers            = iop_buffers,
     .iop_buffers_storage    = iop_buffers_storage,
 
     /** @note descriptor table address are split and aligned at the runtime */
-    .txdesc = descriptor_table,
-    .rxdesc = descriptor_table,
+//    .txdesc = descriptor_table,
+//    .rxdesc = descriptor_table,
 
     .tx_iop_buffer = tx_iop_buffer,
     .rx_iop_buffer = rx_iop_buffer
@@ -87,7 +87,7 @@ static iop_header_t route_header[1] = \
 	{
 		.can_header = {
 			.extended = 0,
-			.rtre = 0,
+			.rtr = 0,
 			.sshot = 0,
 			.id = 2,
 		},

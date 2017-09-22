@@ -24,12 +24,6 @@ static xky_queuing_port_configuration_t queuing_ports[] = {
         .port_direction     = XKY_SOURCE_PORT,
         .port_discipline    = 0
     },
-    {
-        .max_message_size   = 1024,
-        .max_nb_message     = 32,
-        .port_direction     = XKY_SOURCE_PORT,
-        .port_discipline    = 0
-    },
 };
 
 /**
@@ -55,14 +49,8 @@ iop_port_t remote_ports[3] = {
     },
     {
         .type               = XKY_QUEUING_PORT,
-        .name               = "sevennumbers",
+        .name               = "squeueing",
         .configuration      = &queuing_ports[0],
-        .device             = NULL
-    },
-    {
-        .type               = XKY_QUEUING_PORT,
-        .name               = "soddnumbers",
-        .configuration      = &queuing_ports[1],
         .device             = NULL
     },
 };
