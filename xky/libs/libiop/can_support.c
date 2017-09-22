@@ -12,10 +12,6 @@ void can_copy_header() {
 
 }
 
-void can_compared_header(){
-
-}
-
 void can_compare_header(){
 
 }
