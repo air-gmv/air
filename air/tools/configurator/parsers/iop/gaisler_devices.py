@@ -1,8 +1,11 @@
 ## @package parsers.iop.gaisler_devices
-#  @author pfnf and lumm
+#  @author pfnf 
+# modified by lumm and gmvs
 #  @brief Functions to parse gaisler devices
 
-__author__ = 'pfnf and lumm'
+__author__ = 'pfnf'
+__modified__ = 'lumm'
+__modified__ ='gmvs'
 
 from definitions import *
 from utils.parser import str2int
@@ -38,6 +41,8 @@ SPWRTR_CONFIG           = 'Config'
 SPWRTR_IID              = 'Idd'
 SPWRTR_IDIV             = 'Idiv'
 SPWRTR_PRESCALER        = 'Prescaler'
+
+# Insert definition for CANBUS
 
 VALID_EN                    = [ parserutils.str2int, lambda x : 0 <= x <= 1 ]
 VALID_XD	                = [ parserutils.str2int, lambda x : 0 <= x <= 128 ]
@@ -132,6 +137,19 @@ class SPWRTRSchSetup(object):
 
     def details(self):
         return 'SPWRTR Schedule Setup (Reads - {0})'.format(self.reads)
+    
+    
+# CANBUS physical device
+class CANBUSPhySetup(object):
+    
+    def __init__(self):
+        self.speed = 0
+        self.code = ''
+        self.mask = ''
+        
+    def details(self):
+        return 'CAN Physical Device Setup (Speed: {0} Code: {1} Mask: {3})'\
+        .format(self.speed, bin(self.code), bin(self.masks))
 
 ## Greth physical device setup
 # @param iop_parser IOP parser object
@@ -269,3 +287,13 @@ def sch_spwrtr(iop_parser, xml, pdevice):
     # parse complete
     setup.device = pdevice
     return setup
+
+def phy_canbus(iop_parser, xml, pdevices):
+    
+    # clear previous errors and warnings
+    iop_parser.logger.clear_errors(0)
+    
+    # parse setup
+    
+    
+    return True
