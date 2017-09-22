@@ -3,7 +3,7 @@
 /**
  * @brief IOP remote ports
  */
-extern iop_port_t remote_ports[3];
+extern iop_port_t remote_ports[2];
 
 /**
  * @brief Logical devices
@@ -26,7 +26,7 @@ static iop_physical_device_t *physical_device_list[1] = \
 /**
  * @brief Logical devices list
  */
-static iop_logical_device_t *logical_device_list[2] = \
+static iop_logical_device_t *logical_device_list[1] = \
 {
     &logical_device_0,
 };
@@ -38,7 +38,6 @@ static iop_wrapper_t requests_storage[1024];
  */
 static iop_buffer_t iop_buffers[1024];
 static uint8_t iop_buffers_storage[1024 * IOP_BUFFER_SIZE];
-
 
 /**
  * @brief IOP application configurations
