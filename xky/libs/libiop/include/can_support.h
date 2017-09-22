@@ -34,8 +34,10 @@ typedef struct {
 
 /* Not used right now TODO take it or leave it*/
 void can_copy_header();
-void can_compared_header();
 void can_compare_header();
 void can_prebuild_header();
+
+void can_write(iop_physical_device_t *pdev);
+void can_reader(iop_physical_device_t *pdev);
 
 #endif
