@@ -139,8 +139,7 @@ xky_status_code_e pmk_sampling_port_read(
     /* check if the port contains messages */
     xky_status_code_e rc = XKY_NO_ACTION;
     
-	 /* GMV Temporary FIX this is wrong, you will get repeated messages that need to be ignored!!! */
-	 //if (updated != XKY_EMPTY_PORT) {
+	 if (updated != XKY_EMPTY_PORT) {
 
         /* set time stamp */
         time_stamp = slot->timestamp;
@@ -179,7 +178,7 @@ xky_status_code_e pmk_sampling_port_read(
             default:
                 return XKY_INVALID_CONFIG;
         }
-    //}
+    }
 
     /* check if the operation can proceed*/
 	 
@@ -222,6 +221,7 @@ xky_status_code_e pmk_sampling_port_write(
         pmk_port_t *port,xky_message_ptr_t msg,
         xky_sz_t length, xky_sampling_port_status_t *status) {
 
+	 int i = 0;
     /* get sampling channel configuration */
     pmk_sampling_config_t *config =
             (pmk_sampling_config_t *)port->channel->configuration;
@@ -247,17 +247,23 @@ xky_status_code_e pmk_sampling_port_write(
         atomic_set(0, &config->writing);
         return XKY_INVALID_POINTER;
     }
+    
     slot->timestamp = xky_shared_area.schedule_ctrl->total_ticks;
     slot->length = length;
 
-    /* store new slot index */
-    atomic_set(slot_idx, &config->current_slot);
+     /* 4 calls to ensure bus contention therefore share to 4 cores the information */
+	 for (i = 0; i < 4; i++)
+	 {
 
-    /* finish writing operation */
-    atomic_set(0, &config->writing);
+		/* store new slot index */
+		atomic_set(slot_idx, &config->current_slot);
 
-    /* update all destination ports on the channel */
-    pmk_channel_update_ports(port->channel, XKY_NEW_MESSAGE);
+		/* finish writing operation */
+		atomic_set(0, &config->writing);
+		
+		/* update all destination ports on the channel */
+		pmk_channel_update_ports(port->channel, XKY_NEW_MESSAGE);
+	 }
 	 
     return XKY_NO_ERROR;
 }
