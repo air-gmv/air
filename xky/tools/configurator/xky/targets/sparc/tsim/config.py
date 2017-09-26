@@ -30,7 +30,7 @@ kernel_compiler = dict(
     AR="sparc-rtems4.11-ar",
     RANLIB="sparc-rtems4.11-ranlib",
     CFLAGS="",
-    CPPFLAGS="-mcpu=v8 -msoft-float -mflat -fno-builtin -nodefaultlibs -gdwarf-2 -O2 -Wall",
+    CPPFLAGS="-mcpu=v8 -mhard-float -mflat -fno-builtin -nodefaultlibs -gdwarf-2 -O2 -Wall",
     CXXFLAGS="",
     LDFLAGS="",
     ARFLAGS="ruv"

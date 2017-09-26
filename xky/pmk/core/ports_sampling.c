@@ -12,6 +12,7 @@
  * @brief Sampling Ports functions
  */
 
+#include <bsp.h>
 #include <pmk.h>
 #include <ports.h>
 #include <printk.h>
@@ -137,7 +138,9 @@ xky_status_code_e pmk_sampling_port_read(
 
     /* check if the port contains messages */
     xky_status_code_e rc = XKY_NO_ACTION;
-    if (updated != XKY_EMPTY_PORT) {
+    
+	 /* GMV Temporary FIX this is wrong, you will get repeated messages that need to be ignored!!! */
+	 //if (updated != XKY_EMPTY_PORT) {
 
         /* set time stamp */
         time_stamp = slot->timestamp;
@@ -176,9 +179,10 @@ xky_status_code_e pmk_sampling_port_read(
             default:
                 return XKY_INVALID_CONFIG;
         }
-    }
+    //}
 
     /* check if the operation can proceed*/
+	 
     if (rc == XKY_NO_ERROR) {
 
         /* copy message to partition space */
@@ -254,5 +258,6 @@ xky_status_code_e pmk_sampling_port_write(
 
     /* update all destination ports on the channel */
     pmk_channel_update_ports(port->channel, XKY_NEW_MESSAGE);
+	 
     return XKY_NO_ERROR;
 }
