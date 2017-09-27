@@ -19,8 +19,6 @@ def InputArgs(arg_parser, logger):
 
     arg_parser.add_argument('-i', '--info', dest='info', action='store_const', const=True,
                             default=False, help='Installation information')
-    arg_parser.add_argument('--host', dest='host', default='sparc-rtems4.11', 
-                            help='Host compiler')
     arg_parser.add_argument('-t', '--target', dest='target', default=None,
                             help='Deployment target')
     arg_parser.add_argument('-d', '--dev', dest='dev', action='store_const',
@@ -54,13 +52,10 @@ def Run(args, logger):
     if args.target is None:
         arch, bsp = prompt_configuration(logger)
     else:
-        arch, bsp = input_configuration_target(args.target, logger)
-        
-    if args.host is not None:
-        host = input_configuration_host(args.host, logger)
+        arch, bsp = input_configuration(args.target, logger)
 
     # create the OS configuration object
-    os_configuration = xky_configuration.Configuration(arch, bsp, host)
+    os_configuration = xky_configuration.Configuration(arch, bsp)
 
     logger.event(0, 'Configuring XKY OS:')
     logger.information(1, 'Target: {0} - {1}\n'.format(arch.upper(), bsp))
@@ -175,23 +170,8 @@ def prompt_configuration(logger):
 
     return arch, bsp
 
-    
-def input_configuration_host(host, logger):
 
-    try:
-    
-        # get the host
-        args = host.split('-', 1)
-        host_machine = args[1]
-        
-    except:
-    
-        # error
-        logger.error("Unsupported target: '{0}'", target)
-        
-    return host
-
-def input_configuration_target(target, logger):
+def input_configuration(target, logger):
 
     try:
 
