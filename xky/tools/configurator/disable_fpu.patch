@@ -1,0 +1,70 @@
+diff --git a/xky/pos/rtems-impr/rtems-impr/make/compilers/gcc-target-default.cfg b/xky/pos/rtems-impr/rtems-impr/make/compilers/gcc-target-default.cfg
+index a5ef8f0..66c1e65 100755
+--- a/xky/pos/rtems-impr/rtems-impr/make/compilers/gcc-target-default.cfg
++++ b/xky/pos/rtems-impr/rtems-impr/make/compilers/gcc-target-default.cfg
+@@ -124,7 +124,7 @@ ${ARCH}/%.o: %.c
+ 
+ # special compilation for source code compiled with software floating point
+ ${ARCH}/%.o.swfp: %.c
+-	${COMPILE.c} $(AM_CPPFLAGS) $(AM_CFLAGS) -mhard-float -o $@ $<
++	${COMPILE.c} $(AM_CPPFLAGS) $(AM_CFLAGS) -msoft-float -o $@ $<
+ 
+ ${ARCH}/%.o: %.cc
+ 	${COMPILE.cc} $(AM_CPPFLAGS) $(AM_CXXFLAGS) -o $@ $<
+diff --git a/xky/pos/rtems-impr/rtems-impr/make/custom/erc32.cfg b/xky/pos/rtems-impr/rtems-impr/make/custom/erc32.cfg
+index a9f6255..711745b 100755
+--- a/xky/pos/rtems-impr/rtems-impr/make/custom/erc32.cfg
++++ b/xky/pos/rtems-impr/rtems-impr/make/custom/erc32.cfg
+@@ -15,7 +15,7 @@ RTEMS_BSP_FAMILY=erc32
+ 
+ #  This contains the compiler options necessary to select the CPU model
+ #  and (hopefully) optimize for it.
+-CPU_CFLAGS = -mcpu=cypress -mhard-float
++CPU_CFLAGS = -mcpu=cypress -msoft-float
+ 
+ 
+ 
+diff --git a/xky/pos/rtems-impr/rtems-impr/make/custom/leon2.cfg b/xky/pos/rtems-impr/rtems-impr/make/custom/leon2.cfg
+index ea6afc0..f723d64 100755
+--- a/xky/pos/rtems-impr/rtems-impr/make/custom/leon2.cfg
++++ b/xky/pos/rtems-impr/rtems-impr/make/custom/leon2.cfg
+@@ -13,7 +13,7 @@ RTEMS_BSP_FAMILY=leon2
+ 
+ #  This contains the compiler options necessary to select the CPU model
+ #  and (hopefully) optimize for it.
+-CPU_CFLAGS = -mcpu=v8 -mhard-float -DPMK_SPARC_MMU
++CPU_CFLAGS = -mcpu=v8 -msoft-float -DPMK_SPARC_MMU
+ 
+ # optimize flag: typically -O2
+ CFLAGS_OPTIMIZE_V = -g -O2 -fno-merge-constants -fno-builtin-printf 
+@@ -33,7 +33,7 @@ TEST_LINK_LIBS = $(LINK_LIBS)
+ # is currently required.
+ 
+ define make-exe
+-	$(LINK.c) $(AM_CFLAGS) $(AM_LDFLAGS) -mhard-float -o $(basename $@).exe \
++	$(LINK.c) $(AM_CFLAGS) $(AM_LDFLAGS) -msoft-float -o $(basename $@).exe \
+ 		$(LINK_OBJS) $(LINK_LIBS) 
+ 	$(NM) -g -n $(basename $@).exe > $(basename $@).num
+ 	$(SIZE) $(basename $@).exe
+diff --git a/xky/pos/rtems-impr/rtems-impr/make/custom/leon3.cfg b/xky/pos/rtems-impr/rtems-impr/make/custom/leon3.cfg
+index 8bda901..6be8865 100755
+--- a/xky/pos/rtems-impr/rtems-impr/make/custom/leon3.cfg
++++ b/xky/pos/rtems-impr/rtems-impr/make/custom/leon3.cfg
+@@ -16,7 +16,7 @@ RTEMS_BSP_FAMILY=leon3
+ #  This contains the compiler options necessary to select the CPU model
+ #  and (hopefully) optimize for it.
+ #CPU_CFLAGS = -mcpu=cypress -msoft-float
+-CPU_CFLAGS = -mcpu=v8 -mhard-float -gdwarf-2
++CPU_CFLAGS = -mcpu=v8 -msoft-float -gdwarf-2
+ 
+ # optimize flag: typically -O2
+ CFLAGS_OPTIMIZE_V = -g -O2 -fno-merge-constants -fno-builtin-printf
+@@ -37,7 +37,7 @@ TEST_LINK_LIBS = $(LINK_LIBS)
+ # is currently required.
+ 
+ define make-exe
+-	$(LINK.c) $(AM_CFLAGS) $(AM_LDFLAGS) -mhard-float -gdwarf-2 -o $(basename $@).exe \
++	$(LINK.c) $(AM_CFLAGS) $(AM_LDFLAGS) -msoft-float -gdwarf-2 -o $(basename $@).exe \
+ 		$(LINK_OBJS) -Wl,--start-group $(LINK_LIBS) -Wl,--end-group -Wl,--script=linkcmds -B$(RTEMS_EXTERNAL_LIBRARY_PATH)
+ 	$(NM) -g -n $(basename $@).exe > $(basename $@).num
+ 	$(SIZE) $(basename $@).exe

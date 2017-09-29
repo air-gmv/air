@@ -32,7 +32,7 @@ static iop_header_t route_header[4] = \
     },
     {
         .spw_header = {
-            .hdr         = { 0x02,0x0C }
+            .hdr         = {  }
         }
     }
 };
