@@ -22,19 +22,35 @@ description = "XKY OS for SPARC-LEON 3"
 # Target Number of cores
 cores = 1
 
-# Kernel Compiler
+# Kernel Compiler with FPU
 kernel_compiler = dict(
-    CC="sparc-rtems4.11-gcc --pipe",
-    CXX="sparc-rtems4.11-g++ --pipe",
-    LD="sparc-rtems4.11-gcc --pipe",
-    AR="sparc-rtems4.11-ar",
-    RANLIB="sparc-rtems4.11-ranlib",
-    CFLAGS="",
-    CPPFLAGS="-mcpu=v8 -mhard-float -mflat -fno-builtin -nodefaultlibs -gdwarf-2 -O2 -Wall",
-    CXXFLAGS="",
-    LDFLAGS="",
-    ARFLAGS="ruv"
+	CC="sparc-rtems4.11-gcc --pipe",
+	CXX="sparc-rtems4.11-g++ --pipe",
+	LD="sparc-rtems4.11-gcc --pipe",
+	AR="sparc-rtems4.11-ar",
+	RANLIB="sparc-rtems4.11-ranlib",
+	CFLAGS="",
+	CPPFLAGS="-mcpu=v8 -mhard-float -mflat -fno-builtin -nodefaultlibs -gdwarf-2 -O2 -Wall",
+	CXXFLAGS="",
+	LDFLAGS="",
+	ARFLAGS="ruv"
 )
+
+
+# Kernel Compiler with NO FPU
+kernel_compiler_no_fpu = dict(
+	CC="sparc-rtems4.11-gcc --pipe",
+	CXX="sparc-rtems4.11-g++ --pipe",
+	LD="sparc-rtems4.11-gcc --pipe",
+	AR="sparc-rtems4.11-ar",
+	RANLIB="sparc-rtems4.11-ranlib",
+	CFLAGS="",
+	CPPFLAGS="-mcpu=v8 -msoft-float -mflat -fno-builtin -nodefaultlibs -gdwarf-2 -O2 -Wall",
+	CXXFLAGS="",
+	LDFLAGS="",
+	ARFLAGS="ruv"
+)
+
 
 # kernel sources
 kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
