@@ -50,12 +50,12 @@ def Run(args, logger):
 
     # parse input args or prompt the user for configuration
     if args.target is None:
-        arch, bsp = prompt_configuration(logger)
+        arch, bsp, fpu_enabled = prompt_configuration(logger)
     else:
-        arch, bsp = input_configuration(args.target, logger)
+        arch, bsp, fpu_enabled = input_configuration(args.target, logger)
 
     # create the OS configuration object
-    os_configuration = xky_configuration.Configuration(arch, bsp)
+    os_configuration = xky_configuration.Configuration(arch, bsp, fpu_enabled)
 
     logger.event(0, 'Configuring XKY OS:')
     logger.information(1, 'Target: {0} - {1}\n'.format(arch.upper(), bsp))
@@ -148,8 +148,8 @@ def Run(args, logger):
 
 
 ##
-# @brief Prompt the user to select the architecture/bsp
-# @return arch, bsp
+# @brief Prompt the user to select the architecture/bsp/fpu
+# @return arch, bsp, fpup
 def prompt_configuration(logger):
 
     # get supported architectures
@@ -168,7 +168,15 @@ def prompt_configuration(logger):
     else:
         bsp = opts[0]
 
-    return arch, bsp
+    # get the FPU enabled
+    opts = ['Enabled', 'Disabled']
+    i = terminalutils.promptActions('Select if FPU is:', opts)
+    if i == 0:
+        fpu_enabled = True
+    else:
+        fpu_enabled = False
+
+    return arch, bsp, fpu_enabled
 
 
 def input_configuration(target, logger):
@@ -177,7 +185,7 @@ def input_configuration(target, logger):
 
         # get the current target
         args = target.split('-', 1)
-        arch = args[0]; bsp  = args[1]
+        arch = args[0]; bsp  = args[1]; fpu_flag = args[2];
 
         # check if target is supported
         if arch not in xky_configuration.supported_architectures.keys() or \
@@ -202,4 +210,4 @@ def input_configuration(target, logger):
 
         sys.exit(-1)
 
-    return arch, bsp
+    return arch, bsp, fpu_flag

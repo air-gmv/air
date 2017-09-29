@@ -109,11 +109,13 @@ class Configuration(object):
     # @param self object pointer
     # @param arch target architecture
     # @param bsp target board support package
-    def __init__(self, arch, bsp):
+    def __init__(self, arch, bsp, fpu_enabled):
 
         self.arch = arch.lower()
         self.bsp = bsp.lower()
+        self.fpu_enabled = fpu_enabled;
         self.debug_mode = False
+        
 
         # get supported pos
         self.supported_pos = {}
@@ -183,11 +185,30 @@ class Configuration(object):
     def get_target(self):
         return '{0}-{1}'.format(self.arch, self.bsp)
 
+
+    ##
+    # @brief Implementation of grep file
+    # @param filename file to grep
+    # @param needle text to search
+    # @return current target string
+    def grep(self, filename, needle):
+        with open(filename) as f_in:
+            matches = ((i, line.find(needle), line) for i, line in enumerate(f_in))
+            return [match for match in matches if match[0] != -1]
+
     ##
     # @brief Gets the target compiler
-    def get_target_compiler(self):
-        return supported_architectures[self.arch][self.bsp].kernel_compiler
-
+    def get_target_compiler(self):		  
+        msoft_float = self.grep ("Makefile.inc", "msoft")
+        if self.fpu_enabled:
+            if msoft_float:
+                os.system("patch --force -p2 -R -s < tools/configurator/disable_fpu.patch")
+            return supported_architectures[self.arch][self.bsp].kernel_compiler
+        else:
+            if not msoft_float:
+               os.system("patch --force -p2 -s < tools/configurator/disable_fpu.patch")
+            return supported_architectures[self.arch][self.bsp].kernel_compiler_no_fpu
+			
     ##
     # @brief Gets the kernel ASM generator files
     def get_kernel_asm_generator(self):
