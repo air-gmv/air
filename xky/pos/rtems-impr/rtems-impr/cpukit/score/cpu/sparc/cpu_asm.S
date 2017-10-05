@@ -364,8 +364,8 @@ dont_switch_stacks:
 dont_fix_pil:
   or        %g5, SPARC_PSR_PIL_MASK, %g5
 pil_fixed:
-  or        %g5, SPARC_PSR_ET_MASK, %o0
-  set       XKY_SYSCALL_SPARC_SET_PSR, %o5
+  or        %g5, SPARC_PSR_ET_MASK, %o0 //parameters
+  set       XKY_SYSCALL_SPARC_SET_PSR, %o5 //id trap
   ta        XKY_SYSCALL_SPARC_TRAP      ! **** ENABLE TRAPS ****
 dont_fix_pil2:
 
