@@ -125,10 +125,13 @@ void pmk_channel_update_ports(pmk_channel_t *channel, xky_port_updated_e state) 
 
         /* get destination port, and link it to the channel */
         pmk_port_t *port = ((pmk_port_t **)channel->dst.elements)[i];
-        atomic_set(state, &port->updated);
+        atomic_set(state, &port->updated); //como e atomic pode estar outra operacao atomica a bloquear na
+		  // na leitura
 
         /** @todo each partition currently running must received an
          *        port updated interrupt
+			* 
+			* 
          */
     }
     return;
