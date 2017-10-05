@@ -6,6 +6,7 @@
 __author__ = 'pfnf'
 
 import os
+import re
 import imp
 import xky
 import utils
@@ -193,19 +194,30 @@ class Configuration(object):
     # @return current target string
     def grep(self, filename, needle):
         with open(filename) as f_in:
-            matches = ((i, line.find(needle), line) for i, line in enumerate(f_in))
-            return [match for match in matches if match[0] != -1]
+            for line in f_in:
+                if not needle in line:
+                    continue
+                try:
+                    return True
+                except IndexError:
+                    return False
 
     ##
     # @brief Gets the target compiler
     def get_target_compiler(self):		  
         msoft_float = self.grep ("Makefile.inc", "msoft")
         if self.fpu_enabled:
+            print ('fpu to be enabled')
             if msoft_float:
+                print (' It currently disabled, applying patch...')
+                print (msoft_float)
                 os.system("patch --force -p2 -R -s < tools/configurator/disable_fpu.patch")
             return supported_architectures[self.arch][self.bsp].kernel_compiler
         else:
+            print ('fpu to be NOT enabled')
             if not msoft_float:
+               print (' It currently enabled, applying patch...')
+               print (msoft_float)
                os.system("patch --force -p2 -s < tools/configurator/disable_fpu.patch")
             return supported_architectures[self.arch][self.bsp].kernel_compiler_no_fpu
 			
