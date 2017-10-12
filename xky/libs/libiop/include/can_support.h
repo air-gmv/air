@@ -9,6 +9,7 @@
 #include <iop.h>
 #include <rtems.h>
 #include <iop_support.h>
+#include <occan_msg_queue.h>
 
 //typedef struct {
 //	uint16_t identifier;
@@ -30,6 +31,7 @@ typedef struct {
 	uint32_t                count;
 	uint32_t                flags;
 	uint32_t                bytes_moved;
+
 } iop_can_device_t;
 
 /* Not used right now TODO take it or leave it*/
