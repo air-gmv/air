@@ -57,18 +57,8 @@ extern "C" {
 #define OCCAN_NCORE_OFS 0x100
 #define DEFAULT_CLKDIV 0x7
 #define DEFAULT_EXTENDED_MODE 1
-#define DEFAULT_RX_FIFO_LEN 64
-#define DEFAULT_TX_FIFO_LEN 64
-
-/* CAN MESSAGE */
-typedef struct {
-	char extended; /* 1= Extended Frame (29-bit id), 0= STD Frame (11-bit id) */
-	char rtr; /* RTR - Remote Transmission Request */
-	char sshot; /* single shot */
-	unsigned char len;
-	unsigned char data[8];
-	unsigned int id;
-} CANMsg;
+//#define DEFAULT_RX_FIFO_LEN 64
+//#define DEFAULT_TX_FIFO_LEN 64
 
 /* PELICAN */
 #ifdef OCCAN_BYTE_REGS
@@ -234,6 +224,12 @@ typedef struct {
 
 } occan_stats;
 
+/* TODO See if necessary */
+//typedef struct _occan_txrxdesc {
+//	int count;
+//	uint32_t * addr;
+//} occan_txrxdesc;
+
 typedef struct {
 	/* hardware shortcuts */
 	pelican_regs *regs;
@@ -258,10 +254,13 @@ typedef struct {
 	unsigned char code[4];
 	unsigned char mask[4];
 
-	/* IOP descriptors */
-	unsigned int tx_ptr;
-	unsigned int rx_ptr;
+	occan_fifo 			 *internal_msg_queue;
 
+	/* IOP descriptors */
+//	occan_txrxdesc txdesc;
+//	occan_txrxdesc rxdesc;
+	/*unsigned int tx_ptr; /* Buffer pointerl
+	unsigned int rx_ptr;*/
 	/* IOP standard buffers */
 	iop_buffer_t *iop_buffers;
 	uint8_t *iop_buffers_storage;
