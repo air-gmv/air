@@ -1,7 +1,0 @@
-## $Id: local.am 179 2008-09-17 14:07:38Z hsilva $
-
-preinstall-am: $(PREINSTALL_FILES)
-preinstall: preinstall-am
-.PHONY: preinstall preinstall-am
-
-PROJECT_TOOLS = $(PROJECT_RELEASE)/build-tools
