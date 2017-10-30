@@ -1,6 +1,0 @@
-#
-#  $Id: default.cfg.in 179 2008-09-17 14:07:38Z hsilva $
-#
-
-# Base name of start file
-START_BASE=start
