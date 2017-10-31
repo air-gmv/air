@@ -3,7 +3,7 @@
 /* Clear all entries on the fifo and
  * control data */
 
-void occan_fifo_clear(occan_fifo *queue ){
+uint8_t occan_fifo_clear(occan_fifo *queue ){
 	int i;
 
 	for(i = 0; i < queue->max; i++){
@@ -17,6 +17,8 @@ void occan_fifo_clear(occan_fifo *queue ){
 	queue->ovcnt = 0;
 	queue->last = 0;
 	queue->next = 0;
+
+	return 1;
 }
 
 /* TODO force put option for when the queue is full */
@@ -34,6 +36,7 @@ uint8_t occan_fifo_put(occan_fifo *queue, CANMsg *new, int force){
 	}else{
 		queue->last++;
 	}
+	return 1;
 }
 
 CANMsg *occan_fifo_get(occan_fifo *queue){
