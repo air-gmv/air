@@ -230,13 +230,18 @@ typedef struct {
 //	uint32_t * addr;
 //} occan_txrxdesc;
 
+typedef struct occan_filter_{
+	unsigned char code[4];
+	unsigned char mask[4];
+	int single_mode;
+} occan_filter;
+
 typedef struct {
 	/* hardware shortcuts */
 	pelican_regs *regs;
 	int irq;
 	occan_speed_regs timing;
 	int channel; /* 0=default, 1=second bus */
-	int single_mode;
 
 	/* driver state */
 	rtems_id devsem;
@@ -248,13 +253,17 @@ typedef struct {
 	int txblk;
 	unsigned int status;
 	occan_stats stats;
+	int sending;
 
 	/* Config */
 	unsigned int speed; /* speed in HZ */
-	unsigned char code[4];
-	unsigned char mask[4];
+//	int single_mode;
+//	unsigned char code[4];
+//	unsigned char mask[4];
+	occan_filter *filter;
 
-	occan_fifo 			 *internal_msg_queue;
+	occan_fifo	*tx_msg_queue;
+	occan_fifo  *rx_msg_queue;
 
 	/* IOP descriptors */
 //	occan_txrxdesc txdesc;
