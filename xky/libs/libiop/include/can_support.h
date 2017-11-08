@@ -23,7 +23,6 @@ typedef struct {
 	iop_device_driver_t dev;
 
 	char *dev_name;
-	struct occan_afilter *filter;
 //	uint16_t self_id; // This device's ID
 //	uint16_t rx_count;
 //	uint16_t tx_count;
@@ -34,10 +33,16 @@ typedef struct {
 
 } iop_can_device_t;
 
-/* Not used right now TODO take it or leave it*/
-void can_copy_header();
-void can_compare_header();
-void can_prebuild_header();
+/* TODO the next three functions are stubs */
+void can_copy_header(
+		iop_physical_device_t *iop_dev,
+		iop_wrapper_t *wrapper,
+		iop_header_t *header);
+void can_compare_header(
+		iop_wrapper_t *wrapper,
+		iop_header_t *header);
+void can_prebuild_header(
+		can_header_t *header);
 
 void can_write(iop_physical_device_t *pdev);
 void can_reader(iop_physical_device_t *pdev);
