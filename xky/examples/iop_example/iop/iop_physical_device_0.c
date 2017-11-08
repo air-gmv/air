@@ -9,11 +9,15 @@
 #include <iop.h>
 #include <iop_greth.h>
 #include <eth_support.h>
+
 /**
  * @brief IOP remote ports
  */
 extern iop_port_t remote_ports[2];
 
+/**
+ * @brief IOP buffers
+ */
 static iop_buffer_t iop_buffers[64];
 static uint8_t iop_buffers_storage[64 * IOP_BUFFER_SIZE];
 
@@ -78,9 +82,9 @@ static uint32_t reads_per_period[] = \
  */
 static iop_header_t route_header[1] = \
 {
-        {
+    {
         .eth_header = {
-            .dst_ip      = { 192,168,0,3},
+            .dst_ip      = { 192,168,0,3 },
             .dst_mac     = { 0x00,0x50,0xbf,0x50,0x07,0x0d},
             .dst_port    = HTONS(14000),
             .src_port    = HTONS(14000)

@@ -7,7 +7,7 @@
  *  found in the file LICENSE in this distribution or at
  *  http://www.rtems.com/license/LICENSE.
  *
- *  Author: Daniel Hellstr��m, Gaisler Research AB, www.gaisler.com
+ *  Author: Daniel Hellstrom, Gaisler Research AB, www.gaisler.com
  *
  *  Modified: Guilherme Sanches (gmvs@gmv.com)
  *  Modifications introduced to integrate the driver on AIR
@@ -177,14 +177,14 @@ static void pelican_open(occan_priv *priv){
 	priv->speed = OCCAN_SPEED_250K;
 
 	/* set acceptance filters to accept all messages */
-	priv->filter->code[0] = 0;
-	priv->filter->code[1] = 0;
-	priv->filter->code[2] = 0;
-	priv->filter->code[3] = 0;
-	priv->filter->mask[0] = 0xff;
-	priv->filter->mask[1] = 0xff;
-	priv->filter->mask[2] = 0xff;
-	priv->filter->mask[3] = 0xff;
+	priv->filter.code[0] = 0;
+	priv->filter.code[1] = 0;
+	priv->filter.code[2] = 0;
+	priv->filter.code[3] = 0;
+	priv->filter.mask[0] = 0xff;
+	priv->filter.mask[1] = 0xff;
+	priv->filter.mask[2] = 0xff;
+	priv->filter.mask[3] = 0xff;
 
 	/* Set clock divider to extended mode, clkdiv not connected
 	 */
@@ -208,16 +208,18 @@ static int pelican_start(occan_priv *priv){
 	unsigned char tmp;
 	/* Start HW communication */
 
-	if ( !priv->tx_msg_queue || !priv->rx_msg_queue)
-		return -1;
+	/* No need to verify this is done in an higher level */
+	/* TODO check if there is need for this */
+//	if ( !priv->tx_fifo || !priv->rx_fifo)
+//		return -1;
 
   /* In case we were started before and stopped we
    * should empty the TX fifo or try to resend those
    * messages. We make it simple...
    */
 	// TODO Clean buffers
-//  occan_fifo_clr(priv->txfifo);
-	occan_fifo_clear(priv->tx_msg_queue);
+	occan_fifo_clear(&priv->rx_fifo);
+	occan_fifo_clear(&priv->tx_fifo);
 
 	/* Clear status bits */
 	priv->status = 0;
@@ -227,10 +229,10 @@ static int pelican_start(occan_priv *priv){
 	tmp = READ_REG(&priv->regs->intflags);
 
 	/* clear error counters */
-//	priv->regs->rx_err_cnt = 0;
-//	priv->regs->tx_err_cnt = 0;
-	WRITE_REG( &priv->regs->rx_err_cnt, 0);
-	WRITE_REG( &priv->regs->tx_err_cnt, 0);
+	priv->regs->rx_err_cnt = 0;
+	priv->regs->tx_err_cnt = 0;
+//	WRITE_REG( &priv->regs->rx_err_cnt, 0);
+//	WRITE_REG( &priv->regs->tx_err_cnt, 0);
 
 #ifdef REDUNDANT_CHANNELS
 	if ( (priv->channel == 0) || (priv->channel >= REDUNDANT_CHANNELS) ){
@@ -249,13 +251,13 @@ static int pelican_start(occan_priv *priv){
 			READ_REG(&priv->regs->bustim1));
 
 	/* Set default acceptance filter */
-	pelican_set_accept(priv,priv->filter->code,priv->filter->mask);
+	pelican_set_accept(priv,priv->filter.code,priv->filter.mask);
 
 	/* turn on interrupts */
-//	priv->regs->inten = PELICAN_IE_RX | PELICAN_IE_TX | PELICAN_IE_ERRW |
-//	                    PELICAN_IE_ERRP | PELICAN_IE_BUS;
-	WRITE_REG(priv->regs->inten, PELICAN_IE_RX | PELICAN_IE_TX |
-			PELICAN_IE_ERRW | PELICAN_IE_ERRP | PELICAN_IE_BUS);
+	priv->regs->inten = PELICAN_IE_RX | PELICAN_IE_TX | PELICAN_IE_ERRW |
+	                    PELICAN_IE_ERRP | PELICAN_IE_BUS;
+//	WRITE_REG(priv->regs->inten, PELICAN_IE_RX | PELICAN_IE_TX |
+//			PELICAN_IE_ERRW | PELICAN_IE_ERRP | PELICAN_IE_BUS);
 
 #ifdef DEBUG
 	/* print setup before starting */
@@ -267,8 +269,8 @@ static int pelican_start(occan_priv *priv){
 	 *  Exit reset mode
 	 *  Enter Single/Dual mode filtering.
 	 */
-//	priv->regs->mode =  (priv->single_mode << 3);
-	WRITE_REG(priv->regs->mode, (priv->filter->single_mode << 3));
+	priv->regs->mode =  (priv->filter.single_mode << 3);
+//	WRITE_REG(priv->regs->mode, (priv->filter->single_mode << 3));
 
 	return 0;
 }
@@ -283,15 +285,15 @@ static void pelican_stop(occan_priv *priv){
 #endif
 
 	/* put core in reset mode */
-//	priv->regs->mode = PELICAN_MOD_RESET;
-	WRITE_REG(priv->regs->mode, PELICAN_MOD_RESET);
+	priv->regs->mode = PELICAN_MOD_RESET;
+//	WRITE_REG(priv->regs->mode, PELICAN_MOD_RESET);
 
 	/* turn off interrupts */
-//	priv->regs->inten = 0;
-	WRITE_REG(priv->regs->inten, 0);
+	priv->regs->inten = 0;
+//	WRITE_REG(priv->regs->inten, 0);
 
-//	priv->status |= OCCAN_STATUS_RESET;
-	WRITE_REG(priv->status, OCCAN_STATUS_RESET);
+	priv->status |= OCCAN_STATUS_RESET;
+//	WRITE_REG(priv->status, OCCAN_STATUS_RESET);
 }
 
 
@@ -790,7 +792,7 @@ uint32_t occan_initialize(iop_device_driver_t *iop_dev, void *arg){
 			/* bind filesystem name to device */
 			OCCAN_DEVNAME_NO(fs_name, device->dev_name);
 			iop_debug("OCCAN: Registering %s @ 0x%lx irq %d\n\r",fs_name,(unsigned int)can->regs,can->irq);
-			status = rtems_io_register_name(fs_name);
+//			status = rtems_io_register_name(fs_name);
 			if (RTEMS_SUCCESSFUL != status )
 				rtems_fatal_error_occurred(status);
 
@@ -869,12 +871,12 @@ uint32_t occan_open(iop_device_driver_t *iop_dev, void *arg){
 //		return RTEMS_NO_MEMORY;
 //	}
 
-	/* check buffers allocation */
-	if ( !can->rx_msg_queue || !can->rx_msg_queue){
-		can->open = 0;
-		iop_debug("OCCAN fifos not allocated on the upper level.\n");
-		return RTEMS_NO_MEMORY; /* ENOMEM */
-	}
+	/* check buffers allocation TODO keep eye on this*/
+//	if ( !can->rx_fifo || !can->rx_fifo){
+//		can->open = 0;
+//		iop_debug("OCCAN fifos not allocated on the upper level.\n");
+//		return RTEMS_NO_MEMORY; /* ENOMEM */
+//	}
 
 //	can->txfifo = occan_fifo_create(DEFAULT_TX_FIFO_LEN);
 	/* Checking buffers allocation */
@@ -892,7 +894,7 @@ uint32_t occan_open(iop_device_driver_t *iop_dev, void *arg){
 	can->channel = 0; /* Default to first can link */
 	can->txblk = 1; /* Default to Blocking mode */
 	can->rxblk = 1; /* Default to Blocking mode */
-	can->filter->single_mode = 1; /* single mode acceptance filter */
+	can->filter.single_mode = 1; /* single mode acceptance filter */
 
 	/* reset stat counters */
 	memset(&can->stats,0,sizeof(occan_stats));
@@ -917,11 +919,11 @@ uint32_t occan_close(iop_device_driver_t *iop_dev, void *arg){
 		pelican_stop(can);
 
 	/* Enter Reset Mode */
-//	can->regs->mode = PELICAN_MOD_RESET;
-	WRITE_REG(can->regs->mode, PELICAN_MOD_RESET);
+	can->regs->mode = PELICAN_MOD_RESET;
+//	WRITE_REG(can->regs->mode, PELICAN_MOD_RESET);
 
-	occan_fifo_clear(can->rx_msg_queue);
-	occan_fifo_clear(can->tx_msg_queue);
+	occan_fifo_clear(&can->rx_fifo);
+	occan_fifo_clear(&can->tx_fifo);
 
 	return RTEMS_SUCCESSFUL;
 }
@@ -943,16 +945,20 @@ uint32_t occan_read(iop_device_driver_t *iop_dev,  void *arg){
 		return RTEMS_RESOURCE_IN_USE; /* -EBUSY*/
 	}
 
+	/* sanity check */
+	if(wrapper == NULL || wrapper->buffer == NULL){
+		return RTEMS_INVALID_NAME;
+	}
+	/* Check if buffer was well allocated on the upper level */
+	if(iop_buffer->v_addr == NULL) {
+		return RTEMS_INVALID_NAME;
+	}
+
 	/* does at least one message fit */
 	left = device->count;
 	if ( left < sizeof(CANMsg) ){
 		iop_debug("OCCAN: buffer must be at least %d, our is %d\n\r",sizeof(CANMsg),left);
 		return  RTEMS_INVALID_NAME; /* -EINVAL */
-	}
-
-	/* Check if buffer was well allocated on the upper level */
-	if(iop_buffer->v_addr == NULL) {
-		return RTEMS_INVALID_NAME;
 	}
 
 	/* get pointer to start where to put CAN messages */
@@ -976,7 +982,7 @@ uint32_t occan_read(iop_device_driver_t *iop_dev,  void *arg){
 			return RTEMS_IO_ERROR; /* EIO */
 		}
 
-		srcmsg = occan_fifo_get(can->rx_msg_queue);
+		srcmsg = occan_fifo_get(&can->rx_fifo);
 		if ( !srcmsg ){
 			/* no more messages in reception fifo.
 			 * Wait for incoming packets only if in
@@ -1074,7 +1080,7 @@ uint32_t occan_write(iop_device_driver_t *iop_dev, void *arg){
 	 * try to send first message by putting it directly
 	 * into the HW TX fifo.
 	 */
-	if ( occan_fifo_empty(can->tx_msg_queue ) ){
+	if ( occan_fifo_empty(&can->tx_fifo ) ){
 		/*pelican_regs_print(cans[minor+1].regs);*/
 		if ( !pelican_send(can,msg) ) {
 			/* First message put directly into HW TX fifo
@@ -1098,7 +1104,7 @@ uint32_t occan_write(iop_device_driver_t *iop_dev, void *arg){
 		msg->len = (msg->len > 8) ? 8 : msg->len;
 
 		/* TODO check if this condition is ok */
-		if (!occan_fifo_put(can->tx_msg_queue, msg,0)){
+		if (!occan_fifo_put(&can->tx_fifo, msg,0)){
 
 			iop_debug("OCCAN: FIFO is full\n\r");
 			/* Block only if no messages previously sent
@@ -1129,7 +1135,7 @@ uint32_t occan_write(iop_device_driver_t *iop_dev, void *arg){
 
 			rtems_interrupt_disable(oldLevel);
 
-			if ( occan_fifo_empty(can->tx_msg_queue) ){
+			if ( occan_fifo_empty(&can->tx_fifo) ){
 				if ( !pelican_send(can,msg) ) {
 					/* First message put directly into HW TX fifo
 				   * This will turn TX interrupt on.
@@ -1152,7 +1158,7 @@ uint32_t occan_write(iop_device_driver_t *iop_dev, void *arg){
 		/* tell interrupt handler about the message */
 		/* At this point if we were not able to free space
 		 * from the queue the message might be lost */
-		occan_fifo_put(can->tx_msg_queue, msg, 0); /* TODO consider using the force signal at 1 and delete the oldest message */
+		occan_fifo_put(&can->tx_fifo, msg, 0); /* TODO consider using the force signal at 1 and delete the oldest message */
 
 		iop_debug("OCCAN: Put info fifo SW\n\r");
 
@@ -1273,8 +1279,8 @@ uint32_t occan_ioctl(iop_can_device_t *device, void *arg){
 				return  RTEMS_INVALID_NAME; /* EINVAL */
 
 			/* copy data stats into userspace buffer */
-      if ( can->rx_msg_queue )
-        can->stats.rx_sw_dovr = can->rx_msg_queue->ovcnt;
+      if ( &can->rx_fifo )
+        can->stats.rx_sw_dovr = can->rx_fifo.ovcnt;
 			*dststats = can->stats;
 			break;
 
@@ -1309,17 +1315,17 @@ uint32_t occan_ioctl(iop_can_device_t *device, void *arg){
 				return RTEMS_INVALID_NAME; /* EINVAL */
 
 			/* copy acceptance filter */
-			can->filter->code[0] = afilter->code[0];
-			can->filter->code[1] = afilter->code[1];
-			can->filter->code[2] = afilter->code[2];
-			can->filter->code[3] = afilter->code[3];
+			can->filter.code[0] = afilter->code[0];
+			can->filter.code[1] = afilter->code[1];
+			can->filter.code[2] = afilter->code[2];
+			can->filter.code[3] = afilter->code[3];
 
-			can->filter->mask[0] = afilter->mask[0];
-			can->filter->mask[1] = afilter->mask[1];
-			can->filter->mask[2] = afilter->mask[2];
-			can->filter->mask[3] = afilter->mask[3];
+			can->filter.mask[0] = afilter->mask[0];
+			can->filter.mask[1] = afilter->mask[1];
+			can->filter.mask[2] = afilter->mask[2];
+			can->filter.mask[3] = afilter->mask[3];
 
-			can->filter->single_mode = ( afilter->single_mode ) ? 1 : 0;
+			can->filter.single_mode = ( afilter->single_mode ) ? 1 : 0;
 
 			/* TODO verify is this driver is using the can filters
 			 * or not. */
@@ -1358,8 +1364,8 @@ uint32_t occan_ioctl(iop_can_device_t *device, void *arg){
 static void occan_interrupt(occan_priv *can){
 	unsigned char iflags;
 	pelican_regs *regs = can->regs;
-	CANMsg *msg_rx;
-	CANMsg msg_tx; /* Temporary vairable to hold the message */
+	CANMsg msg_rx;
+	CANMsg *msg_tx; /* Temporary vairable to hold the message */
 	int signal_rx=0, signal_tx=0;
 	unsigned char tmp, errcode, arbcode;
 	int tx_error_cnt,rx_error_cnt;
@@ -1379,56 +1385,36 @@ static void occan_interrupt(occan_priv *can){
 			/* get empty (or make room) message */
 //			msg = occan_fifo_put_claim(can->rxfifo,1);
 			tmp = READ_REG(&regs->rx_fi_xff);
-			msg_tx.extended = tmp >> 7;
-			msg_tx.rtr = (tmp >> 6) & 1;
-			msg_tx.len = tmp = tmp & 0x0f;
+			msg_rx.extended = tmp >> 7;
+			msg_rx.rtr = (tmp >> 6) & 1;
+			msg_rx.len = tmp = tmp & 0x0f;
 
-			if ( msg_tx.extended ){
+			if ( msg_rx.extended ){
 				/* extended message */
-				msg_tx.id =  READ_REG(&regs->msg.rx_eff.id[0])<<(5+8+8) |
+				msg_rx.id =  READ_REG(&regs->msg.rx_eff.id[0])<<(5+8+8) |
 				           READ_REG(&regs->msg.rx_eff.id[1])<<(5+8) |
 				           READ_REG(&regs->msg.rx_eff.id[2])<<5 |
 				           READ_REG(&regs->msg.rx_eff.id[3])>>3;
 				while(tmp--){
-					msg_tx.data[tmp] = READ_REG(&regs->msg.rx_eff.data[tmp]);
+					msg_rx.data[tmp] = READ_REG(&regs->msg.rx_eff.data[tmp]);
 				}
-				/*
-				msg->data[0] = READ_REG(&regs->msg.rx_eff.data[0]);
-				msg->data[1] = READ_REG(&regs->msg.rx_eff.data[1]);
-				msg->data[2] = READ_REG(&regs->msg.rx_eff.data[2]);
-				msg->data[3] = READ_REG(&regs->msg.rx_eff.data[3]);
-				msg->data[4] = READ_REG(&regs->msg.rx_eff.data[4]);
-				msg->data[5] = READ_REG(&regs->msg.rx_eff.data[5]);
-				msg->data[6] = READ_REG(&regs->msg.rx_eff.data[6]);
-				msg->data[7] = READ_REG(&regs->msg.rx_eff.data[7]);
-				*/
 			}else{
 				/* standard message */
-				msg_tx.id =  READ_REG(&regs->msg.rx_sff.id[0])<<3 |
+				msg_rx.id =  READ_REG(&regs->msg.rx_sff.id[0])<<3 |
 				           READ_REG(&regs->msg.rx_sff.id[1])>>5;
 
 				while(tmp--){
-					msg_tx.data[tmp] = READ_REG(&regs->msg.rx_sff.data[tmp]);
+					msg_rx.data[tmp] = READ_REG(&regs->msg.rx_sff.data[tmp]);
 				}
-				/*
-				msg->data[0] = READ_REG(&regs->msg.rx_sff.data[0]);
-				msg->data[1] = READ_REG(&regs->msg.rx_sff.data[1]);
-				msg->data[2] = READ_REG(&regs->msg.rx_sff.data[2]);
-				msg->data[3] = READ_REG(&regs->msg.rx_sff.data[3]);
-				msg->data[4] = READ_REG(&regs->msg.rx_sff.data[4]);
-				msg->data[5] = READ_REG(&regs->msg.rx_sff.data[5]);
-				msg->data[6] = READ_REG(&regs->msg.rx_sff.data[6]);
-				msg->data[7] = READ_REG(&regs->msg.rx_sff.data[7]);
-				*/
 			}
 
 			/* Re-Enable RX buffer for a new message */
-//			regs->cmd = PELICAN_CMD_RELRXBUF;
-			WRITE_REG(regs->cmd, PELICAN_CMD_RELRXBUF);
+			regs->cmd = PELICAN_CMD_RELRXBUF;
+//			WRITE_REG(regs->cmd, PELICAN_CMD_RELRXBUF);
 
 			/* Queue the received message to make it available
 			 * to the user */
-			occan_fifo_put(can->rx_msg_queue, &msg,1);
+			occan_fifo_put(&can->rx_fifo, &msg_rx,1);
 
 			/* bump stat counters */
 			can->stats.rx_msgs++;
@@ -1440,11 +1426,11 @@ static void occan_interrupt(occan_priv *can){
 		if ( iflags & PELICAN_IF_TX ){
 			/* there is room in tx fifo of HW */
 
-			if ( !occan_fifo_empty(can->tx_msg_queue) ){
+			if ( !occan_fifo_empty(&can->tx_fifo) ){
 				/* send 1 more messages */
-				msg = occan_fifo_get(can->tx_msg_queue);
+				msg_tx = occan_fifo_get(&can->tx_fifo);
 
-				if ( pelican_send(can,msg) ){
+				if ( pelican_send(can,msg_tx) ){
 					/* ERROR! We got an TX interrupt telling us
 					 * tx fifo is empty, yet it is not.
 					 *
@@ -1486,8 +1472,8 @@ static void occan_interrupt(occan_priv *can){
 					 * turn off interrupts
 					 * enter reset mode (HW already done that for us)
 					 */
-//					regs->inten = 0;
-					WRITE_REG(regs->inten, 0);
+					regs->inten = 0;
+//					WRITE_REG(regs->inten, 0);
 
 					/* Indicate that we are not started any more.
 					 * This will make write/read return with EBUSY
@@ -1616,20 +1602,20 @@ int OCCAN_PREFIX(_register)(amba_confarea_type *bus){
 	if ( !bus )
 		return 1;
 
-  if ((r = rtems_io_register_driver(0, &occan_driver, &m)) == RTEMS_SUCCESSFUL) {
-		iop_debug("OCCAN driver successfully registered, major: %d\n\r", m);
-	}else{
-		switch(r) {
-			case RTEMS_TOO_MANY:
-				iop_debug("OCCAN rtems_io_register_driver failed: RTEMS_TOO_MANY\n\r"); break;
-			case RTEMS_INVALID_NUMBER:
-				iop_debug("OCCAN rtems_io_register_driver failed: RTEMS_INVALID_NUMBER\n\r"); break;
-			case RTEMS_RESOURCE_IN_USE:
-				iop_debug("OCCAN rtems_io_register_driver failed: RTEMS_RESOURCE_IN_USE\n\r"); break;
-			default:
-				iop_debug("OCCAN rtems_io_register_driver failed\n\r");
-		}
-		return 1;
-	}
+//  if ((r = rtems_io_register_driver(0, &occan_driver, &m)) == RTEMS_SUCCESSFUL) {
+//		iop_debug("OCCAN driver successfully registered, major: %d\n\r", m);
+//	}else{
+//		switch(r) {
+//			case RTEMS_TOO_MANY:
+//				iop_debug("OCCAN rtems_io_register_driver failed: RTEMS_TOO_MANY\n\r"); break;
+//			case RTEMS_INVALID_NUMBER:
+//				iop_debug("OCCAN rtems_io_register_driver failed: RTEMS_INVALID_NUMBER\n\r"); break;
+//			case RTEMS_RESOURCE_IN_USE:
+//				iop_debug("OCCAN rtems_io_register_driver failed: RTEMS_RESOURCE_IN_USE\n\r"); break;
+//			default:
+//				iop_debug("OCCAN rtems_io_register_driver failed\n\r");
+//		}
+//		return 1;
+//	}
 	return 0;
 }

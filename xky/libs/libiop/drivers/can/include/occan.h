@@ -7,7 +7,7 @@
  *  found in the file LICENSE in this distribution or at
  *  http://www.rtems.com/license/LICENSE.
  *
- *  Author: Daniel Hellstr��m, Gaisler Research AB, www.gaisler.com
+ *  Author: Daniel Hellstrom, Gaisler Research AB, www.gaisler.com
  */
 
 
@@ -16,9 +16,9 @@
 
 #include <ambapp.h>
 
-#include <can_support.h>
-#include <iop.h>
 #include <xky.h>
+#include <iop.h>
+#include <can_support.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -260,16 +260,16 @@ typedef struct {
 //	int single_mode;
 //	unsigned char code[4];
 //	unsigned char mask[4];
-	occan_filter *filter;
+	occan_filter filter;
 
-	occan_fifo	*tx_msg_queue;
-	occan_fifo  *rx_msg_queue;
+	occan_fifo	tx_fifo;
+	occan_fifo  rx_fifo;
 
 	/* IOP descriptors */
 //	occan_txrxdesc txdesc;
 //	occan_txrxdesc rxdesc;
-	/*unsigned int tx_ptr; /* Buffer pointerl
-	unsigned int rx_ptr;*/
+	unsigned int tx_ptr;  /*Buffer pointer*/
+	unsigned int rx_ptr;
 	/* IOP standard buffers */
 	iop_buffer_t *iop_buffers;
 	uint8_t *iop_buffers_storage;

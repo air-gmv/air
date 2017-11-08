@@ -353,9 +353,7 @@ int amba_find_ahbslvs_next(struct ambapp_bus *abus, int vendor, int device, stru
 	arg.type = DEV_AHB_SLV; /* AHB SLV */
 	arg.dev = dev;
 
-	amba_for_each(abus, (OPTIONS_ALL|OPTIONS_AHB_SLVS), vendor, device,
-			amba_dev_find_match, &arg);
-
+	/*amba_for_each(abus, (OPTIONS_ALL|OPTIONS_AHB_SLVS), vendor, device,	amba_dev_find_match, &arg);*/
 	return maxno - arg.count;
 }
 
