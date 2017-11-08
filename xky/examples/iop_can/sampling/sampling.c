@@ -37,6 +37,10 @@ void error_message(RETURN_CODE_TYPE rc){
 		case INVALID_MODE:
 			pprintf("WRITE_SAMPLING_MESSAGE error Invalid Mode\n");
 		break;
+		default:
+			pprintf("Unknown error\n");
+		break;
+
 	}
 }
 
@@ -104,11 +108,11 @@ int entry_func() {
 
 	CREATE_SAMPLING_PORT (NAME, SIZE, SOURCE, PERIOD, &SEND_PORT, &rc);
 	if (NO_ERROR != rc) {
-		pprintf("CREATE_SAMPLING_PORT error %d\n", rc);
+		pprintf("CREATE_SAMPLING_PORT error %d\n", (int) rc);
 	}
 
 	if (RTEMS_SUCCESSFUL == rtems_task_create (name, 15, 4096, mode, mode_mask, &id)) {
-		rtems_task_start (id, test, self_id);
+		rtems_task_start (id, &test, self_id);
 	}
 
 	SET_PARTITION_MODE(NORMAL, &rc);
