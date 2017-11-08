@@ -27,7 +27,7 @@ QUEUING_PORT_ID_TYPE qpid;
 ------------------------------------------------------------*/
 
 void test(PARTITION_ID_TYPE self_id) {
-	char msg[1024]="empty\0";
+	unsigned char msg[1024]="empty\0";
 	RETURN_CODE_TYPE rc;
 	MESSAGE_SIZE_TYPE len;
 

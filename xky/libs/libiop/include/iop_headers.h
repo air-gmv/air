@@ -63,7 +63,7 @@ typedef struct {
 	char sshot;			/* Single shot option*/
 //	unsigned char len;	/* payload length from 1-8 bytes */
 	unsigned int id;	/* Remote device identifier */
-} __attribute__((packet)) can_header_t;
+} __attribute__((packed)) can_header_t;
 
 /**
  * @brief IOP generic header
