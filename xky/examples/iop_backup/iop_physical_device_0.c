@@ -31,13 +31,6 @@ static iop_buffer_t *tx_iop_buffer[32];
 static iop_buffer_t *rx_iop_buffer[32];
 
 /**
- * @brief Allocation of for the internal message queue
- * to be used by the occan driver
- */
-
-static CANMsg msg_queue[32];
-
-/**
  * @brief RX and TX descriptor table
  * @warning this should be 2048, but we need 3072 to ensure the 0x400 alignment
  */
@@ -52,15 +45,6 @@ static occan_priv occan_driver = \
 
     .iop_buffers            = iop_buffers,
     .iop_buffers_storage    = iop_buffers_storage,
-
-	.internal_msg_queue = {
-		.cnt = 0,
-		.ovcnt = 0,
-		.next = 0,
-		.last = 0,
-		.max = 32,
-		.fifo = msg_queue,
-	},
 
     /** @note descriptor table address are split and aligned at the runtime */
 //    .txdesc = descriptor_table,
