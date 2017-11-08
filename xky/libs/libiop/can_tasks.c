@@ -9,6 +9,7 @@
 
 #include <iop.h>
 #include <can_support.h>
+#include <iop_error.h>
 
 void can_write(iop_physical_device_t *pdev)
 {
