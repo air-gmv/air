@@ -26,7 +26,7 @@ ${iop_template.RemotePortList(iop_configuration)}\
 ${iop_template.IopBuffersStorage(2 * device.setup.txdesccnt + device.setup.rxdesccnt)}\
 
 /**
- * @brief RX and TX descriptor table
+ * @brief RX and TX descriptor tablel
  * @warning this should be 2048, but we need 3072 to ensure the 0x400 alignment
  */
 static uint8_t descriptor_table[3072];
