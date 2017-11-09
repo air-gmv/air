@@ -7,7 +7,7 @@
  *  found in the file LICENSE in this distribution or at
  *  http://www.rtems.com/license/LICENSE.
  *
- *  Author: Daniel Hellstr��m, Gaisler Research AB, www.gaisler.com
+ *  Author: Daniel Hellstrom, Gaisler Research AB, www.gaisler.com
  *
  *  Modified: Guilherme Sanches (gmvs@gmv.com)
  *  Modifications introduced to integrate the driver on AIR
@@ -19,7 +19,7 @@
 
 #include <leon.h>
 #include <ambapp.h>
-#include <occan.h>
+#include <iop_occan.h>
 #include <can_support.h>
 #include <occan_msg_queue.h>
 
