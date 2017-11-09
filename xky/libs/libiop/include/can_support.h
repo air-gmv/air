@@ -1,6 +1,7 @@
 /**
  *  @author gmvs@gmv.com
  *  @brief CAN support structures and functions definitions
+ *  to integrate the occan driver into AIR
  */
 
 #ifndef __CAN_SUPPORT_H__

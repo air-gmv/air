@@ -19,7 +19,7 @@
 
 #include <leon.h>
 #include <ambapp.h>
-#include <occan.h>
+#include <iop_occan.h>
 #include <can_support.h>
 #include <occan_msg_queue.h>
 
