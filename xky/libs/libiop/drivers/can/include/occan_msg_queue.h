@@ -21,7 +21,6 @@ typedef struct {
 	int last;
 	int max;
 	CANMsg *fifo;
-
 } occan_fifo;
 
 uint8_t occan_fifo_clear(occan_fifo *queue);

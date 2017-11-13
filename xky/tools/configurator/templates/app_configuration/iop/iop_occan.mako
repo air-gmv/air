@@ -1,4 +1,4 @@
-<%
+<%	
 	# device functions
 	device_functions = dict(
 		reader_task='can_reader',
@@ -36,10 +36,46 @@ static iop_buffer_t *tx_iop_buffer[${device.setup.txd_count}];
 static iop_buffer_t *rx_iop_buffer[${device.setup.rxd_count}];
 
 /**
+ * @brief Allocation of the occan driver internal
+ * message queue
+ */
+ 
+static CANMsg rx_msg_fifo[${}];
+ 
+static CANMsg tx_msg_fifo[${}]; 
+
+/**
  * @brief RX and TX descriptor table
  * @warning this should be 2048, but we need 3072 to ensure the 0x400 alignment
  */
 static uint8_t descriptor_table[3072];
+
+/** @brief OCCAN control structure*/
+static occan_priv occan_driver = \
+{
+	.speed		= ${device.setup.speed},
+	.filter		= {
+		.single_mode	= ${0 \
+							if device.setup.single_mode is True else \
+							1},
+		.code			= {${device.setup.code}},
+		.mask			= {${device.setup.mask}},
+	},
+	
+	.iop_buffers			= iop_buffers,
+	.iop_buffers_storage	= iop_buffers_storage,
+	
+	.rx_fifo = {
+		.max = ${device.setup.internal_buffer},
+		.fifo = rx_msg_fifo,
+	},
+	
+	.tx_fifo = {
+		.max = ${},
+		.fifo = tx_msg_fifo,
+	}
+}
+
 
 /**  @brief OCCAN control strucutre */
 static iop_can_device_t device_configuration =${'\\'}
@@ -53,5 +89,10 @@ static iop_can_device_t device_configuration =${'\\'}
 		.write			= occan_write,
 		.close			= occan_close,
 	},
-	.dev_name =${}
+	.dev_name = ${},
+	.count = ${},
+	.flags = ${},
+	.bytes_moved = ${},
 }
+
+${iop_template.PhysicalDevice(iop_configuration, device, device_functions)}\
