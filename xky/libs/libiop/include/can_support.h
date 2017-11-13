@@ -12,13 +12,6 @@
 #include <iop_support.h>
 #include <occan_msg_queue.h>
 
-//typedef struct {
-//	uint16_t identifier;
-//	uint8_t RTR;
-//	uint8_t data_len; // Data length in bytes to a maximum of 8
-//	char data[8];
-//}can_frame;
-
 typedef struct {
 	/* Generic device configuration */
 	iop_device_driver_t dev;
@@ -28,11 +21,18 @@ typedef struct {
 //	uint16_t rx_count;
 //	uint16_t tx_count;
 //	char                   *buffer;
-	uint32_t                count;
-	uint32_t                flags;
-	uint32_t                bytes_moved;
+//	uint32_t                count;
+//	uint32_t                flags;
+//	uint32_t                bytes_moved;
 
 } iop_can_device_t;
+
+//typedef struct {
+//	uint8_t extended;
+//	uint8_t rtr;
+//	uint8_t sshot;
+//	uint8_t id;
+//} __attribute__ ((packet)) iop_can_header_t;
 
 /* TODO the next three functions are stubs */
 void can_copy_header(

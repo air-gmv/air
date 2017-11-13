@@ -19,7 +19,8 @@
 	</PhysicalDevices>-->
 	
 	<PhysicalDevices>
-		<Device Id="0" Device="CAN0" >
+		<Device Id="0" Device="CAN0" Speed="250" TXD="32" RXD="32" InternalBuf="8">
+			<Filter  SingleMode="true" Code="f:f:f:f" Mask="f:f:f:f" />
 			<LogicalRoute Id="1" LogicalDeviceId="1">
 				<CANHeader Extended="0" RTR="0" SSHOT="0" CANId="1"/> 
 			</LogicalRoute>
