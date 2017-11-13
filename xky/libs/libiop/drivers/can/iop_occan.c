@@ -932,9 +932,9 @@ uint32_t occan_read(iop_device_driver_t *iop_dev,  void *arg){
 
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	occan_priv *can = (occan_priv *) device->dev.driver;
-	CANMsg *dstmsg, *srcmsg;
+	CANMsg *srcmsg, msg;
 	rtems_interrupt_level oldLevel;
-	int left;
+	int left, bytes_moved, count, i;
 
 	/* get IOP buffer */
 	iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
@@ -964,6 +964,14 @@ uint32_t occan_read(iop_device_driver_t *iop_dev,  void *arg){
 	/* get pointer to start where to put CAN messages */
 	dstmsg = (CANMsg *)wrapper->buffer->v_addr;
 
+	iop_buffer->v_addr = *msg.data;
+	/* limit CAN message length to 8 */
+	msg->len = (msg->len > 8) ? 8 :msg->len;
+	for(i = 0; i < msg->len; i++){
+		msg.data[i] = (char *) ((iop_buffer->v_addr + iop_buffer->payload_off) + i);
+	}
+
+
 	if ( !dstmsg ){
 		iop_debug("OCCAN: input buffer is NULL\n\r");
 		return  RTEMS_INVALID_NAME; /* -EINVAL */
@@ -978,7 +986,7 @@ uint32_t occan_read(iop_device_driver_t *iop_dev,  void *arg){
 		if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
 			rtems_interrupt_enable(oldLevel);
 			iop_debug("OCCAN: read is cancelled due to a BUS OFF error\n\r");
-			device->bytes_moved = device->count-left;
+			bytes_moved = device->count-left;
 			return RTEMS_IO_ERROR; /* EIO */
 		}
 
@@ -1007,7 +1015,7 @@ uint32_t occan_read(iop_device_driver_t *iop_dev,  void *arg){
 			if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
 				iop_debug("OCCAN: Blocking read got woken up by BUS OFF error\n\r");
 				/* At this point it should not matter how many messages we handled */
-				device->bytes_moved = device->count-left;
+				bytes_moved = device->count-left;
 				return RTEMS_IO_ERROR; /* EIO */
 			}
 
@@ -1016,7 +1024,8 @@ uint32_t occan_read(iop_device_driver_t *iop_dev,  void *arg){
 		}
 
 		/* got message, copy it to userspace buffer */
-		*dstmsg = *srcmsg;
+//		*dstmsg = *srcmsg;
+
 
 		/* turn on interrupts again */
 		rtems_interrupt_enable(oldLevel);
@@ -1027,8 +1036,8 @@ uint32_t occan_read(iop_device_driver_t *iop_dev,  void *arg){
 	}
 
 	/* save number of read bytes. */
-	device->bytes_moved = device->count-left;
-	if ( device->bytes_moved == 0 ){
+	bytes_moved = device->count-left;
+	if ( bytes_moved == 0 ){
 		iop_debug("OCCAN: read would block, returning\n\r");
 		return RTEMS_TIMEOUT; /* ETIMEDOUT should be EAGAIN/EWOULDBLOCK */
 	}
@@ -1039,27 +1048,43 @@ uint32_t occan_write(iop_device_driver_t *iop_dev, void *arg){
 
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	occan_priv *can = (occan_priv *) device->dev.driver;
+//	rtems_libio_rw_args_t *rw_args = (rtems_libio_rw_args_t *) arg;
+//	iop_wrapper_t *wrapper = (iop_wrapper_t *) rw_args->buffer;
 	iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
-	CANMsg *msg;
+	iop_buffer_t *iop_buffer = wrapper->buffer;
+	CANMsg *msg_addr, msg;
 	rtems_interrupt_level oldLevel;
+
+	int i, count, bytes_moved;
+	msg_addr = &msg;
 	int left;
 
-	iop_debug("OCCAN: Writing %d bytes from 0x%x (%d)\n\r",device->count, wrapper->buffer->v_addr, sizeof(CANMsg));
+//	left = rw_args->count;
+	left = count;
+//	count = wrapper->buffer->header_size + wrapper->buffer->payload_size;
+//	left = count;
+//	iop_debug("OCCAN: Writing %d bytes from 0x%x (%d)\n\r",rw_args->count , wrapper->buffer->v_addr, sizeof(CANMsg));
+	iop_debug("OCCAN: Writing %d bytes from 0x%x (%d)\n\r",count , wrapper->buffer->v_addr, sizeof(CANMsg));
 
 	if ( !can->started )
 		return RTEMS_RESOURCE_IN_USE; /* EBUSY */
 
-	left = device->count;
+
 	if ( (left < sizeof(CANMsg)) || (!wrapper->buffer->v_addr) ){
 		return RTEMS_INVALID_NAME; /* EINVAL */
 	}
 
-//	msg = (CANMsg *)device->buffer;
-	/* GMVS */
-	msg = (CANMsg *) wrapper->buffer->v_addr;
-
+	/* Build CANMsg */
+	msg.extended = iop_buffer->header_off;
+	msg.rtr = iop_buffer->v_addr + iop_buffer->header_off + sizeof(int);
+	msg.sshot = iop_buffer->v_addr + iop_buffer->header_off + 2*sizeof(int);
+	msg.id = iop_buffer->v_addr + iop_buffer->header_off + 3*sizeof(int);
+	msg_addr->len = iop_buffer->payload_size;
 	/* limit CAN message length to 8 */
-	msg->len = (msg->len > 8) ? 8 : msg->len;
+	msg->len = (msg->len > 8) ? 8 :msg->len;
+	for(i = 0; i < msg->len; i++){
+		msg.data[i] = (char *) ((iop_buffer->v_addr + iop_buffer->payload_off) + i);
+	}
 
 #ifdef DEBUG_VERBOSE
 	pelican_regs_print(can->regs);
@@ -1072,7 +1097,8 @@ uint32_t occan_write(iop_device_driver_t *iop_dev, void *arg){
 	/* A bus off interrupt may have occured after checking can->started */
 	if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
 		rtems_interrupt_enable(oldLevel);
-		device->bytes_moved = 0;
+//		rw_args->bytes_moved = 0;
+		bytes_moved = 0;
 		return RTEMS_IO_ERROR; /* EIO */
 	}
 
@@ -1097,68 +1123,126 @@ uint32_t occan_write(iop_device_driver_t *iop_dev, void *arg){
 		}
 	}
 
-	/* Put messages into software fifo */
-	while ( left >= sizeof(CANMsg) ){
+//	/* Put messages into software fifo */
+//	while ( left >= sizeof(CANMsg) ){
+//
+//		/* limit CAN message length to 8 */
+//		msg_addr->len = (msg_addr->len > 8) ? 8 :msg_addr->len;
+//
+//		/* TODO check if this condition is ok */
+//		if (!occan_fifo_put(&can->tx_fifo,msg_addr,0)){
+//
+//			iop_debug("OCCAN: FIFO is full\n\r");
+//			/* Block only if no messages previously sent
+//			 * and not in blocking mode
+//			 */
+////			if ( !can->txblk  || (left != rw_args->count) )
+//			if ( !can->txblk  || (left != count) )
+//				break;
+//
+//			/* turn on interupts again and wait
+//				INT_ON
+//				WAIT FOR FREE BUF;
+//				INT_OFF;
+//				CHECK_IF_FIFO_EMPTY ==> SEND DIRECT VIA HW;
+//			*/
+//			rtems_interrupt_enable(oldLevel);
+//
+//			iop_debug("OCCAN: Waiting for tx int\n\r");
+//
+//			rtems_semaphore_obtain(can->txsem, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
+//
+//			/* did we get woken up by a BUS OFF error? */
+//			if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
+//				iop_debug("OCCAN: Blocking write got woken up by BUS OFF error or RESET event\n\r");
+//				/* At this point it should not matter how many messages we handled */
+////				rw_args->bytes_moved = rw_args->count-left;
+//				bytes_moved = count-left;
+//				return RTEMS_IO_ERROR; /* EIO */
+//			}
+//
+//			rtems_interrupt_disable(oldLevel);
+//
+//			if ( occan_fifo_empty(&can->tx_fifo) ){
+//				if ( !pelican_send(can,msg) ) {
+//					/* First message put directly into HW TX fifo
+//				   * This will turn TX interrupt on.
+//				   */
+//					left -= sizeof(CANMsg);
+//					msg++;
+//
+//					/* bump stat counters */
+//					can->stats.tx_msgs++;
+//
+//					iop_debug("OCCAN: Sending direct2 via HW\n\r");
+//				}
+//			}
+//			continue;
+//		}
 
-		/* limit CAN message length to 8 */
-		msg->len = (msg->len > 8) ? 8 : msg->len;
+		/* Put messages into software fifo */
+		while ( left >= sizeof(CANMsg) ){
 
-		/* TODO check if this condition is ok */
-		if (!occan_fifo_put(&can->tx_fifo, msg,0)){
+			/* limit CAN message length to 8 */
+			msg_addr->len = (msg_addr->len > 8) ? 8 :msg_addr->len;
 
-			iop_debug("OCCAN: FIFO is full\n\r");
-			/* Block only if no messages previously sent
-			 * and not in blocking mode
-			 */
-			if ( !can->txblk  || (left != device->count) )
-				break;
+			/* TODO check if this condition is ok */
+			if (!occan_fifo_put(&can->tx_fifo,msg_addr,0)){
 
-			/* turn on interupts again and wait
-				INT_ON
-				WAIT FOR FREE BUF;
-				INT_OFF;
-				CHECK_IF_FIFO_EMPTY ==> SEND DIRECT VIA HW;
-			*/
-			rtems_interrupt_enable(oldLevel);
+				iop_debug("OCCAN: FIFO is full\n\r");
+				/* Block only if no messages previously sent
+				 * and not in blocking mode
+				 */
+	//			if ( !can->txblk  || (left != rw_args->count) )
+				if ( !can->txblk  || (left != count) )
+					break;
 
-			iop_debug("OCCAN: Waiting for tx int\n\r");
+				/* turn on interupts again and wait
+					INT_ON
+					WAIT FOR FREE BUF;
+					INT_OFF;
+					CHECK_IF_FIFO_EMPTY ==> SEND DIRECT VIA HW;
+				*/
+				rtems_interrupt_enable(oldLevel);
 
-			rtems_semaphore_obtain(can->txsem, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
+				iop_debug("OCCAN: Waiting for tx int\n\r");
 
-			/* did we get woken up by a BUS OFF error? */
-			if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
-				iop_debug("OCCAN: Blocking write got woken up by BUS OFF error or RESET event\n\r");
-				/* At this point it should not matter how many messages we handled */
-				device->bytes_moved = device->count-left;
-				return RTEMS_IO_ERROR; /* EIO */
-			}
+				rtems_semaphore_obtain(can->txsem, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
 
-			rtems_interrupt_disable(oldLevel);
-
-			if ( occan_fifo_empty(&can->tx_fifo) ){
-				if ( !pelican_send(can,msg) ) {
-					/* First message put directly into HW TX fifo
-				   * This will turn TX interrupt on.
-				   */
-					left -= sizeof(CANMsg);
-					msg++;
-
-					/* bump stat counters */
-					can->stats.tx_msgs++;
-
-					iop_debug("OCCAN: Sending direct2 via HW\n\r");
+				/* did we get woken up by a BUS OFF error? */
+				if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
+					iop_debug("OCCAN: Blocking write got woken up by BUS OFF error or RESET event\n\r");
+					/* At this point it should not matter how many messages we handled */
+	//				rw_args->bytes_moved = rw_args->count-left;
+					bytes_moved = count-left;
+					return RTEMS_IO_ERROR; /* EIO */
 				}
-			}
-			continue;
-		}
 
+				rtems_interrupt_disable(oldLevel);
+
+				if ( occan_fifo_empty(&can->tx_fifo) ){
+					if ( !pelican_send(can,msg) ) {
+						/* First message put directly into HW TX fifo
+					   * This will turn TX interrupt on.
+					   */
+						left -= sizeof(CANMsg);
+						msg++;
+
+						/* bump stat counters */
+						can->stats.tx_msgs++;
+
+						iop_debug("OCCAN: Sending direct2 via HW\n\r");
+					}
+				}
+				continue;
+			}
 		/* copy message into fifo area */
-//		*fifo_msg = *msg;
+	//		*fifo_msg = *msg;
 
 		/* tell interrupt handler about the message */
 		/* At this point if we were not able to free space
 		 * from the queue the message might be lost */
-		occan_fifo_put(&can->tx_fifo, msg, 0); /* TODO consider using the force signal at 1 and delete the oldest message */
+		occan_fifo_put(&can->tx_fifo,msg_addr, 0); /* TODO consider using the force signal at 1 and delete the oldest message */
 
 		iop_debug("OCCAN: Put info fifo SW\n\r");
 
@@ -1169,197 +1253,200 @@ uint32_t occan_write(iop_device_driver_t *iop_dev, void *arg){
 
 	rtems_interrupt_enable(oldLevel);
 
-	device->bytes_moved = device->count-left;
-	iop_debug("OCCAN: Sent %d\n\r",device->bytes_moved);
+//	rw_args->bytes_moved = rw_args->count-left;
+	bytes_moved = count-left;
+//	iop_debug("OCCAN: Sent %d\n\r",rw_args->bytes_moved);
+	iop_debug("OCCAN: Sent %d\n\r",bytes_moved);
 
-	if ( left == device->count )
+//	if ( left == rw_args->count )
+	if ( left == count )
 		return RTEMS_TIMEOUT; /* ETIMEDOUT should be EAGAIN/EWOULDBLOCK */
 	return RTEMS_SUCCESSFUL;
 }
 
-uint32_t occan_ioctl(iop_can_device_t *device, void *arg){
-	int ret;
-	occan_speed_regs timing;
-	occan_priv *can = device->dev.driver;
-	unsigned int speed;
-	rtems_libio_ioctl_args_t	*ioarg = (rtems_libio_ioctl_args_t *) arg;
-	occan_filter *afilter;
-	occan_stats *dststats;
-//	unsigned int rxcnt,txcnt;
-
-	iop_debug("OCCAN: IOCTL %d\n\r",ioarg->command);
-
-	ioarg->ioctl_return = 0;
-	switch(ioarg->command){
-		case OCCAN_IOC_SET_SPEED:
-
-			/* cannot change speed during run mode */
-			if ( can->started )
-				return RTEMS_RESOURCE_IN_USE; /* EBUSY */
-
-			/* get speed rate from argument */
-			speed = (unsigned int)ioarg->buffer;
-			ret = occan_calc_speedregs(sys_freq_hz,speed,&timing);
-			if ( ret )
-				return  RTEMS_INVALID_NAME; /* EINVAL */
-
-			/* set the speed regs of the CAN core */
-			/* occan_set_speedregs(can,timing); */
-
-			/* save timing/speed */
-			can->speed = speed;
-			can->timing = timing;
-			break;
-
-		case OCCAN_IOC_SET_BTRS:
-			/* Set BTR registers manually
-			 * Read OCCAN Manual.
-			 */
-			if ( can->started )
-				return RTEMS_RESOURCE_IN_USE; /* EBUSY */
-
-			can->speed = 0; /* custom */
-			can->timing.btr1 = (unsigned int)ioarg->buffer & 0xff;
-			can->timing.btr0 = ((unsigned int)ioarg->buffer>>8) & 0xff;
-/*
-			can->timing.sjw = (btr0 >> OCCAN_BUSTIM_SJW_BIT) & 0x3;
-			can->timing.brp = btr0 & OCCAN_BUSTIM_BRP;
-			can->timing.tseg1 = btr1 & 0xf;
-			can->timing.tseg2 = (btr1 >> OCCAN_BUSTIM_TSEG2_BIT) & 0x7;
-			can->timing.sam = (btr1 >> 7) & 0x1;
-			*/
-			break;
-
-		case OCCAN_IOC_SPEED_AUTO:
-			return RTEMS_NOT_IMPLEMENTED;
-			if ( can->started )
-				return RTEMS_RESOURCE_IN_USE; /* EBUSY */
-
-			if ( (speed=pelican_speed_auto(can)) < 0 ){
-				/* failed */
-				return RTEMS_IO_ERROR;
-			}
-
-			/* set new speed */
-			can->speed = speed;
-
-			if ( (int *)ioarg->buffer ){
-				*(int *)ioarg->buffer = speed;
-			}
-			return RTEMS_SUCCESSFUL;
-			break;
-			/* The commented case is not used anymore.
-			 * Fifo allocation is no longer dynamic */
-//		case OCCAN_IOC_SET_BUFLEN:
-//			/* set rx & tx fifo buffer length */
+//uint32_t occan_ioctl(iop_can_device_t *device, void *arg){
+//	int ret;
+//	occan_speed_regs timing;
+//	occan_priv *can = device->dev.driver;
+//	unsigned int speed;
+//	rtems_libio_ioctl_args_t	*ioarg = (rtems_libio_ioctl_args_t *) arg;
+//	occan_filter *afilter;
+//	occan_stats *dststats;
+////	unsigned int rxcnt,txcnt;
+//
+//	iop_debug("OCCAN: IOCTL %d\n\r",ioarg->command);
+//
+//	ioarg->ioctl_return = 0;
+//	switch(ioarg->command){
+//		case OCCAN_IOC_SET_SPEED:
+//
+//			/* cannot change speed during run mode */
 //			if ( can->started )
 //				return RTEMS_RESOURCE_IN_USE; /* EBUSY */
 //
-//			rxcnt = (unsigned int)ioarg->buffer & 0x0000ffff;
-//			txcnt = (unsigned int)ioarg->buffer >> 16;
+//			/* get speed rate from argument */
+//			speed = (unsigned int)ioarg->buffer;
+//			ret = occan_calc_speedregs(sys_freq_hz,speed,&timing);
+//			if ( ret )
+//				return  RTEMS_INVALID_NAME; /* EINVAL */
 //
-//			occan_fifo_free(can->rxfifo);
-//			occan_fifo_free(can->txfifo);
+//			/* set the speed regs of the CAN core */
+//			/* occan_set_speedregs(can,timing); */
 //
-//			/* allocate new buffers */
-//			can->rxfifo = occan_fifo_create(rxcnt);
-//			can->txfifo = occan_fifo_create(txcnt);
-//
-//			if ( !can->rxfifo || !can->txfifo )
-//				return RTEMS_NO_MEMORY; /* ENOMEM */
+//			/* save timing/speed */
+//			can->speed = speed;
+//			can->timing = timing;
 //			break;
-
-		case OCCAN_IOC_GET_CONF:
-			return RTEMS_NOT_IMPLEMENTED;
-			break;
-
-		case OCCAN_IOC_GET_STATS:
-			dststats = (occan_stats *)ioarg->buffer;
-			if ( !dststats )
-				return  RTEMS_INVALID_NAME; /* EINVAL */
-
-			/* copy data stats into userspace buffer */
-      if ( &can->rx_fifo )
-        can->stats.rx_sw_dovr = can->rx_fifo.ovcnt;
-			*dststats = can->stats;
-			break;
-
-		case OCCAN_IOC_GET_STATUS:
-			/* return the status of the */
-			if ( !ioarg->buffer )
-				return RTEMS_INVALID_NAME;
-
-			*(unsigned int *)ioarg->buffer = can->status;
-			break;
-
-		/* Set physical link */
-		case OCCAN_IOC_SET_LINK:
-#ifdef REDUNDANT_CHANNELS
-			if ( can->started )
-				return RTEMS_RESOURCE_IN_USE; /* EBUSY */
-
-			/* switch HW channel */
-			can->channel = (unsigned int)ioargs->buffer;
-#else
-			return RTEMS_NOT_IMPLEMENTED;
-#endif
-			break;
-
-		case OCCAN_IOC_SET_FILTER:
-			if ( can->started )
-				return RTEMS_RESOURCE_IN_USE; /* EBUSY */
-
-			afilter = (occan_filter *) ioarg->buffer;
-
-			if ( !afilter )
-				return RTEMS_INVALID_NAME; /* EINVAL */
-
-			/* copy acceptance filter */
-			can->filter.code[0] = afilter->code[0];
-			can->filter.code[1] = afilter->code[1];
-			can->filter.code[2] = afilter->code[2];
-			can->filter.code[3] = afilter->code[3];
-
-			can->filter.mask[0] = afilter->mask[0];
-			can->filter.mask[1] = afilter->mask[1];
-			can->filter.mask[2] = afilter->mask[2];
-			can->filter.mask[3] = afilter->mask[3];
-
-			can->filter.single_mode = ( afilter->single_mode ) ? 1 : 0;
-
-			/* TODO verify is this driver is using the can filters
-			 * or not. */
-			/* Acceptance filter is written to hardware
-			 * when starting.
-			 */
-			/* pelican_set_accept(can,can->acode,can->amask);*/
-			break;
-
-		case OCCAN_IOC_SET_BLK_MODE:
-			can->rxblk = (unsigned int)ioarg->buffer & OCCAN_BLK_MODE_RX;
-			can->txblk = ((unsigned int)ioarg->buffer & OCCAN_BLK_MODE_TX) >> 1;
-			break;
-
-		case OCCAN_IOC_START:
-			if ( can->started )
-				return RTEMS_RESOURCE_IN_USE; /* EBUSY */
-			if ( pelican_start(can) )
-				return RTEMS_NO_MEMORY; /* failed because of no memory, can happen if SET_BUFLEN failed */
-			can->started = 1;
-			break;
-
-		case OCCAN_IOC_STOP:
-			if ( !can->started )
-				return RTEMS_RESOURCE_IN_USE; /* EBUSY */
-			pelican_stop(can);
-			can->started = 0;
-			break;
-
-		default:
-			return RTEMS_NOT_DEFINED;
-	}
-	return RTEMS_SUCCESSFUL;
-}
+//
+//		case OCCAN_IOC_SET_BTRS:
+//			/* Set BTR registers manually
+//			 * Read OCCAN Manual.
+//			 */
+//			if ( can->started )
+//				return RTEMS_RESOURCE_IN_USE; /* EBUSY */
+//
+//			can->speed = 0; /* custom */
+//			can->timing.btr1 = (unsigned int)ioarg->buffer & 0xff;
+//			can->timing.btr0 = ((unsigned int)ioarg->buffer>>8) & 0xff;
+///*
+//			can->timing.sjw = (btr0 >> OCCAN_BUSTIM_SJW_BIT) & 0x3;
+//			can->timing.brp = btr0 & OCCAN_BUSTIM_BRP;
+//			can->timing.tseg1 = btr1 & 0xf;
+//			can->timing.tseg2 = (btr1 >> OCCAN_BUSTIM_TSEG2_BIT) & 0x7;
+//			can->timing.sam = (btr1 >> 7) & 0x1;
+//			*/
+//			break;
+//
+//		case OCCAN_IOC_SPEED_AUTO:
+//			return RTEMS_NOT_IMPLEMENTED;
+//			if ( can->started )
+//				return RTEMS_RESOURCE_IN_USE; /* EBUSY */
+//
+//			if ( (speed=pelican_speed_auto(can)) < 0 ){
+//				/* failed */
+//				return RTEMS_IO_ERROR;
+//			}
+//
+//			/* set new speed */
+//			can->speed = speed;
+//
+//			if ( (int *)ioarg->buffer ){
+//				*(int *)ioarg->buffer = speed;
+//			}
+//			return RTEMS_SUCCESSFUL;
+//			break;
+//			/* The commented case is not used anymore.
+//			 * Fifo allocation is no longer dynamic */
+////		case OCCAN_IOC_SET_BUFLEN:
+////			/* set rx & tx fifo buffer length */
+////			if ( can->started )
+////				return RTEMS_RESOURCE_IN_USE; /* EBUSY */
+////
+////			rxcnt = (unsigned int)ioarg->buffer & 0x0000ffff;
+////			txcnt = (unsigned int)ioarg->buffer >> 16;
+////
+////			occan_fifo_free(can->rxfifo);
+////			occan_fifo_free(can->txfifo);
+////
+////			/* allocate new buffers */
+////			can->rxfifo = occan_fifo_create(rxcnt);
+////			can->txfifo = occan_fifo_create(txcnt);
+////
+////			if ( !can->rxfifo || !can->txfifo )
+////				return RTEMS_NO_MEMORY; /* ENOMEM */
+////			break;
+//
+//		case OCCAN_IOC_GET_CONF:
+//			return RTEMS_NOT_IMPLEMENTED;
+//			break;
+//
+//		case OCCAN_IOC_GET_STATS:
+//			dststats = (occan_stats *)ioarg->buffer;
+//			if ( !dststats )
+//				return  RTEMS_INVALID_NAME; /* EINVAL */
+//
+//			/* copy data stats into userspace buffer */
+//      if ( &can->rx_fifo )
+//        can->stats.rx_sw_dovr = can->rx_fifo.ovcnt;
+//			*dststats = can->stats;
+//			break;
+//
+//		case OCCAN_IOC_GET_STATUS:
+//			/* return the status of the */
+//			if ( !ioarg->buffer )
+//				return RTEMS_INVALID_NAME;
+//
+//			*(unsigned int *)ioarg->buffer = can->status;
+//			break;
+//
+//		/* Set physical link */
+//		case OCCAN_IOC_SET_LINK:
+//#ifdef REDUNDANT_CHANNELS
+//			if ( can->started )
+//				return RTEMS_RESOURCE_IN_USE; /* EBUSY */
+//
+//			/* switch HW channel */
+//			can->channel = (unsigned int)ioargs->buffer;
+//#else
+//			return RTEMS_NOT_IMPLEMENTED;
+//#endif
+//			break;
+//
+//		case OCCAN_IOC_SET_FILTER:
+//			if ( can->started )
+//				return RTEMS_RESOURCE_IN_USE; /* EBUSY */
+//
+//			afilter = (occan_filter *) ioarg->buffer;
+//
+//			if ( !afilter )
+//				return RTEMS_INVALID_NAME; /* EINVAL */
+//
+//			/* copy acceptance filter */
+//			can->filter.code[0] = afilter->code[0];
+//			can->filter.code[1] = afilter->code[1];
+//			can->filter.code[2] = afilter->code[2];
+//			can->filter.code[3] = afilter->code[3];
+//
+//			can->filter.mask[0] = afilter->mask[0];
+//			can->filter.mask[1] = afilter->mask[1];
+//			can->filter.mask[2] = afilter->mask[2];
+//			can->filter.mask[3] = afilter->mask[3];
+//
+//			can->filter.single_mode = ( afilter->single_mode ) ? 1 : 0;
+//
+//			/* TODO verify is this driver is using the can filters
+//			 * or not. */
+//			/* Acceptance filter is written to hardware
+//			 * when starting.
+//			 */
+//			/* pelican_set_accept(can,can->acode,can->amask);*/
+//			break;
+//
+//		case OCCAN_IOC_SET_BLK_MODE:
+//			can->rxblk = (unsigned int)ioarg->buffer & OCCAN_BLK_MODE_RX;
+//			can->txblk = ((unsigned int)ioarg->buffer & OCCAN_BLK_MODE_TX) >> 1;
+//			break;
+//
+//		case OCCAN_IOC_START:
+//			if ( can->started )
+//				return RTEMS_RESOURCE_IN_USE; /* EBUSY */
+//			if ( pelican_start(can) )
+//				return RTEMS_NO_MEMORY; /* failed because of no memory, can happen if SET_BUFLEN failed */
+//			can->started = 1;
+//			break;
+//
+//		case OCCAN_IOC_STOP:
+//			if ( !can->started )
+//				return RTEMS_RESOURCE_IN_USE; /* EBUSY */
+//			pelican_stop(can);
+//			can->started = 0;
+//			break;
+//
+//		default:
+//			return RTEMS_NOT_DEFINED;
+//	}
+//	return RTEMS_SUCCESSFUL;
+//}
 //
 static void occan_interrupt(occan_priv *can){
 	unsigned char iflags;
@@ -1590,7 +1677,7 @@ static void occan_interrupt(occan_priv *can){
 //}
 //#endif
 
-#define OCCAN_DRIVER_TABLE_ENTRY { occan_initialize, occan_open, occan_close, occan_read, occan_write, occan_ioctl }
+#define OCCAN_DRIVER_TABLE_ENTRY { occan_initialize, occan_open, occan_close, occan_read, occan_write, } // occan_ioctl
 
 static rtems_driver_address_table occan_driver = OCCAN_DRIVER_TABLE_ENTRY;
 

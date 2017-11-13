@@ -365,7 +365,7 @@ static void pelican_regadr_print(pelican_regs *regs);
 #endif
 
 /***** Driver related interface *****/
-uint32_t occan_ioctl(iop_can_device_t *device, void *arg);
+//uint32_t occan_ioctl(iop_can_device_t *device, void *arg);
 uint32_t occan_write(iop_device_driver_t *iop_dev, void *arg);
 uint32_t occan_read(iop_device_driver_t *iop_dev, void *arg);
 uint32_t occan_close(iop_device_driver_t *iop_dev, void *arg);
@@ -385,29 +385,35 @@ static unsigned int sys_freq_hz;
  * It must include 'offset' instead of using iop's offset since we can have
  * multiple outstanding i/o's on a device.
  */
-typedef struct {
-  char                   *buffer;
-  uint32_t                count;
-  uint32_t                flags;
-  uint32_t                bytes_moved;
-} rtems_libio_rw_args_t;
+//typedef struct {
+//  char                   *buffer;
+//  uint32_t                count;
+//  uint32_t                flags;
+//  uint32_t                bytes_moved;
+//} rtems_libio_rw_args_t;
 
 /**
- * @brief Parameter block for open/close.
+ * @brief Paramameter block for read/write.
+ *
+ * It must include 'offset' instead of using iop's offset since we can have
+ * multiple outstanding i/o's on a device.
  */
-typedef struct {
-  uint32_t                flags;
-  uint32_t                mode;
-} rtems_libio_open_close_args_t;
-
-/**
- * @brief Parameter block for ioctl.
- */
-typedef struct {
-  uint32_t                command;
-  void                   *buffer;
-  uint32_t                ioctl_return;
-} rtems_libio_ioctl_args_t;
+///**
+// * @brief Parameter block for open/close.
+// */
+//typedef struct {
+//  uint32_t                flags;
+//  uint32_t                mode;
+//} rtems_libio_open_close_args_t;
+//
+///**
+// * @brief Parameter block for ioctl.
+// */
+//typedef struct {
+//  uint32_t                command;
+//  void                   *buffer;
+//  uint32_t                ioctl_return;
+//} rtems_libio_ioctl_args_t;
 
 #ifdef __cplusplus
 }
