@@ -50,7 +50,7 @@ uint8_t occan_fifo_put(occan_fifo *queue, CANMsg *new, int force){
 	queue->fifo[queue->last].sshot = new->sshot;
 	queue->fifo[queue->last].id = new->id;
 	queue->fifo[queue->last].len = new->len;
-	for(i = 0; i < 8; i++){
+	for(i = 0; i < new->len; i++){
 		queue->fifo[queue->last].data[i] = new->data[i];
 	}
 	queue->cnt++;
