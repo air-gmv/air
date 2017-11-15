@@ -14,7 +14,7 @@
  */
 
 //#include <rtems/libio.h>
-#include <string.h>
+//#include <string.h>
 #include <bsp.h>
 
 #include <leon.h>
@@ -932,13 +932,12 @@ uint32_t occan_read(iop_device_driver_t *iop_dev,  void *arg){
 
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	occan_priv *can = (occan_priv *) device->dev.driver;
-	CANMsg *srcmsg, msg;
+	CANMsg *srcmsg;
 	rtems_interrupt_level oldLevel;
-	int left, bytes_moved, count, i;
 
 	/* get IOP buffer */
 	iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
-	iop_buffer_t *iop_buffer = wrapper->buffer;
+
 
 	if ( !can->started ){
 		iop_debug("OCCAN: cannot read when not started\n\r");
@@ -949,59 +948,37 @@ uint32_t occan_read(iop_device_driver_t *iop_dev,  void *arg){
 	if(wrapper == NULL || wrapper->buffer == NULL){
 		return RTEMS_INVALID_NAME;
 	}
-	/* Check if buffer was well allocated on the upper level */
-	if(iop_buffer->v_addr == NULL) {
-		return RTEMS_INVALID_NAME;
-	}
 
+//	/* Check if buffer was well allocated on the upper level */
+//	if(iop_buffer->v_addr == NULL) {
+//		return RTEMS_INVALID_NAME;
+//	}
+	/* TODO check if the buffer in the argument is not null
+	 * in other words if there is space on the wrappers */
 	/* does at least one message fit */
-	left = device->count;
-	if ( left < sizeof(CANMsg) ){
-		iop_debug("OCCAN: buffer must be at least %d, our is %d\n\r",sizeof(CANMsg),left);
-		return  RTEMS_INVALID_NAME; /* -EINVAL */
-	}
+//	left = device->count;
+//	if ( left < sizeof(CANMsg) ){
+//		iop_debug("OCCAN: buffer must be at least %d, our is %d\n\r",sizeof(CANMsg),left);
+//		return  RTEMS_INVALID_NAME; /* -EINVAL */
+//	}
 
-	/* get pointer to start where to put CAN messages */
-	dstmsg = (CANMsg *)wrapper->buffer->v_addr;
+//	if ( !dstmsg ){
+//		iop_debug("OCCAN: input buffer is NULL\n\r");
+//		return  RTEMS_INVALID_NAME; /* -EINVAL */
+//	}
+	/* turn off interrupts */
+//	rtems_interrupt_disable(oldLevel);
 
-	iop_buffer->v_addr = *msg.data;
-	/* limit CAN message length to 8 */
-	msg->len = (msg->len > 8) ? 8 :msg->len;
-	for(i = 0; i < msg->len; i++){
-		msg.data[i] = (char *) ((iop_buffer->v_addr + iop_buffer->payload_off) + i);
-	}
-
-
-	if ( !dstmsg ){
-		iop_debug("OCCAN: input buffer is NULL\n\r");
-		return  RTEMS_INVALID_NAME; /* -EINVAL */
-	}
-
-	while (left >= sizeof(CANMsg) ){
-
-		/* turn off interrupts */
-		rtems_interrupt_disable(oldLevel);
-
-		/* A bus off interrupt may have occured after checking can->started */
-		if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
-			rtems_interrupt_enable(oldLevel);
-			iop_debug("OCCAN: read is cancelled due to a BUS OFF error\n\r");
-			bytes_moved = device->count-left;
-			return RTEMS_IO_ERROR; /* EIO */
-		}
-
-		srcmsg = occan_fifo_get(&can->rx_fifo);
-		if ( !srcmsg ){
-			/* no more messages in reception fifo.
-			 * Wait for incoming packets only if in
-			 * blocking mode AND no messages been
-			 * read before.
-			 */
-			if ( !can->rxblk || (left != device->count) ){
-				/* turn on interrupts again */
-				rtems_interrupt_enable(oldLevel);
-				break;
-			}
+	/* Check if there are messages in the queue
+	 * and if the queue is empty see if we can
+	 * block for a while to receive something
+	 */
+	if(occan_fifo_empty(&can->rx_fifo)){
+		/* no messages in reception fifo.
+		 * Wait for incoming packets only if in
+		 * blocking mode
+		 */
+		if(can->rxblk){
 
 			/* turn on interrupts again */
 			rtems_interrupt_enable(oldLevel);
@@ -1010,39 +987,97 @@ uint32_t occan_read(iop_device_driver_t *iop_dev,  void *arg){
 
 			/* wait for incomming messages */
 			rtems_semaphore_obtain(can->rxsem,RTEMS_WAIT,RTEMS_NO_TIMEOUT);
-
+			/* TODO rtems_wake_after()? */
 			/* did we get woken up by a BUS OFF error? */
 			if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
 				iop_debug("OCCAN: Blocking read got woken up by BUS OFF error\n\r");
-				/* At this point it should not matter how many messages we handled */
-				bytes_moved = device->count-left;
 				return RTEMS_IO_ERROR; /* EIO */
 			}
-
-			/* no errors detected, it must be a message */
-			continue;
+			/* If the fifo is still empty at this point we return.
+			 * There are no can messages to read */
+			if(occan_fifo_empty(&can->rx_fifo)){
+				return RTEMS_UNSATISFIED;
+			}
 		}
+	}
 
+	/*
+	 * Empty the internal message fifo while there is
+	 * space on the iop wrappers
+	 */
+	while(!occan_fifo_empty(&can->rx_fifo)){
+		/* turn off interrupts */
+		rtems_interrupt_disable(oldLevel);
+
+		iop_buffer_t *iop_buffer = wrapper->buffer;
+		wrapper->buffer = can->rx_iop_buffer[can->rx_ptr];
+		can->rx_iop_buffer[can->rx_ptr] = iop_buffer;
+
+		/* A bus off interrupt may have occured after checking can->started */
+		if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
+			rtems_interrupt_enable(oldLevel);
+			iop_debug("OCCAN: read is cancelled due to a BUS OFF error\n\r");
+	//		bytes_moved = device->count-left;
+			return RTEMS_IO_ERROR; /* EIO */
+		}
+		/* Try to get the message */
+		srcmsg = occan_fifo_get(&can->rx_fifo);
+		/* Type of can frame header */
+		/* Sanity check first */
+		if(srcmsg == NULL)
+		{
+			iop_debug("  ::OCCAN internal message queue "
+					"returned a null pointer while reading.\n");
+		}
 		/* got message, copy it to userspace buffer */
-//		*dstmsg = *srcmsg;
+		wrapper->buffer->header_off = 0;
+		if(srcmsg->extended){
+			wrapper->buffer->header_size = 32;
+			wrapper->buffer->payload_off = 32;
+		}else{
+			wrapper->buffer->header_size = 12;
+			wrapper->buffer->payload_off = 12;
 
-
-		/* turn on interrupts again */
-		rtems_interrupt_enable(oldLevel);
-
-		/* increase pointers */
-		left -= sizeof(CANMsg);
-		dstmsg++;
+		}
+		wrapper->buffer->payload_size = srcmsg->len;
+//		*(wrapper->buffer->v_addr +wrapper->buffer->header_off) = srcmsg->extended;
+//		*(wrapper->buffer->v_addr + wrapper->buffer->header_off + sizeof(int)) = srcmsg->rtr;
+//		*(wrapper->buffer->v_addr + wrapper->buffer->header_off + 2*sizeof(int)) = srcmsg->sshot;
+//		*(wrapper->buffer->v_addr + wrapper->buffer->header_off + 3*sizeof(int)) = srcmsg->id;
+//		for(i = 0; i < srcmsg->len; i++)
+//		{
+//			wrapper->buffer->v_addr[wrapper->buffer->payload_off + i] = srcmsg->data[i];
+//		}
+		memcpy((void *) (wrapper->buffer->v_addr + wrapper->buffer->header_off),
+				&srcmsg->extended,
+				sizeof(int));
+		memcpy((void *) (wrapper->buffer->v_addr + wrapper->buffer->header_off + sizeof(int)),
+				&srcmsg->rtr,
+				sizeof(int));
+		memcpy((void *) (wrapper->buffer->v_addr + wrapper->buffer->header_off + 2*sizeof(int)),
+						&srcmsg->sshot,
+						sizeof(int));
+		memcpy((void *) (wrapper->buffer->v_addr + wrapper->buffer->header_off + 3*sizeof(int)),
+								&srcmsg->id,
+								sizeof(int));
+		memcpy((void *) wrapper->buffer->v_addr + wrapper->buffer->payload_off,
+				&srcmsg->data,
+				(srcmsg->len)*sizeof(char));
 	}
+	/* No more messages in the internal queue */
+	/* turn on interrupts again */
+	rtems_interrupt_enable(oldLevel);
 
-	/* save number of read bytes. */
-	bytes_moved = device->count-left;
-	if ( bytes_moved == 0 ){
-		iop_debug("OCCAN: read would block, returning\n\r");
-		return RTEMS_TIMEOUT; /* ETIMEDOUT should be EAGAIN/EWOULDBLOCK */
-	}
 	return RTEMS_SUCCESSFUL;
+//	/* save number of read bytes. */
+//	bytes_moved = device->count-left;
+//	if ( bytes_moved == 0 ){
+//		iop_debug("OCCAN: read would block, returning\n\r");
+//		return RTEMS_TIMEOUT; /* ETIMEDOUT should be EAGAIN/EWOULDBLOCK */
+//	}
 }
+
+
 
 uint32_t occan_write(iop_device_driver_t *iop_dev, void *arg){
 
@@ -1055,36 +1090,44 @@ uint32_t occan_write(iop_device_driver_t *iop_dev, void *arg){
 	CANMsg *msg_addr, msg;
 	rtems_interrupt_level oldLevel;
 
-	int i, count, bytes_moved;
+	int i, msg_saved = 0;
 	msg_addr = &msg;
-	int left;
 
 //	left = rw_args->count;
-	left = count;
+//	left = count;
 //	count = wrapper->buffer->header_size + wrapper->buffer->payload_size;
 //	left = count;
 //	iop_debug("OCCAN: Writing %d bytes from 0x%x (%d)\n\r",rw_args->count , wrapper->buffer->v_addr, sizeof(CANMsg));
-	iop_debug("OCCAN: Writing %d bytes from 0x%x (%d)\n\r",count , wrapper->buffer->v_addr, sizeof(CANMsg));
+	iop_debug("OCCAN: Writing from 0x%x (%d)\n\r", wrapper->buffer->v_addr, sizeof(CANMsg));
 
 	if ( !can->started )
 		return RTEMS_RESOURCE_IN_USE; /* EBUSY */
 
 
-	if ( (left < sizeof(CANMsg)) || (!wrapper->buffer->v_addr) ){
+	if ( !wrapper->buffer->v_addr){
 		return RTEMS_INVALID_NAME; /* EINVAL */
 	}
 
 	/* Build CANMsg */
-	msg.extended = iop_buffer->header_off;
-	msg.rtr = iop_buffer->v_addr + iop_buffer->header_off + sizeof(int);
-	msg.sshot = iop_buffer->v_addr + iop_buffer->header_off + 2*sizeof(int);
-	msg.id = iop_buffer->v_addr + iop_buffer->header_off + 3*sizeof(int);
-	msg_addr->len = iop_buffer->payload_size;
+//	msg.extended = iop_buffer->header_off;
+//	msg.rtr = iop_buffer->v_addr + iop_buffer->header_off + sizeof(int);
+//	msg.sshot = iop_buffer->v_addr + iop_buffer->header_off + 2*sizeof(int);
+//	msg.id = iop_buffer->v_addr + iop_buffer->header_off + 3*sizeof(int);
+//	msg_addr->len = iop_buffer->payload_size;
+	memcpy(&msg.extended, iop_buffer->header_off, sizeof(int));
+	memcpy(&msg.rtr, iop_buffer->header_off + sizeof(int), sizeof(int));
+	memcpy(&msg.sshot, iop_buffer->header_off + 2* sizeof(int), sizeof(int));
+	memcpy(&msg.id, iop_buffer->header_off + 4*sizeof(int), sizeof(int));
+	msg.len = iop_buffer->payload_size;
+
 	/* limit CAN message length to 8 */
-	msg->len = (msg->len > 8) ? 8 :msg->len;
-	for(i = 0; i < msg->len; i++){
-		msg.data[i] = (char *) ((iop_buffer->v_addr + iop_buffer->payload_off) + i);
-	}
+	msg.len = (msg.len > 8) ? 8 :msg.len;
+//	for(i = 0; i < msg.len; i++){
+//		msg.data[i] = (char *) ((iop_buffer->v_addr + iop_buffer->payload_off) + i);
+//	}
+	memcpy(msg.data,
+			iop_buffer->v_addr + iop_buffer->payload_off,
+			msg.len*sizeof(char));
 
 #ifdef DEBUG_VERBOSE
 	pelican_regs_print(can->regs);
@@ -1098,7 +1141,7 @@ uint32_t occan_write(iop_device_driver_t *iop_dev, void *arg){
 	if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
 		rtems_interrupt_enable(oldLevel);
 //		rw_args->bytes_moved = 0;
-		bytes_moved = 0;
+//		bytes_moved = 0;
 		return RTEMS_IO_ERROR; /* EIO */
 	}
 
@@ -1108,159 +1151,94 @@ uint32_t occan_write(iop_device_driver_t *iop_dev, void *arg){
 	 */
 	if ( occan_fifo_empty(&can->tx_fifo ) ){
 		/*pelican_regs_print(cans[minor+1].regs);*/
-		if ( !pelican_send(can,msg) ) {
+		if ( !pelican_send(can,msg_addr)) {
 			/* First message put directly into HW TX fifo
 			 * This will turn TX interrupt on.
 			 */
-			left -= sizeof(CANMsg);
-			msg++;
-
 			can->sending = 1;
 			/* bump stat counters */
 			can->stats.tx_msgs++;
 
 			iop_debug("OCCAN: Sending direct via HW\n\r");
+			return RTEMS_SUCCESSFUL;
+		}else{
+			/* Lets put it in the fifo and wait till later to send */
+			if(occan_fifo_put(&can->tx_fifo, msg_addr, 0)){
+				/* Message saved in the fifo */
+				return RTEMS_SUCCESSFUL;
+			}else{
+				/* No space on the software fifo.
+				 * Both the software fifo and the
+				 * device's fifo are full. return error */
+				return RTEMS_IO_ERROR;
+			}
 		}
 	}
 
-//	/* Put messages into software fifo */
+	/* Since the fifo has messages that need to be sent
+	 * first lets try to send everything */
 //	while ( left >= sizeof(CANMsg) ){
-//
-//		/* limit CAN message length to 8 */
-//		msg_addr->len = (msg_addr->len > 8) ? 8 :msg_addr->len;
-//
-//		/* TODO check if this condition is ok */
-//		if (!occan_fifo_put(&can->tx_fifo,msg_addr,0)){
-//
-//			iop_debug("OCCAN: FIFO is full\n\r");
-//			/* Block only if no messages previously sent
-//			 * and not in blocking mode
-//			 */
-////			if ( !can->txblk  || (left != rw_args->count) )
-//			if ( !can->txblk  || (left != count) )
-//				break;
-//
-//			/* turn on interupts again and wait
-//				INT_ON
-//				WAIT FOR FREE BUF;
-//				INT_OFF;
-//				CHECK_IF_FIFO_EMPTY ==> SEND DIRECT VIA HW;
-//			*/
-//			rtems_interrupt_enable(oldLevel);
-//
-//			iop_debug("OCCAN: Waiting for tx int\n\r");
-//
-//			rtems_semaphore_obtain(can->txsem, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
-//
-//			/* did we get woken up by a BUS OFF error? */
-//			if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
-//				iop_debug("OCCAN: Blocking write got woken up by BUS OFF error or RESET event\n\r");
-//				/* At this point it should not matter how many messages we handled */
-////				rw_args->bytes_moved = rw_args->count-left;
-//				bytes_moved = count-left;
-//				return RTEMS_IO_ERROR; /* EIO */
-//			}
-//
-//			rtems_interrupt_disable(oldLevel);
-//
-//			if ( occan_fifo_empty(&can->tx_fifo) ){
-//				if ( !pelican_send(can,msg) ) {
-//					/* First message put directly into HW TX fifo
-//				   * This will turn TX interrupt on.
-//				   */
-//					left -= sizeof(CANMsg);
-//					msg++;
-//
-//					/* bump stat counters */
-//					can->stats.tx_msgs++;
-//
-//					iop_debug("OCCAN: Sending direct2 via HW\n\r");
-//				}
-//			}
-//			continue;
-//		}
+	while(occan_fifo_full(&can->tx_fifo)){
 
-		/* Put messages into software fifo */
-		while ( left >= sizeof(CANMsg) ){
+		if (!occan_fifo_put(&can->tx_fifo,msg_addr,0)){
 
-			/* limit CAN message length to 8 */
-			msg_addr->len = (msg_addr->len > 8) ? 8 :msg_addr->len;
-
-			/* TODO check if this condition is ok */
-			if (!occan_fifo_put(&can->tx_fifo,msg_addr,0)){
-
-				iop_debug("OCCAN: FIFO is full\n\r");
-				/* Block only if no messages previously sent
-				 * and not in blocking mode
-				 */
-	//			if ( !can->txblk  || (left != rw_args->count) )
-				if ( !can->txblk  || (left != count) )
-					break;
-
-				/* turn on interupts again and wait
-					INT_ON
-					WAIT FOR FREE BUF;
-					INT_OFF;
-					CHECK_IF_FIFO_EMPTY ==> SEND DIRECT VIA HW;
-				*/
-				rtems_interrupt_enable(oldLevel);
-
-				iop_debug("OCCAN: Waiting for tx int\n\r");
-
-				rtems_semaphore_obtain(can->txsem, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
-
-				/* did we get woken up by a BUS OFF error? */
-				if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
-					iop_debug("OCCAN: Blocking write got woken up by BUS OFF error or RESET event\n\r");
-					/* At this point it should not matter how many messages we handled */
-	//				rw_args->bytes_moved = rw_args->count-left;
-					bytes_moved = count-left;
-					return RTEMS_IO_ERROR; /* EIO */
-				}
-
-				rtems_interrupt_disable(oldLevel);
-
-				if ( occan_fifo_empty(&can->tx_fifo) ){
-					if ( !pelican_send(can,msg) ) {
-						/* First message put directly into HW TX fifo
-					   * This will turn TX interrupt on.
-					   */
-						left -= sizeof(CANMsg);
-						msg++;
-
-						/* bump stat counters */
-						can->stats.tx_msgs++;
-
-						iop_debug("OCCAN: Sending direct2 via HW\n\r");
-					}
-				}
-				continue;
+			iop_debug("OCCAN: FIFO is full\n\r");
+			/* Block only if no messages previously sent
+			 * and not in blocking mode
+			 */
+//			if ( !can->txblk  || (left != rw_args->count) )
+			if ( !can->txblk ){
+				/* Software fifo is full and we can't block
+				 * so the oldest message in the fifo will be
+				 * lost and we will try to send later */
+				occan_fifo_put(&can->tx_fifo,msg_addr, 1);
+				return RTEMS_TOO_MANY;
 			}
-		/* copy message into fifo area */
-	//		*fifo_msg = *msg;
 
-		/* tell interrupt handler about the message */
-		/* At this point if we were not able to free space
-		 * from the queue the message might be lost */
-		occan_fifo_put(&can->tx_fifo,msg_addr, 0); /* TODO consider using the force signal at 1 and delete the oldest message */
+			/* turn on interupts again and wait
+				INT_ON
+				WAIT FOR FREE BUF;
+				INT_OFF;
+				CHECK_IF_FIFO_EMPTY ==> SEND DIRECT VIA HW;
+			*/
+			rtems_interrupt_enable(oldLevel);
 
-		iop_debug("OCCAN: Put info fifo SW\n\r");
+			iop_debug("OCCAN: Waiting for tx int\n\r");
 
-		/* Prepare insert of next message */
-		msg++;
-		left-=sizeof(CANMsg);
+			rtems_semaphore_obtain(can->txsem, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
+
+			/* did we get woken up by a BUS OFF error? */
+			if ( can->status & (OCCAN_STATUS_ERR_BUSOFF|OCCAN_STATUS_RESET) ){
+				iop_debug("OCCAN: Blocking write got woken up by BUS OFF error or RESET event\n\r");
+				/* At this point it should not matter how many messages we handled */
+//				rw_args->bytes_moved = rw_args->count-left;
+				return RTEMS_IO_ERROR; /* EIO */
+			}
+
+			rtems_interrupt_disable(oldLevel);
+
+			if ( occan_fifo_empty(&can->tx_fifo) ){
+				if ( !pelican_send(can,msg_addr) ) {
+					/* First message put directly into HW TX fifo
+				   * This will turn TX interrupt on.
+				   */
+					/* bump stat counters */
+					can->stats.tx_msgs++;
+
+					iop_debug("OCCAN: Sending direct2 via HW\n\r");
+					return RTEMS_SUCCESSFUL;
+				}
+			}
+		}else{
+			iop_debug("OCCAN: Put message into SW fifo \n\r");
+			return RTEMS_SUCCESSFUL;
+		}
 	}
-
 	rtems_interrupt_enable(oldLevel);
+	/* The cycle was exited so the fifo must not be full */
+	occan_fifo_put(&can->tx_fifo, msg_addr, 0);
+	iop_debug("OCCAN: Message saved\n\r");
 
-//	rw_args->bytes_moved = rw_args->count-left;
-	bytes_moved = count-left;
-//	iop_debug("OCCAN: Sent %d\n\r",rw_args->bytes_moved);
-	iop_debug("OCCAN: Sent %d\n\r",bytes_moved);
-
-//	if ( left == rw_args->count )
-	if ( left == count )
-		return RTEMS_TIMEOUT; /* ETIMEDOUT should be EAGAIN/EWOULDBLOCK */
 	return RTEMS_SUCCESSFUL;
 }
 
