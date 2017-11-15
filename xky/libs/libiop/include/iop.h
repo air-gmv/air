@@ -264,7 +264,6 @@ extern iop_configuration_t usr_configuration;
 
 void iop_main_loop(void);
 
-#define IOP_NEEDS_DEBUG
 #ifdef IOP_NEEDS_DEBUG
 #include <pprintf.h>
 #define iop_debug(fmt ...)              pprintf(fmt)

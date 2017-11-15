@@ -37,12 +37,17 @@ uint8_t occan_fifo_clear(occan_fifo *queue ){
 	return 1;
 }
 
-/* TODO force put option for when the queue is full */
 uint8_t occan_fifo_put(occan_fifo *queue, CANMsg *new, int force){
 	int i;
 	if(queue->max -queue->cnt < 1){
 		/* queue is full */
-		return 0;
+		if(!force)
+		{
+			return 0;
+		}else
+		{
+			queue->ovcnt++;
+		}
 	}
 
 	queue->fifo[queue->last].extended = new->extended;
