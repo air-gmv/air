@@ -39,7 +39,7 @@ void can_copy_header(
 		iop_physical_device_t *iop_dev,
 		iop_wrapper_t *wrapper,
 		iop_header_t *header);
-void can_compare_header(
+uint16_t can_compare_header(
 		iop_wrapper_t *wrapper,
 		iop_header_t *header);
 void can_prebuild_header(

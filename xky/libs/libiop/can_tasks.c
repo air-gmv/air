@@ -4,7 +4,7 @@
  *  Created on: Sep 7, 2017
  *      Author: gmvs@gmv.com
  *
- *      Read and write functions for CAN
+ *      Read and write high level functions for CAN
  */
 
 #include <iop.h>
@@ -20,19 +20,11 @@ void can_write(iop_physical_device_t *pdev)
 
 	/* Get the underlying driver */
 	iop_can_device_t *can_driver = (iop_can_device_t *) pdev->driver;
-//	rtems_libio_rw_args_t rw_args = {
-//			.buffer = NULL,
-//			.count = 0,
-//			.flags = 0,
-//			.bytes_moved = 0,
-//	};
 
 	iop_debug("  :: can-write running!\n");
 
 	while(!iop_chain_is_empty(&pdev->sendqueue)){
 		iop_wrapper_t *wrapper = obtain_wrapper(&pdev->sendqueue);
-//		uint8_t *message = (uint8_t *) wrapper->buffer->v_addr;
-//		rw_args.buffer = wrapper;
 
 		/* Write to the device */
 		if(can_driver->dev.write((iop_device_driver_t *) can_driver,
@@ -63,7 +55,26 @@ void can_reader(iop_physical_device_t *pdev)
 
 	iop_debug("  :: can-read running!\n");
 
-	/* Read from the buffer */
+	uint32_t i;
+//	uint32_t reads = pdev->reads_per_period[xky_schedule.current_schedule_index];
+	uint32_t reads= 5; // number of reads per period
+	for(i = 0; i < reads; i++){
+		iop_wrapper_t *wrapper = obtain_free_wrapper();
 
+		if(wrapper == NULL){
+			iop_raise_error(OUT_OF_MEMORY);
+			break;
+		}
 
+		if(driver->dev.read((iop_device_driver_t *) driver,
+				wrapper) == RTEMS_SUCCESSFUL){
+			/* We received something lets make it
+			 * available to higher level */
+			iop_chain_append(&pdev->rcvqueue, &wrapper->node);
+			wrapper = NULL;
+		}
+		if(wrapper != NULL){
+			release_wrapper(wrapper);
+		}
+	}
 }
