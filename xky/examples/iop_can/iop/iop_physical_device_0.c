@@ -5,7 +5,7 @@
  * ============================================================================
  */
 #include <iop.h>
-#include <occan.h>
+#include <iop_occan.h>
 #include <can_support.h>
 
 /**
@@ -95,9 +95,9 @@ static iop_can_device_t device_configuration = \
         .close          = occan_close,
     },
     .dev_name ="/dev/occan0",
-	.count = 0,
-	.flags = 0,
-	.bytes_moved = 0,
+//	.count = 0,
+//	.flags = 0,
+//	.bytes_moved = 0,
 };
 
 /**
