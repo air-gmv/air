@@ -329,6 +329,11 @@ class IOParser(object):
             xml_header = xml.parse_tag(SPWHEADER, 1, 1, self.logger)
             if self.logger.check_errors(): return None
             return self.parse_spw_header(xml_header)
+        elif pdevice.type == CAN:
+            xml_header = xml.parse_tag(CANHEADER, 1, 1, self.logger)
+            if self.logger.check_errprs(): return None
+            return self.parse_can_header(xml_header)
+            
 
         # invalid header
         return None
@@ -366,7 +371,26 @@ class IOParser(object):
         # sanity check
         if self.logger.check_errors(): return False
         return header
+    
+    ## Parse CANBUS Header
+    # @param self object pointer
+    # @param xml SpaceWire Header xml node
+    def parse_can_header(selfself, xml):
+        
+        # clear previous errors and warning
+        self.logger.clear_errors(3)
+        
+        # parse attributes
+        header = CanbusHeader()
+        header.extended = xml.parse_attr(CANHEADER_EXTENDED, VALID_BOOLEAN_TYPE, True, self.logger)
+        header.rtr = xml.parse_attr(CANHEADER_RTR, VALID_BOOLEAN_TYPE, True, self.logger)
+        header.sshot = xml.parse_attr(CANHEADER_SSHOT, VALID_BOOLEAN_TYPE, True, self.looger)
+        header.id = xml.parse_attr(CANHEADER_ID, VALID_ID, True, self.logger)
 
+        # sanity check
+        if self.logger.check_errors(): return False
+        return header
+    
     def parse_schedule(self, xml):
 
         # clear previous errors and warnings

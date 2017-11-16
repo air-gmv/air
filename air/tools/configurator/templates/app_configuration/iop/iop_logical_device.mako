@@ -14,6 +14,8 @@ static iop_header_t route_header[${len(device.routes)}] = ${'\\'}
 ${iop_template.EthHeader(route.header)}${',' if i < len(device.routes) - 1 else ''}
 	%elif route.device.type == 'SPW':
 ${iop_template.SpwHeader(route.header)}${',' if i < len(device.routes) - 1 else ''}
+	%elif route.device.type == 'CAN':
+${iop_template.CanHeader(route.header)}${',' if i < len(device.routes) - 1 else ''}
 	%endif
 % endfor
 };
