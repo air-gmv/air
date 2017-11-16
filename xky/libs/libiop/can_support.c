@@ -8,16 +8,15 @@
 #include <can_support.h>
 #include <iop.h>
 
-/*
- * Stub functions
- */
-
 void can_copy_header(
 		iop_physical_device_t *iop_dev,
 		iop_wrapper_t *wrapper,
 		iop_header_t *header) {
 
 }
+
+/* This function compares the ID on the wrapper
+ * to the ID  of a given header. */
 
 uint16_t can_compare_header(
 		iop_wrapper_t *wrapper,

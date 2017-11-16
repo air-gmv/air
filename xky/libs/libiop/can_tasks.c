@@ -40,9 +40,7 @@ void can_write(iop_physical_device_t *pdev)
 		iop_wrapper_t *wrapper = obtain_wrapper(&error);
 		iop_chain_append(&pdev->sendqueue, &wrapper->node);
 	}
-
 }
-
 
 void can_reader(iop_physical_device_t *pdev)
 {
@@ -50,7 +48,7 @@ void can_reader(iop_physical_device_t *pdev)
 	iop_chain_control error;
 	iop_chain_initialize_empty(&error);
 
-	/* Get underlaying driver */
+	/* Get underlying driver */
 	iop_can_device_t *driver = (iop_can_device_t *) pdev->driver;
 
 	iop_debug("  :: can-read running!\n");

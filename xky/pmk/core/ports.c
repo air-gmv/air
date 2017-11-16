@@ -82,11 +82,19 @@ void pmk_channels_init(void) {
 
 void pmk_partition_ports_init(pmk_partition_t *partition) {
 
+	printk("  :: pmk_partition_port_init is here!\n");
+#ifdef PMK_DEBUG
+    printk(" :: The pmk_partition_ports_init is taking place.\n Number of ports for this parition: %d \n",
+    		partition->ports.length);
+#endif
     int i;
     for (i = 0; i < partition->ports.length; ++i) {
 
         /* get port */
         pmk_port_t *port = ((pmk_port_t **)partition->ports.elements)[i];
+#ifdef PMK_DEBUG
+    printk(" :: The pmk_partition_ports_init channel info %s\n", port->channel->name);
+#endif
 
         /* link port to partition */
         port->partition = partition;
