@@ -40,9 +40,9 @@ static iop_buffer_t *rx_iop_buffer[${device.setup.rxd_count}];
  * message queue
  */
  
-static CANMsg rx_msg_fifo[${}];
+static CANMsg rx_msg_fifo[${device.setup.internal_queue}];
  
-static CANMsg tx_msg_fifo[${}]; 
+static CANMsg tx_msg_fifo[${device.setup.internal_queue}]; 
 
 /**
  * @brief RX and TX descriptor table
@@ -55,9 +55,9 @@ static occan_priv occan_driver = \
 {
 	.speed		= ${device.setup.speed},
 	.filter		= {
-		.single_mode	= ${0 \
+		.single_mode	= ${1 \
 							if device.setup.single_mode is True else \
-							1},
+							0},
 		.code			= {${device.setup.code}},
 		.mask			= {${device.setup.mask}},
 	},
@@ -66,12 +66,12 @@ static occan_priv occan_driver = \
 	.iop_buffers_storage	= iop_buffers_storage,
 	
 	.rx_fifo = {
-		.max = ${device.setup.internal_buffer},
+		.max = ${device.setup.internal_queue},
 		.fifo = rx_msg_fifo,
 	},
 	
 	.tx_fifo = {
-		.max = ${},
+		.max = ${device.setup.internal_queue},
 		.fifo = tx_msg_fifo,
 	}
 }
@@ -90,9 +90,6 @@ static iop_can_device_t device_configuration =${'\\'}
 		.close			= occan_close,
 	},
 	.dev_name = ${},
-	.count = ${},
-	.flags = ${},
-	.bytes_moved = ${},
 }
 
 ${iop_template.PhysicalDevice(iop_configuration, device, device_functions)}\

@@ -15,13 +15,14 @@
 
 //#include <rtems/libio.h>
 //#include <string.h>
+#include "../occan/include/iop_occan.h"
+
 #include <bsp.h>
 
 #include <leon.h>
 #include <ambapp.h>
-#include <iop_occan.h>
 #include <can_support.h>
-#include <occan_msg_queue.h>
+#include "../occan/include/occan_msg_queue.h"
 
 /* RTEMS -> ERRNO decoding table
 
@@ -176,15 +177,17 @@ static void pelican_open(occan_priv *priv){
 	/* Set defaults */
 	priv->speed = OCCAN_SPEED_250K;
 
+	/* No need to set filter since that is done on the
+	 * iop configuration files */
 	/* set acceptance filters to accept all messages */
-	priv->filter.code[0] = 0;
-	priv->filter.code[1] = 0;
-	priv->filter.code[2] = 0;
-	priv->filter.code[3] = 0;
-	priv->filter.mask[0] = 0xff;
-	priv->filter.mask[1] = 0xff;
-	priv->filter.mask[2] = 0xff;
-	priv->filter.mask[3] = 0xff;
+//	priv->filter.code[0] = 0;
+//	priv->filter.code[1] = 0;
+//	priv->filter.code[2] = 0;
+//	priv->filter.code[3] = 0;
+//	priv->filter.mask[0] = 0xff;
+//	priv->filter.mask[1] = 0xff;
+//	priv->filter.mask[2] = 0xff;
+//	priv->filter.mask[3] = 0xff;
 
 	/* Set clock divider to extended mode, clkdiv not connected
 	 */
