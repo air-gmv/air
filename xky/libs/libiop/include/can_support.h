@@ -10,7 +10,7 @@
 #include <iop.h>
 #include <rtems.h>
 #include <iop_support.h>
-#include <occan_msg_queue.h>
+#include "../drivers/occan/include/occan_msg_queue.h"
 
 typedef struct {
 	/* Generic device configuration */
