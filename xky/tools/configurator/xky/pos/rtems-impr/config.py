@@ -1,9 +1,9 @@
 ##
 # @package xky.pos.rtems-impr
-# @author pfnf
-# @brief RTEMS 4.8 IMPR configuration
+# @author $(AIR_RUNNER_USER)
+# @brief RTEMS 4.12 configuration
 
-__author__ = 'pfnf'
+__author__ = '$(AIR_RUNNER_USER)'
 
 import os
 import utils
@@ -40,9 +40,8 @@ makefile = os.path.join(POS_DIRECTORY, 'rtems-impr', 'rtems-impr_makefile.mako')
 # @brief List of lines to be add to Makefile.inc
 makefile_inc = [
     "RTEMS_DIRECTORY=rtems-impr",
-    "RTEMS_TARGET=sparc-rtems4.8",
+    "RTEMS_TARGET=sparc-rtems5",
     "RTEMS_BSP=leon3",
-    "RTEMS_EXTERNAL_LIBRARY={0}".format(os.path.join('edilib', 'library'))
 ]
 
 # @brief List of application partition templates
