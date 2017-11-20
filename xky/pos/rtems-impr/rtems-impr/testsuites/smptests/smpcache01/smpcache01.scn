@@ -1,0 +1,5 @@
+*** BEGIN OF TEST SMPCACHE 1 ***
+Calling test cases. Done!
+Calling test cases with ISR disabled. Done!
+Calling test cases with CPU0 holding the giant lock. Done!
+*** END OF TEST SMPCACHE 1 ***

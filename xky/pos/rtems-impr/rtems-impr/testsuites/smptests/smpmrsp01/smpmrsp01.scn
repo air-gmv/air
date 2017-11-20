@@ -1,0 +1,378 @@
+*** BEGIN OF TEST SMPMRSP 1 ***
+test MrsP flush error
+test MrsP initially locked error
+test MrsP nested obtain error
+test MrsP unlock order error
+test MrsP deadlock error
+test MrsP multiple obtain
+test MrsP various block and unblock
+[1] IDLE -> WORK (prio   4, node WORK)
+[0] MAIN -> IDLE (prio   3, node MAIN)
+[0] IDLE -> MAIN (prio   3, node MAIN)
+[1] WORK -> IDLE (prio   3, node WORK)
+[1] IDLE -> HIG1 (prio   2, node HIG1)
+[1] HIG1 -> IDLE (prio   3, node WORK)
+[1] IDLE -> HIG1 (prio   2, node HIG1)
+[1] HIG1 -> WORK (prio   3, node WORK)
+[1] WORK -> MAIN (prio   3, node WORK)
+[0] MAIN -> HIG0 (prio   2, node HIG0)
+[1] MAIN -> HIG1 (prio   2, node HIG1)
+[1] HIG1 -> WORK (prio   3, node WORK)
+[0] HIG0 -> MAIN (prio   3, node MAIN)
+[1] WORK -> MAIN (prio   3, node WORK)
+[0] MAIN -> HIG0 (prio   2, node HIG0)
+[1] MAIN -> HIG1 (prio   2, node HIG1)
+[1] HIG1 -> MAIN (prio   3, node WORK)
+[0] HIG0 -> IDLE (prio 255, node IDLE)
+[0] IDLE -> MAIN (prio   4, node MAIN)
+[1] MAIN -> WORK (prio   3, node WORK)
+test MrsP obtain after migration
+[1] IDLE -> WORK (prio   3, node WORK)
+[0] MAIN -> HIG0 (prio   2, node HIG0)
+[1] WORK -> MAIN (prio   3, node WORK)
+[0] HIG0 -> IDLE (prio   2, node HIG0)
+[0] IDLE -> HIG0 (prio   2, node HIG0)
+[1] MAIN -> WORK (prio   3, node WORK)
+[0] HIG0 -> MAIN (prio   3, node MAIN)
+test MrsP obtain and sleep and release
+[0] MAIN ->  RUN (prio   2, node  RUN)
+[0]  RUN -> MAIN (prio   1, node MAIN)
+[0] MAIN -> IDLE (prio   1, node MAIN)
+[0] IDLE -> MAIN (prio   1, node MAIN)
+test MrsP obtain and release with help
+[1] IDLE -> HELP (prio   3, node HELP)
+[0] MAIN -> IDLE (prio   2, node MAIN)
+[0] IDLE -> MAIN (prio   2, node MAIN)
+[1] HELP -> MAIN (prio   2, node HELP)
+[0] MAIN ->  RUN (prio   1, node  RUN)
+[1] MAIN -> HELP (prio   2, node HELP)
+[1] HELP -> MAIN (prio   2, node HELP)
+[0]  RUN -> IDLE (prio   2, node MAIN)
+[1] MAIN -> HELP (prio   2, node HELP)
+[1] HELP -> MAIN (prio   2, node HELP)
+[0] IDLE -> MAIN (prio   1, node MAIN)
+[1] MAIN -> HELP (prio   2, node HELP)
+test MrsP obtain and release
+[1] IDLE -> WORK (prio   4, node WORK)
+[1] WORK -> MAIN (prio   3, node WORK)
+[0] MAIN -> HIG0 (prio   1, node HIG0)
+[1] MAIN -> WORK (prio   3, node WORK)
+[0] HIG0 -> MAIN (prio   2, node MAIN)
+test MrsP load
+worker[0]
+  sleep = 7
+  timeout = 1780
+  obtain[0] = 607
+  obtain[1] = 443
+  obtain[2] = 988
+  obtain[3] = 659
+  obtain[4] = 1169
+  obtain[5] = 846
+  obtain[6] = 1267
+  obtain[7] = 854
+  obtain[8] = 1016
+  obtain[9] = 1079
+  obtain[10] = 1165
+  obtain[11] = 1020
+  obtai[12] = 767
+  obtain[13] = 925
+  obtain[14] = 792
+  obtain[15] = 881
+  obtain[16] = 439
+  obtain[17] = 1007
+  obtain[18] = 243
+  obtain[19] = 853
+  obtain[20] = 210
+  obtain[21] = 445
+  obtain[22] = 247
+  obtain[23] = 497
+  obtain[24] = 102
+  obtain[25] = 580
+  obtain[26] = 90
+  obtain[27] = 186
+  obtain[28] = 74
+  obtain[29] = 139
+  obtain[30] = 68
+  obtain[31] = 98
+  cpu[0] = 27776
+  cpu[1] = 2795
+  cpu[2] = 4397
+  cpu[3] = 4551
+worker[1]
+  sleep = 1
+  timeout = 0
+  obtain[0] = 1
+  obtain[1] = 0
+  obtain[2] = 3
+  obtain[3] = 0
+  obtain[4] = 0
+  obtain[5] = 0
+  obtain[6] = 0
+  obtain[7] = 0
+  obtain[8] = 0
+  obtain[9] = 0
+  obtain[10] = 0
+  obtain[11] = 0
+  obtain[12] = 0
+  obtain[13] = 0
+  obtain[14] = 0
+  obtain[15] = 0
+  obtain[16] = 0
+  obtain[17] = 0
+  obtain[18] = 0
+  obtain[19] = 0
+  obtain[20] = 0
+  obtain[21] = 0
+  obtain[22] = 0
+  obtain[23] = 0
+  obtain[24] = 0
+  obtain[25] = 0
+  obtain[26] = 0
+  obtain[27] = 0
+  obtain[28] = 0
+  obtain[29] = 0
+  obtain[30] = 0
+  obtain[31] = 0
+  cpu[0] = 9
+  cpu[1] = 0
+  cpu[2] = 0
+  cpu[3] = 0
+worker[2]
+  sleep = 5
+  timeout = 2083
+  obtain[0] = 740
+  obtain[1] = 489
+  obtain[2] = 1232
+  obtain[3] = 732
+  obtain[4] = 1361
+  obtain[5] = 1070
+  obtain[6] = 1334
+  obtain[7] = 997
+  obtain[8] = 1418
+  obtain[9] = 1087
+  obtain[10] = 1005
+  obtain[11] = 1088
+  obtain[12] = 865
+  obtain[13] = 1279
+  obtain[14] = 698
+  obtain[15] = 1152
+  obtain[16] = 339
+  obtain[17] = 1347
+  obtain[18] = 340
+  obtain[19] = 723
+  obtain[20] = 295
+  obtain[21] = 933
+  obtain[22] = 223
+  obtain[23] = 633
+  obtain[24] = 236
+  obtain[25] = 405
+  obtain[26] = 140
+  obtain[27] = 261
+  obtain[28] = 70
+  obtain[29] = 157
+  obtain[30] = 89
+  obtain[31] = 71
+  cpu[0] = 1931
+  cpu[1] = 35336
+  cpu[2] = 4338
+  cpu[3] = 4018
+worker[3]
+  sleep = 1
+  timeout = 1
+  obtain[0] = 0
+  obtain[1] = 0
+  obtain[2] = 3
+  obtain[3] = 0
+  obtain[4] = 5
+  obtain[5] = 0
+  obtain[6] = 0
+  obtain[7] = 0
+  obtain[8] = 0
+  obtain[9] = 0
+  obtain[10] = 0
+  obtain[11] = 0
+  obtain[12] = 0
+  obtain[13] = 0
+  obtain[14] = 0
+  obtain[15] = 0
+  obtain[16] = 0
+  obtain[17] = 0
+  obtain[18] = 0
+  obtain[19] = 0
+  obtain[20] = 0
+  obtain[21] = 0
+  obtain[22] = 0
+  obtain[23] = 0
+  obtain[24] = 0
+  obtain[25] = 0
+  obtain[26] = 0
+  obtain[27] = 0
+  obtain[28] = 0
+  obtain[29] = 0
+  obtain[30] = 0
+  obtain[31] = 0
+  cpu[0] = 0
+  cpu[1] = 14
+  cpu[2] = 0
+  cpu[3] = 3
+worker[4]
+  sleep = 9
+  timeout = 2196
+  obtain[0] = 896
+  obtain[1] = 565
+  obtain[2] = 1443
+  obtain[3] = 936
+  obtain[4] = 1506
+  obtain[5] = 1028
+  obtain[6] = 1541
+  obtain[7] = 1088
+  obtain[8] = 1683
+  obtain[9] = 1494
+  obtain[10] = 1283
+  obtain[11] = 1075
+  obtain[12] = 1101
+  obtain[13] = 1038
+  obtain[14] = 758
+  obtain[15] = 1300
+  obtain[16] = 350
+  obtain[17] = 1180
+  obtain[18] = 396
+  obtain[19] = 1171
+  obtain[20] = 232
+  obtain[21] = 767
+  obtain[22] = 336
+  obtain[23] = 470
+  obtain[24] = 196
+  obtain[25] = 461
+  obtain[26] = 148
+  obtain[27] = 394
+  obtain[28] = 68
+  obtain[29] = 259
+  obtain[30] = 80
+  obtain[31] = 54
+  cpu[0] = 725
+  cpu[1] = 1001
+  cpu[2] = 25845
+  cpu[3] = 23032
+worker[5]
+  sleep = 8
+  timeout = 2062
+  obtain[0] = 754
+  obtain[1] = 540
+  obtain[2] = 1318
+  obtain[3] = 886
+  obtain[4] = 1396
+  obtain[5] = 1030
+  obtain[6] = 1556
+  obtain[7] = 1126
+  obtain[8] = 1338
+  obtain[9] = 1061
+  obtain[10] = 1173
+  obtain[11] = 1396
+  obtain[12] = 1130
+  obtain[13] = 1189
+  obtain[14] = 867
+  obtain[15] = 1290
+  obtain[16] = 339
+  obtain[17] = 1177
+  obtain[18] = 396
+  obtain[19] = 915
+  obtain[20] = 236
+  obtain[21] = 1084
+  obtain[22] = 146
+  obtain[23] = 699
+  obtain[24] = 185
+  obtain[25] = 562
+  obtain[26] = 120
+  obtain[27] = 423
+  obtain[28] = 153
+  obtain[29] = 347
+  obtain[30] = 28
+  obtain[31] = 250
+  cpu[0] = 911
+  cpu[1] = 1018
+  cpu[2] = 23145
+  cpu[3] = 25154
+worker[6]
+  sleep = 1
+  timeout = 3
+  obtain[0] = 3
+  obtain[1] = 0
+  obtain[2] = 3
+  obtain[3] = 0
+  obtain[4] = 0
+  obtain[5] = 6
+  obtain[6] = 0
+  obtain[7] = 8
+  obtain[8] = 3
+  obtain[9] = 0
+  obtain[10] = 0
+  obtain[11] = 0
+  obtain[12] = 13
+  obtain[13] = 0
+  obtain[14] = 0
+  obtain[15] = 0
+  obtain[16] = 2
+  obtain[17] = 0
+  obtain[18] = 0
+  obtain[19] = 0
+  obtain[20] = 0
+  obtain[21] = 0
+  obtain[22] = 0
+  obtain[23] = 0
+  obtain[24] = 0
+  obtain[25] = 0
+  obtain[26] = 0
+  obtain[27] = 0
+  obtain[28] = 0
+  obtain[29] = 0
+  obtain[30] = 0
+  obtain[31] = 0
+  cpu[0] = 0
+  cpu[1] = 11
+  cpu[2] = 42
+  cpu[3] = 24
+worker[7]
+  sleep = 0
+  timeout = 0
+  obtain[0] = 0
+  obtain[1] = 0
+  obtain[2] = 0
+  obtain[3] = 0
+  obtain[4] = 0
+  obtain[5] = 0
+  obtain[6] = 0
+  obtain[7] = 0
+  obtain[8] = 0
+  obtain[9] = 0
+  obtain[10] = 0
+  obtain[11] = 0
+  obtain[12] = 0
+  obtain[13] = 0
+  obtain[14] = 0
+  obtain[15] = 0
+  obtain[16] = 0
+  obtain[17] = 0
+  obtain[18] = 0
+  obtain[19] = 0
+  obtain[20] = 0
+  obtain[21] = 0
+  obtain[22] = 0
+  obtain[23] = 0
+  obtain[24] = 0
+  obtain[25] = 0
+  obtain[26] = 0
+  obtain[27] = 0
+  obtain[28] = 0
+  obtain[29] = 0
+  obtain[30] = 0
+  obtain[31] = 0
+  cpu[0] = 0
+  cpu[1] = 0
+  cpu[2] = 0
+  cpu[3] = 0
+migrations[0] = 20731
+migrations[1] = 20731
+migrations[2] = 20366
+migrations[3] = 21099
+*** END OF TEST SMPMRSP 1 ***

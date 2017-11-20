@@ -1,0 +1,23 @@
+#  COPYRIGHT (c) 1989-2009.
+#  On-Line Applications Research Corporation (OAR).
+#
+#  The license and distribution terms for this file may be
+#  found in the file LICENSE in this distribution or at
+#  http://www.rtems.org/license/LICENSE.
+#
+
+This file describes the directives and concepts tested by this test set.
+
+test set name:  sp57
+
+directives:
+
+  rtems_task_create
+  rtems_task_start
+  rtems_task_restart
+  rtems_task_wake_after
+
+concepts:
+
++ Ensure that when a task is restarted while it is sleeping that the
+  behavior is as expected.

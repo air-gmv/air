@@ -1,0 +1,37 @@
+#  COPYRIGHT (c) 1989-2009.
+#  On-Line Applications Research Corporation (OAR).
+#
+#  The license and distribution terms for this file may be
+#  found in the file LICENSE in this distribution or at
+#  http://www.rtems.org/license/LICENSE.
+#
+
+This file describes the directives and concepts tested by this test set.
+
+test set name:  spchain
+
+directives:
+
+  rtems_chain_initialize_empty
+  rtems_chain_append
+  rtems_chain_insert
+  rtems_chain_is_tail
+  rtems_chain_append_with_empty_check
+  rtems_chain_prepend_with_empty_check
+  rtems_chain_get_with_empty_check
+  rtems_chain_append_with_notification
+  rtems_chain_prepend_with_notification
+  rtems_chain_get_with_notification
+  rtems_chain_get_with_wait
+  rtems_chain_node_count_unprotected
+  _Chain_Insert_ordered_unprotected
+  _Chain_Iterator_registry_initialize
+  _Chain_Iterator_registry_update
+  _Chain_Iterator_initialize
+  _Chain_Iterator_next
+  _Chain_Iterator_set_position
+  _Chain_Iterator_destroy
+
+concepts:
+
++ Ensure that the chain operations listed above behave as defined.

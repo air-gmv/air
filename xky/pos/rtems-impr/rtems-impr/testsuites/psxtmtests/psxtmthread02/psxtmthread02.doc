@@ -1,0 +1,23 @@
+#  COPYRIGHT (c) 1989-2011.
+#  On-Line Applications Research Corporation (OAR).
+#  COPYRIGHT (c) 2013.
+#
+#  The license and distribution terms for this file may be
+#  found in the file LICENSE in this distribution or at
+#  http://www.rtems.org/license/LICENSE.
+#
+
+This test benchmarks the following operations:
+
++ pthread_create - preempt
+
+This file describes the directives and concepts tested by this test set.
+
+test set name: psxtmthread
+
+directives:
++ pthread_create
+
+concepts:
++ Benchmark the call pthread_create for creating a thread with a higher priority
+  and the resulting preempt.
