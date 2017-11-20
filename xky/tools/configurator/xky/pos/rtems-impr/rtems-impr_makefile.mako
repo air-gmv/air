@@ -42,7 +42,7 @@ RTEMS_INSTALL_DIR=${install_dir}
 # All
 ${template.Rule('all', True, ['rtems-impr'])}
 
-# RTEMS 4.10
+# RTEMS 4.12
 ${template.Rule('rtems-impr', True, None)}
 ${'\t'}if [ ! -d "$(RTEMS_BUILD_DIR)" ]; then ${'\\'}
 ${'\t'}$(MKDIR) $(RTEMS_BUILD_DIR) && ${'\\'}
@@ -58,8 +58,7 @@ ${'\t\t'}--disable-tests ${'\\'}
 ${'\t\t'}--enable-rtemsbsp=$(RTEMS_BSP) ${'\\'}
 ${'\t\t'}--prefix=$(RTEMS_INSTALL_DIR) && cd ..; ${'\\'}
 ${'\t'}fi
-${'\t'}make -C $(RTEMS_BUILD_DIR) CPPFLAGS='$(XKY_HEADERS)' && ${'\\'}
-${'\t'}make -C $(RTEMS_BUILD_DIR) install && ${'\\'}
+${'\t'}make -C $(RTEMS_BUILD_DIR) CPPFLAGS='$(XKY_HEADERS)'
 
 # Clean
 ${template.Rule('clean', True, None)}
