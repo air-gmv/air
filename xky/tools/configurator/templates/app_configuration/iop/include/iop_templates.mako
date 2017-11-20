@@ -122,13 +122,12 @@ extern iop_port_t remote_ports[${len(iop_configuration.ports)}];
     }\
 </%def>
 
-</%def name="CANHeader(header)">\
+<%def name="CanHeader(header)">\
 	{
 		.can_header = {
-			.extended = ${},
-			.rtr 	  = ${},
-			.sshot	  = ${},
-			.id		  = ${}
+			.extended = ${int(header.extended)},
+			.rtr 	  = ${int(header.rtr)},
+			.id		  = ${header.can_id}
 		}
 	}\
 </%def>
