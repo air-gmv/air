@@ -57,8 +57,6 @@ ${template.FileList(library_headers)}\
 
 RTEMS_MAKEFILE_PATH=${'\\'}
 ${os.path.relpath(os.path.join(xky.INSTALL_POS_DIRECTORY, '$(RTEMS_DIRECTORY)', '$(RTEMS_DIRECTORY)-install', '$(RTEMS_TARGET)', '$(RTEMS_BSP)'), output_dir)}
-RTEMS_EXTERNAL_LIBRARY_PATH=${'\\'}
-${os.path.relpath(os.path.join(xky.INSTALL_POS_DIRECTORY, '$(RTEMS_DIRECTORY)', '$(RTEMS_EXTERNAL_LIBRARY)'), output_dir)}
 
 ifneq ($(wildcard $(RTEMS_MAKEFILE_PATH)/Makefile.inc),)
 

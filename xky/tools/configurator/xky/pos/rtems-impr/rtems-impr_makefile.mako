@@ -38,7 +38,6 @@ ${template.get_headers_directories(libxky_headers)}\
 # RTEMS build and install directories
 RTEMS_BUILD_DIR=${build_dir}
 RTEMS_INSTALL_DIR=${install_dir}
-EDILIB_BUILD_DIR=../${base_dir}/edilib
 
 # All
 ${template.Rule('all', True, ['rtems-impr'])}
@@ -47,7 +46,6 @@ ${template.Rule('all', True, ['rtems-impr'])}
 ${template.Rule('rtems-impr', True, None)}
 ${'\t'}if [ ! -d "$(RTEMS_BUILD_DIR)" ]; then ${'\\'}
 ${'\t'}$(MKDIR) $(RTEMS_BUILD_DIR) && ${'\\'}
-${'\t'}$(MKDIR) ${base_dir}/edilib && ${'\\'}
 ${'\t'}cd $(RTEMS_BUILD_DIR); $(CURRENT_PATH)/rtems-impr/configure ${'\\'}
 ${'\t\t'}--target=$(RTEMS_TARGET) ${'\\'}
 ${'\t\t'}--enable-rtems-inlines ${'\\'}
@@ -62,7 +60,6 @@ ${'\t\t'}--prefix=$(RTEMS_INSTALL_DIR) && cd ..; ${'\\'}
 ${'\t'}fi
 ${'\t'}make -C $(RTEMS_BUILD_DIR) CPPFLAGS='$(XKY_HEADERS)' && ${'\\'}
 ${'\t'}make -C $(RTEMS_BUILD_DIR) install && ${'\\'}
-${'\t'}make -C edilib BUILD_DIR='$(EDILIB_BUILD_DIR)'
 
 # Clean
 ${template.Rule('clean', True, None)}
