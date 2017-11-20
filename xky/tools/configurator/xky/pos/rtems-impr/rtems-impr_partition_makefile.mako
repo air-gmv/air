@@ -46,8 +46,6 @@ $(XKY_LIBS)/${libname.lower()}/${libname.lower()}.a${'\\' if i < len(partition.l
 
 # The RTEMS_MAKEFILE_PATH is defined by the user for the specific CPU and BSP
 RTEMS_MAKEFILE_PATH=$(XKY_POS)/${os.path.join(pos_config.name, 'rtems-impr-install', 'sparc-rtems4.8', 'leon3')}
-RTEMS_EXTERNAL_LIBRARY_PATH=${'\\'}
-$(XKY_POS)/${os.path.join(pos_config.name, 'edilib', 'library')}${'\\' if len(partition.libraries) > 0 else ''}
 
 # These includes should not be modified by the user.  
 include $(RTEMS_MAKEFILE_PATH)/Makefile.inc 
