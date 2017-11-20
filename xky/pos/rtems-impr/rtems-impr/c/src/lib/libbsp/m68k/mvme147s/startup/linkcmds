@@ -1,0 +1,30 @@
+/*
+ *  This file contains directives for the GNU linker which are specific
+ *  to the Motorola MVME147s boards.
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2007,2016.
+ *  On-Line Applications Research Corporation (OAR).
+ *
+ *  The license and distribution terms for this file may be
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
+ *
+ *  MVME147 port for TNI - Telecom Bretagne
+ *  by Dominique LE CAMPION (Dominique.LECAMPION@enst-bretagne.fr)
+ *  May 1996
+ */
+
+MEMORY
+{
+    bootrom_reserved : ORIGIN = 0x00000000, LENGTH = 0x7000
+    ram              : ORIGIN = 0x00007000, LENGTH = 4M - 0x7000
+}
+
+REGION_ALIAS ("REGION_TEXT", ram);
+REGION_ALIAS ("REGION_TEXT_LOAD", ram);
+REGION_ALIAS ("REGION_DATA", ram);
+REGION_ALIAS ("REGION_DATA_LOAD", ram);
+
+INCLUDE linkcmds.base

@@ -1,0 +1,24 @@
+#  COPYRIGHT (c) 2014.
+#  On-Line Applications Research Corporation (OAR).
+#  Cynthia Rempel <cynthia@rtems.org>
+#  The license and distribution terms for this file may be
+#  found in the file LICENSE in this distribution or at
+#  http://www.rtems.org/license/LICENSE.
+#
+This file describes the directives and concepts tested by this test set.
+
+test set name: monitor
+
+directives:
+  + rtems_monitor_init
+  + rtems_shell_wait_for_input
+  + rtems_task_create
+  + rtems_task_delete
+  + rtems_task_start
+  + rtems_task_wake_after
+  
+concepts:
+  + start the monitor task
+  
+NOTE: the monitor task can be used to obtain information about a variety of
+      RTEMS objects.

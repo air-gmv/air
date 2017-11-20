@@ -1,0 +1,17 @@
+*** BEGIN OF TEST PSX 12 ***
+Init's ID is 0x0b010001
+Init: pthread_attr_init - SUCCESSFUL
+Init: pthread_create - EINVAL (invalid scheduling policy)
+Init: pthread_attr_init - SUCCESSFUL
+Init: set scheduling parameter attributes for sporadic server
+Init: pthread_create - EINVAL (replenish < budget)
+Init: pthread_create - EINVAL (invalid sched_ss_low_priority)
+Init: pthread_create - SUCCESSFUL
+Sporadic Server: exitting
+[0] H 100ms
+[0] L 200ms
+[1] H 290ms
+[1] L 400ms
+[2] H 490ms
+[2] L 600ms
+*** END OF TEST PSX 12 ***

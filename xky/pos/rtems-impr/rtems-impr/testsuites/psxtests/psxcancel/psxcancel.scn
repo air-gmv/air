@@ -1,0 +1,17 @@
+*** BEGIN OF TEST PSXCANCEL ***
+Init - pthread_setcancelstate - NULL oldstate
+Init - pthread_setcancelstate - bad state - EINVAL
+Init - pthread_setcanceltype - NULL oldtype
+Init - pthread_setcanceltype - bad type - EINVAL
+Init - pthread_cancel - bad ID - EINVAL
+countTaskDeferred: elapsed time (second):  0
+countTaskDeferred: elapsed time (second):  1
+countTaskDeferred: elapsed time (second):  2
+countTaskDeferred: elapsed time (second):  3
+countTaskDeferred: elapsed time (second):  4
+countTaskAsync: elapsed time (second):  0
+countTaskAsync: elapsed time (second):  1
+countTaskAsync: elapsed time (second):  2
+countTaskAsync: elapsed time (second):  3
+countTaskAsync: elapsed time (second):  4
+*** END OF POSIX CANCEL TEST ***
