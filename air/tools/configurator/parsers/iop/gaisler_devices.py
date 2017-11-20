@@ -2,6 +2,7 @@
 #  @author pfnf 
 # modified by lumm and gmvs
 #  @brief Functions to parse gaisler devices
+from sqlalchemy.sql.expression import false
 
 __author__ = 'pfnf'
 __modified__ = 'lumm'
@@ -164,7 +165,7 @@ class OCCANPhySetup(object):
         
     def details(self):
         return 'CAN Physical Device Setup (CanID: {0} Speed: {1} TXD: {2} RXD: {3} InternalQueue: {4} SingleMode: {5} Code: {6} Mask: {7})'\
-        .format(bin(self.can_id), bin(self.speed), bin(self.txd), bin(self.rxd), bin(self.internal_queue), bin(int(self.single_mode)), bin(self.code), bin(self.masks))
+        .format(self.can_id, self.speed, self.txd, self.rxd, self.internal_queue, self.single_mode, ':'.join(self.code), ':'.join(self.mask))
         
 # CANBUS Schedule device setup
 class OCCANSchSetup(object):
@@ -330,9 +331,9 @@ def phy_occan(iop_parser, xml, pdevices):
     setup.txd_count         = xml.parse_attr(CANBUS_TXD, VALID_XD, True, iop_parser.logger)
     setup.rxd_count         = xml.parse_attr(CANBUS_RXD, VALID_XD, True, iop_parser.logger)
     setup.internal_queue    = xml.parse_attr(CANBUS_INTERNAL_QUEUE, VALID_READS, True, iop_parser.logger)
-    setup.single_mode       = xml.parse_attr(CANBUS_SINGLE_MODE, VALID_BOOL, True, iop_parser.logger)
-    setup.code              = xml.parse_attr(CANBUS_CODE, VALID_MASK, True, iop_parser.logger)
-    setup.mask              = xml.parse_attr(CANBUS_MASK, VALID_MASK, True, iop_parser.logger)
+    setup.single_mode       = xml.parse_attr(CANBUS_SINGLE_MODE, VALID_BOOLEAN_TYPE, True, iop_parser.logger)
+    setup.code              = xml.parse_attr(CANBUS_CODE, VALID_MASK_CODE, True, iop_parser.logger)
+    setup.mask              = xml.parse_attr(CANBUS_MASK, VALID_MASK_CODE, True, iop_parser.logger)
     
     # sanity check
     if iop_parser.logger.check_errors(): return False
@@ -349,7 +350,7 @@ def sch_occan(iop_parser, xml, pdevice):
     iop_parser.logger.clear_errors(0)
     
     # parse setup
-    setup       = CANBUSchSetup()
+    setup       = OCCANSchSetup()
     setup.reads = xml.parse_attr(CANBUS_READS, VALID_READS, True, iop_parser.logger)
 
     # sanity check
