@@ -1,0 +1,16 @@
+Full RTEMS port to the Milkymist One. Supports Milkymist SoC 1.0.x.
+
+Includes drivers for:
+- Multi-standard video input (PAL/SECAM/NTSC)
+- Two DMX512 (RS485) ports
+- MIDI IN and MIDI OUT ports
+- VGA output
+- AC'97 audio
+- NOR flash
+- 10/100 Ethernet
+- Memory card (experimental and incomplete)
+- USB host connectors (input devices only, using the softusb-input firmware)
+- RC5 infrared receiver
+- RS232 debug port
+
+For more information: http://www.milkymist.org/
