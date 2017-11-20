@@ -29,18 +29,18 @@ SYM(sparc_mmu_initialize):
     srl    %o0,6, %o0
     sll    %o0,2, %o0
     mov    0x100, %o1
-    sta    %o0, [%o1]#ASI_AIUS_L
+    sta    %o0, [%o1]0x19               ! 0x19 is ASI of the MMU register ... previously referencing ASI_AIUS_L
 
     /* Set context */
     mov     0x200, %o1
-    sta     %g0, [%o1]#ASI_AIUS_L
+    sta     %g0, [%o1]0x19              ! 0x19 is ASI of the MMU register
 
     /* Activate MMU - Total Store Ordering */
-    lda     [%g0]#ASI_AIUS_L, %o0
+    lda     [%g0]0x19, %o0
     bset    1, %o0                      ! activate MMU */
     andn    %o0, 0x80, %o0              ! activate TSO - Total Store Ordering
     retl
-    sta     %o0, [%g0]#ASI_AIUS_L       ! delay slot
+    sta     %o0, [%g0]0x19              ! delay slot! 0x19 is ASI of the MMU register
 
 /*
  *  @brief Change the SPARC MMU - Context
@@ -49,19 +49,19 @@ SYM(sparc_mmu_initialize):
 SYM(sparc_mmu_set_context):
 
     mov     0x200, %o1
-    sta     %o0, [%o1]#ASI_AIUS_L
+    sta     %o0, [%o1]0x19               ! 0x19 is ASI of the MMU register
 
 /**
  *  @brief Enables the SPARC MMU
  */
     GLOBAL(sparc_mmu_enable)
 SYM(sparc_mmu_enable):
-    lda     [%g0]#ASI_AIUS_L, %o1
+    lda     [%g0]0x19, %o1
     bset    1, %o1
-    sta     %o1, [%g0]#ASI_AIUS_L
+    sta     %o1, [%g0]0x19           ! 0x19 is ASI of the MMU register
     set     0x400, %o1
     retl
-    sta     %g0, [%o1]#ASI_AIUP_L           ! optimized delay slot
+    sta     %g0, [%o1]0x18           ! optimized delay slot, 0x18 is MMU only: Flush TLB and I/D cache... previously referecing ASI_AIUP_L
 
 
 /**
@@ -69,12 +69,12 @@ SYM(sparc_mmu_enable):
  */
     GLOBAL(sparc_mmu_disable)
 SYM(sparc_mmu_disable):
-    lda     [%g0]#ASI_AIUS_L, %o1
+    lda     [%g0]0x19, %o1
     bclr    1, %o1
-    sta     %o1, [%g0]#ASI_AIUS_L
+    sta     %o1, [%g0]0x19           ! 0x19 is ASI of the MMU register
     set     0x400, %o1
     retl
-    sta     %g0, [%o1]#ASI_AIUP_L           ! optimized delay slot
+    sta     %g0, [%o1]0x18           ! optimized delay slot, 0x18 is MMU only: Flush TLB and I/D cache... 
 
 
 /**

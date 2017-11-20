@@ -227,7 +227,7 @@ SYM(sparc_core_context_restore):
     /* MMU context switch */
     mov     0x200, %o4
     ld      [%o1 + PARTITION_IDX], %o3
-    sta     %o3, [%o4]#ASI_AIUS_L
+    sta     %o3, [%o4]0x19             ! 0x19 is ASI of the MMU register
 
     /* flush cache */
     flush
