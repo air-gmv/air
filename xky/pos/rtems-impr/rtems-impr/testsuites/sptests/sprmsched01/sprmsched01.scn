@@ -1,0 +1,7 @@
+*** BEGIN OF TEST SPRMSCHED 1 ***
+Task 1 has released two jobs
+First time RTEMS_TIMEOUT
+Task 2 should have 3 postponed jobs due to preemption.
+RTEMS_SUCCESSFUL
+Overrun handling is finished, now Task 2 becomes normal.
+*** END OF TEST SPRMSCHED 1 ***

@@ -1,0 +1,67 @@
+/**
+ * @file
+ *
+ * @ingroup lpc32xx_linker_mzx_stage_2
+ *
+ * @brief Memory map.
+ */
+
+/**
+ * @defgroup lpc32xx_linker_mzx_stage_2 MZX Stage-2 Program Memory Map
+ *
+ * @ingroup bsp_linker
+ *
+ * @brief MZX stage-2 program memory map.
+ *
+ * <table>
+ *   <tr><th>Region Name</th><th>Region Begin</th><th>Region Size</th></tr>
+ *   <tr><td>RAM_INT</td><td>0x08000000</td><td>256k</td></tr>
+ *   <tr><td>RAM_MMU</td><td>0x81c00000</td><td>16k</td></tr>
+ *   <tr><td>RAM_EXT</td><td>0x81c04000</td><td>4M - 16k</td></tr>
+ * </table>
+ *
+ * <table>
+ *   <tr><th>Section Name</th><th>Section Runtime Region</th><th>Section Load Region</th></tr>
+ *   <tr><td>.start</td><td>RAM_EXT</td><td></td></tr>
+ *   <tr><td>.vector</td><td>RAM_INT</td><td></td></tr>
+ *   <tr><td>.text</td><td>RAM_EXT</td><td>RAM_EXT</td></tr>
+ *   <tr><td>.rodata</td><td>RAM_EXT</td><td>RAM_EXT</td></tr>
+ *   <tr><td>.data</td><td>RAM_EXT</td><td>RAM_EXT</td></tr>
+ *   <tr><td>.fast</td><td>RAM_EXT</td><td>RAM_EXT</td></tr>
+ *   <tr><td>.bss</td><td>RAM_EXT</td><td></td></tr>
+ *   <tr><td>.work</td><td>RAM_EXT</td><td></td></tr>
+ *   <tr><td>.stack</td><td>RAM_INT</td><td></td></tr>
+ * </table>
+ */
+
+MEMORY {
+	RAM_INT : ORIGIN = 0x08000000, LENGTH = 240k
+	RAM_FAST : ORIGIN = 0x0803c000, LENGTH = 16k
+	RAM_MMU : ORIGIN = 0x80000000, LENGTH = 16k /* SDRAM on DYCS0 */
+	RAM_SCRATCH : ORIGIN = 0x80004000, LENGTH = 4k /* SDRAM on DYCS0 */
+	RAM_EXT : ORIGIN = 0x81c00000, LENGTH = 4M /* SDRAM on DYCS0 */
+}
+
+REGION_ALIAS ("REGION_START", RAM_EXT);
+REGION_ALIAS ("REGION_VECTOR", RAM_INT);
+REGION_ALIAS ("REGION_TEXT", RAM_EXT);
+REGION_ALIAS ("REGION_TEXT_LOAD", RAM_EXT);
+REGION_ALIAS ("REGION_RODATA", RAM_EXT);
+REGION_ALIAS ("REGION_RODATA_LOAD", RAM_EXT);
+REGION_ALIAS ("REGION_DATA", RAM_EXT);
+REGION_ALIAS ("REGION_DATA_LOAD", RAM_EXT);
+REGION_ALIAS ("REGION_FAST_TEXT", RAM_FAST);
+REGION_ALIAS ("REGION_FAST_TEXT_LOAD", RAM_EXT);
+REGION_ALIAS ("REGION_FAST_DATA", RAM_FAST);
+REGION_ALIAS ("REGION_FAST_DATA_LOAD", RAM_EXT);
+REGION_ALIAS ("REGION_BSS", RAM_EXT);
+REGION_ALIAS ("REGION_WORK", RAM_EXT);
+REGION_ALIAS ("REGION_STACK", RAM_INT);
+REGION_ALIAS ("REGION_NOCACHE", RAM_INT);
+REGION_ALIAS ("REGION_NOCACHE_LOAD", RAM_INT);
+
+lpc32xx_scratch_area = ORIGIN (RAM_SCRATCH);
+
+bsp_stack_svc_size = DEFINED (bsp_stack_svc_size) ? bsp_stack_svc_size : 8192;
+
+INCLUDE linkcmds.lpc32xx

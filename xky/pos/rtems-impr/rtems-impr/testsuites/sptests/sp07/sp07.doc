@@ -1,0 +1,36 @@
+﻿#  COPYRIGHT (c) 1989-2013.
+#  On-Line Applications Research Corporation (OAR).
+#
+#  The license and distribution terms for this file may be
+#  found in the file LICENSE in this distribution or at
+#  http://www.rtems.org/license/LICENSE.
+#
+
+test set name:  sp07
+
+directives:
+  rtems_task_create
+  rtems_task_start
+  rtems_clock_tick
+  rtems_task_delete
+  rtems_task_setreg
+  rtems_task_getreg
+  rtems_task_setpri
+  rtems_task_suspend
+
+concepts:
+
+  +  Verifies that tasks can communicate with each other via the
+      rtems_task_setreg and rtems_task_getreg directives.
+
+  +  Verifies that the highest priority task is dispatched to execute.
+
+  +  Verifies setting the priority of both a ready and a blocked task.
+
+  +  Verifies the deletion of ready and blocked tasks.
+
+  +  Verifies the rtems_task_create user extension.
+
+  +  Verifies the rtems_task_start user extension.
+
+  +  Verifies the rtems_task_delete user extension.

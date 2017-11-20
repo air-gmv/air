@@ -1,0 +1,20 @@
+#  COPYRIGHT (c) 1989-2011.
+#  On-Line Applications Research Corporation (OAR).
+#
+#  The license and distribution terms for this file may be
+#  found in the file LICENSE in this distribution or at
+#  http://www.rtems.org/license/LICENSE.
+#
+
+This file describes the directives and concepts tested by this test set.
+
+test set name:  sp75
+
+directives:
+
+  rtems_semaphore_obtain
+
+concepts:
+
++ obtain semaphore in no wait mode with dispatching disabled.  This is
+logically the same as performing the same operation from an ISR.

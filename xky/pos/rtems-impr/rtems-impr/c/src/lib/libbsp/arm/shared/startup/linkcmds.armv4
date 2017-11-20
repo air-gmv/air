@@ -1,0 +1,26 @@
+/**
+ * @file
+ *
+ * @ingroup bsp_linker
+ *
+ * @brief Linker command file for ARMv4T architecture.
+ */
+
+/*
+ * Copyright (c) 2010-2014 embedded brains GmbH.  All rights reserved.
+ *
+ *  embedded brains GmbH
+ *  Obere Lagerstr. 30
+ *  82178 Puchheim
+ *  Germany
+ *  <rtems@embedded-brains.de>
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * http://www.rtems.org/license/LICENSE.
+ */
+
+bsp_stack_irq_size = DEFINED (bsp_stack_irq_size) ? bsp_stack_irq_size : 1024;
+bsp_stack_irq_size = ALIGN (bsp_stack_irq_size, bsp_stack_align);
+
+INCLUDE linkcmds.base

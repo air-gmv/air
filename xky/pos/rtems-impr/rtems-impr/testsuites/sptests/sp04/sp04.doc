@@ -1,0 +1,43 @@
+#  COPYRIGHT (c) 1989-1999.
+#  On-Line Applications Research Corporation (OAR).
+#
+#  The license and distribution terms for this file may be
+#  found in the file LICENSE in this distribution or at
+#  http://www.rtems.org/license/LICENSE.
+#
+
+
+This file describes the directives and concepts tested by this test set.
+
+test set name:  test4
+
+directives:
+  rtems_task_create
+  rtems_task_start
+  rtems_task_mode
+  rtems_clock_set
+  rtems_clock_get
+  rtems_event_receive
+  rtems_extension_create
+  rtems_extension_delete
+
+concepts:
+
+  a.  Verifies timeslicing ( all tasks are in timeslice mode ).
+
+  b.  Verifies the tswitch user extension.
+
+  c.  Verifies the no preemption mode.
+
+  d.  Verifies time-slice gets reset even if only one task ready.
+
+  e.  Verifies that deleting a user extension with a task switch hook
+      works as expected.
+
+output:
+  The task name and the current time are printed out each time that a new
+  task is being dispatched.  The configured timeslice is 100 ticks
+  ( 1 second ); therefore, a task name and the time are printed once
+  every second.  After each task runs 3 times, task 1 changes its mode to
+  no preempt and runs for about 6 seconds and then changes its mode back to
+  preempt mode.

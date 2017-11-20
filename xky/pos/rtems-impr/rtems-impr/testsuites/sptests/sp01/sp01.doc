@@ -1,0 +1,38 @@
+#  COPYRIGHT (c) 1989-2011.
+#  On-Line Applications Research Corporation (OAR).
+#
+#  The license and distribution terms for this file may be
+#  found in the file LICENSE in this distribution or at
+#  http://www.rtems.org/license/LICENSE.
+#
+
+test name:  sp01
+
+directives:
+  rtems_task_create
+  rtems_task_start
+  rtems_task_wake_after
+  rtems_clock_set
+  rtems_clock_get
+  rtems_clock_tick
+  rtems_task_self
+  rtems_object_get_classic_name
+
+concepts:
+
++ Verifies executive initialization performed correctly.
+
++ Verifies system can create and start both the executive's system
+  initialization and idle task.
+
++ Verifies executive can swap between three application tasks at the
+  same priority and the executive's internal idle task.
+
++ Verifies can print strings using stdio and BSP console support.
+
++ Verifies interrupt support can handle a task switch from an interrupt.
+
++ Verifies that a task can get the task identification number of itself.
+
++ Verifies implementation of SuperCore TOD_MILLISECONDS_TO_TICKS.  Normal
+  computation in applications is via a macro at the Classic API level.
