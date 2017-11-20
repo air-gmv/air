@@ -1,0 +1,35 @@
+﻿#  COPYRIGHT (c) 1989-2013.
+#  On-Line Applications Research Corporation (OAR).
+#
+#  The license and distribution terms for this file may be
+#  found in the file LICENSE in this distribution or at
+#  http://www.rtems.org/license/LICENSE.
+#
+
+test set name:  sp02
+
+directives:
+  rtems_task_create
+  rtems_task_start
+  rtems_task_wake_after
+  rtems_clock_set
+  rtems_clock_get
+  rtems_clock_tick
+  rtems_task_set_priority
+  rtems_object_get_classic_name
+  rtems_task_suspend
+
+concepts:
+
++ Verifies that a task can delete another task and also delete itself.
+
++ Verifies that memory is freed back to the heap correctly.
+
++ Verifies that TCBs are freed back to the inactive chain correctly.
+
++ Verifies that a task can get the task ID of another task.
+
++ Verifies the blocking routine where the task is not READY.
+
++ Verifies behavior when the IDLE task's stack is configured for
+  more than the minimum stack size.

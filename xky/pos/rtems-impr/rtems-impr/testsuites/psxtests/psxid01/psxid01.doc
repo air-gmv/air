@@ -1,0 +1,35 @@
+#  COPYRIGHT (c) 1989-2010.
+#  On-Line Applications Research Corporation (OAR).
+#
+#  The license and distribution terms for this file may be
+#  found in the file LICENSE in this distribution or at
+#  http://www.rtems.org/license/LICENSE.
+#
+
+This file describes the directives and concepts tested by this test set.
+
+test set name:  psxid01
+
+directives:
+
+  getegid
+  getgid
+  setgid
+  setpgid
+  geteuid
+  getuid
+  setuid
+  geteuid
+  getuid
+  getpid
+  __getpid
+  getppid
+  setsid
+  getpgrp
+  getgroups
+  getlogin
+  getlogin_r
+
+concepts:
+
++ Fully exercise the above listed methods
