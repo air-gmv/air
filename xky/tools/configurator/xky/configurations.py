@@ -193,14 +193,17 @@ class Configuration(object):
     # @param needle text to search
     # @return current target string
     def grep(self, filename, needle):
-        with open(filename) as f_in:
-            for line in f_in:
-                if not needle in line:
-                    continue
-                try:
-                    return True
-                except IndexError:
-                    return False
+        try:
+            with open(filename) as f_in:
+                for line in f_in:
+                    if not needle in line:
+                        continue
+                    try:
+                        return True
+                    except IndexError:
+                        return False
+        except IOError:
+            return False                   
 
     ##
     # @brief Gets the target compiler

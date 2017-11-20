@@ -24,11 +24,11 @@ cores = 1
 
 # Kernel Compiler with FPU
 kernel_compiler = dict(
-    CC="sparc-rtems4.11-gcc --pipe",
-    CXX="sparc-rtems4.11-g++ --pipe",
-    LD="sparc-rtems4.11-gcc --pipe",
-    AR="sparc-rtems4.11-ar",
-    RANLIB="sparc-rtems4.11-ranlib",
+    CC="sparc-rtems5-gcc --pipe",
+    CXX="sparc-rtems5-g++ --pipe",
+    LD="sparc-rtems5-gcc --pipe",
+    AR="sparc-rtems5-ar",
+    RANLIB="sparc-rtems5-ranlib",
     CFLAGS="",
     CPPFLAGS="-mcpu=v8 -mhard-float -mflat -fno-builtin -nodefaultlibs -gdwarf-2 -O2 -Wall",
     CXXFLAGS="",
@@ -39,11 +39,11 @@ kernel_compiler = dict(
 
 # Kernel Compiler with NO FPU
 kernel_compiler_no_fpu = dict(
-	CC="sparc-rtems4.11-gcc --pipe",
-	CXX="sparc-rtems4.11-g++ --pipe",
-	LD="sparc-rtems4.11-gcc --pipe",
-	AR="sparc-rtems4.11-ar",
-	RANLIB="sparc-rtems4.11-ranlib",
+	CC="sparc-rtems5-gcc --pipe",
+	CXX="sparc-rtems5-g++ --pipe",
+	LD="sparc-rtems5-gcc --pipe",
+	AR="sparc-rtems5-ar",
+	RANLIB="sparc-rtems5-ranlib",
 	CFLAGS="",
 	CPPFLAGS="-mcpu=v8 -msoft-float -mflat -fno-builtin -nodefaultlibs -gdwarf-2 -O2 -Wall",
 	CXXFLAGS="",
