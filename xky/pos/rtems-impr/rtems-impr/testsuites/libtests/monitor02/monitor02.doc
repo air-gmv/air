@@ -1,0 +1,17 @@
+#  COPYRIGHT (c) 2014.
+#  On-Line Applications Research Corporation (OAR).
+#  Cynthia Rempel <cynthia@rtems.org>
+#  The license and distribution terms for this file may be
+#  found in the file LICENSE in this distribution or at
+#  http://www.rtems.org/license/LICENSE.
+#
+This file describes the directives and concepts tested by this test set.
+
+test set name: monitor02
+
+directives:
+  + rtems_shell_make_args
+  + rtems_shell_main_monitor
+  
+concepts:
+  + provide canned commands to the monitor

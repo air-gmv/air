@@ -1,0 +1,37 @@
+*** BEGIN OF TEST SPRBTREE 1 ***
+Init - Initialize rbtree empty
+INIT - Verify rtems_rbtree_insert with two nodes
+INIT - Verify rtems_rbtree_insert with the same value twice
+INIT - Verify rtems_rbtree_is_empty
+INIT - Verify rtems_XXX on an empty tree
+INIT - Verify rtems_rbtree_insert after empty tree
+INIT - Verify rtems_rbtree_peek_max/min, rtems_rbtree_extract
+INIT - Verify rtems_rbtree_insert with 100 nodes value [0,99]
+INIT - Removing 100 nodes
+INIT - Verify rtems_rbtree_insert with 100 nodes value [99,0]
+INIT - Removing 100 nodes
+INIT - Verify rtems_rbtree_extract with 100 nodes value [0,99]
+INIT - Extracting 20 random nodes
+INIT - Removing 80 nodes
+INIT - Verify rtems_rbtree_get_max with 100 nodes value [99,0]
+INIT - Removing 100 nodes
+INIT - Verify rtems_rbtree_get_max with 100 nodes value [0,99]
+INIT - Verify rtems_rbtree_find
+INIT - Verify rtems_rbtree_predecessor/successor
+INIT - Removing 100 nodes
+INIT - Insert 20 random numbers
+INIT - Removing 20 nodes
+INIT - Verify rtems_rbtree_initialize with 100 nodes value [0,99]
+INIT - Removing 100 nodes
+Init - Initialize duplicate rbtree empty
+INIT - Verify rtems_rbtree_insert with 100 nodes value [0,99]
+INIT - Verify rtems_rbtree_find in a duplicate tree
+INIT - Removing 100 nodes
+INIT - Verify rtems_rbtree_insert with 100 nodes value [99,0]
+INIT - Verify rtems_rbtree_find in a duplicate tree
+INIT - Removing 100 nodes
+INIT - Initialize one
+INIT - Verify min/max node updates
+INIT - Verify _RBTree_Insert_inline
+INIT - Random operations
+*** END OF TEST SPRBTREE 1 ***

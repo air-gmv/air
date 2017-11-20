@@ -1,0 +1,10 @@
+#
+# mpc5674f_ecu508_boot RTEMS Test Database.
+#
+# Format is one line per test that is _NOT_ built.
+#
+
+include: testdata/dltests-broken-on-this-bsp.tcfg
+
+exclude: fsdosfsname01
+exclude: linpack
