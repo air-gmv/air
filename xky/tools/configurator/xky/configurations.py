@@ -214,14 +214,16 @@ class Configuration(object):
             if msoft_float:
                 print (' It currently disabled, applying patch...')
                 print (msoft_float)
-                os.system("patch --force -p2 -R -s < tools/configurator/disable_fpu.patch")
+                # not required for RTEMS 4.12 TBC
+                #os.system("patch --force -p2 -R -s < tools/configurator/disable_fpu.patch")
             return supported_architectures[self.arch][self.bsp].kernel_compiler
         else:
             print ('fpu to be NOT enabled')
             if not msoft_float:
                print (' It currently enabled, applying patch...')
                print (msoft_float)
-               os.system("patch --force -p2 -s < tools/configurator/disable_fpu.patch")
+               # not required for RTEMS 4.12 TBC
+               #os.system("patch --force -p2 -s < tools/configurator/disable_fpu.patch")
             return supported_architectures[self.arch][self.bsp].kernel_compiler_no_fpu
 			
     ##
