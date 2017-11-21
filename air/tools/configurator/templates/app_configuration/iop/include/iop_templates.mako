@@ -27,7 +27,9 @@ ${EthHeader(route.header)}${',' if i < len(pdevice.routes) - 1 else ''}
 ${SpwHeader(route.header)}${',' if i < len(pdevice.routes) - 1 else ''}
 	% endfor
 %elif pdevice.type =='CAN':
+	% for i, route in enumerate(pdevice.routes):
 ${CanHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
+	% endfor
 % endif
 };
 
