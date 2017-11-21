@@ -321,7 +321,7 @@ def sch_spwrtr(iop_parser, xml, pdevice):
 # @param iop_parser IOP parser object
 # @param xml XML setup node
 # @param pdevice current physical device
-def phy_occan(iop_parser, xml, pdevices):
+def phy_occan(iop_parser, xml, pdevice):
     
     # clear previous errors and warnings
     iop_parser.logger.clear_errors(0)
@@ -338,7 +338,8 @@ def phy_occan(iop_parser, xml, pdevices):
     
     # sanity check
     if iop_parser.logger.check_errors(): return False
-    pdevices.setup = setup
+    pdevice.setup = setup
+    print(pdevice)
     return True
 
 ## CANBUS schedule device setup
