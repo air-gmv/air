@@ -11,7 +11,7 @@
 #include <can_support.h>
 #include <iop_error.h>
 
-void can_write(iop_physical_device_t *pdev)
+void can_writer(iop_physical_device_t *pdev)
 {
 
 	/* Initialize error chain (packets to be re-sent) */
