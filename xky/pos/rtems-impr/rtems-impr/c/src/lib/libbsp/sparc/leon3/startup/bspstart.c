@@ -62,7 +62,11 @@ static inline int set_snooping(void)
  */
 void bsp_start( void )
 {
-  CPU_SPARC_HAS_SNOOPING = set_snooping();
+  /* Disabled while using AIR
+   * this unadvertly raises HM trap in xky to soon.
+   * To be further investigated
+   */
+  //CPU_SPARC_HAS_SNOOPING = set_snooping();
 }
 
 static void leon3_cpu_index_init(void)
