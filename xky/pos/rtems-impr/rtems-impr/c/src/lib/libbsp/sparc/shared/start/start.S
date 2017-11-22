@@ -25,12 +25,13 @@
 
 /*
  *  Unexpected trap will halt the processor by forcing it to error state
+ *  Update for AIR, to set partition to idle instead halting the processor
  */
 #define BAD_TRAP \
-  ta 0; \
-  nop; \
-  nop; \
-  nop;
+  set     XKY_SYSCALL_SET_PARTITION_MODE, %o5 ! set partition mode trap id
+  set     XKY_MODE_IDLE, %o1                  ! mode idle
+  set     0xFFFFFFFF, %o0                     ! current partition
+  ta      XKY_SYSCALL_OS_TRAP                 ! call XKY OS trap
 
 /*
  * System call optimized trap table entry
