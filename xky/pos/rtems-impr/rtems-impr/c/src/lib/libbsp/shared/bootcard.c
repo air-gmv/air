@@ -26,6 +26,8 @@
  *  http://www.rtems.org/license/LICENSE.
  */
 
+#include <xky.h>
+
 #include <bsp/bootcard.h>
 
 #include <rtems.h>
@@ -55,6 +57,11 @@ RTEMS_SYSINIT_ITEM(
   RTEMS_SYSINIT_ORDER_MIDDLE
 );
 
+/**
+ * @brief trap table of the system redefined by AIR
+ */
+void *trap_table[CPU_INTERRUPT_NUMBER_OF_VECTORS];
+
 /*
  *  This is the initialization framework routine that weaves together
  *  calls to RTEMS and the BSP in the proper sequence to initialize
@@ -66,6 +73,24 @@ void boot_card(
 )
 {
   rtems_interrupt_level  bsp_isr_level;
+  
+  /*
+   * AIR redefines take control of the trap table here
+   */
+  
+    /* clear trap table */
+    uint32_t i;
+    
+    for (i = 0; i < CPU_INTERRUPT_NUMBER_OF_VECTORS; ++i) {
+
+        trap_table[i] = NULL;
+    }
+
+    /* set TBR */
+    xky_sparc_set_tbr(&trap_table[0]);
+
+    /* enable traps*/
+    xky_sparc_enable_traps();
 
   /*
    *  Make sure interrupts are disabled.
