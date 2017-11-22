@@ -129,6 +129,14 @@ typedef enum {
    * This enum value ensures that the enum type needs at least 32-bits for
    * architectures with short enums.
    */
+  INTERNAL_ERROR_INTERRUPTION_NOT_HANDLED = 0xffffffef,
+  
+  /**
+   * @brief The last available fatal source.
+   *
+   * This enum value ensures that the enum type needs at least 32-bits for
+   * architectures with short enums.
+   */
   RTEMS_FATAL_SOURCE_LAST = 0xffffffff
 } Internal_errors_Source;
 
