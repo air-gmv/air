@@ -135,8 +135,20 @@ rtems_isr Clock_isr(
   /*
    *  Accurate count of ISRs
    */
-  Clock_driver_ticks += 1;
+  
+  /**
+   *  AIR control Control_driver_ticks
+   **/
+  //Clock_driver_ticks += 1;
 
+  /* AIR provides elapsed ticks */
+    uint64_t elapsed = xky_syscall_get_elapsed_ticks();
+    uint64_t dt = elapsed - Clock_driver_ticks;
+
+  /* AIR sets accurate count of clock ISRs */
+    Clock_driver_ticks += dt;
+  
+  
   #if CLOCK_DRIVER_USE_FAST_IDLE
     {
       struct timecounter *tc = _Timecounter;
@@ -184,6 +196,11 @@ rtems_isr Clock_isr(
     #else
       /*
        *  The driver is one ISR per clock tick.
+       */
+      /** 
+       * With AIR Maybe timecounter may not update correctly wall time 
+       * if several ticks have passsed. In principle no becuase
+       * HW should update the status 
        */
       Clock_driver_timecounter_tick();
     #endif
