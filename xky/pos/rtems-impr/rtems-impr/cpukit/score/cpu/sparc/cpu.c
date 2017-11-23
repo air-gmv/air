@@ -25,6 +25,15 @@
 #include <rtems/score/tls.h>
 #include <rtems/score/thread.h>
 #include <rtems/rtems/cache.h>
+#include <libcpu/cache.h>
+#include <rtems/score/cpu.h>
+#include <bsp.h>
+#include <xky.h>
+
+/**
+ * @brief trap table of the system from AIR
+ */
+extern void *trap_table[CPU_INTERRUPT_NUMBER_OF_VECTORS];
 
 #if SPARC_HAS_FPU == 1
   RTEMS_STATIC_ASSERT(
@@ -161,15 +170,20 @@ RTEMS_STATIC_ASSERT(
 void _CPU_Initialize(void)
 {
 #if defined(SPARC_USE_LAZY_FP_SWITCH)
-  __asm__ volatile (
-    ".global SPARC_THREAD_CONTROL_REGISTERS_FP_CONTEXT_OFFSET\n"
-    ".set SPARC_THREAD_CONTROL_REGISTERS_FP_CONTEXT_OFFSET, %0\n"
-    ".global SPARC_THREAD_CONTROL_FP_CONTEXT_OFFSET\n"
-    ".set SPARC_THREAD_CONTROL_FP_CONTEXT_OFFSET, %1\n"
-    :
-    : "i" (offsetof(Thread_Control, Registers.fp_context)),
-      "i" (offsetof(Thread_Control, fp_context))
-  );
+  /* @brief AIR checks check if the current partition have FPU permissions */
+  xky_partition_status_t status;
+  xky_syscall_get_partition_status(-1, &status);
+  if ((status.permissions & XKY_PERMISSION_FPU_CONTROL) != 0) {        
+    __asm__ volatile (
+      ".global SPARC_THREAD_CONTROL_REGISTERS_FP_CONTEXT_OFFSET\n"
+      ".set SPARC_THREAD_CONTROL_REGISTERS_FP_CONTEXT_OFFSET, %0\n"
+      ".global SPARC_THREAD_CONTROL_FP_CONTEXT_OFFSET\n"
+      ".set SPARC_THREAD_CONTROL_FP_CONTEXT_OFFSET, %1\n"
+      :
+      : "i" (offsetof(Thread_Control, Registers.fp_context)),
+        "i" (offsetof(Thread_Control, fp_context))
+    );
+  }
 #endif
 }
 
@@ -225,63 +239,36 @@ void _CPU_ISR_install_raw_handler(
   proc_ptr   *old_handler
 )
 {
-  uint32_t               real_vector;
-  CPU_Trap_table_entry  *tbr;
-  CPU_Trap_table_entry  *slot;
-  uint32_t               u32_tbr;
-  uint32_t               u32_handler;
 
-  /*
-   *  Get the "real" trap number for this vector ignoring the synchronous
-   *  versus asynchronous indicator included with our vector numbers.
-   */
+  /* @brief AIR fully replace the function with specific version as seen below.
+   * What is significant it that we use AIR *trap_table* instead of 
+   * RTEMS tbr to set handler. */
 
-  real_vector = SPARC_REAL_TRAP_NUMBER( vector );
+  /* vector number */
+  uint32_t real_vector;
 
-  /*
-   *  Get the current base address of the trap table and calculate a pointer
-   *  to the slot we are interested in.
-   */
+  /* interrupt level */
+  rtems_interrupt_level level;
 
-  sparc_get_tbr( u32_tbr );
+  /* get the "real" trap number for this vector ignoring the synchronous
+   * versus asynchronous indicator included with our vector numbers */
+  real_vector = SPARC_REAL_TRAP_NUMBER(vector);
 
-  u32_tbr &= 0xfffff000;
+  /* enter critical section to protect the _ISR_Vector_table variable */
+  rtems_interrupt_disable(level);
 
-  tbr = (CPU_Trap_table_entry *) u32_tbr;
+  /* get the old handler */
+  *old_handler = trap_table[real_vector];
 
-  slot = &tbr[ real_vector ];
+  /* apply the new handler */
+  trap_table[real_vector] = new_handler;
 
-  /*
-   *  Get the address of the old_handler from the trap table.
-   *
-   *  NOTE: The old_handler returned will be bogus if it does not follow
-   *        the RTEMS model.
-   */
+  /* leave critical section */
+  rtems_interrupt_enable(level);
 
-#define HIGH_BITS_MASK   0xFFFFFC00
-#define HIGH_BITS_SHIFT  10
-#define LOW_BITS_MASK    0x000003FF
+  /* if the CPU has instruction cache */
+#if (HAS_INSTRUCTION_CACHE == TRUE)
 
-  if ( slot->mov_psr_l0 == _CPU_Trap_slot_template.mov_psr_l0 ) {
-    u32_handler =
-      (slot->sethi_of_handler_to_l4 << HIGH_BITS_SHIFT) |
-      (slot->jmp_to_low_of_handler_plus_l4 & LOW_BITS_MASK);
-    *old_handler = (proc_ptr) u32_handler;
-  } else
-    *old_handler = 0;
-
-  /*
-   *  Copy the template to the slot and then fix it.
-   */
-
-  *slot = _CPU_Trap_slot_template;
-
-  u32_handler = (uint32_t) new_handler;
-
-  slot->mov_vector_l3 |= vector;
-  slot->sethi_of_handler_to_l4 |=
-    (u32_handler & HIGH_BITS_MASK) >> HIGH_BITS_SHIFT;
-  slot->jmp_to_low_of_handler_plus_l4 |= (u32_handler & LOW_BITS_MASK);
 
   /*
    * There is no instruction cache snooping, so we need to invalidate
@@ -298,6 +285,8 @@ void _CPU_ISR_install_raw_handler(
    * state, but before enabling interrupts.
    */
   rtems_cache_invalidate_entire_instruction();
+#endif
+  
 }
 
 void _CPU_ISR_install_vector(
@@ -306,34 +295,44 @@ void _CPU_ISR_install_vector(
   proc_ptr   *old_handler
 )
 {
-   uint32_t   real_vector;
-   proc_ptr   ignored;
+  /* @brief AIR fully replace the function with specific version as seen below.
+   * What is significant it that we use AIR *trap_table* instead of 
+   * RTEMS tbr to set handler. */
+    /* vector number */
+    uint32_t real_vector;
 
-  /*
-   *  Get the "real" trap number for this vector ignoring the synchronous
-   *  versus asynchronous indicator included with our vector numbers.
-   */
+    /* auxiliary pointer */
+    proc_ptr ignored;
 
-   real_vector = SPARC_REAL_TRAP_NUMBER( vector );
+    /* interrupt level */
+    rtems_interrupt_level level;
 
-   /*
-    *  Return the previous ISR handler.
-    */
+    /* get the "real" trap number for this vector ignoring the synchronous
+     * versus asynchronous indicator included with our vector numbers */
+    real_vector = SPARC_REAL_TRAP_NUMBER(vector);
 
-   *old_handler = _ISR_Vector_table[ real_vector ];
+    /* enter critical section to protect the _ISR_Vector_table variable */
+    rtems_interrupt_disable(level);
 
-   /*
-    *  Install the wrapper so this ISR can be invoked properly.
-    */
+    /* get the old handler from the internal RTEMS table */
+    *old_handler = _ISR_Vector_table[ real_vector ];
 
-   _CPU_ISR_install_raw_handler( vector, _ISR_Handler, &ignored );
+    /* leave critical section */
+    rtems_interrupt_enable(level);
 
-   /*
-    *  We put the actual user ISR address in '_ISR_vector_table'.  This will
-    *  be used by the _ISR_Handler so the user gets control.
-    */
+    /* install the wrapper so this ISR can be invoked properly */
+    _CPU_ISR_install_raw_handler(vector , _ISR_Handler , &ignored);
 
+    /* enter critical section to protect the _ISR_Vector_table variable */
+    rtems_interrupt_disable(level);
+
+    /* we put the actual user ISR address in '_ISR_vector_table'. This will
+     * be used by the _ISR_Handler so the user gets control */
     _ISR_Vector_table[ real_vector ] = new_handler;
+
+    /* leave critical section */
+    rtems_interrupt_enable(level);
+
 }
 
 void _CPU_Context_Initialize(
@@ -374,7 +373,7 @@ void _CPU_Context_Initialize(
      *  and this SPARC model has an FPU.
      */
 
-    sparc_get_psr( tmp_psr );
+    tmp_psr = xky_sparc_get_psr();
     tmp_psr &= ~SPARC_PSR_PIL_MASK;
     tmp_psr |= (new_level << 8) & SPARC_PSR_PIL_MASK;
     tmp_psr &= ~SPARC_PSR_EF_MASK;      /* disabled by default */
