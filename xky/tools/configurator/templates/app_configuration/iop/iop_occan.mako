@@ -48,7 +48,7 @@ static CANMsg tx_msg_fifo[${device.setup.internal_queue}];
  * @brief RX and TX descriptor table
  * @warning this should be 2048, but we need 3072 to ensure the 0x400 alignment
  */
-static uint8_t descriptor_table[3072];
+//static uint8_t descriptor_table[3072];
 
 /** @brief OCCAN control structure*/
 static occan_priv occan_driver = ${'\\'}
@@ -73,7 +73,11 @@ static occan_priv occan_driver = ${'\\'}
 	.tx_fifo = {
 		.max = ${device.setup.internal_queue},
 		.fifo = tx_msg_fifo,
-	}
+	},
+	.iop_buffers = iop_buffers,
+		
+	.tx_iop_buffer = tx_iop_buffer,
+	.rx_iop_buffer = rx_iop_buffer,
 };
 
 /**  @brief OCCAN control strucutre */
