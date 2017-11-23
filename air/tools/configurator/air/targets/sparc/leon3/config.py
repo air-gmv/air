@@ -144,9 +144,9 @@ arch_configure = air_sparc.get_sparc_configuration
 
 # IOP devices and definitions
 iop = IOP(defines=[],
-          devices=['greth0'],
-          drivers=['amba', 'greth'],
-          alias=dict(eth0='greth0'),
+          devices=['greth0', 'occan0', 'occan1'],
+          drivers=['amba', 'greth', 'occan'],
+          alias=dict(eth0='greth0', can0='occan0', can1='occan1'),
           arch=iop_arch)
 
 # AIR application arch config
