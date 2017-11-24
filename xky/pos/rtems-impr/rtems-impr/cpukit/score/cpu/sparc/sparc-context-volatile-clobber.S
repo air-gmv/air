@@ -81,11 +81,18 @@ window_clobber:
 	add	%o1, SPARC_NUMBER_OF_REGISTER_WINDOWS, %o1
 
 no_manual_update:
-	/* Register to determine whether FPU is switched on */
-	mov	%psr, %o2
+    /* AIR provides psr */
+    set       XKY_SYSCALL_SPARC_GET_PSR, %o5
+    ta        XKY_SYSCALL_SPARC_TRAP // psr at %o0
+    mov       %o0, %o2 // move to %o2      
+
+    /* Register to determine whether FPU is switched on */
+	// mov	%psr, %o2 // disabled by AIR code above
 	sethi	%hi(SPARC_PSR_EF_MASK), %o3
 	and 	%o3, %o2, %o2
 
+
+	
 	clobber_register	%o3
 	clobber_register	%o4
 	clobber_register	%o5
