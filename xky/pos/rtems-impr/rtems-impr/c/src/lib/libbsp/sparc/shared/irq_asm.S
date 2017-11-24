@@ -24,6 +24,7 @@
 #include <rtems/asm.h>
 #include <rtems/score/percpu.h>
 #include <bspopts.h>
+#include <xky.h>              /* PMK paravirtualization definitions */
 
 #if defined(SPARC_USE_SYNCHRONOUS_FP_SWITCH)
   #define FP_FRAME_OFFSET_FO_F1 (SPARC_MINIMUM_STACK_FRAME_SIZE + 0)
