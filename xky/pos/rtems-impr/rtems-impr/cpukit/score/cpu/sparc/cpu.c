@@ -372,8 +372,9 @@ void _CPU_Context_Initialize(
      *  The FPU is ONLY enabled if the context is associated with an FP task
      *  and this SPARC model has an FPU.
      */
+    
 
-    tmp_psr = xky_sparc_get_psr();
+    tmp_psr = xky_sparc_get_psr(); /* virtualized PSR via AIR */
     tmp_psr &= ~SPARC_PSR_PIL_MASK;
     tmp_psr |= (new_level << 8) & SPARC_PSR_PIL_MASK;
     tmp_psr &= ~SPARC_PSR_EF_MASK;      /* disabled by default */
