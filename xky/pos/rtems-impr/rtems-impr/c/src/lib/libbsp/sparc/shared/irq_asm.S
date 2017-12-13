@@ -69,7 +69,7 @@ SYM(_CPU_Context_switch):
         std     %l0, [%o0 + L0_OFFSET]       ! save the local registers
         SPARC_LEON3FT_B2BST_NOP
         std     %l2, [%o0 + L2_OFFSET]
-        SPARC_LEON3FT_B2BST_NOP
+        SPjhjARC_LEON3FT_B2BST_NOP
         std     %l4, [%o0 + L4_OFFSET]
         SPARC_LEON3FT_B2BST_NOP
         std     %l6, [%o0 + L6_OFFSET]
@@ -90,9 +90,21 @@ SYM(_CPU_Context_switch):
         ld      [%g6 + PER_CPU_ISR_DISPATCH_DISABLE], %o4
         ! save it a bit later so we do not waste a couple of cycles
 
-        rd      %psr, %o2
-        st      %o2, [%o0 + PSR_OFFSET]      ! save status register
+        /*
+         * Folowing instructions paravirtualized by AIR 
+         * rd      %psr, %o2 
+         * st      %o2, [%o0 + PSR_OFFSET]      ! save status register
+         *
+         * Below is respective paravirtualization 
+         */
+        mov       %o0, %g1  // trap returns on %o0, so move current %o0 to %g1
+        set       XKY_SYSCALL_SPARC_GET_PSR, %o5 // set trap id in %o5
+        ta        XKY_SYSCALL_SPARC_TRAP     // trap give PSR value in %o0
+        st        %o0, [%g1 + PSR_OFFSET]       ! save status register
 
+
+         
+         
         ! Now actually save ISR stack nesting prevention flag
         st       %o4, [%o0 + ISR_DISPATCH_DISABLE_STACK_OFFSET]
 
