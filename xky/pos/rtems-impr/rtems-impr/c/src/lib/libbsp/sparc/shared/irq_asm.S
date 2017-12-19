@@ -97,12 +97,15 @@ SYM(_CPU_Context_switch):
          *
          * Below is respective paravirtualization 
          */
-        mov       %o0, %g1  // trap returns on %o0, so move current %o0 to %g1
-        set       XKY_SYSCALL_SPARC_GET_PSR, %o5 // set trap id in %o5
-        ta        XKY_SYSCALL_SPARC_TRAP     // trap give PSR value in %o0
-        st        %o0, [%g1 + PSR_OFFSET]       ! save status register
-
-
+        mov       %o0, %g1  !trap returns on %o0, so move current %o0 to %g1
+        set       XKY_SYSCALL_SPARC_GET_PSR, %o5 !set trap id in %o5
+        ta        XKY_SYSCALL_SPARC_TRAP     !trap give PSR value in %o0
+        st        %o0, [%g1 + PSR_OFFSET]    !save status register
+        
+        /* AIR moves registers to requested positions */
+        mov %o0, %o2         !o2 = psr
+        mov %g1, %o0         !o0 = offset reference
+        /* End of AIR intervention */
          
          
         ! Now actually save ISR stack nesting prevention flag
@@ -154,7 +157,21 @@ SYM(_CPU_Context_restore_heir):
 
         and     %o2, SPARC_PSR_CWP_MASK, %g3  ! g3 = CWP
         andn    %o2, SPARC_PSR_ET_MASK, %g1   ! g1 = psr with traps disabled
-        mov     %g1, %psr                     ! **** DISABLE TRAPS ****
+        
+        
+        /*
+         * Folowing instructions paravirtualized by AIR 
+         * mov     %g1, %psr                     ! **** DISABLE TRAPS **** 
+         *
+         * Below is respective paravirtualization 
+         */
+        
+        mov       %g1, %o0
+        set       XKY_SYSCALL_SPARC_SET_PSR, %o5
+        ta        XKY_SYSCALL_SPARC_TRAP         !  **** DISABLE TRAPS ****        
+        /* End of AIR intervention */
+
+        
         mov     %wim, %g2                     ! g2 = wim
         mov     1, %g4
         sll     %g4, %g3, %g4                 ! g4 = WIM mask for CW invalid
@@ -203,7 +220,19 @@ done_flushing:
 
         ! Wait three instructions after the write to PSR before using
         ! non-global registers or instructions affecting the CWP
-        mov     %g1, %psr                     ! restore cwp
+        
+        /*
+         * Folowing instructions paravirtualized by AIR 
+         * mov     %g1, %psr                     ! restore cwp
+         *
+         * Below is respective paravirtualization 
+         */
+        
+        mov       %g1, %o0
+        set       XKY_SYSCALL_SPARC_SET_PSR, %o5
+        ta        XKY_SYSCALL_SPARC_TRAP         ! restore cwp
+        /* End of AIR intervention */
+        
         add     %g3, 1, %g2                   ! calculate desired WIM
         and     %g2, SPARC_NUMBER_OF_REGISTER_WINDOWS - 1, %g2
         mov     1, %g4
@@ -244,9 +273,21 @@ done_flushing:
 #endif
         andn    %g1, SPARC_PSR_CWP_MASK, %g1  ! g1 = heir psr w/o cwp
         or      %g1, %g3, %g1                 ! g1 = heir psr with cwp
-        mov     %g1, %psr                     ! restore status register and
-                                              ! **** ENABLE TRAPS ****
-
+        
+        
+        /*
+         * Folowing instructions paravirtualized by AIR 
+         * mov     %g1, %psr                     ! restore status register and         
+         *                                       ! **** ENABLE TRAPS ****
+         * Below is respective paravirtualization 
+         */
+        
+        mov       %g1, %o0
+        set       XKY_SYSCALL_SPARC_SET_PSR, %o5
+        ta        XKY_SYSCALL_SPARC_TRAP         ! restore status register and         
+                                                 ! **** ENABLE TRAPS ****
+        /* End of AIR intervention */
+                
         ld      [%o1 + G5_OFFSET], %g5        ! restore the global registers
         ld      [%o1 + G7_OFFSET], %g7
 
@@ -266,6 +307,13 @@ done_flushing:
         ldd     [%o1 + I2_OFFSET], %i2
         ldd     [%o1 + I4_OFFSET], %i4
         ldd     [%o1 + I6_FP_OFFSET], %i6
+        
+         /* AIR intervention 
+          * restore the cache state (we may have entered here from an ISR) */
+          */
+  set       XKY_SYSCALL_SPARC_RESTORE_CACHE_REGISTER, %o5
+  ta        XKY_SYSCALL_SPARC_TRAP
+        /* End of AIR intervention */
 
         ldd     [%o1 + O6_SP_OFFSET], %o6     ! restore the output registers
 
@@ -317,7 +365,18 @@ done_flushing:
         PUBLIC(_CPU_Context_restore)
 SYM(_CPU_Context_restore):
         save    %sp, -SPARC_MINIMUM_STACK_FRAME_SIZE, %sp
-        rd      %psr, %o2
+
+        /*
+         * Folowing instructions paravirtualized by AIR 
+         * rd      %psr, %o2 
+         *
+         * Below is respective paravirtualization 
+         */
+        set       XKY_SYSCALL_SPARC_GET_PSR, %o5 !set trap id in %o5
+        ta        XKY_SYSCALL_SPARC_TRAP     !trap give PSR value in %o0
+        mov        %o0, %o2                  !o2 = psr
+        /* End of AIR intervention */
+
 #if defined(RTEMS_SMP)
         ! On SPARC the restore path needs also a valid executing context on SMP
         ! to update the is executing indicator.
@@ -580,7 +639,17 @@ pil_fixed:
         andn     %g5, %l5, %g5
 #endif
 
-        wr       %g5, SPARC_PSR_ET_MASK, %psr ! **** ENABLE TRAPS ****
+        /*
+         * Folowing instructions paravirtualized by AIR 
+         * wr       %g5, SPARC_PSR_ET_MASK, %psr ! **** ENABLE TRAPS ****
+         * 
+         * Below is respective paravirtualization 
+         */
+
+        or        %g5, SPARC_PSR_ET_MASK, %o0 //parameters
+        set       XKY_SYSCALL_SPARC_SET_PSR, %o5 //id trap
+        ta        XKY_SYSCALL_SPARC_TRAP      ! **** ENABLE TRAPS ****        
+        /* End of AIR intervention */
 
         /*
          *  Vector to user's handler.
@@ -862,7 +931,23 @@ simple_return:
          *  WARNING: Traps should now be disabled
          */
 
-        mov     %l0, %psr                  !  **** DISABLE TRAPS ****
+        /*
+         * Folowing instructions paravirtualized by AIR 
+         * mov     %l0, %psr                  !  **** DISABLE TRAPS ****
+         *
+         * Below is respective paravirtualization 
+         */
+        
+        mov       %l0, %o0
+        set       XKY_SYSCALL_SPARC_SET_PSR, %o5
+        ta        XKY_SYSCALL_SPARC_TRAP         !  **** DISABLE TRAPS ****        
+        /* End of AIR intervention */
+         
+        /* AIR restore the cache state  */
+        set       XKY_SYSCALL_SPARC_RESTORE_CACHE_REGISTER, %o5
+        ta        XKY_SYSCALL_SPARC_TRAP
+        
+        
         nop
         nop
         nop
@@ -907,11 +992,34 @@ simple_return:
 
 good_task_window:
 
-        mov     %l0, %psr                  !  **** DISABLE TRAPS ****
+        /*
+         * Folowing instructions paravirtualized by AIR 
+         * mov     %l0, %psr                  !  **** DISABLE TRAPS ****
+         *
+         * Below is respective paravirtualization 
+         */
+        
+        mov       %l0, %o0
+        set       XKY_SYSCALL_SPARC_SET_PSR, %o5
+        ta        XKY_SYSCALL_SPARC_TRAP         !  **** DISABLE TRAPS ****        
+        /* End of AIR intervention */
+
         nop; nop; nop
                                            !  and restore condition codes.
         ld      [%g1 + ISF_G1_OFFSET], %g1 ! restore g1
-        jmp     %l1                        ! transfer control and
-        rett    %l2                        ! go back to tasks window
+
+        /**
+        *  AIR implementation of return from trap
+        *  doing transfer control and go back to task window
+        *  it replaces the following code
+        *
+        * jmp     %l1                        ! transfer control and
+          rett    %l2                        ! go back to tasks window
+        */
+        mov       %l1, %o0                ! transfer control and
+        mov       %l2, %o1                ! go back to tasks window
+        or        %g0, XKY_SYSCALL_SPARC_RETT, %o5
+        ta        XKY_SYSCALL_SPARC_TRAP
+        /* End of AIR intervention */
 
 /* end of file */
