@@ -6,6 +6,7 @@
 from time import asctime
 from textwrap import TextWrapper
 import terminal as terminalutils
+import logging
 
 LEVEL_BASE				                    = 4     # Base level indentation
 LEVEL_WIDTH				                    = 2     # Indentation increment
@@ -23,6 +24,7 @@ class Logger(object):
         self.silent = silent
         self.total_errors = 0
         self.total_warnings = 0
+        self.llogger = logging.getLogger('air_configurator')
 
     ##
     # @brief Desctructor
@@ -39,7 +41,7 @@ class Logger(object):
     # @param fmt format string
     # @param args format arguments
     def event(self, level, fmt, *args):
-
+        self.llogger.info(fmt)
         if not self.silent:
             terminalutils.pprint('\n{0}~b{1}~n\n'.format(
                 ' ' * (LEVEL_BASE if level == 1 else LEVEL_BASE + (level - 1) * LEVEL_WIDTH), fmt), *args)
@@ -52,7 +54,7 @@ class Logger(object):
     # @param fmt format string
     # @param args format arguments
     def information(self, level, fmt, *args):
-
+        self.llogger.debug(fmt)
         if not self.silent:
             color = 'c'
             terminalutils.pprint('{0}~{1}{2}~n'.format(
@@ -67,6 +69,7 @@ class Logger(object):
     def warning(self, fmt, *args):
         self.warnings += 1
         self.total_warnings += 1
+        self.llogger.warning(fmt)
         if not self.silent:
             terminalutils.pprint('{0}~y{1}~n'.format(
                 ' ' * (LEVEL_BASE if self.level == 1 else LEVEL_BASE + (self.level - 1) * LEVEL_WIDTH), fmt), *args)
@@ -79,6 +82,7 @@ class Logger(object):
     def error(self, fmt, *args):
         self.errors += 1
         self.total_errors += 1
+        self.llogger.error(fmt)
         if not self.silent:
             terminalutils.pprint('{0}~r{1}~n'.format(
                 ' ' * (LEVEL_BASE if self.level == 1 else LEVEL_BASE + (self.level - 1) * LEVEL_WIDTH), fmt), *args)

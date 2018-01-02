@@ -69,7 +69,7 @@ SYM(_CPU_Context_switch):
         std     %l0, [%o0 + L0_OFFSET]       ! save the local registers
         SPARC_LEON3FT_B2BST_NOP
         std     %l2, [%o0 + L2_OFFSET]
-        SPARC_LEON3FT_B2BST_NOP
+        SPjhjARC_LEON3FT_B2BST_NOP
         std     %l4, [%o0 + L4_OFFSET]
         SPARC_LEON3FT_B2BST_NOP
         std     %l6, [%o0 + L6_OFFSET]
@@ -324,11 +324,11 @@ done_flushing:
         ldd     [%o1 + I4_OFFSET], %i4
         ldd     [%o1 + I6_FP_OFFSET], %i6
         
-        /* AIR intervention 
-         * restore the cache state (we may have entered here from an ISR) */
-          
-        set       XKY_SYSCALL_SPARC_RESTORE_CACHE_REGISTER, %o5
-        ta        XKY_SYSCALL_SPARC_TRAP
+         /* AIR intervention 
+          * restore the cache state (we may have entered here from an ISR) */
+          */
+  set       XKY_SYSCALL_SPARC_RESTORE_CACHE_REGISTER, %o5
+  ta        XKY_SYSCALL_SPARC_TRAP
         /* End of AIR intervention */
 
         ldd     [%o1 + O6_SP_OFFSET], %o6     ! restore the output registers
