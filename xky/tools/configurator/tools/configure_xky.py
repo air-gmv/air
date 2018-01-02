@@ -20,7 +20,7 @@ def InputArgs(arg_parser, logger):
     arg_parser.add_argument('-i', '--info', dest='info', action='store_const', const=True,
                             default=False, help='Installation information')
     arg_parser.add_argument('-t', '--target', dest='target', default=None,
-                            help='Deployment target')
+                            help='Deplogloyment target')
     arg_parser.add_argument('-d', '--dev', dest='dev', action='store_const',
                             const=True, default=False, help='Development symbols')
     return arg_parser.parse_args()
@@ -34,9 +34,9 @@ def ShowInstallInfo(logger):
     os_configuration = xky_configuration.load_configuration(logger)
 
     if os_configuration is not None:
-        logger.event(0, "AIR configured for {0}", os_configuration.get_target())
+        logger.debug("AIR configured for {0}", os_configuration.get_target())
     else:
-        logger.event(0, "AIR isn't currently configured")
+        logger.debug("AIR isn't currently configured")
 
     exit(0)
 
@@ -57,8 +57,8 @@ def Run(args, logger):
     # create the OS configuration object
     os_configuration = xky_configuration.Configuration(arch, bsp, fpu_enabled)
 
-    logger.event(0, 'Configuring XKY OS:')
-    logger.information(1, 'Target: {0} - {1}\n'.format(arch.upper(), bsp))
+    logger.debug('Configuring XKY OS:')
+    logger.info('Target: {0} - {1}\n'.format(arch.upper(), bsp))
 
     # template lookup directories
     template_includes = \
@@ -203,10 +203,10 @@ def input_configuration(target, logger):
     if arch is None or bsp is None:
 
         # check if arch is supported
-        logger.event(0, "Supported targets:")
+        logger.debug("Supported targets:")
         for arch in xky_configuration.supported_architectures.keys():
             for bsp in xky_configuration.supported_architectures[arch].keys():
-                logger.information(1, '{0}-{1}', arch, bsp)
+                logger.info('{0}-{1}', arch, bsp)
 
         sys.exit(-1)
 

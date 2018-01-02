@@ -15,7 +15,7 @@ from mako.lookup import TemplateLookup as mako_template_lookup
 def applyMAKOTemplate(template_file, output_file, template_args, logger, lookup_dirs = None):
 
     # Log Action
-    logger.information(1, '{0:30} => {1:30}',
+    logger.info('{0:30} => {1:30} %s %s',
                        os.path.basename(template_file),
                        os.path.relpath(output_file, utils.WORKING_DIRECTORY))
 

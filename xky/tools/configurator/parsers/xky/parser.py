@@ -45,7 +45,7 @@ class xkyParser(a653parser):
         self.parse_old_module_extension(xml_node)
         self.parse_module_extension(xml_node)
 
-        self.logger.information(1, "XKY (Module Configuration) - Ticks per Second: {0}; Core Count: {1}",
+        self.logger.info("XKY (Module Configuration) - Ticks per Second: {0}; Core Count: {1}",
                                 self.ticks_per_second, self.core_count)
         return True
 
@@ -152,7 +152,7 @@ class xkyParser(a653parser):
                     system_state.description = HMSystemState[system_state.id]['description']
 
                 self.system_hm_table.append(system_state)
-                self.logger.information(1, system_state.details())
+                self.logger.info(system_state.details())
 
                 # get error level XML nodes
                 xml_error_level_nodes = xml_system_state_node.parse_tag(HM_ERROR_LEVEL, 0, sys.maxint, self.logger)
@@ -192,7 +192,7 @@ class xkyParser(a653parser):
                         error_level.description = HMErrorsDefinitions[error_level.id]['description']
 
                     # store error level information
-                    self.logger.information(2, error_level.details())
+                    self.logger.info(error_level.details())
                     system_state.errors.append(error_level)
 
         # apply default system states
@@ -256,7 +256,7 @@ class xkyParser(a653parser):
             hm_table = partition.hm_table
 
             # mark event
-            self.logger.event(0, '{0} Health-Monitor Table', partition)
+            self.logger.debug('{0} Health-Monitor Table', partition)
 
         else:
 
@@ -313,7 +313,7 @@ class xkyParser(a653parser):
                     target_system_state.description = HMSystemState[target_system_state.id]['description']
 
                 hm_table.append(target_system_state)
-                self.logger.information(1, target_system_state.details())
+                self.logger.info(target_system_state.details())
 
                 # get error action XML nodes
                 xml_error_action_nodes = xml_system_state_node.parse_tag(HM_ERROR_ACTION, 0, sys.maxint, self.logger)
@@ -356,7 +356,7 @@ class xkyParser(a653parser):
                         error_action.description = HMErrorsDefinitions[error_action.id]['description']
 
                     # store error level information
-                    self.logger.information(2, error_action.details())
+                    self.logger.info(error_action.details())
                     target_system_state.errors.append(error_action)
 
         return rc
@@ -686,7 +686,7 @@ class xkyParser(a653parser):
 
         print("   PARSING sm")
         # parse shared memory areas
-        self.logger.event(0, LOG_EVENT_SHARED_MEMORY)
+        self.logger.debug(LOG_EVENT_SHARED_MEMORY)
         xml_partitions = xml.parse_tag(SHM_EXTENSION, 0, sys.maxint, self.logger)
         for xml_node in xml_partitions: self.parse_shared_memory(xml_node)
         self.compute_shared_memory_addresses()
@@ -720,7 +720,7 @@ class xkyParser(a653parser):
         # sanity check
         if self.logger.check_errors(): return False
 
-        self.logger.information(1, shm.details())
+        self.logger.info(shm.details())
 
         # parse partition access nodes
         rc = True
@@ -761,7 +761,7 @@ class xkyParser(a653parser):
             self.logger.error(LOG_REDEFINITION, xml_node.sourceline, shm_permissions)
             return False
 
-        self.logger.information(2, shm_permissions.details())
+        self.logger.info(shm_permissions.details())
         shm.permissions.append(shm_permissions)
         return True
 
