@@ -194,6 +194,7 @@ def input_configuration(target, logger):
             arch = bsp = None
 
     except:
+        logger.logger.exception("Exception, See details below")
 
         # error
         logger.error("Unsupported target: '{0}'", target)

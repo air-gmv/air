@@ -24,7 +24,7 @@ class Logger(object):
         self.silent = silent
         self.total_errors = 0
         self.total_warnings = 0
-        self.llogger = logging.getLogger('air_configurator')
+        self.logger = logging.getLogger('air_configurator')
 
     ##
     # @brief Desctructor
@@ -41,7 +41,7 @@ class Logger(object):
     # @param fmt format string
     # @param args format arguments
     def event(self, level, fmt, *args):
-        self.llogger.info(fmt)
+        self.logger.info(fmt)
         if not self.silent:
             terminalutils.pprint('\n{0}~b{1}~n\n'.format(
                 ' ' * (LEVEL_BASE if level == 1 else LEVEL_BASE + (level - 1) * LEVEL_WIDTH), fmt), *args)
@@ -54,7 +54,7 @@ class Logger(object):
     # @param fmt format string
     # @param args format arguments
     def information(self, level, fmt, *args):
-        self.llogger.debug(fmt)
+        self.logger.debug(fmt)
         if not self.silent:
             color = 'c'
             terminalutils.pprint('{0}~{1}{2}~n'.format(
@@ -69,7 +69,7 @@ class Logger(object):
     def warning(self, fmt, *args):
         self.warnings += 1
         self.total_warnings += 1
-        self.llogger.warning(fmt)
+        self.logger.warning(fmt)
         if not self.silent:
             terminalutils.pprint('{0}~y{1}~n'.format(
                 ' ' * (LEVEL_BASE if self.level == 1 else LEVEL_BASE + (self.level - 1) * LEVEL_WIDTH), fmt), *args)
@@ -82,7 +82,7 @@ class Logger(object):
     def error(self, fmt, *args):
         self.errors += 1
         self.total_errors += 1
-        self.llogger.error(fmt)
+        self.logger.error(fmt)
         if not self.silent:
             terminalutils.pprint('{0}~r{1}~n'.format(
                 ' ' * (LEVEL_BASE if self.level == 1 else LEVEL_BASE + (self.level - 1) * LEVEL_WIDTH), fmt), *args)
@@ -161,6 +161,7 @@ class Logger1:
                 for msg in msgs: 	self.fd.write(msg.format(version, asctime()) + '\r\n')
                 self.fd.write('-' * self.logFileWrapper.width + '\r\n')
             except:
+                self.logger.exception("Exception, See details below")
                 self.close()
 
         # Write on screen
@@ -177,6 +178,7 @@ class Logger1:
             try:
                 self.fd.write('\r\n= {0} {1}\r\n\r\n'.format(title, '=' * (80 - 3 - len(title))))
             except:
+                self.logger.exception("Exception, See details below")
                 self.close()
 
         # Write on screen
@@ -215,6 +217,7 @@ class Logger1:
             try:
                 self.fd.write(('\r\n'.join(self.logFileWrapper.wrap(msg)) if wrapper else msg) + '\r\n')
             except:
+                self.logger.exception("Exception, See details below")
                 self.close()
 
         # Write on screen
@@ -248,6 +251,7 @@ class Logger1:
             try:
                 self.fd.close()
             except:
+                self.logger.exception("Exception, See details below")
                 pass
 
         # Mark file as closed
