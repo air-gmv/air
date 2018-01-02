@@ -38,6 +38,7 @@ if __name__ == "__main__":
 
     # start event logger
     logger = logging.getLogger('air_configurator');
+    
 
     # display
     terminal_utils.printWelcomeBox(AIR_CONFIG_WELCOME, __version__)
