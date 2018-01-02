@@ -23,12 +23,13 @@ from localization.common import *
 from argparse import  ArgumentParser,  RawTextHelpFormatter
 
 __version__ 	= '3.6'
-__copyright__ 	= 'Copyright (C) GMVIS Skysoft S.A., 2018'
+__copyright__ 	= 'Copyright (C) GMVIS Skysoft S.A., 2014'
 __author__ 		= 'pfnf'
 __app__			= os.path.basename(__file__)
 
 #Uncomment this for full debugging of an error and check configurator.log results
-#logging.basicConfig(filename='configurator.log', format='%(levelname)s:%(filename)s:%(funcName)s:%(lineno)d:%(message)s', filemode='w', level=logging.DEBUG)
+# set level for logging.DEBUG for full info
+logging.basicConfig(filename='configurator.log', format='%(levelname)s:%(filename)s:%(funcName)s:%(lineno)d:%(message)s', filemode='w', level=logging.INFO)
 # we can set more attributes to log see https://docs.python.org/2/library/logging.html#logrecord-attributes
 logging.info('Configure log activated')
 
@@ -37,8 +38,7 @@ logging.info('Configure log activated')
 if __name__ == "__main__":
 
     # start event logger
-    logger = logging.getLogger('air_configurator');
-    
+    logger = Logger()
 
     # display
     terminal_utils.printWelcomeBox(AIR_CONFIG_WELCOME, __version__)
@@ -53,17 +53,14 @@ if __name__ == "__main__":
 
     # check if we are configuring XKY or a partition
     if xky.WORKING_DIRECTORY == xky.ROOT_DIRECTORY:
-        logging.info('Running AIR configuration including RTEMS activated')
+
         args = configure_xky.InputArgs(arg_parser, logger)
         configure_xky.Run(args, logger)
 
     else:
         # load OS configurations
-        logging.info('Running AIR partition configuration')
         os_configuration = xky_configuration.load_configuration(logger)
-        if os_configuration is None: 
-            logging.error ('AIR is not configured aborting')
-            exit(-1)
+        if os_configuration is None: exit(-1)
 
         # run the application configuration
         configure_app.InputArgs(arg_parser, logger)
