@@ -46,6 +46,7 @@ try:
 		tas.append(normedCoefficientOfVariation('GlobalTASLockWithLocalCounter', i))
 		ttas.append(normedCoefficientOfVariation('GlobalTTASLockWithLocalCounter', i))
 except:
+      logger.logger.exception("Exception! See details below")
 	pass
 
 x = range(2, len(ticket) + 2)

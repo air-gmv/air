@@ -240,6 +240,7 @@ def createFromMakoTemplate(input, output, v_dict, logger):
     try:
         file_ctx = mytemplate.render(**v_dict)
     except:
+        logger.logger.exception("Exception, See details below")
         from mako import exceptions
         logger.error('Error processing \'{0}\' template', pIn)
         if promptConfirm('View debug trace?', False):
@@ -252,6 +253,7 @@ def createFromMakoTemplate(input, output, v_dict, logger):
         fd.write(file_ctx)
         fd.close()
     except:
+        logger.logger.exception("Exception, See details below")
         logger.error('Error creating \'{0}\' from template', pOut)
         return
 
@@ -269,6 +271,7 @@ def getTerminalSize():
             try:
                 return ioctl_GWINSZ(fd)
             except:
+                logger.logger.exception("Exception, See details below")
                 pass
         return ()
 
@@ -282,6 +285,7 @@ def getTerminalSize():
             finally:
                 os.close(fd)
         except:
+            logger.logger.exception("Exception, See details below")
             return ()
 
     # try `stty size`
@@ -289,6 +293,7 @@ def getTerminalSize():
         try:
             return tuple(int(x) for x in os.popen('stty size', 'r').read().split())
         except:
+            logger.logger.exception("Exception, See details below")
             return ()
 
     # try environment variables
@@ -296,6 +301,7 @@ def getTerminalSize():
         try:
             return tuple(int(os.getenv(var)) for var in ('LINES', 'COLUMNS'))
         except:
+            logger.logger.exception("Exception, See details below")
             return ()
 
     size = fromStd()
@@ -344,6 +350,7 @@ def getPaths(inputFile, outputDirectory):
         try:
             makedirs(outputDirectory)
         except:
+            logger.logger.exception("Exception, See details below")
             cprint(CONFIGURATOR_INVALID_OUTPUT.format(outputDirectory), 'red')
             exit(-1)
 
@@ -361,6 +368,7 @@ def getPaths(inputFile, outputDirectory):
         try:
             copy2(inputFile, outputDirectory)
         except:
+            logger.logger.exception("Exception, See details below")
             cprint(CONFIGURATOR_INVALID_OUTPUT.format(outputDirectory), 'red')
             exit(-1)
 
@@ -403,6 +411,7 @@ def genFileS256Hash(filepath):
     try:
         fd = open(filepath, 'r+')
     except:
+        logger.logger.exception("Exception, See details below")
         return ''
 
     # Create hash
