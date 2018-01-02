@@ -536,7 +536,7 @@ def save_configuration(os_configuration, logger):
 
     try:
         fd = open(__OS_CONFIG_FILE__, 'w+')
-        pickle.dump((os_configuration.arch, os_configuration.bsp), fd)
+        pickle.dump((os_configuration.arch, os_configuration.bsp, os_configuration.fpu_enabled), fd)
         fd.close()
 
     except Exception, why:
@@ -556,11 +556,12 @@ def load_configuration(logger):
     # try to load the configuration
     try:
         fd = open(__OS_CONFIG_FILE__, 'r')
-        arch, bsp = pickle.load(fd)
-        os_configuration = Configuration(arch, bsp)
+        arch, bsp, fpu_enabled = pickle.load(fd)
+        os_configuration = Configuration(arch, bsp, fpu_enabled)        
         fd.close()
         return os_configuration
-    except: logger.exception ('Exception with the following error:')
+    except: 
+        logger.exception ('Exception with the following error:')
         os_configuration = None
 
     return os_configuration
