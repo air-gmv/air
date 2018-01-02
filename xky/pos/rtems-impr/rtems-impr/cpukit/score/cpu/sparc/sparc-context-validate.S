@@ -79,7 +79,18 @@ SYM(_CPU_Context_validate):
 	ld	[%g6 + PER_CPU_OFFSET_EXECUTING], %g2
 	ld	[%g2 + %lo(SPARC_THREAD_CONTROL_FP_CONTEXT_OFFSET)], %g2
 #else
-	mov	%psr, %g2
+   /*
+    * Folowing instructions paravirtualized by AIR 
+    * mov   %psr, %g2
+    *
+    * Below is respective paravirtualization 
+    */
+    set       XKY_SYSCALL_SPARC_GET_PSR, %o5 !set trap id in %o5
+    ta        XKY_SYSCALL_SPARC_TRAP     !trap give PSR value in %o0
+    mov        %o0, %g2                  !g2 = psr
+    /* End of AIR intervention */
+
+
 	sethi	%hi(SPARC_PSR_EF_MASK), %g3
 	and	%g2, %g3, %g2
 #endif

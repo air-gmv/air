@@ -316,12 +316,20 @@ void _SPARC_Set_TBR( uint32_t new_tbr );
  *
  * @return This method returns the entire PSR contents.
  */
+
+/** AIR intervention
+ * The following function is removed being replaced by AIR respective syscall
+ * 
 static inline uint32_t sparc_disable_interrupts(void)
 {
-  register uint32_t psr __asm__("g1"); /* return value of trap handler */
+  register uint32_t psr __asm__("g1"); /* return value of trap handler * /
   __asm__ volatile ( "ta %1\n\t" : "=r" (psr) : "i" (SPARC_SWTRAP_IRQDIS));
   return psr;
 }
+ * End of AIR intervention
+*/
+
+
 
 /**
  * @brief SPARC enable processor interrupts.
@@ -330,6 +338,10 @@ static inline uint32_t sparc_disable_interrupts(void)
  *
  * @param[in] psr is the PSR returned by @ref sparc_disable_interrupts.
  */
+/** AIR intervention
+ * The following function is removed being replaced by AIR respective syscall
+ * 
+
 static inline void sparc_enable_interrupts(uint32_t psr)
 {
   register uint32_t _psr __asm__("g1") = psr; /* input to trap handler */
@@ -339,9 +351,11 @@ static inline void sparc_enable_interrupts(uint32_t psr)
    * according to "The SPARC Architecture Manual: Version 8", Table 7-1
    * "Exception and Interrupt Request Priority and tt Values".  Add a nop to
    * prevent a trap instruction right after the interrupt enable trap.
-   */
+   * /
   __asm__ volatile ( "ta %0\nnop\n" :: "i" (SPARC_SWTRAP_IRQEN), "r" (_psr));
 }
+ * End of AIR intervention
+*/
 
 /**
  * @brief SPARC exit through system call 1
@@ -377,8 +391,8 @@ void sparc_syscall_exit(uint32_t exitcode1, uint32_t exitcode2)
  */
 #define sparc_flash_interrupts( _psr ) \
   do { \
-    sparc_enable_interrupts( (_psr) ); \
-    _psr = sparc_disable_interrupts(); \
+    xky_sparc_enable_interrupts( (_psr) ); \
+    _psr = xky_sparc_enable_interrupts(); \
   } while ( 0 )
 
 /**
@@ -388,15 +402,25 @@ void sparc_syscall_exit(uint32_t exitcode1, uint32_t exitcode2)
  *
  * @param[in] _level is the PSR returned by @ref sparc_disable_interrupts.
  */
+/** AIR intervention
+ * The following call is paravirtualized:
+ * sparc_get_psr( _psr_level ); \
+ * 
+ * with
+ *  _psr_level = xky_sparc_get_psr(); \
+ */
+
 #define sparc_get_interrupt_level( _level ) \
   do { \
     register uint32_t   _psr_level = 0; \
     \
-    sparc_get_psr( _psr_level ); \
+    _psr_level = xky_sparc_get_psr(); \
     (_level) = \
       (_psr_level & SPARC_PSR_PIL_MASK) >> SPARC_PSR_PIL_BIT_POSITION; \
   } while ( 0 )
-
+/** End of AIR intervention */
+  
+  
 static inline uint32_t _LEON3_Get_current_processor( void )
 {
   uint32_t asr17;
