@@ -13,6 +13,7 @@ import utils
 import pickle
 import utils.parser
 import logging
+import traceback
 
 __OS_CONFIG_FILE__ = os.path.join(xky.ROOT_DIRECTORY, '.xky_config')
 
@@ -117,6 +118,7 @@ class Configuration(object):
         self.bsp = bsp.lower()
         self.fpu_enabled = fpu_enabled;
         self.debug_mode = False
+        logging.info ('Initializing Configuration class arch -%s, bsp - %s', self.arch, self.bsp)        
         
 
         # get supported pos
@@ -558,8 +560,7 @@ def load_configuration(logger):
         os_configuration = Configuration(arch, bsp)
         fd.close()
         return os_configuration
-    except Exception:
-        logger.error ('Exception trying to load configuration %s', __OS_CONFIG_FILE__)        
+    except: logger.exception ('Exception with the following error:')
         os_configuration = None
 
     return os_configuration
