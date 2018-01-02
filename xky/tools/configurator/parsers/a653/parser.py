@@ -80,7 +80,7 @@ class a653parser(object):
             self.logger.error(LOG_REDEFINITION, xml_node.sourceline, partition)
             return False
 
-        self.logger.info(partition.details())
+        self.logger.information(1, partition.details())
         rc = True
 
         # parse partition ports
@@ -134,7 +134,7 @@ class a653parser(object):
             return False
 
         # Add port to partition port list
-        self.logger.info(qport.details())
+        self.logger.information(2, qport.details())
         qport.id = len(partition.ports)
         partition.ports.append(qport)
         return True
@@ -169,7 +169,7 @@ class a653parser(object):
         sport.refresh_period = int(sport.refresh_period * A653_TIMESCALE)
 
         # Add port to partition port list
-        self.logger.info(sport.details())
+        self.logger.information(2, sport.details())
         sport.id = len(partition.ports)
         partition.ports.append(sport)
         return True
@@ -201,7 +201,7 @@ class a653parser(object):
             return False
 
         # mark event
-        self.logger.info(schedule.details())
+        self.logger.information(1, schedule.details())
 
         # convert MTF to ticks per second
         schedule.mtf = int(schedule.mtf * A653_TIMESCALE)
@@ -259,7 +259,7 @@ class a653parser(object):
         if self.logger.check_errors(): return False
 
         # Print partition schedule information
-        self.logger.info(partition_schedule.details())
+        self.logger.information(2, partition_schedule.details())
 
         # convert seconds to ticks
         partition_schedule.period   = int(partition_schedule.period   * A653_TIMESCALE)
@@ -364,7 +364,7 @@ class a653parser(object):
         window.partition 	= partition_schedule.partition
 
         # show window information
-        self.logger.info(window.details())
+        self.logger.information(3, window.details())
 
         # add window to the partition schedule
         partition_schedule.windows.append(window)
@@ -389,7 +389,7 @@ class a653parser(object):
         if self.logger.check_errors(): return False
 
         rc = True
-        self.logger.info(channel.details())
+        self.logger.information(1, channel.details())
 
         # parse source ports
         xml_src_nodes   = xml.parse_tag(CHANNEL_SRC, 1, sys.maxint, self.logger)
@@ -538,33 +538,33 @@ class a653parser(object):
             return
 
         # parse module extensions
-        self.logger.debug(LOG_EVENT_MODULE_CONFIG)
+        self.logger.event(0, LOG_EVENT_MODULE_CONFIG)
         self.parse_module_extensions(xml)
 
         # parse system health-monitor configuration
-        self.logger.debug(LOG_EVENT_SYSTEM_HM)
+        self.logger.event(0, LOG_EVENT_SYSTEM_HM)
         xml_node = xml.parse_tag(SYSTEM_HM, 0, 1, self.logger)
         self.parse_system_hm(xml_node)
 
         # parse module health-monitor configuration
         if self.system_hm_table:
-            self.logger.debug(LOG_EVENT_MODULE_HM)
+            self.logger.event(0, LOG_EVENT_MODULE_HM)
             xml_node = xml.parse_tag(MODULE_HM, 0, 1, self.logger)
             if xml_node is not None: self.parse_hm_table(xml_node, MODULE_LEVEL)
 
         # parse partitions
-        self.logger.debug(LOG_EVENT_PARTITIONS)
+        self.logger.event(0, LOG_EVENT_PARTITIONS)
         xml_partitions = xml.parse_tag(PARTITION, 1, sys.maxint, self.logger)
         for xml_node in xml_partitions: self.parse_partition(xml_node)
 
         # parse schedule
-        self.logger.debug(LOG_EVENT_SCHEDULES)
+        self.logger.event(0, LOG_EVENT_SCHEDULES)
         xml_schedules = xml.parse_tag(SCHEDULE, 1, sys.maxint, self.logger)
         for xml_node in xml_schedules: self.parse_schedule(xml_node, len(xml_schedules) > 1)
 
         # parse partitions health-monitor configuration
         if self.system_hm_table:
-            self.logger.debug(LOG_EVENT_PARTITIONS_HM)
+            self.logger.event(0, LOG_EVENT_PARTITIONS_HM)
             xml_partitions_hm = xml.parse_tag(PARTITION_HM, 0, sys.maxint, self.logger)
             for xml_node in xml_partitions_hm: self.parse_hm_table(xml_node, PARTITION_LEVEL)
 
@@ -574,7 +574,7 @@ class a653parser(object):
         print("  PARSING connection table")
 
         # parse connection table
-        self.logger.debug(LOG_EVENT_CONNECTION_TABLE)
+        self.logger.event(0, LOG_EVENT_CONNECTION_TABLE)
         xml_connection_table = xml.parse_tag(CONNECTION_TABLE, 0, 1, self.logger)
         if len(xml_connection_table) > 0:
             xml_connection_table = xml_connection_table[0]
