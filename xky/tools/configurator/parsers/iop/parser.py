@@ -168,6 +168,7 @@ class IOParser(object):
             pdevice.device = alias
 
         except:
+            logger.logger.exception("Exception, See details below")
             pass
 
         print("dev: ", pdevice.device)

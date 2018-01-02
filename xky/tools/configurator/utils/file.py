@@ -34,7 +34,8 @@ def findFiles(pwd, extension, header, n = 10):
                 fd.close()
                 if fdHeader.find(header) >= 0: files.append(os.path.join(pwd, f))
 
-            except: #
+            except:
+                logger.logger.exception("Exception, See details below")
                 pass
 
     return files
@@ -148,6 +149,7 @@ def genFileS256Hash(file_path):
     try:
         fd = open(file_path, 'r+')
     except:
+        logger.logger.exception("Exception, See details below")
         return ''
 
     # Create hash
@@ -213,6 +215,7 @@ def loadFileRecord(file_name):
     try:
         with open(file_name) as fd: contents = fd.readlines()
     except:
+        logger.logger.exception("Exception, See details below")
         return None
 
     # Parse the cleaning record
@@ -327,6 +330,7 @@ def runCleaningRecord(record, logger, followDefault = False):
             try:
                 rmtree(d)
             except:
+                logger.logger.exception("Exception, See details below")
                 continue
 
     # remove configuration record

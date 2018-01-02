@@ -37,4 +37,5 @@ def str2bool(string, default = None):
     try:
         return True if ['true', 'false'].index(string.lower()) == 0 else False
     except:
+        logger.logger.exception("Exception, See details below")
         return default

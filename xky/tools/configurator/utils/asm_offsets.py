@@ -50,7 +50,8 @@ def generate_header(input_file, output_file):
         in_lines = in_fd.readlines()
         in_fd.close()
     except:
-        print("can't open '{0}'".format(input_file))
+        logger.logger.exception("Exception, See details below")
+        logger.information(1, "can't open '{0}'".format(input_file))
         return False
     #
     #try:
@@ -96,6 +97,7 @@ def generate_header(input_file, output_file):
     out_fd.close()
 
     #except:
+    #logger.logger.exception("Exception! See details below")
     #    return False
 
     return True
