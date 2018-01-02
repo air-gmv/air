@@ -78,7 +78,7 @@ class IOParser(object):
             return False
 
         # store logical device
-        self.logger.information(1, ldevice.details())
+        self.logger.info(ldevice.details())
         ldevice.idx = len(self.logical_devices)
         self.logical_devices.append(ldevice)
         return True
@@ -135,7 +135,7 @@ class IOParser(object):
             return False
 
         # save port
-        self.logger.information(2, port.details())
+        self.logger.info(port.details())
         self.ports.append(port)
 
     ## Parse physical device
@@ -210,7 +210,7 @@ class IOParser(object):
         if not pdevice.parser[1](self, xml, pdevice):
             return False
 
-        self.logger.information(1, pdevice.setup.details())
+        self.logger.info(pdevice.setup.details())
 
         print('BEFORE parsing physical routing')
 
@@ -304,8 +304,8 @@ class IOParser(object):
         if route.header is None: return False
 
         # parse complete
-        self.logger.information(2, route.details())
-        self.logger.information(3, route.header.details())
+        self.logger.info(route.details())
+        self.logger.info(route.header.details())
         self.routes.append(route)
         return True
 
@@ -390,7 +390,7 @@ class IOParser(object):
                 self.logger.error(LOG_PARTITION_NOT_SCHEDULED_1, xml.sourceline, self.partition, schedule)
                 return False
 
-            self.logger.information(1, partition_schedule.details())
+            self.logger.info(partition_schedule.details())
 
             # define routes scheduling
             route_schedule          = RouteSchedule()
@@ -451,7 +451,7 @@ class IOParser(object):
         route = routes[0]
         if active and not route in route_schedule.routes:
             route_schedule.routes.append(route)
-            self.logger.information(2, route.details())
+            self.logger.info(route.details())
 
         return True
 
@@ -487,7 +487,7 @@ class IOParser(object):
                 rc = False
                 continue
 
-            self.logger.information(2, device.details())
+            self.logger.info(device.details())
             route_schedule.devices.append(device)
 
         return  rc
@@ -507,22 +507,22 @@ class IOParser(object):
         if xml is None: return False
 
         # parse logical devices
-        self.logger.event(0, LOG_EVENT_IOP_LDEVICES)
+        self.logger.debug(LOG_EVENT_IOP_LDEVICES)
         xml_ldevices = xml.parse_tag(LOGICAL_DEVICE, 0, sys.maxint, self.logger)
         for xml_node in xml_ldevices: self.parse_logical_device(xml_node)
 
         # parse remote ports
-        self.logger.event(0, LOG_EVENT_IOP_REMOTE_PORTS)
+        self.logger.debug(LOG_EVENT_IOP_REMOTE_PORTS)
         xml_rports = xml.parse_tag(REMOTE_PORT, 0, sys.maxint, self.logger)
         for xml_node in xml_rports: self.parse_remote_port(xml_node)
 
         # parse physical devices
-        self.logger.event(0, LOG_EVENT_IOP_PDEVICES)
+        self.logger.debug(LOG_EVENT_IOP_PDEVICES)
         xml_pdevices = xml.parse_tag(PHYSICAL_DEVICE, 0, sys.maxint, self.logger)
         for xml_node in xml_pdevices: self.parse_physical_device(xml_node)
 
         # parse scheduling
-        self.logger.event(0, LOG_EVENT_IOP_SCHEDULE)
+        self.logger.debug(LOG_EVENT_IOP_SCHEDULE)
         xml_schedules = xml.parse_tag(SCHEDULING, 1, sys.maxint, self.logger)
         for xml_node in xml_schedules: self.parse_schedule(xml_node)
 

@@ -32,9 +32,9 @@ def ShowInstallInfo(logger):
     os_configuration = xky_configuration.load_configuration(logger)
 
     if os_configuration is not None:
-        logger.event(0, "AIR configured for {0}", os_configuration.get_target())
+        logger.debug("AIR configured for {0}", os_configuration.get_target())
     else:
-        logger.event(0, "AIR isn't currently configured")
+        logger.debug("AIR isn't currently configured")
 
     exit(0)
 
@@ -88,7 +88,7 @@ def Run(args, os_configuration, logger):
     # generation partition Makefiles and glue code
     for i, partition in enumerate(app_configuration.partitions):
 
-        logger.event(0, LOG_EVENT_PARTITION_CONFIG, partition)
+        logger.debug(LOG_EVENT_PARTITION_CONFIG, partition)
 
         # get partition config and templates
         pos_config = os_configuration.get_pos_config(partition.personality)
@@ -123,7 +123,7 @@ def Run(args, os_configuration, logger):
             configure_iop(os_configuration, app_configuration, partition, temp_directory, logger)
 
     # generate configuration files
-    logger.event(0, LOG_EVENT_APP_CONFIG)
+    logger.debug(LOG_EVENT_APP_CONFIG)
 
     # common source Makefile
     makoutils.applyMAKOTemplate(
