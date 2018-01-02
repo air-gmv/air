@@ -213,18 +213,12 @@ class Configuration(object):
     def get_target_compiler(self):		  
         msoft_float = self.grep ("Makefile.inc", "msoft")
         if self.fpu_enabled:
-            print ('fpu to be enabled')
-            if msoft_float:
-                print (' It currently disabled, applying patch...')
-                print (msoft_float)
+            #if msoft_float:
                 # not required for RTEMS 4.12 TBC
                 #os.system("patch --force -p2 -R -s < tools/configurator/disable_fpu.patch")
             return supported_architectures[self.arch][self.bsp].kernel_compiler
         else:
-            print ('fpu to be NOT enabled')
-            if not msoft_float:
-               print (' It currently enabled, applying patch...')
-               print (msoft_float)
+            #if not msoft_float:
                # not required for RTEMS 4.12 TBC
                #os.system("patch --force -p2 -s < tools/configurator/disable_fpu.patch")
             return supported_architectures[self.arch][self.bsp].kernel_compiler_no_fpu
@@ -562,7 +556,7 @@ def load_configuration(logger):
         fd.close()
         return os_configuration
     except: 
-        logger.logger.exception ('Exception with the following error:')
+        logger.logger.exception("Exception, See details below")
         os_configuration = None
 
     return os_configuration

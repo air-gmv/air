@@ -83,6 +83,7 @@ def xmlParseTag(xml, tag, minRequired, maxAllowed, logger):
     try:
         xmlList = xml.findall(tag)
     except:
+        logger.logger.exception("Exception, See details below")
         xmlList = []
 
     # Check if required element is missing
@@ -123,6 +124,7 @@ def xmlParseAttribute(xml, attr, definition, required, logger, default = None):
         valueStr = xml.attrib.get(attr, None)
         if valueStr is not None: value = converter(valueStr)
     except:
+        logger.logger.exception("Exception, See details below")
         value = None
 
     # Check if required attribute was found
@@ -139,6 +141,7 @@ def xmlParseAttribute(xml, attr, definition, required, logger, default = None):
         try:
             valid = validator(value)
         except:
+            logger.logger.exception("Exception, See details below")
             valid = False
 
         # Invalid value
@@ -171,6 +174,7 @@ def xmlParseText(xml, definition, logger, default = None):
         valueStr = xml.text
         if valueStr is not None: value = converter(valueStr)
     except:
+        logger.logger.exception("Exception, See details below")
         value = None
 
     # Check if text is valid
@@ -178,6 +182,7 @@ def xmlParseText(xml, definition, logger, default = None):
         try:
             valid = validator(value)
         except:
+            logger.logger.exception("Exception, See details below")
             valid = False
 
         # Invalid value
