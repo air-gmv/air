@@ -311,7 +311,7 @@ def runCleaningRecord(record, logger, followDefault = False):
 
             # Check if the files are the same
             currentHash = genFileS256Hash(file)
-            logger.information(1,"Removing file '{0}'...", file)
+            logger.info(1,"Removing file '{0}'...", file)
             if currentHash and currentHash != originalHash and \
                terminalutils.promptActions(
                        "File '{0}', was modified, do you still want remove it?".format(file),
