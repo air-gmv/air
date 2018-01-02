@@ -119,6 +119,15 @@ SYM(_CPU_Context_switch):
 
         PUBLIC(_CPU_Context_restore_heir)
 SYM(_CPU_Context_restore_heir):
+        /* AIR
+           Here is a major intervention of AIR
+           The source code below will be disabled and replaced by
+           AIR's window flush system call
+           Disable done with AIR_DISABLE_FLUSH_SYSCALL
+           Remark the commented code is also updated to have AIR updating
+           the PSR register
+         */
+        
         /*
          *  Flush all windows with valid contents except the current one.
          *  In examining the set register windows, one may logically divide
@@ -155,9 +164,9 @@ SYM(_CPU_Context_restore_heir):
          *      g5 = scratch
          */
 
+        #ifdef AIR_DISABLE_FLUSH_SYSCALL
         and     %o2, SPARC_PSR_CWP_MASK, %g3  ! g3 = CWP
-        andn    %o2, SPARC_PSR_ET_MASK, %g1   ! g1 = psr with traps disabled
-        
+        andn    %o2, SPARC_PSR_ET_MASK, %g1   ! g1 = psr with traps disabled                
         
         /*
          * Folowing instructions paravirtualized by AIR 
@@ -165,18 +174,20 @@ SYM(_CPU_Context_restore_heir):
          *
          * Below is respective paravirtualization 
          */
-        
+                
         mov       %g1, %o0
         set       XKY_SYSCALL_SPARC_SET_PSR, %o5
         ta        XKY_SYSCALL_SPARC_TRAP         !  **** DISABLE TRAPS ****        
         /* End of AIR intervention */
-
+        
         
         mov     %wim, %g2                     ! g2 = wim
         mov     1, %g4
         sll     %g4, %g3, %g4                 ! g4 = WIM mask for CW invalid
-
+        
+        
 save_frame_loop:
+
         sll     %g4, 1, %g5                   ! rotate the "wim" left 1
         srl     %g4, SPARC_NUMBER_OF_REGISTER_WINDOWS - 1, %g4
         or      %g4, %g5, %g4                 ! g4 = wim if we do one restore
@@ -238,7 +249,12 @@ done_flushing:
         mov     1, %g4
         sll     %g4, %g2, %g4                 ! g4 = new WIM
         mov     %g4, %wim
-
+#endif 
+/* END OF AIR_DISABLE_FLUSH_SYSCALL intevention */
+/* AIR flush syscall */
+        ta        XKY_SYSCALL_FLUSH_TRAP        ! flush all windows
+         
+        
 #if defined(RTEMS_SMP)
         /*
          * The executing thread no longer executes on this processor.  Switch
