@@ -28,12 +28,12 @@ __author__ 		= 'pfnf'
 __app__			= os.path.basename(__file__)
 
 #Uncomment this for full debugging of an error and check configurator.log results
-logging.basicConfig(filename='configurator.log', format='%(levelname)s:%(filename)s:%(funcName)s:%(lineno)d:%(message)s', filemode='w', level=logging.DEBUG)
+#logging.basicConfig(filename='configurator.log', format='%(levelname)s:%(filename)s:%(funcName)s:%(lineno)d:%(message)s', filemode='w', level=logging.DEBUG)
 # we can set more attributes to log see https://docs.python.org/2/library/logging.html#logrecord-attributes
-logging.info('Configurator log activated')
+logging.info('Configure log activated')
 
 ##
-# @brief Configurator entry point
+# @brief Configure entry point
 if __name__ == "__main__":
 
     # start event logger
@@ -57,7 +57,6 @@ if __name__ == "__main__":
         configure_xky.Run(args, logger)
 
     else:
-
         # load OS configurations
         logging.info('Running AIR partition configuration')
         os_configuration = xky_configuration.load_configuration(logger)
