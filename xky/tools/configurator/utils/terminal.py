@@ -48,6 +48,7 @@ def getTerminalSize():
             try:
                 return ioctl_GWINSZ(fd)
             except:
+                logger.logger.exception("Exception, See details below")
                 pass
         return ()
 
@@ -61,6 +62,7 @@ def getTerminalSize():
             finally:
                 os.close(fd)
         except:
+            logger.logger.exception("Exception, See details below")
             return ()
 
     # try `stty size`
@@ -68,6 +70,7 @@ def getTerminalSize():
         try:
             return tuple(int(x) for x in os.popen('stty size', 'r').read().split())
         except:
+            logger.logger.exception("Exception, See details below")
             return ()
 
     # try environment variables
@@ -75,6 +78,7 @@ def getTerminalSize():
         try:
             return tuple(int(os.getenv(var)) for var in ('LINES', 'COLUMNS'))
         except:
+            logger.logger.exception("Exception, See details below")
             return ()
 
     size = fromStd()
