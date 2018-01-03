@@ -322,12 +322,11 @@ void _SPARC_Set_TBR( uint32_t new_tbr );
  * TBC */
 static inline uint32_t sparc_disable_interrupts(void)
 {
-  register uint32_t psr __asm__("g1"); /* return value of trap handler * /
+  register uint32_t psr __asm__("g1"); /* return value of trap handler */
   __asm__ volatile ( "ta %1\n\t" : "=r" (psr) : "i" (SPARC_SWTRAP_IRQDIS));
   return psr;
 }
- /* End of AIR intervention
-*/
+ /* End of AIR intervention */
 
 
 
@@ -351,11 +350,10 @@ static inline void sparc_enable_interrupts(uint32_t psr)
    * according to "The SPARC Architecture Manual: Version 8", Table 7-1
    * "Exception and Interrupt Request Priority and tt Values".  Add a nop to
    * prevent a trap instruction right after the interrupt enable trap.
-   * /
+   */
   __asm__ volatile ( "ta %0\nnop\n" :: "i" (SPARC_SWTRAP_IRQEN), "r" (_psr));
 }
- /* End of AIR intervention
-*/
+ /* End of AIR intervention*/
 
 /**
  * @brief SPARC exit through system call 1
