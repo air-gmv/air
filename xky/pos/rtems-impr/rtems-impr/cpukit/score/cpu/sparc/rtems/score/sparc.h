@@ -319,14 +319,14 @@ void _SPARC_Set_TBR( uint32_t new_tbr );
 
 /** AIR intervention
  * The following function is removed being replaced by AIR respective syscall
- * 
+ * TBC */
 static inline uint32_t sparc_disable_interrupts(void)
 {
   register uint32_t psr __asm__("g1"); /* return value of trap handler * /
   __asm__ volatile ( "ta %1\n\t" : "=r" (psr) : "i" (SPARC_SWTRAP_IRQDIS));
   return psr;
 }
- * End of AIR intervention
+ /* End of AIR intervention
 */
 
 
@@ -340,7 +340,7 @@ static inline uint32_t sparc_disable_interrupts(void)
  */
 /** AIR intervention
  * The following function is removed being replaced by AIR respective syscall
- * 
+ * TBC */ 
 
 static inline void sparc_enable_interrupts(uint32_t psr)
 {
@@ -354,7 +354,7 @@ static inline void sparc_enable_interrupts(uint32_t psr)
    * /
   __asm__ volatile ( "ta %0\nnop\n" :: "i" (SPARC_SWTRAP_IRQEN), "r" (_psr));
 }
- * End of AIR intervention
+ /* End of AIR intervention
 */
 
 /**
@@ -389,12 +389,16 @@ void sparc_syscall_exit(uint32_t exitcode1, uint32_t exitcode2)
  *
  * @param[in] _psr is the PSR returned by @ref sparc_disable_interrupts.
  */
+/** AIR intervention
+ *  It uses AIRs  sparc_enable_interrupts */
 #define sparc_flash_interrupts( _psr ) \
   do { \
     xky_sparc_enable_interrupts( (_psr) ); \
     _psr = xky_sparc_enable_interrupts(); \
   } while ( 0 )
-
+/** End of AIR intervention */
+  
+  
 /**
  * @brief SPARC obtain interrupt level.
  *
