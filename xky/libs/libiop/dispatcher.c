@@ -328,7 +328,10 @@ void pre_dispatcher(){
 	iop_debug("\n :: IOP - pre-dispatcher running!\n");
 
 	/* Get execution window reference time */
-	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &last_task_ticks);
+    /* this  commented call is for RTEMS 4.8, it is not deprecated */
+	/* rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &last_task_ticks); */
+    last_task_ticks = rtems_clock_get_ticks_since_boot();
+    
 	//iop_debug("  :: IOP - pre-dispatcher read this time %d\n", last_task_ticks);
 
 	/* check for schedule changes */
@@ -384,11 +387,13 @@ void pos_dispatcher(){
     //OLD MAIN LOOP
 	/* wait for next partition release point */
 	//iop_task_sleep(0);
+	
 
 	iop_debug("\n :: IOP - pos-dispatcher doing nothing!\n");
 
 //	rtems_interval time;
-//	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
+//	/*rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time); // use this for rtems 4.8 */
+//  time = rtems_clock_get_ticks_since_boot(); // use this for rtems 5
 //	char preamble[] = " pos-dispatcher time: ";
 //	append_to_message(&msg_relay, preamble, 26); //52
 //	append_time_to_message(&msg_relay, time, 22+26);//22+52
