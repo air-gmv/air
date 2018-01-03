@@ -164,8 +164,8 @@ static void greth_initialize_hardware(iop_eth_device_t *device){
 		
 	#ifdef AUTONEG_ENABLED
 		/* try to get current time*/
-		if ( rtems_clock_get(RTEMS_CLOCK_GET_TIME_VALUE,&tstart) == RTEMS_NOT_DEFINED){
-			
+		//if ( rtems_clock_get(RTEMS_CLOCK_GET_TIME_VALUE,&tstart) == RTEMS_NOT_DEFINED){ // use for RTEMS 4.
+		if ( rtems_clock_get_tod_timeval(&tstart) == RTEMS_NOT_DEFINED){ // use for RTEMS 5
 			/* Not inited, set to epoch */
 			rtems_time_of_day time;
 			time.year   = 1988;
@@ -179,7 +179,9 @@ static void greth_initialize_hardware(iop_eth_device_t *device){
 
 			tstart.seconds = 0;
 			tstart.microseconds = 0;
-			rtems_clock_get(RTEMS_CLOCK_GET_TIME_VALUE,&tstart);
+            
+			/* rtems_clock_get(RTEMS_CLOCK_GET_TIME_VALUE,&tstart); */ // Use for RTEMS 4.8
+			rtems_clock_get_tod_timeval(&tstart) // Use for RTEMS 5
 		}
 	#endif
 
@@ -189,7 +191,8 @@ static void greth_initialize_hardware(iop_eth_device_t *device){
 		#ifdef AUTONEG_ENABLED
 
 			/*Get current time*/
-			rtems_clock_get(RTEMS_CLOCK_GET_TIME_VALUE,&tnow);
+			/* rtems_clock_get(RTEMS_CLOCK_GET_TIME_VALUE,&tnow); // For RTEMS 4.8 */
+            rtems_clock_get_tod_timeval(&tnow); // For RTEMS 5
 			
 			/*calculate deltat between now and tstart*/
 			msecs = (tnow.seconds-tstart.seconds)*1000+(tnow.microseconds-tstart.microseconds)/1000;
