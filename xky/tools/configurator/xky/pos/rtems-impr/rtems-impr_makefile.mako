@@ -58,7 +58,9 @@ ${'\t\t'}--disable-tests ${'\\'}
 ${'\t\t'}--enable-rtemsbsp=$(RTEMS_BSP) ${'\\'}
 ${'\t\t'}--prefix=$(RTEMS_INSTALL_DIR) && cd ..; ${'\\'}
 ${'\t'}fi
-${'\t'}make -C $(RTEMS_BUILD_DIR) CPPFLAGS='$(XKY_HEADERS)'
+${'\t'}make -C $(RTEMS_BUILD_DIR) CPPFLAGS='$(XKY_HEADERS)' && ${'\\'}
+${'\t'}make -C $(RTEMS_BUILD_DIR) install
+
 
 # Clean
 ${template.Rule('clean', True, None)}
