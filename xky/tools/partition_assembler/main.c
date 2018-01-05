@@ -105,10 +105,10 @@ int main(int argc, char **argv) {
     p_data *p_elfs = (p_data *)safe_malloc(sizeof(p_data) * p_count);
     for (i = 0; i < p_count; ++i) {
 
-        /* get partition data */
+        /* get partition data */ //p0.exe
         p_elfs[i].filename = argv[i * 3 + 1];
-        p_elfs[i].mem_origin = strtoll(argv[i * 3 + 2], NULL, 16);
-        p_elfs[i].mem_length = strtoll(argv[i * 3 + 3], NULL, 16);
+        p_elfs[i].mem_origin = strtoll(argv[i * 3 + 2], NULL, 16); // 0x41000000
+        p_elfs[i].mem_length = strtoll(argv[i * 3 + 3], NULL, 16); // 0x00100000
         p_elfs[i].elf_data = read_file(p_elfs[i].filename, &p_elfs[i].size);
 
         printf("    Partition %02i - %06i KB - Memory: [0x%08x:0x%08x]\n",
