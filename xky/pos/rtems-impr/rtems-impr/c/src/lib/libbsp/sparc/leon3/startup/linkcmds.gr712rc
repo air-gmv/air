@@ -20,11 +20,11 @@ _RAM_START = DEFINED (_RAM_START) ? _RAM_START : 0x40000000;
 */
 
 /* these are the maximum values */
-
+/* Value overridden by AIR
 MEMORY
 {
   rom     : ORIGIN = 0x00000000, LENGTH = 256M
   ram     : ORIGIN = 0x40000000, LENGTH = 1024M
 }
-
+*/
 INCLUDE linkcmds.base
