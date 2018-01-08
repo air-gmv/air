@@ -11,8 +11,8 @@
  */
 
 #define CONFIGURE_INIT
-//#include <stdio.h>
-//#include <stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <xky.h>
 #include <pprintf.h>
 
@@ -25,7 +25,7 @@ while(1)
 {
 
   andp=andp+1;
-  pprintf( "\n\n*** RTEMS HELLO WORLD TEST **********\n" );
+  printf( "\n\n*** RTEMS HELLO WORLD TEST **********\n" );
 
 //  printf( "\n\n*** RTEMS HELLO WORLD TEST **********\n" );
 //  printf( "Hello World (:\n" );
