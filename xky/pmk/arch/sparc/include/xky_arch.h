@@ -24,7 +24,7 @@ typedef long unsigned int xky_sz_t;
 /**
  * @brief Struct member offset
  */
-#define offsetof(st, m) ((xky_sz_t)(&((st *) 0)->m))
+#define air_offsetof(st, m) ((xky_sz_t)(&((st *) 0)->m))
 
 /**
  * @brief Signed 8 bit integer
