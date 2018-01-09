@@ -25,7 +25,7 @@ while(1)
 {
 
   andp=andp+1;
-  printf( "\n\n*** RTEMS HELLO WORLD TEST **********\n" );
+  pprintf( "\n\n*** RTEMS HELLO WORLD TEST **********\n" );
 
 //  printf( "\n\n*** RTEMS HELLO WORLD TEST **********\n" );
 //  printf( "Hello World (:\n" );
