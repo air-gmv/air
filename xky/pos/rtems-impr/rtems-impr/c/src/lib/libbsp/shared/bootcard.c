@@ -78,19 +78,18 @@ void boot_card(
    * AIR redefines take control of the trap table here
    */
   
-    /* clear trap table */
-    uint32_t i;
+  /* clear trap table */
+  uint32_t i;
     
-    for (i = 0; i < CPU_INTERRUPT_NUMBER_OF_VECTORS; ++i) {
+  for (i = 0; i < CPU_INTERRUPT_NUMBER_OF_VECTORS; ++i) {
+    trap_table[i] = NULL;
+  }
 
-        trap_table[i] = NULL;
-    }
+  /* set TBR */
+  xky_sparc_set_tbr(&trap_table[0]);
 
-    /* set TBR */
-    xky_sparc_set_tbr(&trap_table[0]);
-
-    /* enable traps*/
-    xky_sparc_enable_traps();
+  /* enable traps*/
+  xky_sparc_enable_traps();
 
   /*
    *  Make sure interrupts are disabled.
