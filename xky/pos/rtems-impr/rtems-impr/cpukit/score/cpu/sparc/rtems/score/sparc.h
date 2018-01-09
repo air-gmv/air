@@ -349,7 +349,7 @@ static inline uint32_t sparc_disable_interrupts(void)
 static inline void sparc_enable_interrupts(uint32_t psr)
 {
   /** Original Code 
-   *register uint32_t _psr __asm__("g1") = psr; /* input to trap handler 
+   *register uint32_t _psr __asm__("g1") = psr; // input to trap handler 
 
    *
    * The trap instruction has a higher trap priority than the interrupts

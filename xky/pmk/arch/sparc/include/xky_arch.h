@@ -85,7 +85,7 @@ typedef unsigned long xky_isr_level_t;
  * @brief SPARC system call: disable virtual interrupts
  * @return previous PIL
  */
-xky_u32_t xky_sparc_disable_interrupts();
+xky_u32_t xky_sparc_disable_interrupts(void);
 /**
  * @brief SPARC system call: enable virtual interrupts
  * @param pil PIL level to apply
@@ -94,28 +94,28 @@ void xky_sparc_enable_interrupts(xky_u32_t pil);
 /**
  * @brief SPARC system call: disable virtual traps
  */
-void xky_sparc_disable_traps();
+void xky_sparc_disable_traps(void);
 /**
  * @brief SPARC system call: enable virtual traps
  */
-void xky_sparc_enable_traps();
+void xky_sparc_enable_traps(void);
 /**
  * @brief SPARC system call: disable FPU
  * @return NO_ERROR if the partition have permissions to control the FPU
  *         INVALID_CONFIG otherwise
  */
-xky_u32_t xky_sparc_disable_fpu();
+xky_u32_t xky_sparc_disable_fpu(void);
 /**
  * @brief SPARC system call: enable FPU
  * @return NO_ERROR if the partition have permissions to control the FPU
  *         INVALID_CONFIG otherwise
  */
-xky_u32_t xky_sparc_enable_fpu();
+xky_u32_t xky_sparc_enable_fpu(void);
 /**
  * @brief SPARC system call: get PSR
  * @return Core PSR
  */
-xky_u32_t xky_sparc_get_psr();
+xky_u32_t xky_sparc_get_psr(void);
 /**
  * @brief SPARC system call: set PSR
  * @param psr PSR value
@@ -131,7 +131,7 @@ void xky_sparc_virtual_rett(xky_u32_t pc, xky_u32_t n_pc);
  * @brief SPARC system call: get cache register
  * @returns current cache register value
  */
-xky_u32_t xky_sparc_get_cache_register();
+xky_u32_t xky_sparc_get_cache_register(void);
 /**
  * @brief SPARC system call: set cache register
  * @param cache cache register new value
@@ -148,7 +148,7 @@ void xky_sparc_set_tbr(xky_u32_t tbr);
  * @brief SPARC system call: get TBR register
  * @return TBR register value
  */
-xky_u32_t xky_sparc_get_tbr();
+xky_u32_t xky_sparc_get_tbr(void);
 /**
  * @brief SPARC system call: get IRQ mask register
  * @param core identifier
