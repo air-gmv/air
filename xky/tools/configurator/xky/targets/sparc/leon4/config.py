@@ -30,7 +30,7 @@ kernel_compiler = dict(
     AR="sparc-rtems5-ar",
     RANLIB="sparc-rtems5-ranlib",
     CFLAGS="",
-    CPPFLAGS="-mcpu=leon4 -mhard-float -mflat -fno-builtin -nodefaultlibs -gdwarf-2 -O2 -Wall",
+    CPPFLAGS="-mcpu=leon4 -mflat -fno-builtin -nodefaultlibs -gdwarf-2 -O2 -Wall",
     CXXFLAGS="",
     LDFLAGS="",
     ARFLAGS="ruv"
@@ -44,7 +44,7 @@ kernel_compiler_no_fpu = dict(
 	AR="sparc-rtems5-ar",
 	RANLIB="sparc-rtems5-ranlib",
 	CFLAGS="",
-	CPPFLAGS="-mcpu=leon4 -msoft-float -mflat -fno-builtin -nodefaultlibs -gdwarf-2 -O2 -Wall",
+	CPPFLAGS="-mcpu=leon4 -mflat -fno-builtin -nodefaultlibs -gdwarf-2 -O2 -Wall",
 	CXXFLAGS="",
 	LDFLAGS="",
 	ARFLAGS="ruv"
