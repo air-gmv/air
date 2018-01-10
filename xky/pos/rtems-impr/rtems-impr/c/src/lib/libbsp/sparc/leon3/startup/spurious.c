@@ -144,31 +144,39 @@ void bsp_spurious_initialize()
   uint32_t trap;
   uint32_t level;
   /* uint32_t mask; */
+  
+  /* old ISR handler */
+  proc_ptr old_isr_handler;
+  
 
   level = sparc_disable_interrupts();
   /* mask = LEON3_IrqCtrl_Regs->mask_p0; */
 
   for ( trap=0 ; trap<256 ; trap++ ) {
+      /* in case of an external interrupt */
+      if(( trap >= 0x11 ) && ( trap <= 0x1f ))
+      {
+      /* simply catch the interrupt and not unmask it */
+      _CPU_ISR_install_vector(trap ,
+                  bsp_spurious_handler ,
+                  &old_isr_handler);
 
-    /*
-     *  Skip window overflow, underflow, and flush as well as software
-     *  trap 0,9,10 which we will use as a shutdown, IRQ disable, IRQ enable.
-     *  Also avoid trap 0x70 - 0x7f which cannot happen and where some of the
-     *  space is used to pass parameters to the program.
-     */
-
-    if (( trap == 5 ) || ( trap == 6 ) ||
-#if defined(SPARC_USE_LAZY_FP_SWITCH)
-        ( trap == 4 ) ||
-#endif
-        (( trap >= 0x11 ) && ( trap <= 0x1f )) ||
-        (( trap >= 0x70 ) && ( trap <= 0x83 )) ||
-        ( trap == 0x80 + SPARC_SWTRAP_IRQDIS ) ||
-#if defined(SPARC_USE_SYNCHRONOUS_FP_SWITCH)
-        ( trap == 0x80 + SPARC_SWTRAP_IRQDIS_FP ) ||
-#endif
-        ( trap == 0x80 + SPARC_SWTRAP_IRQEN ))
+      /* and move on to the next trap */
       continue;
+      }
+
+      /* skip window overflow, underflow as well as software
+    * trap 0 which we will use as a shutdown. Also avoid trap 0x70 - 0x7f
+    * which cannot happen and where some of the space is used to pass
+    * paramaters to the program */
+      if(( trap == 5 || trap == 6 ) ||
+      ( ( trap >= 0x70 ) && ( trap <= 0x83 ) ))
+      {
+      /* skip this vector */
+      continue;
+      }
+
+          
 
     set_vector(
         (rtems_isr_entry) bsp_spurious_handler,
@@ -180,4 +188,5 @@ void bsp_spurious_initialize()
   /* LEON3_IrqCtrl_Regs->mask_p0 = mask; */
   sparc_enable_interrupts(level);
 
+  
 }
