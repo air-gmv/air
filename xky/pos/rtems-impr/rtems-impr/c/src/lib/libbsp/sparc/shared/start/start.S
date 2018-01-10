@@ -50,8 +50,8 @@ SYM(_ERC32_MEC_Timer_Control_Mirror):
         PUBLIC(hard_reset)
 SYM(hard_reset):
 
-  set     (SYM(rdb_start)), %g6               ! End of work-space area
-  st      %sp, [%g6]                          ! save sp to rdb_start
+    sethi   %hi(_Per_CPU_Information), %g6 ! get per-CPU control
+    add %g6, %lo(_Per_CPU_Information), %g6
 
  #if defined(START_LEON3_ENABLE_SMP)
     rd  %asr17, %o0     ! get CPU identifier
