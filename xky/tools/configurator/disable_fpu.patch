@@ -54,8 +54,8 @@ index 8bda901..6be8865 100755
  #  This contains the compiler options necessary to select the CPU model
  #  and (hopefully) optimize for it.
  #CPU_CFLAGS = -mcpu=cypress -msoft-float
--CPU_CFLAGS = -mcpu=v8 -mhard-float -gdwarf-2
-+CPU_CFLAGS = -mcpu=v8 -msoft-float -gdwarf-2
+-CPU_CFLAGS = -mcpu=v8 -mhard-float 
++CPU_CFLAGS = -mcpu=v8 -msoft-float 
  
  # optimize flag: typically -O2
  CFLAGS_OPTIMIZE_V = -g -O2 -fno-merge-constants -fno-builtin-printf
@@ -63,8 +63,8 @@ index 8bda901..6be8865 100755
  # is currently required.
  
  define make-exe
--	$(LINK.c) $(AM_CFLAGS) $(AM_LDFLAGS) -mhard-float -gdwarf-2 -o $(basename $@).exe \
-+	$(LINK.c) $(AM_CFLAGS) $(AM_LDFLAGS) -msoft-float -gdwarf-2 -o $(basename $@).exe \
+-	$(LINK.c) $(AM_CFLAGS) $(AM_LDFLAGS) -mhard-float -o $(basename $@).exe \
++	$(LINK.c) $(AM_CFLAGS) $(AM_LDFLAGS) -msoft-float -o $(basename $@).exe \
  		$(LINK_OBJS) -Wl,--start-group $(LINK_LIBS) -Wl,--end-group -Wl,--script=linkcmds -B$(RTEMS_EXTERNAL_LIBRARY_PATH)
  	$(NM) -g -n $(basename $@).exe > $(basename $@).num
  	$(SIZE) $(basename $@).exe
