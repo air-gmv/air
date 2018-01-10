@@ -91,6 +91,9 @@ rtems_device_driver console_initialize(
   void                      *arg
 )
 {
+    
+#ifdef AIR_DISABLED
+    
   const rtems_termios_device_handler *handler =
 #if CONSOLE_USE_INTERRUPTS
     &apbuart_handler_interrupt;
@@ -154,6 +157,7 @@ rtems_device_driver console_initialize(
     );
   }
 
+#endif  
   return RTEMS_SUCCESSFUL;
 }
 
