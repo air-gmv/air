@@ -54,7 +54,6 @@ include $(PROJECT_ROOT)/make/leaf.cfg
 
 # built in libraries include files
 CPPFLAGS+=${'\\'}
--gdwarf-2${'\\'}
 -I./${'\\'}
 -B./${'\\'}
 -I../common/${'\\'}
