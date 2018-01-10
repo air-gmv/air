@@ -74,9 +74,10 @@ def get_available_libraries():
     for lib_name in libs_names:
         try:
             lib_path = os.path.join(XKY_LIBRARIES, lib_name, 'config.py')
-            module = imp.load_source(lib_name, lib_path)
-            module.path = lib_path
-            libs[module.name.lower()] = module
+            if lib_name != 'libiop':
+                module = imp.load_source(lib_name, lib_path)
+                module.path = lib_path
+                libs[module.name.lower()] = module
         except IOError:
             pass
 
