@@ -134,9 +134,9 @@ void rtems_initialize_executive(void)
   const rtems_sysinit_item *item;
 
   /* Invoke the registered system initialization handlers */
-  RTEMS_LINKER_SET_FOREACH( _Sysinit, item ) {
-    ( *item->handler )();
-  }
+  //RTEMS_LINKER_SET_FOREACH( _Sysinit, item ) {
+    //( *item->handler )();
+  //}
 
   _System_state_Set( SYSTEM_STATE_UP );
 
