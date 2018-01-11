@@ -27,8 +27,8 @@ void _IO_Initialize_all_drivers( void )
 {
    rtems_device_major_number major;
 
-   _IO_All_drivers_initialized = true;
+   _IO_All_drivers_initialized = false;
 
-   for ( major=0 ; major < _IO_Number_of_drivers ; major ++ )
-     (void) rtems_io_initialize( major, 0, NULL );
+   //for ( major=0 ; major < _IO_Number_of_drivers ; major ++ )
+     //(void) rtems_io_initialize( major, 0, NULL );
 }
