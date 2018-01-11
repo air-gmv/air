@@ -64,7 +64,9 @@ extern "C" {
   #if defined(RTEMS_SMP)
     #define SPARC_USE_SYNCHRONOUS_FP_SWITCH
   #else
+    /* AIR intervention Lazy floating point disabled
     #define SPARC_USE_LAZY_FP_SWITCH
+    * End of AIR interventtion */
   #endif
 #endif
 
