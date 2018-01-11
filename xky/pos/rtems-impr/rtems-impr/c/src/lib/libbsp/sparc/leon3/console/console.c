@@ -158,7 +158,7 @@ rtems_device_driver console_initialize(
   }
 
 #endif  
-  return RTEMS_SUCCESSFUL;
+  return RTEMS_NOT_IMPLEMENTED;
 }
 
 #endif
