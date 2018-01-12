@@ -236,11 +236,11 @@ SYM(sparc_window_underflow_handler):
 SYM(sparc_window_flush_handler):
 
     /* disable MMU to prevent faults */
-    mov     AC_M_SFSR, %g1
-    lda     [%g1] ASI_LEON_MMUREGS, %g0         ! clear flauts
-    lda     [%g0] ASI_LEON_MMUREGS, %g1         ! read MMU control
-    or      %g1, 0x2, %g1                       ! set no_flaut bit
-    sta     %g1, [%g0] ASI_LEON_MMUREGS         ! write MMU control
+    mov     AC_M_SFSR, %g6
+    lda     [%g6] ASI_LEON_MMUREGS, %g0         ! clear flauts
+    lda     [%g0] ASI_LEON_MMUREGS, %g6         ! read MMU control
+    or      %g6, 0x2, %g6                       ! set no_flaut bit
+    sta     %g6, [%g0] ASI_LEON_MMUREGS         ! write MMU control
 		
     /* get PSR and WIM */
     mov     %l0, %g1                            ! get PSR
