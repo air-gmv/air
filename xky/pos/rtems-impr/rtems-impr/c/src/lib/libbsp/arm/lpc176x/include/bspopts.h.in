@@ -1,0 +1,74 @@
+/* include/bspopts.h.in.  Generated from configure.ac by autoheader.  */
+
+/* target used for identify LPC1768 board */
+#undef ARM_LPC1768
+
+/* If defined, then the BSP Framework will put a non-zero pattern into the
+   RTEMS Workspace and C program heap. This should assist in finding code that
+   assumes memory starts set to zero. */
+#undef BSP_DIRTY_MEMORY
+
+/* Suggested minimum task stack size in bytes */
+#undef BSP_MINIMUM_TASK_STACK_SIZE
+
+/* If defined, print a message and wait until pressed before resetting board
+   when application exits. */
+#undef BSP_PRESS_KEY_FOR_RESET
+
+/* If defined, prints the exception context when an unexpected exception
+   occurs. */
+#undef BSP_PRINT_EXCEPTION_CONTEXT
+
+/* If defined, reset the board when the application exits. */
+#undef BSP_RESET_BOARD_AT_EXIT
+
+/* disable testsuite samples with high memory demands */
+#undef BSP_SMALL_MEMORY
+
+/* CPU clock in Hz */
+#undef LPC176X_CCLK
+
+/* configuration for console (UART 0) */
+#undef LPC176X_CONFIG_CONSOLE
+
+/* Use Uart 1 */
+#undef LPC176X_CONFIG_UART_1
+
+/* main oscillator frequency in Hz */
+#undef LPC176X_OSCILLATOR_MAIN
+
+/* RTC oscillator frequency in Hz */
+#undef LPC176X_OSCILLATOR_RTC
+
+/* clock divider for default PCLK (PCLK = CCLK / PCLKDIV) */
+#undef LPC176X_PCLKDIV
+
+/* stop general purpose DMA at start-up to avoid DMA interference */
+#undef LPC176X_STOP_GPDMA
+
+/* stop USB controller at start-up to avoid DMA interference */
+#undef LPC176X_STOP_USB
+
+/* baud for UARTs */
+#undef LPC176X_UART_BAUD
+
+/* DMA channel count */
+#undef LPC_DMA_CHANNEL_COUNT
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
