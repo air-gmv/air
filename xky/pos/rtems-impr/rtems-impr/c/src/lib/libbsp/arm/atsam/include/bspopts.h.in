@@ -1,0 +1,150 @@
+/* include/bspopts.h.in.  Generated from configure.ac by autoheader.  */
+
+/* Move the functions that set up the clock into the SRAM. This allows to
+   change the clock frequency even if the application is started from SDRAM.
+   Requires a TCM_SIZE > 0. */
+#undef ATSAM_CHANGE_CLOCK_FROM_SRAM
+
+/* initial baud for console devices (default 115200) */
+#undef ATSAM_CONSOLE_BAUD
+
+/* device index for /dev/console (default 1, e.g. USART1) */
+#undef ATSAM_CONSOLE_DEVICE_INDEX
+
+/* device type for /dev/console, use 0 for USART and 1 for UART (default
+   USART) */
+#undef ATSAM_CONSOLE_DEVICE_TYPE
+
+/* use interrupt driven mode for console devices (used by default) */
+#undef ATSAM_CONSOLE_USE_INTERRUPTS
+
+/* Frequency of the MCK in Hz. Set to 0 to force application defined speed.
+   See startup/pmc-config.c for available clock configurations. */
+#undef ATSAM_MCK
+
+/* SDRAM variant */
+#undef ATSAM_SDRAM_IS42S16100E_7BLI
+
+/* SDRAM variant */
+#undef ATSAM_SDRAM_IS42S16320F_7BL
+
+/* SDRAM variant */
+#undef ATSAM_SDRAM_MT48LC16M16A2P_6A
+
+/* Main oscillator frequency in Hz (default 12MHz) */
+#undef BOARD_MAINOSC
+
+/* If defined, then the BSP Framework will put a non-zero pattern into the
+   RTEMS Workspace and C program heap. This should assist in finding code that
+   assumes memory starts set to zero. */
+#undef BSP_DIRTY_MEMORY
+
+/* If defined, print a message and wait until pressed before resetting board
+   when application exits. */
+#undef BSP_PRESS_KEY_FOR_RESET
+
+/* If defined, prints the exception context when an unexpected exception
+   occurs. */
+#undef BSP_PRINT_EXCEPTION_CONTEXT
+
+/* If defined, reset the board when the application exits. */
+#undef BSP_RESET_BOARD_AT_EXIT
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* chip variant */
+#undef __SAME70J19__
+
+/* chip variant */
+#undef __SAME70J20__
+
+/* chip variant */
+#undef __SAME70J21__
+
+/* chip variant */
+#undef __SAME70N19__
+
+/* chip variant */
+#undef __SAME70N20__
+
+/* chip variant */
+#undef __SAME70N21__
+
+/* chip variant */
+#undef __SAME70Q19__
+
+/* chip variant */
+#undef __SAME70Q20__
+
+/* chip variant */
+#undef __SAME70Q21__
+
+/* chip variant */
+#undef __SAMS70J19__
+
+/* chip variant */
+#undef __SAMS70J20__
+
+/* chip variant */
+#undef __SAMS70J21__
+
+/* chip variant */
+#undef __SAMS70N19__
+
+/* chip variant */
+#undef __SAMS70N20__
+
+/* chip variant */
+#undef __SAMS70N21__
+
+/* chip variant */
+#undef __SAMS70Q19__
+
+/* chip variant */
+#undef __SAMS70Q20__
+
+/* chip variant */
+#undef __SAMS70Q21__
+
+/* chip variant */
+#undef __SAMV71J19__
+
+/* chip variant */
+#undef __SAMV71J20__
+
+/* chip variant */
+#undef __SAMV71J21__
+
+/* chip variant */
+#undef __SAMV71N19__
+
+/* chip variant */
+#undef __SAMV71N20__
+
+/* chip variant */
+#undef __SAMV71N21__
+
+/* chip variant */
+#undef __SAMV71Q19__
+
+/* chip variant */
+#undef __SAMV71Q20__
+
+/* chip variant */
+#undef __SAMV71Q21__
