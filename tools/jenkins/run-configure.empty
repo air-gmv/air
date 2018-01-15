@@ -1,0 +1,12 @@
+#!/bin/sh 
+#
+# an empty script to manage the running of the `configure` script, it will automatically select a SPARC-LEON4 CPU with enabled FPU.
+# 
+
+#empty -f -i in -o out -L xxv "./configure 2>&1"
+empty -f -i in -o out -L /tmp/xxx.log ./configure 
+empty -w -i out -o in "sparc" "0\n"
+empty -w -i out -o in "leon4" "0\n"
+empty -w -i out -o in "Disabled" "0\n"
+empty -s -o in "exit\n"
+
