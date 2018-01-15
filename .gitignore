@@ -16,6 +16,9 @@ Makefile.rej
 # Install directory
 xky/install
 
+# 'configure' generated files
+xky/.xky_config
+
 # Examples generated files
 xky/examples/**/config
 xky/examples/**/init.c
@@ -24,8 +27,9 @@ xky/examples/**/rtems_config.h
 xky/examples/**/.config
 xky/examples/**/go.sh
 
-#Log files
+# Log/tmp files
 *.log
+.*.swp
 
 
 # Eclipse
