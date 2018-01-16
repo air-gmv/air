@@ -17,7 +17,8 @@ include $(RTEMS_ROOT)/make/custom/$(RTEMS_BSP).cfg
 DEPFLAGS = -MT $@ -MD -MP -MF $(basename $@).d
 SYSFLAGS = -B $(PROJECT_LIB) -specs bsp_specs -qrtems
 WARNFLAGS = -Wall
-OPTFLAGS = -O2 -g -gstrict-dwarf -gdwarf-2 -ffunction-sections -fdata-sections
+# -gstrict-dwarf -gdwarf-2 dropped due to some gdb incompatibilities
+OPTFLAGS = -O2 -g -ffunction-sections -fdata-sections
 EXEEXT = .exe
 DOWNEXT = .ralf
 
