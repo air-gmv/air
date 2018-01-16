@@ -1,0 +1,21 @@
+PGM=${ARCH}/iop.exe
+
+# optional managers required
+MANAGERS=all
+
+# C source names, if any, go here -- minus the .c
+CSRCS = iop.c IOPgreth.c IOPinterface.c IOPuip.c
+COBJS = $(CSRCS:%.c=${ARCH}/%.o)
+
+H_FILES=IOPethernet.h IOPgreth.h iop.h IOPinterface.h IOPuip.h partition_defs.h
+
+OBJS=$(COBJS)
+
+include $(RTEMS_MAKEFILE_PATH)/Makefile.inc
+include $(RTEMS_CUSTOM)
+include $(PROJECT_ROOT)/make/leaf.cfg
+
+all:	${ARCH} $(PGM)
+
+${PGM}: ${OBJS}
+	$(make-exe)
