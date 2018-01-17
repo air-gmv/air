@@ -252,7 +252,9 @@ done_flushing:
 #endif 
 /* END OF AIR_DISABLE_FLUSH_SYSCALL intevention */
 /* AIR flush syscall */
+        mov       %g6, %o4                         ! backup g6, freeing to AIR
         ta        XKY_SYSCALL_FLUSH_TRAP        ! flush all windows
+        mov       %o4, %g6                          ! restoring g6
          
         
 #if defined(RTEMS_SMP)
@@ -882,7 +884,7 @@ isr_dispatch:
 
         orcc    %l7, %g0, %g0        ! Is a thread dispatch necessary?
         bne     isr_dispatch         ! Yes, then invoke the dispatcher again.
-         mov    0, %o1               ! ISR level for _Thread_Do_dispatch()
+        mov    0, %o1               ! ISR level for _Thread_Do_dispatch()
 
         /*
          * No, then set the ISR dispatch disable flag to zero and continue with
