@@ -7,7 +7,7 @@
 #ifndef __SPARC_H__
 #define __SPARC_H__
 
-#include <xky_arch.h>
+#include <air_arch.h>
 
 #define SPARC_STACK_ALIGNMENT               (16)
 #define SPARC_TRAP_COUNT                    (256)
@@ -70,7 +70,7 @@
 
 #ifndef ASM
 
-#include <xky_arch.h>
+#include <air_arch.h>
 
 /**
  *  @brief SPARC minimum stack frame
@@ -78,30 +78,30 @@
  */
 typedef struct {
 
-    xky_u32_t l0;
-    xky_u32_t l1;
-    xky_u32_t l2;
-    xky_u32_t l3;
-    xky_u32_t l4;
-    xky_u32_t l5;
-    xky_u32_t l6;
-    xky_u32_t l7;
-    xky_u32_t i0;
-    xky_u32_t i1;
-    xky_u32_t i2;
-    xky_u32_t i3;
-    xky_u32_t i4;
-    xky_u32_t i5;
-    xky_u32_t i6_fp;
-    xky_u32_t i7;
+    air_u32_t l0;
+    air_u32_t l1;
+    air_u32_t l2;
+    air_u32_t l3;
+    air_u32_t l4;
+    air_u32_t l5;
+    air_u32_t l6;
+    air_u32_t l7;
+    air_u32_t i0;
+    air_u32_t i1;
+    air_u32_t i2;
+    air_u32_t i3;
+    air_u32_t i4;
+    air_u32_t i5;
+    air_u32_t i6_fp;
+    air_u32_t i7;
     void *struct_addr;        /**< structure return address                  */
-    xky_u32_t saved_arg0;     /**<                                           */
-    xky_u32_t saved_arg1;
-    xky_u32_t saved_arg2;
-    xky_u32_t saved_arg3;
-    xky_u32_t saved_arg4;
-    xky_u32_t saved_arg5;
-    xky_u32_t dummy;           /**< dummy entry for ldd and std instructions */
+    air_u32_t saved_arg0;     /**<                                           */
+    air_u32_t saved_arg1;
+    air_u32_t saved_arg2;
+    air_u32_t saved_arg3;
+    air_u32_t saved_arg4;
+    air_u32_t saved_arg5;
+    air_u32_t dummy;           /**< dummy entry for ldd and std instructions */
 
 } sparc_stack_frame_t;
 
@@ -112,31 +112,31 @@ typedef struct {
 
     sparc_stack_frame_t stack_frame;
 
-    xky_u32_t psr;
-    xky_u32_t pc;
-    xky_u32_t nkpc;
-    xky_u32_t tpc;
-    xky_u32_t psp;
+    air_u32_t psr;
+    air_u32_t pc;
+    air_u32_t nkpc;
+    air_u32_t tpc;
+    air_u32_t psp;
 
-    xky_u32_t g1;
-    xky_u32_t g2;
-    xky_u32_t g3;
-    xky_u32_t g4;
-    xky_u32_t g5;
-    xky_u32_t g6;
-    xky_u32_t g7;
+    air_u32_t g1;
+    air_u32_t g2;
+    air_u32_t g3;
+    air_u32_t g4;
+    air_u32_t g5;
+    air_u32_t g6;
+    air_u32_t g7;
 
-    xky_u32_t i0;
-    xky_u32_t i1;
-    xky_u32_t i2;
-    xky_u32_t i3;
-    xky_u32_t i4;
-    xky_u32_t i5;
-    xky_u32_t i6_fp;
-    xky_u32_t i7;
+    air_u32_t i0;
+    air_u32_t i1;
+    air_u32_t i2;
+    air_u32_t i3;
+    air_u32_t i4;
+    air_u32_t i5;
+    air_u32_t i6_fp;
+    air_u32_t i7;
 
-    xky_u32_t y;
-    xky_u32_t dummy; /**< dummy entry for ldd and std instructions */
+    air_u32_t y;
+    air_u32_t dummy; /**< dummy entry for ldd and std instructions */
 
 } sparc_interrupt_stack_frame_t;
 
@@ -161,7 +161,7 @@ typedef struct {
     double f26_f27;     /**< registers f26 and f27                      */
     double f28_f29;     /**< registers f28 and f29                      */
     double f30_f31;     /**< registers f30 and f31                      */
-    xky_u32_t fsr;      /**< FPU status register                        */
+    air_u32_t fsr;      /**< FPU status register                        */
 
 } sparc_fpu_context_t;
 
@@ -170,14 +170,14 @@ typedef struct {
 */
 typedef struct {
 
-   xky_u32_t id;                        /**< virtual CPU id                 */
-   xky_u32_t tbr;                       /**< virtual TBR                    */
-   xky_u32_t psr;                       /**< virtual PSR                    */
-   xky_u32_t imask;                     /**< interrupt mask                 */
-   xky_u32_t ipend;                     /**< interrupts pending             */
-   xky_u32_t cctrl;                     /**< cache control                  */
-   xky_u32_t mmu_ctrl;                  /**< MMU control register           */
-   xky_u32_t mmu_fsr;                   /**< MMU fault register             */
+   air_u32_t id;                        /**< virtual CPU id                 */
+   air_u32_t tbr;                       /**< virtual TBR                    */
+   air_u32_t psr;                       /**< virtual PSR                    */
+   air_u32_t imask;                     /**< interrupt mask                 */
+   air_u32_t ipend;                     /**< interrupts pending             */
+   air_u32_t cctrl;                     /**< cache control                  */
+   air_u32_t mmu_ctrl;                  /**< MMU control register           */
+   air_u32_t mmu_fsr;                   /**< MMU fault register             */
 
 } sparc_virtual_cpu_t;
 
@@ -187,14 +187,14 @@ typedef struct {
 typedef struct {
 
    sparc_virtual_cpu_t vcpu;            /**< virtual CPU control            */
-   xky_u32_t trash;                     /**< trash flag                     */
+   air_u32_t trash;                     /**< trash flag                     */
    void *entry_point;                   /**< core entry point               */
    void *stack_pointer;                 /**< core stack pointer             */
    void *isf_stack_pointer;             /**< core ISF stack                 */
-   xky_u32_t isr_nesting_level;         /**< core interrupt nesting level   */
+   air_u32_t isr_nesting_level;         /**< core interrupt nesting level   */
    sparc_fpu_context_t *fpu_context;    /**< floating point                 */
-   xky_u32_t ipc_event;                 /**< IPC event                      */
-   xky_u32_t state;                     /**< system state                   */
+   air_u32_t ipc_event;                 /**< IPC event                      */
+   air_u32_t state;                     /**< system state                   */
    void *hm_event;                      /**< health-monitor event           */
 
 } sparc_core_context_t;
@@ -204,8 +204,8 @@ typedef struct {
  */
 typedef struct {
 
-   xky_u32_t context;                   /**< context id                     */
-   xky_u32_t *l1_tables;                /**< pointer to the L1 tables       */
+   air_u32_t context;                   /**< context id                     */
+   air_u32_t *l1_tables;                /**< pointer to the L1 tables       */
 
 } sparc_mmu_context_t;
 
@@ -214,10 +214,10 @@ typedef struct {
  */
 typedef struct {
 
-   xky_u32_t mmu_context_entries;
-   xky_u32_t mmu_l1_tables_entries;
-   xky_u32_t mmu_l2_tables_entries;
-   xky_u32_t mmu_l3_tables_entries;
+   air_u32_t mmu_context_entries;
+   air_u32_t mmu_l1_tables_entries;
+   air_u32_t mmu_l2_tables_entries;
+   air_u32_t mmu_l3_tables_entries;
 
 } sparc_configuration_t;
 
@@ -225,34 +225,34 @@ typedef struct {
  * @brief Enable Preemption
  * @return PSR control field
  */
-xky_u32_t sparc_enable_preemption();
+air_u32_t sparc_enable_preemption();
 
 /**
  * @brief Disable Preemption
  * @param flags PSR control field
  */
-void sparc_disable_preemption(xky_u32_t flags);
+void sparc_disable_preemption(air_u32_t flags);
 
 /**
  * @brief Install a raw handler in the trap table
  * @param n Trap number
  * @param handler Function handler
  */
-void *sparc_install_raw_trap_handler(xky_u32_t n, void *handler);
+void *sparc_install_raw_trap_handler(air_u32_t n, void *handler);
 
 /**
  * @brief Install a C trap handler in the trap table
  * @param n Trap number
  * @param handler Function handler
  */
-void *sparc_install_vector_trap_handler(xky_u32_t n, void *handler);
+void *sparc_install_vector_trap_handler(air_u32_t n, void *handler);
 
 /**
  * @brief Register a function handler in the C trap handler vector
  * @param n Trap number
  * @param handler Function handler
  */
-void *sparc_register_vector_trap_handler(xky_u32_t n, void *handler);
+void *sparc_register_vector_trap_handler(air_u32_t n, void *handler);
 
 /**
  * @brief Initializes the health-monitor traps handlers
@@ -275,7 +275,7 @@ void sparc_segregation_init();
  */
 void sparc_map_memory(
         sparc_mmu_context_t *context, void *p_addr, void *v_addr,
-        xky_sz_t size, xky_u32_t unit, xky_u32_t permissions);
+        air_sz_t size, air_u32_t unit, air_u32_t permissions);
 
 /**
  * @brief Copies a block of memory to the user-land
@@ -285,8 +285,8 @@ void sparc_map_memory(
  * @param size Size of the memory block
  * @return zero if no faults, non-zero  otherwise
  */
-xky_u32_t sparc_copy_to_user(
-        sparc_core_context_t *core_ctx, void *dst, void *src, xky_sz_t size);
+air_u32_t sparc_copy_to_user(
+        sparc_core_context_t *core_ctx, void *dst, void *src, air_sz_t size);
 
 /**
  * @brief Copies a block of memory from the user-land
@@ -296,8 +296,8 @@ xky_u32_t sparc_copy_to_user(
  * @param size Size of the memory block
  * @return zero if no faults, non-zero  otherwise
  */
-xky_u32_t sparc_copy_from_user(
-        sparc_core_context_t *core_ctx, void *dst, void *src, xky_sz_t sizd);
+air_u32_t sparc_copy_from_user(
+        sparc_core_context_t *core_ctx, void *dst, void *src, air_sz_t sizd);
 
 /**
  * @brief Get the physical address from the virtual one
@@ -329,14 +329,14 @@ void sparc_core_context_restore(void *core);
  * @param lock Lock variable
  * @return ISR level (PIL)
  */
-xky_u32_t sparc_lock_irqsave(xky_u32_t *lock);
+air_u32_t sparc_lock_irqsave(air_u32_t *lock);
 
 /**
  * @brief Spin unlock with no preemption
  * @param lock Lock variable
  * @param isr_level ISR level (PIL) to restore
  */
-void sparc_unlock_irqrestore(xky_u32_t *lock, xky_u32_t isr_level);
+void sparc_unlock_irqrestore(air_u32_t *lock, air_u32_t isr_level);
 
 #endif /* ASM */
 #endif /* __SPARC_H__ */

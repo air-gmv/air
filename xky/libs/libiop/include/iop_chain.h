@@ -7,7 +7,7 @@
 #ifndef __IOP_CHAIN_H__
 #define __IOP_CHAIN_H__
 
-#include <xky.h>
+#include <air.h>
 #include <stddef.h>
 #include <rtems/score/isr.h>
 

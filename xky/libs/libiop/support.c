@@ -27,7 +27,7 @@ void setup_iop_buffers(
 
         /* get virtual and physical addresses for this buffer */
         buffers[i].v_addr = &storage[i * IOP_BUFFER_SIZE];
-        buffers[i].p_addr = (void *)xky_syscall_get_physical_addr((uintptr_t)buffers[i].v_addr);
+        buffers[i].p_addr = (void *)air_syscall_get_physical_addr((uintptr_t)buffers[i].v_addr);
     }
 }
 

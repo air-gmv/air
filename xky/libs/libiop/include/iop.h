@@ -12,7 +12,7 @@
 #ifndef __IOP_H__
 #define __IOP_H__
 
-#include <xky.h>
+#include <air.h>
 #include <rtems.h>
 #include <iop_chain.h>
 #include <iop_headers.h>
@@ -148,9 +148,9 @@ struct __iop_device_driver_t {
  */
 typedef struct {
 
-    xky_port_type_e type;
-    xky_identifier_t id;
-    xky_name_t name;
+    air_port_type_e type;
+    air_identifier_t id;
+    air_name_t name;
     iop_logical_device_t *device;
     void *configuration;
 

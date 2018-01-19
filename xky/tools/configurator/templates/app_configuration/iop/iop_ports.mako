@@ -1,5 +1,5 @@
 <%
-    import xky
+    import air
     import utils.templates as makoutils
     import parsers.a653.definitions as a653_definitions
 
@@ -31,12 +31,12 @@ ${iop_template.LogicalDevicesList(iop_configuration)}\
 /**
  * @brief Queuing ports configurations
  */
-static xky_queuing_port_configuration_t queuing_ports[] = {
+static air_queuing_port_configuration_t queuing_ports[] = {
 % endif
     {
         .max_message_size   = ${port.max_message_size},
         .max_nb_message     = ${port.max_nb_message},
-        .port_direction     = XKY_${port.direction}_PORT,
+        .port_direction     = AIR_${port.direction}_PORT,
         .port_discipline    = 0
     },
 <%
@@ -55,12 +55,12 @@ static xky_queuing_port_configuration_t queuing_ports[] = {
 /**
  * @brief Sampling ports configurations
  */
-static xky_sampling_port_configuration_t sampling_ports[] = {
+static air_sampling_port_configuration_t sampling_ports[] = {
 % endif
     {
         .max_message_size   = ${port.max_message_size},
         .refresh_period     = ${nsec_to_ticks(port.refresh_period)},
-        .port_direction     = XKY_${port.direction}_PORT,
+        .port_direction     = AIR_${port.direction}_PORT,
     },
 <%
     port.iop_sampling_port_idx = sampling_count
@@ -78,9 +78,9 @@ static xky_sampling_port_configuration_t sampling_ports[] = {
 iop_port_t remote_ports[${len(iop_configuration.ports)}] = {
 % for i, port in enumerate(iop_configuration.ports):
     {
-        .type               = ${'XKY_SAMPLING_PORT' \
+        .type               = ${'AIR_SAMPLING_PORT' \
                                 if getattr(port, 'max_nb_message', 0) == 0 else \
-                                'XKY_QUEUING_PORT'},
+                                'AIR_QUEUING_PORT'},
         .name               = "${port.name}",
         .configuration      = ${'&sampling_ports[{0}]'.format(port.iop_sampling_port_idx) \
                                 if getattr(port, 'max_nb_message', 0) == 0 else \

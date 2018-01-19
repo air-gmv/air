@@ -9,7 +9,7 @@
 /**
  *  @file main.c
  *  @author pfnf
- *  @brief XKY Partition Assembler
+ *  @brief AIR Partition Assembler
  */
 
 #include <stdio.h>
@@ -24,7 +24,7 @@
 
 #define HEADER \
 "--------------------------------------------------------------------------\n" \
-"  XKY Partition Assembler v1.0 (alpha)                                    \n" \
+"  AIR Partition Assembler v1.0 (alpha)                                    \n" \
 "--------------------------------------------------------------------------\n"
 
 #define VALID_ADDR(addr, base_origin, base_length) \

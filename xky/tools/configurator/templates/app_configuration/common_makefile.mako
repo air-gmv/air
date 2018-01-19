@@ -1,6 +1,6 @@
 <%
     import os
-    import xky
+    import air
     import utils
     import utils.file as fileutils
     import utils.templates as makoutils
@@ -15,7 +15,7 @@ ${template.FileHeader('{0} : {1}'.format('Common', 'Shared Source files'))}\
 
 TARGET_BUILD=${build_dir}
 
-# XKY Makefile Include file
+# AIR Makefile Include file
 ${template.MakefileInc(True)}
 
 CSRCS=$(shell find ./ -type f -name '*.c')

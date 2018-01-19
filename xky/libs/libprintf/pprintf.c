@@ -4,7 +4,7 @@
  * @brief Simplified partition printf
  */
 
-#include <xky.h>
+#include <air.h>
 #include <pprintf.h>
 
 /**
@@ -31,13 +31,13 @@ typedef enum {
  * @brief pprintf library current partition id
  * @ingroup lib_pprintf
  */
-static xky_identifier_t partition_idx = 0;
+static air_identifier_t partition_idx = 0;
 
 /**
  * @brief pprintf library initialization flag
  * @ingroup lib_pprintf
  */
-static xky_boolean printf_inited = 0;
+static air_boolean printf_inited = 0;
 
 /**
  * @brief pprintf partition color table
@@ -62,8 +62,8 @@ static void printf_init() {
     if (printf_inited == 0) {
 
         /* get partition index */
-        xky_partition_status_t p_status;
-        if (xky_syscall_get_partition_status(-1, &p_status) != XKY_NO_ERROR) {
+        air_partition_status_t p_status;
+        if (air_syscall_get_partition_status(-1, &p_status) != AIR_NO_ERROR) {
             return;
         }
 
@@ -75,7 +75,7 @@ static void printf_init() {
     }
 
     /* print color change string */
-    xky_syscall_print(partition_colors[partition_idx % 6], 6);
+    air_syscall_print(partition_colors[partition_idx % 6], 6);
 }
 
 /**
@@ -90,7 +90,7 @@ static void print_byte(char *print_buffer, int *buffer_idx, char ch) {
     /* flush buffer */
     if (*buffer_idx >= BUFFER_SIZE) {
 
-        xky_syscall_print(print_buffer, BUFFER_SIZE);
+        air_syscall_print(print_buffer, BUFFER_SIZE);
         *buffer_idx = 0;
     }
 }
@@ -268,7 +268,7 @@ static void vpprintf(const char *fmt, va_list ap) {
     if (buffer_idx > 0) {
 
         buffer[buffer_idx] = '\0';
-        xky_syscall_print(buffer, buffer_idx + 1);
+        air_syscall_print(buffer, buffer_idx + 1);
     }
 }
 

@@ -14,7 +14,7 @@
 
 #include <pmk.h>
 #include <amba.h>
-#include <xky_arch.h>
+#include <air_arch.h>
 #include <l2cache.h>
 
 /**
@@ -23,18 +23,18 @@
  */
 typedef struct {
 
-    volatile xky_u32_t ctrl;             /**< Control register               */
-    volatile xky_u32_t stat;             /**< Status register                */
-    volatile xky_u32_t flush_mem;        /**< Flush (memory address)         */
-    volatile xky_u32_t flust_index;      /**< Flush (set, index)             */
-    volatile xky_u32_t dummy[10];        /**< Reserved                       */
-    volatile xky_u32_t err_stat;         /**< Error Status/Control           */
-    volatile xky_u32_t err_addr;         /**< Error address                  */
-    volatile xky_u32_t tag_check;        /**< TAG-check-bit                  */
-    volatile xky_u32_t data_check;       /**< Data-check-bit                 */
-    volatile xky_u32_t scruber_ctrl;     /**< Scrub Control/Status           */
-    volatile xky_u32_t scruber_delay;    /**< Scrub delay                    */
-    volatile xky_u32_t err_injection;    /**< Error injection                */
+    volatile air_u32_t ctrl;             /**< Control register               */
+    volatile air_u32_t stat;             /**< Status register                */
+    volatile air_u32_t flush_mem;        /**< Flush (memory address)         */
+    volatile air_u32_t flust_index;      /**< Flush (set, index)             */
+    volatile air_u32_t dummy[10];        /**< Reserved                       */
+    volatile air_u32_t err_stat;         /**< Error Status/Control           */
+    volatile air_u32_t err_addr;         /**< Error address                  */
+    volatile air_u32_t tag_check;        /**< TAG-check-bit                  */
+    volatile air_u32_t data_check;       /**< Data-check-bit                 */
+    volatile air_u32_t scruber_ctrl;     /**< Scrub Control/Status           */
+    volatile air_u32_t scruber_delay;    /**< Scrub delay                    */
+    volatile air_u32_t err_injection;    /**< Error injection                */
 
 } l2cache_regmap_t;
 
@@ -74,7 +74,7 @@ void l2cache_set_replacement_policy(l2cache_reppol_e repol) {
     return;
 }
 
-void l2cache_flush(xky_uptr_t address, l2cache_rflush_mode_e mode, int disable) {
+void l2cache_flush(air_uptr_t address, l2cache_rflush_mode_e mode, int disable) {
 
     /* check if the found was found */
     if (l2cache_ctrl.found == 0) {
@@ -94,7 +94,7 @@ void l2cache_set_write_policy(l2cache_writepol_e wp) {
     }
 
     /* get cache current enable state */
-    xky_u32_t enable_state = l2cache_ctrl.regs->ctrl & (1 << 31);
+    air_u32_t enable_state = l2cache_ctrl.regs->ctrl & (1 << 31);
 
     /* flush cache */
     l2cache_flush(0x0, INV_AND_WB_ALL_LINES, 1);

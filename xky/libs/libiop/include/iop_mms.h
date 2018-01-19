@@ -19,11 +19,11 @@ void iop_change_schedule(void);
 /**
  * @brief Current schedule status
  */
-extern xky_schedule_status_t xky_schedule;
+extern air_schedule_status_t air_schedule;
 
 /**
  * @brief Current partition status
  */
-extern xky_partition_status_t xky_partition;
+extern air_partition_status_t air_partition;
 
 #endif  /* __MMS_H__ */
