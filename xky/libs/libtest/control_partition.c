@@ -11,18 +11,18 @@
  * @author pfnf
  * @brief Functions for the control partition
  */
-#include <xky.h>
+#include <air.h>
 #include <libtest.h>
 
 /**
  * @brief Partition count
  */
-xky_u32_t partition_count;
+air_u32_t partition_count;
 
 /**
  * @brief Partition
  */
-extern xky_partition_status_t partition;
+extern air_partition_status_t partition;
 /**
  * @brief Test control area
  */
@@ -36,23 +36,23 @@ extern partition_buffer_t *partition_buffer;
  * @brief Flush partition buffer
  * @param p_buffer partition buffer to flush
  */
-static xky_u32_t flush_partition_buffer(partition_buffer_t *p_buffer) {
+static air_u32_t flush_partition_buffer(partition_buffer_t *p_buffer) {
 
     /* store the values locally */
-    xky_u32_t l_pos = p_buffer->l_pos;
+    air_u32_t l_pos = p_buffer->l_pos;
 
     /* write to UART */
     while (p_buffer->r_pos != l_pos) {
 
-        xky_i8_t ch = p_buffer->buffer[p_buffer->r_pos];
+        air_i8_t ch = p_buffer->buffer[p_buffer->r_pos];
 
         /* write '\r' character */
         if (ch == '\n') {
-            xky_syscall_putchar('\r');
+            air_syscall_putchar('\r');
         }
 
         /* write 'ch' */
-        xky_syscall_putchar(ch);
+        air_syscall_putchar(ch);
 
         /* increment the reading position */
         p_buffer->r_pos = INCREMENT_POSITION(p_buffer->r_pos);
@@ -66,22 +66,22 @@ static xky_u32_t flush_partition_buffer(partition_buffer_t *p_buffer) {
  * @param id current test id
  * @param shm_name name of the shared memory for the test report
  */
-void control_partition_init(xky_u32_t id, xky_name_ptr_t shm_name) {
+void control_partition_init(air_u32_t id, air_name_ptr_t shm_name) {
 
-    xky_u32_t i;
+    air_u32_t i;
     test_control = NULL;
-    xky_sharedmemory_t sharedmemory;
+    air_sharedmemory_t sharedmemory;
 
     /* get partition configuration */
-    xky_syscall_get_partition_status(-1, &partition);
+    air_syscall_get_partition_status(-1, &partition);
 
     /* get shared memory area */
-    if (xky_syscall_get_sharedmemory(shm_name, &sharedmemory) == XKY_NO_ERROR) {
+    if (air_syscall_get_sharedmemory(shm_name, &sharedmemory) == AIR_NO_ERROR) {
 
         /* get control structures */
         test_control = (test_control_t *)sharedmemory.address;
         test_control->buffers = (partition_buffer_t *)ADDR_ALIGN(
-                (xky_uptr_t)sharedmemory.address + sizeof(test_control_t),
+                (air_uptr_t)sharedmemory.address + sizeof(test_control_t),
                 0x40);
 
         /* initialize each partition buffer */
@@ -111,15 +111,15 @@ void control_partition_init(xky_u32_t id, xky_name_ptr_t shm_name) {
     } else {
 
         /* shutdown module */
-        xky_syscall_shutdown_module();
+        air_syscall_shutdown_module();
         for (;;);
     }
 
     /* loop to print the text results */
     while (1) {
 
-        xky_u32_t i;
-        volatile xky_u32_t all_done = 1, all_pass = 1;
+        air_u32_t i;
+        volatile air_u32_t all_done = 1, all_pass = 1;
 
         /* loop through all partition */
         for (i = 0; i < partition.index; ++i) {
@@ -149,7 +149,7 @@ void control_partition_init(xky_u32_t id, xky_name_ptr_t shm_name) {
             flush_partition_buffer(partition_buffer);
 
             /* shutdown module */
-            xky_syscall_shutdown_module();
+            air_syscall_shutdown_module();
             for (;;);
         }
     }

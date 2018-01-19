@@ -1,18 +1,18 @@
 <%
     import os
-    import xky
+    import air
     import utils.templates as makoutils
 %>\
 <%namespace name="template" file="/makefile.mako"/>\
-${template.FileHeader("XKY application Makefile")}\
+${template.FileHeader("AIR application Makefile")}\
 
-# XKY OS installation directories
-export XKY_ROOT=${xky.ROOT_DIRECTORY}
-export XKY_INSTALL=${xky.INSTALL_DIRECTORY}
-export XKY_PMK=$(XKY_INSTALL)/${xky.PMK_DIR_NAME}
-export XKY_POS=$(XKY_INSTALL)/${xky.POS_DIR_NAME}
-export XKY_LIBS=$(XKY_INSTALL)/${xky.LIBS_DIR_NAME}
-export XKY_TOOLS=$(XKY_INSTALL)/${xky.TOOLS_DIR_NAME}
+# AIR OS installation directories
+export AIR_ROOT=${air.ROOT_DIRECTORY}
+export AIR_INSTALL=${air.INSTALL_DIRECTORY}
+export AIR_PMK=$(AIR_INSTALL)/${air.PMK_DIR_NAME}
+export AIR_POS=$(AIR_INSTALL)/${air.POS_DIR_NAME}
+export AIR_LIBS=$(AIR_INSTALL)/${air.LIBS_DIR_NAME}
+export AIR_TOOLS=$(AIR_INSTALL)/${air.TOOLS_DIR_NAME}
 
 # Makefile Include file
 ${template.MakefileInc(True)}
@@ -36,5 +36,5 @@ ${template.RunMakeInDir('config', 'clean')}
 # Distclean
 ${template.Rule('distclean', True, ['clean'])}
 ${template.RunMakeInDir('config', 'distclean')}
-${'\t'}${os.path.join('$(XKY_TOOLS)', 'configurator clean')}
+${'\t'}${os.path.join('$(AIR_TOOLS)', 'configurator clean')}
 

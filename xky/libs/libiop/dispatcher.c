@@ -163,9 +163,9 @@ rtems_status_code process_service_request(iop_wrapper_t *incoming, int reply_add
  */
 static void process_remote_port(iop_port_t *port){
 
-    xky_status_code_e rc = XKY_NO_ERROR;
+    air_status_code_e rc = AIR_NO_ERROR;
 
-    while (rc != XKY_NOT_AVAILABLE) {
+    while (rc != AIR_NOT_AVAILABLE) {
 
         /* get a empty request wrapper from the wrapper chain*/
         iop_wrapper_t *wrapper = obtain_free_wrapper();
@@ -181,23 +181,23 @@ static void process_remote_port(iop_port_t *port){
                 ((uintptr_t)wrapper->buffer->v_addr + sizeof(iop_header_t));
 
         /* read regular message */
-        xky_sampling_port_status_t status;
-        status.operation = XKY_SAMPLING_MODE_REGULAR;
+        air_sampling_port_status_t status;
+        status.operation = AIR_SAMPLING_MODE_REGULAR;
 
         /* read from port */
         size_t size;
-        rc = xky_syscall_read_port(
+        rc = air_syscall_read_port(
                 port->type,
-                (xky_identifier_t)port->id,
-                (xky_message_ptr_t)message,
+                (air_identifier_t)port->id,
+                (air_message_ptr_t)message,
                 (size_t *)&size,
                 &status);
 
         /* if no errors occurred */
-        if (rc == XKY_NO_ERROR && size > 0 &&
-            (port->type == XKY_QUEUING_PORT ||
-            (port->type == XKY_SAMPLING_PORT &&
-             status.last_msg_validity == XKY_MESSAGE_VALID))) {
+        if (rc == AIR_NO_ERROR && size > 0 &&
+            (port->type == AIR_QUEUING_PORT ||
+            (port->type == AIR_SAMPLING_PORT &&
+             status.last_msg_validity == AIR_MESSAGE_VALID))) {
 
             /* setup the wrapper properties */
             wrapper->buffer->payload_off = sizeof(iop_header_t);
@@ -210,15 +210,15 @@ static void process_remote_port(iop_port_t *port){
                     &port->device->sendqueue, &wrapper->node);
 
             /* if this an sampling port, the processing is over */
-            if (port->type == XKY_SAMPLING_PORT) {
-                rc = XKY_NOT_AVAILABLE;
+            if (port->type == AIR_SAMPLING_PORT) {
+                rc = AIR_NOT_AVAILABLE;
             }
 
         } else {
 
             /* release the wrapper */
             release_wrapper(wrapper);
-            rc = XKY_NOT_AVAILABLE;
+            rc = AIR_NOT_AVAILABLE;
         }
         rtems_task_wake_after(1);
     }
@@ -238,10 +238,10 @@ static void process_remote_port(iop_port_t *port){
  **/
 static void process_request_port(iop_port_t *port){
 
-    xky_status_code_e rc = XKY_NO_ERROR;
+    air_status_code_e rc = AIR_NO_ERROR;
 
     /*
-    while (rc != XKY_NOT_AVAILABLE) {
+    while (rc != AIR_NOT_AVAILABLE) {
 
         /* get a empty request wrapper from the wrapper chain*
         request_wrapper_t *incoming_request =
@@ -255,15 +255,15 @@ static void process_request_port(iop_port_t *port){
 
         /* read from port *
         size_t size;
-        rc = xky_syscall_read_port(
+        rc = air_syscall_read_port(
                 port->type,
-                (xky_identifier_t)port->id,
-                (xky_message_ptr_t)&incoming_request->request.generic_data[0],
+                (air_identifier_t)port->id,
+                (air_message_ptr_t)&incoming_request->request.generic_data[0],
                 (size_t *)&size,
                 NULL);
 
         /* if no errors occurred *
-        if (rc == XKY_NO_ERROR) {
+        if (rc == AIR_NO_ERROR) {
 
             /* validate service_request before processing it *
             rtems_status_code status =
@@ -299,8 +299,8 @@ static void process_request_port(iop_port_t *port){
             }
 
             /* if this an sampling port, the processing is over *
-            if (port->type == XKY_SAMPLING_PORT) {
-                 rc = XKY_NOT_AVAILABLE;
+            if (port->type == AIR_SAMPLING_PORT) {
+                 rc = AIR_NOT_AVAILABLE;
             }
         } else {
 

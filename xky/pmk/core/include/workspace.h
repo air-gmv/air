@@ -39,21 +39,21 @@
 typedef struct {
 
     /**< core index                                                         */
-    xky_u32_t idx;
+    air_u32_t idx;
     /** partition virtual core context control                              */
     core_context_t *volatile context;
     /** partition current partition                                         */
     pmk_partition_t *volatile partition;
     /** core Health-Monitor state                                           */
-    xky_state_e state;
+    air_state_e state;
     /** current core schedule                                               */
     pmk_core_schedule_t *volatile schedule;
     /** current core schedule preemption point                              */
-    volatile xky_u32_t preempt_point;
+    volatile air_u32_t preempt_point;
     /** flag of partition switching                                         */
-    volatile xky_u32_t partition_switch;
+    volatile air_u32_t partition_switch;
     /** core next context switch ticks                                      */
-    volatile xky_u64_t next_switch_ticks;
+    volatile air_u64_t next_switch_ticks;
 
 } pmk_core_ctrl_t;
 
@@ -67,7 +67,7 @@ typedef struct {
 typedef struct {
 
     /** Numner of configured cores */
-    xky_u32_t configured_cores;
+    air_u32_t configured_cores;
     /** Per core control structure */
     pmk_core_ctrl_t *core;
     /** New schedule control                                                */
@@ -90,7 +90,7 @@ void pmk_workspace_init(void);
  * @note This function generates an fatal error if no more memory is available
  *       on the workspace
  */
-void *pmk_workspace_alloc(xky_sz_t size);
+void *pmk_workspace_alloc(air_sz_t size);
 
 /**
  * @brief Allocates space on the PMK workspace
@@ -99,7 +99,7 @@ void *pmk_workspace_alloc(xky_sz_t size);
  * @note This function generates an fatal error if no more memory is available
  *       on the workspace
  */
-void *pmk_workspace_aligned_alloc(xky_sz_t size, xky_u32_t align);
+void *pmk_workspace_aligned_alloc(air_sz_t size, air_u32_t align);
 
 #ifdef PMK_DEBUG
 /**
@@ -111,7 +111,7 @@ void pmk_workspace_debug(void);
 /**
  * @brief PMK Shared area
  */
-extern pmk_sharedarea_t xky_shared_area;
+extern pmk_sharedarea_t air_shared_area;
 
 /** @} */
 

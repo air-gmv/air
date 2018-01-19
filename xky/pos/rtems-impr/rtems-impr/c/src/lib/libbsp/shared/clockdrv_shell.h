@@ -142,7 +142,7 @@ rtems_isr Clock_isr(
   //Clock_driver_ticks += 1;
 
   /* AIR provides elapsed ticks */
-    uint64_t elapsed = xky_syscall_get_elapsed_ticks();
+    uint64_t elapsed = air_syscall_get_elapsed_ticks();
     uint64_t dt = elapsed - Clock_driver_ticks;
 
   /* AIR sets accurate count of clock ISRs */

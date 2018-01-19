@@ -24,7 +24,7 @@
 #include <rtems/asm.h>
 #include <rtems/score/percpu.h>
 #include <bspopts.h>
-#include <xky.h>              /* PMK paravirtualization definitions */
+#include <air.h>              /* PMK paravirtualization definitions */
 
 #if defined(SPARC_USE_SYNCHRONOUS_FP_SWITCH)
   #define FP_FRAME_OFFSET_FO_F1 (SPARC_MINIMUM_STACK_FRAME_SIZE + 0)
@@ -98,8 +98,8 @@ SYM(_CPU_Context_switch):
          * Below is respective paravirtualization 
          */
         mov       %o0, %g1  !trap returns on %o0, so move current %o0 to %g1
-        set       XKY_SYSCALL_SPARC_GET_PSR, %o5 !set trap id in %o5
-        ta        XKY_SYSCALL_SPARC_TRAP     !trap give PSR value in %o0
+        set       AIR_SYSCALL_SPARC_GET_PSR, %o5 !set trap id in %o5
+        ta        AIR_SYSCALL_SPARC_TRAP     !trap give PSR value in %o0
         st        %o0, [%g1 + PSR_OFFSET]    !save status register
         
         /* AIR moves registers to requested positions */
@@ -176,8 +176,8 @@ SYM(_CPU_Context_restore_heir):
          */
                 
         mov       %g1, %o0
-        set       XKY_SYSCALL_SPARC_SET_PSR, %o5
-        ta        XKY_SYSCALL_SPARC_TRAP         !  **** DISABLE TRAPS ****        
+        set       AIR_SYSCALL_SPARC_SET_PSR, %o5
+        ta        AIR_SYSCALL_SPARC_TRAP         !  **** DISABLE TRAPS ****        
         /* End of AIR intervention */
         
         
@@ -240,8 +240,8 @@ done_flushing:
          */
         
         mov       %g1, %o0
-        set       XKY_SYSCALL_SPARC_SET_PSR, %o5
-        ta        XKY_SYSCALL_SPARC_TRAP         ! restore cwp
+        set       AIR_SYSCALL_SPARC_SET_PSR, %o5
+        ta        AIR_SYSCALL_SPARC_TRAP         ! restore cwp
         /* End of AIR intervention */
         
         add     %g3, 1, %g2                   ! calculate desired WIM
@@ -253,7 +253,7 @@ done_flushing:
 /* END OF AIR_DISABLE_FLUSH_SYSCALL intevention */
 /* AIR flush syscall */
         mov       %g6, %o4                         ! backup g6, freeing to AIR
-        ta        XKY_SYSCALL_FLUSH_TRAP        ! flush all windows
+        ta        AIR_SYSCALL_FLUSH_TRAP        ! flush all windows
         mov       %o4, %g6                          ! restoring g6
          
         
@@ -301,8 +301,8 @@ done_flushing:
          */
         
         mov       %g1, %o0
-        set       XKY_SYSCALL_SPARC_SET_PSR, %o5
-        ta        XKY_SYSCALL_SPARC_TRAP         ! restore status register and         
+        set       AIR_SYSCALL_SPARC_SET_PSR, %o5
+        ta        AIR_SYSCALL_SPARC_TRAP         ! restore status register and         
                                                  ! **** ENABLE TRAPS ****
         /* End of AIR intervention */
                 
@@ -329,8 +329,8 @@ done_flushing:
         /* AIR intervention 
          * restore the cache state (we may have entered here from an ISR) */
           
-        set       XKY_SYSCALL_SPARC_RESTORE_CACHE_REGISTER, %o5
-        ta        XKY_SYSCALL_SPARC_TRAP
+        set       AIR_SYSCALL_SPARC_RESTORE_CACHE_REGISTER, %o5
+        ta        AIR_SYSCALL_SPARC_TRAP
         /* End of AIR intervention */
 
         ldd     [%o1 + O6_SP_OFFSET], %o6     ! restore the output registers
@@ -390,8 +390,8 @@ SYM(_CPU_Context_restore):
          *
          * Below is respective paravirtualization 
          */
-        set       XKY_SYSCALL_SPARC_GET_PSR, %o5 !set trap id in %o5
-        ta        XKY_SYSCALL_SPARC_TRAP     !trap give PSR value in %o0
+        set       AIR_SYSCALL_SPARC_GET_PSR, %o5 !set trap id in %o5
+        ta        AIR_SYSCALL_SPARC_TRAP     !trap give PSR value in %o0
         mov        %o0, %o2                  !o2 = psr
         /* End of AIR intervention */
 
@@ -665,8 +665,8 @@ pil_fixed:
          */
 
         or        %g5, SPARC_PSR_ET_MASK, %o0 //parameters
-        set       XKY_SYSCALL_SPARC_SET_PSR, %o5 //id trap
-        ta        XKY_SYSCALL_SPARC_TRAP      ! **** ENABLE TRAPS ****        
+        set       AIR_SYSCALL_SPARC_SET_PSR, %o5 //id trap
+        ta        AIR_SYSCALL_SPARC_TRAP      ! **** ENABLE TRAPS ****        
         /* End of AIR intervention */
 
         /*
@@ -957,13 +957,13 @@ simple_return:
          */
         
         mov       %l0, %o0
-        set       XKY_SYSCALL_SPARC_SET_PSR, %o5
-        ta        XKY_SYSCALL_SPARC_TRAP         !  **** DISABLE TRAPS ****        
+        set       AIR_SYSCALL_SPARC_SET_PSR, %o5
+        ta        AIR_SYSCALL_SPARC_TRAP         !  **** DISABLE TRAPS ****        
         /* End of AIR intervention */
          
         /* AIR restore the cache state  */
-        set       XKY_SYSCALL_SPARC_RESTORE_CACHE_REGISTER, %o5
-        ta        XKY_SYSCALL_SPARC_TRAP
+        set       AIR_SYSCALL_SPARC_RESTORE_CACHE_REGISTER, %o5
+        ta        AIR_SYSCALL_SPARC_TRAP
         
         
         nop
@@ -1018,8 +1018,8 @@ good_task_window:
          */
         
         mov       %l0, %o0
-        set       XKY_SYSCALL_SPARC_SET_PSR, %o5
-        ta        XKY_SYSCALL_SPARC_TRAP         !  **** DISABLE TRAPS ****        
+        set       AIR_SYSCALL_SPARC_SET_PSR, %o5
+        ta        AIR_SYSCALL_SPARC_TRAP         !  **** DISABLE TRAPS ****        
         /* End of AIR intervention */
 
         nop; nop; nop
@@ -1036,8 +1036,8 @@ good_task_window:
         */
         mov       %l1, %o0                ! transfer control and
         mov       %l2, %o1                ! go back to tasks window
-        or        %g0, XKY_SYSCALL_SPARC_RETT, %o5
-        ta        XKY_SYSCALL_SPARC_TRAP
+        or        %g0, AIR_SYSCALL_SPARC_RETT, %o5
+        ta        AIR_SYSCALL_SPARC_TRAP
         /* End of AIR intervention */
 
 /* end of file */

@@ -1,7 +1,7 @@
 
 import os
 import sys
-import xky
+import air
 import utils
 import utils.xml_parser as xml_parser
 from utils.logger import Logger
@@ -35,7 +35,7 @@ class IOParser(object):
         self.partition          = partition
         self.a653parser         = a653parser
 
-        # xky & IOP configuration
+        # air & IOP configuration
         self.os_configuration = os_configuration
         self.iop_configuration = os_configuration.get_iop_configuration()
 
@@ -504,7 +504,7 @@ class IOParser(object):
             return False
 
         # open XML file
-        xml = xml_parser.xmlOpen(os.path.join(xky.WORKING_DIRECTORY, file_name), self.logger, None)
+        xml = xml_parser.xmlOpen(os.path.join(air.WORKING_DIRECTORY, file_name), self.logger, None)
         if xml is None: return False
 
         # parse logical devices

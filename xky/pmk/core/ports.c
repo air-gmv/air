@@ -41,7 +41,7 @@ void pmk_channels_init(void) {
 
             /* get source port, and link it to the channel */
             pmk_port_t *port = ((pmk_port_t **)channel->src.elements)[j];
-            atomic_set(XKY_EMPTY_PORT, &port->updated);
+            atomic_set(AIR_EMPTY_PORT, &port->updated);
             port->channel = channel;
         }
 
@@ -50,7 +50,7 @@ void pmk_channels_init(void) {
 
             /* get destination port, and link it to the channel */
             pmk_port_t *port = ((pmk_port_t **)channel->dst.elements)[j];
-            atomic_set(XKY_EMPTY_PORT, &port->updated);
+            atomic_set(AIR_EMPTY_PORT, &port->updated);
             port->channel = channel;
         }
 
@@ -58,12 +58,12 @@ void pmk_channels_init(void) {
         switch (channel->type) {
 
             /* queuing channel initialization */
-            case XKY_QUEUING_PORT:
+            case AIR_QUEUING_PORT:
                 pmk_queuing_channel_init(channel);
                 break;
 
             /* sampling channel initialization */
-            case XKY_SAMPLING_PORT:
+            case AIR_SAMPLING_PORT:
                 pmk_sampling_channel_init(channel);
                 break;
 
@@ -92,7 +92,7 @@ void pmk_partition_ports_init(pmk_partition_t *partition) {
         port->partition = partition;
 
         /* flag that port isn't created if state is COLD_START */
-        if (XKY_MODE_COLD_START == partition->mode) {
+        if (AIR_MODE_COLD_START == partition->mode) {
             atomic_set(0, &port->created);
         }
     }
@@ -101,8 +101,8 @@ void pmk_partition_ports_init(pmk_partition_t *partition) {
 
 pmk_port_t *pmk_port_get_from_partition_by_id(
         pmk_partition_t *partition,
-        xky_identifier_t id,
-        xky_port_type_e type) {
+        air_identifier_t id,
+        air_port_type_e type) {
 
     /* port doesn't belong to the partition */
     if (id < 0 || id >= partition->ports.length) {
@@ -118,7 +118,7 @@ pmk_port_t *pmk_port_get_from_partition_by_id(
     return port;
 }
 
-void pmk_channel_update_ports(pmk_channel_t *channel, xky_port_updated_e state) {
+void pmk_channel_update_ports(pmk_channel_t *channel, air_port_updated_e state) {
 
     int i;
     for (i = 0; i < channel->dst.length; ++i) {
@@ -138,7 +138,7 @@ void pmk_channel_update_ports(pmk_channel_t *channel, xky_port_updated_e state) 
 }
 
 pmk_port_t *pmk_port_get_from_partition_by_name(
-        pmk_partition_t *partition, xky_name_ptr_t name) {
+        pmk_partition_t *partition, air_name_ptr_t name) {
 
     int i;
     pmk_port_t *found = NULL;
@@ -148,7 +148,7 @@ pmk_port_t *pmk_port_get_from_partition_by_name(
 
         /* get port */
         pmk_port_t *port = ((pmk_port_t **)partition->ports.elements)[i];
-        if (strncmp(name, port->name, sizeof(xky_name_t)) == 0) {
+        if (strncmp(name, port->name, sizeof(air_name_t)) == 0) {
             found = port;
         }
     }

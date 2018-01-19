@@ -45,7 +45,7 @@ void pmk_scheduler_init(void) {
     printk(" :: Scheduler initialization\n");
 #endif
 
-	xky_shared_area.schedule_ctrl = &scheduler_ctrl;
+	air_shared_area.schedule_ctrl = &scheduler_ctrl;
 
 	/* find the first schedule (multiple scheduler case) */
 	pmk_list_t *list = pmk_get_schedules();
@@ -81,7 +81,7 @@ void pmk_scheduler_init(void) {
 
     /* initialize the MTF synchronization barrier */
 	pmk_barrier_init(
-	        &scheduler_ctrl.mtf_barrier, xky_shared_area.configured_cores);
+	        &scheduler_ctrl.mtf_barrier, air_shared_area.configured_cores);
 
 	/* force a schedule change on the next clock tick */
 	scheduler_ctrl.mtf_ticks = 0;
@@ -89,10 +89,10 @@ void pmk_scheduler_init(void) {
     scheduler_ctrl.curr_schedule = NULL;
     scheduler_ctrl.last_switch_ticks = 0;
     scheduler_ctrl.next_schedule = initial_schedule;
-    for (i = 0; i < xky_shared_area.configured_cores; ++i) {
-        xky_shared_area.core[i].schedule = NULL;
-        xky_shared_area.core[i].partition_switch = 1;
-        xky_shared_area.core[i].next_switch_ticks = 0;
+    for (i = 0; i < air_shared_area.configured_cores; ++i) {
+        air_shared_area.core[i].schedule = NULL;
+        air_shared_area.core[i].partition_switch = 1;
+        air_shared_area.core[i].next_switch_ticks = 0;
     }
 
 #ifdef PMK_DEBUG
@@ -104,7 +104,7 @@ void pmk_scheduler_init(void) {
 
 void pmk_apply_next_schedule(pmk_core_ctrl_t *core) {
 
-    xky_u32_t i, j;
+    air_u32_t i, j;
     pmk_partition_t *partition;
     pmk_partition_schedule_t *partition_schedule;
 
@@ -137,7 +137,7 @@ void pmk_apply_next_schedule(pmk_core_ctrl_t *core) {
         partition->duration = partition_schedule->duration;
 
         /* set scheduler change event */
-        partition->events |= XKY_EVENT_SCHEDULE_CHANGE;
+        partition->events |= AIR_EVENT_SCHEDULE_CHANGE;
 
         /* apply schedule change action */
         if (partition_schedule->action > PMK_SCHED_CHANGE_ACTION_IGNORE) {
@@ -152,23 +152,23 @@ void pmk_apply_next_schedule(pmk_core_ctrl_t *core) {
 
                 /* change partition to IDLE */
                 case PMK_SCHED_CHANGE_ACTION_IDLE:
-                    partition->start_condition = XKY_START_CONDITION_NORMAL;
+                    partition->start_condition = AIR_START_CONDITION_NORMAL;
                     partition->state = PMK_PARTITION_STATE_HALTED;
-                    partition->mode = XKY_MODE_IDLE;
+                    partition->mode = AIR_MODE_IDLE;
                     break;
 
                 /* change partition to cold start */
                 case PMK_SCHED_CHANGE_ACTION_COLD_START:
-                    partition->start_condition = XKY_START_CONDITION_NORMAL;
+                    partition->start_condition = AIR_START_CONDITION_NORMAL;
                     partition->state = PMK_PARTITION_STATE_INIT;
-                    partition->mode = XKY_MODE_COLD_START;
+                    partition->mode = AIR_MODE_COLD_START;
                     break;
 
                 /* change partition to warm start */
                 case PMK_SCHED_CHANGE_ACTION_WARM_START:
-                    partition->start_condition = XKY_START_CONDITION_NORMAL;
+                    partition->start_condition = AIR_START_CONDITION_NORMAL;
                     partition->state = PMK_PARTITION_STATE_INIT;
-                    partition->mode = XKY_MODE_WARM_START;
+                    partition->mode = AIR_MODE_WARM_START;
                     break;
 
                 /* default case, no action */
@@ -181,19 +181,19 @@ void pmk_apply_next_schedule(pmk_core_ctrl_t *core) {
         if (1 == partition_schedule->set_schedule) {
 
             partition_schedule->partition->permissions |=
-                    XKY_PERMISSION_SET_SCHEDULE;
+                    AIR_PERMISSION_SET_SCHEDULE;
 
         } else {
 
             partition_schedule->partition->permissions &=
-                    ~XKY_PERMISSION_SET_SCHEDULE;
+                    ~AIR_PERMISSION_SET_SCHEDULE;
         }
     }
 
     /* apply the schedule to each core */
-    for (i = 0; i < xky_shared_area.configured_cores; ++i) {
+    for (i = 0; i < air_shared_area.configured_cores; ++i) {
 
-        xky_shared_area.core[i].schedule =
+        air_shared_area.core[i].schedule =
                 &scheduler_ctrl.next_schedule->cores[i];
     }
 
@@ -204,7 +204,7 @@ void pmk_apply_next_schedule(pmk_core_ctrl_t *core) {
 
 void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
 
-    xky_u32_t vcore_id;
+    air_u32_t vcore_id;
     pmk_partition_t *partition;
     pmk_core_schedule_t *core_schedule = core->schedule;
 
@@ -234,7 +234,7 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
     /* update partition elapsed ticks */
     if (core->partition != NULL && core_context_id(core->context) == 0) {
 
-        core->partition->events |= XKY_EVENT_CLOCKTICK;
+        core->partition->events |= AIR_EVENT_CLOCKTICK;
         ++core->partition->elapsed_ticks;
     }
 
@@ -256,7 +256,7 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
             partition = core->partition;
 
             /* get the current virtual core */
-            xky_u32_t vcore_id = core_context_id(core->context);
+            air_u32_t vcore_id = core_context_id(core->context);
 
             /* store the current core partition context */
             if (!core_context_trashed(core->context)) {
@@ -299,7 +299,7 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
 
         /* get the current core schedule and current window*/
         core_schedule = core->schedule;
-        xky_u32_t wnd_idx = core->preempt_point;
+        air_u32_t wnd_idx = core->preempt_point;
 
         /* determine when the core will perform the next context switch */
         core->next_switch_ticks += core_schedule->windows[wnd_idx].duration;
@@ -318,16 +318,16 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
 
             /* set MTF begin flag */
             if (wnd_idx == 0) {
-                partition->events |= XKY_EVENT_SCHEDULE_START;
+                partition->events |= AIR_EVENT_SCHEDULE_START;
             }
 
             /* set period start flag */
             if (core_schedule->windows[wnd_idx].period_start == 1) {
-                partition->events |= XKY_EVENT_PERIOD_START;
+                partition->events |= AIR_EVENT_PERIOD_START;
             }
 
             /* set window start flag */
-            partition->events |= XKY_EVENT_WINDOW_START;
+            partition->events |= AIR_EVENT_WINDOW_START;
 
             /* assign the partition virtual core to this core */
             vcore_id = core_schedule->windows[wnd_idx].virtual_core;
@@ -350,9 +350,9 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
             /* update partition global time */
             if (core_context_id(core->context) == 0) {
 
-                if ((partition->permissions & XKY_PERMISSION_GLOBAL_TIME) != 0) {
+                if ((partition->permissions & AIR_PERMISSION_GLOBAL_TIME) != 0) {
 
-                    xky_u64_t dt = scheduler_ctrl.total_ticks - partition->last_clock_tick;
+                    air_u64_t dt = scheduler_ctrl.total_ticks - partition->last_clock_tick;
                     partition->elapsed_ticks += dt;
                 }
             }
@@ -385,9 +385,9 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
 #endif
 }
 
-pmk_schedule_t *pmk_get_schedule_by_id(xky_identifier_t sid) {
+pmk_schedule_t *pmk_get_schedule_by_id(air_identifier_t sid) {
 
-    xky_u32_t i;
+    air_u32_t i;
     pmk_schedule_t *found = NULL;
     pmk_list_t *list = pmk_get_schedules();
     for(i = 0; i < list->length; ++i){
@@ -399,14 +399,14 @@ pmk_schedule_t *pmk_get_schedule_by_id(xky_identifier_t sid) {
     return found;
 }
 
-pmk_schedule_t *pmk_get_schedule_by_name(xky_name_ptr_t name) {
+pmk_schedule_t *pmk_get_schedule_by_name(air_name_ptr_t name) {
 
-    xky_u32_t i;
+    air_u32_t i;
     pmk_schedule_t *found = NULL;
     pmk_list_t *list = pmk_get_schedules();
     for(i = 0; i < list->length; ++i){
         pmk_schedule_t *schedule = pmk_get_from_list(pmk_schedule_t, list, i);
-        if (strncmp(name, schedule->name, sizeof(xky_name_t)) == 0) {
+        if (strncmp(name, schedule->name, sizeof(air_name_t)) == 0) {
             found = schedule;
         }
     }

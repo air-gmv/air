@@ -18,7 +18,7 @@
 #include <rtems/asm.h>
 #include <rtems/score/percpu.h>
 #include <bspopts.h>
-#include <xky.h>
+#include <air.h>
 
 /*
  *  @brief AIR removes trap table definition to impose its definition
@@ -144,10 +144,10 @@ zerobss:
   */
         PUBLIC(bsp_cleanup)
 SYM(bsp_cleanup):
-  set     XKY_SYSCALL_SET_PARTITION_MODE, %o5 ! set partition mode trap id
-  set     XKY_MODE_IDLE, %o1                  ! mode idle
+  set     AIR_SYSCALL_SET_PARTITION_MODE, %o5 ! set partition mode trap id
+  set     AIR_MODE_IDLE, %o1                  ! mode idle
   set     0xFFFFFFFF, %o0                     ! current partition
-  ta      XKY_SYSCALL_OS_TRAP                 ! call XKY OS trap
+  ta      AIR_SYSCALL_OS_TRAP                 ! call AIR OS trap
 
   .global SYM(rdb_start)                      ! place to store the end of systen                             ! memory
 SYM(rdb_start):

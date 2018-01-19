@@ -146,6 +146,7 @@ Init (rtems_task_argument ignored)
 
 #ifdef GTEST /* LLLG XXX */
     int argc = 1;
+    int rc = 0;
     char argument[32] = "rtems-ttcp_ut.exe";
     char *argv[3];
 
@@ -153,7 +154,8 @@ printk(">> InitGoogleTest()\n");
     argv[0] = argument;
     ::testing::InitGoogleTest(&argc, argv);
 printk(">> RUN_ALL_TESTS()\n");
-    RUN_ALL_TESTS();
+    rc = RUN_ALL_TESTS();
+printk(">> %d = RUN_ALL_TESTS()\n", rc);
 
 #else /* GTEST LLLG XXX */
 

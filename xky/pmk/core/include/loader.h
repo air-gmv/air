@@ -24,8 +24,8 @@
 typedef struct {
 
     void *addr;                     /**< segment address            */
-    xky_uptr_t offset;               /**< segment data offset        */
-    xky_sz_t size;                    /**< segment memory size        */
+    air_uptr_t offset;               /**< segment data offset        */
+    air_sz_t size;                    /**< segment memory size        */
 
 } pmk_segment_t;
 
@@ -36,9 +36,9 @@ typedef struct {
 typedef struct {
 
     void *entry;                    /**< entry point            */
-    xky_u32_t count;                 /**< segment count          */
+    air_u32_t count;                 /**< segment count          */
     pmk_segment_t *segments;        /**< program segments       */
-    xky_u8_t *data;                  /**< compress program       */
+    air_u8_t *data;                  /**< compress program       */
 
 } pmk_elf_t;
 

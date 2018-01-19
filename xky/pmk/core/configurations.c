@@ -21,7 +21,7 @@
  * @brief Beginning of the application configuration (from link commands)
  * @ingroup pmk_configuration
  */
-extern xky_u32_t xky_configuration;
+extern air_u32_t air_configuration;
 
 /**
  * @brief Pointer to the application configuration
@@ -31,7 +31,7 @@ pmk_configuration_t *pmk_configuration;
 void pmk_configurations_int(void) {
 
     /* get pointer to module configuration */
-    pmk_configuration = (pmk_configuration_t *)(&xky_configuration);
+    pmk_configuration = (pmk_configuration_t *)(&air_configuration);
 
 #ifdef PMK_DEBUG
     printk(" :: Configuration initialization (%p)\n", pmk_configuration);

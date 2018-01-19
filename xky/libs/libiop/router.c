@@ -30,17 +30,17 @@ static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
     size_t size = get_payload_size(wrapper->buffer);
 
     /* get maximum size allowed by the port */
-    if (port->type == XKY_QUEUING_PORT) {
+    if (port->type == AIR_QUEUING_PORT) {
 
-        xky_queuing_port_configuration_t *config =
-                (xky_queuing_port_configuration_t *)port->configuration;
+        air_queuing_port_configuration_t *config =
+                (air_queuing_port_configuration_t *)port->configuration;
 
         max_size = config->max_message_size;
 
-    } else if (port->type == XKY_SAMPLING_PORT) {
+    } else if (port->type == AIR_SAMPLING_PORT) {
 
-        xky_sampling_port_configuration_t *config =
-                (xky_sampling_port_configuration_t *)port->configuration;
+        air_sampling_port_configuration_t *config =
+                (air_sampling_port_configuration_t *)port->configuration;
 
         max_size = config->max_message_size;
     } else {
@@ -57,15 +57,15 @@ static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
     }
 
     /* send data */
-    xky_status_code_e rc = xky_syscall_write_port(
+    air_status_code_e rc = air_syscall_write_port(
             port->type,
             port->id,
-            (xky_message_ptr_t)get_payload(wrapper->buffer),
+            (air_message_ptr_t)get_payload(wrapper->buffer),
             (size_t)size,
             (void *)NULL);
 
     /* check if any errors occurred */
-    if (rc != XKY_NO_ERROR && rc != XKY_NOT_AVAILABLE) {
+    if (rc != AIR_NO_ERROR && rc != AIR_NOT_AVAILABLE) {
         iop_raise_error(WRITE_ERROR_S);
     }
 }
@@ -100,7 +100,7 @@ void route_request(iop_logical_device_t *ldev, iop_wrapper_t *wrapper){
                 &((iop_logical_route_t *)ldev->routes.elements)[i];
 
         /* is this route active? */
-        if (1 == route->schedule[xky_schedule.current_schedule_index]) {
+        if (1 == route->schedule[air_schedule.current_schedule_index]) {
 
             /* since the route is active we will follow it */
             replication++;
@@ -201,7 +201,7 @@ void route_reply(iop_physical_device_t *pdev, iop_wrapper_t *wrapper) {
                 &((iop_physical_route_t *)pdev->routes.elements)[i];
 
         /* is this route active? */
-        if (1 == route->schedule[xky_schedule.current_schedule_index]) {
+        if (1 == route->schedule[air_schedule.current_schedule_index]) {
 
             /* Determine if this data is for this route based on the header */
             if (pdev->header_compare(wrapper, route->header)) {

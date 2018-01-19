@@ -1,5 +1,5 @@
 <%
-    import xky
+    import air
     import utils.templates as makoutils
     from tools.configure_app import convertMemoryPermissions
 

@@ -354,8 +354,8 @@ SYM(pmk_hard_reset):
 pmk_primary_core_init:
 
     /* clear BSS */
-    set     SYM(xky_kernel_bss_start), %g2
-    set     SYM(xky_kernel_bss_end), %g3
+    set     SYM(air_kernel_bss_start), %g2
+    set     SYM(air_kernel_bss_end), %g3
     call    zero_bss
     nop
 

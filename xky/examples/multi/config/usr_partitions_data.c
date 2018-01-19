@@ -3,8 +3,8 @@
 #include <loader.h>
 #include <usr_config.h>
 
-extern xky_u8_t usr_partition0_data[19888];
-extern xky_u8_t usr_partition1_data[18235];
+extern air_u8_t usr_partition0_data[19888];
+extern air_u8_t usr_partition1_data[18235];
 extern pmk_segment_t usr_partition0_segments[1];
 extern pmk_segment_t usr_partition1_segments[1];
 
@@ -54,7 +54,7 @@ pmk_segment_t usr_partition1_segments[1] = \
 /**
  * @brief Partition 0 - Compressed ELF Program Segments
  */
-xky_u8_t usr_partition0_data[19888] = \
+air_u8_t usr_partition0_data[19888] = \
 {
     0xaa, 0x45, 0x44, 0x00, 0x00, 0x00, 0x4d, 0xa3, 0x00, 0x00, 0xbf, 0x80, 
     0xff, 0x0d, 0x10, 0x40, 0x00, 0x8c, 0x11, 0xa0, 0x58, 0xff, 0xdc, 0x21, 
@@ -1719,7 +1719,7 @@ xky_u8_t usr_partition0_data[19888] = \
 /**
  * @brief Partition 1 - Compressed ELF Program Segments
  */
-xky_u8_t usr_partition1_data[18235] = \
+air_u8_t usr_partition1_data[18235] = \
 {
     0xaa, 0x45, 0x65, 0x00, 0x00, 0x00, 0x47, 0x2e, 0x00, 0x00, 0xb2, 0xa8, 
     0xff, 0x0d, 0x10, 0x40, 0x00, 0x8c, 0x11, 0xa0, 0x58, 0xff, 0xdc, 0x21, 

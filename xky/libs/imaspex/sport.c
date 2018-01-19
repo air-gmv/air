@@ -15,7 +15,7 @@
 #include <imaspex.h>
 
 extern int imaspex_tsal_init;
-extern xky_clocktick_t imaspex_ns_per_tick;
+extern air_clocktick_t imaspex_ns_per_tick;
 
 /* ARINC 653 (PART 1) SAMPLING PORT SERVICES */
 /* -------------------------------------------------------------------------- */
@@ -33,19 +33,19 @@ void CREATE_SAMPLING_PORT (
         return;
     }
 
-    /* convert configuration to XKY format */
-    xky_sampling_port_configuration_t config;
+    /* convert configuration to AIR format */
+    air_sampling_port_configuration_t config;
 
     config.max_message_size = MAX_MESSAGE_SIZE;
     config.refresh_period = REFRESH_PERIOD / imaspex_ns_per_tick;
     config.port_direction = PORT_DIRECTION;
 
     /* create port via system call */
-    *RETURN_CODE = xky_syscall_create_port(
-            XKY_SAMPLING_PORT,
-            (xky_name_ptr_t)SAMPLING_PORT_NAME,
+    *RETURN_CODE = air_syscall_create_port(
+            AIR_SAMPLING_PORT,
+            (air_name_ptr_t)SAMPLING_PORT_NAME,
             (void *)&config,
-            (xky_identifier_t *)SAMPLING_PORT_ID);
+            (air_identifier_t *)SAMPLING_PORT_ID);
 }
 
 void WRITE_SAMPLING_MESSAGE (
@@ -61,11 +61,11 @@ void WRITE_SAMPLING_MESSAGE (
     }
 
     /* write message view system call */
-    *RETURN_CODE = xky_syscall_write_port(
-            XKY_SAMPLING_PORT,
-            (xky_identifier_t)SAMPLING_PORT_ID,
-            (xky_message_ptr_t)MESSAGE_ADDR,
-            (xky_sz_t)LENGTH,
+    *RETURN_CODE = air_syscall_write_port(
+            AIR_SAMPLING_PORT,
+            (air_identifier_t)SAMPLING_PORT_ID,
+            (air_message_ptr_t)MESSAGE_ADDR,
+            (air_sz_t)LENGTH,
             (void *)NULL);
 }
 
@@ -83,15 +83,15 @@ void READ_SAMPLING_MESSAGE (
     }
 
     /* read regular message */
-    xky_sampling_port_status_t status;
-    status.operation = XKY_SAMPLING_MODE_REGULAR;
+    air_sampling_port_status_t status;
+    status.operation = AIR_SAMPLING_MODE_REGULAR;
 
     /* read message view system call */
-    *RETURN_CODE = xky_syscall_read_port(
-            XKY_SAMPLING_PORT,
-            (xky_identifier_t)SAMPLING_PORT_ID,
-            (xky_message_ptr_t)MESSAGE_ADDR,
-            (xky_sz_t *)LENGTH,
+    *RETURN_CODE = air_syscall_read_port(
+            AIR_SAMPLING_PORT,
+            (air_identifier_t)SAMPLING_PORT_ID,
+            (air_message_ptr_t)MESSAGE_ADDR,
+            (air_sz_t *)LENGTH,
             (void *)&status);
 
     /* convert back to ARINC format */
@@ -110,10 +110,10 @@ void GET_SAMPLING_PORT_ID (
     }
 
     /* get port id via system call */
-    *RETURN_CODE = xky_syscall_get_port_id(
-            XKY_SAMPLING_PORT,
-            (xky_name_ptr_t)SAMPLING_PORT_NAME,
-            (xky_identifier_t *)SAMPLING_PORT_ID);
+    *RETURN_CODE = air_syscall_get_port_id(
+            AIR_SAMPLING_PORT,
+            (air_name_ptr_t)SAMPLING_PORT_NAME,
+            (air_identifier_t *)SAMPLING_PORT_ID);
 }
 
 void GET_SAMPLING_PORT_STATUS (
@@ -128,10 +128,10 @@ void GET_SAMPLING_PORT_STATUS (
     }
 
     /* get port status via system call */
-    xky_sampling_port_status_t status;
-    *RETURN_CODE = xky_syscall_get_port_status(
-            XKY_SAMPLING_PORT,
-            (xky_identifier_t)SAMPLING_PORT_ID,
+    air_sampling_port_status_t status;
+    *RETURN_CODE = air_syscall_get_port_status(
+            AIR_SAMPLING_PORT,
+            (air_identifier_t)SAMPLING_PORT_ID,
             (void *)&status);
 
     /* convert status back to the ARINC format */
@@ -161,15 +161,15 @@ void READ_UPDATED_SAMPLING_MESSAGE (
     }
 
     /* read updated message */
-    xky_sampling_port_status_t status;
-    status.operation = XKY_SAMPLING_MODE_UPDATED;
+    air_sampling_port_status_t status;
+    status.operation = AIR_SAMPLING_MODE_UPDATED;
 
     /* read message view system call */
-    *RETURN_CODE = xky_syscall_read_port(
-            XKY_SAMPLING_PORT,
-            (xky_identifier_t)SAMPLING_PORT_ID,
-            (xky_message_ptr_t)MESSAGE_ADDR,
-            (xky_sz_t *)LENGTH,
+    *RETURN_CODE = air_syscall_read_port(
+            AIR_SAMPLING_PORT,
+            (air_identifier_t)SAMPLING_PORT_ID,
+            (air_message_ptr_t)MESSAGE_ADDR,
+            (air_sz_t *)LENGTH,
             (void *)&status);
 
     /* convert back to ARINC format */
@@ -194,10 +194,10 @@ void GET_SAMPLING_PORT_CURRENT_STATUS (
     }
 
     /* get port status via system call */
-    xky_sampling_port_status_t status;
-    *RETURN_CODE = xky_syscall_get_port_status(
-            XKY_SAMPLING_PORT,
-            (xky_identifier_t)SAMPLING_PORT_ID,
+    air_sampling_port_status_t status;
+    *RETURN_CODE = air_syscall_get_port_status(
+            AIR_SAMPLING_PORT,
+            (air_identifier_t)SAMPLING_PORT_ID,
             (void *)&status);
 
     /* convert status back to the ARINC format */
@@ -227,16 +227,16 @@ void READ_SAMPLING_MESSAGE_CONDITIONAL (
     }
 
     /* read updated message */
-    xky_sampling_port_status_t status;
+    air_sampling_port_status_t status;
     status.time_stamp = REF_TIME_STAMP / imaspex_ns_per_tick;
-    status.operation = XKY_SAMPLING_MODE_CONDITIONAL;
+    status.operation = AIR_SAMPLING_MODE_CONDITIONAL;
 
     /* read message view system call */
-    *RETURN_CODE = xky_syscall_read_port(
-            XKY_SAMPLING_PORT,
-            (xky_identifier_t)SAMPLING_PORT_ID,
-            (xky_message_ptr_t)MESSAGE_ADDR,
-            (xky_sz_t *)LENGTH,
+    *RETURN_CODE = air_syscall_read_port(
+            AIR_SAMPLING_PORT,
+            (air_identifier_t)SAMPLING_PORT_ID,
+            (air_message_ptr_t)MESSAGE_ADDR,
+            (air_sz_t *)LENGTH,
             (void *)&status);
 
     /* convert back to ARINC format */

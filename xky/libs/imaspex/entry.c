@@ -15,7 +15,7 @@
 #include <imaspex.h>
 
 int imaspex_tsal_init = 0;
-xky_clocktick_t imaspex_ns_per_tick;
+air_clocktick_t imaspex_ns_per_tick;
 
 int imaspex_init(void){
 
@@ -25,7 +25,7 @@ int imaspex_init(void){
 
 		/* init once only :) */
 	    imaspex_tsal_init = 1;
-		imaspex_ns_per_tick = xky_syscall_get_us_per_tick() * 1000;
+		imaspex_ns_per_tick = air_syscall_get_us_per_tick() * 1000;
 
 		ret_code = NO_ERROR;
 	}

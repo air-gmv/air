@@ -196,12 +196,12 @@ static rtems_status_code iop_init_ports() {
         iop_port_t *port = get_remote_port(i);
 
         /* create port */
-        xky_status_code_e p_rc = xky_syscall_create_port(
+        air_status_code_e p_rc = air_syscall_create_port(
                 port->type, port->name,
                 port->configuration, &port->id);
 
         /* check return code */
-        if (p_rc != XKY_NO_ERROR && p_rc != XKY_NO_ACTION) {
+        if (p_rc != AIR_NO_ERROR && p_rc != AIR_NO_ACTION) {
             iop_debug("    - error %i creating port %s\n", p_rc, port->name);
             rc = RTEMS_INTERNAL_ERROR;
         }

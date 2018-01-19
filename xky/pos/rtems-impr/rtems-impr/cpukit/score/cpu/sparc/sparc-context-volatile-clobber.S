@@ -88,8 +88,8 @@ no_manual_update:
     *
     * Below is respective paravirtualization 
     */    
-    set       XKY_SYSCALL_SPARC_GET_PSR, %o5
-    ta        XKY_SYSCALL_SPARC_TRAP // psr at %o0
+    set       AIR_SYSCALL_SPARC_GET_PSR, %o5
+    ta        AIR_SYSCALL_SPARC_TRAP // psr at %o0
     mov       %o0, %o2 // move to %o2      
     /* End of AIR intervention */
 

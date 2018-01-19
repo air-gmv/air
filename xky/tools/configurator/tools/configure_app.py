@@ -1,20 +1,20 @@
 ## @package tools.configure_app
 #  @author pfnf
-#  @brief Tool to configuration a XKY OS instalation
+#  @brief Tool to configuration a AIR OS instalation
 
 __author__ = 'pfnf'
 
 import os
-import xky
+import air
 import utils
 import utils.file as fileutils
 import utils.templates as makoutils
-import xky.configurations as xky_configuration
+import air.configurations as air_configuration
 
 from localization.logger import *
 import parsers.a653.definitions as a653_definitions
 
-## @brief Setup input arguments to configure a XKY application
+## @brief Setup input arguments to configure a AIR application
 def InputArgs(arg_parser, logger):
 
     arg_parser.add_argument('-i', '--info', dest='info', action='store_const', const=True, default=False, help='Installation information')
@@ -29,7 +29,7 @@ def InputArgs(arg_parser, logger):
 def ShowInstallInfo(logger):
 
     # load OS configurations
-    os_configuration = xky_configuration.load_configuration(logger)
+    os_configuration = air_configuration.load_configuration(logger)
 
     if os_configuration is not None:
         logger.event(0, "AIR configured for {0}", os_configuration.get_target())
@@ -38,7 +38,7 @@ def ShowInstallInfo(logger):
 
     exit(0)
 
-## @brief Run the XKY application configurator
+## @brief Run the AIR application configurator
 def Run(args, os_configuration, logger):
 
     # show info
@@ -49,7 +49,7 @@ def Run(args, os_configuration, logger):
 
     # look for a single valid XML configuration
     if args.xml_file is None:
-        files = fileutils.findFiles(xky.WORKING_DIRECTORY, '.xml', a653_definitions.ARINC_653_MODULE)
+        files = fileutils.findFiles(air.WORKING_DIRECTORY, '.xml', a653_definitions.ARINC_653_MODULE)
         if len(files) == 1:
             args.xml_file = files[0]
 
@@ -62,10 +62,10 @@ def Run(args, os_configuration, logger):
     os_configuration.debug_mode = args.debug_mode
 
     # parse module
-    from parsers.xky.parser import xkyParser
+    from parsers.air.parser import airParser
 
     print("  PARSING configs")
-    app_configuration = xkyParser(os_configuration, logger)
+    app_configuration = airParser(os_configuration, logger)
     app_configuration.parse(args.xml_file)
     print("  done PARSING configs")
     # sanity check
@@ -77,12 +77,12 @@ def Run(args, os_configuration, logger):
     app_configuration.arch = os_configuration.archConfiguration(app_configuration)
 
     # create temporary file to hold the new files
-    temp_directory = os.path.join(xky.WORKING_DIRECTORY, '.temp')
+    temp_directory = os.path.join(air.WORKING_DIRECTORY, '.temp')
 
     # template lookup directories
     template_includes = \
         [
-            os.path.join(xky.TEMPLATES_DIRECTORY, 'include')
+            os.path.join(air.TEMPLATES_DIRECTORY, 'include')
         ]
 
     # generation partition Makefiles and glue code
@@ -101,19 +101,19 @@ def Run(args, os_configuration, logger):
                 dict(os_configuration=os_configuration, partition=partition, pos_config=pos_config),
                 logger, template_includes)
 
-        # makoutils.applyMAKOTemplate(os.path.join(xky.APP_TEMPLATES_DIRECTORY, xky.POS_DIR_NAME, 'ports_init.mako'),
+        # makoutils.applyMAKOTemplate(os.path.join(air.APP_TEMPLATES_DIRECTORY, air.POS_DIR_NAME, 'ports_init.mako'),
         #                            os.path.join(temp_directory, partition.directory, 'ports_init.h'),
         #                            dict(os_configuration=os_configuration, partition=partition, header=True),
         #                            logger, template_includes)
 
-        # makoutils.applyMAKOTemplate(os.path.join(xky.APP_TEMPLATES_DIRECTORY, xky.POS_DIR_NAME, 'ports_init.mako'),
+        # makoutils.applyMAKOTemplate(os.path.join(air.APP_TEMPLATES_DIRECTORY, air.POS_DIR_NAME, 'ports_init.mako'),
         #                            os.path.join(temp_directory, partition.directory, 'ports_init.c'),
         #                            dict(os_configuration=os_configuration, partition=partition, header=False),
         #                            logger, template_includes)
 
         # partition linker inc
         makoutils.applyMAKOTemplate(
-            os.path.join(xky.APP_TEMPLATES_DIRECTORY, 'inc_linkcmds.mako'),
+            os.path.join(air.APP_TEMPLATES_DIRECTORY, 'inc_linkcmds.mako'),
             os.path.join(temp_directory, partition.directory, 'linkcmds.inc'),
             dict(os_configuration=os_configuration, partition=partition, pos_config=pos_config),
             logger, template_includes)
@@ -127,7 +127,7 @@ def Run(args, os_configuration, logger):
 
     # common source Makefile
     makoutils.applyMAKOTemplate(
-        os.path.join(xky.APP_TEMPLATES_DIRECTORY, 'common_makefile.mako'),
+        os.path.join(air.APP_TEMPLATES_DIRECTORY, 'common_makefile.mako'),
         os.path.join(temp_directory, 'common', 'Makefile'),
         dict(configuration=app_configuration),
         logger, template_includes)
@@ -136,14 +136,14 @@ def Run(args, os_configuration, logger):
     templates_names = ['usr_channels', 'usr_config', 'usr_hm', 'usr_partitions', 'usr_schedules', 'usr_sharedmemory']
     for template in templates_names:
         makoutils.applyMAKOTemplate(
-            os.path.join(xky.APP_TEMPLATES_DIRECTORY, '{0}.mako'.format(template)),
+            os.path.join(air.APP_TEMPLATES_DIRECTORY, '{0}.mako'.format(template)),
             os.path.join(temp_directory, 'config', '{0}.c'.format(template)),
             dict(configuration=app_configuration, header=False),
             logger, template_includes)
 
     # generate configuration header file
     makoutils.applyMAKOTemplate(
-        os.path.join(xky.APP_TEMPLATES_DIRECTORY, 'usr_config.mako'),
+        os.path.join(air.APP_TEMPLATES_DIRECTORY, 'usr_config.mako'),
         os.path.join(temp_directory, 'config', 'usr_config.h'),
         dict(configuration=app_configuration, header=True),
         logger, template_includes)
@@ -164,25 +164,25 @@ def Run(args, os_configuration, logger):
 
     # generate main Makefile
     makoutils.applyMAKOTemplate(
-        os.path.join(xky.APP_TEMPLATES_DIRECTORY, 'xky_makefile.mako'),
+        os.path.join(air.APP_TEMPLATES_DIRECTORY, 'air_makefile.mako'),
         os.path.join(temp_directory, 'config', 'Makefile'),
         dict(app_configuration=app_configuration, os_configuration=os_configuration),
         logger, template_includes)
 
     # generate main Makefile
     makoutils.applyMAKOTemplate(
-        os.path.join(xky.APP_TEMPLATES_DIRECTORY, 'dir_makefile.mako'),
+        os.path.join(air.APP_TEMPLATES_DIRECTORY, 'dir_makefile.mako'),
         os.path.join(temp_directory, 'Makefile'),
         dict(app_configuration=app_configuration),
         logger, template_includes)
 
     # load previous cleaning record (if it exists)
-    record = fileutils.loadFileRecord(os.path.join(xky.WORKING_DIRECTORY, '.config'))
-    fileutils.safeMultiFileCopyWithRecord(temp_directory, xky.WORKING_DIRECTORY, record)
+    record = fileutils.loadFileRecord(os.path.join(air.WORKING_DIRECTORY, '.config'))
+    fileutils.safeMultiFileCopyWithRecord(temp_directory, air.WORKING_DIRECTORY, record)
 
     # create new record
     record = fileutils.createFileRecord(temp_directory)
-    fileutils.saveFileRecord(os.path.join(xky.WORKING_DIRECTORY, '.config'), record)
+    fileutils.saveFileRecord(os.path.join(air.WORKING_DIRECTORY, '.config'), record)
     fileutils.safeRemoveDirectory(temp_directory)
 
 def configure_iop(os_configuration, app_configuration, partition, temp_directory, logger):
@@ -192,14 +192,14 @@ def configure_iop(os_configuration, app_configuration, partition, temp_directory
     # template lookup directories
     template_includes = \
         [
-            os.path.join(xky.TEMPLATES_DIRECTORY, 'include'),
-            os.path.join(xky.TEMPLATES_DIRECTORY, 'app_configuration', 'iop', 'include')
+            os.path.join(air.TEMPLATES_DIRECTORY, 'include'),
+            os.path.join(air.TEMPLATES_DIRECTORY, 'app_configuration', 'iop', 'include')
         ]
 
     # physical device files
     for i, device in enumerate(iop_configuration.physical_devices):
         makoutils.applyMAKOTemplate(
-            os.path.join(xky.APP_TEMPLATES_DIRECTORY, 'iop', device.parser[3]),
+            os.path.join(air.APP_TEMPLATES_DIRECTORY, 'iop', device.parser[3]),
             os.path.join(temp_directory, partition.directory, 'iop_physical_device_{0}.c'.format(i)),
             dict(app_configuration=app_configuration, os_configuration=os_configuration,
                  iop_configuration=iop_configuration, device=device),
@@ -208,7 +208,7 @@ def configure_iop(os_configuration, app_configuration, partition, temp_directory
     # logical device files
     for i, device in enumerate(iop_configuration.logical_devices):
         makoutils.applyMAKOTemplate(
-            os.path.join(xky.APP_TEMPLATES_DIRECTORY, 'iop', 'iop_logical_device.mako'),
+            os.path.join(air.APP_TEMPLATES_DIRECTORY, 'iop', 'iop_logical_device.mako'),
             os.path.join(temp_directory, partition.directory, 'iop_logical_device_{0}.c'.format(i)),
             dict(app_configuration=app_configuration, os_configuration=os_configuration,
                  iop_configuration=iop_configuration, device=device),
@@ -216,14 +216,14 @@ def configure_iop(os_configuration, app_configuration, partition, temp_directory
 
     # ports
     makoutils.applyMAKOTemplate(
-        os.path.join(xky.APP_TEMPLATES_DIRECTORY, 'iop', 'iop_ports.mako'),
+        os.path.join(air.APP_TEMPLATES_DIRECTORY, 'iop', 'iop_ports.mako'),
         os.path.join(temp_directory, partition.directory, 'iop_ports.c'),
         dict(app_configuration=app_configuration, os_configuration=os_configuration, iop_configuration=iop_configuration),
         logger, template_includes)
 
     # generic
     makoutils.applyMAKOTemplate(
-        os.path.join(xky.APP_TEMPLATES_DIRECTORY, 'iop', 'iop_config.mako'),
+        os.path.join(air.APP_TEMPLATES_DIRECTORY, 'iop', 'iop_config.mako'),
         os.path.join(temp_directory, partition.directory, 'iop_config.c'),
         dict(app_configuration=app_configuration, os_configuration=os_configuration, iop_configuration=iop_configuration),
         logger, template_includes)
@@ -240,5 +240,5 @@ def convertMemoryPermissions(permissions_str):
 #  @param logger Logger object
 def clearConfiguration(logger):
 
-    fileutils.runCleaningRecord(os.path.join(xky.WORKING_DIRECTORY, '.config'), logger)
+    fileutils.runCleaningRecord(os.path.join(air.WORKING_DIRECTORY, '.config'), logger)
     exit(0)

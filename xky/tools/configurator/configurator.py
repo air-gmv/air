@@ -2,16 +2,16 @@
 # =============================================================================
 #  Copyright (C) GMVIS Skysoft S.A., 2014
 # =============================================================================
-#   This file is part of the XKY Operating System configuration sub-system.
+#   This file is part of the AIR Operating System configuration sub-system.
 #   The license and distribution terms for this file may be found in the file
 #   LICENSE in the root directory of the AIR OS distribution.
 # =============================================================================
 
 import os
-import xky
-import xky.configurations as xky_configuration
+import air
+import air.configurations as air_configuration
 import utils.terminal as terminal_utils
-import tools.configure_xky as configure_xky
+import tools.configure_air as configure_air
 import tools.configure_app as configure_app
 import logging
 
@@ -48,19 +48,19 @@ if __name__ == "__main__":
     arg_parser = ArgumentParser(prog=__file__, description=AIR_DESCRIPTION, formatter_class=RawTextHelpFormatter)
 
     # get available architectures
-    xky_configuration.supported_architectures = xky_configuration.get_available_targets()
-    xky_configuration.available_libraries = xky_configuration.get_available_libraries()
-    xky_configuration.available_pos = xky_configuration.get_available_pos()
+    air_configuration.supported_architectures = air_configuration.get_available_targets()
+    air_configuration.available_libraries = air_configuration.get_available_libraries()
+    air_configuration.available_pos = air_configuration.get_available_pos()
 
-    # check if we are configuring XKY or a partition
-    if xky.WORKING_DIRECTORY == xky.ROOT_DIRECTORY:
+    # check if we are configuring AIR or a partition
+    if air.WORKING_DIRECTORY == air.ROOT_DIRECTORY:
 
-        args = configure_xky.InputArgs(arg_parser, logger)
-        configure_xky.Run(args, logger)
+        args = configure_air.InputArgs(arg_parser, logger)
+        configure_air.Run(args, logger)
 
     else:
         # load OS configurations
-        os_configuration = xky_configuration.load_configuration(logger)
+        os_configuration = air_configuration.load_configuration(logger)
         if os_configuration is None: exit(-1)
 
         # run the application configuration

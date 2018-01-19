@@ -85,8 +85,8 @@ SYM(_CPU_Context_validate):
     *
     * Below is respective paravirtualization 
     */
-    set       XKY_SYSCALL_SPARC_GET_PSR, %o5 !set trap id in %o5
-    ta        XKY_SYSCALL_SPARC_TRAP     !trap give PSR value in %o0
+    set       AIR_SYSCALL_SPARC_GET_PSR, %o5 !set trap id in %o5
+    ta        AIR_SYSCALL_SPARC_TRAP     !trap give PSR value in %o0
     mov        %o0, %g2                  !g2 = psr
     /* End of AIR intervention */
 
