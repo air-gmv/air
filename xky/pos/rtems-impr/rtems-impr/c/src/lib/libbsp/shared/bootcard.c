@@ -26,7 +26,7 @@
  *  http://www.rtems.org/license/LICENSE.
  */
 
-#include <xky.h>
+#include <air.h>
 
 #include <bsp/bootcard.h>
 
@@ -86,10 +86,10 @@ void boot_card(
   }
 
   /* set TBR */
-  xky_sparc_set_tbr(&trap_table[0]);
+  air_sparc_set_tbr(&trap_table[0]);
 
   /* enable traps*/
-  xky_sparc_enable_traps();
+  air_sparc_enable_traps();
 
   /*
    *  Make sure interrupts are disabled.

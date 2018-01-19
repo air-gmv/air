@@ -18,7 +18,7 @@
 #include <sharedmemory.h>
 #include <configurations.h>
 
-pmk_shm_t *pmk_sharedmemory_get_by_id(xky_identifier_t id) {
+pmk_shm_t *pmk_sharedmemory_get_by_id(air_identifier_t id) {
 
     int i;
     pmk_shm_t *found = NULL;
@@ -32,14 +32,14 @@ pmk_shm_t *pmk_sharedmemory_get_by_id(xky_identifier_t id) {
     return found;
 }
 
-pmk_shm_t *pmk_sharedmemory_get_by_name(xky_name_ptr_t name) {
+pmk_shm_t *pmk_sharedmemory_get_by_name(air_name_ptr_t name) {
 
     int i;
     pmk_shm_t *found = NULL;
     pmk_list_t *list = pmk_get_shared_memory_areas();
     for(i = 0; i < list->length; ++i) {
         pmk_shm_t *sharedmemory = pmk_get_from_list(pmk_shm_t, list, i);
-        if (strncmp(name, sharedmemory->name, sizeof(xky_name_t)) == 0) {
+        if (strncmp(name, sharedmemory->name, sizeof(air_name_t)) == 0) {
             found = sharedmemory;
         }
     }

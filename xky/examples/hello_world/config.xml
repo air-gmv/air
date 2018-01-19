@@ -5,7 +5,7 @@
   <Partition PartitionIdentifier="1" PartitionName="p0" 
     Criticality="LEVEL_A" EntryPoint="entry_point" SystemPartition="false">
     <PartitionConfiguration Personality="RTEMS" Cores="1">
-        <Libs>LIBXKY; LIBPRINTF</Libs>
+        <Libs>LIBAIR; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x100000" />
@@ -28,5 +28,5 @@
 
   
   <!-- Module configuration -->
-  <XKY_Configuration TicksPerSecond="200" RequiredCores="1"/>
+  <AIR_Configuration TicksPerSecond="200" RequiredCores="1"/>
 </ARINC_653_Module>

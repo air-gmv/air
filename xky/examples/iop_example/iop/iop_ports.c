@@ -17,11 +17,11 @@ extern iop_logical_device_t logical_device_0;
 /**
  * @brief Queuing ports configurations
  */
-static xky_queuing_port_configuration_t queuing_ports[] = {
+static air_queuing_port_configuration_t queuing_ports[] = {
     {
         .max_message_size   = 1024,
         .max_nb_message     = 32,
-        .port_direction     = XKY_SOURCE_PORT,
+        .port_direction     = AIR_SOURCE_PORT,
         .port_discipline    = 0
     },
 };
@@ -29,11 +29,11 @@ static xky_queuing_port_configuration_t queuing_ports[] = {
 /**
  * @brief Sampling ports configurations
  */
-static xky_sampling_port_configuration_t sampling_ports[] = {
+static air_sampling_port_configuration_t sampling_ports[] = {
     {
         .max_message_size   = 1024,
-        .refresh_period     = 200,
-        .port_direction     = XKY_DESTINATION_PORT,
+        .refresh_period     = 1000,
+        .port_direction     = AIR_DESTINATION_PORT,
     },
 };
 
@@ -42,13 +42,13 @@ static xky_sampling_port_configuration_t sampling_ports[] = {
  */
 iop_port_t remote_ports[2] = {
     {
-        .type               = XKY_SAMPLING_PORT,
+        .type               = AIR_SAMPLING_PORT,
         .name               = "dsampling",
         .configuration      = &sampling_ports[0],
         .device             = &logical_device_0
     },
     {
-        .type               = XKY_QUEUING_PORT,
+        .type               = AIR_QUEUING_PORT,
         .name               = "squeuing",
         .configuration      = &queuing_ports[0],
         .device             = NULL

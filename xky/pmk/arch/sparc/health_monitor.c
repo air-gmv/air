@@ -22,270 +22,270 @@
  */
 typedef struct {
 
-    xky_error_e error_id;
+    air_error_e error_id;
     char*           error_str;
 
 } sparc_error_map_t;
 
 
-xky_error_e error_map[] = {
+air_error_e error_map[] = {
 
-    XKY_POWER_ERROR,            /* Power-on reset                             */
-    XKY_SEGMENTATION_ERROR,     /* Error during instruction fetch             */
-    XKY_UNIMPLEMENTED_ERROR,    /* UNIMP or other un-implemented instruction  */
-    XKY_VIOLATION_ERROR,        /* Privileged instruction in user mode        */
-    XKY_FLOAT_ERROR,            /* FP instruction while FPU disabled          */
-    XKY_SEGMENTATION_ERROR,     /* SAVE into invalid window                   */
-    XKY_SEGMENTATION_ERROR,     /* RESTORE into invalid window                */
-    XKY_SEGMENTATION_ERROR,     /* Memory access to un-aligned address        */
-    XKY_FLOAT_ERROR,            /* FPU exception                              */
-    XKY_SEGMENTATION_ERROR,     /* Access error during load/store instruction */
-    XKY_ARITHMETIC_ERROR,       /* Tagged arithmetic overflow                 */
-    XKY_UNIMPLEMENTED_ERROR,    /* Hardware breakpoint match                  */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_IO_ERROR,               /* Asynchronous interrupt 1                   */
-    XKY_IO_ERROR,               /* Asynchronous interrupt 2                   */
-    XKY_IO_ERROR,               /* Asynchronous interrupt 3                   */
-    XKY_IO_ERROR,               /* Asynchronous interrupt 4                   */
-    XKY_IO_ERROR,               /* Asynchronous interrupt 5                   */
-    XKY_IO_ERROR,               /* Asynchronous interrupt 6                   */
-    XKY_IO_ERROR,               /* Asynchronous interrupt 7                   */
-    XKY_IO_ERROR,               /* Asynchronous interrupt 8                   */
-    XKY_IO_ERROR,               /* Asynchronous interrupt 9                   */
-    XKY_IO_ERROR,               /* Asynchronous interrupt 10                  */
-    XKY_IO_ERROR,               /* Asynchronous interrupt 11                  */
-    XKY_IO_ERROR,               /* Asynchronous interrupt 12                  */
-    XKY_IO_ERROR,               /* Asynchronous interrupt 13                  */
-    XKY_IO_ERROR,               /* Asynchronous interrupt 14                  */
-    XKY_IO_ERROR,               /* Asynchronous interrupt 15                  */
-    XKY_IO_ERROR,               /* register file EDAC error                   */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_UNIMPLEMENTED_ERROR,    /* CP instruction while Co-processor disabled */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_IO_ERROR,               /* Co-processor exception                     */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_DIVISION_BY_0_ERROR,    /* Divide by zero                             */
-    XKY_SEGMENTATION_ERROR,     /* write buffer error                         */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* GDB breakpoint trap                        */
-    XKY_DIVISION_BY_0_ERROR,    /* SW Divide by zero                          */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* APEX Error                                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
-    XKY_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_POWER_ERROR,            /* Power-on reset                             */
+    AIR_SEGMENTATION_ERROR,     /* Error during instruction fetch             */
+    AIR_UNIMPLEMENTED_ERROR,    /* UNIMP or other un-implemented instruction  */
+    AIR_VIOLATION_ERROR,        /* Privileged instruction in user mode        */
+    AIR_FLOAT_ERROR,            /* FP instruction while FPU disabled          */
+    AIR_SEGMENTATION_ERROR,     /* SAVE into invalid window                   */
+    AIR_SEGMENTATION_ERROR,     /* RESTORE into invalid window                */
+    AIR_SEGMENTATION_ERROR,     /* Memory access to un-aligned address        */
+    AIR_FLOAT_ERROR,            /* FPU exception                              */
+    AIR_SEGMENTATION_ERROR,     /* Access error during load/store instruction */
+    AIR_ARITHMETIC_ERROR,       /* Tagged arithmetic overflow                 */
+    AIR_UNIMPLEMENTED_ERROR,    /* Hardware breakpoint match                  */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_IO_ERROR,               /* Asynchronous interrupt 1                   */
+    AIR_IO_ERROR,               /* Asynchronous interrupt 2                   */
+    AIR_IO_ERROR,               /* Asynchronous interrupt 3                   */
+    AIR_IO_ERROR,               /* Asynchronous interrupt 4                   */
+    AIR_IO_ERROR,               /* Asynchronous interrupt 5                   */
+    AIR_IO_ERROR,               /* Asynchronous interrupt 6                   */
+    AIR_IO_ERROR,               /* Asynchronous interrupt 7                   */
+    AIR_IO_ERROR,               /* Asynchronous interrupt 8                   */
+    AIR_IO_ERROR,               /* Asynchronous interrupt 9                   */
+    AIR_IO_ERROR,               /* Asynchronous interrupt 10                  */
+    AIR_IO_ERROR,               /* Asynchronous interrupt 11                  */
+    AIR_IO_ERROR,               /* Asynchronous interrupt 12                  */
+    AIR_IO_ERROR,               /* Asynchronous interrupt 13                  */
+    AIR_IO_ERROR,               /* Asynchronous interrupt 14                  */
+    AIR_IO_ERROR,               /* Asynchronous interrupt 15                  */
+    AIR_IO_ERROR,               /* register file EDAC error                   */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_UNIMPLEMENTED_ERROR,    /* CP instruction while Co-processor disabled */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_IO_ERROR,               /* Co-processor exception                     */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_DIVISION_BY_0_ERROR,    /* Divide by zero                             */
+    AIR_SEGMENTATION_ERROR,     /* write buffer error                         */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* GDB breakpoint trap                        */
+    AIR_DIVISION_BY_0_ERROR,    /* SW Divide by zero                          */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* APEX Error                                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
+    AIR_VIOLATION_ERROR,        /* Unexpected/Unassigned trap                 */
 };
 
 /**
@@ -297,7 +297,7 @@ void sparc_hm_handler(
         sparc_interrupt_stack_frame_t *isf, pmk_core_ctrl_t *core_ctrl) {
 
     /* map it to the PMK independent data */
-    xky_error_e error_id = error_map[isf->tpc];
+    air_error_e error_id = error_map[isf->tpc];
 
     /* call the PMK health monitor */
     pmk_hm_isr_handler(error_id);

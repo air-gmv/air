@@ -18,7 +18,7 @@
 #include <segregation.h>
 #include <configurations.h>
 
-xky_status_code_e pmk_syscall_get_tod(pmk_core_ctrl_t *core, xky_time_t *tod) {
+air_status_code_e pmk_syscall_get_tod(pmk_core_ctrl_t *core, air_time_t *tod) {
 
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
@@ -31,7 +31,7 @@ xky_status_code_e pmk_syscall_get_tod(pmk_core_ctrl_t *core, xky_time_t *tod) {
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
-        return XKY_INVALID_CONFIG;
+        return AIR_INVALID_CONFIG;
     }
 
     /* copy ToD to the partition */
@@ -39,15 +39,15 @@ xky_status_code_e pmk_syscall_get_tod(pmk_core_ctrl_t *core, xky_time_t *tod) {
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
-        return XKY_INVALID_POINTER;
+        return AIR_INVALID_POINTER;
     }
 
     /* disable preemption and return */
     cpu_disable_preemption(flags);
-    return XKY_NO_ERROR;
+    return AIR_NO_ERROR;
 }
 
-xky_status_code_e pmk_syscall_set_tod(pmk_core_ctrl_t *core, xky_time_t *tod) {
+air_status_code_e pmk_syscall_set_tod(pmk_core_ctrl_t *core, air_time_t *tod) {
 
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
@@ -57,20 +57,20 @@ xky_status_code_e pmk_syscall_set_tod(pmk_core_ctrl_t *core, xky_time_t *tod) {
     cpu_enable_preemption(flags);
 
     /* check if the partition have permissions to set the system time */
-    if ((partition->permissions & XKY_PERMISSION_SET_TOD) == 0) {
+    if ((partition->permissions & AIR_PERMISSION_SET_TOD) == 0) {
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
-        return XKY_INVALID_CONFIG;
+        return AIR_INVALID_CONFIG;
     }
 
     /* copy ToD from the partition */
-    xky_time_t local_tod;
+    air_time_t local_tod;
     if (pmk_segregation_get_user(context, local_tod, tod) != 0) {
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
-        return XKY_INVALID_POINTER;
+        return AIR_INVALID_POINTER;
     }
 
     /* apply new ToD */
@@ -80,5 +80,5 @@ xky_status_code_e pmk_syscall_set_tod(pmk_core_ctrl_t *core, xky_time_t *tod) {
 
     /* disable preemption and return */
     cpu_disable_preemption(flags);
-    return XKY_NO_ERROR;
+    return AIR_NO_ERROR;
 }

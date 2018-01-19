@@ -45,7 +45,7 @@ void output_partition_data(FILE *fd, uint32_t idx, char *data, uint32_t size) {
             "/**\n" \
             " * @brief Partition %i - Compressed ELF Program Segments\n" \
             " */\n" \
-            "xky_u8_t usr_partition%i_data[%i] = \\\n" \
+            "air_u8_t usr_partition%i_data[%i] = \\\n" \
             "{\n    ",
             idx, idx, size);
     for (i = 0; i < size; ++i) {
@@ -79,7 +79,7 @@ void generate_output(p_data *p_elfs, uint32_t p_count) {
 
         fprintf(
                 fd,
-                "extern xky_u8_t usr_partition%i_data[%i];\n",
+                "extern air_u8_t usr_partition%i_data[%i];\n",
                 i, (int)(p_elfs[i].c_size));
     }
     for (i = 0; i < p_count; ++i) {

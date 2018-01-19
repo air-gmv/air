@@ -31,7 +31,7 @@
  * @brief SPARC Initial stack
  * @ingroup cpu_sparc
  */
-xky_u8_t sparc_initial_stack[SPARC_STACK_MINIMUM_SIZE * PMK_MAX_CORES];
+air_u8_t sparc_initial_stack[SPARC_STACK_MINIMUM_SIZE * PMK_MAX_CORES];
 
 /**
  * @brief Initializes the core context
@@ -40,7 +40,7 @@ xky_u8_t sparc_initial_stack[SPARC_STACK_MINIMUM_SIZE * PMK_MAX_CORES];
  *
  * This function initializes the architecture dependent part of the core context
  */
-void core_context_init(core_context_t *context, xky_u32_t id) {
+void core_context_init(core_context_t *context, air_u32_t id) {
 
     /* core id */
     context->vcpu.id = id;
@@ -50,7 +50,7 @@ void core_context_init(core_context_t *context, xky_u32_t id) {
     context->isr_nesting_level = 1;
 
     /* allocate context stack */
-    xky_uptr_t stack_space = (xky_uptr_t)pmk_workspace_alloc(CONTEXT_STACK_SIZE);
+    air_uptr_t stack_space = (air_uptr_t)pmk_workspace_alloc(CONTEXT_STACK_SIZE);
     context->isf_stack_pointer =
             (void *)(stack_space +
                      CONTEXT_STACK_SIZE -
@@ -68,7 +68,7 @@ void core_context_init(core_context_t *context, xky_u32_t id) {
     context->ipc_event          = PMK_IPC_NO_ACTION;
 
     /* initialize the System State and HM event */
-    context->state = XKY_STATE_MODULE_EXEC;
+    context->state = AIR_STATE_MODULE_EXEC;
     pmk_hm_event_t *hm_event = (pmk_hm_event_t *) \
             pmk_workspace_alloc(sizeof(pmk_hm_event_t));
     context->hm_event = hm_event;
@@ -109,7 +109,7 @@ void core_context_setup_idle(core_context_t *context) {
             (sparc_interrupt_stack_frame_t *)(context->isf_stack_pointer);
 
     /* setup the space for the 1st window and the restore point */
-    isf->i6_fp = (xky_u32_t)isf;
+    isf->i6_fp = (air_u32_t)isf;
     context->stack_pointer = (void *)isf;
 
     /* this context doesn't need to be saved */
@@ -121,8 +121,8 @@ void core_context_setup_idle(core_context_t *context) {
     isf->psr |= SPARC_PSR_PS_MASK;      /* the idle loop is in the PMK */
 
     /* setup the context entry point */
-    isf->pc   = (xky_u32_t)bsp_idle_loop;
-    isf->nkpc = (xky_u32_t)bsp_idle_loop + 0x00000004;
+    isf->pc   = (air_u32_t)bsp_idle_loop;
+    isf->nkpc = (air_u32_t)bsp_idle_loop + 0x00000004;
 }
 
 /**
@@ -142,7 +142,7 @@ void core_context_setup_partition(
     context->vcpu.mmu_fsr = 0;
 
     /* initialize the System State and HM event */
-    context->state = XKY_STATE_PARTITION_INIT;
+    context->state = AIR_STATE_PARTITION_INIT;
     pmk_hm_event_t *hm_event = (pmk_hm_event_t *)context->hm_event;
     hm_event->nesting = 0;
 
@@ -164,14 +164,14 @@ void core_context_setup_partition(
         isf->psr = SPARC_PSR_S_MASK;
 
         /* check if the partition have supervisor permissions */
-        if ((partition->permissions & XKY_PERMISSION_SUPERVISOR) != 0) {
+        if ((partition->permissions & AIR_PERMISSION_SUPERVISOR) != 0) {
 
             isf->psr |= SPARC_PSR_PS_MASK;
         }
 
 #if PMK_FPU_SUPPORT
         /* check if the partition have floating point permissions */
-        if ((partition->permissions & XKY_PERMISSION_FPU_CONTROL) != 0) {
+        if ((partition->permissions & AIR_PERMISSION_FPU_CONTROL) != 0) {
 
             /* enable FPU and enable virtual FPU */
             isf->psr |= SPARC_PSR_EF_MASK;
@@ -180,25 +180,25 @@ void core_context_setup_partition(
 #endif
 
         /* setup the partition entry point */
-        isf->pc   = (xky_u32_t)context->entry_point;
-        isf->nkpc = (xky_u32_t)context->entry_point + 0x04;
+        isf->pc   = (air_u32_t)context->entry_point;
+        isf->nkpc = (air_u32_t)context->entry_point + 0x04;
 
         /* setup the stack pointer of the partition */
-        xky_u32_t stack_high =
-                (xky_uptr_t)partition->mmap->v_addr + partition->mmap->size;
+        air_u32_t stack_high =
+                (air_uptr_t)partition->mmap->v_addr + partition->mmap->size;
         stack_high &= ~(SPARC_STACK_ALIGNMENT - 1);
         isf->i6_fp = stack_high;
 
 
         /* setup the initial cache state */
         switch (partition->init_cache) {
-            case XKY_CACHE_ALL:
+            case AIR_CACHE_ALL:
                 context->vcpu.cctrl = 0xF;
                 break;
-            case XKY_CACHE_DATA:
+            case AIR_CACHE_DATA:
                 context->vcpu.cctrl = 0xC;
                 break;
-            case XKY_CACHE_INSTRUCTION:
+            case AIR_CACHE_INSTRUCTION:
                 context->vcpu.cctrl = 0x3;
                 break;
             default:
@@ -220,8 +220,8 @@ void core_context_setup_partition(
  */
 void core_context_add_hm_event(
         core_context_t *context,
-        xky_state_e state_id,
-        xky_error_e error_id) {
+        air_state_e state_id,
+        air_error_e error_id) {
 
     /* get the current core HM event */
     pmk_hm_event_t *hm_event = (pmk_hm_event_t *)context->hm_event;
@@ -230,7 +230,7 @@ void core_context_add_hm_event(
     if (0 == hm_event->nesting) {
 
         hm_event->previous_state_id = context->state;
-        context->state = XKY_STATE_PARTITION_HM;
+        context->state = AIR_STATE_PARTITION_HM;
     }
 
     /* increment the HM event nesting and save the state */

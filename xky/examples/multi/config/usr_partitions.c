@@ -59,12 +59,12 @@ pmk_partition_t usr_partition_table[USR_PARTITIONS] = \
         .id          = 1,
         .name        = "p0",
         .permissions = \
-            XKY_PERMISSION_CACHE_CONTROL |
-            XKY_PERMISSION_GLOBAL_TIME |
-            XKY_PERMISSION_SET_TOD |
-            XKY_PERMISSION_SET_PARTITION_MODE,
+            AIR_PERMISSION_CACHE_CONTROL |
+            AIR_PERMISSION_GLOBAL_TIME |
+            AIR_PERMISSION_SET_TOD |
+            AIR_PERMISSION_SET_PARTITION_MODE,
         .cores       = 1,
-        .init_cache  = XKY_CACHE_ALL,
+        .init_cache  = AIR_CACHE_ALL,
         .hm_table    = usr_hm_partition0_table,
         .mmap        = &usr_partitions_memmap[0],
         .elf         = &usr_partitions_data[0],
@@ -78,12 +78,12 @@ pmk_partition_t usr_partition_table[USR_PARTITIONS] = \
         .id          = 2,
         .name        = "p1",
         .permissions = \
-            XKY_PERMISSION_CACHE_CONTROL |
-            XKY_PERMISSION_GLOBAL_TIME |
-            XKY_PERMISSION_SET_TOD |
-            XKY_PERMISSION_SET_PARTITION_MODE,
+            AIR_PERMISSION_CACHE_CONTROL |
+            AIR_PERMISSION_GLOBAL_TIME |
+            AIR_PERMISSION_SET_TOD |
+            AIR_PERMISSION_SET_PARTITION_MODE,
         .cores       = 1,
-        .init_cache  = XKY_CACHE_ALL,
+        .init_cache  = AIR_CACHE_ALL,
         .hm_table    = usr_hm_partition1_table,
         .mmap        = &usr_partitions_memmap[1],
         .elf         = &usr_partitions_data[1],

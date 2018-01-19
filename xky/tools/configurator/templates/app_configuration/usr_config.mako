@@ -1,9 +1,9 @@
 <%
-    import xky
+    import air
     import utils.templates as makoutils
 %>\
 %if header:
-${makoutils.cfileHeader('usr_config.h', 'General XKY application configuration')}
+${makoutils.cfileHeader('usr_config.h', 'General AIR application configuration')}
 
 #define USR_US_PER_TICK                                         (${int((1.0 / configuration.ticks_per_second) * 1E6)})
 #define USR_PARTITIONS                                          (${len(configuration.partitions)})
@@ -12,7 +12,7 @@ ${makoutils.cfileHeader('usr_config.h', 'General XKY application configuration')
 #define USR_CORES                                               (${configuration.core_count})
 #define USR_SHARED_MEMORY                                       (${len(configuration.shared_memory)})
 %else:
-${makoutils.cfileHeader('usr_config.c', 'General XKY application configuration')}
+${makoutils.cfileHeader('usr_config.c', 'General AIR application configuration')}
 
 #include <pmk.h>
 #include <ports.h>
@@ -54,7 +54,7 @@ extern pmk_hm_action_list_t *usr_hm_module_table[PMK_HM_STATES_COUNT];
 extern arch_configuration_t arch_configuration;
 
 /**
- * @brief XKY configuration
+ * @brief AIR configuration
  */
 const pmk_configuration_t __config = \
 {

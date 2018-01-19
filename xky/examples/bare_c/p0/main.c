@@ -4,7 +4,7 @@
  * @brief Hello! Is it me you're looking for?
  */
 
-#include <xky.h>
+#include <air.h>
 #include <math.h>
 
 char message[] = {
@@ -98,6 +98,6 @@ char message[] = {
  */
 void entry_point() {
 
-    xky_syscall_print(message, sizeof(message));
+    air_syscall_print(message, sizeof(message));
     for (;;);
 }

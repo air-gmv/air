@@ -10,7 +10,7 @@
 #define ASM
 #endif
 
-#include <xky.h>
+#include <air.h>
 #include <asm.h>
 #include <sparc.h>
 
@@ -20,8 +20,8 @@
     GLOBAL(sparc_isr_handler)
 SYM(sparc_isr_handler):
 
-    set     XKY_SYSCALL_SPARC_GET_PSR, %o5
-    ta      XKY_SYSCALL_SPARC_TRAP
+    set     AIR_SYSCALL_SPARC_GET_PSR, %o5
+    ta      AIR_SYSCALL_SPARC_TRAP
     mov     %o0, %l0
 
 save_isf:
@@ -49,8 +49,8 @@ save_isf:
     mov     %sp, %g6                            ! 2nd arg to ISR Handler
 
     /* get ISR handler */
-    set     XKY_SYSCALL_GET_CORE_ID, %o5
-    ta      XKY_SYSCALL_OS_TRAP
+    set     AIR_SYSCALL_GET_CORE_ID, %o5
+    ta      AIR_SYSCALL_OS_TRAP
 
     set     isr_table, %g4
     umul    %o0, 0x04, %o0
@@ -72,8 +72,8 @@ skip_user_handler:
 
     /* disable traps */
     mov     %l0, %o0
-    set     XKY_SYSCALL_SPARC_SET_PSR, %o5
-    ta      XKY_SYSCALL_SPARC_TRAP         ! **** DISABLE TRAPS ****
+    set     AIR_SYSCALL_SPARC_SET_PSR, %o5
+    ta      AIR_SYSCALL_SPARC_TRAP         ! **** DISABLE TRAPS ****
 
     /* return to user-land */
     ld      [%sp + ISF_Y_OFFSET], %l5      ! restore y
@@ -96,15 +96,15 @@ skip_user_handler:
     ldd     [%sp + ISF_I6_FP_OFFSET], %i6 ! restore i6/fp, i7
 
     mov     %l0, %o0
-    set     XKY_SYSCALL_SPARC_SET_PSR, %o5
-    ta      XKY_SYSCALL_SPARC_TRAP        ! **** DISABLE TRAPS ****
+    set     AIR_SYSCALL_SPARC_SET_PSR, %o5
+    ta      AIR_SYSCALL_SPARC_TRAP        ! **** DISABLE TRAPS ****
 
     /* restore the cache state  */
-    set     XKY_SYSCALL_SPARC_RESTORE_CACHE_REGISTER, %o5
-    ta      XKY_SYSCALL_SPARC_TRAP
+    set     AIR_SYSCALL_SPARC_RESTORE_CACHE_REGISTER, %o5
+    ta      AIR_SYSCALL_SPARC_TRAP
 
     /* Return from trap */
     mov     %l1, %o0                    ! transfer control and
     mov     %l2, %o1                    ! go back to tasks window
-    set     XKY_SYSCALL_SPARC_RETT, %o5
-    ta      XKY_SYSCALL_SPARC_TRAP
+    set     AIR_SYSCALL_SPARC_RETT, %o5
+    ta      AIR_SYSCALL_SPARC_TRAP
