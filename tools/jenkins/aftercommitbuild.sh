@@ -3,8 +3,7 @@
 # a script file to run by jenkins each time there is a commit to test it
 # 
 
-#cd ./air
-cd ./xky
+cd ./air
 
 pwd=`pwd`
 export PATH=$PATH:/opt/rtems/5/bin:$pwd
