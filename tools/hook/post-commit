@@ -1,0 +1,2 @@
+#!/bin/sh
+curl --user assert:assertvm http://localhost:8080/job/git-commit-check/build?token=e3cbb98ff0193b98
