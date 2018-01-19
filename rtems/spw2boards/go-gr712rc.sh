@@ -1,0 +1,9 @@
+rm -rf o-optimize-gr712rc/
+export RTEMS_MAKEFILE_PATH=/opt/rtems/sparc-rtems4.12/gr712rc
+make -f Makefile-4.12
+#cp o-optimize/occan.exe /home/assert/Desktop/C_DRIVE/vmshare/spw.exe
+#tar -zcvf l.tar.gz o-optimize/ethgmv.exe 
+#sshpass -p "$(AIR_RUNNER_PASSWORD)" scp l.tar.gz $(AIR_RUNNER_USER)@$(AIR_RUNNER_IP):~/drivers
+
+#sshpass -p "$(AIR_RUNNER_PASSWORD)" scp o-optimize/occan.exe $(AIR_RUNNER_USER)@$(AIR_RUNNER_IP):~/drivers/rtemspw.exe
+

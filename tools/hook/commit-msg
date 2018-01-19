@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+message_file = ARGV[0]
+message = File.read(message_file)
+
+$regex = /#(\d+)/
+if !$regex.match(message)
+  puts "[POLICY ERROR] Your message is not formatted correctly, add gmvmine item ID !"
+  exit 1
+end
+
+$regex = /refs|references|IssueID|fixes|closes/i
+if !$regex.match(message)
+  puts "[POLICY ERROR] Your message is not formatted correctly, use 'refs', 'references', 'IssueID', 'fixes' and/or 'closes' !"
+  exit 1
+end
