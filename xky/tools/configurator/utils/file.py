@@ -6,6 +6,7 @@ import os
 import re
 import utils
 import terminal as terminalutils
+import logging
 
 from hashlib import sha256
 from shutil import copy2, rmtree
@@ -35,7 +36,7 @@ def findFiles(pwd, extension, header, n = 10):
                 if fdHeader.find(header) >= 0: files.append(os.path.join(pwd, f))
 
             except:
-                logger.logger.exception("Exception, See details below")
+                logging.exception("Exception, See details below")
                 pass
 
     return files
@@ -149,7 +150,7 @@ def genFileS256Hash(file_path):
     try:
         fd = open(file_path, 'r+')
     except:
-        logger.logger.exception("Exception, See details below")
+        logging.exception("Exception, See details below")
         return ''
 
     # Create hash
@@ -215,7 +216,7 @@ def loadFileRecord(file_name):
     try:
         with open(file_name) as fd: contents = fd.readlines()
     except:
-        logger.logger.exception("Exception, See details below")
+        logging.debug("Exception, See details below")
         return None
 
     # Parse the cleaning record
@@ -330,7 +331,7 @@ def runCleaningRecord(record, logger, followDefault = False):
             try:
                 rmtree(d)
             except:
-                logger.logger.exception("Exception, See details below")
+                logging.exception("Exception, See details below")
                 continue
 
     # remove configuration record

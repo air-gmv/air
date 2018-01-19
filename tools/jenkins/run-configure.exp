@@ -1,0 +1,21 @@
+#!/usr/bin/expect -f
+#
+# an expect script to manage the running of the `configure` script, it will automatically select a SPARC-LEON4 CPU with enabled FPU.
+# 
+
+# to log everything expect is receiving/inspecting
+#exp_internal 1
+
+spawn sh -c "./configure 2>&1"
+    expect "sparc" {
+        send "0\r"
+    }
+    expect "leon4" {
+        send "2\r"
+    }
+    expect "Disabled" {
+        send "0\r"
+    }
+interact
+exit
+
