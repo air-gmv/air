@@ -15,23 +15,23 @@ Makefile.rej
 *.pyc
 
 # Install directory
-xky/install
+air/install
 o-optimize-*/
 b-*/
 
 # 'configure' generated files
 .config
-xky/.air_config
+air/.air_config
 
 # Examples generated files
-xky/examples/**/*.a
-xky/examples/**/*.ld
-xky/examples/**/config
-xky/examples/**/go.sh
-xky/examples/**/init.c
-xky/examples/**/init.template
-xky/examples/**/linkcmds.inc
-xky/examples/**/rtems_config.h
+air/examples/**/*.a
+air/examples/**/*.ld
+air/examples/**/config
+air/examples/**/go.sh
+air/examples/**/init.c
+air/examples/**/init.template
+air/examples/**/linkcmds.inc
+air/examples/**/rtems_config.h
 
 # log/tags/tmp files
 *.log
