@@ -1,6 +1,6 @@
 <%
     import os
-    import xky
+    import air
     import utils.templates as makoutils
 
     mmap = os_configuration.get_memory_map()

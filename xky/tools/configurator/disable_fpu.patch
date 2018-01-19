@@ -1,7 +1,7 @@
-diff --git a/xky/pos/rtems-impr/rtems-impr/make/compilers/gcc-target-default.cfg b/xky/pos/rtems-impr/rtems-impr/make/compilers/gcc-target-default.cfg
+diff --git a/air/pos/rtems-impr/rtems-impr/make/compilers/gcc-target-default.cfg b/air/pos/rtems-impr/rtems-impr/make/compilers/gcc-target-default.cfg
 index a5ef8f0..66c1e65 100755
---- a/xky/pos/rtems-impr/rtems-impr/make/compilers/gcc-target-default.cfg
-+++ b/xky/pos/rtems-impr/rtems-impr/make/compilers/gcc-target-default.cfg
+--- a/air/pos/rtems-impr/rtems-impr/make/compilers/gcc-target-default.cfg
++++ b/air/pos/rtems-impr/rtems-impr/make/compilers/gcc-target-default.cfg
 @@ -124,7 +124,7 @@ ${ARCH}/%.o: %.c
  
  # special compilation for source code compiled with software floating point
@@ -11,10 +11,10 @@ index a5ef8f0..66c1e65 100755
  
  ${ARCH}/%.o: %.cc
  	${COMPILE.cc} $(AM_CPPFLAGS) $(AM_CXXFLAGS) -o $@ $<
-diff --git a/xky/pos/rtems-impr/rtems-impr/make/custom/erc32.cfg b/xky/pos/rtems-impr/rtems-impr/make/custom/erc32.cfg
+diff --git a/air/pos/rtems-impr/rtems-impr/make/custom/erc32.cfg b/air/pos/rtems-impr/rtems-impr/make/custom/erc32.cfg
 index a9f6255..711745b 100755
---- a/xky/pos/rtems-impr/rtems-impr/make/custom/erc32.cfg
-+++ b/xky/pos/rtems-impr/rtems-impr/make/custom/erc32.cfg
+--- a/air/pos/rtems-impr/rtems-impr/make/custom/erc32.cfg
++++ b/air/pos/rtems-impr/rtems-impr/make/custom/erc32.cfg
 @@ -15,7 +15,7 @@ RTEMS_BSP_FAMILY=erc32
  
  #  This contains the compiler options necessary to select the CPU model
@@ -24,10 +24,10 @@ index a9f6255..711745b 100755
  
  
  
-diff --git a/xky/pos/rtems-impr/rtems-impr/make/custom/leon2.cfg b/xky/pos/rtems-impr/rtems-impr/make/custom/leon2.cfg
+diff --git a/air/pos/rtems-impr/rtems-impr/make/custom/leon2.cfg b/air/pos/rtems-impr/rtems-impr/make/custom/leon2.cfg
 index ea6afc0..f723d64 100755
---- a/xky/pos/rtems-impr/rtems-impr/make/custom/leon2.cfg
-+++ b/xky/pos/rtems-impr/rtems-impr/make/custom/leon2.cfg
+--- a/air/pos/rtems-impr/rtems-impr/make/custom/leon2.cfg
++++ b/air/pos/rtems-impr/rtems-impr/make/custom/leon2.cfg
 @@ -13,7 +13,7 @@ RTEMS_BSP_FAMILY=leon2
  
  #  This contains the compiler options necessary to select the CPU model
@@ -46,10 +46,10 @@ index ea6afc0..f723d64 100755
  		$(LINK_OBJS) $(LINK_LIBS) 
  	$(NM) -g -n $(basename $@).exe > $(basename $@).num
  	$(SIZE) $(basename $@).exe
-diff --git a/xky/pos/rtems-impr/rtems-impr/make/custom/leon3.cfg b/xky/pos/rtems-impr/rtems-impr/make/custom/leon3.cfg
+diff --git a/air/pos/rtems-impr/rtems-impr/make/custom/leon3.cfg b/air/pos/rtems-impr/rtems-impr/make/custom/leon3.cfg
 index 8bda901..6be8865 100755
---- a/xky/pos/rtems-impr/rtems-impr/make/custom/leon3.cfg
-+++ b/xky/pos/rtems-impr/rtems-impr/make/custom/leon3.cfg
+--- a/air/pos/rtems-impr/rtems-impr/make/custom/leon3.cfg
++++ b/air/pos/rtems-impr/rtems-impr/make/custom/leon3.cfg
 @@ -16,7 +16,7 @@ RTEMS_BSP_FAMILY=leon3
  #  This contains the compiler options necessary to select the CPU model
  #  and (hopefully) optimize for it.

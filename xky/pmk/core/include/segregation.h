@@ -38,11 +38,11 @@
 typedef enum {
 
     /** User-level read permission                              */
-    PMK_MMU_R           = XKY_MEMORY_ATTRIBUTE_READ,
+    PMK_MMU_R           = AIR_MEMORY_ATTRIBUTE_READ,
     /** User-level write permission                             */
-    PMK_MMU_W           = XKY_MEMORY_ATTRIBUTE_WRITE,
+    PMK_MMU_W           = AIR_MEMORY_ATTRIBUTE_WRITE,
     /** User-level executable permission                        */
-    PMK_MMU_E           = XKY_MEMORY_ATTRIBUTE_EXECUTE,
+    PMK_MMU_E           = AIR_MEMORY_ATTRIBUTE_EXECUTE,
     /** Supervisor-level read permission                        */
     PMK_MMU_SR          = 0x08,
     /** Supervisor-level write permission                       */
@@ -63,8 +63,8 @@ typedef struct {
 
     void *p_addr;                    /**< Physical address                   */
     void *v_addr;                    /**< Virtual address                    */
-    xky_u32_t p_unit;                 /**< Page unit                          */
-    xky_sz_t size;                     /**< Size of the partition              */
+    air_u32_t p_unit;                 /**< Page unit                          */
+    air_sz_t size;                     /**< Size of the partition              */
 
 } pmk_mmap_t;
 
@@ -119,11 +119,11 @@ void pmk_segregation_int(void);
 /**
  * @brief End of the kernel memory area (from link commands)
  */
-extern xky_u32_t xky_kernel_memory_end;
+extern air_u32_t air_kernel_memory_end;
 /**
  * @brief Begin of the kernel memory area (from link commands)
  */
-extern xky_u32_t xky_kernel_memory_start;
+extern air_u32_t air_kernel_memory_start;
 
 /** @} */
 

@@ -26,7 +26,7 @@ amba_confarea_t amba_confarea;
 extern void leon_restart_core();
 extern void leon_shutdown_core();
 extern void sparc_trap_table_int(void);
-extern xky_u32_t sparc_enable_preemption(xky_u32_t pil);
+extern air_u32_t sparc_enable_preemption(air_u32_t pil);
 
 
 /**
@@ -38,7 +38,7 @@ extern xky_u32_t sparc_enable_preemption(xky_u32_t pil);
 int bsp_core_init(void) {
 
     int rc = 0;
-    xky_u32_t core_id = bsp_get_core_id();
+    air_u32_t core_id = bsp_get_core_id();
 
     /* primary core, will initialize the BSP */
     if (core_id == 0) {
@@ -80,7 +80,7 @@ void bsp_restart_core(pmk_core_ctrl_t *core) {
 
 void bsp_core_ready(void) {
 
-    xky_u32_t core_id = bsp_get_core_id();
+    air_u32_t core_id = bsp_get_core_id();
 
     /* primary core, will enable more BSP specific components */
     if (core_id == 0) {
@@ -113,9 +113,9 @@ void bsp_segregation(pmk_partition_t *partition) {
     /* map the PMK memory region for supervisor access */
     cpu_segregation_map_memory(
             partition->mmu_ctrl,
-            &xky_kernel_memory_start,
-            &xky_kernel_memory_start,
-            (xky_uptr_t)&xky_kernel_memory_end - (xky_uptr_t)&xky_kernel_memory_start,
+            &air_kernel_memory_start,
+            &air_kernel_memory_start,
+            (air_uptr_t)&air_kernel_memory_end - (air_uptr_t)&air_kernel_memory_start,
             0x01000000,
             PMK_MMU_SR | PMK_MMU_SW | PMK_MMU_SE | PMK_MMU_CACHEABLE);
 

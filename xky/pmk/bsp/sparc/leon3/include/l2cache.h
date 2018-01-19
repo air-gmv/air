@@ -102,7 +102,7 @@ void l2cache_set_replacement_policy(l2cache_reppol_e repol);
  * @param mode Flush mode
  * @param disable Flag to disable the cache
  */
-void l2cache_flush(xky_uptr_t address, l2cache_rflush_mode_e mode, int disable);
+void l2cache_flush(air_uptr_t address, l2cache_rflush_mode_e mode, int disable);
 
 /**
  * @brief Set L2 Cache Write Policy

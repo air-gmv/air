@@ -34,7 +34,7 @@ void test(PARTITION_ID_TYPE self_id) {
 	char message[18]= "This is sample 0\0";
 
 	/* get the number of ticks per second */
-	int tps = 1000000 / xky_syscall_get_us_per_tick();
+	int tps = 1000000 / air_syscall_get_us_per_tick();
 	pprintf("TPS %i\n", tps);
 
 	RETURN_CODE_TYPE rc = NO_ERROR;

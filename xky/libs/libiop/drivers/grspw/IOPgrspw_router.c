@@ -9,7 +9,7 @@
  */
 
 #include <bsp.h>
-#include <xky.h>
+#include <air.h>
 #include <rtems.h>
 
 #include <amba.h>

@@ -79,10 +79,10 @@ typedef pmk_hm_action_list_t pmk_hm_action_table_t[PMK_HM_STATES_COUNT];
  */
 typedef struct {
 
-    xky_error_e error_id;              /**< HM last error Id                 */
-    xky_state_e state_id;               /**< HM last state Id                 */
-    xky_state_e previous_state_id;      /**< State prior to the 1st HM event  */
-    xky_u32_t nesting;                   /**< HM error nesting                 */
+    air_error_e error_id;              /**< HM last error Id                 */
+    air_state_e state_id;               /**< HM last state Id                 */
+    air_state_e previous_state_id;      /**< State prior to the 1st HM event  */
+    air_u32_t nesting;                   /**< HM error nesting                 */
 
 } pmk_hm_event_t;
 
@@ -94,7 +94,7 @@ void pmk_hm_init();
  * @brief Health-Monitor ISR handler
  * @param error_id current error id to be handled
  */
-void pmk_hm_isr_handler(xky_error_e error_id);
+void pmk_hm_isr_handler(air_error_e error_id);
 /**
  * @brief Set core system state
  * @param state new system state
@@ -102,7 +102,7 @@ void pmk_hm_isr_handler(xky_error_e error_id);
  * By setting the system state, the behavior of the Health-Monitor is
  * changed according to the system configuration
  */
-void pmk_hm_set_core_state(xky_state_e state);
+void pmk_hm_set_core_state(air_state_e state);
 /**
  * @brief Set all cores system state
  * @param state new system state
@@ -110,7 +110,7 @@ void pmk_hm_set_core_state(xky_state_e state);
  * By setting the system state, the behavior of the Health-Monitor is
  * changed according to the system configuration
  */
-void pmk_hm_set_state(xky_state_e state);
+void pmk_hm_set_state(air_state_e state);
 /**
  * @brief Gets the Health-Monitor System State table
  * @returns Health-Monitor System State table pointer
@@ -124,13 +124,13 @@ pmk_hm_action_list_t **pmk_hm_get_module_hm_table(void);
 
 #else /* ASM */
 
-#define XKY_STATE_MODULE_INIT                                   0x00
-#define XKY_STATE_MODULE_EXEC                                   0x01
-#define XKY_STATE_PARTITION_INIT                                0x02
-#define XKY_STATE_PARTITION_EXEC                                0x03
-#define XKY_STATE_PARTITION_PROC                                0x04
-#define XKY_STATE_PARTITION_HM                                  0x05
-#define XKY_STATE_MODULE_HM                                     0x06
+#define AIR_STATE_MODULE_INIT                                   0x00
+#define AIR_STATE_MODULE_EXEC                                   0x01
+#define AIR_STATE_PARTITION_INIT                                0x02
+#define AIR_STATE_PARTITION_EXEC                                0x03
+#define AIR_STATE_PARTITION_PROC                                0x04
+#define AIR_STATE_PARTITION_HM                                  0x05
+#define AIR_STATE_MODULE_HM                                     0x06
 
 #define PMK_ERROR_LEVEL_UNDEFINED                               0x01
 #define PMK_ERROR_LEVEL_MODULE                                  0x01
