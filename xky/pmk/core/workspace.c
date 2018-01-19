@@ -23,37 +23,37 @@
  * @brief Current workspace pointer
  * @ingroup pmk_workspace
  */
-static xky_uptr_t current_pointer;
+static air_uptr_t current_pointer;
 /**
  * @brief Initial workspace memory area
  * @ingroup pmk_workspace
  */
-extern xky_u32_t xky_workspace;
+extern air_u32_t air_workspace;
 /**
  * @brief End of the workspace memory area
  * @ingroup pmk_workspace
  */
-extern xky_u32_t xky_kernel_memory_end;
+extern air_u32_t air_kernel_memory_end;
 
 /**
  * @brief PMK Shared area
  */
-pmk_sharedarea_t xky_shared_area;
+pmk_sharedarea_t air_shared_area;
 
 
 /**
  * @brief Workspace size
  */
-static xky_sz_t workspace_size;
+static air_sz_t workspace_size;
 
-void *pmk_workspace_alloc(xky_sz_t size) {
+void *pmk_workspace_alloc(air_sz_t size) {
 
     /* get a block of memory */
     void *block = (void *)ADDR_ALIGN(current_pointer, CPU_CRITICAL_ALIGN);
-    current_pointer = (xky_uptr_t)block + size;
+    current_pointer = (air_uptr_t)block + size;
 
     /* check if the memory is available*/
-    xky_sz_t used = (xky_sz_t)(current_pointer - (xky_uptr_t)&xky_workspace);
+    air_sz_t used = (air_sz_t)(current_pointer - (air_uptr_t)&air_workspace);
     if (used > workspace_size) {
         printk(" - %i overhead\n", used - workspace_size);
         pmk_fatal_error(PMK_INTERNAL_ERROR_MEMORY, __func__, __FILE__, __LINE__);
@@ -62,14 +62,14 @@ void *pmk_workspace_alloc(xky_sz_t size) {
     return block;
 }
 
-void *pmk_workspace_aligned_alloc(xky_sz_t size, xky_u32_t align) {
+void *pmk_workspace_aligned_alloc(air_sz_t size, air_u32_t align) {
 
     /* get a block of memory */
     void *block = (void *)ADDR_ALIGN(current_pointer, align);
-    current_pointer = (xky_uptr_t)block + size;
+    current_pointer = (air_uptr_t)block + size;
 
     /* check if the memory is available*/
-    xky_sz_t used = (xky_sz_t)(current_pointer - (xky_uptr_t)&xky_workspace);
+    air_sz_t used = (air_sz_t)(current_pointer - (air_uptr_t)&air_workspace);
     if (used > workspace_size) {
         printk(" - %i overhead\n", used - workspace_size);
         pmk_fatal_error(PMK_INTERNAL_ERROR_MEMORY, __func__, __FILE__, __LINE__);
@@ -85,11 +85,11 @@ void pmk_workspace_init(void) {
 #endif
 
     /* clear shared area structure */
-    memset(&xky_shared_area, 0x0, sizeof(pmk_sharedarea_t));
+    memset(&air_shared_area, 0x0, sizeof(pmk_sharedarea_t));
 
     /* setup first pointer */
-    current_pointer = (xky_uptr_t)&xky_workspace;
-    workspace_size = ((xky_sz_t)&xky_kernel_memory_end - (xky_sz_t)&xky_workspace);
+    current_pointer = (air_uptr_t)&air_workspace;
+    workspace_size = ((air_sz_t)&air_kernel_memory_end - (air_sz_t)&air_workspace);
 
 #ifdef PMK_DEBUG
     printk("    initial memory block: 0x%08x\n", current_pointer);
@@ -100,7 +100,7 @@ void pmk_workspace_init(void) {
 #ifdef PMK_DEBUG
 void pmk_workspace_debug(void) {
 
-    xky_sz_t used = (xky_sz_t)(current_pointer - (xky_uptr_t)&xky_workspace);
+    air_sz_t used = (air_sz_t)(current_pointer - (air_uptr_t)&air_workspace);
     printk("    workspace usage: %i of %i\n\n", used, workspace_size);
     return;
 }

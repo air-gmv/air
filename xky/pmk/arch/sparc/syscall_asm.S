@@ -17,7 +17,7 @@
 #define ASM
 #endif
 
-#include <xky.h>
+#include <air.h>
 #include <pmk.h>
 #include <asm.h>
 #include <bsp.h>
@@ -37,7 +37,7 @@ SYM(sparc_os_syscall):
     add     %l2, 0x04, %l2
 
     /* check if the system call is valid */
-    cmp     %i5, XKY_SYSCALL_COUNT
+    cmp     %i5, AIR_SYSCALL_COUNT
     bgu     syscall_simple_return
     nop
 
@@ -93,7 +93,7 @@ syscall_branch_table:
  */
 syscall_get_core_id:
 
-    set     SYM(xky_shared_area), %l3                ! shared area
+    set     SYM(air_shared_area), %l3                ! shared area
     ld      [%l3 + SHAREDAREA_CORE_CTRL], %l3        ! core control area
 
     rd      %asr17, %l4
@@ -111,7 +111,7 @@ syscall_get_core_id:
  */
 syscall_boot_core:
 
-    set     SYM(xky_shared_area), %l3                ! shared area
+    set     SYM(air_shared_area), %l3                ! shared area
     ld      [%l3 + SHAREDAREA_CORE_CTRL], %l3        ! core control area
 
     rd      %asr17, %l4
@@ -154,7 +154,7 @@ syscall_boot_core:
  */
 syscall_get_us_per_tick:
 
-    set     xky_configuration, %l3                   ! xky configuration area
+    set     air_configuration, %l3                   ! air configuration area
     ba      syscall_simple_return
     ldd     [%l3 + USR_CONFIG_US_PER_TICK], %i0      ! micro seconds per tick
 
@@ -163,7 +163,7 @@ syscall_get_us_per_tick:
  */
 syscall_get_elapsed_ticks:
 
-    set     SYM(xky_shared_area), %l3                ! shared area
+    set     SYM(air_shared_area), %l3                ! shared area
     ld      [%l3 + SHAREDAREA_CORE_CTRL], %l3        ! core control area
 
     rd      %asr17, %l4
@@ -181,7 +181,7 @@ syscall_get_elapsed_ticks:
  */
 syscall_get_event:
 
-    set     SYM(xky_shared_area), %l3                ! shared area
+    set     SYM(air_shared_area), %l3                ! shared area
     ld      [%l3 + SHAREDAREA_CORE_CTRL], %l3        ! core control area
 
     rd      %asr17, %l4
@@ -201,7 +201,7 @@ syscall_get_event:
  */
 syscall_get_system_state:
 
-    set     SYM(xky_shared_area), %l3                ! shared area
+    set     SYM(air_shared_area), %l3                ! shared area
     ld      [%l3 + SHAREDAREA_CORE_CTRL], %l3        ! core control area
 
     rd      %asr17, %l4
@@ -219,7 +219,7 @@ syscall_get_system_state:
  */
 syscall_shutdown_module:
 
-    set     SYM(xky_shared_area), %l3                ! shared area
+    set     SYM(air_shared_area), %l3                ! shared area
     ld      [%l3 + SHAREDAREA_CORE_CTRL], %l3        ! core control area
 
     rd      %asr17, %l4
@@ -231,7 +231,7 @@ syscall_shutdown_module:
     ld      [%l4 + CORE_CTRL_PARTITION], %l4         ! current partition
     ld      [%l4 + PARTITION_PERMISSIONS], %l4   ! partition permissions
 
-    btst    XKY_PERMISSION_MODULE_CONTROL, %l4
+    btst    AIR_PERMISSION_MODULE_CONTROL, %l4
     bz      syscall_simple_return
     nop
     ta      0x0                                      ! "shutdown" module
@@ -251,7 +251,7 @@ syscall_simple_return:
  */
 syscall_no_error_return:
 
-    set     XKY_NO_ERROR, %i0                        ! set no error code
+    set     AIR_NO_ERROR, %i0                        ! set no error code
     mov     %l0, %psr                                ! restore partition PSR
     nop; nop; nop                                    ! WRPSR delay slots
     jmp     %l1                                      ! set PC
@@ -262,7 +262,7 @@ syscall_no_error_return:
  */
 syscall_invalid_config_return:
 
-    set     XKY_INVALID_CONFIG, %i0                  ! set invalid config code
+    set     AIR_INVALID_CONFIG, %i0                  ! set invalid config code
     mov     %l0, %psr                                ! restore partition PSR
     nop; nop; nop                                    ! WRPSR delay slots
     jmp     %l1                                      ! set PC

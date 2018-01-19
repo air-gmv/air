@@ -22,14 +22,14 @@
 		<!--  AMBA ports configuration
 		Important fields:
 			RXmax: maximum number of allowed bytes on the reception (N2X maximum is 0x1FFFFFC).
-					xky however limits this to 1520
+					air however limits this to 1520
 			PRO: Promiscuous mode. Set to 1 to ignore checking of the header byte and keep it in the msg
 			Timeout unused for SPW2 w/ DMA (N2X case)
 			RMAP = 0. At the moment RMAP not used. Dest also belongs to RMAP.
 			ProtID = 0. Not used at the moment.
 			TXD: number of transmition descriptors. Maximum = 64.
 			RXD: number of reception descriptors. Maximum = 128.
-			(T|R)Xsize unused on xky. Size of the buffer is always 1520.
+			(T|R)Xsize unused on air. Size of the buffer is always 1520.
 			Addr and Mask should be left as they are. Only in promiscuous mode they have not
 				meaning. They are used to confirm the header.
 			The Clk (Clkdivisor) is not used in the N2X.

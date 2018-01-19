@@ -1,5 +1,5 @@
 <%
-    import xky
+    import air
     import utils.templates as makoutils
     import parsers.a653.definitions as a653_definitions
 
@@ -32,12 +32,12 @@ ${makoutils.cfileHeader('usr_hm.c', 'Health-Monitor configuration')}
  */
 pmk_hm_level_list_t usr_hm_system_table[PMK_HM_STATES_COUNT] = ${'\\'}
 {
-% for i in range(xky.MIN_STATE_ID, xky.MAX_STATE_ID):
+% for i in range(air.MIN_STATE_ID, air.MAX_STATE_ID):
     {   /* ${a653_definitions.SYSTEM_STATE_STR.format(i)} */
-    % for j in range(xky.MIN_ERROR_ID, xky.MAX_ERROR_ID):
-        ${get_error_level(i, j)}${"," if j < xky.MAX_ERROR_ID - 1 else ""}
+    % for j in range(air.MIN_ERROR_ID, air.MAX_ERROR_ID):
+        ${get_error_level(i, j)}${"," if j < air.MAX_ERROR_ID - 1 else ""}
     % endfor
-    }${"," if i < xky.MAX_STATE_ID - 1 else ""}
+    }${"," if i < air.MAX_STATE_ID - 1 else ""}
 % endfor
 };
 
@@ -48,8 +48,8 @@ static pmk_hm_action_list_t usr_hm_module_entries[${len(configuration.module_hm_
 {
 % for i, system_state in enumerate(configuration.module_hm_table):
     {   /* ${system_state} */
-    % for j in range(xky.MIN_ERROR_ID, xky.MAX_ERROR_ID):
-        ${get_error_action(system_state, j)}${"," if j < xky.MAX_ERROR_ID - 1 else ""}
+    % for j in range(air.MIN_ERROR_ID, air.MAX_ERROR_ID):
+        ${get_error_action(system_state, j)}${"," if j < air.MAX_ERROR_ID - 1 else ""}
     % endfor
     }${"," if i < len(configuration.module_hm_table) - 1 else ""}
 % endfor
@@ -61,7 +61,7 @@ static pmk_hm_action_list_t usr_hm_module_entries[${len(configuration.module_hm_
 pmk_hm_action_list_t *usr_hm_module_table[PMK_HM_STATES_COUNT] = ${'\\'}
 {
 <% j = 0 %>\
-% for i in range(xky.MIN_STATE_ID, xky.MAX_STATE_ID):
+% for i in range(air.MIN_STATE_ID, air.MAX_STATE_ID):
 <%
     state_defined = [ s for s in configuration.module_hm_table if s.id == i  ]
 %>\
@@ -71,7 +71,7 @@ pmk_hm_action_list_t *usr_hm_module_table[PMK_HM_STATES_COUNT] = ${'\\'}
     % else:
     NULL\
     % endif
-${"," if i < xky.MAX_STATE_ID - 1 else ""}
+${"," if i < air.MAX_STATE_ID - 1 else ""}
 % endfor
 };
 %for i, partition in enumerate(configuration.partitions):
@@ -83,8 +83,8 @@ pmk_hm_action_list_t usr_hm_partition${i}_entries[${len(partition.hm_table)}] = 
 {
     % for j, system_state in enumerate(partition.hm_table):
     {   /* ${system_state} */
-        % for k in range(xky.MIN_ERROR_ID, xky.MAX_ERROR_ID):
-        ${get_error_action(system_state, k)}${"," if k < xky.MAX_ERROR_ID - 1 else ""}
+        % for k in range(air.MIN_ERROR_ID, air.MAX_ERROR_ID):
+        ${get_error_action(system_state, k)}${"," if k < air.MAX_ERROR_ID - 1 else ""}
         % endfor
     }${"," if j < len(partition.hm_table) - 1 else ""}
     % endfor
@@ -96,7 +96,7 @@ pmk_hm_action_list_t usr_hm_partition${i}_entries[${len(partition.hm_table)}] = 
 pmk_hm_action_list_t *usr_hm_partition${i}_table[PMK_HM_STATES_COUNT] = ${'\\'}
 {
 <% k = 0 %>\
-    % for j in range(xky.MIN_STATE_ID, xky.MAX_STATE_ID):
+    % for j in range(air.MIN_STATE_ID, air.MAX_STATE_ID):
 <%
     state_defined = [ s for s in partition.hm_table if s.id == j  ]
 %>\
@@ -106,7 +106,7 @@ pmk_hm_action_list_t *usr_hm_partition${i}_table[PMK_HM_STATES_COUNT] = ${'\\'}
         % else:
     NULL\
         % endif
-${"," if j < xky.MAX_STATE_ID - 1 else ""}
+${"," if j < air.MAX_STATE_ID - 1 else ""}
     % endfor
 };
 %endfor

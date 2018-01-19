@@ -46,8 +46,8 @@ void pmk_partitions_init(void) {
         partition->idx = i;
 
         /* Define partition mode and start condition */
-        partition->mode = XKY_MODE_COLD_START;
-        partition->start_condition = XKY_START_CONDITION_NORMAL;
+        partition->mode = AIR_MODE_COLD_START;
+        partition->start_condition = AIR_START_CONDITION_NORMAL;
 
         /* initialize the partition reset count */
         partition->restart_count = ~0;
@@ -66,7 +66,7 @@ void pmk_partitions_init(void) {
 
         /* allocate space for the partition virtual to real core mapping */
         partition->core_mapping =
-                pmk_workspace_alloc(sizeof(xky_u32_t) * PMK_MAX_CORES);
+                pmk_workspace_alloc(sizeof(air_u32_t) * PMK_MAX_CORES);
 
         /* initialize each core context */
         for (j = 0; j < PMK_MAX_CORES; ++j) {
@@ -123,10 +123,10 @@ void pmk_partition_start(pmk_partition_t *partition, core_context_t *context) {
  */
 void pmk_partition_halt(pmk_partition_t *partition) {
 
-    xky_u32_t i;
+    air_u32_t i;
 
     /* get current core */
-    xky_u32_t core_id = bsp_get_core_id();
+    air_u32_t core_id = bsp_get_core_id();
     for (i = 0; i < partition->cores; ++i) {
 
         /* partition is running */
@@ -168,9 +168,9 @@ void pmk_partition_restart(pmk_partition_t *partition) {
  * @param pid partition Id
  * @return partition configuration pointer if Id is valid, NULL otherwise
  */
-pmk_partition_t *pmk_get_partition_by_id(xky_identifier_t pid) {
+pmk_partition_t *pmk_get_partition_by_id(air_identifier_t pid) {
 
-    xky_u32_t i;
+    air_u32_t i;
     pmk_partition_t *found = NULL;
     pmk_list_t *list = pmk_get_usr_partitions();
     for(i = 0; i < list->length; ++i){
@@ -182,15 +182,15 @@ pmk_partition_t *pmk_get_partition_by_id(xky_identifier_t pid) {
     return found;
 }
 
-pmk_partition_t *pmk_get_partition_by_name(xky_name_ptr_t name) {
+pmk_partition_t *pmk_get_partition_by_name(air_name_ptr_t name) {
 
-    xky_u32_t i;
+    air_u32_t i;
     pmk_partition_t *found = NULL;
     pmk_list_t *list = pmk_get_usr_partitions();
     for(i = 0; i < list->length; ++i){
         pmk_partition_t *partition =
                 pmk_get_from_list(pmk_partition_t, list, i);
-        if (strncmp(name, partition->name, sizeof(xky_name_t)) == 0) {
+        if (strncmp(name, partition->name, sizeof(air_name_t)) == 0) {
             found = partition;
         }
     }

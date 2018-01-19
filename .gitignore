@@ -20,19 +20,23 @@ o-optimize-*/
 b-*/
 
 # 'configure' generated files
-xky/.xky_config
+.config
+xky/.air_config
 
 # Examples generated files
+xky/examples/**/*.a
+xky/examples/**/*.ld
 xky/examples/**/config
+xky/examples/**/go.sh
 xky/examples/**/init.c
+xky/examples/**/init.template
 xky/examples/**/linkcmds.inc
 xky/examples/**/rtems_config.h
-xky/examples/**/.config
-xky/examples/**/go.sh
 
 # log/tags/tmp files
 *.log
 .*.swp
+.*-swp
 tags
 
 

@@ -40,11 +40,11 @@
 typedef struct {
 
     /** Configuration magic                                                 */
-    xky_u32_t magic;
+    air_u32_t magic;
     /** Number of configured cores                                          */
-    xky_u32_t cores;
+    air_u32_t cores;
     /** Micro-seconds per tick                                              */
-    xky_clocktick_t us_per_tick;
+    air_clocktick_t us_per_tick;
     /** List of partitions                                                  */
     pmk_list_t partitions;
     /** List of schedules                                                   */
@@ -103,7 +103,7 @@ static inline  pmk_list_t *pmk_get_usr_channels(void) {
  * @brief Get the number of configured cores
  * @return Number of configured cores
  */
-static inline  xky_u32_t pmk_get_usr_configured_cores(void) {
+static inline  air_u32_t pmk_get_usr_configured_cores(void) {
 
     return pmk_configuration->cores;
 }
@@ -112,7 +112,7 @@ static inline  xky_u32_t pmk_get_usr_configured_cores(void) {
  * @brief Get the number of configured mirco-seconds per tick
  * @return Number of micro-seconds per tick
  */
-static inline  xky_u32_t pmk_get_usr_us_per_tick(void) {
+static inline  air_u32_t pmk_get_usr_us_per_tick(void) {
 
     return pmk_configuration->us_per_tick;
 }
@@ -121,7 +121,7 @@ static inline  xky_u32_t pmk_get_usr_us_per_tick(void) {
  * @brief Get the number of configured nano-seconds per tick
  * @return Number of nano-seconds per tick
  */
-static inline  xky_u32_t pmk_get_usr_ns_per_tick(void) {
+static inline  air_u32_t pmk_get_usr_ns_per_tick(void) {
 
     return pmk_configuration->us_per_tick * 1000;
 }

@@ -141,7 +141,7 @@ Disassembly of section .text:
 
 410001cc <hm_isr_handler>:
 410001cc:	9d e3 bf 98 	save  %sp, -104, %sp
-410001d0:	40 00 17 fb 	call  410061bc <xky_syscall_get_hm_event>
+410001d0:	40 00 17 fb 	call  410061bc <air_syscall_get_hm_event>
 410001d4:	90 07 bf f8 	add  %fp, -8, %o0
 410001d8:	81 c7 e0 08 	ret 
 410001dc:	81 e8 00 00 	restore 
@@ -165,7 +165,7 @@ Disassembly of section .text:
 
 4100021c <test2>:
 4100021c:	9d e3 bf a0 	save  %sp, -96, %sp
-41000220:	40 00 17 97 	call  4100607c <xky_syscall_get_us_per_tick>
+41000220:	40 00 17 97 	call  4100607c <air_syscall_get_us_per_tick>
 41000224:	31 10 40 18 	sethi  %hi(0x41006000), %i0
 41000228:	94 10 00 08 	mov  %o0, %o2
 4100022c:	96 10 00 09 	mov  %o1, %o3
@@ -457,7 +457,7 @@ Disassembly of section .text:
 41000674:	03 10 40 19 	sethi  %hi(0x41006400), %g1
 41000678:	40 00 04 c1 	call  4100197c <_Thread_Start_multitasking>
 4100067c:	c4 20 63 90 	st  %g2, [ %g1 + 0x390 ]	! 41006790 <_System_state_Current>
-41000680:	40 00 16 e3 	call  4100620c <xky_sparc_enable_interrupts>
+41000680:	40 00 16 e3 	call  4100620c <air_sparc_enable_interrupts>
 41000684:	81 e8 00 00 	restore 
 41000688:	01 00 00 00 	nop 
 
@@ -578,7 +578,7 @@ Disassembly of section .text:
 41000848:	9d e3 bf a0 	save  %sp, -96, %sp
 4100084c:	25 10 40 19 	sethi  %hi(0x41006400), %l2
 41000850:	a0 10 00 18 	mov  %i0, %l0
-41000854:	40 00 16 6a 	call  410061fc <xky_sparc_disable_interrupts>
+41000854:	40 00 16 6a 	call  410061fc <air_sparc_disable_interrupts>
 41000858:	c0 24 a3 90 	clr  [ %l2 + 0x390 ]
 4100085c:	b0 10 00 08 	mov  %o0, %i0
 41000860:	80 a6 60 00 	cmp  %i1, 0
@@ -847,7 +847,7 @@ Disassembly of section .text:
 
 41000c34 <_Chain_Append>:
 41000c34:	9d e3 bf a0 	save  %sp, -96, %sp
-41000c38:	40 00 15 71 	call  410061fc <xky_sparc_disable_interrupts>
+41000c38:	40 00 15 71 	call  410061fc <air_sparc_disable_interrupts>
 41000c3c:	01 00 00 00 	nop 
 41000c40:	82 06 20 04 	add  %i0, 4, %g1
 41000c44:	c2 26 40 00 	st  %g1, [ %i1 ]
@@ -855,7 +855,7 @@ Disassembly of section .text:
 41000c4c:	f2 26 20 08 	st  %i1, [ %i0 + 8 ]
 41000c50:	c2 26 60 04 	st  %g1, [ %i1 + 4 ]
 41000c54:	f2 20 40 00 	st  %i1, [ %g1 ]
-41000c58:	40 00 15 6d 	call  4100620c <xky_sparc_enable_interrupts>
+41000c58:	40 00 15 6d 	call  4100620c <air_sparc_enable_interrupts>
 41000c5c:	91 e8 00 08 	restore  %g0, %o0, %o0
 41000c60:	01 00 00 00 	nop 
 
@@ -888,7 +888,7 @@ Disassembly of section .text:
 41000cc0:	80 a4 a0 03 	cmp  %l2, 3
 41000cc4:	02 80 00 11 	be  41000d08 <_Internal_error_Occurred+0x68>
 41000cc8:	a0 10 00 18 	mov  %i0, %l0
-41000ccc:	40 00 15 4c 	call  410061fc <xky_sparc_disable_interrupts>
+41000ccc:	40 00 15 4c 	call  410061fc <air_sparc_disable_interrupts>
 41000cd0:	01 00 00 00 	nop 
 41000cd4:	b0 10 00 08 	mov  %o0, %i0
 41000cd8:	82 10 20 04 	mov  4, %g1
@@ -901,7 +901,7 @@ Disassembly of section .text:
 41000cf4:	02 bf ff fc 	be  41000ce4 <_Internal_error_Occurred+0x44>
 41000cf8:	90 10 00 10 	mov  %l0, %o0
 41000cfc:	e4 24 63 90 	st  %l2, [ %l1 + 0x390 ]
-41000d00:	40 00 15 43 	call  4100620c <xky_sparc_enable_interrupts>
+41000d00:	40 00 15 43 	call  4100620c <air_sparc_enable_interrupts>
 41000d04:	81 e8 00 00 	restore 
 41000d08:	90 10 00 18 	mov  %i0, %o0
 41000d0c:	92 10 00 19 	mov  %i1, %o1
@@ -1260,7 +1260,7 @@ Disassembly of section .text:
 41001244 <_Thread_Dispatch>:
 41001244:	9d e3 bf a0 	save  %sp, -96, %sp
 41001248:	27 10 40 19 	sethi  %hi(0x41006400), %l3
-4100124c:	40 00 13 ec 	call  410061fc <xky_sparc_disable_interrupts>
+4100124c:	40 00 13 ec 	call  410061fc <air_sparc_disable_interrupts>
 41001250:	e0 04 e3 94 	ld  [ %l3 + 0x394 ], %l0	! 41006794 <_Thread_Executing>
 41001254:	29 10 40 2a 	sethi  %hi(0x4100a800), %l4
 41001258:	c2 05 21 c0 	ld  [ %l4 + 0x1c0 ], %g1	! 4100a9c0 <_Context_Switch_necessary>
@@ -1278,7 +1278,7 @@ Disassembly of section .text:
 41001288:	ac 17 21 68 	or  %i4, 0x168, %l6
 4100128c:	10 80 00 1c 	b  410012fc <_Thread_Dispatch+0xb8>
 41001290:	aa 10 20 01 	mov  1, %l5
-41001294:	40 00 13 de 	call  4100620c <xky_sparc_enable_interrupts>
+41001294:	40 00 13 de 	call  4100620c <air_sparc_enable_interrupts>
 41001298:	01 00 00 00 	nop 
 4100129c:	90 10 00 10 	mov  %l0, %o0
 410012a0:	40 00 02 bc 	call  41001d90 <_User_extensions_Thread_switch>
@@ -1298,7 +1298,7 @@ Disassembly of section .text:
 410012d8:	90 04 21 88 	add  %l0, 0x188, %o0
 410012dc:	40 00 04 05 	call  410022f0 <_CPU_Context_restore_fp>
 410012e0:	01 00 00 00 	nop 
-410012e4:	40 00 13 c6 	call  410061fc <xky_sparc_disable_interrupts>
+410012e4:	40 00 13 c6 	call  410061fc <air_sparc_disable_interrupts>
 410012e8:	e0 04 c0 00 	ld  [ %l3 ], %l0
 410012ec:	c2 05 00 00 	ld  [ %l4 ], %g1
 410012f0:	80 a0 60 01 	cmp  %g1, 1
@@ -1320,7 +1320,7 @@ Disassembly of section .text:
 41001330:	10 bf ff d9 	b  41001294 <_Thread_Dispatch+0x50>
 41001334:	c2 24 60 a8 	st  %g1, [ %l1 + 0xa8 ]
 41001338:	c0 27 21 68 	clr  [ %i4 + 0x168 ]
-4100133c:	40 00 13 b4 	call  4100620c <xky_sparc_enable_interrupts>
+4100133c:	40 00 13 b4 	call  4100620c <air_sparc_enable_interrupts>
 41001340:	91 e8 00 08 	restore  %g0, %o0, %o0
 41001344:	01 00 00 00 	nop 
 
@@ -1348,7 +1348,7 @@ Disassembly of section .text:
 41001390:	e0 00 63 94 	ld  [ %g1 + 0x394 ], %l0	! 41006794 <_Thread_Executing>
 41001394:	3f 10 40 04 	sethi  %hi(0x41001000), %i7
 41001398:	be 17 e3 84 	or  %i7, 0x384, %i7	! 41001384 <_Thread_Free_mutexes+0x3c>
-4100139c:	40 00 13 9c 	call  4100620c <xky_sparc_enable_interrupts>
+4100139c:	40 00 13 9c 	call  4100620c <air_sparc_enable_interrupts>
 410013a0:	d0 04 20 e0 	ld  [ %l0 + 0xe0 ], %o0
 410013a4:	84 10 20 01 	mov  1, %g2
 410013a8:	03 10 40 19 	sethi  %hi(0x41006400), %g1
@@ -1574,7 +1574,7 @@ Disassembly of section .text:
 
 410016f8 <_Thread_Set_state>:
 410016f8:	9d e3 bf a0 	save  %sp, -96, %sp
-410016fc:	40 00 12 c0 	call  410061fc <xky_sparc_disable_interrupts>
+410016fc:	40 00 12 c0 	call  410061fc <air_sparc_disable_interrupts>
 41001700:	e0 06 20 b4 	ld  [ %i0 + 0xb4 ], %l0
 41001704:	a2 10 00 08 	mov  %o0, %l1
 41001708:	c2 06 20 10 	ld  [ %i0 + 0x10 ], %g1
@@ -1591,9 +1591,9 @@ Disassembly of section .text:
 41001734:	c4 06 20 04 	ld  [ %i0 + 4 ], %g2
 41001738:	c2 20 80 00 	st  %g1, [ %g2 ]
 4100173c:	c4 20 60 04 	st  %g2, [ %g1 + 4 ]
-41001740:	40 00 12 b3 	call  4100620c <xky_sparc_enable_interrupts>
+41001740:	40 00 12 b3 	call  4100620c <air_sparc_enable_interrupts>
 41001744:	90 10 00 11 	mov  %l1, %o0
-41001748:	40 00 12 ad 	call  410061fc <xky_sparc_disable_interrupts>
+41001748:	40 00 12 ad 	call  410061fc <air_sparc_disable_interrupts>
 4100174c:	01 00 00 00 	nop 
 41001750:	03 10 40 19 	sethi  %hi(0x41006400), %g1
 41001754:	c4 00 63 98 	ld  [ %g1 + 0x398 ], %g2	! 41006798 <_Thread_Heir>
@@ -1605,14 +1605,14 @@ Disassembly of section .text:
 4100176c:	80 a6 00 01 	cmp  %i0, %g1
 41001770:	22 80 00 07 	be,a   4100178c <_Thread_Set_state+0x94>
 41001774:	84 10 20 01 	mov  1, %g2
-41001778:	40 00 12 a5 	call  4100620c <xky_sparc_enable_interrupts>
+41001778:	40 00 12 a5 	call  4100620c <air_sparc_enable_interrupts>
 4100177c:	91 e8 00 11 	restore  %g0, %l1, %o0
 41001780:	f2 26 20 10 	st  %i1, [ %i0 + 0x10 ]
-41001784:	40 00 12 a2 	call  4100620c <xky_sparc_enable_interrupts>
+41001784:	40 00 12 a2 	call  4100620c <air_sparc_enable_interrupts>
 41001788:	91 e8 00 08 	restore  %g0, %o0, %o0
 4100178c:	03 10 40 2a 	sethi  %hi(0x4100a800), %g1
 41001790:	c4 20 61 c0 	st  %g2, [ %g1 + 0x1c0 ]	! 4100a9c0 <_Context_Switch_necessary>
-41001794:	40 00 12 9e 	call  4100620c <xky_sparc_enable_interrupts>
+41001794:	40 00 12 9e 	call  4100620c <air_sparc_enable_interrupts>
 41001798:	91 e8 00 11 	restore  %g0, %l1, %o0
 4100179c:	c2 16 20 c2 	lduh  [ %i0 + 0xc2 ], %g1
 410017a0:	c6 10 80 00 	lduh  [ %g2 ], %g3
@@ -1769,7 +1769,7 @@ Disassembly of section .text:
 410019d4:	9d e3 bf a0 	save  %sp, -96, %sp
 410019d8:	03 10 40 19 	sethi  %hi(0x41006400), %g1
 410019dc:	e0 00 63 94 	ld  [ %g1 + 0x394 ], %l0	! 41006794 <_Thread_Executing>
-410019e0:	40 00 12 07 	call  410061fc <xky_sparc_disable_interrupts>
+410019e0:	40 00 12 07 	call  410061fc <air_sparc_disable_interrupts>
 410019e4:	e2 04 20 b4 	ld  [ %l0 + 0xb4 ], %l1
 410019e8:	b0 10 00 08 	mov  %o0, %i0
 410019ec:	c4 04 40 00 	ld  [ %l1 ], %g2
@@ -1787,9 +1787,9 @@ Disassembly of section .text:
 41001a1c:	e0 24 60 08 	st  %l0, [ %l1 + 8 ]
 41001a20:	c2 24 20 04 	st  %g1, [ %l0 + 4 ]
 41001a24:	e0 20 40 00 	st  %l0, [ %g1 ]
-41001a28:	40 00 11 f9 	call  4100620c <xky_sparc_enable_interrupts>
+41001a28:	40 00 11 f9 	call  4100620c <air_sparc_enable_interrupts>
 41001a2c:	01 00 00 00 	nop 
-41001a30:	40 00 11 f3 	call  410061fc <xky_sparc_disable_interrupts>
+41001a30:	40 00 11 f3 	call  410061fc <air_sparc_disable_interrupts>
 41001a34:	01 00 00 00 	nop 
 41001a38:	03 10 40 19 	sethi  %hi(0x41006400), %g1
 41001a3c:	c4 00 63 98 	ld  [ %g1 + 0x398 ], %g2	! 41006798 <_Thread_Heir>
@@ -1799,13 +1799,13 @@ Disassembly of section .text:
 41001a4c:	84 10 20 01 	mov  1, %g2
 41001a50:	03 10 40 2a 	sethi  %hi(0x4100a800), %g1
 41001a54:	c4 20 61 c0 	st  %g2, [ %g1 + 0x1c0 ]	! 4100a9c0 <_Context_Switch_necessary>
-41001a58:	40 00 11 ed 	call  4100620c <xky_sparc_enable_interrupts>
+41001a58:	40 00 11 ed 	call  4100620c <air_sparc_enable_interrupts>
 41001a5c:	81 e8 00 00 	restore 
 41001a60:	c2 00 63 98 	ld  [ %g1 + 0x398 ], %g1
 41001a64:	80 a4 00 01 	cmp  %l0, %g1
 41001a68:	32 bf ff fa 	bne,a   41001a50 <_Thread_Yield_processor+0x7c>
 41001a6c:	84 10 20 01 	mov  1, %g2
-41001a70:	40 00 11 e7 	call  4100620c <xky_sparc_enable_interrupts>
+41001a70:	40 00 11 e7 	call  4100620c <air_sparc_enable_interrupts>
 41001a74:	81 e8 00 00 	restore 
 41001a78:	10 bf ff f5 	b  41001a4c <_Thread_Yield_processor+0x78>
 41001a7c:	c4 20 63 98 	st  %g2, [ %g1 + 0x398 ]
@@ -2067,7 +2067,7 @@ Disassembly of section .text:
 
 41001e2c <_Watchdog_Insert>:
 41001e2c:	9d e3 bf a0 	save  %sp, -96, %sp
-41001e30:	40 00 10 f3 	call  410061fc <xky_sparc_disable_interrupts>
+41001e30:	40 00 10 f3 	call  410061fc <air_sparc_disable_interrupts>
 41001e34:	a0 10 00 18 	mov  %i0, %l0
 41001e38:	b0 10 00 08 	mov  %o0, %i0
 41001e3c:	03 10 40 2a 	sethi  %hi(0x4100a800), %g1
@@ -2113,9 +2113,9 @@ Disassembly of section .text:
 41001edc:	80 a4 c0 11 	cmp  %l3, %l1
 41001ee0:	38 80 00 10 	bgu,a   41001f20 <_Watchdog_Insert+0xf4>
 41001ee4:	a6 24 c0 11 	sub  %l3, %l1, %l3
-41001ee8:	40 00 10 c9 	call  4100620c <xky_sparc_enable_interrupts>
+41001ee8:	40 00 10 c9 	call  4100620c <air_sparc_enable_interrupts>
 41001eec:	90 10 00 18 	mov  %i0, %o0
-41001ef0:	40 00 10 c3 	call  410061fc <xky_sparc_disable_interrupts>
+41001ef0:	40 00 10 c3 	call  410061fc <air_sparc_disable_interrupts>
 41001ef4:	01 00 00 00 	nop 
 41001ef8:	c2 06 60 08 	ld  [ %i1 + 8 ], %g1
 41001efc:	80 a0 60 01 	cmp  %g1, 1
@@ -2125,7 +2125,7 @@ Disassembly of section .text:
 41001f0c:	c2 05 a1 f8 	ld  [ %l6 + 0x1f8 ], %g1
 41001f10:	82 00 7f ff 	add  %g1, -1, %g1
 41001f14:	c2 25 a1 f8 	st  %g1, [ %l6 + 0x1f8 ]
-41001f18:	40 00 10 bd 	call  4100620c <xky_sparc_enable_interrupts>
+41001f18:	40 00 10 bd 	call  4100620c <air_sparc_enable_interrupts>
 41001f1c:	81 e8 00 00 	restore 
 41001f20:	e6 24 a0 10 	st  %l3, [ %l2 + 0x10 ]
 41001f24:	c2 04 a0 04 	ld  [ %l2 + 4 ], %g1
@@ -2150,7 +2150,7 @@ Disassembly of section .text:
 
 41001f70 <_Watchdog_Remove>:
 41001f70:	9d e3 bf a0 	save  %sp, -96, %sp
-41001f74:	40 00 10 a2 	call  410061fc <xky_sparc_disable_interrupts>
+41001f74:	40 00 10 a2 	call  410061fc <air_sparc_disable_interrupts>
 41001f78:	a0 10 00 18 	mov  %i0, %l0
 41001f7c:	a2 10 00 08 	mov  %o0, %l1
 41001f80:	f0 06 20 08 	ld  [ %i0 + 8 ], %i0
@@ -2162,7 +2162,7 @@ Disassembly of section .text:
 41001f98:	03 10 40 2a 	sethi  %hi(0x4100a800), %g1
 41001f9c:	c2 00 61 fc 	ld  [ %g1 + 0x1fc ], %g1	! 4100a9fc <_Watchdog_Ticks_since_boot>
 41001fa0:	c2 24 20 18 	st  %g1, [ %l0 + 0x18 ]
-41001fa4:	40 00 10 9a 	call  4100620c <xky_sparc_enable_interrupts>
+41001fa4:	40 00 10 9a 	call  4100620c <air_sparc_enable_interrupts>
 41001fa8:	90 10 00 11 	mov  %l1, %o0
 41001fac:	81 c7 e0 08 	ret 
 41001fb0:	81 e8 00 00 	restore 
@@ -2192,7 +2192,7 @@ Disassembly of section .text:
 41002010:	03 10 40 2a 	sethi  %hi(0x4100a800), %g1
 41002014:	c2 00 61 fc 	ld  [ %g1 + 0x1fc ], %g1	! 4100a9fc <_Watchdog_Ticks_since_boot>
 41002018:	c2 24 20 18 	st  %g1, [ %l0 + 0x18 ]
-4100201c:	40 00 10 7c 	call  4100620c <xky_sparc_enable_interrupts>
+4100201c:	40 00 10 7c 	call  4100620c <air_sparc_enable_interrupts>
 41002020:	90 10 00 11 	mov  %l1, %o0
 41002024:	81 c7 e0 08 	ret 
 41002028:	81 e8 00 00 	restore 
@@ -2202,14 +2202,14 @@ Disassembly of section .text:
 41002038:	03 10 40 2a 	sethi  %hi(0x4100a800), %g1
 4100203c:	c2 00 61 fc 	ld  [ %g1 + 0x1fc ], %g1	! 4100a9fc <_Watchdog_Ticks_since_boot>
 41002040:	c2 24 20 18 	st  %g1, [ %l0 + 0x18 ]
-41002044:	40 00 10 72 	call  4100620c <xky_sparc_enable_interrupts>
+41002044:	40 00 10 72 	call  4100620c <air_sparc_enable_interrupts>
 41002048:	90 10 00 11 	mov  %l1, %o0
 4100204c:	81 c7 e0 08 	ret 
 41002050:	81 e8 00 00 	restore 
 41002054:	03 10 40 2a 	sethi  %hi(0x4100a800), %g1
 41002058:	c2 00 61 fc 	ld  [ %g1 + 0x1fc ], %g1	! 4100a9fc <_Watchdog_Ticks_since_boot>
 4100205c:	c2 24 20 18 	st  %g1, [ %l0 + 0x18 ]
-41002060:	40 00 10 6b 	call  4100620c <xky_sparc_enable_interrupts>
+41002060:	40 00 10 6b 	call  4100620c <air_sparc_enable_interrupts>
 41002064:	90 10 00 11 	mov  %l1, %o0
 41002068:	81 c7 e0 08 	ret 
 4100206c:	81 e8 00 00 	restore 
@@ -2279,7 +2279,7 @@ Disassembly of section .text:
 41002154:	f8 26 20 7c 	st  %i4, [ %i0 + 0x7c ]
 41002158:	b4 06 bf a0 	add  %i2, -96, %i2
 4100215c:	c0 26 20 58 	clr  [ %i0 + 0x58 ]
-41002160:	40 00 10 47 	call  4100627c <xky_sparc_get_psr>
+41002160:	40 00 10 47 	call  4100627c <air_sparc_get_psr>
 41002164:	f4 26 20 78 	st  %i2, [ %i0 + 0x78 ]
 41002168:	b7 2e e0 08 	sll  %i3, 8, %i3
 4100216c:	90 0a 30 ff 	and  %o0, -3841, %o0
@@ -2297,7 +2297,7 @@ Disassembly of section .text:
 
 4100219c <_CPU_ISR_Get_level>:
 4100219c:	9d e3 bf a0 	save  %sp, -96, %sp
-410021a0:	40 00 10 37 	call  4100627c <xky_sparc_get_psr>
+410021a0:	40 00 10 37 	call  4100627c <air_sparc_get_psr>
 410021a4:	01 00 00 00 	nop 
 410021a8:	90 0a 2f 00 	and  %o0, 0xf00, %o0
 410021ac:	b1 32 20 08 	srl  %o0, 8, %i0
@@ -2306,7 +2306,7 @@ Disassembly of section .text:
 
 410021b8 <_CPU_ISR_install_raw_handler>:
 410021b8:	9d e3 bf a0 	save  %sp, -96, %sp
-410021bc:	40 00 10 10 	call  410061fc <xky_sparc_disable_interrupts>
+410021bc:	40 00 10 10 	call  410061fc <air_sparc_disable_interrupts>
 410021c0:	b0 0e 20 ff 	and  %i0, 0xff, %i0
 410021c4:	03 10 40 2b 	sethi  %hi(0x4100ac00), %g1
 410021c8:	b1 2e 20 02 	sll  %i0, 2, %i0
@@ -2314,7 +2314,7 @@ Disassembly of section .text:
 410021d0:	c4 00 40 18 	ld  [ %g1 + %i0 ], %g2
 410021d4:	c4 26 80 00 	st  %g2, [ %i2 ]
 410021d8:	f2 20 40 18 	st  %i1, [ %g1 + %i0 ]
-410021dc:	40 00 10 0c 	call  4100620c <xky_sparc_enable_interrupts>
+410021dc:	40 00 10 0c 	call  4100620c <air_sparc_enable_interrupts>
 410021e0:	01 00 00 00 	nop 
 410021e4:	40 00 08 da 	call  4100454c <rtems_cache_invalidate_entire_instruction>
 410021e8:	81 e8 00 00 	restore 
@@ -2322,7 +2322,7 @@ Disassembly of section .text:
 
 410021f0 <_CPU_ISR_install_vector>:
 410021f0:	9d e3 bf 98 	save  %sp, -104, %sp
-410021f4:	40 00 10 02 	call  410061fc <xky_sparc_disable_interrupts>
+410021f4:	40 00 10 02 	call  410061fc <air_sparc_disable_interrupts>
 410021f8:	01 00 00 00 	nop 
 410021fc:	23 10 40 2a 	sethi  %hi(0x4100a800), %l1
 41002200:	a0 0e 20 ff 	and  %i0, 0xff, %l0
@@ -2330,18 +2330,18 @@ Disassembly of section .text:
 41002208:	a1 2c 20 02 	sll  %l0, 2, %l0
 4100220c:	c2 00 40 10 	ld  [ %g1 + %l0 ], %g1
 41002210:	c2 26 80 00 	st  %g1, [ %i2 ]
-41002214:	40 00 0f fe 	call  4100620c <xky_sparc_enable_interrupts>
+41002214:	40 00 0f fe 	call  4100620c <air_sparc_enable_interrupts>
 41002218:	01 00 00 00 	nop 
 4100221c:	90 10 00 18 	mov  %i0, %o0
 41002220:	94 07 bf fc 	add  %fp, -4, %o2
 41002224:	13 10 40 09 	sethi  %hi(0x41002400), %o1
 41002228:	7f ff ff e4 	call  410021b8 <_CPU_ISR_install_raw_handler>
 4100222c:	92 12 60 20 	or  %o1, 0x20, %o1	! 41002420 <_ISR_Handler>
-41002230:	40 00 0f f3 	call  410061fc <xky_sparc_disable_interrupts>
+41002230:	40 00 0f f3 	call  410061fc <air_sparc_disable_interrupts>
 41002234:	01 00 00 00 	nop 
 41002238:	c2 04 60 bc 	ld  [ %l1 + 0xbc ], %g1
 4100223c:	f2 20 40 10 	st  %i1, [ %g1 + %l0 ]
-41002240:	40 00 0f f3 	call  4100620c <xky_sparc_enable_interrupts>
+41002240:	40 00 0f f3 	call  4100620c <air_sparc_enable_interrupts>
 41002244:	01 00 00 00 	nop 
 41002248:	81 c7 e0 08 	ret 
 4100224c:	81 e8 00 00 	restore 
@@ -2349,7 +2349,7 @@ Disassembly of section .text:
 41002250 <_CPU_Initialize>:
 41002250:	9d e3 bf 68 	save  %sp, -152, %sp
 41002254:	90 10 3f ff 	mov  -1, %o0
-41002258:	40 00 0f 95 	call  410060ac <xky_syscall_get_partition_status>
+41002258:	40 00 0f 95 	call  410060ac <air_syscall_get_partition_status>
 4100225c:	92 07 bf c8 	add  %fp, -56, %o1
 41002260:	c2 07 bf e4 	ld  [ %fp + -28 ], %g1
 41002264:	80 88 60 02 	btst  2, %g1
@@ -2859,13 +2859,13 @@ Disassembly of section .text:
 
 4100297c <_Chain_Extract>:
 4100297c:	9d e3 bf a0 	save  %sp, -96, %sp
-41002980:	40 00 0e 1f 	call  410061fc <xky_sparc_disable_interrupts>
+41002980:	40 00 0e 1f 	call  410061fc <air_sparc_disable_interrupts>
 41002984:	01 00 00 00 	nop 
 41002988:	c4 06 20 04 	ld  [ %i0 + 4 ], %g2
 4100298c:	c2 06 00 00 	ld  [ %i0 ], %g1
 41002990:	c2 20 80 00 	st  %g1, [ %g2 ]
 41002994:	c4 20 60 04 	st  %g2, [ %g1 + 4 ]
-41002998:	40 00 0e 1d 	call  4100620c <xky_sparc_enable_interrupts>
+41002998:	40 00 0e 1d 	call  4100620c <air_sparc_enable_interrupts>
 4100299c:	91 e8 00 08 	restore  %g0, %o0, %o0
 410029a0:	01 00 00 00 	nop 
 
@@ -3571,7 +3571,7 @@ Disassembly of section .text:
 41003454:	80 a0 40 02 	cmp  %g1, %g2
 41003458:	0a bf ff fd 	bcs  4100344c <_Objects_Extend_information+0x164>
 4100345c:	a6 04 e0 04 	add  %l3, 4, %l3
-41003460:	40 00 0b 67 	call  410061fc <xky_sparc_disable_interrupts>
+41003460:	40 00 0b 67 	call  410061fc <air_sparc_disable_interrupts>
 41003464:	01 00 00 00 	nop 
 41003468:	85 2c a0 10 	sll  %l2, 0x10, %g2
 4100346c:	c6 16 20 04 	lduh  [ %i0 + 4 ], %g3
@@ -3587,7 +3587,7 @@ Disassembly of section .text:
 41003494:	82 10 c0 01 	or  %g3, %g1, %g1
 41003498:	82 10 40 02 	or  %g1, %g2, %g1
 4100349c:	c2 26 20 0c 	st  %g1, [ %i0 + 0xc ]
-410034a0:	40 00 0b 5b 	call  4100620c <xky_sparc_enable_interrupts>
+410034a0:	40 00 0b 5b 	call  4100620c <air_sparc_enable_interrupts>
 410034a4:	01 00 00 00 	nop 
 410034a8:	10 bf ff 9a 	b  41003310 <_Objects_Extend_information+0x28>
 410034ac:	c2 06 20 18 	ld  [ %i0 + 0x18 ], %g1
@@ -3602,7 +3602,7 @@ Disassembly of section .text:
 410034c8:	92 10 00 19 	mov  %i1, %o1
 410034cc:	7f ff f8 71 	call  41001690 <_Thread_Set_priority>
 410034d0:	90 10 00 18 	mov  %i0, %o0
-410034d4:	40 00 0b 4a 	call  410061fc <xky_sparc_disable_interrupts>
+410034d4:	40 00 0b 4a 	call  410061fc <air_sparc_disable_interrupts>
 410034d8:	01 00 00 00 	nop 
 410034dc:	a2 10 00 08 	mov  %o0, %l1
 410034e0:	e0 06 20 10 	ld  [ %i0 + 0x10 ], %l0
@@ -3610,7 +3610,7 @@ Disassembly of section .text:
 410034e8:	02 80 00 0c 	be  41003518 <_Thread_Change_priority+0x68>
 410034ec:	82 0c 3f fb 	and  %l0, -5, %g1
 410034f0:	c2 26 20 10 	st  %g1, [ %i0 + 0x10 ]
-410034f4:	40 00 0b 46 	call  4100620c <xky_sparc_enable_interrupts>
+410034f4:	40 00 0b 46 	call  4100620c <air_sparc_enable_interrupts>
 410034f8:	01 00 00 00 	nop 
 410034fc:	03 00 00 ef 	sethi  %hi(0x3bc00), %g1
 41003500:	82 10 62 e0 	or  %g1, 0x2e0, %g1	! 3bee0 <PROM_START+0x3bee0>
@@ -3638,9 +3638,9 @@ Disassembly of section .text:
 41003558:	f0 20 40 00 	st  %i0, [ %g1 ]
 4100355c:	f0 20 a0 04 	st  %i0, [ %g2 + 4 ]
 41003560:	c4 26 00 00 	st  %g2, [ %i0 ]
-41003564:	40 00 0b 2a 	call  4100620c <xky_sparc_enable_interrupts>
+41003564:	40 00 0b 2a 	call  4100620c <air_sparc_enable_interrupts>
 41003568:	90 10 00 11 	mov  %l1, %o0
-4100356c:	40 00 0b 24 	call  410061fc <xky_sparc_disable_interrupts>
+4100356c:	40 00 0b 24 	call  410061fc <air_sparc_disable_interrupts>
 41003570:	01 00 00 00 	nop 
 41003574:	05 10 40 2a 	sethi  %hi(0x4100a800), %g2
 41003578:	c2 14 23 e8 	lduh  [ %l0 + 0x3e8 ], %g1
@@ -3688,7 +3688,7 @@ Disassembly of section .text:
 41003620:	84 10 20 01 	mov  1, %g2	! 1 <PROM_START+0x1>
 41003624:	03 10 40 2a 	sethi  %hi(0x4100a800), %g1
 41003628:	c4 20 61 c0 	st  %g2, [ %g1 + 0x1c0 ]	! 4100a9c0 <_Context_Switch_necessary>
-4100362c:	40 00 0a f8 	call  4100620c <xky_sparc_enable_interrupts>
+4100362c:	40 00 0a f8 	call  4100620c <air_sparc_enable_interrupts>
 41003630:	91 e8 00 11 	restore  %g0, %l1, %o0
 41003634:	10 bf ff e8 	b  410035d4 <_Thread_Change_priority+0x124>
 41003638:	c2 08 c0 01 	ldub  [ %g3 + %g1 ], %g1
@@ -3710,7 +3710,7 @@ Disassembly of section .text:
 
 41003678 <_Thread_Clear_state>:
 41003678:	9d e3 bf a0 	save  %sp, -96, %sp
-4100367c:	40 00 0a e0 	call  410061fc <xky_sparc_disable_interrupts>
+4100367c:	40 00 0a e0 	call  410061fc <air_sparc_disable_interrupts>
 41003680:	a0 10 00 18 	mov  %i0, %l0
 41003684:	b0 10 00 08 	mov  %o0, %i0
 41003688:	c2 04 20 10 	ld  [ %l0 + 0x10 ], %g1
@@ -3721,7 +3721,7 @@ Disassembly of section .text:
 4100369c:	80 a6 60 00 	cmp  %i1, 0
 410036a0:	02 80 00 04 	be  410036b0 <_Thread_Clear_state+0x38>
 410036a4:	f2 24 20 10 	st  %i1, [ %l0 + 0x10 ]
-410036a8:	40 00 0a d9 	call  4100620c <xky_sparc_enable_interrupts>
+410036a8:	40 00 0a d9 	call  4100620c <air_sparc_enable_interrupts>
 410036ac:	81 e8 00 00 	restore 
 410036b0:	c2 04 20 b4 	ld  [ %l0 + 0xb4 ], %g1
 410036b4:	84 00 60 04 	add  %g1, 4, %g2
@@ -3740,9 +3740,9 @@ Disassembly of section .text:
 410036e8:	c6 10 63 e8 	lduh  [ %g1 + 0x3e8 ], %g3
 410036ec:	84 10 c0 02 	or  %g3, %g2, %g2
 410036f0:	c4 30 63 e8 	sth  %g2, [ %g1 + 0x3e8 ]
-410036f4:	40 00 0a c6 	call  4100620c <xky_sparc_enable_interrupts>
+410036f4:	40 00 0a c6 	call  4100620c <air_sparc_enable_interrupts>
 410036f8:	01 00 00 00 	nop 
-410036fc:	40 00 0a c0 	call  410061fc <xky_sparc_disable_interrupts>
+410036fc:	40 00 0a c0 	call  410061fc <air_sparc_disable_interrupts>
 41003700:	01 00 00 00 	nop 
 41003704:	03 10 40 19 	sethi  %hi(0x41006400), %g1
 41003708:	c4 04 20 14 	ld  [ %l0 + 0x14 ], %g2
@@ -3763,7 +3763,7 @@ Disassembly of section .text:
 41003744:	84 10 20 01 	mov  1, %g2
 41003748:	03 10 40 2a 	sethi  %hi(0x4100a800), %g1
 4100374c:	c4 20 61 c0 	st  %g2, [ %g1 + 0x1c0 ]	! 4100a9c0 <_Context_Switch_necessary>
-41003750:	40 00 0a af 	call  4100620c <xky_sparc_enable_interrupts>
+41003750:	40 00 0a af 	call  4100620c <air_sparc_enable_interrupts>
 41003754:	81 e8 00 00 	restore 
 41003758:	01 00 00 00 	nop 
 
@@ -3828,7 +3828,7 @@ Disassembly of section .text:
 
 41003838 <_Thread_queue_Dequeue_fifo>:
 41003838:	9d e3 bf a0 	save  %sp, -96, %sp
-4100383c:	40 00 0a 70 	call  410061fc <xky_sparc_disable_interrupts>
+4100383c:	40 00 0a 70 	call  410061fc <air_sparc_disable_interrupts>
 41003840:	01 00 00 00 	nop 
 41003844:	86 10 00 08 	mov  %o0, %g3
 41003848:	c2 06 00 00 	ld  [ %i0 ], %g1
@@ -3845,7 +3845,7 @@ Disassembly of section .text:
 41003874:	80 a0 60 02 	cmp  %g1, 2
 41003878:	02 80 00 0a 	be  410038a0 <_Thread_queue_Dequeue_fifo+0x68>
 4100387c:	82 10 20 03 	mov  3, %g1
-41003880:	40 00 0a 63 	call  4100620c <xky_sparc_enable_interrupts>
+41003880:	40 00 0a 63 	call  4100620c <air_sparc_enable_interrupts>
 41003884:	01 00 00 00 	nop 
 41003888:	90 10 00 18 	mov  %i0, %o0
 4100388c:	13 04 00 ff 	sethi  %hi(0x1003fc00), %o1
@@ -3854,7 +3854,7 @@ Disassembly of section .text:
 41003898:	81 c7 e0 08 	ret 
 4100389c:	81 e8 00 00 	restore 
 410038a0:	c2 26 20 78 	st  %g1, [ %i0 + 0x78 ]
-410038a4:	40 00 0a 5a 	call  4100620c <xky_sparc_enable_interrupts>
+410038a4:	40 00 0a 5a 	call  4100620c <air_sparc_enable_interrupts>
 410038a8:	01 00 00 00 	nop 
 410038ac:	7f ff f9 b1 	call  41001f70 <_Watchdog_Remove>
 410038b0:	90 06 20 70 	add  %i0, 0x70, %o0
@@ -3871,14 +3871,14 @@ Disassembly of section .text:
 410038dc:	0a 80 00 09 	bcs  41003900 <_Thread_queue_Dequeue_fifo+0xc8>
 410038e0:	82 10 20 03 	mov  3, %g1
 410038e4:	c2 26 20 30 	st  %g1, [ %i0 + 0x30 ]
-410038e8:	40 00 0a 49 	call  4100620c <xky_sparc_enable_interrupts>
+410038e8:	40 00 0a 49 	call  4100620c <air_sparc_enable_interrupts>
 410038ec:	01 00 00 00 	nop 
 410038f0:	03 10 40 19 	sethi  %hi(0x41006400), %g1
 410038f4:	f0 00 63 94 	ld  [ %g1 + 0x394 ], %i0	! 41006794 <_Thread_Executing>
 410038f8:	81 c7 e0 08 	ret 
 410038fc:	81 e8 00 00 	restore 
 41003900:	b0 10 20 00 	clr  %i0
-41003904:	40 00 0a 42 	call  4100620c <xky_sparc_enable_interrupts>
+41003904:	40 00 0a 42 	call  4100620c <air_sparc_enable_interrupts>
 41003908:	90 10 00 03 	mov  %g3, %o0
 4100390c:	81 c7 e0 08 	ret 
 41003910:	81 e8 00 00 	restore 
@@ -3893,7 +3893,7 @@ Disassembly of section .text:
 
 41003934 <_Thread_queue_Dequeue_priority>:
 41003934:	9d e3 bf a0 	save  %sp, -96, %sp
-41003938:	40 00 0a 31 	call  410061fc <xky_sparc_disable_interrupts>
+41003938:	40 00 0a 31 	call  410061fc <air_sparc_disable_interrupts>
 4100393c:	01 00 00 00 	nop 
 41003940:	a0 10 00 08 	mov  %o0, %l0
 41003944:	84 10 20 00 	clr  %g2
@@ -3945,7 +3945,7 @@ Disassembly of section .text:
 410039fc:	80 a0 60 02 	cmp  %g1, 2
 41003a00:	02 80 00 18 	be  41003a60 <_Thread_queue_Dequeue_priority+0x12c>
 41003a04:	82 10 20 03 	mov  3, %g1
-41003a08:	40 00 0a 01 	call  4100620c <xky_sparc_enable_interrupts>
+41003a08:	40 00 0a 01 	call  4100620c <air_sparc_enable_interrupts>
 41003a0c:	90 10 00 10 	mov  %l0, %o0
 41003a10:	90 10 00 18 	mov  %i0, %o0
 41003a14:	13 04 00 ff 	sethi  %hi(0x1003fc00), %o1
@@ -3956,19 +3956,19 @@ Disassembly of section .text:
 41003a28:	0a 80 00 09 	bcs  41003a4c <_Thread_queue_Dequeue_priority+0x118>
 41003a2c:	82 10 20 03 	mov  3, %g1
 41003a30:	c2 26 20 30 	st  %g1, [ %i0 + 0x30 ]
-41003a34:	40 00 09 f6 	call  4100620c <xky_sparc_enable_interrupts>
+41003a34:	40 00 09 f6 	call  4100620c <air_sparc_enable_interrupts>
 41003a38:	90 10 00 10 	mov  %l0, %o0
 41003a3c:	03 10 40 19 	sethi  %hi(0x41006400), %g1
 41003a40:	f0 00 63 94 	ld  [ %g1 + 0x394 ], %i0	! 41006794 <_Thread_Executing>
 41003a44:	81 c7 e0 08 	ret 
 41003a48:	81 e8 00 00 	restore 
 41003a4c:	b0 10 20 00 	clr  %i0
-41003a50:	40 00 09 ef 	call  4100620c <xky_sparc_enable_interrupts>
+41003a50:	40 00 09 ef 	call  4100620c <air_sparc_enable_interrupts>
 41003a54:	90 10 00 10 	mov  %l0, %o0
 41003a58:	81 c7 e0 08 	ret 
 41003a5c:	81 e8 00 00 	restore 
 41003a60:	c2 26 20 78 	st  %g1, [ %i0 + 0x78 ]
-41003a64:	40 00 09 ea 	call  4100620c <xky_sparc_enable_interrupts>
+41003a64:	40 00 09 ea 	call  4100620c <air_sparc_enable_interrupts>
 41003a68:	90 10 00 10 	mov  %l0, %o0
 41003a6c:	7f ff f9 41 	call  41001f70 <_Watchdog_Remove>
 41003a70:	90 06 20 70 	add  %i0, 0x70, %o0
@@ -4009,7 +4009,7 @@ Disassembly of section .text:
 
 41003af4 <_Thread_queue_Extract_fifo>:
 41003af4:	9d e3 bf a0 	save  %sp, -96, %sp
-41003af8:	40 00 09 c1 	call  410061fc <xky_sparc_disable_interrupts>
+41003af8:	40 00 09 c1 	call  410061fc <air_sparc_disable_interrupts>
 41003afc:	01 00 00 00 	nop 
 41003b00:	b0 10 00 08 	mov  %o0, %i0
 41003b04:	03 00 00 ef 	sethi  %hi(0x3bc00), %g1
@@ -4027,14 +4027,14 @@ Disassembly of section .text:
 41003b34:	80 a0 60 02 	cmp  %g1, 2
 41003b38:	02 80 00 08 	be  41003b58 <_Thread_queue_Extract_fifo+0x64>
 41003b3c:	82 10 20 03 	mov  3, %g1
-41003b40:	40 00 09 b3 	call  4100620c <xky_sparc_enable_interrupts>
+41003b40:	40 00 09 b3 	call  4100620c <air_sparc_enable_interrupts>
 41003b44:	b0 10 00 19 	mov  %i1, %i0
 41003b48:	33 04 00 ff 	sethi  %hi(0x1003fc00), %i1
 41003b4c:	b2 16 63 f8 	or  %i1, 0x3f8, %i1	! 1003fff8 <RAM_SIZE+0xfc3fff8>
 41003b50:	7f ff fe ca 	call  41003678 <_Thread_Clear_state>
 41003b54:	81 e8 00 00 	restore 
 41003b58:	c2 26 60 78 	st  %g1, [ %i1 + 0x78 ]
-41003b5c:	40 00 09 ac 	call  4100620c <xky_sparc_enable_interrupts>
+41003b5c:	40 00 09 ac 	call  4100620c <air_sparc_enable_interrupts>
 41003b60:	b0 10 00 19 	mov  %i1, %i0
 41003b64:	7f ff f9 03 	call  41001f70 <_Watchdog_Remove>
 41003b68:	90 06 60 70 	add  %i1, 0x70, %o0
@@ -4042,13 +4042,13 @@ Disassembly of section .text:
 41003b70:	b2 16 63 f8 	or  %i1, 0x3f8, %i1	! 1003fff8 <RAM_SIZE+0xfc3fff8>
 41003b74:	7f ff fe c1 	call  41003678 <_Thread_Clear_state>
 41003b78:	81 e8 00 00 	restore 
-41003b7c:	40 00 09 a4 	call  4100620c <xky_sparc_enable_interrupts>
+41003b7c:	40 00 09 a4 	call  4100620c <air_sparc_enable_interrupts>
 41003b80:	81 e8 00 00 	restore 
 41003b84:	01 00 00 00 	nop 
 
 41003b88 <_Thread_queue_Extract_priority_helper>:
 41003b88:	9d e3 bf a0 	save  %sp, -96, %sp
-41003b8c:	40 00 09 9c 	call  410061fc <xky_sparc_disable_interrupts>
+41003b8c:	40 00 09 9c 	call  410061fc <air_sparc_disable_interrupts>
 41003b90:	01 00 00 00 	nop 
 41003b94:	03 00 00 ef 	sethi  %hi(0x3bc00), %g1
 41003b98:	c4 06 60 10 	ld  [ %i1 + 0x10 ], %g2
@@ -4084,16 +4084,16 @@ Disassembly of section .text:
 41003c10:	80 a0 60 02 	cmp  %g1, 2
 41003c14:	02 80 00 0a 	be  41003c3c <_Thread_queue_Extract_priority_helper+0xb4>
 41003c18:	82 10 20 03 	mov  3, %g1
-41003c1c:	40 00 09 7c 	call  4100620c <xky_sparc_enable_interrupts>
+41003c1c:	40 00 09 7c 	call  4100620c <air_sparc_enable_interrupts>
 41003c20:	b0 10 00 19 	mov  %i1, %i0
 41003c24:	33 04 00 ff 	sethi  %hi(0x1003fc00), %i1
 41003c28:	b2 16 63 f8 	or  %i1, 0x3f8, %i1	! 1003fff8 <RAM_SIZE+0xfc3fff8>
 41003c2c:	7f ff fe 93 	call  41003678 <_Thread_Clear_state>
 41003c30:	81 e8 00 00 	restore 
-41003c34:	40 00 09 76 	call  4100620c <xky_sparc_enable_interrupts>
+41003c34:	40 00 09 76 	call  4100620c <air_sparc_enable_interrupts>
 41003c38:	91 e8 00 08 	restore  %g0, %o0, %o0
 41003c3c:	c2 26 60 78 	st  %g1, [ %i1 + 0x78 ]
-41003c40:	40 00 09 73 	call  4100620c <xky_sparc_enable_interrupts>
+41003c40:	40 00 09 73 	call  4100620c <air_sparc_enable_interrupts>
 41003c44:	b0 10 00 19 	mov  %i1, %i0
 41003c48:	7f ff f8 ca 	call  41001f70 <_Watchdog_Remove>
 41003c4c:	90 06 60 70 	add  %i1, 0x70, %o0
@@ -4122,7 +4122,7 @@ Disassembly of section .text:
 41003ca0:	95 e8 20 25 	restore  %g0, 0x25, %o2
 41003ca4:	81 c7 e0 08 	ret 
 41003ca8:	81 e8 00 00 	restore 
-41003cac:	40 00 09 54 	call  410061fc <xky_sparc_disable_interrupts>
+41003cac:	40 00 09 54 	call  410061fc <air_sparc_disable_interrupts>
 41003cb0:	01 00 00 00 	nop 
 41003cb4:	a0 10 00 08 	mov  %o0, %l0
 41003cb8:	03 00 00 ef 	sethi  %hi(0x3bc00), %g1
@@ -4131,7 +4131,7 @@ Disassembly of section .text:
 41003cc4:	80 88 80 01 	btst  %g2, %g1
 41003cc8:	12 80 00 04 	bne  41003cd8 <_Thread_queue_Requeue+0x6c>
 41003ccc:	94 10 20 01 	mov  1, %o2
-41003cd0:	40 00 09 4f 	call  4100620c <xky_sparc_enable_interrupts>
+41003cd0:	40 00 09 4f 	call  4100620c <air_sparc_enable_interrupts>
 41003cd4:	91 e8 00 10 	restore  %g0, %l0, %o0
 41003cd8:	90 10 00 18 	mov  %i0, %o0
 41003cdc:	92 10 00 19 	mov  %i1, %o1
@@ -4140,13 +4140,13 @@ Disassembly of section .text:
 41003ce8:	90 10 00 18 	mov  %i0, %o0
 41003cec:	40 00 00 af 	call  41003fa8 <_Thread_queue_Enqueue_priority>
 41003cf0:	92 10 00 19 	mov  %i1, %o1
-41003cf4:	40 00 09 46 	call  4100620c <xky_sparc_enable_interrupts>
+41003cf4:	40 00 09 46 	call  4100620c <air_sparc_enable_interrupts>
 41003cf8:	91 e8 00 10 	restore  %g0, %l0, %o0
 41003cfc:	01 00 00 00 	nop 
 
 41003d00 <_Thread_Ready>:
 41003d00:	9d e3 bf a0 	save  %sp, -96, %sp
-41003d04:	40 00 09 3e 	call  410061fc <xky_sparc_disable_interrupts>
+41003d04:	40 00 09 3e 	call  410061fc <air_sparc_disable_interrupts>
 41003d08:	a0 10 00 18 	mov  %i0, %l0
 41003d0c:	b0 10 00 08 	mov  %o0, %i0
 41003d10:	c2 04 20 b4 	ld  [ %l0 + 0xb4 ], %g1
@@ -4167,9 +4167,9 @@ Disassembly of section .text:
 41003d4c:	c4 14 23 e8 	lduh  [ %l0 + 0x3e8 ], %g2	! 4100a7e8 <_Priority_Major_bit_map>
 41003d50:	82 10 80 01 	or  %g2, %g1, %g1
 41003d54:	c2 34 23 e8 	sth  %g1, [ %l0 + 0x3e8 ]
-41003d58:	40 00 09 2d 	call  4100620c <xky_sparc_enable_interrupts>
+41003d58:	40 00 09 2d 	call  4100620c <air_sparc_enable_interrupts>
 41003d5c:	01 00 00 00 	nop 
-41003d60:	40 00 09 27 	call  410061fc <xky_sparc_disable_interrupts>
+41003d60:	40 00 09 27 	call  410061fc <air_sparc_disable_interrupts>
 41003d64:	01 00 00 00 	nop 
 41003d68:	05 10 40 2a 	sethi  %hi(0x4100a800), %g2
 41003d6c:	c2 14 23 e8 	lduh  [ %l0 + 0x3e8 ], %g1
@@ -4217,7 +4217,7 @@ Disassembly of section .text:
 41003e14:	84 10 20 01 	mov  1, %g2	! 1 <PROM_START+0x1>
 41003e18:	03 10 40 2a 	sethi  %hi(0x4100a800), %g1
 41003e1c:	c4 20 61 c0 	st  %g2, [ %g1 + 0x1c0 ]	! 4100a9c0 <_Context_Switch_necessary>
-41003e20:	40 00 08 fb 	call  4100620c <xky_sparc_enable_interrupts>
+41003e20:	40 00 08 fb 	call  4100620c <air_sparc_enable_interrupts>
 41003e24:	81 e8 00 00 	restore 
 41003e28:	10 bf ff e8 	b  41003dc8 <_Thread_Ready+0xc8>
 41003e2c:	c2 08 c0 01 	ldub  [ %g3 + %g1 ], %g1
@@ -4228,7 +4228,7 @@ Disassembly of section .text:
 
 41003e40 <_Thread_Set_transient>:
 41003e40:	9d e3 bf a0 	save  %sp, -96, %sp
-41003e44:	40 00 08 ee 	call  410061fc <xky_sparc_disable_interrupts>
+41003e44:	40 00 08 ee 	call  410061fc <air_sparc_disable_interrupts>
 41003e48:	e2 06 20 b4 	ld  [ %i0 + 0xb4 ], %l1
 41003e4c:	c2 06 20 10 	ld  [ %i0 + 0x10 ], %g1
 41003e50:	84 10 60 04 	or  %g1, 4, %g2
@@ -4244,7 +4244,7 @@ Disassembly of section .text:
 41003e78:	c2 06 00 00 	ld  [ %i0 ], %g1
 41003e7c:	c2 20 80 00 	st  %g1, [ %g2 ]
 41003e80:	c4 20 60 04 	st  %g2, [ %g1 + 4 ]
-41003e84:	40 00 08 e2 	call  4100620c <xky_sparc_enable_interrupts>
+41003e84:	40 00 08 e2 	call  4100620c <air_sparc_enable_interrupts>
 41003e88:	91 e8 00 08 	restore  %g0, %o0, %o0
 41003e8c:	c2 16 20 c2 	lduh  [ %i0 + 0xc2 ], %g1
 41003e90:	c6 10 80 00 	lduh  [ %g2 ], %g3
@@ -4305,7 +4305,7 @@ Disassembly of section .text:
 
 41003f5c <_Chain_Get>:
 41003f5c:	9d e3 bf a0 	save  %sp, -96, %sp
-41003f60:	40 00 08 a7 	call  410061fc <xky_sparc_disable_interrupts>
+41003f60:	40 00 08 a7 	call  410061fc <air_sparc_disable_interrupts>
 41003f64:	a0 10 00 18 	mov  %i0, %l0
 41003f68:	f0 06 00 00 	ld  [ %i0 ], %i0
 41003f6c:	82 04 20 04 	add  %l0, 4, %g1
@@ -4315,11 +4315,11 @@ Disassembly of section .text:
 41003f7c:	c2 06 00 00 	ld  [ %i0 ], %g1
 41003f80:	c2 24 00 00 	st  %g1, [ %l0 ]
 41003f84:	e0 20 60 04 	st  %l0, [ %g1 + 4 ]
-41003f88:	40 00 08 a1 	call  4100620c <xky_sparc_enable_interrupts>
+41003f88:	40 00 08 a1 	call  4100620c <air_sparc_enable_interrupts>
 41003f8c:	01 00 00 00 	nop 
 41003f90:	81 c7 e0 08 	ret 
 41003f94:	81 e8 00 00 	restore 
-41003f98:	40 00 08 9d 	call  4100620c <xky_sparc_enable_interrupts>
+41003f98:	40 00 08 9d 	call  4100620c <air_sparc_enable_interrupts>
 41003f9c:	01 00 00 00 	nop 
 41003fa0:	81 c7 e0 08 	ret 
 41003fa4:	81 e8 00 00 	restore 
@@ -4341,7 +4341,7 @@ Disassembly of section .text:
 41003fdc:	12 80 00 34 	bne  410040ac <_Thread_queue_Enqueue_priority+0x104>
 41003fe0:	a6 06 00 13 	add  %i0, %l3, %l3
 41003fe4:	a8 04 e0 04 	add  %l3, 4, %l4
-41003fe8:	40 00 08 85 	call  410061fc <xky_sparc_disable_interrupts>
+41003fe8:	40 00 08 85 	call  410061fc <air_sparc_disable_interrupts>
 41003fec:	01 00 00 00 	nop 
 41003ff0:	ac 10 00 08 	mov  %o0, %l6
 41003ff4:	e0 04 c0 00 	ld  [ %l3 ], %l0
@@ -4357,9 +4357,9 @@ Disassembly of section .text:
 4100401c:	80 a4 40 12 	cmp  %l1, %l2
 41004020:	28 80 00 14 	bleu,a   41004070 <_Thread_queue_Enqueue_priority+0xc8>
 41004024:	c2 06 20 30 	ld  [ %i0 + 0x30 ], %g1
-41004028:	40 00 08 79 	call  4100620c <xky_sparc_enable_interrupts>
+41004028:	40 00 08 79 	call  4100620c <air_sparc_enable_interrupts>
 4100402c:	90 10 00 16 	mov  %l6, %o0
-41004030:	40 00 08 73 	call  410061fc <xky_sparc_disable_interrupts>
+41004030:	40 00 08 73 	call  410061fc <air_sparc_disable_interrupts>
 41004034:	01 00 00 00 	nop 
 41004038:	c2 04 20 10 	ld  [ %l0 + 0x10 ], %g1
 4100403c:	80 8d 40 01 	btst  %l5, %g1
@@ -4388,9 +4388,9 @@ Disassembly of section .text:
 41004098:	b2 16 63 f8 	or  %i1, 0x3f8, %i1	! 1003fff8 <RAM_SIZE+0xfc3fff8>
 4100409c:	7f ff fd 77 	call  41003678 <_Thread_Clear_state>
 410040a0:	81 e8 00 00 	restore 
-410040a4:	40 00 08 5a 	call  4100620c <xky_sparc_enable_interrupts>
+410040a4:	40 00 08 5a 	call  4100620c <air_sparc_enable_interrupts>
 410040a8:	90 10 00 14 	mov  %l4, %o0
-410040ac:	40 00 08 54 	call  410061fc <xky_sparc_disable_interrupts>
+410040ac:	40 00 08 54 	call  410061fc <air_sparc_disable_interrupts>
 410040b0:	01 00 00 00 	nop 
 410040b4:	a8 10 00 08 	mov  %o0, %l4
 410040b8:	e0 04 e0 08 	ld  [ %l3 + 8 ], %l0
@@ -4407,9 +4407,9 @@ Disassembly of section .text:
 410040e4:	e4 04 20 14 	ld  [ %l0 + 0x14 ], %l2
 410040e8:	10 80 00 1a 	b  41004150 <_Thread_queue_Enqueue_priority+0x1a8>
 410040ec:	90 10 00 14 	mov  %l4, %o0
-410040f0:	40 00 08 47 	call  4100620c <xky_sparc_enable_interrupts>
+410040f0:	40 00 08 47 	call  4100620c <air_sparc_enable_interrupts>
 410040f4:	90 10 00 14 	mov  %l4, %o0
-410040f8:	40 00 08 41 	call  410061fc <xky_sparc_disable_interrupts>
+410040f8:	40 00 08 41 	call  410061fc <air_sparc_disable_interrupts>
 410040fc:	01 00 00 00 	nop 
 41004100:	c2 04 20 10 	ld  [ %l0 + 0x10 ], %g1
 41004104:	80 8d 40 01 	btst  %l5, %g1
@@ -4444,13 +4444,13 @@ Disassembly of section .text:
 41004178:	f0 26 60 4c 	st  %i0, [ %i1 + 0x4c ]
 4100417c:	f2 24 00 00 	st  %i1, [ %l0 ]
 41004180:	f2 20 60 04 	st  %i1, [ %g1 + 4 ]
-41004184:	40 00 08 22 	call  4100620c <xky_sparc_enable_interrupts>
+41004184:	40 00 08 22 	call  4100620c <air_sparc_enable_interrupts>
 41004188:	91 e8 00 14 	restore  %g0, %l4, %o0
 4100418c:	c4 06 60 78 	ld  [ %i1 + 0x78 ], %g2
 41004190:	80 a0 a0 02 	cmp  %g2, 2
 41004194:	22 80 00 12 	be,a   410041dc <_Thread_queue_Enqueue_priority+0x234>
 41004198:	c2 26 60 78 	st  %g1, [ %i1 + 0x78 ]
-4100419c:	40 00 08 1c 	call  4100620c <xky_sparc_enable_interrupts>
+4100419c:	40 00 08 1c 	call  4100620c <air_sparc_enable_interrupts>
 410041a0:	b0 10 00 19 	mov  %i1, %i0
 410041a4:	33 04 00 ff 	sethi  %hi(0x1003fc00), %i1
 410041a8:	b2 16 63 f8 	or  %i1, 0x3f8, %i1	! 1003fff8 <RAM_SIZE+0xfc3fff8>
@@ -4460,14 +4460,14 @@ Disassembly of section .text:
 410041b8:	c0 26 60 4c 	clr  [ %i1 + 0x4c ]
 410041bc:	c2 00 60 3c 	ld  [ %g1 + 0x3c ], %g1
 410041c0:	c2 26 60 3c 	st  %g1, [ %i1 + 0x3c ]
-410041c4:	40 00 08 12 	call  4100620c <xky_sparc_enable_interrupts>
+410041c4:	40 00 08 12 	call  4100620c <air_sparc_enable_interrupts>
 410041c8:	b0 10 00 19 	mov  %i1, %i0
 410041cc:	33 04 00 ff 	sethi  %hi(0x1003fc00), %i1
 410041d0:	b2 16 63 f8 	or  %i1, 0x3f8, %i1	! 1003fff8 <RAM_SIZE+0xfc3fff8>
 410041d4:	7f ff fd 29 	call  41003678 <_Thread_Clear_state>
 410041d8:	81 e8 00 00 	restore 
 410041dc:	c0 26 60 4c 	clr  [ %i1 + 0x4c ]
-410041e0:	40 00 08 0b 	call  4100620c <xky_sparc_enable_interrupts>
+410041e0:	40 00 08 0b 	call  4100620c <air_sparc_enable_interrupts>
 410041e4:	b0 10 00 19 	mov  %i1, %i0
 410041e8:	7f ff f7 62 	call  41001f70 <_Watchdog_Remove>
 410041ec:	90 06 60 70 	add  %i1, 0x70, %o0
@@ -4481,7 +4481,7 @@ Disassembly of section .text:
 4100420c:	f0 26 60 4c 	st  %i0, [ %i1 + 0x4c ]
 41004210:	f2 20 40 00 	st  %i1, [ %g1 ]
 41004214:	f2 24 20 04 	st  %i1, [ %l0 + 4 ]
-41004218:	40 00 07 fd 	call  4100620c <xky_sparc_enable_interrupts>
+41004218:	40 00 07 fd 	call  4100620c <air_sparc_enable_interrupts>
 4100421c:	91 e8 00 16 	restore  %g0, %l6, %o0
 41004220:	a0 04 20 44 	add  %l0, 0x44, %l0
 41004224:	c2 04 20 04 	ld  [ %l0 + 4 ], %g1
@@ -4490,9 +4490,9 @@ Disassembly of section .text:
 41004230:	f0 26 60 4c 	st  %i0, [ %i1 + 0x4c ]
 41004234:	f2 20 40 00 	st  %i1, [ %g1 ]
 41004238:	f2 24 20 04 	st  %i1, [ %l0 + 4 ]
-4100423c:	40 00 07 f4 	call  4100620c <xky_sparc_enable_interrupts>
+4100423c:	40 00 07 f4 	call  4100620c <air_sparc_enable_interrupts>
 41004240:	91 e8 00 08 	restore  %g0, %o0, %o0
-41004244:	40 00 07 f2 	call  4100620c <xky_sparc_enable_interrupts>
+41004244:	40 00 07 f2 	call  4100620c <air_sparc_enable_interrupts>
 41004248:	90 10 00 16 	mov  %l6, %o0
 4100424c:	30 bf ff 67 	b,a   41003fe8 <_Thread_queue_Enqueue_priority+0x40>
 41004250:	10 bf ff 88 	b  41004070 <_Thread_queue_Enqueue_priority+0xc8>
@@ -4575,9 +4575,9 @@ Disassembly of section .text:
 41004354:	80 a0 40 02 	cmp  %g1, %g2
 41004358:	32 bf ff fe 	bne,a   41004350 <boot_card+0x18>
 4100435c:	c0 20 40 00 	clr  [ %g1 ]
-41004360:	40 00 07 c3 	call  4100626c <xky_sparc_set_tbr>
+41004360:	40 00 07 c3 	call  4100626c <air_sparc_set_tbr>
 41004364:	23 10 40 19 	sethi  %hi(0x41006400), %l1
-41004368:	40 00 07 b1 	call  4100622c <xky_sparc_enable_traps>
+41004368:	40 00 07 b1 	call  4100622c <air_sparc_enable_traps>
 4100436c:	21 10 40 2c 	sethi  %hi(0x4100b000), %l0
 41004370:	03 00 00 04 	sethi  %hi(0x1000), %g1
 41004374:	90 14 62 88 	or  %l1, 0x288, %o0
@@ -4675,13 +4675,13 @@ Disassembly of section .text:
 410044d4:	80 a4 80 01 	cmp  %l2, %g1
 410044d8:	08 80 00 08 	bleu  410044f8 <bsp_start+0x84>
 410044dc:	27 10 40 19 	sethi  %hi(0x41006400), %l3
-410044e0:	40 00 06 e7 	call  4100607c <xky_syscall_get_us_per_tick>
+410044e0:	40 00 06 e7 	call  4100607c <air_syscall_get_us_per_tick>
 410044e4:	01 00 00 00 	nop 
 410044e8:	e4 24 60 8c 	st  %l2, [ %l1 + 0x8c ]
 410044ec:	d2 24 20 0c 	st  %o1, [ %l0 + 0xc ]
 410044f0:	81 c7 e0 08 	ret 
 410044f4:	81 e8 00 00 	restore 
-410044f8:	40 00 07 41 	call  410061fc <xky_sparc_disable_interrupts>
+410044f8:	40 00 07 41 	call  410061fc <air_sparc_disable_interrupts>
 410044fc:	ea 04 e3 90 	ld  [ %l3 + 0x390 ], %l5
 41004500:	a8 10 00 08 	mov  %o0, %l4
 41004504:	82 10 20 04 	mov  4, %g1
@@ -4694,9 +4694,9 @@ Disassembly of section .text:
 41004520:	02 bf ff fc 	be  41004510 <bsp_start+0x9c>
 41004524:	90 10 20 00 	clr  %o0
 41004528:	ea 24 e3 90 	st  %l5, [ %l3 + 0x390 ]
-4100452c:	40 00 07 38 	call  4100620c <xky_sparc_enable_interrupts>
+4100452c:	40 00 07 38 	call  4100620c <air_sparc_enable_interrupts>
 41004530:	90 10 00 14 	mov  %l4, %o0
-41004534:	40 00 06 d2 	call  4100607c <xky_syscall_get_us_per_tick>
+41004534:	40 00 06 d2 	call  4100607c <air_syscall_get_us_per_tick>
 41004538:	01 00 00 00 	nop 
 4100453c:	e4 24 60 8c 	st  %l2, [ %l1 + 0x8c ]
 41004540:	d2 24 20 0c 	st  %o1, [ %l0 + 0xc ]
@@ -4748,7 +4748,7 @@ Disassembly of section .text:
 
 410045e8 <Clock_isr>:
 410045e8:	9d e3 bf a0 	save  %sp, -96, %sp
-410045ec:	40 00 06 a8 	call  4100608c <xky_syscall_get_elapsed_ticks>
+410045ec:	40 00 06 a8 	call  4100608c <air_syscall_get_elapsed_ticks>
 410045f0:	01 00 00 00 	nop 
 410045f4:	03 10 40 2c 	sethi  %hi(0x4100b000), %g1
 410045f8:	c4 18 60 c0 	ldd  [ %g1 + 0xc0 ], %g2	! 4100b0c0 <Clock_driver_ticks>
@@ -5143,13 +5143,13 @@ Disassembly of section .text:
 41004bb4:	b3 28 40 19 	sll  %g1, %i1, %i1
 41004bb8:	c2 04 21 e4 	ld  [ %l0 + 0x1e4 ], %g1
 41004bbc:	f2 20 60 0c 	st  %i1, [ %g1 + 0xc ]
-41004bc0:	40 00 05 8f 	call  410061fc <xky_sparc_disable_interrupts>
+41004bc0:	40 00 05 8f 	call  410061fc <air_sparc_disable_interrupts>
 41004bc4:	01 00 00 00 	nop 
 41004bc8:	c2 04 21 e4 	ld  [ %l0 + 0x1e4 ], %g1
 41004bcc:	c4 00 60 40 	ld  [ %g1 + 0x40 ], %g2
 41004bd0:	b2 16 40 02 	or  %i1, %g2, %i1
 41004bd4:	f2 20 60 40 	st  %i1, [ %g1 + 0x40 ]
-41004bd8:	40 00 05 8d 	call  4100620c <xky_sparc_enable_interrupts>
+41004bd8:	40 00 05 8d 	call  4100620c <air_sparc_enable_interrupts>
 41004bdc:	01 00 00 00 	nop 
 41004be0:	f0 07 bf fc 	ld  [ %fp + -4 ], %i0
 41004be4:	81 c7 e0 08 	ret 
@@ -5157,7 +5157,7 @@ Disassembly of section .text:
 
 41004bec <bsp_spurious_initialize>:
 41004bec:	9d e3 bf 98 	save  %sp, -104, %sp
-41004bf0:	40 00 05 83 	call  410061fc <xky_sparc_disable_interrupts>
+41004bf0:	40 00 05 83 	call  410061fc <air_sparc_disable_interrupts>
 41004bf4:	23 10 40 13 	sethi  %hi(0x41004c00), %l1
 41004bf8:	a0 10 20 00 	clr  %l0
 41004bfc:	a4 07 bf fc 	add  %fp, -4, %l2
@@ -5183,7 +5183,7 @@ Disassembly of section .text:
 41004c4c:	80 a4 21 00 	cmp  %l0, 0x100
 41004c50:	12 bf ff f7 	bne  41004c2c <bsp_spurious_initialize+0x40>
 41004c54:	82 04 3f ef 	add  %l0, -17, %g1
-41004c58:	40 00 05 6d 	call  4100620c <xky_sparc_enable_interrupts>
+41004c58:	40 00 05 6d 	call  4100620c <air_sparc_enable_interrupts>
 41004c5c:	90 10 00 13 	mov  %l3, %o0
 41004c60:	81 c7 e0 08 	ret 
 41004c64:	81 e8 00 00 	restore 
@@ -5389,7 +5389,7 @@ Disassembly of section .text:
 
 41004f44 <_Watchdog_Adjust>:
 41004f44:	9d e3 bf a0 	save  %sp, -96, %sp
-41004f48:	40 00 04 ad 	call  410061fc <xky_sparc_disable_interrupts>
+41004f48:	40 00 04 ad 	call  410061fc <air_sparc_disable_interrupts>
 41004f4c:	a0 10 00 18 	mov  %i0, %l0
 41004f50:	b0 10 00 08 	mov  %o0, %i0
 41004f54:	c2 04 00 00 	ld  [ %l0 ], %g1
@@ -5415,39 +5415,39 @@ Disassembly of section .text:
 41004fa4:	38 80 00 1c 	bgu,a   41005014 <_Watchdog_Adjust+0xd0>
 41004fa8:	b4 26 40 1a 	sub  %i1, %i2, %i2
 41004fac:	e4 20 60 10 	st  %l2, [ %g1 + 0x10 ]
-41004fb0:	40 00 04 97 	call  4100620c <xky_sparc_enable_interrupts>
+41004fb0:	40 00 04 97 	call  4100620c <air_sparc_enable_interrupts>
 41004fb4:	90 10 00 18 	mov  %i0, %o0
 41004fb8:	40 00 00 1b 	call  41005024 <_Watchdog_Tickle>
 41004fbc:	90 10 00 10 	mov  %l0, %o0
-41004fc0:	40 00 04 8f 	call  410061fc <xky_sparc_disable_interrupts>
+41004fc0:	40 00 04 8f 	call  410061fc <air_sparc_disable_interrupts>
 41004fc4:	01 00 00 00 	nop 
 41004fc8:	b0 10 00 08 	mov  %o0, %i0
 41004fcc:	c2 04 00 00 	ld  [ %l0 ], %g1
 41004fd0:	80 a4 40 01 	cmp  %l1, %g1
 41004fd4:	32 bf ff f0 	bne,a   41004f94 <_Watchdog_Adjust+0x50>
 41004fd8:	b4 a6 80 19 	subcc  %i2, %i1, %i2
-41004fdc:	40 00 04 8c 	call  4100620c <xky_sparc_enable_interrupts>
+41004fdc:	40 00 04 8c 	call  4100620c <air_sparc_enable_interrupts>
 41004fe0:	81 e8 00 00 	restore 
 41004fe4:	02 80 00 07 	be  41005000 <_Watchdog_Adjust+0xbc>
 41004fe8:	90 10 20 00 	clr  %o0
 41004fec:	92 10 20 01 	mov  1, %o1
 41004ff0:	7f ff ef 2c 	call  41000ca0 <_Internal_error_Occurred>
 41004ff4:	94 10 20 27 	mov  0x27, %o2
-41004ff8:	40 00 04 85 	call  4100620c <xky_sparc_enable_interrupts>
+41004ff8:	40 00 04 85 	call  4100620c <air_sparc_enable_interrupts>
 41004ffc:	81 e8 00 00 	restore 
 41005000:	c4 00 60 10 	ld  [ %g1 + 0x10 ], %g2
 41005004:	b4 00 80 1a 	add  %g2, %i2, %i2
 41005008:	f4 20 60 10 	st  %i2, [ %g1 + 0x10 ]
-4100500c:	40 00 04 80 	call  4100620c <xky_sparc_enable_interrupts>
+4100500c:	40 00 04 80 	call  4100620c <air_sparc_enable_interrupts>
 41005010:	81 e8 00 00 	restore 
 41005014:	f4 20 60 10 	st  %i2, [ %g1 + 0x10 ]
-41005018:	40 00 04 7d 	call  4100620c <xky_sparc_enable_interrupts>
+41005018:	40 00 04 7d 	call  4100620c <air_sparc_enable_interrupts>
 4100501c:	81 e8 00 00 	restore 
 41005020:	01 00 00 00 	nop 
 
 41005024 <_Watchdog_Tickle>:
 41005024:	9d e3 bf a0 	save  %sp, -96, %sp
-41005028:	40 00 04 75 	call  410061fc <xky_sparc_disable_interrupts>
+41005028:	40 00 04 75 	call  410061fc <air_sparc_disable_interrupts>
 4100502c:	a0 10 00 18 	mov  %i0, %l0
 41005030:	b0 10 00 08 	mov  %o0, %i0
 41005034:	e4 04 00 00 	ld  [ %l0 ], %l2
@@ -5462,7 +5462,7 @@ Disassembly of section .text:
 41005058:	80 a0 60 00 	cmp  %g1, 0
 4100505c:	02 80 00 16 	be  410050b4 <_Watchdog_Tickle+0x90>
 41005060:	c2 24 a0 10 	st  %g1, [ %l2 + 0x10 ]
-41005064:	40 00 04 6a 	call  4100620c <xky_sparc_enable_interrupts>
+41005064:	40 00 04 6a 	call  4100620c <air_sparc_enable_interrupts>
 41005068:	81 e8 00 00 	restore 
 4100506c:	0a 80 00 07 	bcs  41005088 <_Watchdog_Tickle+0x64>
 41005070:	80 a4 e0 03 	cmp  %l3, 3
@@ -5471,7 +5471,7 @@ Disassembly of section .text:
 4100507c:	94 10 20 28 	mov  0x28, %o2
 41005080:	7f ff ef 08 	call  41000ca0 <_Internal_error_Occurred>
 41005084:	90 10 20 00 	clr  %o0
-41005088:	40 00 04 5d 	call  410061fc <xky_sparc_disable_interrupts>
+41005088:	40 00 04 5d 	call  410061fc <air_sparc_disable_interrupts>
 4100508c:	01 00 00 00 	nop 
 41005090:	b0 10 00 08 	mov  %o0, %i0
 41005094:	e4 04 00 00 	ld  [ %l0 ], %l2
@@ -5485,7 +5485,7 @@ Disassembly of section .text:
 410050b4:	7f ff f3 af 	call  41001f70 <_Watchdog_Remove>
 410050b8:	90 10 00 12 	mov  %l2, %o0
 410050bc:	a6 10 00 08 	mov  %o0, %l3
-410050c0:	40 00 04 53 	call  4100620c <xky_sparc_enable_interrupts>
+410050c0:	40 00 04 53 	call  4100620c <air_sparc_enable_interrupts>
 410050c4:	90 10 00 18 	mov  %i0, %o0
 410050c8:	80 a4 e0 02 	cmp  %l3, 2
 410050cc:	12 bf ff e8 	bne  4100506c <_Watchdog_Tickle+0x48>
@@ -5500,7 +5500,7 @@ Disassembly of section .text:
 410050e8:	9d e3 bf a0 	save  %sp, -96, %sp
 410050ec:	03 10 40 19 	sethi  %hi(0x41006400), %g1
 410050f0:	e0 00 63 94 	ld  [ %g1 + 0x394 ], %l0	! 41006794 <_Thread_Executing>
-410050f4:	40 00 04 42 	call  410061fc <xky_sparc_disable_interrupts>
+410050f4:	40 00 04 42 	call  410061fc <air_sparc_disable_interrupts>
 410050f8:	e2 04 20 b4 	ld  [ %l0 + 0xb4 ], %l1
 410050fc:	b0 10 00 08 	mov  %o0, %i0
 41005100:	c4 04 40 00 	ld  [ %l1 ], %g2
@@ -5518,9 +5518,9 @@ Disassembly of section .text:
 41005130:	e0 24 60 08 	st  %l0, [ %l1 + 8 ]
 41005134:	c2 24 20 04 	st  %g1, [ %l0 + 4 ]
 41005138:	e0 20 40 00 	st  %l0, [ %g1 ]
-4100513c:	40 00 04 34 	call  4100620c <xky_sparc_enable_interrupts>
+4100513c:	40 00 04 34 	call  4100620c <air_sparc_enable_interrupts>
 41005140:	01 00 00 00 	nop 
-41005144:	40 00 04 2e 	call  410061fc <xky_sparc_disable_interrupts>
+41005144:	40 00 04 2e 	call  410061fc <air_sparc_disable_interrupts>
 41005148:	01 00 00 00 	nop 
 4100514c:	03 10 40 19 	sethi  %hi(0x41006400), %g1
 41005150:	c4 00 63 98 	ld  [ %g1 + 0x398 ], %g2	! 41006798 <_Thread_Heir>
@@ -5530,7 +5530,7 @@ Disassembly of section .text:
 41005160:	84 10 20 01 	mov  1, %g2
 41005164:	03 10 40 2a 	sethi  %hi(0x4100a800), %g1
 41005168:	c4 20 61 c0 	st  %g2, [ %g1 + 0x1c0 ]	! 4100a9c0 <_Context_Switch_necessary>
-4100516c:	40 00 04 28 	call  4100620c <xky_sparc_enable_interrupts>
+4100516c:	40 00 04 28 	call  4100620c <air_sparc_enable_interrupts>
 41005170:	81 e8 00 00 	restore 
 41005174:	10 bf ff fb 	b  41005160 <_Thread_Reset_timeslice+0x78>
 41005178:	c4 20 63 98 	st  %g2, [ %g1 + 0x398 ]
@@ -5860,7 +5860,7 @@ Disassembly of section .text:
 41005668:	04 80 00 06 	ble  41005680 <print_byte+0x3c>
 4100566c:	be 10 00 0f 	mov  %o7, %i7
 41005670:	ba 10 00 09 	mov  %o1, %i5
-41005674:	40 00 02 da 	call  410061dc <xky_syscall_print>
+41005674:	40 00 02 da 	call  410061dc <air_syscall_print>
 41005678:	92 10 20 40 	mov  0x40, %o1
 4100567c:	c0 27 40 00 	clr  [ %i5 ]
 41005680:	9e 10 00 1f 	mov  %i7, %o7
@@ -5890,7 +5890,7 @@ Disassembly of section .text:
 410056d8:	12 80 00 0d 	bne  4100570c <libpprintf_internal_pprintf+0x78>
 410056dc:	ba 10 00 08 	mov  %o0, %i5
 410056e0:	90 10 3f ff 	mov  -1, %o0
-410056e4:	40 00 02 72 	call  410060ac <xky_syscall_get_partition_status>
+410056e4:	40 00 02 72 	call  410060ac <air_syscall_get_partition_status>
 410056e8:	92 03 a0 80 	add  %sp, 0x80, %o1
 410056ec:	80 a2 20 00 	cmp  %o0, 0
 410056f0:	12 80 00 1b 	bne  4100575c <libpprintf_internal_pprintf+0xc8>
@@ -5918,7 +5918,7 @@ Disassembly of section .text:
 41005748:	11 10 40 19 	sethi  %hi(0x41006400), %o0
 4100574c:	92 10 20 06 	mov  6, %o1
 41005750:	90 12 23 20 	or  %o0, 0x320, %o0
-41005754:	40 00 02 a2 	call  410061dc <xky_syscall_print>
+41005754:	40 00 02 a2 	call  410061dc <air_syscall_print>
 41005758:	90 02 00 01 	add  %o0, %g1, %o0
 4100575c:	b6 03 a1 08 	add  %sp, 0x108, %i3
 41005760:	c0 23 a0 64 	clr  [ %sp + 0x64 ]
@@ -6045,7 +6045,7 @@ Disassembly of section .text:
 41005944:	82 00 80 09 	add  %g2, %o1, %g1
 41005948:	90 03 a0 80 	add  %sp, 0x80, %o0
 4100594c:	c0 28 7f c0 	clrb  [ %g1 + -64 ]
-41005950:	40 00 02 23 	call  410061dc <xky_syscall_print>
+41005950:	40 00 02 23 	call  410061dc <air_syscall_print>
 41005954:	92 02 60 01 	inc  %o1
 41005958:	9e 10 00 1f 	mov  %i7, %o7
 4100595c:	e0 1b a0 c0 	ldd  [ %sp + 0xc0 ], %l0
@@ -6226,7 +6226,7 @@ Disassembly of section .text:
 41005c10:	80 a0 a0 00 	cmp  %g2, 0
 41005c14:	12 80 00 0b 	bne  41005c40 <imaspex_init+0x44>
 41005c18:	90 10 20 01 	mov  1, %o0
-41005c1c:	40 00 01 18 	call  4100607c <xky_syscall_get_us_per_tick>
+41005c1c:	40 00 01 18 	call  4100607c <air_syscall_get_us_per_tick>
 41005c20:	d0 20 63 b4 	st  %o0, [ %g1 + 0x3b4 ]
 41005c24:	82 5a 23 e8 	smul  %o0, 0x3e8, %g1
 41005c28:	86 52 63 e8 	umul  %o1, 0x3e8, %g3
@@ -6249,7 +6249,7 @@ Disassembly of section .text:
 41005c64:	80 a0 a0 00 	cmp  %g2, 0
 41005c68:	12 80 00 0b 	bne  41005c94 <TSAL_INIT+0x44>
 41005c6c:	90 10 20 01 	mov  1, %o0
-41005c70:	40 00 01 03 	call  4100607c <xky_syscall_get_us_per_tick>
+41005c70:	40 00 01 03 	call  4100607c <air_syscall_get_us_per_tick>
 41005c74:	d0 20 63 b4 	st  %o0, [ %g1 + 0x3b4 ]
 41005c78:	82 5a 23 e8 	smul  %o0, 0x3e8, %g1
 41005c7c:	86 52 63 e8 	umul  %o1, 0x3e8, %g3
@@ -6282,7 +6282,7 @@ Disassembly of section .text:
 41005ce0:	ba 10 00 09 	mov  %o1, %i5
 41005ce4:	b8 10 00 08 	mov  %o0, %i4
 41005ce8:	92 03 a0 60 	add  %sp, 0x60, %o1
-41005cec:	40 00 00 f0 	call  410060ac <xky_syscall_get_partition_status>
+41005cec:	40 00 00 f0 	call  410060ac <air_syscall_get_partition_status>
 41005cf0:	90 10 3f ff 	mov  -1, %o0
 41005cf4:	80 a2 20 00 	cmp  %o0, 0
 41005cf8:	12 bf ff f5 	bne  41005ccc <GET_PARTITION_STATUS+0x28>
@@ -6339,7 +6339,7 @@ Disassembly of section .text:
 41005dbc:	9c 03 a0 60 	add  %sp, 0x60, %sp
 41005dc0:	ba 10 00 09 	mov  %o1, %i5
 41005dc4:	92 10 00 08 	mov  %o0, %o1
-41005dc8:	40 00 00 bd 	call  410060bc <xky_syscall_set_partition_mode>
+41005dc8:	40 00 00 bd 	call  410060bc <air_syscall_set_partition_mode>
 41005dcc:	90 10 3f ff 	mov  -1, %o0
 41005dd0:	d0 27 40 00 	st  %o0, [ %i5 ]
 41005dd4:	9e 10 00 1f 	mov  %i7, %o7
@@ -6365,7 +6365,7 @@ Disassembly of section .text:
 41005e1c:	81 c3 e0 08 	retl 
 41005e20:	9c 03 a0 60 	add  %sp, 0x60, %sp
 41005e24:	ba 10 00 09 	mov  %o1, %i5
-41005e28:	40 00 00 99 	call  4100608c <xky_syscall_get_elapsed_ticks>
+41005e28:	40 00 00 99 	call  4100608c <air_syscall_get_elapsed_ticks>
 41005e2c:	b8 10 00 08 	mov  %o0, %i4
 41005e30:	03 10 40 2c 	sethi  %hi(0x4100b000), %g1
 41005e34:	c8 00 61 f0 	ld  [ %g1 + 0x1f0 ], %g4	! 4100b1f0 <imaspex_ns_per_tick>
@@ -6401,7 +6401,7 @@ Disassembly of section .text:
 41005ea4:	fe 03 a0 9c 	ld  [ %sp + 0x9c ], %i7
 41005ea8:	81 c3 e0 08 	retl 
 41005eac:	9c 03 a0 60 	add  %sp, 0x60, %sp
-41005eb0:	40 00 00 83 	call  410060bc <xky_syscall_set_partition_mode>
+41005eb0:	40 00 00 83 	call  410060bc <air_syscall_set_partition_mode>
 41005eb4:	ba 10 00 0a 	mov  %o2, %i5
 41005eb8:	d0 27 40 00 	st  %o0, [ %i5 ]
 41005ebc:	9e 10 00 1f 	mov  %i7, %o7
@@ -6428,7 +6428,7 @@ Disassembly of section .text:
 41005f08:	9c 03 a0 90 	add  %sp, 0x90, %sp
 41005f0c:	ba 10 00 0a 	mov  %o2, %i5
 41005f10:	b8 10 00 09 	mov  %o1, %i4
-41005f14:	40 00 00 66 	call  410060ac <xky_syscall_get_partition_status>
+41005f14:	40 00 00 66 	call  410060ac <air_syscall_get_partition_status>
 41005f18:	92 03 a0 60 	add  %sp, 0x60, %o1
 41005f1c:	80 a2 20 00 	cmp  %o0, 0
 41005f20:	12 bf ff f6 	bne  41005ef8 <GET_A_PARTITION_STATUS+0x28>
@@ -6465,7 +6465,7 @@ Disassembly of section .text:
 41005f94:	fe 03 a0 9c 	ld  [ %sp + 0x9c ], %i7
 41005f98:	81 c3 e0 08 	retl 
 41005f9c:	9c 03 a0 60 	add  %sp, 0x60, %sp
-41005fa0:	40 00 00 3f 	call  4100609c <xky_syscall_get_partition_id>
+41005fa0:	40 00 00 3f 	call  4100609c <air_syscall_get_partition_id>
 41005fa4:	ba 10 00 0a 	mov  %o2, %i5
 41005fa8:	d0 27 40 00 	st  %o0, [ %i5 ]
 41005fac:	9e 10 00 1f 	mov  %i7, %o7
@@ -6492,7 +6492,7 @@ Disassembly of section .text:
 41005ff8:	9c 03 a0 60 	add  %sp, 0x60, %sp
 41005ffc:	ba 10 00 09 	mov  %o1, %i5
 41006000:	92 10 00 08 	mov  %o0, %o1
-41006004:	40 00 00 26 	call  4100609c <xky_syscall_get_partition_id>
+41006004:	40 00 00 26 	call  4100609c <air_syscall_get_partition_id>
 41006008:	90 10 20 00 	clr  %o0
 4100600c:	d0 27 40 00 	st  %o0, [ %i5 ]
 41006010:	9e 10 00 1f 	mov  %i7, %o7
@@ -6513,253 +6513,253 @@ Disassembly of section .text:
 41006044:	81 c3 e0 08 	retl 
 41006048:	c2 22 00 00 	st  %g1, [ %o0 ]
 
-4100604c <xky_syscall_get_physical_addr>:
+4100604c <air_syscall_get_physical_addr>:
 4100604c:	9a 10 20 03 	mov  3, %o5
 41006050:	91 d0 20 00 	ta  0
 41006054:	81 c3 e0 08 	retl 
 41006058:	01 00 00 00 	nop 
 
-4100605c <xky_syscall_get_core_id>:
+4100605c <air_syscall_get_core_id>:
 4100605c:	9a 10 20 04 	mov  4, %o5	! 4 <PROM_START+0x4>
 41006060:	91 d0 20 00 	ta  0
 41006064:	81 c3 e0 08 	retl 
 41006068:	01 00 00 00 	nop 
 
-4100606c <xky_syscall_boot_core>:
+4100606c <air_syscall_boot_core>:
 4100606c:	9a 10 20 05 	mov  5, %o5	! 5 <PROM_START+0x5>
 41006070:	91 d0 20 00 	ta  0
 41006074:	81 c3 e0 08 	retl 
 41006078:	01 00 00 00 	nop 
 
-4100607c <xky_syscall_get_us_per_tick>:
+4100607c <air_syscall_get_us_per_tick>:
 4100607c:	9a 10 20 06 	mov  6, %o5	! 6 <PROM_START+0x6>
 41006080:	91 d0 20 00 	ta  0
 41006084:	81 c3 e0 08 	retl 
 41006088:	01 00 00 00 	nop 
 
-4100608c <xky_syscall_get_elapsed_ticks>:
+4100608c <air_syscall_get_elapsed_ticks>:
 4100608c:	9a 10 20 07 	mov  7, %o5	! 7 <PROM_START+0x7>
 41006090:	91 d0 20 00 	ta  0
 41006094:	81 c3 e0 08 	retl 
 41006098:	01 00 00 00 	nop 
 
-4100609c <xky_syscall_get_partition_id>:
+4100609c <air_syscall_get_partition_id>:
 4100609c:	9a 10 20 08 	mov  8, %o5	! 8 <PROM_START+0x8>
 410060a0:	91 d0 20 00 	ta  0
 410060a4:	81 c3 e0 08 	retl 
 410060a8:	01 00 00 00 	nop 
 
-410060ac <xky_syscall_get_partition_status>:
+410060ac <air_syscall_get_partition_status>:
 410060ac:	9a 10 20 09 	mov  9, %o5	! 9 <PROM_START+0x9>
 410060b0:	91 d0 20 00 	ta  0
 410060b4:	81 c3 e0 08 	retl 
 410060b8:	01 00 00 00 	nop 
 
-410060bc <xky_syscall_set_partition_mode>:
+410060bc <air_syscall_set_partition_mode>:
 410060bc:	9a 10 20 0a 	mov  0xa, %o5	! a <PROM_START+0xa>
 410060c0:	91 d0 20 00 	ta  0
 410060c4:	81 c3 e0 08 	retl 
 410060c8:	01 00 00 00 	nop 
 
-410060cc <xky_syscall_get_schedule_id>:
+410060cc <air_syscall_get_schedule_id>:
 410060cc:	9a 10 20 0b 	mov  0xb, %o5	! b <PROM_START+0xb>
 410060d0:	91 d0 20 00 	ta  0
 410060d4:	81 c3 e0 08 	retl 
 410060d8:	01 00 00 00 	nop 
 
-410060dc <xky_syscall_get_schedule_status>:
+410060dc <air_syscall_get_schedule_status>:
 410060dc:	9a 10 20 0c 	mov  0xc, %o5	! c <PROM_START+0xc>
 410060e0:	91 d0 20 00 	ta  0
 410060e4:	81 c3 e0 08 	retl 
 410060e8:	01 00 00 00 	nop 
 
-410060ec <xky_syscall_set_schedule>:
+410060ec <air_syscall_set_schedule>:
 410060ec:	9a 10 20 0d 	mov  0xd, %o5	! d <PROM_START+0xd>
 410060f0:	91 d0 20 00 	ta  0
 410060f4:	81 c3 e0 08 	retl 
 410060f8:	01 00 00 00 	nop 
 
-410060fc <xky_syscall_get_tod>:
+410060fc <air_syscall_get_tod>:
 410060fc:	9a 10 20 0e 	mov  0xe, %o5	! e <PROM_START+0xe>
 41006100:	91 d0 20 00 	ta  0
 41006104:	81 c3 e0 08 	retl 
 41006108:	01 00 00 00 	nop 
 
-4100610c <xky_syscall_set_tod>:
+4100610c <air_syscall_set_tod>:
 4100610c:	9a 10 20 0f 	mov  0xf, %o5	! f <PROM_START+0xf>
 41006110:	91 d0 20 00 	ta  0
 41006114:	81 c3 e0 08 	retl 
 41006118:	01 00 00 00 	nop 
 
-4100611c <xky_syscall_get_port_id>:
+4100611c <air_syscall_get_port_id>:
 4100611c:	9a 10 20 10 	mov  0x10, %o5	! 10 <PROM_START+0x10>
 41006120:	91 d0 20 00 	ta  0
 41006124:	81 c3 e0 08 	retl 
 41006128:	01 00 00 00 	nop 
 
-4100612c <xky_syscall_create_port>:
+4100612c <air_syscall_create_port>:
 4100612c:	9a 10 20 12 	mov  0x12, %o5	! 12 <PROM_START+0x12>
 41006130:	91 d0 20 00 	ta  0
 41006134:	81 c3 e0 08 	retl 
 41006138:	01 00 00 00 	nop 
 
-4100613c <xky_syscall_get_port_status>:
+4100613c <air_syscall_get_port_status>:
 4100613c:	9a 10 20 11 	mov  0x11, %o5	! 11 <PROM_START+0x11>
 41006140:	91 d0 20 00 	ta  0
 41006144:	81 c3 e0 08 	retl 
 41006148:	01 00 00 00 	nop 
 
-4100614c <xky_syscall_read_port>:
+4100614c <air_syscall_read_port>:
 4100614c:	9a 10 20 13 	mov  0x13, %o5	! 13 <PROM_START+0x13>
 41006150:	91 d0 20 00 	ta  0
 41006154:	81 c3 e0 08 	retl 
 41006158:	01 00 00 00 	nop 
 
-4100615c <xky_syscall_write_port>:
+4100615c <air_syscall_write_port>:
 4100615c:	9a 10 20 14 	mov  0x14, %o5	! 14 <PROM_START+0x14>
 41006160:	91 d0 20 00 	ta  0
 41006164:	81 c3 e0 08 	retl 
 41006168:	01 00 00 00 	nop 
 
-4100616c <xky_syscall_get_sharedmemory>:
+4100616c <air_syscall_get_sharedmemory>:
 4100616c:	9a 10 20 15 	mov  0x15, %o5	! 15 <PROM_START+0x15>
 41006170:	91 d0 20 00 	ta  0
 41006174:	81 c3 e0 08 	retl 
 41006178:	01 00 00 00 	nop 
 
-4100617c <xky_syscall_shutdown_module>:
+4100617c <air_syscall_shutdown_module>:
 4100617c:	9a 10 20 17 	mov  0x17, %o5	! 17 <PROM_START+0x17>
 41006180:	91 d0 20 00 	ta  0
 41006184:	81 c3 e0 08 	retl 
 41006188:	01 00 00 00 	nop 
 
-4100618c <xky_syscall_get_event>:
+4100618c <air_syscall_get_event>:
 4100618c:	9a 10 20 18 	mov  0x18, %o5	! 18 <PROM_START+0x18>
 41006190:	91 d0 20 00 	ta  0
 41006194:	81 c3 e0 08 	retl 
 41006198:	01 00 00 00 	nop 
 
-4100619c <xky_syscall_get_system_state>:
+4100619c <air_syscall_get_system_state>:
 4100619c:	9a 10 20 19 	mov  0x19, %o5	! 19 <PROM_START+0x19>
 410061a0:	91 d0 20 00 	ta  0
 410061a4:	81 c3 e0 08 	retl 
 410061a8:	01 00 00 00 	nop 
 
-410061ac <xky_syscall_set_system_state>:
+410061ac <air_syscall_set_system_state>:
 410061ac:	9a 10 20 1a 	mov  0x1a, %o5	! 1a <PROM_START+0x1a>
 410061b0:	91 d0 20 00 	ta  0
 410061b4:	81 c3 e0 08 	retl 
 410061b8:	01 00 00 00 	nop 
 
-410061bc <xky_syscall_get_hm_event>:
+410061bc <air_syscall_get_hm_event>:
 410061bc:	9a 10 20 1b 	mov  0x1b, %o5	! 1b <PROM_START+0x1b>
 410061c0:	91 d0 20 00 	ta  0
 410061c4:	81 c3 e0 08 	retl 
 410061c8:	01 00 00 00 	nop 
 
-410061cc <xky_syscall_raise_hm_event>:
+410061cc <air_syscall_raise_hm_event>:
 410061cc:	9a 10 20 1c 	mov  0x1c, %o5	! 1c <PROM_START+0x1c>
 410061d0:	91 d0 20 00 	ta  0
 410061d4:	81 c3 e0 08 	retl 
 410061d8:	01 00 00 00 	nop 
 
-410061dc <xky_syscall_print>:
+410061dc <air_syscall_print>:
 410061dc:	9a 10 20 1e 	mov  0x1e, %o5	! 1e <PROM_START+0x1e>
 410061e0:	91 d0 20 00 	ta  0
 410061e4:	81 c3 e0 08 	retl 
 410061e8:	01 00 00 00 	nop 
 
-410061ec <xky_syscall_putchar>:
+410061ec <air_syscall_putchar>:
 410061ec:	9a 10 20 1d 	mov  0x1d, %o5	! 1d <PROM_START+0x1d>
 410061f0:	91 d0 20 00 	ta  0
 410061f4:	81 c3 e0 08 	retl 
 410061f8:	01 00 00 00 	nop 
 
-410061fc <xky_sparc_disable_interrupts>:
+410061fc <air_sparc_disable_interrupts>:
 410061fc:	9a 10 20 00 	clr  %o5	! 0 <PROM_START>
 41006200:	91 d0 20 82 	ta  0x82
 41006204:	81 c3 e0 08 	retl 
 41006208:	01 00 00 00 	nop 
 
-4100620c <xky_sparc_enable_interrupts>:
+4100620c <air_sparc_enable_interrupts>:
 4100620c:	9a 10 20 01 	mov  1, %o5	! 1 <PROM_START+0x1>
 41006210:	91 d0 20 82 	ta  0x82
 41006214:	81 c3 e0 08 	retl 
 41006218:	01 00 00 00 	nop 
 
-4100621c <xky_sparc_disable_traps>:
+4100621c <air_sparc_disable_traps>:
 4100621c:	9a 10 20 02 	mov  2, %o5	! 2 <PROM_START+0x2>
 41006220:	91 d0 20 82 	ta  0x82
 41006224:	81 c3 e0 08 	retl 
 41006228:	01 00 00 00 	nop 
 
-4100622c <xky_sparc_enable_traps>:
+4100622c <air_sparc_enable_traps>:
 4100622c:	9a 10 20 03 	mov  3, %o5	! 3 <PROM_START+0x3>
 41006230:	91 d0 20 82 	ta  0x82
 41006234:	81 c3 e0 08 	retl 
 41006238:	01 00 00 00 	nop 
 
-4100623c <xky_sparc_disable_fpu>:
+4100623c <air_sparc_disable_fpu>:
 4100623c:	9a 10 20 04 	mov  4, %o5	! 4 <PROM_START+0x4>
 41006240:	91 d0 20 82 	ta  0x82
 41006244:	81 c3 e0 08 	retl 
 41006248:	01 00 00 00 	nop 
 
-4100624c <xky_sparc_enable_fpu>:
+4100624c <air_sparc_enable_fpu>:
 4100624c:	9a 10 20 05 	mov  5, %o5	! 5 <PROM_START+0x5>
 41006250:	91 d0 20 82 	ta  0x82
 41006254:	81 c3 e0 08 	retl 
 41006258:	01 00 00 00 	nop 
 
-4100625c <xky_sparc_get_tbr>:
+4100625c <air_sparc_get_tbr>:
 4100625c:	9a 10 20 06 	mov  6, %o5	! 6 <PROM_START+0x6>
 41006260:	91 d0 20 82 	ta  0x82
 41006264:	81 c3 e0 08 	retl 
 41006268:	01 00 00 00 	nop 
 
-4100626c <xky_sparc_set_tbr>:
+4100626c <air_sparc_set_tbr>:
 4100626c:	9a 10 20 07 	mov  7, %o5	! 7 <PROM_START+0x7>
 41006270:	91 d0 20 82 	ta  0x82
 41006274:	81 c3 e0 08 	retl 
 41006278:	01 00 00 00 	nop 
 
-4100627c <xky_sparc_get_psr>:
+4100627c <air_sparc_get_psr>:
 4100627c:	9a 10 20 08 	mov  8, %o5	! 8 <PROM_START+0x8>
 41006280:	91 d0 20 82 	ta  0x82
 41006284:	81 c3 e0 08 	retl 
 41006288:	01 00 00 00 	nop 
 
-4100628c <xky_sparc_set_psr>:
+4100628c <air_sparc_set_psr>:
 4100628c:	9a 10 20 09 	mov  9, %o5	! 9 <PROM_START+0x9>
 41006290:	91 d0 20 82 	ta  0x82
 41006294:	81 c3 e0 08 	retl 
 41006298:	01 00 00 00 	nop 
 
-4100629c <xky_sparc_get_cache_register>:
+4100629c <air_sparc_get_cache_register>:
 4100629c:	9a 10 20 0b 	mov  0xb, %o5	! b <PROM_START+0xb>
 410062a0:	91 d0 20 82 	ta  0x82
 410062a4:	81 c3 e0 08 	retl 
 410062a8:	01 00 00 00 	nop 
 
-410062ac <xky_sparc_set_cache_register>:
+410062ac <air_sparc_set_cache_register>:
 410062ac:	9a 10 20 0c 	mov  0xc, %o5	! c <PROM_START+0xc>
 410062b0:	91 d0 20 82 	ta  0x82
 410062b4:	81 c3 e0 08 	retl 
 410062b8:	01 00 00 00 	nop 
 
-410062bc <xky_sparc_get_irq_mask_register>:
+410062bc <air_sparc_get_irq_mask_register>:
 410062bc:	9a 10 20 0e 	mov  0xe, %o5	! e <PROM_START+0xe>
 410062c0:	91 d0 20 82 	ta  0x82
 410062c4:	81 c3 e0 08 	retl 
 410062c8:	01 00 00 00 	nop 
 
-410062cc <xky_sparc_set_irq_mask_register>:
+410062cc <air_sparc_set_irq_mask_register>:
 410062cc:	9a 10 20 0f 	mov  0xf, %o5	! f <PROM_START+0xf>
 410062d0:	91 d0 20 82 	ta  0x82
 410062d4:	81 c3 e0 08 	retl 
 410062d8:	01 00 00 00 	nop 
 
-410062dc <xky_sparc_set_irq_force_register>:
+410062dc <air_sparc_set_irq_force_register>:
 410062dc:	9a 10 20 10 	mov  0x10, %o5	! 10 <PROM_START+0x10>
 410062e0:	91 d0 20 82 	ta  0x82
 410062e4:	81 c3 e0 08 	retl 

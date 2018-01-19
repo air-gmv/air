@@ -3,6 +3,7 @@
 # a script file to run by jenkins each time there is a commit to test it
 # 
 
+#cd ./air
 cd ./xky
 
 pwd=`pwd`
@@ -30,7 +31,7 @@ for entry in */
 do
     echo "### check [ $entry ] ###"
 
-    if [ $entry = "iop_example/" -o $entry = "math/" -o $entry = "multi/" -o $entry = "router_example/" ]; then
+    if [ $entry = "iop_example/" -o $entry = "math/" -o $entry = "multi/" -o $entry = "router_example/" -o $entry = "testsuites/" ]; then
         echo "### avoid [ $entry ] ###"
         continue
     fi

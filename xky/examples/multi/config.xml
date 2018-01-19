@@ -156,7 +156,7 @@
     <Sampling_Port Direction="SOURCE" MaxMessageSize="32" Name="SEND_SAMP1" RefreshRateSeconds="1.000"/>
     <Sampling_Port Direction="DESTINATION" MaxMessageSize="32" Name="RECV_SAMP1" RefreshRateSeconds="1.000"/>
     <PartitionConfiguration Personality="RTEMS" Cores="1" Mode="binary">
-      <Libs>LIBXKY;IMASPEX;LIBPRINTF</Libs>
+      <Libs>LIBAIR;IMASPEX;LIBPRINTF</Libs>
       <Cache>CODE; DATA</Cache>
       <Memory Size="0x500000" />
       <Permissions>
@@ -170,7 +170,7 @@
     <Sampling_Port Direction="SOURCE" MaxMessageSize="32" Name="SEND_SAMP2" RefreshRateSeconds="1.000"/>
     <Sampling_Port Direction="DESTINATION" MaxMessageSize="32" Name="RECV_SAMP2" RefreshRateSeconds="1.000"/>
     <PartitionConfiguration Personality="RTEMS" Cores="1" Mode="binary">
-      <Libs>LIBXKY; IMASPEX; LIBPRINTF</Libs>
+      <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
       <Cache>CODE; DATA</Cache>
       <Memory Size="0x500000" />
       <Permissions>
@@ -320,7 +320,7 @@
   </Partition_HM_Table>
 	 
 	 
-  <XKY_Configuration TicksPerSecond="1000" RequiredCores="2"/>
+  <AIR_Configuration TicksPerSecond="1000" RequiredCores="2"/>
   
 </ARINC_653_Module>
 

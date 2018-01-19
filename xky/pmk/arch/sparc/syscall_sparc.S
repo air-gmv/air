@@ -17,7 +17,7 @@
 #define ASM
 #endif
 
-#include <xky.h>
+#include <air.h>
 #include <pmk.h>
 #include <asm.h>
 #include <bsp.h>
@@ -35,7 +35,7 @@ SYM(sparc_virt_syscall):
     add     %l2, 0x04, %l2
 
     /* check if the system call is valid */
-    cmp     %i5, XKY_SYSCALL_SPARC_COUNT
+    cmp     %i5, AIR_SYSCALL_SPARC_COUNT
     bgeu    syscall_sparc_return
     nop
 
@@ -45,7 +45,7 @@ SYM(sparc_virt_syscall):
     and     %l4, 0xff, %l4
     umul    %l4, CORE_CTRL_SIZE, %l4                    ! core control offset
 
-    set     SYM(xky_shared_area), %l3                   ! shared area
+    set     SYM(air_shared_area), %l3                   ! shared area
     ld      [%l3 + SHAREDAREA_CORE_CTRL], %l3           ! core control area
     add     %l3, %l4, %l3                               ! current core control
 
@@ -153,7 +153,7 @@ syscall_sparc_disable_fpu:
     /* check the permissions to disable the FPU */
     ld      [%l3 + CORE_CTRL_PARTITION], %l4
     ld      [%l4 + PARTITION_PERMISSIONS], %l4
-    btst    XKY_PERMISSION_FPU_CONTROL, %l4
+    btst    AIR_PERMISSION_FPU_CONTROL, %l4
     bz      syscall_sparc_return_invalid_config
     nop
 
@@ -189,7 +189,7 @@ syscall_sparc_enable_fpu:
     /* check the permissions to disable the FPU */
     ld      [%l3 + CORE_CTRL_PARTITION], %l4
     ld      [%l4 + PARTITION_PERMISSIONS], %l4
-    btst    XKY_PERMISSION_FPU_CONTROL, %l4
+    btst    AIR_PERMISSION_FPU_CONTROL, %l4
     bz      syscall_sparc_return_invalid_config
     nop
 
@@ -298,7 +298,7 @@ syscall_sparc_set_psr:
     /* check the permissions to disable the FPU */
     ld      [%l3 + CORE_CTRL_PARTITION], %l4
     ld      [%l4 + PARTITION_PERMISSIONS], %l4
-    btst    XKY_PERMISSION_FPU_CONTROL, %l4
+    btst    AIR_PERMISSION_FPU_CONTROL, %l4
     bz      1f
 
     /* apply FPU change */
@@ -388,7 +388,7 @@ syscall_sparc_rett:
     nop
 
     /* 2nd check if the address is in kernel zone */
-    set     SYM(xky_kernel_memory_end), %g3
+    set     SYM(air_kernel_memory_end), %g3
     cmp     %g6, %g3
     bleu    1f
     nop
@@ -459,7 +459,7 @@ syscall_sparc_set_cache_register:
     /* check if the partition have the permissions */
     ld      [%l3 + CORE_CTRL_PARTITION], %l4
     ld      [%l4 + PARTITION_PERMISSIONS], %l4               ! permissions
-    andcc   %l4, XKY_PERMISSION_CACHE_CONTROL, %g0 ! can control cache?
+    andcc   %l4, AIR_PERMISSION_CACHE_CONTROL, %g0 ! can control cache?
     bz      syscall_sparc_return_invalid_config              ! no? then error
     nop                                                      ! delay slot
 
@@ -702,7 +702,7 @@ syscall_sparc_pedding_irq:
     nop
 
     /* 2nd check if the address is in kernel zone */
-    set     SYM(xky_kernel_memory_end), %g4
+    set     SYM(air_kernel_memory_end), %g4
     cmp     %sp, %g4
     bleu    1f
     nop
@@ -784,7 +784,7 @@ syscall_sparc_return:
  */
 syscall_sparc_return_no_error:
 
-    set     XKY_NO_ERROR, %i0                        ! set no error code
+    set     AIR_NO_ERROR, %i0                        ! set no error code
     mov     %l0, %psr                                ! restore partition PSR
     nop; nop; nop                                    ! WRPSR delay slots
     jmp     %l1                                      ! set PC
@@ -795,7 +795,7 @@ syscall_sparc_return_no_error:
  */
 syscall_sparc_return_no_action:
 
-    set     XKY_NO_ACTION, %i0                       ! set no error code
+    set     AIR_NO_ACTION, %i0                       ! set no error code
     mov     %l0, %psr                                ! restore partition PSR
     nop; nop; nop                                    ! WRPSR delay slots
     jmp     %l1                                      ! set PC
@@ -806,7 +806,7 @@ syscall_sparc_return_no_action:
  */
 syscall_sparc_return_invalid_config:
 
-    set     XKY_INVALID_CONFIG, %i0                  ! set invalid config code
+    set     AIR_INVALID_CONFIG, %i0                  ! set invalid config code
     mov     %l0, %psr                                ! restore partition PSR
     nop; nop; nop                                    ! WRPSR delay slots
     jmp     %l1                                      ! set PC

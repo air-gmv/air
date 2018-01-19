@@ -43,9 +43,9 @@ static pmk_barrier_t initialization_barrier;
  */
 void pmk_multicore_init(void) {
     
-    xky_u32_t i;
-    xky_u32_t available_cores = 0;
-    xky_u32_t configured_cores = 0;
+    air_u32_t i;
+    air_u32_t available_cores = 0;
+    air_u32_t configured_cores = 0;
 
 #ifdef PMK_DEBUG
     printk(" :: Multicore support initialization\n");
@@ -65,19 +65,19 @@ void pmk_multicore_init(void) {
 #endif
 
     /* setup configured cores */
-    xky_shared_area.configured_cores = configured_cores;
+    air_shared_area.configured_cores = configured_cores;
 
     /* allocate the required core structures and its respective interrupt stack
      * pointers in the workspace shared area
      */
     pmk_core_idle_context =
             pmk_workspace_alloc(sizeof(core_context_t) * configured_cores);
-    xky_shared_area.core =
+    air_shared_area.core =
             pmk_workspace_alloc(sizeof(pmk_core_ctrl_t) * configured_cores);
     for (i = 0; i < configured_cores; ++i){
 
 #ifdef PMK_DEBUG
-        printk("    core control %i (0x%08x):\n", i, &xky_shared_area.core[i]);
+        printk("    core control %i (0x%08x):\n", i, &air_shared_area.core[i]);
 #endif
 
         /* initialize idle contexts */
@@ -85,10 +85,10 @@ void pmk_multicore_init(void) {
         core_context_setup_idle(&pmk_core_idle_context[i]);
 
         /* initialize core control */
-        xky_shared_area.core[i].context = &pmk_core_idle_context[i];
-        xky_shared_area.core[i].partition = NULL;
-        xky_shared_area.core[i].schedule = NULL;
-        xky_shared_area.core[i].idx = i;
+        air_shared_area.core[i].context = &pmk_core_idle_context[i];
+        air_shared_area.core[i].partition = NULL;
+        air_shared_area.core[i].schedule = NULL;
+        air_shared_area.core[i].idx = i;
     }
 
     /* initialize the synchronization barriers between all cores */
@@ -130,6 +130,6 @@ void pmk_core_initialize(void){
 
 pmk_core_ctrl_t *pmk_get_current_core_ctrl(void) {
 
-    xky_u32_t idx = bsp_get_core_id();
-    return &xky_shared_area.core[idx];
+    air_u32_t idx = bsp_get_core_id();
+    return &air_shared_area.core[idx];
 }

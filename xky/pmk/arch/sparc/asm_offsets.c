@@ -5,7 +5,7 @@
  * @note This file isn't meant to be compiled into executable code
  */
 
-#include <xky.h>
+#include <air.h>
 #include <pmk.h>
 #include <cpu.h>
 #include <sparc.h>

@@ -28,10 +28,10 @@
  *         INVALID_PARAM   - if invalid partition name,
  *         NO_ERROR        - otherwise
  */
-xky_status_code_e pmk_syscall_get_partition_id(
+air_status_code_e pmk_syscall_get_partition_id(
         pmk_core_ctrl_t *core,
-        xky_name_ptr_t name,
-        xky_identifier_t *pid);
+        air_name_ptr_t name,
+        air_identifier_t *pid);
 /**
  * @brief Get Partition Status
  * @param core executing core information
@@ -41,10 +41,10 @@ xky_status_code_e pmk_syscall_get_partition_id(
  *         INVALID_PARAM   - if invalid partition id,
  *         NO_ERROR        - no error otherwise
  */
-xky_status_code_e pmk_syscall_get_partition_status(
+air_status_code_e pmk_syscall_get_partition_status(
         pmk_core_ctrl_t *core,
-        xky_identifier_t pid,
-        xky_partition_status_t *status);
+        air_identifier_t pid,
+        air_partition_status_t *status);
 /**
  * @brief Set partition mode
  * @param idx partition index
@@ -54,10 +54,10 @@ xky_status_code_e pmk_syscall_get_partition_status(
  *         NO_ACTION       - if transition from normal to normal
  *         NO_ERROR        - no error otherwise
  */
-xky_status_code_e pmk_syscall_set_partition_mode(
+air_status_code_e pmk_syscall_set_partition_mode(
         pmk_core_ctrl_t *core_ctrl,
-        xky_identifier_t pid,
-        xky_operating_mode_e mode);
+        air_identifier_t pid,
+        air_operating_mode_e mode);
 /**
  * @brief Get Schedule Id
  * @param core executing core information
@@ -67,10 +67,10 @@ xky_status_code_e pmk_syscall_set_partition_mode(
  *         INVALID_PARAM   - if invalid schedule name,
  *         NO_ERROR        - otherwise
  */
-xky_status_code_e pmk_syscall_get_schedule_id(
+air_status_code_e pmk_syscall_get_schedule_id(
         pmk_core_ctrl_t *core,
-        xky_name_ptr_t name,
-        xky_identifier_t *sid);
+        air_name_ptr_t name,
+        air_identifier_t *sid);
 /**
  * @brief Get Schedule Status
  * @param core executing core information
@@ -78,9 +78,9 @@ xky_status_code_e pmk_syscall_get_schedule_id(
  * @return INVALID_POINTER - if the partition pointers aren't valid,
  *         NO_ERROR        - otherwise
  */
-xky_status_code_e pmk_syscall_get_schedule_status(
+air_status_code_e pmk_syscall_get_schedule_status(
         pmk_core_ctrl_t *core,
-        xky_schedule_status_t *status);
+        air_schedule_status_t *status);
 /**
  * @brief Set Module schedule
  * @param core executing core information
@@ -90,9 +90,9 @@ xky_status_code_e pmk_syscall_get_schedule_status(
  *         NO_ACTION       - if the current id is the schedule id
  *         NO_ERROR        - otherwise
  */
-xky_status_code_e pmk_syscall_set_schedule(
+air_status_code_e pmk_syscall_set_schedule(
         pmk_core_ctrl_t *core,
-        xky_identifier_t sid);
+        air_identifier_t sid);
 /**
  * @brief Gets the system time of day
  * @param core executing core information
@@ -101,7 +101,7 @@ xky_status_code_e pmk_syscall_set_schedule(
  *         INVALID_CONFIG  - if the ToD haven't been set
  *         NO_ERROR        - otherwise
  */
-xky_status_code_e pmk_syscall_get_tod(pmk_core_ctrl_t *core, xky_time_t *tod);
+air_status_code_e pmk_syscall_get_tod(pmk_core_ctrl_t *core, air_time_t *tod);
 /**
  * @brief Sets the system time of day
  * @param core executing core information
@@ -110,7 +110,7 @@ xky_status_code_e pmk_syscall_get_tod(pmk_core_ctrl_t *core, xky_time_t *tod);
  *         INVALID_CONFIG  - if the partition doesn't have enough permissions,
  *         NO_ERROR        - otherwise
  */
-xky_status_code_e pmk_syscall_set_tod(pmk_core_ctrl_t *core, xky_time_t *tod);
+air_status_code_e pmk_syscall_set_tod(pmk_core_ctrl_t *core, air_time_t *tod);
 /**
  * @brief Get port Id
  * @param core current controlling core
@@ -121,11 +121,11 @@ xky_status_code_e pmk_syscall_set_tod(pmk_core_ctrl_t *core, xky_time_t *tod);
  *         INVALID_CONFIG if port not found
  *         NO_ERROR otherwise
  */
-xky_status_code_e pmk_syscall_get_port_id(
+air_status_code_e pmk_syscall_get_port_id(
     pmk_core_ctrl_t *core,
-    xky_port_type_e type,
-    xky_name_ptr_t name,
-    xky_identifier_t *pid);
+    air_port_type_e type,
+    air_name_ptr_t name,
+    air_identifier_t *pid);
 /**
  * @brief System call create port
  * @param core current controlling core
@@ -138,12 +138,12 @@ xky_status_code_e pmk_syscall_get_port_id(
  *         NO_ACTION       - if port already created
  *         NO_ERROR        - otherwise
  */
-xky_status_code_e pmk_syscall_create_port(
+air_status_code_e pmk_syscall_create_port(
         pmk_core_ctrl_t *core,
-        xky_port_type_e type,
-        xky_name_ptr_t name,
+        air_port_type_e type,
+        air_name_ptr_t name,
         void *config,
-        xky_identifier_t *pid);
+        air_identifier_t *pid);
 /**
  * @brief System call get port status
  * @param core current controlling core
@@ -154,10 +154,10 @@ xky_status_code_e pmk_syscall_create_port(
  *         INVALID_PARAM   - if port not found
  *         NO_ERROR        - otherwise
  */
-xky_status_code_e pmk_syscall_get_port_status(
+air_status_code_e pmk_syscall_get_port_status(
         pmk_core_ctrl_t *core,
-        xky_port_type_e type,
-        xky_identifier_t pid,
+        air_port_type_e type,
+        air_identifier_t pid,
         void *status);
 /**
  * @brief System call read from port
@@ -168,12 +168,12 @@ xky_status_code_e pmk_syscall_get_port_status(
  * @param[out] length length of the message
  * @param[in/out] status port status/configuration
  */
-xky_status_code_e pmk_syscall_read_port(
+air_status_code_e pmk_syscall_read_port(
         pmk_core_ctrl_t *core,
-        xky_port_type_e type,
-        xky_identifier_t id,
-        xky_message_ptr_t msg,
-        xky_sz_t *length,
+        air_port_type_e type,
+        air_identifier_t id,
+        air_message_ptr_t msg,
+        air_sz_t *length,
         void *status);
 /**
  * @brief System call write to port
@@ -184,12 +184,12 @@ xky_status_code_e pmk_syscall_read_port(
  * @param length length of the message
  * @param[in/out] status port status/configuration
  */
-xky_status_code_e pmk_syscall_write_port(
+air_status_code_e pmk_syscall_write_port(
         pmk_core_ctrl_t *core,
-        xky_port_type_e type,
-        xky_identifier_t id,
-        xky_message_ptr_t msg,
-        xky_sz_t length,
+        air_port_type_e type,
+        air_identifier_t id,
+        air_message_ptr_t msg,
+        air_sz_t length,
         void *status);
 /**
  * @brief Gets the information of a shared memory area
@@ -201,10 +201,10 @@ xky_status_code_e pmk_syscall_write_port(
  *                           partition doesn't have access to it
  *         NO_ERROR        - otherwise
  */
-xky_status_code_e pmk_syscall_get_sharedmemory(
+air_status_code_e pmk_syscall_get_sharedmemory(
         pmk_core_ctrl_t *core,
-        xky_name_ptr_t name,
-        xky_sharedmemory_t *sharedmemory);
+        air_name_ptr_t name,
+        air_sharedmemory_t *sharedmemory);
 
 /**
  * @brief Sets the system state
@@ -214,8 +214,8 @@ xky_status_code_e pmk_syscall_get_sharedmemory(
  *                     state
  *         NO_ERROR  - otherwise
  */
-xky_status_code_e pmk_syscall_set_system_state(
-        pmk_core_ctrl_t *core, xky_state_e state);
+air_status_code_e pmk_syscall_set_system_state(
+        pmk_core_ctrl_t *core, air_state_e state);
 
 /**
  * @brief Gets the last HM event
@@ -224,9 +224,9 @@ xky_status_code_e pmk_syscall_set_system_state(
  * @return INVALID_POINTER - if the partition pointers aren't valid,
  *         NO_ERROR        - otherwise
  */
-xky_status_code_e pmk_syscall_get_hm_event(
+air_status_code_e pmk_syscall_get_hm_event(
         pmk_core_ctrl_t *core,
-        xky_hm_event_t *event);
+        air_hm_event_t *event);
 
 /**
  * @brief Prints a partition character
@@ -241,7 +241,7 @@ void pmk_syscall_putchar(pmk_core_ctrl_t *core, char ch);
  * @param len size of the buffer
  * @return Number of characters printed
  */
-xky_u32_t pmk_syscall_print(pmk_core_ctrl_t *core, char *buffer, xky_sz_t len);
+air_u32_t pmk_syscall_print(pmk_core_ctrl_t *core, char *buffer, air_sz_t len);
 
 #endif /* __SYSCALL_H__ */
 

@@ -25,7 +25,7 @@ void FLUSH_CACHE(CACHE_TYPE CACHE, RETURN_CODE_TYPE *RETURN_CODE){
     }
 
 	/* syscall to flush cache */
-	*RETURN_CODE = xky_syscall_flush_cache(CACHE);
+	*RETURN_CODE = air_syscall_flush_cache(CACHE);
 }
 
 void ACTIVATE_CACHE(CACHE_TYPE CACHE, RETURN_CODE_TYPE *RETURN_CODE){
@@ -37,7 +37,7 @@ void ACTIVATE_CACHE(CACHE_TYPE CACHE, RETURN_CODE_TYPE *RETURN_CODE){
     }
 	
 	/* syscall to flush cache */
-	*RETURN_CODE = xky_syscall_enable_cache(CACHE);
+	*RETURN_CODE = air_syscall_enable_cache(CACHE);
 
 }
 
@@ -50,7 +50,7 @@ void DEACTIVATE_CACHE(CACHE_TYPE CACHE, RETURN_CODE_TYPE *RETURN_CODE){
     }
 	
 	/* syscall to flush cache */
-	*RETURN_CODE = xky_syscall_disable_cache(CACHE);
+	*RETURN_CODE = air_syscall_disable_cache(CACHE);
 
 }
 
@@ -63,5 +63,5 @@ void FREEZE_CACHE(CACHE_TYPE CACHE, RETURN_CODE_TYPE *RETURN_CODE){
     }
 	
 	/* syscall to flush cache */
-	*RETURN_CODE = xky_syscall_freeze_cache(CACHE);
+	*RETURN_CODE = air_syscall_freeze_cache(CACHE);
 }

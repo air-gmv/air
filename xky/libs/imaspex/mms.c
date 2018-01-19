@@ -15,7 +15,7 @@
 #include <imaspex.h>
 
 extern int imaspex_tsal_init;
-extern xky_clocktick_t imaspex_ns_per_tick;
+extern air_clocktick_t imaspex_ns_per_tick;
 
 void SET_MODULE_SCHEDULE (
 	/*in */ SCHEDULE_ID_TYPE SCHEDULE_ID,
@@ -28,7 +28,7 @@ void SET_MODULE_SCHEDULE (
     }
 	
     /* sets next module schedule to schedule_id via a system call*/
-    *RETURN_CODE = xky_syscall_set_schedule(SCHEDULE_ID);
+    *RETURN_CODE = air_syscall_set_schedule(SCHEDULE_ID);
 }
 
 void GET_MODULE_SCHEDULE_STATUS (
@@ -42,8 +42,8 @@ void GET_MODULE_SCHEDULE_STATUS (
     }
 
     /* get the schedule status via system call */
-    xky_schedule_status_t status;
-    *RETURN_CODE = xky_syscall_get_schedule_status(&status);
+    air_schedule_status_t status;
+    *RETURN_CODE = air_syscall_get_schedule_status(&status);
 
     /* convert status to ARINC status format */
     if (*RETURN_CODE == NO_ERROR) {
@@ -66,5 +66,5 @@ void GET_MODULE_SCHEDULE_ID (
     }
 
     /* get the schedule id via system call */
-    *RETURN_CODE = xky_syscall_get_schedule_id(SCHEDULE_NAME, SCHEDULE_ID);
+    *RETURN_CODE = air_syscall_get_schedule_id(SCHEDULE_NAME, SCHEDULE_ID);
 }

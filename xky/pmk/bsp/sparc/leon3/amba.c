@@ -63,7 +63,7 @@
  * @ingroup bsp_leon_amba
  */
 static void amba_search_ahp_slaves(
-        amba_confarea_t *amba_conf, xky_uptr_t io_area) {
+        amba_confarea_t *amba_conf, air_uptr_t io_area) {
 
     int i;
     unsigned int *dev_config = (unsigned int *)(io_area | MASTER_AREA | SLAVE_AREA);
@@ -87,7 +87,7 @@ static void amba_search_ahp_slaves(
  * @ingroup bsp_leon_amba
  */
 static void amba_search_apb_slaves(
-        amba_confarea_t *amba_conf, xky_uptr_t io_area) {
+        amba_confarea_t *amba_conf, air_uptr_t io_area) {
 
     int i;
     unsigned int *dev_config = (unsigned int *)(io_area | MASTER_AREA);
@@ -112,7 +112,7 @@ static void amba_search_apb_slaves(
  * @ingroup bsp_leon_amba
  */
 static void amba_search_ahb_masters(
-        amba_confarea_t *amba_conf, xky_uptr_t io_area) {
+        amba_confarea_t *amba_conf, air_uptr_t io_area) {
 
     int i;
     unsigned int *dev_config;
@@ -126,7 +126,7 @@ static void amba_search_ahb_masters(
 
         /* check if the device configuration is valid */
         if (get_vendor(dev_config[0]) != 0 &&
-            dev_config[4] != (xky_uptr_t)NULL) {
+            dev_config[4] != (air_uptr_t)NULL) {
 
             amba_conf->ahb_masters.addr[amba_conf->ahb_masters.count] = dev_config;
             ++amba_conf->ahb_masters.count;
@@ -151,7 +151,7 @@ static void amba_search_ahb_masters(
 
             /* get bridge IO area */
             io_area = *(amba_conf->ahb_slaves.addr[i] + 2);
-            if (get_version(conf) != 0 && io_area != (xky_uptr_t)NULL){
+            if (get_version(conf) != 0 && io_area != (air_uptr_t)NULL){
                 amba_search_ahb_masters(amba_conf, io_area);
             }
             continue;
@@ -199,12 +199,12 @@ static inline void get_ahb_device(
     }
 
     /* get device version and IRQ number */
-    xky_u32_t conf = *table->addr[index];
+    air_u32_t conf = *table->addr[index];
     dev->ver = get_version(conf);
     dev->irq = get_irq(conf);
 }
 
-void amba_setup(amba_confarea_t *amba_conf, xky_uptr_t io_area) {
+void amba_setup(amba_confarea_t *amba_conf, air_uptr_t io_area) {
 
     amba_conf->io_area = io_area;
 
@@ -226,7 +226,7 @@ int amba_get_ahb_master(
     for (i = 0; i < amba_conf->ahb_masters.count; ++i) {
 
         /* get configuration word */
-        xky_u32_t conf = *amba_conf->ahb_masters.addr[i];
+        air_u32_t conf = *amba_conf->ahb_masters.addr[i];
         if (get_vendor(conf) == vendor && get_device(conf) == device) {
 
             /* check if the device index we want */
@@ -252,7 +252,7 @@ int amba_get_ahb_slave(
     for (i = 0; i < amba_conf->ahb_slaves.count; ++i) {
 
         /* get configuration word */
-        xky_u32_t conf = *amba_conf->ahb_slaves.addr[i];
+        air_u32_t conf = *amba_conf->ahb_slaves.addr[i];
         if (get_vendor(conf) == vendor && get_device(conf) == device) {
 
             /* check if the device index we want */
@@ -296,7 +296,7 @@ int amba_get_apb_slave(
     for (i = 0; i < amba_conf->apb_slaves.count; ++i) {
 
         /* get configuration word */
-        xky_u32_t conf = *amba_conf->apb_slaves.addr[i];
+        air_u32_t conf = *amba_conf->apb_slaves.addr[i];
         if (get_vendor(conf) == vendor && get_device(conf) == device) {
 
             /* check if the device index we want */

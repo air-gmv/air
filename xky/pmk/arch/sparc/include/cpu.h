@@ -13,7 +13,7 @@
 
 /**
  * @defgroup cpu_sparc CPU - SPARC Abstractions
- * @brief CPU - SPARC Abstractions for XKY common code
+ * @brief CPU - SPARC Abstractions for AIR common code
  * @{
  */
 
@@ -45,7 +45,7 @@ typedef sparc_interrupt_stack_frame_t interrupt_stack_frame_t;
 /**
  * @brief CPU Preemption flags
  */
-#define cpu_preemption_flags_t xky_u32_t
+#define cpu_preemption_flags_t air_u32_t
 
 /**
  * @brief CPU enable preemption
@@ -77,7 +77,7 @@ typedef sparc_interrupt_stack_frame_t interrupt_stack_frame_t;
  * @brief CPU segregation map memory
  */
 #define cpu_segregation_map_memory(ctrl, paddr, vaddr, size, unit, perms) \
-    sparc_map_memory((ctrl), (paddr), (vaddr), (size), (unit), (xky_u32_t)(perms))
+    sparc_map_memory((ctrl), (paddr), (vaddr), (size), (unit), (air_u32_t)(perms))
 
 /**
  * @brief CPU segregation copy to user-land
@@ -96,7 +96,7 @@ typedef sparc_interrupt_stack_frame_t interrupt_stack_frame_t;
  * @param context the core context to be initialized
  * @param id virtual core id;
  */
-void core_context_init(core_context_t *context, xky_u32_t id);
+void core_context_init(core_context_t *context, air_u32_t id);
 /**
  * @brief Setups an idle context
  * @param context the core context to be set as idle
@@ -143,7 +143,7 @@ void core_context_setup_idle(core_context_t *context);
  * @param state system state to apply
  */
 #define core_context_set_system_state(context, state) \
-        (context)->state = (xky_u32_t)(state)
+        (context)->state = (air_u32_t)(state)
 /**
  * @brief Flag an HM event on a core context
  * @param context core context
@@ -151,7 +151,7 @@ void core_context_setup_idle(core_context_t *context);
  * @param error_id current error Id
  */
 void core_context_add_hm_event(core_context_t *context,
-                               xky_state_e state_id, xky_error_e error_id);
+                               air_state_e state_id, air_error_e error_id);
 
 /**
  * @brief Removes an HM event from the core context

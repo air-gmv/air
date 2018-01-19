@@ -46,10 +46,10 @@ typedef enum {
  */
 typedef struct {
 
-    xky_u32_t        duration;              /**< Length of the window         */
-    xky_u32_t        period_start;          /**< Period start                 */
+    air_u32_t        duration;              /**< Length of the window         */
+    air_u32_t        period_start;          /**< Period start                 */
     pmk_partition_t *partition;             /**< Window partition             */
-    xky_u32_t        virtual_core;          /**< Partition virtual-core       */
+    air_u32_t        virtual_core;          /**< Partition virtual-core       */
 
 } pmk_window_t;
 
@@ -58,7 +58,7 @@ typedef struct {
  */
 typedef struct {
 
-    xky_u32_t        count;                 /**< Number of windows            */
+    air_u32_t        count;                 /**< Number of windows            */
     pmk_window_t    *windows;               /**< Array of windows             */
 
 } pmk_core_schedule_t;
@@ -69,10 +69,10 @@ typedef struct {
 typedef struct {
 
     pmk_partition_t *partition;              /**< Partition                   */
-    xky_u32_t set_schedule;                  /**< Change schedule permission  */
+    air_u32_t set_schedule;                  /**< Change schedule permission  */
     pmk_sched_change_action_e action;        /**< Schedule change action      */
-    xky_u64_t period;                        /**< Partition period            */
-    xky_u64_t duration;                      /**< Partition period duration   */
+    air_u64_t period;                        /**< Partition period            */
+    air_u64_t duration;                      /**< Partition period duration   */
 
 } pmk_partition_schedule_t;
 
@@ -81,13 +81,13 @@ typedef struct {
  */
 typedef struct {
 
-    xky_u32_t idx;                           /**< Schedule index              */
-    xky_u32_t mtf;                           /**< Schedule MTF size           */
-    xky_u32_t initial;                       /**< Initial schedule flag       */
+    air_u32_t idx;                           /**< Schedule index              */
+    air_u32_t mtf;                           /**< Schedule MTF size           */
+    air_u32_t initial;                       /**< Initial schedule flag       */
     pmk_list_t partitions;                   /**< Partitions in this schedule */
     pmk_core_schedule_t *cores;              /**< Core schedules              */
-    xky_identifier_t id;                     /**< Schedule id                 */
-    xky_name_t name;                         /**< Schedule name               */
+    air_identifier_t id;                     /**< Schedule id                 */
+    air_name_t name;                         /**< Schedule name               */
 
 } pmk_schedule_t;
 
@@ -98,9 +98,9 @@ typedef struct {
 
     pmk_schedule_t *volatile curr_schedule;  /**< Current schedule            */
     pmk_schedule_t *next_schedule;           /**< Next schedule               */
-    xky_clocktick_t mtf_ticks;               /**< Current MTF ticks           */
-    xky_clocktick_t total_ticks;             /**< Total elapsed ticks         */
-    xky_clocktick_t last_switch_ticks;       /**< Last MTF ticks              */
+    air_clocktick_t mtf_ticks;               /**< Current MTF ticks           */
+    air_clocktick_t total_ticks;             /**< Total elapsed ticks         */
+    air_clocktick_t last_switch_ticks;       /**< Last MTF ticks              */
     pmk_barrier_t   mtf_barrier;             /**< MTF sync barrier            */
 
 } pmk_schedule_ctrl_t;
@@ -115,14 +115,14 @@ void pmk_scheduler_init(void);
  * @param pid Schedule Id
  * @return Schedule configuration pointer if Id is valid, NULL otherwise
  */
-pmk_schedule_t *pmk_get_schedule_by_id(xky_identifier_t pid);
+pmk_schedule_t *pmk_get_schedule_by_id(air_identifier_t pid);
 
 /**
  * @brief Get schedule configuration by name
  * @param name Schedule name
  * @return Schedule configuration pointer if name is valid, NULL otherwise
  */
-pmk_schedule_t *pmk_get_schedule_by_name(xky_name_ptr_t name);
+pmk_schedule_t *pmk_get_schedule_by_name(air_name_ptr_t name);
 
 /** @} */
 

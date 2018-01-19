@@ -3,7 +3,7 @@
 
   <Partition Criticality="LEVEL_A" EntryPoint="entry_func" PartitionIdentifier="10" PartitionName="master" SystemPartition="true">
     <PartitionConfiguration Personality="BARE" Cores="1">
-       <Libs>LIBXKY; LIBPRINTF</Libs>
+       <Libs>LIBAIR; LIBPRINTF</Libs>
        <Cache>CODE; DATA</Cache>
        <Memory Size="0x100000" />
        <Permissions>CACHE_CONTROL; SET_PARTITION_MODE;</Permissions>
@@ -12,7 +12,7 @@
   
   <Partition Criticality="LEVEL_A" EntryPoint="entry_func" PartitionIdentifier="1" PartitionName="p1" SystemPartition="false">
     <PartitionConfiguration Personality="BARE" Cores="1">
-       <Libs>LIBXKY; LIBPRINTF</Libs>
+       <Libs>LIBAIR; LIBPRINTF</Libs>
        <Cache>CODE; DATA</Cache>
        <Memory Size="0x100000" />
        <Permissions>CACHE_CONTROL; SET_PARTITION_MODE;</Permissions>
@@ -21,7 +21,7 @@
   
   <Partition Criticality="LEVEL_A" EntryPoint="entry_func" PartitionIdentifier="2" PartitionName="p2" SystemPartition="false">
      <PartitionConfiguration Personality="BARE" Cores="1">
-        <Libs>LIBXKY; LIBPRINTF</Libs>
+        <Libs>LIBAIR; LIBPRINTF</Libs>
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x100000" />
         <Permissions>CACHE_CONTROL; SET_PARTITION_MODE;</Permissions>
@@ -30,7 +30,7 @@
   
   <Partition Criticality="LEVEL_A" EntryPoint="entry_func" PartitionIdentifier="3" PartitionName="p3" SystemPartition="false">
      <PartitionConfiguration Personality="BARE" Cores="1">
-     <Libs>LIBXKY; LIBPRINTF</Libs>
+     <Libs>LIBAIR; LIBPRINTF</Libs>
      <Cache>CODE; DATA</Cache>
      <Memory Size="0x100000" />
      <Permissions>CACHE_CONTROL; SET_PARTITION_MODE;</Permissions>
@@ -61,5 +61,5 @@
     </Partition_Schedule>
   </Module_Schedule>
 
-  <XKY_Configuration TicksPerSecond="100" RequiredCores="1"/>
+  <AIR_Configuration TicksPerSecond="100" RequiredCores="1"/>
 </ARINC_653_Module>

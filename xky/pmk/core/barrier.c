@@ -15,7 +15,7 @@
 #include <barrier.h>
 
 
-void pmk_barrier_init(pmk_barrier_t *barrier, xky_u32_t size) {
+void pmk_barrier_init(pmk_barrier_t *barrier, air_u32_t size) {
 
     int i;
     barrier->sense = 0;
@@ -27,7 +27,7 @@ void pmk_barrier_init(pmk_barrier_t *barrier, xky_u32_t size) {
     }
 }
 
-void pmk_barrier_wait(pmk_barrier_t *barrier, xky_u32_t core_id) {
+void pmk_barrier_wait(pmk_barrier_t *barrier, air_u32_t core_id) {
 
     /* swap local sense */
     barrier->local_sense[core_id] = ~barrier->local_sense[core_id];

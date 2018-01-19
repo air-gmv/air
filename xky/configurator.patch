@@ -1,8 +1,8 @@
-diff --git a/xky/tools/configurator/xky/targets/sparc/leon4/config.py b/xky/tools/configurator/xky/targets/sparc/leon4/config.py
+diff --git a/air/tools/configurator/air/targets/sparc/leon4/config.py b/air/tools/configurator/air/targets/sparc/leon4/config.py
 index 6efb7c3..0bd4439 100755
---- a/xky/tools/configurator/xky/targets/sparc/leon4/config.py
-+++ b/xky/tools/configurator/xky/targets/sparc/leon4/config.py
-@@ -128,8 +128,8 @@ arch_configure = xky_sparc.get_sparc_configuration
+--- a/air/tools/configurator/air/targets/sparc/leon4/config.py
++++ b/air/tools/configurator/air/targets/sparc/leon4/config.py
+@@ -128,8 +128,8 @@ arch_configure = air_sparc.get_sparc_configuration
  
  # IOP devices and definitions
  iop = IOP(defines=[],

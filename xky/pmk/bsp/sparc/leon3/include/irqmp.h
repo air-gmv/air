@@ -32,48 +32,48 @@ int irqmp_init(void);
  * @brief Get the maximum available cores
  * @return Number of cores available
  */
-xky_u32_t irqmp_get_number_of_cores();
+air_u32_t irqmp_get_number_of_cores();
 /**
  * @brief Enable interrupt on core
  * @param core_id Id of the core to enable the interrupt
  * @param tn Interrupt trap number
  */
-void irqmp_enable_interrupt(xky_u32_t core_id, xky_u32_t tn);
+void irqmp_enable_interrupt(air_u32_t core_id, air_u32_t tn);
 /**
  * @brief Disable interrupt on core
  * @param core_id Id of the core to enable the interrupt
  * @param tn Interrupt trap number
  */
-void irqmp_disable_interrupt(xky_u32_t core_id, xky_u32_t tn);
+void irqmp_disable_interrupt(air_u32_t core_id, air_u32_t tn);
 /**
  * @brief Set core interrupt mask
  * @param core_id Id of the core to apply the IRQ mask
  * @param irq_mask IRQ mask to apply
  */
-void irqmp_set_interrupt_mask(xky_u32_t core_id, xky_u32_t irq_mask);
+void irqmp_set_interrupt_mask(air_u32_t core_id, air_u32_t irq_mask);
 /**
  * @brief Set an interrupt priority
  * @param tn interrupt number
  * @param p priority for the interrupt
  */
-void irqmp_interrupt_set_priority(xky_u32_t tn, xky_u32_t p);
+void irqmp_interrupt_set_priority(air_u32_t tn, air_u32_t p);
 /**
  * @brief Interrupt core
  * @param core_id Id of the core to interrupt
  * @param tn Interrupt tap number
  */
-void irqmp_interrupt_core(xky_u32_t core_id, xky_u32_t tn);
+void irqmp_interrupt_core(air_u32_t core_id, air_u32_t tn);
 /**
  * @brief Broadcast interrupt
  * @param tn Interrupt tap number
  */
-void irqmp_interrupt_broadcast(xky_u32_t tn);
+void irqmp_interrupt_broadcast(air_u32_t tn);
 /**
  * @brief Boot core
  * @param core_id Index of the core to boot
  * @param entry_point Core execution entry point
  */
-void irqmp_boot_core(xky_u32_t core_id, void *entry_point);
+void irqmp_boot_core(air_u32_t core_id, void *entry_point);
 
 /** @} */
 

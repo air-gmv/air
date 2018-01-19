@@ -19,10 +19,10 @@
 #include <configurations.h>
 
 
-xky_status_code_e pmk_syscall_get_partition_id(
+air_status_code_e pmk_syscall_get_partition_id(
         pmk_core_ctrl_t *core,
-        xky_name_ptr_t name,
-        xky_identifier_t *pid) {
+        air_name_ptr_t name,
+        air_identifier_t *pid) {
 
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
@@ -35,22 +35,22 @@ xky_status_code_e pmk_syscall_get_partition_id(
     if (NULL != name) {
 
         /* check partition permissions */
-        if ((partition->permissions & XKY_PERMISSION_ARINC_SYSTEM) == 0 &&
-            (partition->permissions & XKY_PERMISSION_SET_PARTITION_MODE) == 0) {
+        if ((partition->permissions & AIR_PERMISSION_ARINC_SYSTEM) == 0 &&
+            (partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0) {
 
             /* disable preemption and return */
             cpu_disable_preemption(flags);
-            return XKY_INVALID_CONFIG;
+            return AIR_INVALID_CONFIG;
         }
 
         /* copy partition name to PMK space */
-        xky_name_t local_name;
+        air_name_t local_name;
         if (pmk_segregation_copy_from_user(
-                context, local_name, name, sizeof(xky_name_t)) != 0) {
+                context, local_name, name, sizeof(air_name_t)) != 0) {
 
             /* disable preemption and return */
             cpu_disable_preemption(flags);
-            return XKY_INVALID_POINTER;
+            return AIR_INVALID_POINTER;
         }
 
         /* check if the name is valid */
@@ -62,7 +62,7 @@ xky_status_code_e pmk_syscall_get_partition_id(
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
-        return XKY_INVALID_PARAM;
+        return AIR_INVALID_PARAM;
     }
 
     /* pass id to partition */
@@ -70,18 +70,18 @@ xky_status_code_e pmk_syscall_get_partition_id(
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
-        return XKY_INVALID_POINTER;
+        return AIR_INVALID_POINTER;
     }
 
     /* disable preemption and return */
     cpu_disable_preemption(flags);
-    return XKY_NO_ERROR;
+    return AIR_NO_ERROR;
 }
 
-xky_status_code_e pmk_syscall_get_partition_status(
+air_status_code_e pmk_syscall_get_partition_status(
         pmk_core_ctrl_t *core,
-        xky_identifier_t pid,
-        xky_partition_status_t *status) {
+        air_identifier_t pid,
+        air_partition_status_t *status) {
 
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
@@ -94,12 +94,12 @@ xky_status_code_e pmk_syscall_get_partition_status(
     if (pid >= 0 && partition->id != pid) {
 
         /* check partition permissions */
-        if ((partition->permissions & XKY_PERMISSION_ARINC_SYSTEM) == 0 &&
-            (partition->permissions & XKY_PERMISSION_SET_PARTITION_MODE) == 0) {
+        if ((partition->permissions & AIR_PERMISSION_ARINC_SYSTEM) == 0 &&
+            (partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0) {
 
             /* disable preemption and return */
             cpu_disable_preemption(flags);
-            return XKY_INVALID_CONFIG;
+            return AIR_INVALID_CONFIG;
         }
 
         /* check if the name is valid */
@@ -111,11 +111,11 @@ xky_status_code_e pmk_syscall_get_partition_status(
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
-        return XKY_INVALID_PARAM;
+        return AIR_INVALID_PARAM;
     }
 
     /* fill status structure */
-    xky_partition_status_t local_status;
+    air_partition_status_t local_status;
     local_status.index = partition->idx;
     local_status.period = partition->period;
     local_status.duration = partition->duration;
@@ -136,18 +136,18 @@ xky_status_code_e pmk_syscall_get_partition_status(
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
-        return XKY_INVALID_POINTER;
+        return AIR_INVALID_POINTER;
     }
 
     /* disable preemption and return */
     cpu_disable_preemption(flags);
-    return XKY_NO_ERROR;
+    return AIR_NO_ERROR;
 }
 
-xky_status_code_e pmk_syscall_set_partition_mode(
+air_status_code_e pmk_syscall_set_partition_mode(
         pmk_core_ctrl_t *core_ctrl,
-        xky_identifier_t pid,
-        xky_operating_mode_e mode) {
+        air_identifier_t pid,
+        air_operating_mode_e mode) {
 
     pmk_partition_t *partition = core_ctrl->partition;
 
@@ -155,43 +155,43 @@ xky_status_code_e pmk_syscall_set_partition_mode(
     if (partition->id != pid && pid != -1) {
 
         /* check for valid permissions */
-        if ((partition->permissions & XKY_PERMISSION_SET_PARTITION_MODE) == 0 &&
-            (partition->permissions & XKY_PERMISSION_ARINC_SYSTEM) == 0) {
+        if ((partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0 &&
+            (partition->permissions & AIR_PERMISSION_ARINC_SYSTEM) == 0) {
 
-            return XKY_INVALID_CONFIG;
+            return AIR_INVALID_CONFIG;
         }
 
         /* get other partition */
         partition = pmk_get_partition_by_id(pid);
         if (NULL == partition) {
 
-            return XKY_INVALID_PARAM;
+            return AIR_INVALID_PARAM;
         }
 
         /* check if the state is valid for other partition */
-        if (XKY_MODE_NORMAL == mode) {
+        if (AIR_MODE_NORMAL == mode) {
 
-            return XKY_INVALID_MODE;
+            return AIR_INVALID_MODE;
         }
     }
 
     /* check if mode is valid */
-    if (mode < XKY_MODE_IDLE || mode > XKY_MODE_NORMAL) {
+    if (mode < AIR_MODE_IDLE || mode > AIR_MODE_NORMAL) {
 
-        return XKY_INVALID_PARAM;
+        return AIR_INVALID_PARAM;
     }
 
     /* check if action is necessary */
-    if ((XKY_MODE_IDLE == mode && XKY_MODE_IDLE == partition->mode) ||
-        (XKY_MODE_NORMAL == mode && XKY_MODE_NORMAL == partition->mode)) {
+    if ((AIR_MODE_IDLE == mode && AIR_MODE_IDLE == partition->mode) ||
+        (AIR_MODE_NORMAL == mode && AIR_MODE_NORMAL == partition->mode)) {
 
-        return XKY_NO_ACTION;
+        return AIR_NO_ACTION;
     }
 
     /* check if the mode is valid */
-    if (XKY_MODE_WARM_START == mode && XKY_MODE_COLD_START == partition->mode) {
+    if (AIR_MODE_WARM_START == mode && AIR_MODE_COLD_START == partition->mode) {
 
-       //return XKY_INVALID_MODE;
+       //return AIR_INVALID_MODE;
     }
 
     /* apply state to the partition */
@@ -199,14 +199,14 @@ xky_status_code_e pmk_syscall_set_partition_mode(
     switch (mode) {
 
         /* restart partition */
-        case XKY_MODE_COLD_START:
-        case XKY_MODE_WARM_START:
+        case AIR_MODE_COLD_START:
+        case AIR_MODE_WARM_START:
             pmk_partition_restart(partition);
-            partition->start_condition = XKY_START_CONDITION_PARTITION_RESTART;
+            partition->start_condition = AIR_START_CONDITION_PARTITION_RESTART;
             break;
 
         /* halt partition */
-        case XKY_MODE_IDLE:
+        case AIR_MODE_IDLE:
             pmk_partition_halt(partition);
             break;
 
@@ -217,7 +217,7 @@ xky_status_code_e pmk_syscall_set_partition_mode(
     }
 
     /* return no error */
-    return XKY_NO_ERROR;
+    return AIR_NO_ERROR;
 }
 
 void pmk_syscall_putchar(pmk_core_ctrl_t *core, char ch) {
@@ -233,7 +233,7 @@ void pmk_syscall_putchar(pmk_core_ctrl_t *core, char ch) {
     cpu_disable_preemption(flags);
 }
 
-xky_u32_t pmk_syscall_print(pmk_core_ctrl_t *core, char *buffer, xky_sz_t len) {
+air_u32_t pmk_syscall_print(pmk_core_ctrl_t *core, char *buffer, air_sz_t len) {
 
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
@@ -243,7 +243,7 @@ xky_u32_t pmk_syscall_print(pmk_core_ctrl_t *core, char *buffer, xky_sz_t len) {
 
     /* print buffer @todo needs optimization */
     char ch;
-    xky_u32_t count;
+    air_u32_t count;
     for (count = 0; count < len; ++count) {
 
         /* get character from user land */

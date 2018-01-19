@@ -28,7 +28,7 @@
 #include <libcpu/cache.h>
 #include <rtems/score/cpu.h>
 #include <bsp.h>
-#include <xky.h>
+#include <air.h>
 
 /**
  * @brief trap table of the system from AIR
@@ -171,9 +171,9 @@ void _CPU_Initialize(void)
 {
 #if defined(SPARC_USE_LAZY_FP_SWITCH)
   /* @brief AIR checks check if the current partition have FPU permissions */
-  xky_partition_status_t status;
-  xky_syscall_get_partition_status(-1, &status);
-  if ((status.permissions & XKY_PERMISSION_FPU_CONTROL) != 0) {        
+  air_partition_status_t status;
+  air_syscall_get_partition_status(-1, &status);
+  if ((status.permissions & AIR_PERMISSION_FPU_CONTROL) != 0) {        
     __asm__ volatile (
       ".global SPARC_THREAD_CONTROL_REGISTERS_FP_CONTEXT_OFFSET\n"
       ".set SPARC_THREAD_CONTROL_REGISTERS_FP_CONTEXT_OFFSET, %0\n"
@@ -374,7 +374,7 @@ void _CPU_Context_Initialize(
      */
     
 
-    tmp_psr = xky_sparc_get_psr(); /* virtualized PSR via AIR */
+    tmp_psr = air_sparc_get_psr(); /* virtualized PSR via AIR */
     tmp_psr &= ~SPARC_PSR_PIL_MASK;
     tmp_psr |= (new_level << 8) & SPARC_PSR_PIL_MASK;
     tmp_psr &= ~SPARC_PSR_EF_MASK;      /* disabled by default */
