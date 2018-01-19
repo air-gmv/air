@@ -4,7 +4,7 @@
   <Partition PartitionIdentifier="1" PartitionName="p0" 
    Criticality="LEVEL_A" SystemPartition="true" EntryPoint="entry_point">
     <PartitionConfiguration Personality="BARE" Cores="1">
-      <Libs>LIBXKY; LIBPRINTF</Libs>
+      <Libs>LIBAIR; LIBPRINTF</Libs>
       <Cache>CODE; DATA</Cache>
       <Memory Size="0x100000" />
       <Permissions>
@@ -23,5 +23,5 @@
   </Module_Schedule>
   
   <!-- module configuration -->
-  <XKY_Configuration TicksPerSecond="100" RequiredCores="1"/>
+  <AIR_Configuration TicksPerSecond="100" RequiredCores="1"/>
 </ARINC_653_Module>

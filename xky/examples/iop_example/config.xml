@@ -9,7 +9,7 @@
     <Queuing_Port Name="squeuing" 
       Direction="SOURCE" MaxMessageSize="1024" MaxNbMessages="32" />
     <PartitionConfiguration Personality="RTEMS" IOP="iop.xml" Cores="1">
-        <Libs>LIBXKY; LIBIOP; LIBPRINTF</Libs>
+        <Libs>LIBAIR; LIBIOP; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x400000" />
@@ -25,7 +25,7 @@
     <Sampling_Port Name="ssampling" 
       Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
     <PartitionConfiguration Personality="RTEMS" Cores="1">
-        <Libs>LIBXKY; IMASPEX; LIBPRINTF</Libs>
+        <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x400000" />
@@ -41,7 +41,7 @@
     <Queuing_Port  Name="dqueuing"
       Direction="DESTINATION" MaxMessageSize="1024" MaxNbMessages="32" />
     <PartitionConfiguration Personality="RTEMS" Cores="1">
-        <Libs>LIBXKY; IMASPEX; LIBPRINTF</Libs>
+        <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x400000" />
@@ -96,5 +96,5 @@
   </Connection_Table>
   
   <!-- Module configuration -->
-  <XKY_Configuration TicksPerSecond="1000" RequiredCores="1"/>
+  <AIR_Configuration TicksPerSecond="1000" RequiredCores="1"/>
 </ARINC_653_Module>

@@ -50,33 +50,33 @@ typedef enum {
 typedef struct {
 
     /** Partition sequential index                                          */
-    xky_u32_t idx;
+    air_u32_t idx;
     /** Partition number of allocated cores                                 */
-    xky_u32_t cores;
+    air_u32_t cores;
     /** Partition core context (one per allocated core)                     */
     core_context_t *context;
     /** Partition initial cache state                                       */
-    xky_cache_e init_cache;
+    air_cache_e init_cache;
     /** Partition internal state                                            */
     pmk_partition_state_t state;
     /** Partition last clock tick                                           */
-    xky_clocktick_t last_clock_tick;
+    air_clocktick_t last_clock_tick;
     /** Partition elapsed clock ticks                                       */
-    xky_clocktick_t elapsed_ticks;
+    air_clocktick_t elapsed_ticks;
     /** Partition operating mode (controlled by the partition)              */
-    xky_operating_mode_e mode;
+    air_operating_mode_e mode;
     /** Partition virtual to real core mapping                              */
-    volatile xky_u32_t *core_mapping;
+    volatile air_u32_t *core_mapping;
     /** Partition system permissions flags                                  */
-    xky_permissions_e permissions;
+    air_permissions_e permissions;
     /** Partition events                                                    */
-    xky_u32_t events;
+    air_u32_t events;
     /** Partition health-monitor table                                      */
     pmk_hm_action_list_t **hm_table;
     /** Partition execution state condition                                 */
-    xky_start_condition_e start_condition;
+    air_start_condition_e start_condition;
     /** Partition number of restarts                                        */
-    xky_u32_t restart_count;
+    air_u32_t restart_count;
     /** Partition ports                                                     */
     pmk_list_t ports;
     /** Partition barrier for SMP configurations                            */
@@ -88,13 +88,13 @@ typedef struct {
     /** Partition compressed ELF pointer                                    */
     pmk_elf_t *elf;
     /** Partition identifier                                                */
-    xky_identifier_t id;
+    air_identifier_t id;
     /** Partition name                                                      */
-    xky_name_t name;
+    air_name_t name;
     /** Current partition schedule period                                   */
-    xky_u64_t period;
+    air_u64_t period;
     /** Current partition schedule duration                                 */
-    xky_u64_t duration;
+    air_u64_t duration;
 
 } pmk_partition_t;
 
@@ -130,13 +130,13 @@ void pmk_partition_idle(void);
  * @param pid partition Id
  * @return partition configuration pointer if Id is valid, NULL otherwise
  */
-pmk_partition_t *pmk_get_partition_by_id(xky_identifier_t pid);
+pmk_partition_t *pmk_get_partition_by_id(air_identifier_t pid);
 /**
  * @brief Get partition configuration by name
  * @param name partition name
  * @return partition configuration pointer if name is valid, NULL otherwise
  */
-pmk_partition_t *pmk_get_partition_by_name(xky_name_ptr_t name);
+pmk_partition_t *pmk_get_partition_by_name(air_name_ptr_t name);
 /**
  * @brief Setups a core partition context
  * @param partition partition information

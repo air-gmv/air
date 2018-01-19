@@ -11,7 +11,7 @@
 rtems_status_code iop_raise_error(int error){
 
     pprintf("IO ERROR (%i)!\n", error);
-	//xky_syscall_set_partition_mode(-1, IDLE);
+	//air_syscall_set_partition_mode(-1, IDLE);
 	
 	return RTEMS_SUCCESSFUL;
 }

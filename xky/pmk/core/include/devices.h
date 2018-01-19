@@ -22,10 +22,10 @@
  */
 typedef struct {
 
-    xky_u32_t vendor;                        /**< Device vendor Id  */
-    xky_u32_t device;                        /**< Device Id         */
-    xky_u32_t minor;                         /**< Device Minor      */
-    xky_u32_t partition;                     /**< Owner partition   */
+    air_u32_t vendor;                        /**< Device vendor Id  */
+    air_u32_t device;                        /**< Device Id         */
+    air_u32_t minor;                         /**< Device Minor      */
+    air_u32_t partition;                     /**< Owner partition   */
 
 } pmk_device_map_t;
 

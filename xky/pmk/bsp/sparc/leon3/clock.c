@@ -15,9 +15,9 @@
 #include <configurations.h>
 
 /**
- * @brief XKY shared area (defined in multicore.c)
+ * @brief AIR shared area (defined in multicore.c)
  */
-extern pmk_sharedarea_t xky_shared_area;
+extern pmk_sharedarea_t air_shared_area;
 
 /**
  * @brief IPC trap handler
@@ -52,10 +52,10 @@ void pmk_ipc_handler(void *isf, pmk_core_ctrl_t *core);
  */
 typedef struct {
 
-   volatile xky_u32_t value;
-   volatile xky_u32_t reload;
-   volatile xky_u32_t conf;
-   volatile xky_u32_t dummy;
+   volatile air_u32_t value;
+   volatile air_u32_t reload;
+   volatile air_u32_t conf;
+   volatile air_u32_t dummy;
 
 } timer_subtype_t;
 
@@ -64,10 +64,10 @@ typedef struct {
  */
 typedef struct {
 
-   volatile xky_u32_t scaler_value;
-   volatile xky_u32_t scaler_reload;
-   volatile xky_u32_t status;
-   volatile xky_u32_t dummy;
+   volatile air_u32_t scaler_value;
+   volatile air_u32_t scaler_reload;
+   volatile air_u32_t status;
+   volatile air_u32_t dummy;
    timer_subtype_t timer[8];
 
 } timer_regmap_t;
@@ -81,7 +81,7 @@ timer_ctrl_t timer_ctrl;
 void bsp_clock_start(void) {
 
     /* */
-    xky_u32_t i;
+    air_u32_t i;
 
     /* install scheduler service routine */
     sparc_install_vector_trap_handler(timer_ctrl.irq, pmk_partition_scheduler);
@@ -93,7 +93,7 @@ void bsp_clock_start(void) {
 
     /* setup cores interrupts */
     irqmp_enable_interrupt(0, timer_ctrl.irq);
-    for (i = 0; i < xky_shared_area.configured_cores; ++i) {
+    for (i = 0; i < air_shared_area.configured_cores; ++i) {
         irqmp_enable_interrupt(i, BSP_IPC_IRQ);
         irqmp_enable_interrupt(i, BSP_IPC_PCS);
     }

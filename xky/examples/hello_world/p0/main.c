@@ -13,7 +13,7 @@
 #define CONFIGURE_INIT
 #include <stdio.h>
 #include <stdlib.h>
-#include <xky.h>
+#include <air.h>
 #include <pprintf.h>
 
 int andp=7;

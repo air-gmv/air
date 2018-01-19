@@ -24,7 +24,7 @@
 #define _RTEMS_SCORE_SPARC_H
 
 #include <rtems/score/types.h>
-#include <xky.h>
+#include <air.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -328,7 +328,7 @@ static inline uint32_t sparc_disable_interrupts(void)
   __asm__ volatile ( "ta %1\n\t" : "=r" (psr) : "i" (SPARC_SWTRAP_IRQDIS));
   return psr;
   */
-  return xky_sparc_disable_interrupts();
+  return air_sparc_disable_interrupts();
   
 }
  /* End of AIR intervention */
@@ -359,7 +359,7 @@ static inline void sparc_enable_interrupts(uint32_t psr)
    
   *__asm__ volatile ( "ta %0\nnop\n" :: "i" (SPARC_SWTRAP_IRQEN), "r" (_psr)); 
   */
-  xky_sparc_enable_interrupts(psr);
+  air_sparc_enable_interrupts(psr);
 }
  /* End of AIR intervention*/
 
@@ -401,8 +401,8 @@ void sparc_syscall_exit(uint32_t exitcode1, uint32_t exitcode2)
   do { \
     register uint32_t   _ignored = 0; \
     \
-    xky_sparc_enable_interrupts( (_psr) ); \
-    _ignored = xky_sparc_disable_interrupts(); \
+    air_sparc_enable_interrupts( (_psr) ); \
+    _ignored = air_sparc_disable_interrupts(); \
   } while ( 0 )
 
 /** End of AIR intervention */
@@ -420,14 +420,14 @@ void sparc_syscall_exit(uint32_t exitcode1, uint32_t exitcode2)
  * sparc_get_psr( _psr_level ); \
  * 
  * with
- *  _psr_level = xky_sparc_get_psr(); \
+ *  _psr_level = air_sparc_get_psr(); \
  */
 
 #define sparc_get_interrupt_level( _level ) \
   do { \
     register uint32_t   _psr_level = 0; \
     \
-    _psr_level = xky_sparc_get_psr(); \
+    _psr_level = air_sparc_get_psr(); \
     (_level) = \
       (_psr_level & SPARC_PSR_PIL_MASK) >> SPARC_PSR_PIL_BIT_POSITION; \
   } while ( 0 )

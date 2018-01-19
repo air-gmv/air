@@ -47,12 +47,10 @@ CXXFLAGS += -pthread
 CPPFLAGS += -DGTEST -isystem $(GTEST_DIR)/include
 
 # built in libraries include files
-#CPPFLAGS+= -B$(XKY_LIBS)/libprintf/
 #CPPFLAGS+= -gdwarf-2 -I./ -B./
 #-I../common/\
 #-B../common/\
 #
-#-B$(XKY_LIBS)/libxky/
 
 # include directories
 # 

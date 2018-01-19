@@ -20,7 +20,7 @@
 
 #define GRETH_SUPPORTED
 #include <bsp.h>
-#include <xky.h>
+#include <air.h>
 #include <rtems.h>
 #include <amba.h>
 #include <ambapp.h>
@@ -338,8 +338,8 @@ auto_neg_done:
     sc->rxdesc = (greth_rxtxdesc *)((((uintptr_t)sc->rxdesc + 1024) & ~(1024 - 1)) + 1024);
 
 	/* insert the descriptor table address in the HW register*/
-    regs->txdesc = (uint32_t)xky_syscall_get_physical_addr((uintptr_t)sc->txdesc);
-    regs->rxdesc = (uint32_t)xky_syscall_get_physical_addr((uintptr_t)sc->rxdesc);
+    regs->txdesc = (uint32_t)air_syscall_get_physical_addr((uintptr_t)sc->txdesc);
+    regs->rxdesc = (uint32_t)air_syscall_get_physical_addr((uintptr_t)sc->rxdesc);
 
     /* setup IOP buffers */
     setup_iop_buffers(

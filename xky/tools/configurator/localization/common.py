@@ -1,5 +1,5 @@
 
-AIR_CONFIG_WELCOME 				= [ ' XKY Configurator v{0}', ' Copyright (C) GMVIS Skysoft S.A., 2014' ]
+AIR_CONFIG_WELCOME 				= [ ' AIR Configurator v{0}', ' Copyright (C) GMVIS Skysoft S.A., 2014' ]
 IOP_CONFIG_WELCOME 				= [ ' IOP Configurator v{0}', ' Copyright (C) GMVIS Skysoft S.A., 2013' ]
 
 AIR_DESCRIPTION 				= 'Tool to configure an AIR application'

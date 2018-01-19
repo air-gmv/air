@@ -1,6 +1,6 @@
 ##
 # @package tools
 # @author pfnf
-# @brief Tools to configure XKY and its applications
+# @brief Tools to configure AIR and its applications
 
 __author__ = 'pfnf'
