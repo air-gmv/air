@@ -1,7 +1,8 @@
 # C compiled files
 *.exe
-*.o
+*.map
 *.num
+*.o
 *.ralf
 *.txt
 
@@ -15,6 +16,11 @@ Makefile.rej
 
 # Install directory
 xky/install
+o-optimize-*/
+b-*/
+
+# 'configure' generated files
+xky/.xky_config
 
 # Examples generated files
 xky/examples/**/config
@@ -24,8 +30,10 @@ xky/examples/**/rtems_config.h
 xky/examples/**/.config
 xky/examples/**/go.sh
 
-#Log files
+# log/tags/tmp files
 *.log
+.*.swp
+tags
 
 
 # Eclipse
