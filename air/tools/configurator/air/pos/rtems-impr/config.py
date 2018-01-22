@@ -35,7 +35,7 @@ public_header_files = {
 }
 
 # @brief Custom Makefile
-makefile = os.path.join(POS_DIRECTORY, 'rtems-impr', 'rtems-impr_makefile.mako')
+makefile = os.path.join(POS_DIRECTORY, 'rtems-impr', 'rtems5_makefile.mako')
 
 # @brief List of lines to be add to Makefile.inc
 makefile_inc = [
@@ -46,7 +46,7 @@ makefile_inc = [
 
 # @brief List of application partition templates
 partition_templates = [
-    os.path.join(POS_DIRECTORY, 'rtems-impr', 'rtems-impr_partition_makefile.mako'),    # POS makefile
+    os.path.join(POS_DIRECTORY, 'rtems-impr', 'rtems5_partition_makefile.mako'),    # POS makefile
     os.path.join(POS_DIRECTORY, 'rtems-impr', 'init.c.mako'),
     os.path.join(POS_DIRECTORY, 'rtems-impr', 'rtems_config.h.mako'),
 ]
