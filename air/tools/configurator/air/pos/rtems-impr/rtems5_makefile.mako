@@ -12,19 +12,19 @@
     build_dir = os.path.join(
         os.path.relpath(air.INSTALL_DIRECTORY, output_dir),
         os.path.relpath(output_dir, air.ROOT_DIRECTORY),
-        'rtems-impr-build')
+        'rtems5-build')
     
     # rtems install dir
     install_dir = os.path.join(
         air.INSTALL_DIRECTORY,
         os.path.relpath(output_dir, air.ROOT_DIRECTORY),
-        'rtems-impr-install')
+        'rtems5-install')
 
     # get libair headers
     libair_headers = os_configuration.get_libair_headers()
 %>\
 <%namespace name="template" file="/makefile.mako"/>\
-${template.FileHeader("POS RTEMS-IMPR - RTEMS-IMPR personality")}\
+${template.FileHeader("POS RTEMS5 - RTEMS5 personality")}\
 
 # Makefile Include file
 ${template.MakefileInc()}
@@ -40,13 +40,13 @@ RTEMS_BUILD_DIR=${build_dir}
 RTEMS_INSTALL_DIR=${install_dir}
 
 # All
-${template.Rule('all', True, ['rtems-impr'])}
+${template.Rule('all', True, ['rtems5'])}
 
 # RTEMS 4.12
-${template.Rule('rtems-impr', True, None)}
+${template.Rule('rtems5', True, None)}
 ${'\t'}if [ ! -d "$(RTEMS_BUILD_DIR)" ]; then ${'\\'}
 ${'\t'}$(MKDIR) $(RTEMS_BUILD_DIR) && ${'\\'}
-${'\t'}cd $(RTEMS_BUILD_DIR); $(CURRENT_PATH)/rtems-impr/configure ${'\\'}
+${'\t'}cd $(RTEMS_BUILD_DIR); $(CURRENT_PATH)/rtems5/configure ${'\\'}
 ${'\t\t'}--target=$(RTEMS_TARGET) ${'\\'}
 ${'\t\t'}--enable-rtems-inlines ${'\\'}
 ${'\t\t'}--disable-itron ${'\\'}
