@@ -1,5 +1,0 @@
-*** POSIX TIME TEST PSXTMBARRIER 01 ***
-pthread_barrier_init 20
-pthread_barrier_destroy 21
-*** END OF POSIX TIME TEST PSXTMBARRIER 01  ***
-

@@ -1,7 +1,0 @@
-*** BEGIN OF TEST FSSCANDIR ROOT IMFS ***
-Initializing filesystem ROOT IMFS
-scandir: Success
-
-
-Shutting down filesystem ROOT IMFS
-*** END OF TEST FSSCANDIR ROOT IMFS ***
