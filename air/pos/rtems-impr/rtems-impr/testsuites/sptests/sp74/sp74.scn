@@ -1,5 +1,0 @@
-*** SP74 (YIELD) TEST ***
-Create TA1 at higher priority task
-Yield to TA1
-Successfully yielded it to higher priority task
-*** END OF SP74 TEST ***
