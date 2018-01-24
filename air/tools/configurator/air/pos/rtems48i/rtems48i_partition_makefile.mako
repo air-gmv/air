@@ -30,7 +30,7 @@ CHDRS=$(shell find ./ -type f -name '*.h')
 COBJS_=$(CSRCS:.c=.o)
 COBJS=$(COBJS_:%=$(ARCH)/%) $(shell find ../common -type f -name '*.o')
  
-# RTEMS Newlib check (TBC)
+# RTEMS Improvement RTEMS source code 
 RTEMS_USES_NEWLIB = no
  
 # Example of assembly source code filenames that could be included 
@@ -45,7 +45,9 @@ $(AIR_LIBS)/${libname.lower()}/${libname.lower()}.a${'\\' if i < len(partition.l
 % endfor
 
 # The RTEMS_MAKEFILE_PATH is defined by the user for the specific CPU and BSP
-RTEMS_MAKEFILE_PATH=$(AIR_POS)/${os.path.join(pos_config.name, 'rtems5-install', 'sparc-rtems5', 'leon3')}
+RTEMS_MAKEFILE_PATH=$(AIR_POS)/${os.path.join(pos_config.name, 'rtems48i-install', 'sparc-rtems5', 'leon3')}
+RTEMS_EXTERNAL_LIBRARY_PATH=${'\\'}
+$(XKY_POS)/${os.path.join(pos_config.name, 'edilib', 'library')}${'\\' if len(partition.libraries) > 0 else ''}
 
 # These includes should not be modified by the user.  
 include $(RTEMS_MAKEFILE_PATH)/Makefile.inc 
