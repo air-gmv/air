@@ -94,9 +94,9 @@ endef
 
 %for pos_name in os_configuration.get_supported_pos():
 <%
-	pos = os_configuration.get_pos_config(pos_name)
+    pos = os_configuration.get_pos_config(pos_name)
 %>\
-%if (pos.alias is None or pos_name not in pos.alias) and pos.makefile_inc is not None and len(pos.makefile_inc) > 0:
+%if pos.makefile_inc is not None:
 ${'# {0} definitions'.format(pos.name)}
 %for line in pos.makefile_inc:
 ${line}

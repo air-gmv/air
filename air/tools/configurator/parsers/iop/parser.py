@@ -153,7 +153,7 @@ class IOParser(object):
         pdevice.id = xml.parse_attr(PHYSICAL_DEVICE_ID, VALID_IDENTIFIER_TYPE, True, self.logger)
         pdevice.device = xml.parse_attr(PHYSICAL_DEVICE_NAME, VALID_NAME_TYPE, True, self.logger)
 
-        self.logger.event(pdevice.device)
+        self.logger.event(0, "dev:", pdevice.device)
         # sanity check
         if self.logger.check_errors(): return False
 

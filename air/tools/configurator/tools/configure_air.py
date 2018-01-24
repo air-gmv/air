@@ -107,8 +107,8 @@ def Run(args, logger):
             pos = os_configuration.get_pos_config(pos_name)
 
             # check if it is an alias
-            if pos.alias is not None and pos_name in pos.alias:
-                continue
+#            if pos.alias is not None and pos_name in pos.alias:
+#                continue
 
             makoutils.applyMAKOTemplate(
                 os_configuration.get_pos_makefile(pos.name),
