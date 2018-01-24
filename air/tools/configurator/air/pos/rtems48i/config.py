@@ -1,7 +1,7 @@
 ##
-# @package air.pos.rtems5
+# @package air.pos.rtems48i
 # @author $(AIR_RUNNER_USER)
-# @brief RTEMS 5 configuration
+# @brief RTEMS 4.8 (impr) configuration
 
 __author__ = '$(AIR_RUNNER_USER)'
 
@@ -11,13 +11,13 @@ from air import *
 import utils.file as file_tools
 
 # @brief Name
-name = "rtems5"
+name = "rtems48i"
 
 # @brief Description
-description = "RTEMS-5"
+description = "RTEMS-4.8-IMPR"
 
 # @brief OS alias
-alias = ['rtems5']
+alias = ['rtems48i']
 
 # @brief POS Source files
 source_files = {
@@ -35,18 +35,18 @@ public_header_files = {
 }
 
 # @brief Custom Makefile
-makefile = os.path.join(POS_DIRECTORY, 'rtems5', 'rtems5_makefile.mako')
+makefile = os.path.join(POS_DIRECTORY, 'rtems48i', 'rtems48i_makefile.mako')
 
 # @brief List of lines to be add to Makefile.inc
-# RTEMS_DIRECTORY is  necessary only for lbiop
 makefile_inc = [
-    "RTEMS5_TARGET=sparc-rtems5",
-    "RTEMS5_BSP=leon3",
+    "RTEMS_IMPR_DIRECTORY=rtems48i",
+    "RTEMS_IMPR_TARGET=sparc-rtems5",
+    "RTEMS_IMPR_BSP=leon3",
 ]
 
 # @brief List of application partition templates
 partition_templates = [
-    os.path.join(POS_DIRECTORY, 'rtems5', 'rtems5_partition_makefile.mako'),    # POS makefile
-    os.path.join(POS_DIRECTORY, 'rtems5', 'init.c.mako'),
-    os.path.join(POS_DIRECTORY, 'rtems5', 'rtems_config.h.mako'),
+    os.path.join(POS_DIRECTORY, 'rtems48i', 'rtems48i_partition_makefile.mako'),    # POS makefile
+    os.path.join(POS_DIRECTORY, 'rtems48i', 'init.c.mako'),
+    os.path.join(POS_DIRECTORY, 'rtems48i', 'rtems_config.h.mako'),
 ]

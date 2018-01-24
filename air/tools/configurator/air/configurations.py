@@ -14,6 +14,7 @@ import pickle
 import utils.parser
 import logging
 import traceback
+import utils.terminal as terminalutils
 
 __OS_CONFIG_FILE__ = os.path.join(air.ROOT_DIRECTORY, '.air_config')
 
@@ -46,6 +47,7 @@ def get_available_targets():
                 module = imp.load_source(target_str, bsp_path)
                 bsp[bsp_name] = module
             except IOError:
+                logging.warning ('Missing AIR target : %s, bsp: %s', bsp_path, bsp_name)        
                 pass
 
         if len(bsp) > 0:
@@ -74,11 +76,12 @@ def get_available_libraries():
     for lib_name in libs_names:
         try:
             lib_path = os.path.join(AIR_LIBRARIES, lib_name, 'config.py')
-            if lib_name != 'libiop':
-                module = imp.load_source(lib_name, lib_path)
-                module.path = lib_path
-                libs[module.name.lower()] = module
+            module = imp.load_source(lib_name, lib_path)
+            module.path = lib_path
+            libs[module.name.lower()] = module
+
         except IOError:
+            logging.warning ('Missing AIR library : %s, name: %s', lib_path, lib_name)        
             pass
 
     return libs
@@ -86,15 +89,25 @@ def get_available_libraries():
 
 def get_available_pos():
     pos = {}
+    # Prompt to install RTOS
+    #opts = ['No', 'Yes']
+    #promptx = 'Install All RTOS ?'
+    #all_rtos = terminalutils.promptActions(promptx, opts)
     pos_names = [x for x in os.listdir(AIR_POS)
                  if os.path.isdir(os.path.join(AIR_POS, x)) and x != 'shared']
     for pos_name in pos_names:
         try:
+            #i = 0
+            #if all_rtos == 0:
+            #    promptx = 'Install '  + pos_name + '?'
+            #    i = terminalutils.promptActions(promptx, opts)
+            #if i == 1 or all_rtos == 1:
             pos_path = os.path.join(AIR_POS, pos_name, 'config.py')
             module = imp.load_source(pos_name, pos_path)
             module.path = pos_path
             pos[module.name.lower()] = module
         except IOError:
+            logging.warning ('Missing AIR POS : %s, name: %s', pos_path, pos_name)        
             pass
     return pos
 
@@ -119,7 +132,7 @@ class Configuration(object):
         self.bsp = bsp.lower()
         self.fpu_enabled = fpu_enabled;
         self.debug_mode = False
-        logging.info ('Initializing Configuration class arch: %s, bsp: %s', self.arch, self.bsp)        
+        logging.info ('Initializing Configuration class architecture: %s, bsp: %s', self.arch, self.bsp)        
         
 
         # get supported pos
@@ -147,7 +160,8 @@ class Configuration(object):
                         pos.supported_libraries.append(lib.name)
                         supported = True
                     except Exception:
-                        pass                # pos is not supported...
+                        logging.warning ('the library: %s is not installed because %s is missing', lib.name, pos_name)  
+                        pass              
             else:
                 for pos_name in self.supported_pos:
                     pos = self.supported_pos[pos_name]
@@ -215,12 +229,12 @@ class Configuration(object):
         msoft_float = self.grep ("Makefile.inc", "msoft")
         if self.fpu_enabled:
             #if msoft_float:
-                # not required for RTEMS 4.12 TBC
+                # not required for RTEMS 5 TBC
                 #os.system("patch --force -p2 -R -s < tools/configurator/disable_fpu.patch")
             return supported_architectures[self.arch][self.bsp].kernel_compiler
         else:
             #if not msoft_float:
-               # not required for RTEMS 4.12 TBC
+               # not required for RTEMS 5  TBC
                #os.system("patch --force -p2 -s < tools/configurator/disable_fpu.patch")
             return supported_architectures[self.arch][self.bsp].kernel_compiler_no_fpu
 			
@@ -544,12 +558,13 @@ def save_configuration(os_configuration, logger):
 # @param logger logger to report errors
 # @return OS configuration object pointer
 def load_configuration(logger):
-
     # sanity check
     if not os.path.isfile(__OS_CONFIG_FILE__):
+        logger.error("Error POS config file is missing ", __OS_CONFIG_FILE__)
         return None
 
     # try to load the configuration
+    
     try:
         fd = open(__OS_CONFIG_FILE__, 'r')
         arch, bsp, fpu_enabled = pickle.load(fd)
