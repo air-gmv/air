@@ -29,4 +29,4 @@ dependencies = ['libprintf']
 makefile = os.path.join(LIBRARIES_DIRECTORY, 'libiop', 'iop_makefile.mako')
 
 # @brief Requires POS
-requires_pos = ['rtems']
+requires_pos = ['rtems48i']

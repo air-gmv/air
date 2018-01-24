@@ -1,6 +1,6 @@
 
-AIR_CONFIG_WELCOME 				= [ ' AIR Configurator v{0}', ' Copyright (C) GMVIS Skysoft S.A., 2014' ]
-IOP_CONFIG_WELCOME 				= [ ' IOP Configurator v{0}', ' Copyright (C) GMVIS Skysoft S.A., 2013' ]
+AIR_CONFIG_WELCOME 				= [ ' AIR Configurator v{0}', ' Copyright (C) GMVIS Skysoft S.A., 2018' ]
+IOP_CONFIG_WELCOME 				= [ ' IOP Configurator v{0}', ' Copyright (C) GMVIS Skysoft S.A., 2017' ]
 
 AIR_DESCRIPTION 				= 'Tool to configure an AIR application'
 IOP_DESCRIPTION 				= 'Tool to configure an I/O Partition'
