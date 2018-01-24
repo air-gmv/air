@@ -56,7 +56,7 @@ LIBRARY_HEADERS=${'\\'}
 ${template.FileList(library_headers)}\
 
 RTEMS_MAKEFILE_PATH=${'\\'}
-${os.path.relpath(os.path.join(air.INSTALL_POS_DIRECTORY, '$(RTEMS_DIRECTORY)', '$(RTEMS_DIRECTORY)-install', '$(RTEMS_TARGET)', '$(RTEMS_BSP)'), output_dir)}
+${os.path.relpath(os.path.join(air.INSTALL_POS_DIRECTORY, '$(RTEMS_DIRECTORY_FOR_IOP)', '$(RTEMS_DIRECTORY_FOR_IOP)-install', '$(RTEMS_IMPR_TARGET)', '$(RTEMS_IMPR_BSP)'), output_dir)}
 
 ifneq ($(wildcard $(RTEMS_MAKEFILE_PATH)/Makefile.inc),)
 

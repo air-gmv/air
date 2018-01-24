@@ -22,9 +22,9 @@ from utils.logger import Logger
 from localization.common import *
 from argparse import  ArgumentParser,  RawTextHelpFormatter
 
-__version__ 	= '3.6'
-__copyright__ 	= 'Copyright (C) GMVIS Skysoft S.A., 2014'
-__author__ 		= 'pfnf'
+__version__ 	= '4.0'
+__copyright__ 	= 'Copyright (C) GMVIS Skysoft S.A., 2018'
+__author__ 		= '$(AIR_RUNNER_USER), llgg, gmvs, lumm, pfnf'
 __app__			= os.path.basename(__file__)
 
 #Uncomment this for full debugging of an error and check configurator.log results
@@ -54,10 +54,8 @@ if __name__ == "__main__":
 
     # check if we are configuring AIR or a partition
     if air.WORKING_DIRECTORY == air.ROOT_DIRECTORY:
-
         args = configure_air.InputArgs(arg_parser, logger)
         configure_air.Run(args, logger)
-
     else:
         # load OS configurations
         os_configuration = air_configuration.load_configuration(logger)
