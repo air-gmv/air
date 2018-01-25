@@ -155,7 +155,7 @@
   <Partition PartitionIdentifier="1" PartitionName="p0" Criticality="LEVEL_A" SystemPartition="true" EntryPoint="producer">
     <Sampling_Port Direction="SOURCE" MaxMessageSize="32" Name="SEND_SAMP1" RefreshRateSeconds="1.000"/>
     <Sampling_Port Direction="DESTINATION" MaxMessageSize="32" Name="RECV_SAMP1" RefreshRateSeconds="1.000"/>
-    <PartitionConfiguration Personality="RTEMS" Cores="1" Mode="binary">
+    <PartitionConfiguration Personality="RTEMS5" Cores="1" Mode="binary">
       <Libs>LIBAIR;IMASPEX;LIBPRINTF</Libs>
       <Cache>CODE; DATA</Cache>
       <Memory Size="0x500000" />
@@ -169,7 +169,7 @@
   <Partition PartitionIdentifier="2" PartitionName="p1" Criticality="LEVEL_A" SystemPartition="true" EntryPoint="receiver">
     <Sampling_Port Direction="SOURCE" MaxMessageSize="32" Name="SEND_SAMP2" RefreshRateSeconds="1.000"/>
     <Sampling_Port Direction="DESTINATION" MaxMessageSize="32" Name="RECV_SAMP2" RefreshRateSeconds="1.000"/>
-    <PartitionConfiguration Personality="RTEMS" Cores="1" Mode="binary">
+    <PartitionConfiguration Personality="RTEMS5" Cores="1" Mode="binary">
       <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
       <Cache>CODE; DATA</Cache>
       <Memory Size="0x500000" />
