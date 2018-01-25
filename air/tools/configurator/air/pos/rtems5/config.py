@@ -19,6 +19,10 @@ description = "RTEMS-5"
 # @brief OS alias
 alias = ['rtems5']
 
+# @brief Supported git checkout id
+git_id = "2e2a41ecd99d17b379b2874cbd45d32b9430791e"
+
+
 # @brief POS Source files
 source_files = {
     'sparc': [],             # empty, the magic happens in the makefile template

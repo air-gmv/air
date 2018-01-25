@@ -19,6 +19,10 @@ description = "RTEMS-4.8-IMPR"
 # @brief OS alias
 alias = ['rtems48i']
 
+# @brief Supported git checkout id
+git_id = ""
+
+
 # @brief POS Source files
 source_files = {
     'sparc': [],             # empty, the magic happens in the makefile template
