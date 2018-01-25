@@ -19,6 +19,9 @@ description = "Bare C support"
 # @brief OS alias
 alias = None
 
+# @brief Supported git checkout id
+git_id = ""
+
 # @brief POS Source files
 source_files = {
     'arm': set(utils.flatten([

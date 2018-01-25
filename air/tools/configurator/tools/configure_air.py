@@ -105,6 +105,9 @@ def Run(args, logger):
         for pos_name in personalities:
 
             pos = os_configuration.get_pos_config(pos_name)
+            
+            #Git checkout of pos
+            os_configuration.git_pos_checkout(pos_name, logger)
 
             # check if it is an alias
 #            if pos.alias is not None and pos_name in pos.alias:
