@@ -242,7 +242,7 @@
 /** @brief air_offsetof(pmk_schedule_ctrl_t, mtf_barrier)                   */
 #define SCHEDULE_CTRL_MTF_BARRIER                                           32
 /** @brief sizeof(pmk_schedule_ctrl_t)                                      */
-#define SCHEDULE_CTRL_SIZE                                                  48
+#define SCHEDULE_CTRL_SIZE                                                  64
 /** @} */
 
 /**
@@ -262,9 +262,9 @@
 /** @brief air_offsetof(pmk_partition_t, events)                            */
 #define PARTITION_EVENTS                                                    52
 /** @brief air_offsetof(pmk_partition_t, mmap)                              */
-#define PARTITION_MMAP                                                      92
+#define PARTITION_MMAP                                                     104
 /** @brief sizeof(pmk_partition_t)                                          */
-#define PARTITION_SIZE                                                     160
+#define PARTITION_SIZE                                                     168
 /** @} */
 
 /**
