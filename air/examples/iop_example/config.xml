@@ -8,7 +8,7 @@
       Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
     <Queuing_Port Name="squeuing" 
       Direction="SOURCE" MaxMessageSize="1024" MaxNbMessages="32" />
-    <PartitionConfiguration Personality="RTEMS" IOP="iop.xml" Cores="1">
+    <PartitionConfiguration Personality="RTEMS5" IOP="iop.xml" Cores="1">
         <Libs>LIBAIR; LIBIOP; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
@@ -24,7 +24,7 @@
     Criticality="LEVEL_A" EntryPoint="entry_func" SystemPartition="false">
     <Sampling_Port Name="ssampling" 
       Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
-    <PartitionConfiguration Personality="RTEMS" Cores="1">
+    <PartitionConfiguration Personality="RTEMS5" Cores="1">
         <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
@@ -40,7 +40,7 @@
     Criticality="LEVEL_A" EntryPoint="entry_func"  SystemPartition="false">
     <Queuing_Port  Name="dqueuing"
       Direction="DESTINATION" MaxMessageSize="1024" MaxNbMessages="32" />
-    <PartitionConfiguration Personality="RTEMS" Cores="1">
+    <PartitionConfiguration Personality="RTEMS5" Cores="1">
         <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
