@@ -15,6 +15,7 @@ import utils.parser
 import logging
 import traceback
 import utils.terminal as terminalutils
+import subprocess
 
 __OS_CONFIG_FILE__ = os.path.join(air.ROOT_DIRECTORY, '.air_config')
 
@@ -384,6 +385,21 @@ class Configuration(object):
             output_file.append('Makefile' if i == 0 else os.path.basename(template).replace('.mako', ''))
 
         return input_file, output_file
+
+    ##
+    # @brief Execute POS git checkout
+    # @param pos_name Name of the pos
+    # @return Path to the makefile template
+    def git_pos_checkout(self, pos_name, logger):
+        if self.supported_pos[pos_name].git_id is not "":
+            logger.information(1, 'Checking out ' + pos_name + ' from GIT')
+            FNULL = open(os.devnull, 'w')
+            subprocess.call(['git','checkout', self.supported_pos[pos_name].git_id], cwd="pos/" + pos_name+ "/" + pos_name, stdout=FNULL, stderr=subprocess.STDOUT)
+        
+#        if self.supported_pos[pos_name].makefile is None:
+#            return os.path.join(air.AIR_TEMPLATES_DIRECTORY, 'pos_makefile.mako')
+#        return self.supported_pos[pos_name].makefile
+
 
     ##
     # @brief Gets the Partition complete library list
