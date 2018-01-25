@@ -20,7 +20,7 @@ description = "RTEMS-5"
 alias = ['rtems5']
 
 # @brief Supported git checkout id
-git_id = "2e2a41ecd99d17b379b2874cbd45d32b9430791e"
+git_id = "6bb9b3df7b5ea97e151d39654092c060d2175045"
 
 
 # @brief POS Source files
