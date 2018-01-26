@@ -62,7 +62,7 @@ ${'\t\t'}--prefix=$(RTEMS_INSTALL_DIR) && cd ..; ${'\\'}
 ${'\t'}fi
 ${'\t'}make -C $(RTEMS_BUILD_DIR) CPPFLAGS='$(AIR_HEADERS)' && ${'\\'}
 ${'\t'}make -C $(RTEMS_BUILD_DIR) install && ${'\\'}
-${'\t'}make -C edilib BUILD_DIR='$(EDILIB_BUILD_DIR)'
+${'\t'}make -C edilib -f Makefile-hc BUILD_DIR='$(EDILIB_BUILD_DIR)'
 
 # Clean
 ${template.Rule('clean', True, None)}
