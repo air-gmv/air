@@ -14,8 +14,8 @@ if [ -f ./Makefile ]; then
 fi
 
 echo "\n\n### configure [ SPARC, LEON4, ENABLE FPU ] ###\n";
-../tools/jenkins/run-configure.empty
-#../tools/jenkins/run-configure.exp
+../utils/jenkins/run-configure.empty
+#../utils/jenkins/run-configure.exp
 
 sleep 2
 
