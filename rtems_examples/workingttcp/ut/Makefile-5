@@ -39,7 +39,7 @@ CPPFLAGS = -DGTEST -isystem $(GTEST_DIR)/include -I$(PROJECT_INCLUDE)/bsp
 CFLAGS = $(DEPFLAGS) $(SYSFLAGS) $(WARNFLAGS) $(CPU_CFLAGS) $(OPTFLAGS)
 CXXFLAGS = $(DEPFLAGS) $(SYSFLAGS) $(WARNFLAGS) $(CPU_CFLAGS) $(OPTFLAGS)
 ASFLAGS = $(CPU_CFLAGS)
-LDFLAGS = -Wl,--gc-sections
+LDFLAGS = -Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar
 
 LINKFLAGS = $(SYSFLAGS) $(CPU_CFLAGS) $(LDFLAGS) $(OPTFLAGS)
 CCLINK = $(CC) $(LINKFLAGS) -Wl,-Map,$(basename $@).map
