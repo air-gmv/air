@@ -2,7 +2,7 @@
 #  @author pfnf
 #  @brief Tool to configuration a AIR OS instalation
 
-__author__ = 'pfnf'
+__author__ = 'pfnf,$(AIR_RUNNER_USER)'
 
 import os
 import air
@@ -10,6 +10,7 @@ import utils
 import utils.file as fileutils
 import utils.templates as makoutils
 import air.configurations as air_configuration
+
 
 from localization.logger import *
 import parsers.a653.definitions as a653_definitions
@@ -67,7 +68,7 @@ def Run(args, os_configuration, logger):
     print("  PARSING configs")
     app_configuration = airParser(os_configuration, logger)
     app_configuration.parse(args.xml_file)
-    print("  done PARSING configs")
+    #print("  done PARSING configs")
     # sanity check
     if logger.total_errors > 0:
         logger.error(' :: XML configuration contains errors...')
@@ -175,7 +176,7 @@ def Run(args, os_configuration, logger):
         os.path.join(temp_directory, 'Makefile'),
         dict(app_configuration=app_configuration),
         logger, template_includes)
-
+    
     # load previous cleaning record (if it exists)
     record = fileutils.loadFileRecord(os.path.join(air.WORKING_DIRECTORY, '.config'))
     fileutils.safeMultiFileCopyWithRecord(temp_directory, air.WORKING_DIRECTORY, record)
@@ -239,6 +240,7 @@ def convertMemoryPermissions(permissions_str):
 ## @brief Clear application configuration
 #  @param logger Logger object
 def clearConfiguration(logger):
-
     fileutils.runCleaningRecord(os.path.join(air.WORKING_DIRECTORY, '.config'), logger)
     exit(0)
+
+        

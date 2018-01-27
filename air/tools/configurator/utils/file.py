@@ -1,8 +1,10 @@
 ## @package utils.file
-#  @author pfnf
+#  @author pfnf,$(AIR_RUNNER_USER)
 #  @brief File manipulation methods
 
 import os
+import shutil
+import fnmatch
 import re
 import utils
 import terminal as terminalutils
@@ -338,3 +340,11 @@ def runCleaningRecord(record, logger, followDefault = False):
     if res: safeRemoveFile(record)
 
 
+## @brief search hardcoded files, they have extension .hc and remove that extension
+def setHardcodedFiles():
+    for root, dirnames, filenames in os.walk('.'):
+        for filename in fnmatch.filter(filenames, '*.hc'):
+            #matches.append(os.path.join(root, filename))
+            old_name = os.path.join(root, filename)
+            new_name = old_name[:-3]
+            shutil.copy(old_name, new_name)
