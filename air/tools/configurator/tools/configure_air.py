@@ -110,8 +110,8 @@ def Run(args, logger):
 
             pos = os_configuration.get_pos_config(pos_name)
             
-            #Git checkout of pos
-            os_configuration.git_pos_checkout(pos_name, logger)
+            #Git checkout of pos and patchit
+            os_configuration.pos_checkout_and_patch(pos_name, logger)
 
             # check if it is an alias
 #            if pos.alias is not None and pos_name in pos.alias:
