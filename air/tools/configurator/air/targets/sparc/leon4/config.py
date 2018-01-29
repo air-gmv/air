@@ -32,7 +32,7 @@ kernel_compiler = dict(
     CFLAGS="",
     CPPFLAGS="-mcpu=leon3 -mflat -fno-builtin -nodefaultlibs -O2 -Wall",
     CXXFLAGS="",
-    LDFLAGS="",
+    LDFLAGS="-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar",
     ARFLAGS="ruv"
 )
 
@@ -46,7 +46,7 @@ kernel_compiler_no_fpu = dict(
 	CFLAGS="",
 	CPPFLAGS="-mcpu=leon3 -mflat -fno-builtin -nodefaultlibs -O2 -Wall",
 	CXXFLAGS="",
-	LDFLAGS="",
+	LDFLAGS="-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar",
 	ARFLAGS="ruv"
 )
 
