@@ -3,14 +3,13 @@
 # @author pfnf
 # @brief Tool to configuration a AIR OS instalation
 
-__author__ = "pfnf,$(AIR_RUNNER_USER)"
+__author__ = "pfnf"
 
 import os
 import air
 import sys
 import utils.templates as makoutils
 import utils.terminal as terminalutils
-import utils.file as fileutils
 import air.configurations as air_configuration
 
 
@@ -48,9 +47,6 @@ def Run(args, logger):
 
     # show info
     if args.info: ShowInstallInfo(logger)
-
-    #check hardcoded files to replace generated
-    fileutils.setHardcodedFiles()
 
     # parse input args or prompt the user for configuration
     if args.target is None:
@@ -110,8 +106,8 @@ def Run(args, logger):
 
             pos = os_configuration.get_pos_config(pos_name)
             
-            #Git checkout of pos and patchit
-            os_configuration.pos_checkout_and_patch(pos_name, logger)
+            #Git checkout of pos
+            #os_configuration.git_pos_checkout(pos_name, logger)
 
             # check if it is an alias
 #            if pos.alias is not None and pos_name in pos.alias:
