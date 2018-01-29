@@ -22,6 +22,7 @@ b-*/
 # 'configure' generated files
 .config
 air/.air_config
+air/pmk/arch/sparc/include/asm_offsets.h
 
 # Examples generated files
 air/examples/**/*.a
