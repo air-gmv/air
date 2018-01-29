@@ -1,0 +1,32 @@
+*** TEST 21 ***
+-----  TESTING THE NULL DRIVER CHECKS  -----
+rtems_io_initialize  - NULL DRIVER RTEMS_SUCCESSFUL
+rtems_io_open        - NULL DRIVER RTEMS_SUCCESSFUL
+rtems_io_close       - NULL DRIVER RTEMS_SUCCESSFUL
+rtems_io_read        - NULL DRIVER RTEMS_SUCCESSFUL
+rtems_io_write       - NULL DRIVER RTEMS_SUCCESSFUL
+rtems_io_control     - NULL DRIVER RTEMS_SUCCESSFUL
+-----  TESTING THE I/O MANAGER DIRECTIVES  -----
+rtems_io_initialize  - STUB DRIVER RTEMS_SUCCESSFUL
+rtems_io_open        - STUB DRIVER RTEMS_SUCCESSFUL
+rtems_io_close       - STUB DRIVER RTEMS_SUCCESSFUL
+rtems_io_read        - STUB DRIVER RTEMS_SUCCESSFUL
+rtems_io_write       - STUB DRIVER RTEMS_SUCCESSFUL
+rtems_io_control     - STUB DRIVER RTEMS_SUCCESSFUL
+-----  RETURNING INVALID MAJOR NUMBER -----
+rtems_io_initialize  - RTEMS_INVALID_NUMBER
+rtems_io_open        - RTEMS_INVALID_NUMBER
+-----  EXERCISE DRIVER REGISTER -----
+rtems_io_register_driver - RTEMS_INVALID_ADDRESS - NULL registered
+rtems_io_register_driver - RTEMS_INVALID_ADDRESS - NULL device
+rtems_io_register_driver - RTEMS_INVALID_ADDRESS - no callouts
+rtems_io_register_driver - RTEMS_INVALID_NUMBER - bad major
+rtems_io_register_driver - RTEMS_SUCCESSFUL - overwrite NULL
+rtems_io_register_driver - RTEMS_TOO_MANY - no slots
+rtems_io_register_driver - RTEMS_RESOURCE_IN_USE - major in use
+rtems_io_unregister_driver - RTEMS_SUCCESSFUL
+rtems_io_lookup_name( "", &info ) - RTEMS_UNSATISFIED
+rtems_io_lookup_name( "/dev", &info ) - RTEMS_UNSATISFIED
+rtems_io_lookup_name( "/dev/null", &info ) - RTEMS_SUCCESSFUL
+-----  TESTING THE ZERO DRIVER CHECKS  -----
+*** END OF TEST 21 ***

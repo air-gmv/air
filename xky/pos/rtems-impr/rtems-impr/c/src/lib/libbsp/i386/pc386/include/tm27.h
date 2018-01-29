@@ -1,11 +1,17 @@
+/**
+ * @file
+ *
+ * @ingroup i386_pc386
+ *
+ * @brief Implementation of interrupt mechanisms for Time Test 27.
+ */
+
 /*
  *  tm27.h
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef _RTEMS_TMTEST27
@@ -23,7 +29,7 @@
 
 #define Install_tm27_vector(handler)
 
-#define Cause_tm27_intr() asm volatile("int $0x90" : :);
+#define Cause_tm27_intr() __asm__ volatile("int $0x90" : :);
 
 #define Clear_tm27_intr() /* empty */
 

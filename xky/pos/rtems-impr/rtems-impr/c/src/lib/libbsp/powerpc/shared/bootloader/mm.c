@@ -9,10 +9,8 @@
  *  Copyright (C) 1999 Eric Valette. valette@crf.canon.fr
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- * $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 /* This code is a crude memory manager for early boot for LinuxPPC.
@@ -95,7 +93,7 @@ typedef struct _map {
 
 SPR_RW(SDR1);
 SPR_RO(DSISR);
-SPR_RO(DAR);
+SPR_RO(PPC_DAR);
 
 /* We need a few statically allocated free maps to bootstrap the
  * memory managment */
@@ -131,7 +129,6 @@ void print_maps(map *, const char *);
 /* The handler used for all exceptions although for now it is only
  * designed to properly handle MMU interrupts to fill the hash table.
  */
-
 void _handler(int vec, ctxt *p) {
 	map *area;
 	struct _mm_private *mm = (struct _mm_private *) bd->mm_private;
@@ -140,7 +137,7 @@ void _handler(int vec, ctxt *p) {
 		vaddr = p->nip;
 		cause = p->msr;
 	} else { /* Valid for DSI and alignment exceptions */
-		vaddr = _read_DAR();
+		vaddr = _read_PPC_DAR();
 		cause = _read_DSISR();
 	}
 
@@ -213,12 +210,14 @@ void _handler(int vec, ctxt *p) {
 		}
 	} else {
 	  MMUon();
-	  printk("\nPanic: vector=%x, dsisr=%lx, faultaddr =%lx, msr=%lx opcode=%lx\n", vec,
+	  printk(
+		"\nPanic: vector=%d, dsisr=%lx, faultaddr =%lx, "
+		  "msr=%lx opcode=%x\n", vec,
 		 cause, p->nip, p->msr, * ((unsigned int*) p->nip) );
 	  if (vec == 7) {
 	    unsigned int* ptr = ((unsigned int*) p->nip) - 4 * 10;
 	    for (; ptr <= (((unsigned int*) p->nip) + 4 * 10); ptr ++)
-	      printk("Hexdecimal code at address %x = %x\n", ptr, *ptr);
+	      printk("Hexdecimal code at address %p = %x\n", ptr, *ptr);
 	  }
 	  hang("Program or alignment exception at ", vaddr, p);
 	}
@@ -426,7 +425,7 @@ MEM_MAP seg_fix[] = {
  * data. This routine changes some things in a way that the bootloader and
  * linux are happy.
  */
-void
+static void
 fix_residual( RESIDUAL *res )
 {
 #if 0
@@ -473,6 +472,19 @@ fix_residual( RESIDUAL *res )
 int early_setup(u_long image_size) {
 	register RESIDUAL *res = bd->residual;
 	u_long minpages = PAGE_ALIGN(image_size)>>PAGE_SHIFT;
+
+	if ( residual_fw_is_qemu( res ) ) {
+		/* save command-line - QEMU firmware sets R6/R7 to
+		 * commandline start/end (NON-PReP STD)
+		 */
+		int len = bd->r7 - bd->r6;
+		if ( len > 0 ) {
+			if ( len > sizeof(bd->cmd_line) - 1 )
+				len = sizeof(bd->cmd_line) - 1;
+			codemove(bd->cmd_line, bd->r6, len, bd->cache_lsize);
+			bd->cmd_line[len] = 0;
+		}
+	}
 
 	/* Fix residual if we are loaded by Motorola NT firmware */
 	if ( res && res->VitalProductData.FirmwareSupplier == 0x10000 )

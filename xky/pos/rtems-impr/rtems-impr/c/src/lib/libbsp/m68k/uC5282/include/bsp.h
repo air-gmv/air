@@ -8,22 +8,21 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-#ifndef _BSP_H
-#define _BSP_H
+#ifndef LIBBSP_M68K_UC5282_BSP_H
+#define LIBBSP_M68K_UC5282_BSP_H
+
+#include <bspopts.h>
+#include <bsp/default-initial-extension.h>
+
+#include <rtems.h>
+#include <rtems/bspIo.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <rtems.h>
-#include <rtems/iosupp.h>
-#include <rtems/console.h>
-#include <rtems/clockdrv.h>
-#include <rtems/iosupp.h>
-#include <rtems/bspIo.h>
 
 /***************************************************************************/
 /**  BSP Configuration                                                    **/
@@ -71,7 +70,7 @@ const char *bsp_getbenv(const char *a);
 int bsp_flash_erase_range(volatile unsigned short *flashptr, int start, int end);
 int bsp_flash_write_range(volatile unsigned short *flashptr, bsp_mnode_t *chain, int offset);
 
-m68k_isr_entry set_vector(
+rtems_isr_entry set_vector(
   rtems_isr_entry     handler,
   rtems_vector_number vector,
   int                 type
@@ -133,6 +132,16 @@ int BSP_vme2local_adrs(unsigned am, unsigned long vmeaddr, unsigned long *plocal
  */
 void *bsp_idle_thread( uintptr_t ignored );
 #define BSP_IDLE_TASK_BODY bsp_idle_thread
+
+/*
+ *  The custom IDLE task keeps some idle statistics.
+ */
+int bsp_cpu_load_percentage(void);
+
+/*
+ *  This is a helper method to determine the cause of a reset.
+ */
+void bsp_reset_cause(char *buf, size_t capacity);
 
 /*
  * SRAM. The BSP uses SRAM for maintaining some clock-driver data

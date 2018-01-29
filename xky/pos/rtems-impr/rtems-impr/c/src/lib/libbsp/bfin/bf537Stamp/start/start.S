@@ -1,7 +1,3 @@
-/*
- *  $Id$
- */
-
 #include <libcpu/bf537.h>
 #include <libcpu/sicRegs.h>
 #include <libcpu/cecRegs.h>
@@ -14,17 +10,6 @@
 #ifndef HI
 #define HI(con32) (((con32) >> 16) & 0xFFFF)
 #endif
-
-
-	.section .init
-	.globl	__init
-	.type	__init,@function
-__init:
-	.section .fini
-	.globl	__fini
-	.type	__fini,@function
-__fini:
-
 
 	.section .start
 	.align  4
@@ -121,6 +106,9 @@ loop4:	p0 +=1;
 	call (p0);
 	sp += 12;
 
+	.global _bsp_reset
+_bsp_reset:
+	HLT
 	p0.h = _exit;
 	p0.l = _exit;
 	jump (p0);

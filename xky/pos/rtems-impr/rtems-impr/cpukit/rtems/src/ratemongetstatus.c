@@ -1,128 +1,86 @@
 /**
  *  @file
- *  ratemongetstatus.c
  *
- *  @brief get rate monotonic period status
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-2007.
+ *  @brief RTEMS Rate Monotonic Get Status
+ *  @ingroup ClassicRateMon
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2009.
  *  On-Line Applications Research Corporation (OAR).
+ *  Copyright (c) 2016 embedded brains GmbH.
+ *  Copyright (c) 2017 Kuan-Hsun Chen.
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  578     | 17/11/2008  | mcoutinho    | IPR 64
- *  578     | 17/11/2008  | mcoutinho    | IPR 70
- *  5247    | 30/10/2009  | mcoutinho    | IPR 828
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  5317    | 02/11/2009  | mcoutinho    | IPR 831
- *  7095    | 09/04/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup RTEMS_API RTEMS API
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup RTEMS_API_RATEMON Rate Monotonic Manager
- *  @{
- */
-
-#include <rtems/system.h>
-#include <rtems/rtems/status.h>
-#include <rtems/rtems/support.h>
-#include <rtems/score/isr.h>
-#include <rtems/score/object.h>
-#include <rtems/rtems/ratemon.h>
-#include <rtems/score/thread.h>
-
-
-rtems_status_code rtems_rate_monotonic_get_status(
-                                                  Objects_Id id ,
-                                                  rtems_rate_monotonic_period_status *status
-                                                  )
-{
-    /* rate monotonic object to get status */
-    Rate_monotonic_Control *the_period;
-
-    /* rate monotonic object to get status location */
-    Objects_Locations location;
-
-
-    /* check if status address is valid */
-    if(!status)
-    {
-        /*return invalid address error */
-        return RTEMS_INVALID_ADDRESS;
-    }
-
-    /* get the period */
-    the_period = _Rate_monotonic_Get(id , &location);
-
-    /* check the rate monotonic object location */
-    switch(location)
-    {
-
-#if defined(RTEMS_MULTIPROCESSING)
-            /* rate monotonic object is remote */
-        case OBJECTS_REMOTE:
-
-            /* should never return this */
-
-            /* return internal error */
-            return RTEMS_INTERNAL_ERROR;
+#if HAVE_CONFIG_H
+#include "config.h"
 #endif
 
-            /* rate monotonic object id is invalid */
-        case OBJECTS_ERROR:
+#include <rtems/rtems/ratemonimpl.h>
 
-            /* return invalid indentifier */
-            return RTEMS_INVALID_ID;
+rtems_status_code rtems_rate_monotonic_get_status(
+  rtems_id                            id,
+  rtems_rate_monotonic_period_status *period_status
+)
+{
+  Rate_monotonic_Control *the_period;
+  ISR_lock_Context        lock_context;
+  rtems_status_code       status;
 
-            /* rate monotonic object is local (nominal case) */
-        case OBJECTS_LOCAL:
+  if ( period_status == NULL ) {
+    return RTEMS_INVALID_ADDRESS;
+  }
 
-            /* check if owner is NULL */
-            if(the_period->owner == NULL)
-            {
-                /* update the status with invalid owner */
-                status->owner = 0;
-            }
-            else
-            {
-                /* update the status with the owner id */
-                status->owner = the_period->owner->Object.id;
-            }
+  the_period = _Rate_monotonic_Get( id, &lock_context );
+  if ( the_period == NULL ) {
+    return RTEMS_INVALID_ID;
+  }
 
-            /* get the status */
-            status->state = the_period->state;
+  _Rate_monotonic_Acquire_critical( the_period, &lock_context );
 
-            /* enable dispatch (disabled by _Rate_monotonic_Get) */
-            _Thread_Enable_dispatch();
+  period_status->owner = the_period->owner->Object.id;
+  period_status->state = the_period->state;
+  period_status->postponed_jobs_count = the_period->postponed_jobs;
 
-            /* return success */
-            return RTEMS_SUCCESSFUL;
+  if ( the_period->state == RATE_MONOTONIC_INACTIVE ) {
+    /*
+     *  If the period is inactive, there is no information.
+     */
+    _Timespec_Set_to_zero( &period_status->since_last_period );
+    _Timespec_Set_to_zero( &period_status->executed_since_last_period );
+    status = RTEMS_SUCCESSFUL;
+  } else {
+    Timestamp_Control wall_since_last_period;
+    Timestamp_Control cpu_since_last_period;
+    bool              valid_status;
 
-            /* default clause: the object location is invalid */
-        default:
-
-            /* an internal error occured and the object location is invalid */
-            return RTEMS_INTERNAL_INVALID_OBJECT_LOCATION;
+    /*
+     *  Grab the current status.
+     */
+    valid_status = _Rate_monotonic_Get_status(
+      the_period,
+      &wall_since_last_period,
+      &cpu_since_last_period
+    );
+    if ( valid_status ) {
+      _Timestamp_To_timespec(
+        &wall_since_last_period,
+        &period_status->since_last_period
+      );
+      _Timestamp_To_timespec(
+        &cpu_since_last_period,
+        &period_status->executed_since_last_period
+      );
+      status = RTEMS_SUCCESSFUL;
+    } else {
+      status = RTEMS_NOT_DEFINED;
     }
+  }
+
+  _Rate_monotonic_Release( the_period, &lock_context );
+  return status;
 }
-
-/**  
- *  @}
- */
-
-/**
- *  @}
- */

@@ -16,7 +16,7 @@
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
- * http://www.rtems.com/license/LICENSE.
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef LIBBSP_ARM_SHARED_LPC_TIMER_H
@@ -31,7 +31,8 @@ extern "C" {
 /**
  * @defgroup lpc_timer Timer Support
  *
- * @ingroup lpc
+ * @ingroup arm_lpc24xx
+ * @ingroup arm_lpc32xx
  *
  * @brief Timer support.
  *

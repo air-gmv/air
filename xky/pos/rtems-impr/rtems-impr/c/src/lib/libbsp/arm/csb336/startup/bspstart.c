@@ -1,24 +1,21 @@
 /*
  * Cogent CSB336 - MC9328MXL SBC startup code
- *
+ */
+
+/*
  * Copyright (c) 2004 by Cogent Computer Systems
  * Written by Jay Monkman <jtm@lopingdog.com>
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
- * http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>
 #include <bsp/irq-generic.h>
 #include <rtems/bspIo.h>
 #include <mc9328mxl.h>
-
-extern void rtems_exception_init_mngt(void);
-
-extern void mmu_set_cpu_async_mode(void);
+#include <libcpu/mmu.h>
 
 /*
  * bsp_start_default - BSP initialization function
@@ -32,7 +29,7 @@ extern void mmu_set_cpu_async_mode(void);
  *   Since RTEMS is not configured, no RTEMS functions can be called.
  *
  */
-void bsp_start_default( void )
+static void bsp_start_default( void )
 {
   int i;
 
@@ -44,7 +41,7 @@ void bsp_start_default( void )
 
   /* Delay to allow time for PLL to get going */
   for (i = 0; i < 100; i++) {
-    asm volatile ("nop\n");
+    __asm__ volatile ("nop\n");
   }
 
   /* Set the CPU to asynchrous clock mode, so it uses its fastest clock */
@@ -58,16 +55,9 @@ void bsp_start_default( void )
   MC9328MXL_AITC_NIMASK = 0x1f;
 
   /*
-   * Init rtems exceptions management
-   */
-  rtems_exception_init_mngt();
-
-  /*
    * Init rtems interrupt management
    */
-  if (bsp_interrupt_initialize() != RTEMS_SUCCESSFUL) {
-    _CPU_Fatal_halt(0xe);
-  }
+  bsp_interrupt_initialize();
 } /* bsp_start */
 
 /* Calcuate the frequency for perclk1 */

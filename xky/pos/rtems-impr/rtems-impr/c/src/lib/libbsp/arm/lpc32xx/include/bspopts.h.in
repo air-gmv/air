@@ -9,17 +9,21 @@
    when application exits. */
 #undef BSP_PRESS_KEY_FOR_RESET
 
+/* If defined, prints the exception context when an unexpected exception
+   occurs. */
+#undef BSP_PRINT_EXCEPTION_CONTEXT
+
 /* If defined, reset the board when the application exits. */
 #undef BSP_RESET_BOARD_AT_EXIT
-
-/* disable testsuite samples with high memory demands */
-#undef BSP_SMALL_MEMORY
 
 /* reset vector address for BSP start */
 #undef BSP_START_RESET_VECTOR
 
-/* ARM clock in Hz */
-#undef LPC32XX_ARM_CLK
+/* USB OTG transceiver I2C address used by USB stack */
+#undef BSP_USB_OTG_TRANSCEIVER_I2C_ADDR
+
+/* USB OTG transceiver VBUS policy */
+#undef BSP_USB_OTG_TRANSCEIVER_VBUS
 
 /* clock configuration for UART 3 */
 #undef LPC32XX_CONFIG_U3CLK
@@ -33,9 +37,6 @@
 /* clock configuration for UART 6 */
 #undef LPC32XX_CONFIG_U6CLK
 
-/* clock mode configuration for UARTs */
-#undef LPC32XX_CONFIG_UART_CLKMODE
-
 /* disable MMU */
 #undef LPC32XX_DISABLE_MMU
 
@@ -45,11 +46,11 @@
 /* disable cache for read-write data sections */
 #undef LPC32XX_DISABLE_READ_WRITE_DATA_CACHE
 
+/* bsp_reset() will use the watchdog to reset the chip */
+#undef LPC32XX_ENABLE_WATCHDOG_RESET
+
 /* enable RMII for Ethernet */
 #undef LPC32XX_ETHERNET_RMII
-
-/* AHB bus clock in Hz */
-#undef LPC32XX_HCLK
 
 /* main oscillator frequency in Hz */
 #undef LPC32XX_OSCILLATOR_MAIN
@@ -60,14 +61,41 @@
 /* peripheral clock in Hz */
 #undef LPC32XX_PERIPH_CLK
 
+/* size of scratch area */
+#undef LPC32XX_SCRATCH_AREA_SIZE
+
+/* stop Ethernet controller at start-up to avoid DMA interference */
+#undef LPC32XX_STOP_ETHERNET
+
+/* stop general purpose DMA at start-up to avoid DMA interference */
+#undef LPC32XX_STOP_GPDMA
+
+/* stop USB controller at start-up to avoid DMA interference */
+#undef LPC32XX_STOP_USB
+
 /* baud for UART 1 */
 #undef LPC32XX_UART_1_BAUD
 
 /* baud for UART 2 */
 #undef LPC32XX_UART_2_BAUD
 
+/* baud for UART 3 */
+#undef LPC32XX_UART_3_BAUD
+
+/* baud for UART 4 */
+#undef LPC32XX_UART_4_BAUD
+
+/* baud for UART 5 */
+#undef LPC32XX_UART_5_BAUD
+
+/* baud for UART 6 */
+#undef LPC32XX_UART_6_BAUD
+
 /* baud for UART 7 */
 #undef LPC32XX_UART_7_BAUD
+
+/* DMA channel count */
+#undef LPC_DMA_CHANNEL_COUNT
 
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
@@ -86,3 +114,6 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* tests use printk() for output */
+#undef TESTS_USE_PRINTK

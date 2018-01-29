@@ -20,10 +20,8 @@
  *    between SIU and CPM interrupts.
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef LIBBSP_POWERPC_IRQ_H
@@ -186,6 +184,9 @@ extern void BSP_rtems_irq_mng_init(unsigned cpuId);
 #ifdef __cplusplus
 }
 #endif
+
+/* Now that we have defined some basics, include the generic support */
+#include <bsp/irq-generic.h>
 
 #endif
 

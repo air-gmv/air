@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -31,11 +27,11 @@ libbsp_a_SOURCES =
 
 # startup
 libbsp_a_SOURCES += startup/alloc360.c ../../shared/bspclean.c \
-    ../../shared/bsppredriverhook.c ../../shared/bsppretaskinghook.c \
-    ../../shared/bsplibc.c ../../shared/bsppost.c \
+    ../../shared/bsppredriverhook.c \
     ../../shared/bspgetworkarea.c ../../shared/bspstart.c \
     startup/init68360.c ../../shared/bootcard.c \
-    ../../shared/sbrk.c ../../m68k/shared/setvec.c \
+    ../../shared/getentropy-cpucounter.c \
+    ../../shared/sbrk.c ../../shared/setvec.c \
     ../../shared/gnatinstallhandler.c
 # clock
 libbsp_a_SOURCES += clock/clock.c ../../../shared/clockdrv_shell.h

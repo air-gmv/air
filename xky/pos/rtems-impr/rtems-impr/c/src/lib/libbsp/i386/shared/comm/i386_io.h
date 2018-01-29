@@ -1,6 +1,10 @@
+/**
+ * @file
+ * @ingroup i386_io
+ * @brief I/O
+ */
+
 /*
- * $Id$
- *
  * Copyright (c) 2000 - Rosimildo da Silva.  All Rights Reserved.
  *
  * MODULE DESCRIPTION:
@@ -12,6 +16,13 @@
  *
  */
 
+/**
+ * @defgroup i386_io I/O
+ * @ingroup i386_comm
+ * @brief I/O
+ * @{
+ */
+
 #ifndef i386_io_h__
 #define i386_io_h__
 
@@ -19,7 +30,7 @@
 ({									\
         register int _inb_result;					\
 							\
-        asm volatile ("xorl %%eax,%%eax; inb %%dx,%%al" :		\
+        __asm__ volatile ("xorl %%eax,%%eax; inb %%dx,%%al" :		\
             "=a" (_inb_result) : "d" (port));				\
         _inb_result;							\
 })
@@ -28,16 +39,16 @@
 ({									\
         register int _inbw_result;					\
 									\
-        asm volatile ("xorl %%eax,%%eax; inw %%dx,%%ax" :		\
+        __asm__ volatile ("xorl %%eax,%%eax; inw %%dx,%%ax" :		\
             "=a" (_inbw_result) : "d" (port));				\
         _inbw_result;							\
 })
 
 #define rtems_outb(port, data)						\
-        asm volatile ("outb %%al,%%dx" : : "a" (data), "d" (port))
+        __asm__ volatile ("outb %%al,%%dx" : : "a" (data), "d" (port))
 
 #define rtems_outw(port, data)						\
-        asm volatile ("outw %%ax,%%dx" : : "a" (data), "d" (port))
+        __asm__ volatile ("outw %%ax,%%dx" : : "a" (data), "d" (port))
 
 #define outp(port, val)	rtems_outb(port,val)
 #define inp(port)	      rtems_inb(port)
@@ -58,3 +69,5 @@
 #define sti()   __asm__ __volatile__("sti");
 
 #endif /* i386_io_h__ */
+
+/** @} */

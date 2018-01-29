@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @ingroup bsp_interrupt
+ * @ingroup lpc32xx_interrupt
  *
  * @brief Interrupt definitions.
  */
@@ -16,7 +16,7 @@
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
- * http://www.rtems.com/license/LICENSE.
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef LIBBSP_ARM_LPC32XX_IRQ_H
@@ -28,8 +28,16 @@
 #include <rtems/irq.h>
 #include <rtems/irq-extension.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 /**
- * @addtogroup bsp_interrupt
+ * @defgroup lpc32xx_interrupt Interrupt Support
+ *
+ * @ingroup arm_lpc32xx
+ *
+ * @ingroup bsp_interrupt
  *
  * @{
  */
@@ -161,6 +169,10 @@ lpc32xx_irq_activation_type lpc32xx_irq_get_activation_type(rtems_vector_number 
 void lpc32xx_set_exception_handler(Arm_symbolic_exception_name exception, void (*handler)(void));
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* ASM */
 

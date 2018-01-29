@@ -1,5 +1,3 @@
-## $Id: enable-rtems-debug.m4 179 2008-09-17 14:07:38Z hsilva $
-
 AC_DEFUN([RTEMS_ENABLE_RTEMS_DEBUG],
 [
 AC_ARG_ENABLE(rtems-debug,

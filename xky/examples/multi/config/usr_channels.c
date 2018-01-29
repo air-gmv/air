@@ -19,22 +19,22 @@ static pmk_port_t usr_ports[] = \
     {   /* Sampling Port (Name: SEND_SAMP1) */
         .id         = 0,
         .name       = "SEND_SAMP1",
-        .direction  = XKY_SOURCE_PORT,
+        .direction  = AIR_SOURCE_PORT,
     }, 
     {   /* Sampling Port (Name: RECV_SAMP1) */
         .id         = 1,
         .name       = "RECV_SAMP1",
-        .direction  = XKY_DESTINATION_PORT,
+        .direction  = AIR_DESTINATION_PORT,
     }, 
     {   /* Sampling Port (Name: SEND_SAMP2) */
         .id         = 0,
         .name       = "SEND_SAMP2",
-        .direction  = XKY_SOURCE_PORT,
+        .direction  = AIR_SOURCE_PORT,
     }, 
     {   /* Sampling Port (Name: RECV_SAMP2) */
         .id         = 1,
         .name       = "RECV_SAMP2",
-        .direction  = XKY_DESTINATION_PORT,
+        .direction  = AIR_DESTINATION_PORT,
     }, 
 };
 
@@ -114,7 +114,7 @@ pmk_channel_t usr_channels_table[USR_CHANNELS] = \
     {   /* Channel (Id: 1, Name: SAMPLING1) */
         .id             = 1,
         .name           = "SAMPLING1",
-        .type           = XKY_SAMPLING_PORT,
+        .type           = AIR_SAMPLING_PORT,
         .src            = \
         {
             .length     =  1,
@@ -130,7 +130,7 @@ pmk_channel_t usr_channels_table[USR_CHANNELS] = \
     {   /* Channel (Id: 1, Name: SAMPLING2) */
         .id             = 1,
         .name           = "SAMPLING2",
-        .type           = XKY_SAMPLING_PORT,
+        .type           = AIR_SAMPLING_PORT,
         .src            = \
         {
             .length     =  1,

@@ -1,13 +1,14 @@
-/*  bsp.h
- *
+/*
  *  This include file contains all MVME162fx board IO definitions.
- *
- *  COPYRIGHT (c) 1989-1999.
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2014.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Modifications of respective RTEMS file: COPYRIGHT (c) 1994.
  *  EISCAT Scientific Association. M.Savitski
@@ -15,25 +16,21 @@
  *  This material is a part of the MVME162 Board Support Package
  *  for the RTEMS executive. Its licensing policies are those of the
  *  RTEMS above.
- *
- *  $Id$
  */
 
-#ifndef _BSP_H
-#define _BSP_H
+#ifndef LIBBSP_M68K_MVME162_BSP_H
+#define LIBBSP_M68K_MVME162_BSP_H
+
+#include <bspopts.h>
+#include <bsp/default-initial-extension.h>
+
+#include <rtems.h>
+
+#include <mvme16x_hw.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <bspopts.h>
-
-#include <rtems.h>
-#include <rtems/clockdrv.h>
-#include <rtems/console.h>
-#include <rtems/iosupp.h>
-
-#include <mvme16x_hw.h>
 
 /*----------------------------------------------------------------*/
 
@@ -163,15 +160,42 @@ typedef volatile struct {
 #define EXTERN extern
 #endif
 
-extern m68k_isr_entry M68Kvec[];   /* vector table address */
+/*
+ *  This value is the default address location of the 162Bug vector table
+ *  and is also the default start address of the boards DRAM.  This value
+ *  may be different for your specific board based on a number of factors:
+ *
+ *     Default DRAM address:   0x00000000
+ *     Default SRAM address:   0xFFE00000
+ *
+ *  o  If no DRAM can be found by the 162Bug program, it will use SRAM.
+ *  o  The default SRAM address may be different if SRAM mezzanine boards
+ *     are installed on the main board.
+ *  o  Both the DRAM and SRAM addresses can be modified by changing the
+ *     appropriate values in NVRAM using the ENV command at the 162Bug
+ *     prompt.
+ *
+ *  If your board has different values than the defaults, change the value
+ *  of the following define.
+ *
+ */
+#define MOT_162BUG_VEC_ADDRESS  0x00000000
+
+extern rtems_isr_entry M68Kvec[];   /* vector table address */
 
 /* functions */
 
-m68k_isr_entry set_vector(
+rtems_isr_entry set_vector(
   rtems_isr_entry     handler,
   rtems_vector_number vector,
   int                 type
 );
+
+/*
+ * Prototypes for methods in the BSP that cross file boundaries.
+ */
+bool char_ready(int port, char *ch);
+
 
 #ifdef __cplusplus
 }

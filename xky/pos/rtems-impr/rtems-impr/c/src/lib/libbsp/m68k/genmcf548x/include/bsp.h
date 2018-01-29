@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @ingroup m68k_genmcf548x
+ *
+ * @brief Global BSP definitions.
+ */
+
 /*===============================================================*\
 | Project: RTEMS generic mcf548x BSP                              |
 +-----------------------------------------------------------------+
@@ -33,7 +41,7 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 |                                                                 |
@@ -43,31 +51,30 @@
 |                                                                 |
 \*===============================================================*/
 
-#ifndef __GENMCF548X_BSP_H
-#define __GENMCF548X_BSP_H
+#ifndef LIBBSP_M68K_GENMCF548X_BSP_H
+#define LIBBSP_M68K_GENMCF548X_BSP_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 #include <bspopts.h>
+#include <bsp/default-initial-extension.h>
+
+/**
+ * @defgroup m68k_genmcf548x MCF548X Support
+ *
+ * @ingroup bsp_m68k
+ *
+ * @brief MCT548X support.
+ */
 
 #include <rtems.h>
-#include <rtems/iosupp.h>
-#include <rtems/console.h>
-#include <rtems/clockdrv.h>
-#include <rtems/iosupp.h>
 #include <rtems/bspIo.h>
 
 /***************************************************************************/
 /**  Hardware data structure headers                                      **/
 #include <mcf548x/mcf548x.h>
 
-/***************************************************************************/
-/**  Network driver configuration                                         **/
-struct rtems_bsdnet_ifconfig;
-extern int rtems_fec_driver_attach (struct rtems_bsdnet_ifconfig *config, int attaching );
-#define RTEMS_BSP_NETWORK_DRIVER_NAME     "fs1"
-#define RTEMS_BSP_NETWORK_DRIVER_ATTACH   rtems_fec_driver_attach
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /***************************************************************************/
 /**  User Definable configuration                                         **/
@@ -75,36 +82,18 @@ extern int rtems_fec_driver_attach (struct rtems_bsdnet_ifconfig *config, int at
 /* define which port the console should use - all other ports are then defined as general purpose */
 #define CONSOLE_PORT        0
 
-#define RAM_END 0x4000000 /* 64 MB */
-
 /* functions */
 
 uint32_t get_CPU_clock_speed(void);
 
-m68k_isr_entry set_vector(
+rtems_isr_entry set_vector(
   rtems_isr_entry     handler,
   rtems_vector_number vector,
   int                 type
 );
 
-/*
- * Interrupt assignments
- *  Highest-priority listed first
- */
-#define SLT0_IRQ_LEVEL      4
-#define SLT0_IRQ_PRIORITY   0
-
-#define PSC0_IRQ_LEVEL      3
-#define PSC0_IRQ_PRIORITY   7
-#define PSC1_IRQ_LEVEL      3
-#define PSC1_IRQ_PRIORITY   6
-#define PSC2_IRQ_LEVEL      3
-#define PSC2_IRQ_PRIORITY   5
-#define PSC3_IRQ_LEVEL      3
-#define PSC3_IRQ_PRIORITY   4
-
-#define FEC_IRQ_LEVEL       2
-#define FEC_IRQ_PRIORITY    3
+/* Initial values for the interrupt level and priority registers (INTC_ICRn) */
+extern const uint8_t mcf548x_intc_icr_init_values[64];
 
 /*
  * Network driver configuration
@@ -131,6 +120,13 @@ extern int rtems_mcf548x_fec_driver_attach_detach(struct rtems_bsdnet_ifconfig *
   
 #define DBUG_SETTINGS (*(const dbug_settings_t *)0xFC020000)
 #endif /* HAS_DBUG */
+
+void bsp_cacr_set_flags(uint32_t flags);
+
+void bsp_cacr_set_self_clear_flags(uint32_t flags);
+
+void bsp_cacr_clear_flags(uint32_t flags);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,0 +1,20 @@
+#  COPYRIGHT (c) 2014.
+#  On-Line Applications Research Corporation (OAR).
+#  Cynthia Rempel <cynthia@rtems.org>
+#  The license and distribution terms for this file may be
+#  found in the file LICENSE in this distribution or at
+#  http://www.rtems.org/license/LICENSE.
+#
+This file describes the directives and concepts tested by this test set.
+
+test set name: stackchk
+
+directives:
+  + rtems_clock_get_tod
+  + rtems_task_ident
+  + rtems_task_wake_after
+  + rtems_stack_checker_report_usage
+
+concepts:
+  + This set of three tasks do some simple task switching for about
+    15 seconds and then call a routine to "blow the stack".

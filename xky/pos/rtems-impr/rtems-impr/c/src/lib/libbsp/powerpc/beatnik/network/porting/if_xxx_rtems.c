@@ -1,4 +1,3 @@
-/* $Id$ */
 #include <rtemscompat.h>
 
 /* Template for driver task, setup and attach routines. To be instantiated
@@ -28,7 +27,6 @@
 
 #include <netinet/in.h>
 #include <netinet/if_ether.h>
-#include <arpa/inet.h>
 
 #include <net/if_media.h>
 
@@ -136,7 +134,7 @@ NET_EMBEMB(rtems_,NETDRIVER_PREFIX,_attach)
 	}
 
 	if ( !net_driver_ticks_per_sec )
-		rtems_clock_get( RTEMS_CLOCK_GET_TICKS_PER_SECOND, &net_driver_ticks_per_sec );
+		net_driver_ticks_per_sec = rtems_clock_get_ticks_per_second();
 
 	sc  = device_get_softc( dev );
 	ifp = &sc->arpcom.ac_if;
@@ -243,7 +241,7 @@ struct NET_SOFTC *sc = thesc;
 	/* disable interrupts */
 	NET_DISABLE_IRQS(sc);
 
-	rtems_event_send( sc->tid, EX_EVENT );
+	rtems_bsdnet_event_send( sc->tid, EX_EVENT );
 }
 
 static void net_daemon(void *arg)

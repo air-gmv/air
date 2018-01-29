@@ -31,12 +31,12 @@
  */
 typedef struct {
 
-    xky_identifier_t id;            /**< Channel Id                         */
-    xky_port_type_e type;           /**< Channel type                       */
+    air_identifier_t id;            /**< Channel Id                         */
+    air_port_type_e type;           /**< Channel type                       */
     void *configuration;            /**< Channel configuration              */
     pmk_list_t src;                 /**< Channel source ports               */
     pmk_list_t dst;                 /**< Channel destination ports          */
-    xky_name_t name;                /**< Channel name                       */
+    air_name_t name;                /**< Channel name                       */
 
 } pmk_channel_t;
 
@@ -46,11 +46,11 @@ typedef struct {
 typedef struct {
 
     /**< Port Id                                                            */
-    xky_identifier_t id;
+    air_identifier_t id;
     /**< Port type                                                          */
-    xky_port_direction_e direction;
+    air_port_direction_e direction;
     /**< Port message validity                                              */
-    xky_message_validity_e last_msg_validity;
+    air_message_validity_e last_msg_validity;
     /**< Port created flag                                                  */
     atomic_t created;
     /**< Port updated flag                                                  */
@@ -60,7 +60,7 @@ typedef struct {
     /**< Port channel                                                       */
     pmk_channel_t *channel;
     /**< Port name                                                          */
-    xky_name_t name;
+    air_name_t name;
 
 } pmk_port_t;
 
@@ -69,9 +69,9 @@ typedef struct {
  */
 typedef struct {
 
-    xky_message_ptr_t message;      /**< Message pointer                    */
-    xky_sz_t length;                  /**< Message Length                     */
-    xky_clocktick_t timestamp;      /**< Message time stamp                 */
+    air_message_ptr_t message;      /**< Message pointer                    */
+    air_sz_t length;                  /**< Message Length                     */
+    air_clocktick_t timestamp;      /**< Message time stamp                 */
 
 } pmk_message_slot_t;
 
@@ -87,7 +87,7 @@ void pmk_channels_init(void);
  * @return port Pointer if port name exists, NULL otherwise
  */
 pmk_port_t *pmk_port_get_from_partition_by_name(
-        pmk_partition_t *partition, xky_name_ptr_t name);
+        pmk_partition_t *partition, air_name_ptr_t name);
 
 /**
  * @brief Gets a port from the partition
@@ -98,14 +98,14 @@ pmk_port_t *pmk_port_get_from_partition_by_name(
  *         NULL otherwise
  */
 pmk_port_t *pmk_port_get_from_partition_by_id(
-        pmk_partition_t *partition, xky_identifier_t id, xky_port_type_e type);
+        pmk_partition_t *partition, air_identifier_t id, air_port_type_e type);
 
 /**
  * @brief Update channel ports
  * @param channel Channel to update
  * @param state State to apply to the port
  */
-void pmk_channel_update_ports(pmk_channel_t *channel, xky_port_updated_e state);
+void pmk_channel_update_ports(pmk_channel_t *channel, air_port_updated_e state);
 
 /**
  * @brief Partition port initialization

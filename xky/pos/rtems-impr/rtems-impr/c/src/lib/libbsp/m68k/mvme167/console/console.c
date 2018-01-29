@@ -1,6 +1,4 @@
 /*
- *  console.c
- *
  *  This file contains the MVME167 termios console package. Only asynchronous
  *  I/O is supported.
  *
@@ -117,12 +115,14 @@
  *  All page references are to the MVME166/MVME167/MVME187 Single Board
  *  Computer Programmer's Reference Guide (MVME187PG/D2) with the April
  *  1993 supplements/addenda (MVME187PG/D2A1).
- *
+ */
+
+/*
  *  Copyright (c) 1998, National Research Council of Canada
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #define M167_INIT
@@ -130,9 +130,11 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <termios.h>
+
+#include <rtems/console.h>
+#include <rtems/libio.h>
 #include <rtems/termiostypes.h>
 #include <bsp.h>                /* Must be before libio.h */
-#include <rtems/libio.h>
 
 /* Utility functions */
 void cd2401_udelay( unsigned long delay );
@@ -160,7 +162,8 @@ ssize_t _167Bug_pollWrite( int minor, const char *buf, size_t len );
 
 /* Printk function */
 static void _BSP_output_char( char c );
-BSP_output_char_function_type BSP_output_char = _BSP_output_char;
+BSP_output_char_function_type     BSP_output_char = _BSP_output_char;
+BSP_polling_getchar_function_type BSP_poll_char = NULL;
 
 /* '\r' character in memory. This used to live on
  * the stack but storing the '\r' character is
@@ -228,9 +231,8 @@ rtems_isr_entry Prev_modem_isr;     /* Previous modem/timer isr */
 )
 {
   unsigned long i = 20000;  /* In case clock is off */
-  rtems_interval ticks_per_second, start_ticks, end_ticks, current_ticks;
+  rtems_interval start_ticks, end_ticks, current_ticks;
 
-  ticks_per_second = rtems_clock_get_ticks_per_second();
   start_ticks = rtems_clock_get_ticks_since_boot();
   end_ticks = start_ticks + delay;
 
@@ -535,8 +537,13 @@ rtems_isr cd2401_rx_isr(
 )
 {
   char c;
-  uint8_t         ch, status, nchars, i, total;
-  char buffer[256];
+  uint8_t         ch, status, nchars, total;
+  #ifdef CD2401_RECORD_DEBUG_INFO
+    uint8_t i = 0;
+    char    buffer[256];
+  #endif
+
+  (void) total; /* avoid set but not used warnings when not recording info */
 
   status = cd2401->u5.b.risrl;
   ch = cd2401->licr >> 2;
@@ -545,11 +552,12 @@ rtems_isr cd2401_rx_isr(
   if ( CD2401_Channel_Info[ch].tty && !status ) {
     /* Normal Rx Int, read chars, enqueue them, and issue EOI */
     total = nchars = cd2401->rfoc;  /* Nb of chars to retrieve from rx FIFO */
-    i = 0;
     while ( nchars-- > 0 ) {
       c = (char)cd2401->dr;         /* Next char in rx FIFO */
       rtems_termios_enqueue_raw_characters( CD2401_Channel_Info[ch].tty ,&c, 1 );
-      buffer[i++] = c;
+      #ifdef CD2401_RECORD_DEBUG_INFO
+	buffer[i++] = c;
+      #endif
     }
     cd2401->reoir = 0;              /* EOI */
     CD2401_RECORD_RX_ISR_INFO(( ch, total, buffer ));
@@ -587,6 +595,15 @@ rtems_isr cd2401_tx_isr(
   ch = cd2401->licr >> 2;
   initial_ier = cd2401->ier;
 
+  #ifndef CD2401_RECORD_DEBUG_INFO
+    /*
+     * When the debug is disabled, these variables are really not read.
+     * But when debug is enabled, they are.
+     */
+    (void) initial_ier; /* avoid set but not used warning */
+    (void) final_ier; /* avoid set but not used warning */
+  #endif
+
   /* Has this channel been initialized? */
   if ( !CD2401_Channel_Info[ch].tty ) {
     /* No, record as spurious interrupt */
@@ -594,6 +611,7 @@ rtems_isr cd2401_tx_isr(
         (vector << 24) | (cd2401->stk << 16) | (cd2401->tir << 8) | cd2401->tisr;
     CD2401_Channel_Info[ch].spur_cnt++;
     final_ier = cd2401->ier &= 0xFC;/* Shut up, whoever you are */
+
     cd2401->teoir = 0x88;           /* EOI - Terminate buffer and no transfer */
     CD2401_RECORD_TX_ISR_SPURIOUS_INFO(( ch, status, initial_ier, final_ier,
                                          CD2401_Channel_Info[ch].spur_dev,
@@ -707,7 +725,7 @@ int cd2401_firstOpen(
    * We could have made a tcgetattr() call if we had our fd.
    */
   newarg.iop = args->iop;
-  newarg.command = RTEMS_IO_GET_ATTRIBUTES;
+  newarg.command = TIOCGETA;
   newarg.buffer = &termios;
   sc = rtems_termios_ioctl (&newarg);
   if (sc != RTEMS_SUCCESSFUL)
@@ -720,7 +738,7 @@ int cd2401_firstOpen(
    *  on the ttyMutex that it already owns; this is safe in RTEMS.
    */
   termios.c_cflag |= CLOCAL;    /* Ignore modem status lines */
-  newarg.command = RTEMS_IO_SET_ATTRIBUTES;
+  newarg.command = TIOCGETA;
   sc = rtems_termios_ioctl (&newarg);
   if (sc != RTEMS_SUCCESSFUL)
     rtems_fatal_error_occurred (sc);
@@ -826,8 +844,8 @@ int cd2401_setAttributes(
   /* Determine what the line parameters should be */
 
   /* baud rates */
-  out_baud = rtems_termios_baud_to_number(t->c_cflag & CBAUD);
-  in_baud  = rtems_termios_baud_to_number(t->c_cflag & CBAUD);
+  out_baud = rtems_termios_baud_to_number(t->c_ospeed);
+  in_baud  = rtems_termios_baud_to_number(t->c_ispeed);
 
   /* Number of bits per char */
   csize = 0x07; /* to avoid a warning */
@@ -1140,37 +1158,39 @@ ssize_t cd2401_write(
   size_t len
 )
 {
-  cd2401->car = minor;              /* Select channel */
+  if (len > 0) {
+    cd2401->car = minor;              /* Select channel */
 
-  if ( (cd2401->dmabsts & 0x08) == 0 ) {
-    /* Next buffer is A. Wait for it to be ours. */
-    while ( cd2401->atbsts & 0x01 );
+    if ( (cd2401->dmabsts & 0x08) == 0 ) {
+      /* Next buffer is A. Wait for it to be ours. */
+      while ( cd2401->atbsts & 0x01 );
 
-    CD2401_Channel_Info[minor].own_buf_A = FALSE;
-    CD2401_Channel_Info[minor].len = len;
-    CD2401_Channel_Info[minor].buf = buf;
-    cd2401->atbadru = (uint16_t)( ( (uint32_t) buf ) >> 16 );
-    cd2401->atbadrl = (uint16_t)( (uint32_t) buf );
-    cd2401->atbcnt = len;
-    CD2401_RECORD_WRITE_INFO(( len, buf, 'A' ));
-    cd2401->atbsts = 0x03;          /* CD2401 owns buffer, int when empty */
+      CD2401_Channel_Info[minor].own_buf_A = FALSE;
+      CD2401_Channel_Info[minor].len = len;
+      CD2401_Channel_Info[minor].buf = buf;
+      cd2401->atbadru = (uint16_t)( ( (uint32_t) buf ) >> 16 );
+      cd2401->atbadrl = (uint16_t)( (uint32_t) buf );
+      cd2401->atbcnt = len;
+      CD2401_RECORD_WRITE_INFO(( len, buf, 'A' ));
+      cd2401->atbsts = 0x03;          /* CD2401 owns buffer, int when empty */
+    }
+    else {
+      /* Next buffer is B. Wait for it to be ours. */
+      while ( cd2401->btbsts & 0x01 );
+
+      CD2401_Channel_Info[minor].own_buf_B = FALSE;
+      CD2401_Channel_Info[minor].len = len;
+      CD2401_Channel_Info[minor].buf = buf;
+      cd2401->btbadru = (uint16_t)( ( (uint32_t) buf ) >> 16 );
+      cd2401->btbadrl = (uint16_t)( (uint32_t) buf );
+      cd2401->btbcnt = len;
+      CD2401_RECORD_WRITE_INFO(( len, buf, 'B' ));
+      cd2401->btbsts = 0x03;          /* CD2401 owns buffer, int when empty */
+    }
+    /* Nuts -- Need TxD ints */
+    CD2401_Channel_Info[minor].txEmpty = FALSE;
+    cd2401->ier |= 0x01;
   }
-  else {
-    /* Next buffer is B. Wait for it to be ours. */
-    while ( cd2401->btbsts & 0x01 );
-
-    CD2401_Channel_Info[minor].own_buf_B = FALSE;
-    CD2401_Channel_Info[minor].len = len;
-    CD2401_Channel_Info[minor].buf = buf;
-    cd2401->btbadru = (uint16_t)( ( (uint32_t) buf ) >> 16 );
-    cd2401->btbadrl = (uint16_t)( (uint32_t) buf );
-    cd2401->btbcnt = len;
-    CD2401_RECORD_WRITE_INFO(( len, buf, 'B' ));
-    cd2401->btbsts = 0x03;          /* CD2401 owns buffer, int when empty */
-  }
-  /* Nuts -- Need TxD ints */
-  CD2401_Channel_Info[minor].txEmpty = FALSE;
-  cd2401->ier |= 0x01;
 
   /* Return something */
   return len;
@@ -1244,7 +1264,7 @@ int _167Bug_pollRead(
    */
   rtems_interrupt_disable( previous_level );
 
-  asm volatile( "movew  %1, -(%%sp)\n\t"/* Channel */
+  __asm__ volatile( "movew  %1, -(%%sp)\n\t"/* Channel */
                 "trap   #15\n\t"        /* Trap to 167Bug */
                 ".short 0x61\n\t"       /* Code for .REDIR_I */
                 "trap   #15\n\t"        /* Trap to 167Bug */
@@ -1259,7 +1279,7 @@ int _167Bug_pollRead(
   }
 
   /* Read the char and return it */
-  asm volatile( "subq.l #2,%%a7\n\t"    /* Space for result */
+  __asm__ volatile( "subq.l #2,%%a7\n\t"    /* Space for result */
                 "trap   #15\n\t"        /* Trap to 167 Bug */
                 ".short 0x00\n\t"       /* Code for .INCHR */
                 "moveb  (%%a7)+, %0"    /* Pop char into c */
@@ -1295,7 +1315,7 @@ ssize_t _167Bug_pollWrite(
 {
   const char *endbuf = buf + len;
 
-  asm volatile( "pea    (%0)\n\t"            /* endbuf */
+  __asm__ volatile( "pea    (%0)\n\t"            /* endbuf */
                 "pea    (%1)\n\t"            /* buf */
                 "movew  #0x21, -(%%sp)\n\t"  /* Code for .OUTSTR */
                 "movew  %2, -(%%sp)\n\t"     /* Channel */
@@ -1330,7 +1350,7 @@ ssize_t _167Bug_pollWrite(
  *
  *  CANNOT BE COMBINED WITH INTERRUPT DRIVEN I/O!
  */
-rtems_status_code do_poll_read(
+static rtems_status_code do_poll_read(
   rtems_device_major_number major,
   rtems_device_minor_number minor,
   void                    * arg
@@ -1368,7 +1388,7 @@ rtems_status_code do_poll_read(
  *
  *  CANNOT BE COMBINED WITH INTERRUPT DRIVEN I/O!
  */
-rtems_status_code do_poll_write(
+static rtems_status_code do_poll_write(
   rtems_device_major_number major,
   rtems_device_minor_number minor,
   void                    * arg
@@ -1406,8 +1426,6 @@ void _BSP_output_char(char c)
     printk_minor = PRINTK_MINOR;
 
   _167Bug_pollWrite(printk_minor, &c, 1);
-  if ( c == '\n' )
-      _167Bug_pollWrite(printk_minor, &cr_char, 1);
 }
 
 /*

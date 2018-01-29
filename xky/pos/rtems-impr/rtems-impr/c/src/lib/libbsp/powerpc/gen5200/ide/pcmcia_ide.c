@@ -14,7 +14,7 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 | this file contains the PCMCIA IDE access functions              |
@@ -51,7 +51,7 @@
 /*                                                                     */
 /*  The license and distribution terms for this file may be            */
 /*  found in the file LICENSE in this distribution or at               */
-/*  http://www.rtems.com/license/LICENSE.                         */
+/*  http://www.rtems.org/license/LICENSE.                         */
 /*                                                                     */
 /*---------------------------------------------------------------------*/
 /*                                                                     */
@@ -75,8 +75,10 @@
 /*                                                                     */
 /***********************************************************************/
 
+#include <sys/param.h>
 #include <rtems.h>
 #include <rtems/error.h>
+#include <rtems/score/sysstate.h>
 #include <bsp.h>
 #include <bsp/irq.h>
 #include "../include/mpc5200.h"
@@ -87,28 +89,15 @@
 #include <libchip/ide_ctrl_io.h>
 #include <string.h>
 
-#ifndef MIN
-#define MIN(a,b) (((a)<(b))?(a):(b))
-#endif
 #define IDE_DMA_TEST            FALSE
 
-#ifdef BRS5L
-#define IDE_USE_INT             TRUE
-#define IDE_READ_USE_DMA        TRUE
-#define IDE_USE_READ_PIO_OPT    FALSE
-#define IDE_WRITE_USE_DMA       TRUE
-#define IDE_USE_WRITE_PIO_OPT   TRUE
-/* #define IDE_USE_DMA (IDE_READ_USE_DMA||IDE_WRITE_USE_DMA) */
-#define IDE_USE_DMA             TRUE
-#else
+/* DMA supported PIO mode is broken */
 #define IDE_USE_INT             TRUE
 #define IDE_READ_USE_DMA        FALSE
 #define IDE_USE_READ_PIO_OPT    FALSE
 #define IDE_WRITE_USE_DMA       FALSE
 #define IDE_USE_WRITE_PIO_OPT   FALSE
-/* #define IDE_USE_DMA (IDE_READ_USE_DMA||IDE_WRITE_USE_DMA) */
-#define IDE_USE_DMA             FALSE
-#endif
+#define IDE_USE_DMA (IDE_READ_USE_DMA || IDE_WRITE_USE_DMA)
 
 #define IDE_USE_STATISTICS      TRUE
 
@@ -122,8 +111,8 @@
 #include "../bestcomm/task_api/bestcomm_cntrl.h"
 #include "../bestcomm/task_api/tasksetup_bdtable.h"
 
-#define IDE_RECV_TASK_NO            TASK_GEN_DP_BD_0
-#define TASK_GEN_DP_BD_1            TASK_GEN_DP_BD_1
+#define IDE_RX_TASK_NO TASK_GEN_DP_BD_0
+#define IDE_TX_TASK_NO TASK_GEN_DP_BD_1
 static TaskId pcmcia_ide_rxTaskId;	/* SDMA RX task ID */
 static TaskId pcmcia_ide_txTaskId;	/* SDMA TX task ID */
 #define PCMCIA_IDE_RD_SECTOR_SIZE 512   /* FIXME: make this better... */
@@ -147,15 +136,29 @@ void mpc5200_pcmciaide_dma_blockop(
 /*
  * support functions for PCMCIA IDE IF
  */
-bool mpc5200_pcmciaide_probe(int minor)
+static bool mpc5200_pcmciaide_probe(int minor)
   {
   bool ide_card_plugged = false; /* assume: we don't have a card plugged in */
   struct mpc5200_gpt *gpt = (struct mpc5200_gpt *)(&mpc5200.gpt[GPT2]);
 
+  #ifdef MPC5200_BOARD_DP2
+    /* Deactivate RESET signal */
+    rtems_interrupt_level level;
+    rtems_interrupt_disable(level);
+    mpc5200.gpiowe |= GPIO_W_PIN_PSC1_4;
+    mpc5200.gpiowod &= ~GPIO_W_PIN_PSC1_4;
+    mpc5200.gpiowdd |= GPIO_W_PIN_PSC1_4;
+    mpc5200.gpiowdo |= GPIO_W_PIN_PSC1_4;
+    rtems_interrupt_enable(level);
+    /* FIXME */
+    volatile int i = 0;
+    while (++i < 20000000);
+  #endif
+
   /* enable card detection on GPT2 */
   gpt->emsel = (GPT_EMSEL_GPIO_IN | GPT_EMSEL_TIMER_MS_GPIO);
 
-#if defined (BRS5L)
+#if defined (MPC5200_BOARD_BRS5L)
   /* Check for card detection (-CD0) */
   if((gpt->status) & GPT_STATUS_PIN)
     ide_card_plugged = false;
@@ -167,8 +170,16 @@ bool mpc5200_pcmciaide_probe(int minor)
 
   }
 
+#define DMA1_T0(val) BSP_BFLD32(COUNT_VAL(val), 0, 7)
+#define DMA1_TD(val) BSP_BFLD32(COUNT_VAL(val), 8, 15)
+#define DMA1_TK(val) BSP_BFLD32(COUNT_VAL(val), 16, 23)
+#define DMA1_TM(val) BSP_BFLD32(COUNT_VAL(val), 24, 31)
 
-rtems_status_code mpc5200_pcmciaide_config_io_speed(int minor, uint16_t modes_avail)
+#define DMA2_TH(val) BSP_BFLD32(COUNT_VAL(val), 0, 7)
+#define DMA2_TJ(val) BSP_BFLD32(COUNT_VAL(val), 8, 15)
+#define DMA2_TN(val) BSP_BFLD32(COUNT_VAL(val), 16, 23)
+
+static rtems_status_code mpc5200_pcmciaide_config_io_speed(int minor, uint16_t modes_avail)
   {
   uint8_t pio_t0, pio_t2_8, pio_t2_16, pio_t4, pio_t1, pio_ta;
 
@@ -199,13 +210,16 @@ rtems_status_code mpc5200_pcmciaide_config_io_speed(int minor, uint16_t modes_av
   mpc5200.ata_pio1 = ATA_PIO_TIMING_1(pio_t0, pio_t2_8, pio_t2_16);
   mpc5200.ata_pio2 = ATA_PIO_TIMING_2(pio_t4, pio_t1, pio_ta);
 
+  mpc5200.ata_dma1 = DMA1_T0(120) | DMA1_TD(70) | DMA1_TK(25) | DMA1_TM(25);
+  mpc5200.ata_dma2 = DMA2_TH(10) | DMA2_TJ(5) | DMA2_TN(10);
+
   return RTEMS_SUCCESSFUL;
 
   }
 
 
 
-void mpc5200_pcmciaide_read_reg(int minor, int reg, uint16_t *value)
+static void mpc5200_pcmciaide_read_reg(int minor, int reg, uint16_t *value)
   {
   volatile uint32_t *ata_reg = mpc5200_ata_drive_regs[reg];
 
@@ -216,7 +230,7 @@ void mpc5200_pcmciaide_read_reg(int minor, int reg, uint16_t *value)
   }
 
 
-void mpc5200_pcmciaide_write_reg(int minor, int reg, uint16_t value)
+static void mpc5200_pcmciaide_write_reg(int minor, int reg, uint16_t value)
   {
   volatile uint32_t *ata_reg = mpc5200_ata_drive_regs[reg];
 
@@ -237,10 +251,10 @@ volatile rtems_id pcmcia_ide_hdl_task = 0;
  */
 static void pcmcia_ide_recv_dmairq_hdl(rtems_irq_hdl_param unused)
 {
-  SDMA_CLEAR_IEVENT(&mpc5200.IntPend,TASK_GEN_DP_BD_0);
+  SDMA_CLEAR_IEVENT(&mpc5200.sdma.IntPend,IDE_RX_TASK_NO);
 
 /*Disable receive ints*/
-  bestcomm_glue_irq_disable(TASK_GEN_DP_BD_0);
+  bestcomm_glue_irq_disable(IDE_RX_TASK_NO);
 
   pcmcia_ide_rxInterrupts++; 		/* Rx int has occurred */
 
@@ -252,10 +266,10 @@ static void pcmcia_ide_recv_dmairq_hdl(rtems_irq_hdl_param unused)
 static void pcmcia_ide_xmit_dmairq_hdl(rtems_irq_hdl_param unused)
 {
 
-  SDMA_CLEAR_IEVENT(&mpc5200.IntPend,TASK_GEN_DP_BD_1);
+  SDMA_CLEAR_IEVENT(&mpc5200.sdma.IntPend,IDE_TX_TASK_NO);
 
   /*Disable transmit ints*/
-  bestcomm_glue_irq_disable(TASK_GEN_DP_BD_1);
+  bestcomm_glue_irq_disable(IDE_TX_TASK_NO);
 
   pcmcia_ide_txInterrupts++; 		/* Tx int has occurred */
 
@@ -287,7 +301,7 @@ void mpc5200_pcmciaide_dma_init(int minor)
   rxParam.IncrDst      = sizeof(uint16_t);
   rxParam.SzDst	       = sizeof(uint16_t);  /* XXX: set this to 32 bit? */
 
-  pcmcia_ide_rxTaskId  = TaskSetup(TASK_GEN_DP_BD_0,&rxParam );
+  pcmcia_ide_rxTaskId  = TaskSetup(IDE_RX_TASK_NO,&rxParam );
 
   /*
    * Setup the TX task.
@@ -303,7 +317,7 @@ void mpc5200_pcmciaide_dma_init(int minor)
   txParam.IncrDst      = 0;
   txParam.SzDst        = sizeof(uint16_t);
 
-  pcmcia_ide_txTaskId  = TaskSetup( TASK_GEN_DP_BD_1, &txParam );
+  pcmcia_ide_txTaskId  = TaskSetup( IDE_TX_TASK_NO, &txParam );
   /*
    * FIXME: Init BD rings
    */
@@ -314,9 +328,10 @@ void mpc5200_pcmciaide_dma_init(int minor)
   /*
    * connect interrupt handlers
    */
-  bestcomm_glue_irq_install(TASK_GEN_DP_BD_1,pcmcia_ide_xmit_dmairq_hdl,NULL);
-  bestcomm_glue_irq_install(TASK_GEN_DP_BD_0,pcmcia_ide_recv_dmairq_hdl,NULL);
+  bestcomm_glue_irq_install(IDE_TX_TASK_NO,pcmcia_ide_xmit_dmairq_hdl,NULL);
+  bestcomm_glue_irq_install(IDE_RX_TASK_NO,pcmcia_ide_recv_dmairq_hdl,NULL);
 }
+#endif /* IDE_USE_DMA */
 
 void mpc5200_pcmciaide_dma_blockop(bool is_write,
 				   int minor,
@@ -326,6 +341,7 @@ void mpc5200_pcmciaide_dma_blockop(bool is_write,
 				   uint32_t *pos)
 
 {
+#if IDE_USE_DMA
   /*
    * Nameing:
    * - a block is one unit of data on disk (multiple sectors)
@@ -367,9 +383,9 @@ void mpc5200_pcmciaide_dma_blockop(bool is_write,
       /*
        * fill in BD, set interrupt if needed
        */
-    SDMA_CLEAR_IEVENT(&mpc5200.IntPend,(is_write
-	                                  ? TASK_GEN_DP_BD_1
-	                                  : TASK_GEN_DP_BD_0));
+    SDMA_CLEAR_IEVENT(&mpc5200.sdma.IntPend,(is_write
+	                                  ? IDE_TX_TASK_NO
+	                                  : IDE_RX_TASK_NO));
       if (is_write) {
 	TaskBDAssign(pcmcia_ide_txTaskId ,
 		     (void *)bufs[bufs_to_dma].buffer,
@@ -406,10 +422,10 @@ void mpc5200_pcmciaide_dma_blockop(bool is_write,
       /*
        * enable interrupts, wait for interrupt event
        */
-      rtems_task_ident(RTEMS_SELF,0,(rtems_id *)&pcmcia_ide_hdl_task);
+      pcmcia_ide_hdl_task = rtems_task_self();
       bestcomm_glue_irq_enable((is_write
-				? TASK_GEN_DP_BD_1
-				: TASK_GEN_DP_BD_0));
+				? IDE_TX_TASK_NO
+				: IDE_RX_TASK_NO));
 
       rtems_event_receive(PCMCIA_IDE_INTERRUPT_EVENT,
 			  RTEMS_WAIT | RTEMS_EVENT_ANY,
@@ -437,17 +453,18 @@ void mpc5200_pcmciaide_dma_blockop(bool is_write,
         (*cbuf)++;
         (*pos) += bufs[bufs_from_dma].length;
         bufs_from_dma++;
+        bds_free++;
 	  }
     } while ((nxt_bd_idx != TASK_ERR_BD_RING_EMPTY) &&
              (nxt_bd_idx != TASK_ERR_BD_BUSY)       &&
   	         (bufs_from_dma < bufs_to_dma));
   }
-}
 #endif /* IDE_USE_DMA */
+}
 
 
-void mpc5200_pcmciaide_read_block(int minor, uint32_t block_size, rtems_blkdev_sg_buffer *bufs,
-                                  uint32_t *cbuf, uint32_t *pos)
+static void mpc5200_pcmciaide_read_block(int minor, uint32_t block_size,
+    rtems_blkdev_sg_buffer *bufs, uint32_t *cbuf, uint32_t *pos)
 {
 
   volatile uint32_t *ata_reg=mpc5200_ata_drive_regs[IDE_REGISTER_DATA_WORD];
@@ -521,25 +538,11 @@ void mpc5200_pcmciaide_read_block(int minor, uint32_t block_size, rtems_blkdev_s
       }
     }
 #endif
-    while (cnt < block_size) {
-      *lbuf++ = 0; /* fill buffer with dummy data */
-      cnt += 2;
-      (*pos) += 2;
-
-      if((*pos) == llength) {
-	(*pos) = 0;
-	(*cbuf)++;
-	lbuf = bufs[(*cbuf)].buffer;
-	llength = bufs[(*cbuf)].length;
-      }
-    }
   }
 }
 
-void mpc5200_pcmciaide_write_block(int minor, uint32_t block_size,
-                                   rtems_blkdev_sg_buffer *bufs, uint32_t *cbuf,
-                                   uint32_t *pos)
-
+static void mpc5200_pcmciaide_write_block(int minor, uint32_t block_size,
+    rtems_blkdev_sg_buffer *bufs, uint32_t *cbuf, uint32_t *pos)
 {
 
 
@@ -628,14 +631,14 @@ void mpc5200_pcmciaide_write_block(int minor, uint32_t block_size,
   }
 }
 
-int mpc5200_pcmciaide_control(int  minor, uint32_t cmd, void * arg)
+static int mpc5200_pcmciaide_control(int  minor, uint32_t cmd, void * arg)
   {
   return RTEMS_SUCCESSFUL;
   }
 
-void mpc5200_pcmciaide_initialize(int minor)
+static void mpc5200_pcmciaide_initialize(int minor)
   {
-#if defined (BRS5L)
+#if defined (MPC5200_BOARD_BRS5L)
   struct mpc5200_gpt *gpt = (struct mpc5200_gpt *)(&mpc5200.gpt[GPT7]);
 
   /* invert ATA reset on GPT7 */

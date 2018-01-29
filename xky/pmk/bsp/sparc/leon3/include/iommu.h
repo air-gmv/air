@@ -23,7 +23,7 @@
 /**
  *  @brief APV Vector size (in 4KiB)
  */
-#define APV_SIZE    ((4 * 1024 * 1024 / APV_PAGE) / (sizeof(xky_u32_t) * 8))
+#define APV_SIZE    ((4 * 1024 * 1024 / APV_PAGE) / (sizeof(air_u32_t) * 8))
 
 /**
  *  @brief Number of available groups

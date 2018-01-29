@@ -6,12 +6,11 @@
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
  *
- * http://www.rtems.com/license/LICENSE.
- *
- * @(#) i2c.c,v 1.5 2004/04/21 16:01:34 ralf Exp
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>
+#include <rtems/score/sysstate.h>
 #include "../include/i2c.h"
 
 /* i2c_transfer_sema_done_func --

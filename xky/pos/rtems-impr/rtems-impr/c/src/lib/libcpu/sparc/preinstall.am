@@ -18,27 +18,15 @@ $(PROJECT_INCLUDE)/libcpu/$(dirstamp):
 	@: > $(PROJECT_INCLUDE)/libcpu/$(dirstamp)
 PREINSTALL_DIRS += $(PROJECT_INCLUDE)/libcpu/$(dirstamp)
 
-$(PROJECT_INCLUDE)/libcpu/cache.h: $(top_srcdir)/../shared/include/cache.h $(PROJECT_INCLUDE)/libcpu/$(dirstamp)
+$(PROJECT_INCLUDE)/libcpu/cache.h: ../shared/include/cache.h $(PROJECT_INCLUDE)/libcpu/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/libcpu/cache.h
 PREINSTALL_FILES += $(PROJECT_INCLUDE)/libcpu/cache.h
 
-$(PROJECT_INCLUDE)/libcpu/cache_.h: $(top_srcdir)/../sparc/cache/include/cache_.h $(PROJECT_INCLUDE)/libcpu/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/libcpu/cache_.h
-PREINSTALL_FILES += $(PROJECT_INCLUDE)/libcpu/cache_.h
+$(PROJECT_INCLUDE)/libcpu/byteorder.h: include/libcpu/byteorder.h $(PROJECT_INCLUDE)/libcpu/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/libcpu/byteorder.h
+PREINSTALL_FILES += $(PROJECT_INCLUDE)/libcpu/byteorder.h
 
-$(PROJECT_INCLUDE)/libcpu/sharedCPUs.h: $(top_srcdir)/../shared/include/sharedCPUs.h $(PROJECT_INCLUDE)/libcpu/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/libcpu/sharedCPUs.h
-PREINSTALL_FILES += $(PROJECT_INCLUDE)/libcpu/sharedCPUs.h
-
-$(PROJECT_INCLUDE)/libcpu/sharedSPARCCPUs.h: $(top_srcdir)/../sparc/include/sharedSPARCCPUs.h $(PROJECT_INCLUDE)/libcpu/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/libcpu/sharedSPARCCPUs.h
-PREINSTALL_FILES += $(PROJECT_INCLUDE)/libcpu/sharedSPARCCPUs.h
-
-$(PROJECT_INCLUDE)/libcpu/window.h: $(top_srcdir)/../sparc/reg_win/window.h $(PROJECT_INCLUDE)/libcpu/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/libcpu/window.h
-PREINSTALL_FILES += $(PROJECT_INCLUDE)/libcpu/window.h
-
-$(PROJECT_INCLUDE)/libcpu/syscall.h: $(top_srcdir)/../sparc/syscall/syscall.h $(PROJECT_INCLUDE)/libcpu/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/libcpu/syscall.h
-PREINSTALL_FILES += $(PROJECT_INCLUDE)/libcpu/syscall.h
+$(PROJECT_INCLUDE)/libcpu/access.h: include/libcpu/access.h $(PROJECT_INCLUDE)/libcpu/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/libcpu/access.h
+PREINSTALL_FILES += $(PROJECT_INCLUDE)/libcpu/access.h
 

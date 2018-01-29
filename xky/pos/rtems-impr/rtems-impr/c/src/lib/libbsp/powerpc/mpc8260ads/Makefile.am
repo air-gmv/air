@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -21,11 +17,14 @@ noinst_PROGRAMS =
 
 include_HEADERS += ../../shared/include/coverhd.h
 
+dist_project_lib_DATA += startup/linkcmds
+
 noinst_LIBRARIES = libbspstart.a
 libbspstart_a_SOURCES = start/start.S
 project_lib_DATA = start.$(OBJEXT)
 
-dist_project_lib_DATA += startup/linkcmds
+libbspstart_a_SOURCES += ../../powerpc/shared/start/rtems_crti.S
+project_lib_DATA += rtems_crti.$(OBJEXT)
 
 noinst_LIBRARIES += libbsp.a
 libbsp_a_SOURCES =
@@ -41,19 +40,21 @@ include_bsp_HEADERS = irq/irq.h \
 	../../shared/include/irq-info.h
 
 # irq
-libbsp_a_SOURCES += irq/irq.c \
-	../../shared/src/irq-generic.c \
-	../../shared/src/irq-legacy.c \
-	../../shared/src/irq-info.c \
-	../../shared/src/irq-shell.c \
-	../../shared/src/irq-server.c
+libbsp_a_SOURCES += ../../shared/src/irq-default-handler.c
+libbsp_a_SOURCES += ../../shared/src/irq-generic.c
+libbsp_a_SOURCES += ../../shared/src/irq-info.c
+libbsp_a_SOURCES += ../../shared/src/irq-legacy.c
+libbsp_a_SOURCES += ../../shared/src/irq-server.c
+libbsp_a_SOURCES += ../../shared/src/irq-shell.c
+libbsp_a_SOURCES += irq/irq.c
 
 # startup
-libbsp_a_SOURCES += ../../shared/bspclean.c ../../shared/bsplibc.c \
-    ../../shared/bsppredriverhook.c ../../shared/bsppost.c \
+libbsp_a_SOURCES += ../../shared/bspclean.c \
+    ../../shared/bsppredriverhook.c \
     ../shared/startup/bspidle.c startup/bspstart.c ../../shared/bootcard.c \
+    ../../shared/getentropy-cpucounter.c \
     ../../shared/sbrk.c ../../shared/gnatinstallhandler.c startup/cpuinit.c \
-    ../../shared/bspgetworkarea.c ../../shared/bsppretaskinghook.c
+    ../../shared/bspgetworkarea.c
 
 if HAS_NETWORKING
 network_CPPFLAGS = -D__INSIDE_RTEMS_BSD_TCPIP_STACK__

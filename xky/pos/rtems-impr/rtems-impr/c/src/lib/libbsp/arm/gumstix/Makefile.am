@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -32,24 +28,34 @@ dist_project_lib_DATA += startup/linkcmds
 noinst_LIBRARIES += libbsp.a
 
 libbsp_a_SOURCES =
-libbsp_a_SOURCES += ../../shared/bsplibc.c ../../shared/bsppost.c \
+libbsp_a_SOURCES += \
   ../../shared/bsppredriverhook.c ../../shared/bspgetworkarea.c \
   ../../shared/bootcard.c ../../shared/sbrk.c \
-  ../../shared/gnatinstallhandler.c ../../shared/bsppretaskinghook.c \
-  ../../shared/bspclean.c startup/bspstart.c startup/memmap.c
+  ../../shared/getentropy-cpucounter.c \
+  ../../shared/gnatinstallhandler.c \
+  ../../shared/bspclean.c startup/bspstart.c startup/bspreset.c startup/memmap.c
+libbsp_a_SOURCES += ../../shared/cpucounterread.c
+libbsp_a_SOURCES += ../../shared/cpucounterdiff.c
 
 #console
-libbsp_a_SOURCES += console/uarts.c ../../shared/console.c
+libbsp_a_SOURCES += console/uarts.c ../../shared/console.c \
+  ../../shared/console_select.c  ../../shared/console_control.c \
+  ../../shared/console_read.c ../../shared/console_write.c 
 # IRQ
 include_bsp_HEADERS += ../../shared/include/irq-generic.h \
 	../../shared/include/irq-info.h
-libbsp_a_SOURCES += ../../shared/src/irq-generic.c \
-	../../shared/src/irq-legacy.c \
-	../../shared/src/irq-info.c \
-	../../shared/src/irq-shell.c \
-	../../shared/src/irq-server.c
-#abort
-libbsp_a_SOURCES += ../shared/abort/abort.c
+libbsp_a_SOURCES += ../../shared/src/irq-default-handler.c
+libbsp_a_SOURCES += ../../shared/src/irq-generic.c
+libbsp_a_SOURCES += ../../shared/src/irq-info.c
+libbsp_a_SOURCES += ../../shared/src/irq-legacy.c
+libbsp_a_SOURCES += ../../shared/src/irq-server.c
+libbsp_a_SOURCES += ../../shared/src/irq-shell.c
+
+# Cache
+libbsp_a_SOURCES += ../../../libcpu/shared/src/cache_manager.c
+libbsp_a_SOURCES += ../../shared/include/cache_.h
+libbsp_a_CPPFLAGS = -I$(srcdir)/../../shared/include
+
 #framebuffer
 if ON_SKYEYE
 libbsp_a_SOURCES += fb/fb.c
@@ -66,8 +72,7 @@ libbsp_a_LIBADD = ../../../libcpu/@RTEMS_CPU@/shared/arm920.rel \
     ../../../libcpu/@RTEMS_CPU@/@RTEMS_CPU_MODEL@/clock.rel \
     ../../../libcpu/@RTEMS_CPU@/@RTEMS_CPU_MODEL@/timer.rel \
     ../../../libcpu/@RTEMS_CPU@/@RTEMS_CPU_MODEL@/ffuart.rel \
-    ../../../libcpu/@RTEMS_CPU@/@RTEMS_CPU_MODEL@/irq.rel \
-    ../../../libcpu/@RTEMS_CPU@/@RTEMS_CPU_MODEL@/pmc.rel
+    ../../../libcpu/@RTEMS_CPU@/@RTEMS_CPU_MODEL@/irq.rel
 
 if ON_SKYEYE
 if HAS_NETWORKING

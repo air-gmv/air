@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -20,8 +16,12 @@ noinst_PROGRAMS =
 
 include_HEADERS += include/coverhd.h
 
+## Zilog component header files
+include_rtems_zilogdir = $(includedir)/rtems/zilog
+include_rtems_zilog_HEADERS = ../../shared/include/zilog/z8530.h
+
 noinst_LIBRARIES = libbspstart.a
-libbspstart_a_SOURCES = ../../m68k/shared/start.S
+libbspstart_a_SOURCES = ../../m68k/shared/start/start.S
 project_lib_DATA = start.$(OBJEXT)
 
 dist_project_lib_DATA += startup/linkcmds
@@ -30,11 +30,12 @@ noinst_LIBRARIES += libbsp.a
 libbsp_a_SOURCES =
 
 # startup
-libbsp_a_SOURCES += ../../shared/bspclean.c ../../shared/bsplibc.c \
-    ../../shared/bsppost.c ../../shared/bsppredriverhook.c \
+libbsp_a_SOURCES += ../../shared/bspclean.c \
+    ../../shared/bsppredriverhook.c \
     startup/bspstart.c ../../shared/bootcard.c \
-    ../../shared/bsppretaskinghook.c ../../m68k/shared/setvec.c \
-    ../../shared/bspgetworkarea.c ../../m68k/shared/setvec.c \
+    ../../shared/getentropy-cpucounter.c \
+    ../../shared/setvec.c \
+    ../../shared/bspgetworkarea.c ../../shared/setvec.c \
     ../../shared/sbrk.c ../../shared/gnatinstallhandler.c
 # clock
 libbsp_a_SOURCES += ../mvme147/clock/ckinit.c

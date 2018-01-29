@@ -1,7 +1,3 @@
-#
-#  $Id$
-#
-
 Development Board: QVGA Base Board from Embedded Artists
 
 http://www.embeddedartists.com/products/uclinux/oem_lpc2478.php
@@ -36,6 +32,11 @@ Howto setup QVGA Base Board?
 		set bootcmd 'echo Booting RTEMS ...;run rtems'
 		saveenv
 
+Howto make a U-Boot image?
+
+mkimage -A arm -O rtems -T kernel -C gzip \
+   -a a0000000 -e a0000040 -n "RTEMS Application" -d app.bin.gz app.img
+
 Application Board: NCS (Nurse Control Station)
 
 	Board:      NextGenNCS
@@ -44,3 +45,8 @@ Application Board: NCS (Nurse Control Station)
 	Ext. Flash: 1MByte, 16 bit wide
 	Console:    UART, 115200 Baud
 	Network:    100Base-T
+
+Application Board: TLI800
+	TLI800 is a network node using four serial ports produced by Thorn
+	Security Limited.  It is used by Tyco Fire & Integrated Solutions for a
+	fire control network.

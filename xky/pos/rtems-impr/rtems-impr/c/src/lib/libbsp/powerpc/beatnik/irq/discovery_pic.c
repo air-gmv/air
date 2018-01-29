@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* Interrupt driver + dispatcher for the discovery host controller */
 
 /* Author: T. Straumann, 2005-2007
@@ -75,7 +73,7 @@
 #define NUM_INTR_REGS 3
 
 
-#define SYNC() asm volatile("sync")
+#define SYNC() __asm__ volatile("sync")
 
 /* How many times should the ISR dispatcher check for
  * pending interrupts until it decides that something's
@@ -198,7 +196,7 @@ int i;
 	}
 }
 
-void discovery_dump_picregs(void)
+static void discovery_dump_picregs(void)
 {
 		printk("       ..GPP_IRQ. -- ..MAIN_HI. -- ..MAIN_LO.\n");
 		printk("Cause:"); pregs(thePic.causes);

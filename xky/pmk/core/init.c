@@ -56,7 +56,7 @@ void pmk_init(void) {
     printk(
 "\033[0m"
 "-------------------------------------------------------------------------------\n" \
-" ** XKY OS v1.0 \n" \
+" ** AIR OS v0.42 \n" \
 "-------------------------------------------------------------------------------\n");
 
 	/* USR configuration initialization */
@@ -87,7 +87,7 @@ void pmk_init(void) {
     pmk_tod_initialization();
 
     /* Set HM state */
-    pmk_hm_set_state(XKY_STATE_MODULE_EXEC);
+    pmk_hm_set_state(AIR_STATE_MODULE_EXEC);
 
     printk("    :: Initialization complete!\n");
 

@@ -9,8 +9,6 @@
  * University of Saskatchewan
  * Saskatoon, Saskatchewan, CANADA
  * eric@skatter.usask.ca
- *
- *  $Id$
  */
 
 #include <rtems.h>
@@ -53,10 +51,8 @@ static unsigned long nsec;
 /*
  * Attach clock interrupt handler
  */
-#define Clock_driver_support_install_isr( _new, _old ) \
-    do {                                                          \
-        _old = (rtems_isr_entry)set_vector(_new, CLOCK_VECTOR, 1);  \
-    } while(0)
+#define Clock_driver_support_install_isr( _new ) \
+    set_vector(_new, CLOCK_VECTOR, 1)
 
 /*
  * Turn off the clock
@@ -99,5 +95,7 @@ extern int m360_clock_rate;
         m360.picr = (CLOCK_IRQ_LEVEL << 8) | CLOCK_VECTOR;                    \
         m360.pitr |= divisor;                                                 \
     } while (0)
+
+#define CLOCK_DRIVER_USE_DUMMY_TIMECOUNTER
 
 #include "../../../shared/clockdrv_shell.h"

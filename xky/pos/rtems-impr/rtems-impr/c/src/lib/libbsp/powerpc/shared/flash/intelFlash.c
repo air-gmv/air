@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /*
  * Trivial driver for 16-bit intel flash present on the
  * MVME5500/MVME6100 boards.
@@ -64,7 +62,7 @@
 
 #include <rtems.h>
 #define TIMEOUT_US       1000
-#define CLOCKRATE_GET(p) rtems_clock_get( RTEMS_CLOCK_GET_TICKS_PER_SECOND, p )
+#define CLOCKRATE_GET(p) *p = rtems_clock_get_ticks_per_second()
 
 #endif
 
@@ -143,7 +141,7 @@ STATIC void
 flash_array_mode_intel(struct bankdesc *, uint32_t);
 
 STATIC uint32_t
-flash_write_line_intel(struct bankdesc *, uint32_t, char *, uint32_t);
+flash_write_line_intel(struct bankdesc *, uint32_t, const char *, uint32_t);
 
 /********* Global Variables ********************/
 
@@ -394,7 +392,7 @@ flash_lock_block_intel(struct bankdesc *b, uint32_t addr)
 }
 
 STATIC uint32_t
-flash_write_line_intel(struct bankdesc *b, uint32_t a, char *s, uint32_t N)
+flash_write_line_intel(struct bankdesc *b, uint32_t a, const char *s, uint32_t N)
 {
 uint32_t sta, Nspla, nxt, j;
 union	{
@@ -418,7 +416,7 @@ union	{
 	/* fill buffer */
 	for (nxt = a; N>0; N--) {
 #if defined(TESTING) || (DEBUG > 4)
-		printf("Writing DAT *0x%08"PRIx32" = 0x%08"PRIx32"\n", nxt, *(uint32_t*)s);
+		printf("Writing DAT *0x%08"PRIx32" = 0x%08"PRIx32"\n", nxt, *(const uint32_t*)s);
 #endif
 		/* deal with misaligned sources */
 		for ( j=0; j<sizeof(buf.u); j++ ) {

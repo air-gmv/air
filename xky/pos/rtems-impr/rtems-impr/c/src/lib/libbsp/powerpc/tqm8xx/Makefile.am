@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -23,12 +19,13 @@ include_HEADERS += include/coverhd.h
 include_bsp_HEADERS = include/tqm.h include/8xx_immap.h \
     include/irq.h \
     ../../shared/include/irq-generic.h \
+    ../../shared/include/irq-info.h \
     spi/spi.h
 
-EXTRA_DIST = times-tqm866
+EXTRA_DIST =
 
 noinst_LIBRARIES = libbspstart.a
-libbspstart_a_SOURCES = startup/start.S
+libbspstart_a_SOURCES = start/start.S
 project_lib_DATA = start.$(OBJEXT)
 
 libbspstart_a_SOURCES += ../../powerpc/shared/start/rtems_crti.S
@@ -42,9 +39,13 @@ noinst_LIBRARIES += libbsp.a
 libbsp_a_SOURCES =
 
 # irq
-libbsp_a_SOURCES += irq/irq.c \
-	../../shared/src/irq-generic.c \
-	../../shared/src/irq-legacy.c
+libbsp_a_SOURCES += ../../shared/src/irq-default-handler.c
+libbsp_a_SOURCES += ../../shared/src/irq-generic.c
+libbsp_a_SOURCES += ../../shared/src/irq-info.c
+libbsp_a_SOURCES += ../../shared/src/irq-legacy.c
+libbsp_a_SOURCES += ../../shared/src/irq-server.c
+libbsp_a_SOURCES += ../../shared/src/irq-shell.c
+libbsp_a_SOURCES += irq/irq.c
 
 # clock
 libbsp_a_SOURCES += ../shared/clock/clock.c
@@ -57,10 +58,11 @@ libbsp_a_SOURCES += spi/spi.c
 # timer
 libbsp_a_SOURCES += timer/timer.c
 # startup
-libbsp_a_SOURCES += ../../shared/bspclean.c ../../shared/bsplibc.c \
-    ../../shared/bsppost.c ../../shared/bsppredriverhook.c \
-    ../../shared/bsppretaskinghook.c ../shared/startup/bspidle.c \
+libbsp_a_SOURCES += ../../shared/bspclean.c \
+    ../../shared/bsppredriverhook.c \
+    ../shared/startup/bspidle.c \
     startup/bspstart.c startup/bspgetworkarea.c ../../shared/bootcard.c \
+    ../../shared/getentropy-cpucounter.c \
     startup/mmutlbtab.c startup/cpuinit.c ../../shared/sbrk.c \
     ../../shared/gnatinstallhandler.c
 

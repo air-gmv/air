@@ -7,9 +7,7 @@
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
  *
- * http://www.rtems.com/license/LICENSE.
- *
- * @(#) $Id$
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef __RTEMS__I2C_H__
@@ -137,7 +135,7 @@ i2c_transfer(i2c_bus_number bus, int nmsg, i2c_message *msg,
  *     nmsg - number of messages in transfer
  *
  * RETURNS:
- *     I2C_SUCCESSFUL, if tranfer finished successfully,
+ *     I2C_SUCCESSFUL, if transfer finished successfully,
  *     I2C_RESOURCE_NOT_AVAILABLE, if semaphore operations has failed,
  *     value of status field of first error-finished message in transfer,
  *     if something wrong.

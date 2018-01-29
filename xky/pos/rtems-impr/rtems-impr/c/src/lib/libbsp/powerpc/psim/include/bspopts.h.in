@@ -5,9 +5,16 @@
    assumes memory starts set to zero. */
 #undef BSP_DIRTY_MEMORY
 
+/* indicate that the interrupt stack is at the work area begin */
+#undef BSP_INTERRUPT_STACK_AT_WORK_AREA_BEGIN
+
 /* If defined, print a message and wait until pressed before resetting board
    when application exits. */
 #undef BSP_PRESS_KEY_FOR_RESET
+
+/* If defined, prints the exception context when an unexpected exception
+   occurs. */
+#undef BSP_PRINT_EXCEPTION_CONTEXT
 
 /* If defined, reset the board when the application exits. */
 #undef BSP_RESET_BOARD_AT_EXIT

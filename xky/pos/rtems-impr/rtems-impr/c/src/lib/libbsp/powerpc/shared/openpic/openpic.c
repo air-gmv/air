@@ -9,10 +9,8 @@
  *  Copyright (C) 1999 Eric Valette. valette@crf.canon.fr
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- * $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 /*
@@ -27,6 +25,7 @@
 #include <libcpu/io.h>
 #include <libcpu/byteorder.h>
 #include <rtems/bspIo.h>
+#include <inttypes.h>
 
 #ifndef NULL
 #define NULL 0
@@ -55,6 +54,11 @@ static          int openpic_src_offst = 0;
      */
 
 #if 1
+/* This software deliberately uses non-zero values to the method
+ * __builtin_return_address() and we want to avoid the GCC warning.
+ */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wframe-address"
 #define check_arg_ipi(ipi) \
     if (ipi < 0 || ipi >= OPENPIC_NUM_IPI) \
 	printk("openpic.c:%d: illegal ipi %d\n", __LINE__, ipi);
@@ -69,9 +73,9 @@ static          int openpic_src_offst = 0;
 	printk("openpic.c:%d: illegal priority %d\n", __LINE__, pri);
 #define check_arg_irq(irq) \
     if (irq < 0 || irq >= NumSources) \
-	printk("openpic.c:%d: illegal irq %d from 0x%08x,[0x%08x],[[0x%08x]]\n", \
-	       __LINE__, irq, __builtin_return_address(0), \
-	       __builtin_return_address(1), __builtin_return_address(2) \
+	printk("openpic.c:%d: illegal irq %d from 0x%08" PRIxPTR ",[0x%08" PRIxPTR "],[[0x%08" PRIxPTR "]]\n", \
+	       __LINE__, irq, (uintptr_t) __builtin_return_address(0), \
+	       (uintptr_t) __builtin_return_address(1), (uintptr_t) __builtin_return_address(2) \
 	       );
 #define check_arg_cpu(cpu) \
     if (cpu < 0 || cpu >= NumProcessors) \
@@ -94,9 +98,9 @@ static inline unsigned int openpic_read(volatile unsigned int *addr)
     unsigned int val;
 
 #ifdef BSP_OPEN_PIC_BIG_ENDIAN
-	val = in_be32(addr);
+	val = in_be32((volatile uint32_t *)addr);
 #else
-    val = in_le32(addr);
+    val = in_le32((volatile uint32_t *)addr);
 #endif
 #ifdef REGISTER_DEBUG
     printk("openpic_read(0x%08x) = 0x%08x\n", (unsigned int)addr, val);
@@ -110,9 +114,9 @@ static inline void openpic_write(volatile unsigned int *addr, unsigned int val)
     printk("openpic_write(0x%08x, 0x%08x)\n", (unsigned int)addr, val);
 #endif
 #ifdef BSP_OPEN_PIC_BIG_ENDIAN
-    out_be32(addr, val);
+    out_be32((volatile uint32_t *)addr, val);
 #else
-	out_le32(addr, val);
+	out_le32((volatile uint32_t *)addr, val);
 #endif
 }
 
@@ -231,8 +235,8 @@ void openpic_init(int main_pic, unsigned char *polarities, unsigned char *senses
 		break;
 	}
     }
-    printk("OpenPIC Version %s (%d CPUs and %d IRQ sources) at 0x%08x\n", version,
-	   NumProcessors, NumSources, OpenPIC);
+    printk("OpenPIC Version %s (%d CPUs and %d IRQ sources) at 0x%08" PRIuPTR "\n", version,
+	   NumProcessors, NumSources, (uintptr_t) OpenPIC);
 
     printk("OpenPIC Vendor %d (%s), Device %d (%s), Stepping %d\n", vendorid,
 	   vendor, devid, device, stepping);
@@ -309,7 +313,7 @@ void openpic_init(int main_pic, unsigned char *polarities, unsigned char *senses
 		 */
 		uint32_t eicr_val, ratio;
 		/* On the 8240 this is the EICR register */
-		eicr_val = in_le32( &OpenPIC->Global.Global_Configuration1 ) & ~(7<<28);
+		eicr_val = in_le32( (volatile uint32_t *)&OpenPIC->Global.Global_Configuration1 ) & ~(7<<28);
 		if ( (1<<27) & eicr_val ) {
 			/* serial interface mode enabled */
 
@@ -320,7 +324,7 @@ void openpic_init(int main_pic, unsigned char *polarities, unsigned char *senses
 			ratio >>= 2; /* EICR value is half actual divisor */
 			if ( 0==ratio )
 				ratio = 1;
-			out_le32(&OpenPIC->Global.Global_Configuration1, eicr_val | ((ratio &7) << 28));
+			out_le32((volatile uint32_t *)&OpenPIC->Global.Global_Configuration1, eicr_val | ((ratio &7) << 28));
 			/*  Delay in TB cycles (assuming TB runs at 1/4 of the bus frequency) */
 			openpic_set_eoi_delay( 16 * (2*ratio) / 4 );
 		}

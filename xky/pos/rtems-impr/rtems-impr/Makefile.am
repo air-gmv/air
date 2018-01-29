@@ -1,13 +1,10 @@
 #
 # top level directory for RTEMS build tree
 #
-##
-## $Id: Makefile.am 8817 2010-09-03 14:20:53Z jsousa $
-##
 
 ACLOCAL_AMFLAGS = -I aclocal
 
-SUBDIRS = make $(build_SUBDIRS) $(host_SUBDIRS) $(target_SUBDIRS)
+SUBDIRS = $(build_SUBDIRS) $(host_SUBDIRS) $(target_SUBDIRS)
 DIST_SUBDIRS = $(SUBDIRS)
 
 noinst_SCRIPTS = bootstrap
@@ -17,7 +14,7 @@ EXTRA_DIST += config-ml.in
 EXTRA_DIST += ampolish3
 
 dist-hook:
-	@files=`(cd $(srcdir); find doc cpukit c testsuites OARtestsuites \
+	@files=`(cd $(srcdir); find cpukit c testsuites tools \
 	   -name configure.ac -print | sed 's,/configure.ac,,' | sort)`; \
 	for i in $$files; do \
 	  if test -f $(distdir)/$$i/configure.ac; then : ; \
@@ -39,6 +36,23 @@ dist-hook:
 	find $(distdir) -name '*.in' -print | while read a; do \
 	  f=`echo $$a | sed 's,\.in$$,,'`; \
 	  if test -f $$f; then echo "rm $$f"; rm $$f; fi; done
+
+rtems_makedir = $(prefix)/make
+
+dist_rtems_make_DATA = 
+dist_rtems_make_DATA += make/main.cfg
+dist_rtems_make_DATA += make/leaf.cfg
+
+rtems_make_Templatesdir = $(pkgdatadir)/make/Templates
+
+dist_rtems_make_Templates_DATA =
+dist_rtems_make_Templates_DATA += make/Templates/Makefile.dir
+dist_rtems_make_Templates_DATA += make/Templates/Makefile.leaf
+dist_rtems_make_Templates_DATA += make/Templates/Makefile.lib
+
+rtems_make_customdir = $(rtems_makedir)/custom
+
+dist_rtems_make_custom_DATA = make/custom/default.cfg
 
 include $(top_srcdir)/automake/subdirs.am
 include $(top_srcdir)/automake/host.am

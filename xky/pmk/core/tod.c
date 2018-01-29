@@ -27,12 +27,12 @@ int pmk_tod_defined;
 /**
  * @brief System Time of Day
  */
-xky_time_t pmk_tod_now;
+air_time_t pmk_tod_now;
 
 /**
  * @brief System nano-seconds per tick
  */
-static xky_u32_t ns_per_tick;
+static air_u32_t ns_per_tick;
 
 void pmk_tod_initialization(void) {
    

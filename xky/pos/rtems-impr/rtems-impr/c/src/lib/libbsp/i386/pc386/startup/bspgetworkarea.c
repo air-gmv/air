@@ -1,5 +1,5 @@
 /*
- *  This routine is an implementation of the bsp_get_work_area()
+ *  This routine is an implementation of the bsp_work_area_initialize()
  *  that can be used by all m68k BSPs following linkcmds conventions
  *  regarding heap, stack, and workspace allocation.
  *
@@ -8,9 +8,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 /* #define BSP_GET_WORK_AREA_DEBUG */
@@ -54,7 +52,7 @@ uint32_t bsp_mem_size = 0;
 /* Size of stack used during initialization. Defined in 'start.s'.  */
 extern uint32_t _stack_size;
 
-void bsp_size_memory(void)
+static void bsp_size_memory(void)
 {
   uintptr_t topAddr;
 
@@ -118,34 +116,20 @@ void bsp_size_memory(void)
     #endif
   }
 
-  
   bsp_mem_size = topAddr;
 }
 
-/*
- *  This method returns the base address and size of the area which
- *  is to be allocated between the RTEMS Workspace and the C Program
- *  Heap.
- */
-void bsp_get_work_area(
-  void      **work_area_start,
-  uintptr_t  *work_area_size,
-  void      **heap_start,
-  uintptr_t  *heap_size
-)
+void bsp_work_area_initialize(void)
 {
-  *work_area_start = (void *) rtemsWorkAreaStart;
-  *work_area_size  = (uintptr_t) bsp_mem_size - (uintptr_t) rtemsWorkAreaStart;
-  *heap_start      = BSP_BOOTCARD_HEAP_USES_WORK_AREA;
-  *heap_size       = (uintptr_t) HeapSize;
+  void *area_start;
+  uintptr_t area_size;
 
-  #ifdef BSP_GET_WORK_AREA_DEBUG
-    printk( "bsp_mem_size = 0x%08x\n", bsp_mem_size );
-    printk( "rtemsWorkAreaStart = 0x%08x\n", rtemsWorkAreaStart );
-    printk( "WorkArea Base = %p\n", *work_area_start );
-    printk( "WorkArea Size = 0x%08x\n", *work_area_size );
-    printk( "C Program Heap Base = %p\n", *heap_start );
-    printk( "C Program Heap Size = 0x%08x\n", *heap_size );
-    printk( "End of WorkArea = %p\n", *work_area_start +  *work_area_size );
-  #endif
+  /*
+   *  We need to determine how much memory there is in the system.
+   */
+  bsp_size_memory();
+
+  area_start = (void *) rtemsWorkAreaStart;
+  area_size  = (uintptr_t) bsp_mem_size - (uintptr_t) rtemsWorkAreaStart;
+  bsp_work_area_initialize_default( area_start, area_size );
 }

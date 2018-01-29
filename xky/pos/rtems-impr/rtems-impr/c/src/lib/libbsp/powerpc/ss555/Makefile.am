@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -24,6 +20,11 @@ EXTRA_DIST = times
 
 dist_project_lib_DATA += startup/linkcmds
 
+EXTRA_DIST += ../../powerpc/shared/start/rtems_crti.S
+rtems_crti.$(OBJEXT): ../../powerpc/shared/start/rtems_crti.S
+	$(CPPASCOMPILE) -o $@ -c $<
+project_lib_DATA = rtems_crti.$(OBJEXT)
+
 noinst_LIBRARIES = libbsp.a
 libbsp_a_SOURCES =
 
@@ -32,16 +33,18 @@ libbsp_a_SOURCES += clock/p_clock.c
 # console
 libbsp_a_SOURCES += console/console.c
 # startup
-libbsp_a_SOURCES += ../../shared/bspclean.c ../../shared/bsplibc.c \
-    ../../shared/bsppost.c ../../shared/bsppredriverhook.c \
+libbsp_a_SOURCES += ../../shared/bspclean.c \
+    ../../shared/bsppredriverhook.c \
     startup/bspstart.c ../../shared/bootcard.c startup/iss555.c \
-    ../../shared/sbrk.c ../../shared/gnatinstallhandler.c startup/start.S \
-    ../../shared/bsppretaskinghook.c ../../shared/bspgetworkarea.c
+    ../../shared/getentropy-cpucounter.c \
+    ../../shared/sbrk.c ../../shared/gnatinstallhandler.c start/start.S \
+    ../../shared/bspgetworkarea.c
 # tm27supp
 libbsp_a_SOURCES += startup/tm27supp.c
 
 libbsp_a_LIBADD = \
     ../../../libcpu/@RTEMS_CPU@/shared/cpuIdent.rel \
+    ../../../libcpu/@RTEMS_CPU@/shared/cache.rel \
     ../../../libcpu/@RTEMS_CPU@/@exceptions@/rtems-cpu.rel \
     ../../../libcpu/@RTEMS_CPU@/mpc5xx/clock.rel \
     ../../../libcpu/@RTEMS_CPU@/mpc5xx/console-generic.rel \

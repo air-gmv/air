@@ -28,14 +28,14 @@
 | *  On-Line Applications Research Corporation (OAR).
 | *
 | *  The license and distribution terms for this file may be
-| *  found in found in the file LICENSE in this distribution or at
-| *  http://www.rtems.com/license/LICENSE.
+| *  found in the file LICENSE in this distribution or at
+| *  http://www.rtems.org/license/LICENSE.
 | **************************************************************************
-|
-|  $Id$
 +--------------------------------------------------------------------------*/
 
 #include <rtems/asm.h>
+#include <bsp/tblsizes.h> /* contains sizes of GDT and IDT */
+#include <bspopts.h>
 
 /*----------------------------------------------------------------------------+
 | CODE section
@@ -96,7 +96,7 @@ pc386_delay1:
 SYM (_load_segments):
 
 	lgdt SYM(gdtdesc)
-	lidt SYM(idtdesc)
+	lidt SYM(IDT_Descriptor)
 
 	/* Load CS, flush prefetched queue */
 	ljmp $0x8, $next_step
@@ -146,33 +146,16 @@ next_step:
 	outb	al, $0xA1
 	call	SYM(pc386_delay)
 
+	/*
+	 * The IMR values must correspond to the initial value of i8259s_cache.
+	 */
 	movb	$0xFF, al		/* mask off all interrupts for now  */
 	outb	al, $0xA1
 	call	SYM(pc386_delay)
 	movb	$0xFB, al		/* mask all irq's but irq2 which    */
 	outb	al, $0x21		/* is cascaded                      */
 	call	SYM(pc386_delay)
-
-	movw	$0xFFFB, SYM(i8259s_cache) /* set up same values in cache */
-
 	jmp	SYM (_establish_stack)	# return to the bsp entry code
-
-/*-------------------------------------------------------------------------+
-|         Function: _return_to_monitor
-|      Description: Return to board's monitor (we have none so simply restart).
-| Global Variables: None.
-|        Arguments: None.
-|          Returns: Nothing.
-+--------------------------------------------------------------------------*/
-
-	.p2align 4
-
-        PUBLIC (_return_to_monitor)
-SYM (_return_to_monitor):
-
-	call	SYM (Timer_exit)
-	call	SYM (Clock_exit)
-	jmp	SYM (start)
 
 /*-------------------------------------------------------------------------+
 |         Function: _default_int_handler
@@ -186,6 +169,9 @@ SYM (_return_to_monitor):
 /*---------------------------------------------------------------------------+
 | GDT itself
 +--------------------------------------------------------------------------*/
+#if GDT_SIZE < NUM_SYSTEM_GDT_DESCRIPTORS
+#error "GDT_SIZE must be at least NUM_SYSTEM_GDT_DESCRIPTORS"
+#endif
 
 BEGIN_DATA
 	.p2align 4
@@ -205,11 +191,21 @@ SYM (_Global_descriptor_table):
 	.word 0xffff, 0
 	.byte 0, 0x92, 0xcf, 0
 
+	/* gs segment */
+	.word 0xffff, 0
+	.byte 0, 0x92, 0xcf, 0
+
+        /* allocated space for user segments */
+        .rept (GDT_SIZE - NUM_SYSTEM_GDT_DESCRIPTORS)
+        .word 0,0,0,0
+        .endr
+
 /*---------------------------------------------------------------------------+
 | Descriptor of GDT
 +--------------------------------------------------------------------------*/
-SYM (gdtdesc):
-	.word (3*8 - 1)
+        PUBLIC(gdtdesc)
+SYM(gdtdesc):
+	.word (GDT_SIZE*8 - 1)
 	.long SYM (_Global_descriptor_table)
 
 /*---------------------------------------------------------------------------+
@@ -219,7 +215,7 @@ SYM (gdtdesc):
 
 	PUBLIC(Interrupt_descriptor_table)
 SYM(Interrupt_descriptor_table):
-	.rept 256
+	.rept IDT_SIZE
 	.word 0,0,0,0
 	.endr
 
@@ -228,8 +224,9 @@ SYM(Interrupt_descriptor_table):
 +--------------------------------------------------------------------------*/
 
 	.p2align 4
-SYM(idtdesc):
-	.word  (256*8 - 1)
+	PUBLIC(IDT_Descriptor)
+SYM(IDT_Descriptor):
+	.word  (IDT_SIZE*8 - 1)
 	.long  SYM (Interrupt_descriptor_table)
 
 END_DATA

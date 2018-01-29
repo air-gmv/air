@@ -14,7 +14,7 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 | this file contains the nvram functions                          |
@@ -53,7 +53,7 @@
 /*                                                                     */
 /*   The license and distribution terms for this file may be           */
 /*   found in the file LICENSE in this distribution or at              */
-/*   http://www.rtems.com/license/LICENSE.                        */
+/*   http://www.rtems.org/license/LICENSE.                        */
 /*                                                                     */
 /*---------------------------------------------------------------------*/
 /*                                                                     */
@@ -579,12 +579,12 @@ rtems_device_driver nvram_driver_write(rtems_device_major_number major, rtems_de
     return RTEMS_UNSATISFIED;
 
     }
-  else
-    count = args->count;
 
-    m93cxx_enable_write();
+  count = args->count;
 
-    WAIT(1);
+  m93cxx_enable_write();
+
+  WAIT(1);
 
   for(i = 0; i < count; i++)
     {

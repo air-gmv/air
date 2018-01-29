@@ -1,261 +1,485 @@
 /**
- *  @file
- *  heap.c
+ * @file
  *
- *  @brief initialize the Heap Handler
+ * @ingroup ScoreHeap
  *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-2006.
+ * @brief Heap Handler implementation.
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2009.
  *  On-Line Applications Research Corporation (OAR).
+ *
+ *  Copyright (c) 2009, 2010 embedded brains GmbH.
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
+ */
+
+#if HAVE_CONFIG_H
+  #include "config.h"
+#endif
+
+#include <rtems/score/heapimpl.h>
+#include <rtems/score/threadimpl.h>
+#include <rtems/score/interr.h>
+
+#include <string.h>
+
+#if CPU_ALIGNMENT == 0 || CPU_ALIGNMENT % 2 != 0
+  #error "invalid CPU_ALIGNMENT value"
+#endif
+
+/*
+ *  _Heap_Initialize
  *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  612     | 17/11/2008  | mcoutinho    | IPR 71
- *  3617    | 02/07/2009  | mcoutinho    | IPR 97
- *  5059    | 27/10/2009  | mcoutinho    | IPR 828
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  6325    | 01/03/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
+ *  This kernel routine initializes a heap.
  *
- **/
-
-/**
- *  @addtogroup SUPER_CORE Super Core
- *  @{
+ *  Input parameters:
+ *    heap         - pointer to heap header
+ *    area_begin - starting address of heap
+ *    size             - size of heap
+ *    page_size        - allocatable unit of memory
+ *
+ *  Output parameters:
+ *    returns - maximum memory available if RTEMS_SUCCESSFUL
+ *    0       - otherwise
+ *
+ *  This is what a heap looks like in memory immediately after initialization:
+ *
+ *
+ *            +--------------------------------+ <- begin = area_begin
+ *            |  unused space due to alignment |
+ *            |       size < page_size         |
+ *         0  +--------------------------------+ <- first block
+ *            |  prev_size = page_size         |
+ *         4  +--------------------------------+
+ *            |  size = size0              | 1 |
+ *         8  +---------------------+----------+ <- aligned on page_size
+ *            |  next = HEAP_TAIL   |          |
+ *        12  +---------------------+          |
+ *            |  prev = HEAP_HEAD   |  memory  |
+ *            +---------------------+          |
+ *            |                     available  |
+ *            |                                |
+ *            |                for allocation  |
+ *            |                                |
+ *     size0  +--------------------------------+ <- last dummy block
+ *            |  prev_size = size0             |
+ *        +4  +--------------------------------+
+ *            |  size = page_size          | 0 | <- prev block is free
+ *        +8  +--------------------------------+ <- aligned on page_size
+ *            |  unused space due to alignment |
+ *            |       size < page_size         |
+ *            +--------------------------------+ <- end = begin + size
+ *
+ *  Below is what a heap looks like after first allocation of SIZE bytes using
+ *  _Heap_allocate(). BSIZE stands for SIZE + 4 aligned up on 'page_size'
+ *  boundary.
+ *  [NOTE: If allocation were performed by _Heap_Allocate_aligned(), the
+ *  block size BSIZE is defined differently, and previously free block will
+ *  be split so that upper part of it will become used block (see
+ *  'heapallocatealigned.c' for details).]
+ *
+ *            +--------------------------------+ <- begin = area_begin
+ *            |  unused space due to alignment |
+ *            |       size < page_size         |
+ *         0  +--------------------------------+ <- used block
+ *            |  prev_size = page_size         |
+ *         4  +--------------------------------+
+ *            |  size = BSIZE              | 1 | <- prev block is used
+ *         8  +--------------------------------+ <- aligned on page_size
+ *            |              .                 | Pointer returned to the user
+ *            |              .                 | is 8 for _Heap_Allocate()
+ *            |              .                 | and is in range
+ * 8 +        |         user-accessible        | [8,8+page_size) for
+ *  page_size +- - -                      - - -+ _Heap_Allocate_aligned()
+ *            |             area               |
+ *            |              .                 |
+ *     BSIZE  +- - - - -     .        - - - - -+ <- free block
+ *            |              .                 |
+ * BSIZE  +4  +--------------------------------+
+ *            |  size = S = size0 - BSIZE  | 1 | <- prev block is used
+ * BSIZE  +8  +-------------------+------------+ <- aligned on page_size
+ *            |  next = HEAP_TAIL |            |
+ * BSIZE +12  +-------------------+            |
+ *            |  prev = HEAP_HEAD |     memory |
+ *            +-------------------+            |
+ *            |                   .  available |
+ *            |                   .            |
+ *            |                   .        for |
+ *            |                   .            |
+ * BSIZE +S+0 +-------------------+ allocation + <- last dummy block
+ *            |  prev_size = S    |            |
+ *       +S+4 +-------------------+------------+
+ *            |  size = page_size          | 0 | <- prev block is free
+ *       +S+8 +--------------------------------+ <- aligned on page_size
+ *            |  unused space due to alignment |
+ *            |       size < page_size         |
+ *            +--------------------------------+ <- end = begin + size
+ *
  */
 
-/**
- *  @addtogroup ScoreHeap Heap Handler
- *  @{
- */
+#ifdef HEAP_PROTECTION
+  static void _Heap_Protection_block_initialize_default(
+    Heap_Control *heap,
+    Heap_Block *block
+  )
+  {
+    block->Protection_begin.protector [0] = HEAP_BEGIN_PROTECTOR_0;
+    block->Protection_begin.protector [1] = HEAP_BEGIN_PROTECTOR_1;
+    block->Protection_begin.next_delayed_free_block = NULL;
+    block->Protection_begin.task = _Thread_Get_executing();
+    block->Protection_begin.tag = NULL;
+    block->Protection_end.protector [0] = HEAP_END_PROTECTOR_0;
+    block->Protection_end.protector [1] = HEAP_END_PROTECTOR_1;
+  }
 
-#include <rtems/system.h>
-#include <rtems/score/sysstate.h>
-#include <rtems/score/heap.h>
+  static void _Heap_Protection_block_check_default(
+    Heap_Control *heap,
+    Heap_Block *block
+  )
+  {
+    if (
+      block->Protection_begin.protector [0] != HEAP_BEGIN_PROTECTOR_0
+        || block->Protection_begin.protector [1] != HEAP_BEGIN_PROTECTOR_1
+        || block->Protection_end.protector [0] != HEAP_END_PROTECTOR_0
+        || block->Protection_end.protector [1] != HEAP_END_PROTECTOR_1
+    ) {
+      _Heap_Protection_block_error( heap, block );
+    }
+  }
 
+  static void _Heap_Protection_block_error_default(
+    Heap_Control *heap,
+    Heap_Block *block
+  )
+  {
+    /* FIXME */
+    _Terminate( INTERNAL_ERROR_CORE, 0xdeadbeef );
+  }
+#endif
 
-uint32_t _Heap_Initialize(
-                          Heap_Control *the_heap ,
-                          void *starting_address ,
-                          size_t size ,
-                          uint32_t page_size
-                          )
+bool _Heap_Get_first_and_last_block(
+  uintptr_t heap_area_begin,
+  uintptr_t heap_area_size,
+  uintptr_t page_size,
+  uintptr_t min_block_size,
+  Heap_Block **first_block_ptr,
+  Heap_Block **last_block_ptr
+)
 {
-    /* first block of the heap */
-    Heap_Block *the_block;
+  uintptr_t const heap_area_end = heap_area_begin + heap_area_size;
+  uintptr_t const alloc_area_begin =
+    _Heap_Align_up( heap_area_begin + HEAP_BLOCK_HEADER_SIZE, page_size );
+  uintptr_t const first_block_begin =
+    alloc_area_begin - HEAP_BLOCK_HEADER_SIZE;
+  uintptr_t const overhead =
+    HEAP_BLOCK_HEADER_SIZE + (first_block_begin - heap_area_begin);
+  uintptr_t const first_block_size =
+    _Heap_Align_down( heap_area_size - overhead, page_size );
+  Heap_Block *const first_block = (Heap_Block *) first_block_begin;
+  Heap_Block *const last_block =
+    _Heap_Block_at( first_block, first_block_size );
 
-    /* block size */
-    uint32_t the_size;
+  if (
+    heap_area_end < heap_area_begin
+      || heap_area_size <= overhead
+      || first_block_size < min_block_size
+  ) {
+    /* Invalid area or area too small */
+    return false;
+  }
 
-    /* start of the heap */
-    _H_uptr_t start;
+  *first_block_ptr = first_block;
+  *last_block_ptr = last_block;
 
-    /* aligned start of the heap */
-    _H_uptr_t aligned_start;
-
-    /* overhead need at the end of the first block */
-    uint32_t overhead;
-
-    /* returns the maximum available memory for this heap */
-    uint32_t result;
-
-
-    /* check if the page size is 0 */
-    if(page_size == 0)
-    {
-        /* set the page size to the minimum */
-        page_size = CPU_ALIGNMENT;
-    }
-    else
-    {
-        /* align the page size up to be multiple of CPU_ALIGNMENT */
-        _Heap_Align_up(&page_size , CPU_ALIGNMENT);
-    }
-
-    /* calculate aligned_start so that aligned_start + HEAP_BLOCK_USER_OFFSET
-     * (value of user pointer) is aligned on 'page_size' boundary. Make sure
-     * resulting 'aligned_start' is not below 'starting_address'. */
-    start = _H_p2u(starting_address);
-    aligned_start = start + HEAP_BLOCK_USER_OFFSET;
-    _Heap_Align_up_uptr(&aligned_start , page_size);
-    aligned_start -= HEAP_BLOCK_USER_OFFSET;
-
-    /* calculate 'min_block_size'. It's HEAP_MIN_BLOCK_SIZE aligned up to the
-     * nearest multiple of 'page_size' */
-    the_heap->min_block_size = HEAP_MIN_BLOCK_SIZE;
-    _Heap_Align_up(&the_heap->min_block_size , page_size);
-
-    /* calculate 'the_size' -- size of the first block so that there is enough
-     * space at the end for the permanent last block. It is equal to 'size'
-     * minus total overhead aligned down to the nearest multiple of
-     * 'page_size' */
-    overhead = HEAP_OVERHEAD + ( aligned_start - start );
-
-    /* check if the size is small */
-    if(size < overhead)
-    {
-        /* too small area for the heap */
-        result = 0;
-    }
-    else
-    {
-        the_size = size - overhead;
-        _Heap_Align_down(&the_size , page_size);
-
-        /* check the size */
-        if(the_size == 0)
-        {
-            /* too small area for the heap */
-            result = 0;
-        }
-        else
-        {
-            /* initialize the heap page size */
-            the_heap->page_size = page_size;
-
-            /* initialize the heap start address */
-            the_heap->begin = starting_address;
-
-            /* initialize the heap end address */
-            the_heap->end = starting_address + size;
-
-            /* initialize the heap first (and only) block */
-            the_block = (Heap_Block *) aligned_start;
-
-            the_block->prev_size = page_size;
-            the_block->size = the_size | HEAP_PREV_USED;
-            the_block->next = _Heap_Tail(the_heap);
-            the_block->prev = _Heap_Head(the_heap);
-
-            /* the heap head next pointer points to the block */
-            _Heap_Head(the_heap)->next = the_block;
-
-            /* the heap head previous pointer points to the block */
-            _Heap_Tail(the_heap)->prev = the_block;
-
-            /* set the start of the heap to the block */
-            the_heap->start = the_block;
-
-            /* assert that the heap page size is aligned to CPU_ALIGNMENT */
-            _HAssert(_Heap_Is_aligned(the_heap->page_size , CPU_ALIGNMENT));
-
-            /* assert that the heap minimum block size is aligned to the page size */
-            _HAssert(_Heap_Is_aligned(the_heap->min_block_size , page_size));
-
-            /* assert that the the user area of the block is aligned to the page size */
-            _HAssert(_Heap_Is_aligned_ptr(_Heap_User_area(the_block) , page_size));
-
-            the_block = _Heap_Block_at(the_block , the_size);
-
-            /* permanent final block of the heap */
-            the_heap->final = the_block;
-
-            /* previous block is free */
-            the_block->prev_size = the_size;
-
-            the_block->size = page_size;
-
-            result = ( the_size - HEAP_BLOCK_USED_OVERHEAD );
-        }
-    }
-
-    /* return maximum memory available */
-    return result;
+  return true;
 }
 
-
-size_t _Heap_Calc_block_size(
-                             size_t size ,
-                             uint32_t page_size ,
-                             uint32_t min_size)
+uintptr_t _Heap_Initialize(
+  Heap_Control *heap,
+  void *heap_area_begin_ptr,
+  uintptr_t heap_area_size,
+  uintptr_t page_size
+)
 {
-    /* block size [in bytes] */
-    uint32_t block_size = size + HEAP_BLOCK_USED_OVERHEAD;
+  Heap_Statistics *const stats = &heap->stats;
+  uintptr_t const heap_area_begin = (uintptr_t) heap_area_begin_ptr;
+  uintptr_t const heap_area_end = heap_area_begin + heap_area_size;
+  uintptr_t first_block_begin = 0;
+  uintptr_t first_block_size = 0;
+  uintptr_t last_block_begin = 0;
+  uintptr_t min_block_size = 0;
+  bool area_ok = false;
+  Heap_Block *first_block = NULL;
+  Heap_Block *last_block = NULL;
 
-    
-    /* align the block size by the page size */
-    _Heap_Align_up(&block_size , page_size);
+  if ( page_size == 0 ) {
+    page_size = CPU_ALIGNMENT;
+  } else {
+    page_size = _Heap_Align_up( page_size, CPU_ALIGNMENT );
 
-    /* check if the block size is too little */
-    if(block_size < min_size)
-    {
-        block_size = min_size;
+    if ( page_size < CPU_ALIGNMENT ) {
+      /* Integer overflow */
+      return 0;
     }
+  }
 
-    /* check if an overflow occurred */
-    if(block_size <= size)
-    {
-        /* reset the block size */
-        block_size = 0;
-    }
+  min_block_size = _Heap_Min_block_size( page_size );
 
-    /* return the block size */
-    return block_size;
+  area_ok = _Heap_Get_first_and_last_block(
+    heap_area_begin,
+    heap_area_size,
+    page_size,
+    min_block_size,
+    &first_block,
+    &last_block
+  );
+  if ( !area_ok ) {
+    return 0;
+  }
+
+  memset(heap, 0, sizeof(*heap));
+
+  #ifdef HEAP_PROTECTION
+    heap->Protection.block_initialize = _Heap_Protection_block_initialize_default;
+    heap->Protection.block_check = _Heap_Protection_block_check_default;
+    heap->Protection.block_error = _Heap_Protection_block_error_default;
+  #endif
+
+  first_block_begin = (uintptr_t) first_block;
+  last_block_begin = (uintptr_t) last_block;
+  first_block_size = last_block_begin - first_block_begin;
+
+  /* First block */
+  first_block->prev_size = heap_area_end;
+  first_block->size_and_flag = first_block_size | HEAP_PREV_BLOCK_USED;
+  first_block->next = _Heap_Free_list_tail( heap );
+  first_block->prev = _Heap_Free_list_head( heap );
+  _Heap_Protection_block_initialize( heap, first_block );
+
+  /* Heap control */
+  heap->page_size = page_size;
+  heap->min_block_size = min_block_size;
+  heap->area_begin = heap_area_begin;
+  heap->area_end = heap_area_end;
+  heap->first_block = first_block;
+  heap->last_block = last_block;
+  _Heap_Free_list_head( heap )->next = first_block;
+  _Heap_Free_list_tail( heap )->prev = first_block;
+
+  /* Last block */
+  last_block->prev_size = first_block_size;
+  last_block->size_and_flag = 0;
+  _Heap_Set_last_block_size( heap );
+  _Heap_Protection_block_initialize( heap, last_block );
+
+  /* Statistics */
+  stats->size = first_block_size;
+  stats->free_size = first_block_size;
+  stats->min_free_size = first_block_size;
+  stats->free_blocks = 1;
+  stats->max_free_blocks = 1;
+
+  _Heap_Protection_set_delayed_free_fraction( heap, 2 );
+
+  _HAssert( _Heap_Is_aligned( heap->page_size, CPU_ALIGNMENT ) );
+  _HAssert( _Heap_Is_aligned( heap->min_block_size, page_size ) );
+  _HAssert(
+    _Heap_Is_aligned( _Heap_Alloc_area_of_block( first_block ), page_size )
+  );
+  _HAssert(
+    _Heap_Is_aligned( _Heap_Alloc_area_of_block( last_block ), page_size )
+  );
+
+  return first_block_size;
 }
 
-
-uint32_t _Heap_Block_allocate(
-                              Heap_Control* the_heap ,
-                              Heap_Block* the_block ,
-                              uint32_t alloc_size
-                              )
+static void _Heap_Block_split(
+  Heap_Control *heap,
+  Heap_Block *block,
+  Heap_Block *free_list_anchor,
+  uintptr_t alloc_size
+)
 {
-    /* block size [in bytes] */
-    uint32_t const block_size = _Heap_Block_size(the_block);
+  Heap_Statistics *const stats = &heap->stats;
 
-    /* free space */
-    uint32_t const the_rest = block_size - alloc_size;
+  uintptr_t const page_size = heap->page_size;
+  uintptr_t const min_block_size = heap->min_block_size;
+  uintptr_t const min_alloc_size = min_block_size - HEAP_BLOCK_HEADER_SIZE;
 
+  uintptr_t const block_size = _Heap_Block_size( block );
 
-    /* assert if the block is aligned to the page_size */
-    _HAssert(_Heap_Is_aligned(block_size , the_heap->page_size));
+  uintptr_t const used_size =
+    _Heap_Max( alloc_size, min_alloc_size ) + HEAP_BLOCK_HEADER_SIZE;
+  uintptr_t const used_block_size = _Heap_Align_up( used_size, page_size );
 
-    /* assert if the allocated size is aligned to the page_size */
-    _HAssert(_Heap_Is_aligned(alloc_size , the_heap->page_size));
+  uintptr_t const free_size = block_size + HEAP_ALLOC_BONUS - used_size;
+  uintptr_t const free_size_limit = min_block_size + HEAP_ALLOC_BONUS;
 
-    /* assert if the allocated size is smaller than the block size */
-    _HAssert(alloc_size <= block_size);
+  Heap_Block *next_block = _Heap_Block_at( block, block_size );
 
-    /* assert if the heap previous block is being used */
-    _HAssert(_Heap_Is_prev_used(the_block));
+  _HAssert( used_size <= block_size + HEAP_ALLOC_BONUS );
+  _HAssert( used_size + free_size == block_size + HEAP_ALLOC_BONUS );
 
-    /* if the free space of the block is larger than the minimum block size */
-    if(the_rest >= the_heap->min_block_size)
-    {
-        /* then split the block so that upper part is still free, and
-         * lower part becomes used. This is slightly less optimal than leaving
-         * lower part free as it requires replacing block in the free blocks list,
-         * but it makes it possible to reuse this code in the _Heap_Resize_block(). */
-        Heap_Block *next_block = _Heap_Block_at(the_block , alloc_size);
-        _Heap_Block_replace(the_block , next_block);
-        the_block->size = alloc_size | HEAP_PREV_USED;
-        next_block->size = the_rest | HEAP_PREV_USED;
-        _Heap_Block_at(next_block , the_rest)->prev_size = the_rest;
+  if ( free_size >= free_size_limit ) {
+    Heap_Block *const free_block = _Heap_Block_at( block, used_block_size );
+    uintptr_t free_block_size = block_size - used_block_size;
+
+    _HAssert( used_block_size + free_block_size == block_size );
+
+    _Heap_Block_set_size( block, used_block_size );
+
+    /* Statistics */
+    stats->free_size += free_block_size;
+
+    if ( _Heap_Is_used( next_block ) ) {
+      _Heap_Free_list_insert_after( free_list_anchor, free_block );
+
+      /* Statistics */
+      ++stats->free_blocks;
+    } else {
+      uintptr_t const next_block_size = _Heap_Block_size( next_block );
+
+      _Heap_Free_list_replace( next_block, free_block );
+
+      free_block_size += next_block_size;
+
+      next_block = _Heap_Block_at( free_block, free_block_size );
     }
-    else
-    {
-        /* otherwise, don't split the block as remainder is either zero or too
-         * small to be used as a separate free block. Change 'alloc_size' to the
-         * size of the block and remove the block from the list of free blocks */
-        _Heap_Block_remove(the_block);
-        alloc_size = block_size;
-        _Heap_Block_at(the_block , alloc_size)->size |= HEAP_PREV_USED;
-    }
 
-    /* return the allocated size */
-    return alloc_size;
+    free_block->size_and_flag = free_block_size | HEAP_PREV_BLOCK_USED;
+
+    next_block->prev_size = free_block_size;
+    next_block->size_and_flag &= ~HEAP_PREV_BLOCK_USED;
+
+    _Heap_Protection_block_initialize( heap, free_block );
+  } else {
+    next_block->size_and_flag |= HEAP_PREV_BLOCK_USED;
+  }
 }
 
-/**  
- *  @}
- */
+static Heap_Block *_Heap_Block_allocate_from_begin(
+  Heap_Control *heap,
+  Heap_Block *block,
+  Heap_Block *free_list_anchor,
+  uintptr_t alloc_size
+)
+{
+  _Heap_Block_split( heap, block, free_list_anchor, alloc_size );
 
-/**
- *  @}
- */
+  return block;
+}
+
+static Heap_Block *_Heap_Block_allocate_from_end(
+  Heap_Control *heap,
+  Heap_Block *block,
+  Heap_Block *free_list_anchor,
+  uintptr_t alloc_begin,
+  uintptr_t alloc_size
+)
+{
+  Heap_Statistics *const stats = &heap->stats;
+
+  uintptr_t block_begin = (uintptr_t) block;
+  uintptr_t block_size = _Heap_Block_size( block );
+  uintptr_t block_end = block_begin + block_size;
+
+  Heap_Block *const new_block =
+    _Heap_Block_of_alloc_area( alloc_begin, heap->page_size );
+  uintptr_t const new_block_begin = (uintptr_t) new_block;
+  uintptr_t const new_block_size = block_end - new_block_begin;
+
+  block_end = new_block_begin;
+  block_size = block_end - block_begin;
+
+  _HAssert( block_size >= heap->min_block_size );
+  _HAssert( new_block_size >= heap->min_block_size );
+
+  /* Statistics */
+  stats->free_size += block_size;
+
+  if ( _Heap_Is_prev_used( block ) ) {
+    _Heap_Free_list_insert_after( free_list_anchor, block );
+
+    free_list_anchor = block;
+
+    /* Statistics */
+    ++stats->free_blocks;
+  } else {
+    Heap_Block *const prev_block = _Heap_Prev_block( block );
+    uintptr_t const prev_block_size = _Heap_Block_size( prev_block );
+
+    block = prev_block;
+    block_size += prev_block_size;
+  }
+
+  block->size_and_flag = block_size | HEAP_PREV_BLOCK_USED;
+
+  new_block->prev_size = block_size;
+  new_block->size_and_flag = new_block_size;
+
+  _Heap_Block_split( heap, new_block, free_list_anchor, alloc_size );
+
+  return new_block;
+}
+
+Heap_Block *_Heap_Block_allocate(
+  Heap_Control *heap,
+  Heap_Block *block,
+  uintptr_t alloc_begin,
+  uintptr_t alloc_size
+)
+{
+  Heap_Statistics *const stats = &heap->stats;
+
+  uintptr_t const alloc_area_begin = _Heap_Alloc_area_of_block( block );
+  uintptr_t const alloc_area_offset = alloc_begin - alloc_area_begin;
+
+  Heap_Block *free_list_anchor = NULL;
+
+  _HAssert( alloc_area_begin <= alloc_begin );
+
+  if ( _Heap_Is_free( block ) ) {
+    free_list_anchor = block->prev;
+
+    _Heap_Free_list_remove( block );
+
+    /* Statistics */
+    --stats->free_blocks;
+    ++stats->used_blocks;
+    stats->free_size -= _Heap_Block_size( block );
+  } else {
+    free_list_anchor = _Heap_Free_list_head( heap );
+  }
+
+  if ( alloc_area_offset < heap->page_size ) {
+    alloc_size += alloc_area_offset;
+
+    block = _Heap_Block_allocate_from_begin(
+      heap,
+      block,
+      free_list_anchor,
+      alloc_size
+    );
+  } else {
+    block = _Heap_Block_allocate_from_end(
+      heap,
+      block,
+      free_list_anchor,
+      alloc_begin,
+      alloc_size
+    );
+  }
+
+  /* Statistics */
+  if ( stats->min_free_size > stats->free_size ) {
+    stats->min_free_size = stats->free_size;
+  }
+
+  _Heap_Protection_block_initialize( heap, block );
+
+  return block;
+}

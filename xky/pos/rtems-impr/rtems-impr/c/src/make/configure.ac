@@ -1,29 +1,28 @@
 ## Process this file with autoconf to produce a configure script.
-## 
-## $Id: configure.ac 5659 2009-11-24 17:23:00Z jsousa $
 
-## 
+##
 ## This script configures the configuration files below make/
-## 
+##
 
-AC_PREREQ(2.60)
-AC_INIT([rtems-c-src-make],[_RTEMS_VERSION],[http://www.rtems.org/bugzilla])
+AC_PREREQ([2.69])
+AC_INIT([rtems-c-src-make],[_RTEMS_VERSION],[https://devel.rtems.org/newticket])
 AC_CONFIG_SRCDIR([bsp.cfg.in])
 RTEMS_TOP(../../..)
 AC_SUBST(RTEMS_TOPdir,../../..)
 
 RTEMS_CANONICAL_TARGET_CPU
 
-AM_INIT_AUTOMAKE([no-define foreign 1.10])
+AM_INIT_AUTOMAKE([no-define foreign 1.12.2])
 AM_MAINTAINER_MODE
 
+RTEMS_VERSIONING
 RTEMS_ENABLE_MULTIPROCESSING
+RTEMS_ENABLE_POSIX
 RTEMS_ENABLE_NETWORKING
 RTEMS_ENABLE_CXX
-RTEMS_ENABLE_BARE
+RTEMS_ENABLE_DRVMGR
 
 RTEMS_ENV_RTEMSBSP
-RTEMS_ENABLE_COVERAGE
 
 AC_PATH_PROG(CAT,cat)
 AC_PATH_PROG(CP,cp)
@@ -62,15 +61,15 @@ RTEMS_CHECK_CUSTOM_BSP(RTEMS_BSP)
 
 RTEMS_CHECK_MULTIPROCESSING(RTEMS_BSP)
 RTEMS_CHECK_NETWORKING(RTEMS_BSP)
+RTEMS_CHECK_POSIX_API(RTEMS_BSP)
 RTEMS_CHECK_CXX(RTEMS_BSP)
 
 AC_SUBST(rtems_cv_prog_cc_cross)
 AC_SUBST(RTEMS_HAS_CPLUSPLUS)
-AC_SUBST(BARE_CPU_CFLAGS)
-AC_SUBST(BARE_CPU_MODEL)
 AC_SUBST(program_prefix)
 AC_SUBST(CC_CFLAGS_DEFAULT)
 AC_SUBST(CC_CFLAGS_DEBUG_V)
+AC_SUBST(RTEMS_API,[_RTEMS_API])
 
 cfg_dir="${RTEMS_TOPdir}/make"
 AC_SUBST(cfg_dir)
@@ -80,9 +79,5 @@ AC_CONFIG_LINKS([leaf.cfg:leaf.cfg])
 
 # Explicitly list all Makefiles here
 AC_CONFIG_FILES([Makefile
-Makefile.inc
-host.cfg
-bsp.cfg
 ])
-AC_CONFIG_FILES([target.cfg])
 AC_OUTPUT

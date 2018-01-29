@@ -6,10 +6,8 @@
  *  CopyRight (C) 1999 valette@crf.canon.fr
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef LIBBSP_POWERPC_SHARED_MOTOROLA_MOTOROLA_H
@@ -62,7 +60,7 @@ typedef enum {
 
 extern prep_t 			checkPrepBoardType(RESIDUAL *res);
 extern prep_t 			currentPrepType;
-extern motorolaBoard		getMotorolaBoard();
+extern motorolaBoard		getMotorolaBoard(void);
 extern motorolaBoard		currentBoard;
 extern const char*		motorolaBoardToString(motorolaBoard);
 extern const struct _int_map    *motorolaIntMap(motorolaBoard board);

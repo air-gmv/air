@@ -8,12 +8,11 @@
  *
  *  July 2009: Joel Sherrill merged csb637 PHY differences from
  *             MicroMonitor 1.17.
- *
- *  $Id$
  */
 
 #include <rtems.h>
 #include <rtems/rtems_bsdnet.h>
+#include <rtems/bspIo.h>
 #include <at91rm9200.h>
 #include <at91rm9200_emac.h>
 #include <at91rm9200_gpio.h>
@@ -24,6 +23,7 @@
 
 #include <errno.h>
 #include <rtems/error.h>
+#include <assert.h>
 
 #include <sys/param.h>
 #include <sys/mbuf.h>
@@ -84,21 +84,8 @@
   /* RTEMS event used to start transmit daemon. */
   #define START_TRANSMIT_EVENT    RTEMS_EVENT_2
 
-static void at91rm9200_emac_isr (rtems_irq_hdl_param unused);
-static void at91rm9200_emac_isr_on(const rtems_irq_connect_data *unused);
-static void at91rm9200_emac_isr_off(const rtems_irq_connect_data *unused);
-static int at91rm9200_emac_isr_is_on(const rtems_irq_connect_data *irq);
-
-/* Replace the first value with the clock's interrupt name. */
-rtems_irq_connect_data at91rm9200_emac_isr_data = {
-    AT91RM9200_INT_EMAC,
-    at91rm9200_emac_isr,
-    NULL,
-    at91rm9200_emac_isr_on,
-    at91rm9200_emac_isr_off,
-    at91rm9200_emac_isr_is_on
-};
-
+static void at91rm9200_emac_isr (void *);
+static void at91rm9200_emac_isr_on(void);
 
 /* use the values defined in linkcmds for our use of SRAM */
 extern void * at91rm9200_emac_rxbuf_hdrs;
@@ -211,11 +198,11 @@ static int at91rm9200_emac_ioctl (struct ifnet *ifp,
                                   ioctl_command_t command,
                                   caddr_t data);
 
-
+#if csb637
 /*
  * phyread(): Read the PHY
  */
-uint32_t phyread(uint8_t reg)
+static uint32_t phyread(uint8_t reg)
 {
   EMAC_REG(EMAC_MAN) = (0x01 << 30  /* Start of Frame Delimiter */
             | 0x02 << 28            /* Operation, 0x01 = Write, 0x02 = Read */
@@ -236,11 +223,12 @@ uint32_t phyread(uint8_t reg)
 
   return EMAC_REG(EMAC_MAN) & 0xffff;
 }
+#endif
 
 /*
  * phywrite(): Write the PHY
  */
-void phywrite(uint8_t reg, uint16_t data)
+static void phywrite(uint8_t reg, uint16_t data)
 {
   EMAC_REG(EMAC_MAN) = (0x01 << 30 /* Start of Frame Delimiter */
              | 0x01 << 28          /* Operation, 0x01 = Write, 0x02 = Read */
@@ -360,6 +348,7 @@ void at91rm9200_emac_init(void *arg)
 {
     at91rm9200_emac_softc_t     *sc = arg;
     struct ifnet *ifp = &sc->arpcom.ac_if;
+    rtems_status_code status = RTEMS_SUCCESSFUL;
 
     /*
      *This is for stuff that only gets done once (at91rm9200_emac_init()
@@ -384,7 +373,15 @@ void at91rm9200_emac_init(void *arg)
     AIC_SMR_REG(AIC_SMR_EMAC) = AIC_SMR_PRIOR(EMAC_INT_PRIORITY);
 
     /* install the interrupt handler */
-    BSP_install_rtems_irq_handler(&at91rm9200_emac_isr_data);
+    status = rtems_interrupt_handler_install(
+        AT91RM9200_INT_EMAC,
+        "Network",
+        RTEMS_INTERRUPT_UNIQUE,
+        at91rm9200_emac_isr,
+        NULL
+    );
+    assert(status == RTEMS_SUCCESSFUL);
+    at91rm9200_emac_isr_on();
 
     /* EMAC doesn't support promiscuous, so ignore requests */
     if (ifp->if_flags & IFF_PROMISC) {
@@ -563,7 +560,7 @@ void at91rm9200_emac_start(struct ifnet *ifp)
 {
     at91rm9200_emac_softc_t *sc = ifp->if_softc;
 
-    rtems_event_send(sc->txDaemonTid, START_TRANSMIT_EVENT);
+    rtems_bsdnet_event_send(sc->txDaemonTid, START_TRANSMIT_EVENT);
     ifp->if_flags |= IFF_OACTIVE;
 }
 
@@ -769,7 +766,7 @@ void at91rm9200_emac_stats (at91rm9200_emac_softc_t *sc)
 
 
 /* Enables at91rm9200_emac interrupts. */
-static void at91rm9200_emac_isr_on(const rtems_irq_connect_data *unused)
+static void at91rm9200_emac_isr_on(void)
 {
     /* Enable various TX/RX interrupts */
     EMAC_REG(EMAC_IER) = (EMAC_INT_RCOM | /* Receive complete */
@@ -779,23 +776,6 @@ static void at91rm9200_emac_isr_on(const rtems_irq_connect_data *unused)
                           EMAC_INT_ABT);  /* Abort on DMA transfer */
 
     return;
-}
-
-/* Disables at91rm9200_emac interrupts */
-static void at91rm9200_emac_isr_off(const rtems_irq_connect_data *unused)
-{
-    /* disable all various TX/RX interrupts */
-    EMAC_REG(EMAC_IDR) = 0xffffffff;
-    return;
-}
-
-/* Tests to see if at91rm9200_emac interrupts are enabled, and
- * returns non-0 if so.
- * If interrupt is not enabled, returns 0.
- */
-static int at91rm9200_emac_isr_is_on(const rtems_irq_connect_data *irq)
-{
-    return EMAC_REG(EMAC_IMR); /* any interrupts enabled? */
 }
 
 /*  Driver ioctl handler */
@@ -847,7 +827,7 @@ at91rm9200_emac_ioctl (struct ifnet *ifp, ioctl_command_t command, caddr_t data)
 }
 
 /* interrupt handler */
-static void at91rm9200_emac_isr (rtems_irq_hdl_param unused)
+static void at91rm9200_emac_isr (void * unused)
 {
     unsigned long status32;
 
@@ -868,7 +848,7 @@ static void at91rm9200_emac_isr (rtems_irq_hdl_param unused)
                               EMAC_INT_RBNA |  /* Receive buf not available */
                               EMAC_INT_ROVR);  /* Receive overrun */
 
-        rtems_event_send (softc.rxDaemonTid, START_RECEIVE_EVENT);
+        rtems_bsdnet_event_send (softc.rxDaemonTid, START_RECEIVE_EVENT);
     }
 
     if (status32 & EMAC_INT_TCOM) {      /* Transmit buffer register empty */
@@ -876,7 +856,7 @@ static void at91rm9200_emac_isr (rtems_irq_hdl_param unused)
         /* disable the TX interrupts */
         EMAC_REG(EMAC_IDR) = EMAC_INT_TCOM;
 
-        rtems_event_send (softc.txDaemonTid, START_TRANSMIT_EVENT);
+        rtems_bsdnet_event_send (softc.txDaemonTid, START_TRANSMIT_EVENT);
     }
 }
 

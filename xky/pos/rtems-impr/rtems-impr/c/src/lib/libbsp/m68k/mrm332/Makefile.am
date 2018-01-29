@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -26,18 +22,19 @@ noinst_LIBRARIES = libbspstart.a
 libbspstart_a_SOURCES = start/start.S
 project_lib_DATA = start.$(OBJEXT)
 
-dist_project_lib_DATA += startup/linkcmds startup/linkcmds_ROM
+dist_project_lib_DATA += startup/linkcmds
 
 noinst_LIBRARIES += libbsp.a
 libbsp_a_SOURCES =
 
 # startup
-libbsp_a_SOURCES += startup/start_c.c ../../shared/bsplibc.c \
-    ../../shared/bsppost.c ../../shared/bspstart.c startup/bsppredriverhook.c \
-    ../../shared/bspclean.c ../../shared/bootcard.c ../../shared/sbrk.c \
-    ../../m68k/shared/setvec.c ../../shared/bsppretaskinghook.c \
-    ../../shared/bspgetworkarea.c ../../shared/gnatinstallhandler.c \
-    startup/except_vect_332_ROM.S
+libbsp_a_SOURCES += startup/start_c.c \
+    ../../shared/bspstart.c startup/bsppredriverhook.c \
+    ../../shared/bootcard.c ../../shared/sbrk.c \
+    ../../shared/getentropy-cpucounter.c \
+    ../../shared/bspclean.c \
+    ../../shared/setvec.c \
+    ../../shared/bspgetworkarea.c ../../shared/gnatinstallhandler.c 
 # clock
 libbsp_a_SOURCES += clock/ckinit.c
 # console

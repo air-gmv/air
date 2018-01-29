@@ -12,14 +12,23 @@
  *                     Canon Centre Recherche France.
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- * $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-#include <libcpu/cpu.h>
+#include <rtems/score/cpu.h>
 #include <bsp/irq.h>
+#include <bsp/tblsizes.h>
+
+/*
+ * This locking is not enough if IDT is changed at runtime
+ * and entry can be changed for vector which is enabled
+ * at change time. But such use is broken anyway.
+ * Protect code only against concurrent changes.
+ * Even that is probably unnecessary if different
+ * entries are changed concurrently.
+ */
+RTEMS_INTERRUPT_LOCK_DEFINE( static, rtems_idt_access_lock, "rtems_idt_access_lock" );
 
 static rtems_raw_irq_connect_data* 	raw_irq_table;
 static rtems_raw_irq_connect_data  	default_raw_irq_entry;
@@ -62,7 +71,7 @@ int i386_set_idt_entry  (const rtems_raw_irq_connect_data* irq)
 {
     interrupt_gate_descriptor* 	idt_entry_tbl;
     unsigned			limit;
-    rtems_interrupt_level       level;
+    rtems_interrupt_lock_context lock_context;
 
     i386_get_info_from_IDTR (&idt_entry_tbl, &limit);
 
@@ -83,14 +92,14 @@ int i386_set_idt_entry  (const rtems_raw_irq_connect_data* irq)
       return 0;
     }
 
-    rtems_interrupt_disable(level);
+    rtems_interrupt_lock_acquire(&rtems_idt_access_lock, &lock_context);
 
     raw_irq_table [irq->idtIndex] = *irq;
     create_interrupt_gate_descriptor (&idt_entry_tbl[irq->idtIndex], irq->hdl);
     if (irq->on)
       irq->on(irq);
 
-    rtems_interrupt_enable(level);
+    rtems_interrupt_lock_release(&rtems_idt_access_lock, &lock_context);
     return 1;
 }
 
@@ -101,7 +110,7 @@ void _CPU_ISR_install_vector (uint32_t vector,
     interrupt_gate_descriptor* 	idt_entry_tbl;
     unsigned			limit;
     interrupt_gate_descriptor	new;
-    rtems_interrupt_level       level;
+    rtems_interrupt_lock_context lock_context;
 
     i386_get_info_from_IDTR (&idt_entry_tbl, &limit);
 
@@ -111,14 +120,14 @@ void _CPU_ISR_install_vector (uint32_t vector,
     if (vector >= limit) {
       return;
     }
-    rtems_interrupt_disable(level);
+    rtems_interrupt_lock_acquire(&rtems_idt_access_lock, &lock_context);
     * ((unsigned int *) oldHdl) = idt_entry_tbl[vector].low_offsets_bits |
 	(idt_entry_tbl[vector].high_offsets_bits << 16);
 
     create_interrupt_gate_descriptor(&new,  hdl);
     idt_entry_tbl[vector] = new;
 
-    rtems_interrupt_enable(level);
+    rtems_interrupt_lock_release(&rtems_idt_access_lock, &lock_context);
 }
 
 int i386_get_current_idt_entry (rtems_raw_irq_connect_data* irq)
@@ -145,7 +154,7 @@ int i386_delete_idt_entry (const rtems_raw_irq_connect_data* irq)
 {
     interrupt_gate_descriptor* 	idt_entry_tbl;
     unsigned			limit;
-    rtems_interrupt_level       level;
+    rtems_interrupt_lock_context lock_context;
 
     i386_get_info_from_IDTR (&idt_entry_tbl, &limit);
 
@@ -165,7 +174,7 @@ int i386_delete_idt_entry (const rtems_raw_irq_connect_data* irq)
     if (get_hdl_from_vector(irq->idtIndex) != irq->hdl){
       return 0;
     }
-    rtems_interrupt_disable(level);
+    rtems_interrupt_lock_acquire(&rtems_idt_access_lock, &lock_context);
 
     idt_entry_tbl[irq->idtIndex] = default_idt_entry;
 
@@ -175,7 +184,7 @@ int i386_delete_idt_entry (const rtems_raw_irq_connect_data* irq)
     raw_irq_table[irq->idtIndex] = default_raw_irq_entry;
     raw_irq_table[irq->idtIndex].idtIndex = irq->idtIndex;
 
-    rtems_interrupt_enable(level);
+    rtems_interrupt_lock_release(&rtems_idt_access_lock, &lock_context);
 
     return 1;
 }
@@ -187,7 +196,7 @@ int i386_init_idt (rtems_raw_irq_global_settings* config)
 {
     unsigned			limit;
     unsigned 			i;
-    rtems_interrupt_level       level;
+    rtems_interrupt_lock_context lock_context;
     interrupt_gate_descriptor*	idt_entry_tbl;
 
     i386_get_info_from_IDTR (&idt_entry_tbl, &limit);
@@ -205,7 +214,7 @@ int i386_init_idt (rtems_raw_irq_global_settings* config)
     local_settings 		= config;
     default_raw_irq_entry 	= config->defaultRawEntry;
 
-    rtems_interrupt_disable(level);
+    rtems_interrupt_lock_acquire(&rtems_idt_access_lock, &lock_context);
 
     create_interrupt_gate_descriptor (&default_idt_entry, default_raw_irq_entry.hdl);
 
@@ -220,7 +229,7 @@ int i386_init_idt (rtems_raw_irq_global_settings* config)
 	raw_irq_table[i].off(&raw_irq_table[i]);
       }
     }
-    rtems_interrupt_enable(level);
+    rtems_interrupt_lock_release(&rtems_idt_access_lock, &lock_context);
 
     return 1;
 }
@@ -231,58 +240,142 @@ int i386_get_idt_config (rtems_raw_irq_global_settings** config)
   return 1;
 }
 
-/*
- * Caution this function assumes the GDTR has been already set.
- */
-int i386_set_gdt_entry (unsigned short segment_selector, unsigned base,
-			unsigned limit)
+uint32_t i386_raw_gdt_entry (uint16_t segment_selector_index,
+                             segment_descriptors* sd)
 {
-    unsigned 			gdt_limit;
-    unsigned short              tmp_segment = 0;
-    unsigned int                limit_adjusted;
-    segment_descriptors* 	gdt_entry_tbl;
+    uint16_t                gdt_limit;
+    uint16_t                tmp_segment = 0;
+    segment_descriptors*    gdt_entry_tbl;
+    uint8_t                 present;
 
     i386_get_info_from_GDTR (&gdt_entry_tbl, &gdt_limit);
 
-    if (segment_selector > limit) {
+    if (segment_selector_index >= (gdt_limit+1)/8) {
+      /* index to GDT table out of bounds */
       return 0;
     }
-    /*
-     * set up limit first
-     */
-    limit_adjusted = limit;
-    if ( limit > 4095 ) {
-      gdt_entry_tbl[segment_selector].granularity = 1;
-      limit_adjusted /= 4096;
+    if (segment_selector_index == 0) {
+      /* index 0 is not usable */
+      return 0;
     }
-    gdt_entry_tbl[segment_selector].limit_15_0  = limit_adjusted & 0xffff;
-    gdt_entry_tbl[segment_selector].limit_19_16 = (limit_adjusted >> 16) & 0xf;
-    /*
-     * set up base
-     */
-    gdt_entry_tbl[segment_selector].base_address_15_0  = base & 0xffff;
-    gdt_entry_tbl[segment_selector].base_address_23_16 = (base >> 16) & 0xff;
-    gdt_entry_tbl[segment_selector].base_address_31_24 = (base >> 24) & 0xff;
-    /*
-     * set up descriptor type (this may well becomes a parameter if needed)
-     */
-    gdt_entry_tbl[segment_selector].type 		= 2;   	/* Data R/W */
-    gdt_entry_tbl[segment_selector].descriptor_type 	= 1;	/* Code or Data */
-    gdt_entry_tbl[segment_selector].privilege 		= 0; 	/* ring 0 */
-    gdt_entry_tbl[segment_selector].present 		= 1; 	/* not present */
 
+    /* put prepared descriptor into the GDT */
+    present = sd->present;
+    sd->present = 0;
+    gdt_entry_tbl[segment_selector_index].present = 0;
+    RTEMS_COMPILER_MEMORY_BARRIER();
+    gdt_entry_tbl[segment_selector_index] = *sd;
+    RTEMS_COMPILER_MEMORY_BARRIER();
+    gdt_entry_tbl[segment_selector_index].present = present;
+    sd->present = present;
     /*
-     * Now, reload all segment registers so the limit takes effect.
+     * Now, reload all segment registers so that the possible changes takes effect.
      */
-
-    asm volatile( "movw %%ds,%0 ; movw %0,%%ds\n\t"
+    __asm__ volatile( "movw %%ds,%0 ; movw %0,%%ds\n\t"
                   "movw %%es,%0 ; movw %0,%%es\n\t"
                   "movw %%fs,%0 ; movw %0,%%fs\n\t"
                   "movw %%gs,%0 ; movw %0,%%gs\n\t"
                   "movw %%ss,%0 ; movw %0,%%ss"
                    : "=r" (tmp_segment)
                    : "0"  (tmp_segment)
-		  );
-
+                 );
     return 1;
+}
+
+void i386_fill_segment_desc_base(uint32_t base,
+                                 segment_descriptors* sd)
+{
+    sd->base_address_15_0  = base & 0xffff;
+    sd->base_address_23_16 = (base >> 16) & 0xff;
+    sd->base_address_31_24 = (base >> 24) & 0xff;
+}
+
+void i386_fill_segment_desc_limit(uint32_t limit,
+                                  segment_descriptors* sd)
+{
+    sd->granularity = 0;
+    if (limit > 65535) {
+      sd->granularity = 1;
+      limit /= 4096;
+    }
+    sd->limit_15_0  = limit & 0xffff;
+    sd->limit_19_16 = (limit >> 16) & 0xf;
+}
+
+/*
+ * Caution this function assumes the GDTR has been already set.
+ */
+uint32_t i386_set_gdt_entry (uint16_t segment_selector_index, uint32_t base,
+                             uint32_t limit)
+{
+    segment_descriptors     gdt_entry;
+    memset(&gdt_entry, 0, sizeof(gdt_entry));
+
+    i386_fill_segment_desc_limit(limit, &gdt_entry);
+    i386_fill_segment_desc_base(base, &gdt_entry);
+    /*
+     * set up descriptor type (this may well becomes a parameter if needed)
+     */
+    gdt_entry.type              = 2;    /* Data R/W */
+    gdt_entry.descriptor_type   = 1;    /* Code or Data */
+    gdt_entry.privilege         = 0;    /* ring 0 */
+    gdt_entry.present           = 1;    /* not present */
+
+    /*
+     * Now, reload all segment registers so the limit takes effect.
+     */
+    return i386_raw_gdt_entry(segment_selector_index, &gdt_entry);
+}
+
+uint16_t i386_next_empty_gdt_entry ()
+{
+    uint16_t                gdt_limit;
+    segment_descriptors*    gdt_entry_tbl;
+    /* initial amount of filled descriptors */
+    static uint16_t         segment_selector_index = NUM_SYSTEM_GDT_DESCRIPTORS - 1;
+
+    segment_selector_index += 1;
+    i386_get_info_from_GDTR (&gdt_entry_tbl, &gdt_limit);
+    if (segment_selector_index >= (gdt_limit+1)/8) {
+      return 0;
+    }
+    return segment_selector_index;
+}
+
+uint16_t i386_cpy_gdt_entry(uint16_t segment_selector_index,
+                            segment_descriptors* struct_to_fill)
+{
+    uint16_t                gdt_limit;
+    segment_descriptors*    gdt_entry_tbl;
+
+    i386_get_info_from_GDTR (&gdt_entry_tbl, &gdt_limit);
+
+    if (segment_selector_index >= (gdt_limit+1)/8) {
+      return 0;
+    }
+
+    *struct_to_fill = gdt_entry_tbl[segment_selector_index];
+    return segment_selector_index;
+}
+
+segment_descriptors* i386_get_gdt_entry(uint16_t segment_selector_index)
+{
+    uint16_t                gdt_limit;
+    segment_descriptors*    gdt_entry_tbl;
+
+    i386_get_info_from_GDTR (&gdt_entry_tbl, &gdt_limit);
+
+    if (segment_selector_index >= (gdt_limit+1)/8) {
+      return 0;
+    }
+    return &gdt_entry_tbl[segment_selector_index];
+}
+
+uint32_t i386_limit_gdt_entry(segment_descriptors* gdt_entry)
+{
+    uint32_t lim = (gdt_entry->limit_15_0 + (gdt_entry->limit_19_16<<16));
+    if (gdt_entry->granularity) {
+      return lim*4096+4095;
+    }
+    return lim;
 }

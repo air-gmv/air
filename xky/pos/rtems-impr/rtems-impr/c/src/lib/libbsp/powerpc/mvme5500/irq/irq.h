@@ -12,8 +12,8 @@
  *  the STREAM API Specification Document link.
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  *
  * Copyright 2004, 2005 Brookhaven National Laboratory and
  *                 Shuchen Kate Feng <feng1@bnl.gov>
@@ -22,8 +22,6 @@
  *    - Discovery GT64260 interrupt controller instead of 8259.
  *    - Added support for software IRQ priority levels.
  *    - modified to optimize the IRQ latency and handling
- *
- *  $Id$
  */
 
 #ifndef LIBBSP_POWERPC_MVME5500_IRQ_IRQ_H

@@ -10,14 +10,13 @@
 /*             i.e. only one bit is on for each enum                          */
 /* Reserved fields must be filled with zeros.                                */
 
-/*
- * $Id$
- */
 
 #ifndef _RESIDUAL_
 #define _RESIDUAL_
 
 #ifndef ASM
+
+#include <stdint.h>
 
 #define MAX_CPUS 32                     /* These should be set to the maximum */
 #define MAX_MEMS 64                     /* number possible for this system.   */
@@ -63,6 +62,7 @@ typedef enum _FIRMWARE_SUPPLIERS {
   MotoFirmware = 0x01,                  /* 7/18/95                            */
   FirmWorks = 0x02,                     /* 10/5/95                            */
   Bull = 0x03,                          /* 04/03/96                           */
+  QEMU = ('q'<<24) | ('e'<<16) | ('m'<<8) | ('u'<<0),
   } FIRMWARE_SUPPLIERS;
 
 typedef enum _ENDIAN_SWITCH_METHODS {
@@ -321,6 +321,12 @@ typedef struct _RESIDUAL {
 #define NULL	0
 #endif
 
+static inline int
+residual_fw_is_qemu(RESIDUAL *r)
+{
+	return QEMU == r->VitalProductData.FirmwareSupplier;
+}
+
 extern RESIDUAL residualCopy;
 
 extern void print_residual_device_info(void);
@@ -341,5 +347,10 @@ extern PnP_TAG_PACKET *PnP_find_small_vendor_packet(unsigned char *p,
 extern PnP_TAG_PACKET *PnP_find_large_vendor_packet(unsigned char *p,
 						    unsigned packet_type,
 						    int n);
+/*
+ * Prototypes for methods called only from .S for dependency tracking
+ */
+uint32_t res_copy(void);
+
 #endif /* ASM */
 #endif  /* ndef _RESIDUAL_ */

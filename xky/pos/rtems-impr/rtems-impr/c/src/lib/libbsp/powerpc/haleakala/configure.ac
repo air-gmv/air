@@ -1,14 +1,12 @@
 dnl Process this file with autoconf to produce a configure script.
-dnl
-dnl $Id$
 
-AC_PREREQ([2.68])
-AC_INIT([rtems-c-src-lib-libbsp-powerpc-haleakala],[_RTEMS_VERSION],[rtems-bugs@rtems.com])
+AC_PREREQ([2.69])
+AC_INIT([rtems-c-src-lib-libbsp-powerpc-haleakala],[_RTEMS_VERSION],[https://devel.rtems.org/newticket])
 AC_CONFIG_SRCDIR([bsp_specs])
 RTEMS_TOP(../../../../../..)
 
 RTEMS_CANONICAL_TARGET_CPU
-AM_INIT_AUTOMAKE([no-define nostdinc foreign 1.11.1])
+AM_INIT_AUTOMAKE([no-define nostdinc foreign 1.12.2])
 RTEMS_BSP_CONFIGURE
 
 RTEMS_PROG_CC_FOR_TARGET
@@ -16,7 +14,6 @@ RTEMS_CANONICALIZE_TOOLS
 RTEMS_PROG_CCAS
 
 RTEMS_CHECK_NETWORKING
-
 AM_CONDITIONAL(HAS_NETWORKING,test "$HAS_NETWORKING" = "yes")
 
 RTEMS_BSPOPTS_SET([PPC_USE_SPRG],[*],[1])

@@ -11,9 +11,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/rtems/license.html.
- *
- *  pci.c,v 1.2 2002/05/14 17:10:16 joel Exp
+ *  http://www.rtems.org/rtems/license.html.
  *
  *  Copyright 2004, 2008 Brookhaven National Laboratory and
  *                  Shuchen K. Feng, <feng1@bnl.gov>
@@ -35,6 +33,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
 
 #define PCI_DEBUG 0
 #define PCI_PRINT 1
@@ -54,8 +53,6 @@
 #define PCI1_CONFIG_DATA	        0xc7c
 #endif
 
-#define PCI_INVALID_VENDORDEVICEID	0xffffffff
-#define PCI_MULTI_FUNCTION		0x80
 #define HOSTBRIDGET_ERROR               0xf0000000
 
 #define GT64x60_PCI_CONFIG_ADDR         GT64x60_REG_BASE + PCI_CONFIG_ADDR
@@ -75,8 +72,6 @@ static rtems_pci_config_t BSP_pci[2]={
    (volatile unsigned char*) (GT64x60_PCI1_CONFIG_DATA),
    0 /* defined at BSP_pci_configuration */}
 };
-
-extern void pci_interface(void);
 
 /* Pack RegNum,FuncNum,DevNum,BusNum,and ConfigEnable for
  * PCI Configuration Address Register
@@ -108,7 +103,7 @@ unsigned char offset, uint8_t *val)
     BSP_pci[n].config_data,pciConfigPack(bus,dev,func,offset));
 #endif
 
-  out_be32((volatile unsigned int *) BSP_pci[n].pci_config_addr, pciConfigPack(bus,dev,func,offset));
+  out_be32((volatile uint32_t *) BSP_pci[n].pci_config_addr, pciConfigPack(bus,dev,func,offset));
   *val = in_8(BSP_pci[n].pci_config_data + (offset&3));
   return PCIBIOS_SUCCESSFUL;
 }
@@ -129,8 +124,8 @@ unsigned char func, unsigned char offset, uint16_t *val)
   printk("addr %x, data %x, pack %x \n", config_addr,
     config_data,pciConfigPack(bus,dev,func,offset));
 #endif
-  out_be32((volatile unsigned int *) BSP_pci[n].pci_config_addr, pciConfigPack(bus,dev,func,offset));
-  *val = in_le16((volatile unsigned short *) (BSP_pci[n].pci_config_data + (offset&2)));
+  out_be32((volatile uint32_t *) BSP_pci[n].pci_config_addr, pciConfigPack(bus,dev,func,offset));
+  *val = in_le16((volatile uint16_t *) (BSP_pci[n].pci_config_data + (offset&2)));
   return PCIBIOS_SUCCESSFUL;
 }
 
@@ -147,8 +142,8 @@ unsigned char func, unsigned char offset, uint32_t *val)
   *val = 0xffffffff;
   if ((offset&3)|| (offset & ~0xff)) return PCIBIOS_BAD_REGISTER_NUMBER;
 
-  out_be32((volatile unsigned int *)BSP_pci[n].pci_config_addr, pciConfigPack(bus,dev,func,offset));
-  *val = in_le32((volatile unsigned int *)BSP_pci[n].pci_config_data);
+  out_be32((volatile uint32_t *)BSP_pci[n].pci_config_addr, pciConfigPack(bus,dev,func,offset));
+  *val = in_le32((volatile uint32_t *)BSP_pci[n].pci_config_data);
   return PCIBIOS_SUCCESSFUL;
 }
 
@@ -163,8 +158,8 @@ static int indirect_pci_write_config_byte(unsigned char bus, unsigned char dev,u
 
   if (offset & ~0xff) return PCIBIOS_BAD_REGISTER_NUMBER;
 
-  out_be32((volatile unsigned int *)BSP_pci[n].pci_config_addr, pciConfigPack(bus,dev,func,offset));
-  out_8((volatile unsigned char *) (BSP_pci[n].pci_config_data + (offset&3)), val);
+  out_be32((volatile uint32_t *)BSP_pci[n].pci_config_addr, pciConfigPack(bus,dev,func,offset));
+  out_8((volatile uint8_t *) (BSP_pci[n].pci_config_data + (offset&3)), val);
   return PCIBIOS_SUCCESSFUL;
 }
 
@@ -179,8 +174,8 @@ static int indirect_pci_write_config_word(unsigned char bus, unsigned char dev,u
 
   if ((offset&1)|| (offset & ~0xff)) return PCIBIOS_BAD_REGISTER_NUMBER;
 
-  out_be32((volatile unsigned int *)BSP_pci[n].pci_config_addr, pciConfigPack(bus,dev,func,offset));
-  out_le16((volatile unsigned short *)(BSP_pci[n].pci_config_data + (offset&3)), val);
+  out_be32((volatile uint32_t *)BSP_pci[n].pci_config_addr, pciConfigPack(bus,dev,func,offset));
+  out_le16((volatile uint16_t *)(BSP_pci[n].pci_config_data + (offset&3)), val);
   return PCIBIOS_SUCCESSFUL;
 }
 
@@ -195,8 +190,8 @@ static int indirect_pci_write_config_dword(unsigned char bus,unsigned char dev,u
 
   if ((offset&3)|| (offset & ~0xff)) return PCIBIOS_BAD_REGISTER_NUMBER;
 
-  out_be32((volatile unsigned int *)BSP_pci[n].pci_config_addr, pciConfigPack(bus,dev,func,offset));
-  out_le32((volatile unsigned int *)BSP_pci[n].pci_config_data, val);
+  out_be32((volatile uint32_t *)BSP_pci[n].pci_config_addr, pciConfigPack(bus,dev,func,offset));
+  out_le32((volatile uint32_t *)BSP_pci[n].pci_config_data, val);
   return PCIBIOS_SUCCESSFUL;
 }
 
@@ -300,7 +295,7 @@ int pci_initialize(void)
 	  break;
        default :
 #if PCI_PRINT
-          printk("BSP unlisted vendor, Bus%d Slot%d DeviceID 0x%x \n",
+          printk("BSP unlisted vendor, Bus%d Slot%d DeviceID 0x%" PRIx32 "\n",
              ucBusNumber,ucSlotNumber, ulDeviceID);
 #endif
 	  /* Kate Feng : device not supported by BSP needs to remap the IRQ line on mvme5500/mvme6100 */
@@ -367,7 +362,7 @@ int pci_initialize(void)
 			  0,
 			  PCI_CACHE_LINE_SIZE,
 			  &ulHeader);
-      if ((ulHeader>>16)&PCI_MULTI_FUNCTION)
+      if ((ulHeader>>16)&PCI_HEADER_TYPE_MULTI_FUNCTION)
          ucNumFuncs=PCI_MAX_FUNCTIONS;
       else
          ucNumFuncs=1;
@@ -411,7 +406,7 @@ int pci_initialize(void)
   return(0);
 }
 
-void FixupPCI( struct _int_map *bspmap, int (*swizzler)(int,int) )
+void FixupPCI( const struct _int_map *bspmap, int (*swizzler)(int,int) )
 {
 }
 

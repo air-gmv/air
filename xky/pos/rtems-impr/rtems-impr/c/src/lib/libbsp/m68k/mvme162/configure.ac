@@ -1,14 +1,12 @@
 ## Process this file with autoconf to produce a configure script.
-##
-## $Id$
 
-AC_PREREQ([2.68])
-AC_INIT([rtems-c-src-lib-libbsp-m68k-mvme162],[_RTEMS_VERSION],[http://www.rtems.org/bugzilla])
+AC_PREREQ([2.69])
+AC_INIT([rtems-c-src-lib-libbsp-m68k-mvme162],[_RTEMS_VERSION],[https://devel.rtems.org/newticket])
 AC_CONFIG_SRCDIR([bsp_specs])
 RTEMS_TOP(../../../../../..)
 
 RTEMS_CANONICAL_TARGET_CPU
-AM_INIT_AUTOMAKE([no-define nostdinc foreign 1.11.1])
+AM_INIT_AUTOMAKE([no-define nostdinc foreign 1.12.2])
 RTEMS_BSP_CONFIGURE
 
 RTEMS_PROG_CC_FOR_TARGET
@@ -16,8 +14,6 @@ RTEMS_CANONICALIZE_TOOLS
 RTEMS_PROG_CCAS
 
 RTEMS_CHECK_NETWORKING
-
-## RTEMS_CONFIG_BUILD_SUBDIRS(tools)
 
 AM_CONDITIONAL([HAS_NETWORKING],test "$HAS_NETWORKING" = "yes")
 AM_CONDITIONAL([HAS_FPSP],[test "$RTEMS_CPU_MODEL" = "m68040"])

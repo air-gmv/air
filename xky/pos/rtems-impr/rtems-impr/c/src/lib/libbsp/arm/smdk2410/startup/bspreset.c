@@ -3,12 +3,11 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>
+#include <bsp/bootcard.h>
 
 void bsp_reset(void)
 {
@@ -17,11 +16,16 @@ void bsp_reset(void)
 
   SKYEYE_MAGIC_ADDRESS = 0xff;
 #else
-  /* XXX TODO this code is copied from gp32.. move it to a shared place */
+  /* TODO: This code was initially copied from the gp32 BSP. That BSP has
+   * been obsoleted and removed but this code may still benefit from being
+   * in a shared place.
+   */
   rtems_interrupt_level level;
+
+  (void) level;
   rtems_interrupt_disable(level);
   /* disable mmu, invalide i-cache and call swi #4 */
-  asm volatile(""
+  __asm__ volatile(""
     "mrc    p15,0,r0,c1,c0,0  \n"
     "bic    r0,r0,#1          \n"
     "mcr    p15,0,r0,c1,c0,0  \n"

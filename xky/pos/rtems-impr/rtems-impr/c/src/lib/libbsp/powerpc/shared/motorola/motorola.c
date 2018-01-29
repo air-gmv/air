@@ -6,10 +6,8 @@
  *  Copyright (C) 1999 valette@crf.canon.fr
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>
@@ -66,6 +64,15 @@
 
 #define NULL_PINMAP     {-1,{-1,-1,-1,-1}}
 #define NULL_INTMAP     {-1,-1,-1,{}}
+
+#ifdef qemu
+static struct _int_map qemu_prep_intmap[] = {
+    { 0, -1, 0, { { 1, { 9, -1, -1, -1}},
+                  { 2, {11, -1  -1, -1}},
+                  NULL_PINMAP }},
+	NULL_INTMAP
+};
+#endif
 
 static struct _int_map mcp750_intmap[] = {
 
@@ -308,7 +315,11 @@ static const mot_info_t mot_boards[] = {
   {0x050, 0x00, PPC_UNKNOWN, "Omaha (PowerStack II Pro3000)", NULL, NULL},
   {0x060, 0x00, PPC_UNKNOWN, "Utah (Powerstack II Pro4000)", NULL, NULL},
   {0x0A0, 0x00, PPC_UNKNOWN, "Powerstack (Series EX)", NULL, NULL},
+#ifdef qemu
+  {0x1E0, 0xE0, PPC_UNKNOWN, "QEMU", qemu_prep_intmap, prep_pci_swizzle},
+#else
   {0x1E0, 0xE0, PPC_UNKNOWN, "Mesquite cPCI (MCP750)", mcp750_intmap, prep_pci_swizzle},
+#endif
   {0x1E0, 0xE1, PPC_UNKNOWN, "Sitka cPCI (MCPN750)", mcp750_intmap, prep_pci_swizzle},
   {0x1E0, 0xE2, PPC_UNKNOWN, "Mesquite cPCI (MCP750) w/ HAC", mcp750_intmap, prep_pci_swizzle},
   {0x1E0, 0xF6, PPC_UNKNOWN, "MTX Plus", NULL, NULL},

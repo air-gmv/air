@@ -44,7 +44,6 @@
 
 /* #include <sys/queue.h> */
 
-#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/sockio.h>             /* SIOCADDMULTI, SIOC...     */
 #include <net/if.h>
@@ -191,7 +190,7 @@ static void GT64260eth_isr(void)
 
 
   }
-  rtems_event_send(sc->daemonTid, events);
+  rtems_bsdnet_event_send(sc->daemonTid, events);
 }
 
 static rtems_irq_connect_data GT64260ethIrqData={
@@ -291,7 +290,7 @@ static void GT64260eth_stop(struct GTeth_softc *sc)
   /* kill the daemon. We also must release the networking
    * semaphore or there'll be a deadlock...
    */
-  rtems_event_send(sc->daemonTid, KILL_EVENT);
+  rtems_bsdnet_event_send(sc->daemonTid, KILL_EVENT);
   rtems_bsdnet_semaphore_release();
 
   sc->daemonTid=0;
@@ -615,7 +614,7 @@ static void GTeth_ifstart(struct ifnet *ifp)
   }
 
   ifp->if_flags |= IFF_OACTIVE;
-  rtems_event_send (sc->daemonTid, START_TRANSMIT_EVENT);
+  rtems_bsdnet_event_send (sc->daemonTid, START_TRANSMIT_EVENT);
 #ifdef GT_DEBUG
   printk(")\n");
 #endif
@@ -899,8 +898,6 @@ static int txq_high_limit(struct GTeth_softc *sc)
   return 0;
 }
 #endif
-
-#define MAX(a,b) (((a) > (b)) ? (a) : (b))
 
 static int GT64260eth_sendpacket(struct GTeth_softc *sc,struct mbuf *m)
 {

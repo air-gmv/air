@@ -17,18 +17,18 @@
 #ifndef __ATOMIC_H__
 #define __ATOMIC_H__
 
-#include <xky_arch.h>
+#include <air_arch.h>
 
 /**
  * @brief SPARC atomic integer
  */
 typedef struct { volatile int value; } atomic_t;
 
-extern xky_i32_t sparc_atomic_add(xky_i32_t i, atomic_t *v);
-extern xky_i32_t sparc_atomic_swap(xky_i32_t i, atomic_t *v);
-extern xky_i32_t sparc_atomic_or(xky_i32_t i, atomic_t *v);
-extern xky_i32_t sparc_atomic_and(xky_i32_t i, atomic_t *v);
-extern xky_i32_t sparc_atomic_xor(xky_i32_t i, atomic_t *v);
+extern air_i32_t sparc_atomic_add(air_i32_t i, atomic_t *v);
+extern air_i32_t sparc_atomic_swap(air_i32_t i, atomic_t *v);
+extern air_i32_t sparc_atomic_or(air_i32_t i, atomic_t *v);
+extern air_i32_t sparc_atomic_and(air_i32_t i, atomic_t *v);
+extern air_i32_t sparc_atomic_xor(air_i32_t i, atomic_t *v);
 
 #define atomic_set(i, v)                ((void)sparc_atomic_swap((int)(i), (v)))
 #define atomic_swap(i, v)               (sparc_atomic_swap((int)(i), (v)))

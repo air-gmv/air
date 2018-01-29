@@ -31,13 +31,13 @@
  */
 typedef struct {
 
-    xky_u32_t max_message_size;
-    xky_u32_t max_nb_message;
-    xky_u32_t discipline;
+    air_u32_t max_message_size;
+    air_u32_t max_nb_message;
+    air_u32_t discipline;
 
     pmk_message_slot_t *queue;
-    xky_u32_t first;
-    xky_u32_t last;
+    air_u32_t first;
+    air_u32_t last;
     atomic_t count;
     atomic_t overflowed;
     atomic_t reading;
@@ -57,8 +57,8 @@ void pmk_queuing_channel_init(pmk_channel_t *channel);
  * @param usr_config User supplied configuration
  * @return 0 if valid, 1 otherwise
  */
-xky_u32_t pmk_queuing_port_check_configuration(
-        pmk_port_t *port, xky_queuing_port_status_t *usr_config);
+air_u32_t pmk_queuing_port_check_configuration(
+        pmk_port_t *port, air_queuing_port_status_t *usr_config);
 
 /**
  * @brief Handle a get status from a queuing port
@@ -70,9 +70,9 @@ xky_u32_t pmk_queuing_port_check_configuration(
  *       operations, this pointer is in partition space and must be checked
  *       before using
  */
-xky_status_code_e pmk_queuing_port_get_status(
+air_status_code_e pmk_queuing_port_get_status(
         core_context_t *context, pmk_port_t *port,
-        xky_queuing_port_status_t *status);
+        air_queuing_port_status_t *status);
 
 /**
  * @brief Handle an read operation from a queuing port
@@ -86,10 +86,10 @@ xky_status_code_e pmk_queuing_port_get_status(
  *       operations (currently not used), this pointer is in partition space
  *       and must be checked before using
  */
-xky_status_code_e pmk_queuing_port_read(
+air_status_code_e pmk_queuing_port_read(
         core_context_t *context,
-        pmk_port_t *port, xky_message_ptr_t msg, xky_sz_t *length,
-        xky_queuing_port_status_t *status);
+        pmk_port_t *port, air_message_ptr_t msg, air_sz_t *length,
+        air_queuing_port_status_t *status);
 
 /**
  * @brief Handle an write operation from a queuing port
@@ -103,10 +103,10 @@ xky_status_code_e pmk_queuing_port_read(
  *       operations (currently not used), this pointer is in partition space
  *       and must be checked before using
  */
-xky_status_code_e pmk_queuing_port_write(
+air_status_code_e pmk_queuing_port_write(
         core_context_t *context,
-        pmk_port_t *port, xky_message_ptr_t msg, xky_sz_t length,
-        xky_queuing_port_status_t *status);
+        pmk_port_t *port, air_message_ptr_t msg, air_sz_t length,
+        air_queuing_port_status_t *status);
 
 /** @} */
 

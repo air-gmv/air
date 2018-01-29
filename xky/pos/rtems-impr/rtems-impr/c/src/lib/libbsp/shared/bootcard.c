@@ -1,154 +1,109 @@
 /**
+ * @file
  *
- *  @file
- *  bootcard.c
+ * @ingroup bsp_bootcard
  *
- *  @brief This is the C entry point for ALL RTEMS BSPs.
- * 
- *  It is invoked from the assembly language initialization file usually called
+ * @brief Standard system startup.
+ *
+ *  This is the C entry point for ALL RTEMS BSPs.  It is invoked
+ *  from the assembly language initialization file usually called
  *  start.S.  It provides the framework for the BSP initialization
- *  sequence.  The basic flow of initialization is:
+ *  sequence.  For the basic flow of initialization see RTEMS C User's Guide,
+ *  Initialization Manager.
  *
- *  + start.S: basic CPU setup (stack, zero BSS)\n
- *    + boot_card\n
- *      + bspstart.c: bsp_start - more advanced initialization\n
- *      + rtems_initialize_executive_early\n
- *        + all device drivers\n
- *      + rtems_initialize_executive_late\n
- *        + 1st task executes C++ global constructors\n
- *        .... appplication runs ...\n
- *        + exit\n
- *     + back to here eventually\n
- *     + bspclean.c: bsp_cleanup\n
- *
- *  This style of initialization insures that the C++ global
+ *  This style of initialization ensures that the C++ global
  *  constructors are executed after RTEMS is initialized.
- *
- *  Thanks to Chris Johns <cjohns@plessey.com.au> for this idea.
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-2006.
+ *  Thanks to Chris Johns <cjohns@plessey.com.au> for the idea
+ *  to move C++ global constructors into the first task.
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2014.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  552     | 17/11/2008  | mcoutinho    | IPR 65
- *  3537    | 29/06/2009  | mcoutinho    | IPR 536
- *  3705    | 09/07/2009  | jsousa       | IPR 153
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  8183    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SHARED_BETWEEN_BSPS Shared between BSPs
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-#include <xky.h>
-#include <bsp.h>
-#include <sharedBSPs.h>
+#include <air.h>
+
+#include <bsp/bootcard.h>
+
+#include <rtems.h>
+#include <rtems/sysinit.h>
+
+/*
+ *  At most a single pointer to the cmdline for those target
+ *  short on memory and not supporting a command line.
+ */
+const char *bsp_boot_cmdline;
+
+RTEMS_SYSINIT_ITEM(
+  bsp_work_area_initialize,
+  RTEMS_SYSINIT_BSP_WORK_AREAS,
+  RTEMS_SYSINIT_ORDER_MIDDLE
+);
+
+RTEMS_SYSINIT_ITEM(
+  bsp_start,
+  RTEMS_SYSINIT_BSP_START,
+  RTEMS_SYSINIT_ORDER_MIDDLE
+);
+
+RTEMS_SYSINIT_ITEM(
+  bsp_predriver_hook,
+  RTEMS_SYSINIT_BSP_PRE_DRIVERS,
+  RTEMS_SYSINIT_ORDER_MIDDLE
+);
 
 /**
- * @brief RTEMS API configuration
- **/
-rtems_api_configuration_table BSP_RTEMS_Configuration;
-
-/**
- * @brief bsp interrupt level
- **/
-rtems_interrupt_level bsp_isr_level;
-
-/**
- * @brief trap table of the system
+ * @brief trap table of the system redefined by AIR
  */
 void *trap_table[CPU_INTERRUPT_NUMBER_OF_VECTORS];
 
-int boot_card(int argc , char **argv , char **envp)
-{
-    /* clear trap table */
-    uint32_t i;
-    for (i = 0; i < CPU_INTERRUPT_NUMBER_OF_VECTORS; ++i) {
-
-        trap_table[i] = NULL;
-    }
-
-    /* set TBR */
-    xky_sparc_set_tbr(&trap_table[0]);
-
-	/* enable traps*/
-	xky_sparc_enable_traps();
-
-    /* set default values for the CPU Table fields all ports must have.
-     * These values can be overridden in bsp_start() but they are
-     * right most of the time */
-
-    /* by default, there is no pretasking hook */
-    Cpu_table.pretasking_hook = NULL;
-
-    /* by default, there is no predriving hook */
-    Cpu_table.predriver_hook = NULL;
-
-    /* by default, there is no postdriver hook */
-    Cpu_table.postdriver_hook = NULL;
-
-    /* by default, there is no idle task */
-    Cpu_table.idle_task = NULL;
-
-    /* by default, the system does not need to initialize the workspace to 0 */
-    Cpu_table.do_zero_of_workspace = FALSE;
-
-    /* by default, the interrupt stack size is the minimum size */
-    Cpu_table.interrupt_stack_size = RTEMS_MINIMUM_STACK_SIZE;
-
-#if defined(RTEMS_MULTIPROCESSING)
-
-    /* by default, there is no multiprocessor server stack */
-    Cpu_table.extra_mpci_receive_server_stack = 0;
-
-#endif
-
-    /* by default, there is stack allocate hook */
-    Cpu_table.stack_allocate_hook = NULL;
-
-    /* by default, there is no stack free hook */
-    Cpu_table.stack_free_hook = NULL;
-
-    /* check if the configuratio parameters are ok */
-    rtems_check_configuration_parameters(&Configuration);
-
-    /* Copy the configuration table so we and the BSP wants to change it. */
-    BSP_Configuration = Configuration;
-
-    /* copy to the BSP the API configuration */
-    BSP_RTEMS_Configuration = *Configuration.RTEMS_api_configuration;
-
-    /* copy the API configuration to the BSP configuration */
-    BSP_Configuration.RTEMS_api_configuration = &BSP_RTEMS_Configuration;
-
-    /* Invoke Board Support Package initialization routine */
-    bsp_start();
-
-    /* Initialize RTEMS but do NOT start multitasking */
-    bsp_isr_level = rtems_initialize_executive_early(&BSP_Configuration ,
-                                                     &Cpu_table);
-
-    /* start multitasking here */
-    rtems_initialize_executive_late(bsp_isr_level);
-
-    /* APPLICATION RUNS HERE!!!  When it shuts down, we return!!! */
-
-
-    /* Now return to the start code */
-    return 0;
-}
-
-/**
- *  @}
+/*
+ *  This is the initialization framework routine that weaves together
+ *  calls to RTEMS and the BSP in the proper sequence to initialize
+ *  the system while maximizing shared code and keeping BSP code in C
+ *  as much as possible.
  */
+void boot_card(
+  const char *cmdline
+)
+{
+  rtems_interrupt_level  bsp_isr_level;
+  
+  /*
+   * AIR redefines take control of the trap table here
+   */
+  
+  /* clear trap table */
+  uint32_t i;
+    
+  for (i = 0; i < CPU_INTERRUPT_NUMBER_OF_VECTORS; ++i) {
+    trap_table[i] = NULL;
+  }
+
+  /* set TBR */
+  air_sparc_set_tbr(&trap_table[0]);
+
+  /* enable traps*/
+  air_sparc_enable_traps();
+
+  /*
+   *  Make sure interrupts are disabled.
+   */
+  (void) bsp_isr_level;
+  rtems_interrupt_local_disable( bsp_isr_level );
+
+  bsp_boot_cmdline = cmdline;
+
+  rtems_initialize_executive();
+
+  /***************************************************************
+   ***************************************************************
+   *  APPLICATION RUNS NOW!!!  We will not return to here!!!     *
+   ***************************************************************
+   ***************************************************************/
+}

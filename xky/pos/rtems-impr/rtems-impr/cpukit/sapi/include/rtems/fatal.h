@@ -1,64 +1,118 @@
 /**
- *  @file
- *  fatal.h
+ * @file
  *
- *  @brief constants and prototypes related to the Fatal Error Manager.
- *  This manager processes all fatal or irrecoverable errors.
- *
- *  This manager provides directives to:
- *\n
- *     + announce a fatal error has occurred\n
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-1999.
+ * @brief Fatal API.
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2011.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_API Super API
- *  @{
- */
-
-/**
- *  @defgroup SUPER_API_FATAL Fatal Error Manager
- *
- *  @brief The Fatal Error Manager consists on an API that allows the user to announce
- *  that an application fatal error occurred.
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef _RTEMS_FATAL_H
 #define _RTEMS_FATAL_H
 
+#include <rtems/score/basedefs.h> /* RTEMS_NO_RETURN */
+#include <rtems/extension.h>
+
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-   /**
-    *  @brief announce that a fatal error occurred
-    *
-    *  This is the routine which implements the rtems_fatal_error_occurred
-    *  directive.  It is invoked when the application or RTEMS
-    *  determines that a fatal error has occurred.
-    *
-    *  @param[in] the_error the error
-    */
-   void rtems_fatal_error_occurred(
-                                   uint32_t the_error
-                                   );
+/**
+ * @defgroup ClassicFatal Fatal
+ *
+ * @ingroup ClassicRTEMS
+ *
+ * @brief The Fatal Manager provides functions for fatal system states and or
+ * irrecoverable errors.
+ */
+/**@{**/
+
+/**
+ * @brief Assert context.
+ */
+typedef struct {
+  const char *file;
+  int         line;
+  const char *function;
+  const char *failed_expression;
+} rtems_assert_context;
+
+/**
+ * @brief Exception frame.
+ */
+typedef CPU_Exception_frame rtems_exception_frame;
+
+/**
+ * @brief Prints the exception frame via printk().
+ *
+ * @see rtems_fatal() and RTEMS_FATAL_SOURCE_EXCEPTION.
+ */
+static inline void rtems_exception_frame_print(
+  const rtems_exception_frame *frame
+)
+{
+  _CPU_Exception_frame_print( frame );
+}
+
+/**
+ * @brief Invokes the internal error handler with a source of
+ * INTERNAL_ERROR_RTEMS_API and is internal set to false.
+ *
+ * @param[in] the_error is a 32-bit fatal error code.
+ *
+ * @see _Terminate().
+ */
+void rtems_fatal_error_occurred(
+  uint32_t   the_error
+) RTEMS_NO_RETURN;
+
+/**
+ * @brief Terminates the system.
+ *
+ * @param[in] fatal_source The fatal source.
+ * @param[in] error_code The error code.
+ *
+ * @see _Terminate().
+ */
+RTEMS_NO_RETURN RTEMS_INLINE_ROUTINE void rtems_fatal(
+  rtems_fatal_source fatal_source,
+  rtems_fatal_code   error_code
+)
+{
+  _Terminate( fatal_source, error_code );
+}
+
+/**
+ * @brief Returns a text for a fatal source.
+ *
+ * The text for each fatal source is the enumerator constant.
+ *
+ * @param[in] source is the fatal source.
+ *
+ * @retval text The fatal source text.
+ * @retval "?" The passed fatal source is invalid.
+ */
+const char *rtems_fatal_source_text( rtems_fatal_source source );
+
+/**
+ * @brief Returns a text for an internal error code.
+ *
+ * The text for each internal error code is the enumerator constant.
+ *
+ * @param[in] error is the error code.
+ *
+ * @retval text The error code text.
+ * @retval "?" The passed error code is invalid.
+ */
+const char *rtems_internal_error_text( rtems_fatal_code error );
+
+/** @} */
 
 #ifdef __cplusplus
 }
@@ -66,12 +120,3 @@ extern "C"
 
 #endif
 /* end of include file */
-
-/**  
- *  @}
- */
-
-/**  
- *  @}
- */
-

@@ -46,7 +46,7 @@ SYM(sparc_isr_handler_entry):
 
     /* get current core control structure */
     umul    %l5, CORE_CTRL_SIZE, %l5             ! core control mem. offset
-    set     xky_shared_area, %l4                 ! shared area pointer
+    set     air_shared_area, %l4                 ! shared area pointer
     ld      [%l4 + SHAREDAREA_CORE_CTRL], %l4    ! shared area->cores
     add     %l4, %l5, %l4                        ! current core control
 
@@ -150,7 +150,7 @@ sparc_isr_handler_from_partition:
     nop
 
     /* 2nd check if the address is in kernel zone */
-    set     SYM(xky_kernel_memory_end), %g6
+    set     SYM(air_kernel_memory_end), %g6
     cmp     %sp, %g6
     bleu    2f
     nop
@@ -325,7 +325,7 @@ sparc_isr_handler_ready:
 
     /* get current core control structure */
     umul    %l5, CORE_CTRL_SIZE, %l5             ! core control mem. offset
-    set     xky_shared_area, %l4                 ! shared area pointer
+    set     air_shared_area, %l4                 ! shared area pointer
     ld      [%l4 + SHAREDAREA_CORE_CTRL], %l4    ! shared area->cores
     add     %l4, %l5, %l4                        ! current core control
 
@@ -493,7 +493,7 @@ sparc_isr_handler_return_to_partition:
     nop
 
     /* 2nd check if the address is in kernel zone */
-    set     SYM(xky_kernel_memory_end), %g4
+    set     SYM(air_kernel_memory_end), %g4
     cmp     %sp, %g4
     bleu    2f
     nop

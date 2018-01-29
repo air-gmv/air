@@ -1,18 +1,17 @@
-/* irq_init.c
- *
+/*
  *  This file contains the implementation of rtems initialization
- *  related to interrupt handling.
+ *  related to interrupt handling
+ */
+
+/*
+ *  Copyright (C) 1999 valette@crf.canon.fr
  *
- *  CopyRight (C) 1999 valette@crf.canon.fr
- *
- * Enhanced by Jay Kulpinski <jskulpin@eng01.gdds.com>
- * to make it valid for MVME2300 Motorola boards.
+ *  Enhanced by Jay Kulpinski <jskulpin@eng01.gdds.com>
+ *  to make it valid for MVME2300 Motorola boards.
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  irq_init.c,v 1.6.2.5 2003/09/04 18:45:20 joel Exp
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <libcpu/io.h>
@@ -23,6 +22,7 @@
 #include <bsp/vectors.h>
 #include <rtems/bspIo.h>
 #include <bsp/openpic.h>
+#include <bsp/irq-generic.h>
 
 static rtems_irq_connect_data      rtemsIrq[BSP_IRQ_NUMBER];
 static rtems_irq_global_settings   initial_config;
@@ -88,4 +88,38 @@ void BSP_rtems_irq_mng_init(unsigned cpuId)
   #ifdef TRACE_IRQ_INIT
     printk("RTEMS IRQ management is now operationnal\n");
   #endif
+}
+
+static int psim_exception_handler(
+  BSP_Exception_frame *frame,
+  unsigned exception_number
+)
+{
+  BSP_panic("Unexpected interrupt occured");
+  return 0;
+}
+
+/*
+ * functions to enable/disable a source at the ipic
+ */
+void bsp_interrupt_vector_enable( rtems_vector_number irqnum)
+{
+  /* FIXME: do something */
+  bsp_interrupt_assert(bsp_interrupt_is_valid_vector(irqnum));
+}
+
+void bsp_interrupt_vector_disable( rtems_vector_number irqnum)
+{
+  /* FIXME: do something */
+  bsp_interrupt_assert(bsp_interrupt_is_valid_vector(irqnum));
+}
+
+rtems_status_code bsp_interrupt_facility_initialize(void)
+{
+  /* Install exception handler */
+  if (ppc_exc_set_handler( ASM_EXT_VECTOR, psim_exception_handler)) {
+    return RTEMS_IO_ERROR;
+  }
+  
+  return RTEMS_SUCCESSFUL;
 }

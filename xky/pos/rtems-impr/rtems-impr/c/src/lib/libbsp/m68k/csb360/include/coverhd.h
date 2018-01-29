@@ -1,7 +1,13 @@
+/**
+ * @file
+ *
+ * @ingroup m68k_csb360
+ *
+ * @brief C Overhead definitions.
+ */
+
 /*
  * This file based on output of tmoverhd test.
- *
- * $Id$
  */
 
 #ifndef __COVERHD_H__

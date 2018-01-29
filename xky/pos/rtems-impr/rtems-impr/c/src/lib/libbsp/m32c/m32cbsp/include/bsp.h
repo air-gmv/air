@@ -1,3 +1,11 @@
+/**
+  *  @file
+  *
+  *  @ingroup m32c_bsp
+  *
+  *  @brief m32c simulator definitions in gdb
+  */
+
 /*  bsp.h
  *
  *  This include file contains some definitions specific to the
@@ -8,45 +16,31 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-#ifndef _BSP_H
-#define _BSP_H
+#ifndef LIBBSP_M32C_M32CBSP_BSP_H
+#define LIBBSP_M32C_M32CBSP_BSP_H
+
+#include <bspopts.h>
+#include <bsp/default-initial-extension.h>
+
+#include <rtems.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <bspopts.h>
+/**
+  *  @defgroup m32c_bsp Clock Tick Support
+  *
+  *  @ingroup m32c_m32cbsp
+  *
+  *  @brief Clock Tick Support Package
+  */
 
-#include <rtems.h>
-#include <rtems/iosupp.h>
-#include <rtems/console.h>
-#include <rtems/clockdrv.h>
-
-/* support for simulated clock tick */
-Thread clock_driver_sim_idle_body(uintptr_t);
+void *clock_driver_sim_idle_body(uintptr_t);
 #define BSP_IDLE_TASK_BODY clock_driver_sim_idle_body
-
-/*
- *  Simple spin delay in microsecond units for device drivers.
- *  This is very dependent on the clock speed of the target.
- */
-
-#define rtems_bsp_delay( microseconds ) \
-  { register uint32_t         _delay=(microseconds); \
-    register uint32_t         _tmp = 0; /* initialized to avoid warning */ \
-    asm volatile( "0: \
-                     remo      3,31,%0 ; \
-                     cmpo      0,%0 ; \
-                     subo      1,%1,%1 ; \
-                     cmpobne.t 0,%1,0b " \
-                  : "=d" (_tmp), "=d" (_delay) \
-                  : "0"  (_tmp), "1"  (_delay) ); \
-  }
 
 #ifdef __cplusplus
 }

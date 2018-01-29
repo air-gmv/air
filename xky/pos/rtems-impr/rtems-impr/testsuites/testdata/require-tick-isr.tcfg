@@ -1,0 +1,72 @@
+#
+# These tests require that the BSP have a real clock tick ISR. Some
+# simulator BSPs do not have any interrupt sources and use the file
+# libbsp/shared/clock_driver_simidle.c.
+#
+# Tests which do not work with this clock driver tend to have the
+# one of the following characteristics:
+#
+#  + Assume that a clock tick will occur while a task is running
+#    continuously can be
+#  + Assume that a timer service routine will execute in an ISR
+#    while a task is running continously.
+#  + Has a busy spin loop waiting to start the test on a tick boundary
+#    does this.
+#
+# Eventually there should be a way to note that a BSP has a list
+# of expected test failures which are specific to it AND a set of
+# characteristics that make running classes of test appropriate or
+# inappropriate. At that point, this would be one characteristic.
+#
+# NOTE: Each test in this list should be reviewed to ensure that it
+#       has a legitimate reason to not run on a BSP with the simulator
+#       clock idle task. It may need to be broken into multiple tests
+#       if not executing it misses other paths.
+#
+exclude: cpuuse
+exclude: psx07
+exclude: psx09
+exclude: psx10
+exclude: psx11
+exclude: psxcancel01
+exclude: psxgetrusage01
+exclude: psxintrcritical01
+exclude: psxsignal01
+exclude: psxsignal02
+exclude: psxspin01
+exclude: psxtime
+exclude: psxtimes01
+exclude: sp04
+exclude: sp14
+exclude: sp19
+exclude: sp35
+exclude: sp38
+exclude: sp44
+exclude: sp69
+exclude: spcbssched02
+exclude: spcbssched03
+exclude: spcontext01
+exclude: spcpucounter01
+exclude: spedfsched03
+exclude: spintrcritical01
+exclude: spintrcritical02
+exclude: spintrcritical03
+exclude: spintrcritical04
+exclude: spintrcritical05
+exclude: spintrcritical06
+exclude: spintrcritical07
+exclude: spintrcritical08
+exclude: spintrcritical09
+exclude: spintrcritical10
+exclude: spintrcritical11
+exclude: spintrcritical12
+exclude: spintrcritical13
+exclude: spintrcritical14
+exclude: spintrcritical15
+exclude: spintrcritical16
+exclude: spintrcritical17
+exclude: spintrcritical18
+exclude: spintrcritical19
+exclude: spintrcritical20
+exclude: spnsext01
+exclude: spqreslib

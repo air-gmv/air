@@ -774,7 +774,7 @@ m4_if([$1], [v7],
 AC_SUBST([am__tar])
 AC_SUBST([am__untar])
 ])
-m4trace:aclocal/bsp-alias.m4:7: -1- AC_DEFUN([_RTEMS_BSP_ALIAS], [# account for "aliased" bsps which share source code
+m4trace:aclocal/bsp-alias.m4:3: -1- AC_DEFUN([_RTEMS_BSP_ALIAS], [# account for "aliased" bsps which share source code
       for bsp_cfgs in `ls "$srcdir"/"$RTEMS_TOPdir"/c/src/lib/libbsp/"$RTEMS_CPU"/*/"make/custom/$1.cfg" 2>/dev/null`; do
         $2=`echo "$bsp_cfgs" | sed \
           -e "s,^$srcdir/$RTEMS_TOPdir/c/src/lib/libbsp/$RTEMS_CPU/,," \
@@ -782,24 +782,28 @@ m4trace:aclocal/bsp-alias.m4:7: -1- AC_DEFUN([_RTEMS_BSP_ALIAS], [# account for 
         break
       done
 ])
-m4trace:aclocal/bsp-alias.m4:19: -1- AC_DEFUN([RTEMS_BSP_ALIAS], [_RTEMS_BSP_ALIAS(m4_if([$1],,[$RTEMS_BSP],[$1]),
+m4trace:aclocal/bsp-alias.m4:15: -1- AC_DEFUN([RTEMS_BSP_ALIAS], [_RTEMS_BSP_ALIAS(m4_if([$1],,[$RTEMS_BSP],[$1]),
   m4_if([$2],,[RTEMS_BSP_FAMILY],[$2]))
 ])
-m4trace:aclocal/canonical-target-name.m4:11: -1- AC_DEFUN([RTEMS_CANONICAL_TARGET_CPU], [
-AC_CANONICAL_HOST
+m4trace:aclocal/canonical-target-name.m4:7: -1- AC_DEFUN([RTEMS_CANONICAL_TARGET_CPU], [AC_REQUIRE([AC_CANONICAL_HOST])
 AC_MSG_CHECKING(rtems target cpu)
 case "${host}" in
-  no_cpu-*rtems*)
-        RTEMS_CPU=no_cpu
-	;;
-  *) 
-	RTEMS_CPU=`echo $host | sed 's%^\([[^-]]*\)-\(.*\)$%\1%'`
+riscv*-*-rtems*)
+	RTEMS_CPU=riscv;;
+*-*-rtems*)
+	RTEMS_CPU="$host_cpu";;
+*)
 	;;
 esac
+AS_IF([test -n "$RTEMS_CPU"],
+[dnl
+AC_MSG_RESULT($RTEMS_CPU)],
+[dnl
+AC_MSG_RESULT([<none>])
+AC_MSG_ERROR([unsupported host $host])])
 AC_SUBST(RTEMS_CPU)
-AC_MSG_RESULT($RTEMS_CPU)
 ])
-m4trace:aclocal/canonicalize-tools.m4:7: -1- AC_DEFUN([RTEMS_CANONICALIZE_TOOLS], [AC_REQUIRE([RTEMS_PROG_CC])dnl
+m4trace:aclocal/canonicalize-tools.m4:3: -1- AC_DEFUN([RTEMS_CANONICALIZE_TOOLS], [AC_REQUIRE([RTEMS_PROG_CC])dnl
 
 dnl FIXME: What shall be done if these tools are not available?
   RTEMS_CHECK_TOOL(AR,ar,no)
@@ -809,7 +813,7 @@ dnl FIXME: What shall be done if these tools are not available?
 dnl special treatment of ranlib
   RTEMS_CHECK_TOOL(RANLIB,ranlib,:)
 ])
-m4trace:aclocal/check-custom-bsp.m4:3: -1- AC_DEFUN([_RTEMS_CHECK_CUSTOM_BSP], [
+m4trace:aclocal/check-custom-bsp.m4:1: -1- AC_DEFUN([_RTEMS_CHECK_CUSTOM_BSP], [
 AC_REQUIRE([RTEMS_CANONICAL_TARGET_CPU])dnl sets RTEMS_CPU, target
 AC_REQUIRE([RTEMS_TOP])dnl sets RTEMS_TOPdir
   $2=
@@ -822,13 +826,13 @@ AC_REQUIRE([RTEMS_TOP])dnl sets RTEMS_TOPdir
     ])
   done
 ])
-m4trace:aclocal/check-custom-bsp.m4:17: -1- AC_DEFUN([RTEMS_CHECK_CUSTOM_BSP], [
+m4trace:aclocal/check-custom-bsp.m4:15: -1- AC_DEFUN([RTEMS_CHECK_CUSTOM_BSP], [
   _RTEMS_CHECK_CUSTOM_BSP([[$]$1.cfg],[BSP_FOUND])
   AS_IF([test -z "$BSP_FOUND"],[
     AC_MSG_ERROR([missing [$]$1.cfg])
   ])
 ])
-m4trace:aclocal/check-multiprocessing.m4:5: -1- AC_DEFUN([RTEMS_CHECK_MULTIPROCESSING], [dnl
+m4trace:aclocal/check-multiprocessing.m4:1: -1- AC_DEFUN([RTEMS_CHECK_MULTIPROCESSING], [dnl
 AC_REQUIRE([RTEMS_ENABLE_MULTILIB])dnl
 AC_REQUIRE([RTEMS_ENV_RTEMSBSP])dnl
 AC_REQUIRE([RTEMS_TOP])dnl
@@ -864,7 +868,7 @@ fi
 
 AM_CONDITIONAL(HAS_MP,[test x"$rtems_cv_HAS_MP" = x"yes"])
 ])
-m4trace:aclocal/check-networking.m4:3: -1- AC_DEFUN([RTEMS_CHECK_NETWORKING], [dnl
+m4trace:aclocal/check-networking.m4:1: -1- AC_DEFUN([RTEMS_CHECK_NETWORKING], [dnl
 AC_REQUIRE([RTEMS_CANONICAL_TARGET_CPU])dnl
 AC_REQUIRE([RTEMS_ENABLE_NETWORKING])dnl
 
@@ -872,7 +876,8 @@ AC_CACHE_CHECK([whether BSP supports networking],
   rtems_cv_HAS_NETWORKING,
   [dnl
     case "$RTEMS_CPU" in
-    avr*|m32c*)       # do not have address space to hold BSD TCP/IP stack
+    # do not have address space to hold BSD TCP/IP stack
+    m32c*)
       rtems_cv_HAS_NETWORKING="no"
       ;;
     *)
@@ -890,7 +895,7 @@ else
 fi
 AC_SUBST(HAS_NETWORKING)dnl
 ])
-m4trace:aclocal/check-posix.m4:3: -1- AC_DEFUN([RTEMS_CHECK_POSIX_API], [dnl
+m4trace:aclocal/check-posix.m4:1: -1- AC_DEFUN([RTEMS_CHECK_POSIX_API], [dnl
 AC_REQUIRE([RTEMS_CANONICAL_TARGET_CPU])dnl
 AC_REQUIRE([RTEMS_ENABLE_POSIX])dnl
 
@@ -913,35 +918,55 @@ else
 fi
 AC_SUBST(HAS_POSIX_API)dnl
 ])
-m4trace:aclocal/check-posix.m4:28: -1- AC_DEFUN([RTEMS_DEFINE_POSIX_API], [AC_REQUIRE([RTEMS_CHECK_POSIX_API])dnl
+m4trace:aclocal/check-posix.m4:26: -1- AC_DEFUN([RTEMS_DEFINE_POSIX_API], [AC_REQUIRE([RTEMS_CHECK_POSIX_API])dnl
 AS_IF(
   [test x"${HAS_POSIX_API}" = x"yes"],
   [AC_DEFINE_UNQUOTED(RTEMS_POSIX_API,1,[if posix api is supported])])
 ])
-m4trace:aclocal/check-tool.m4:6: -1- AC_DEFUN([RTEMS_CHECK_TOOL], [
+m4trace:aclocal/check-smp.m4:1: -1- AC_DEFUN([RTEMS_CHECK_SMP], [dnl
+AC_REQUIRE([RTEMS_ENABLE_SMP])dnl
+
+AC_CACHE_CHECK([whether CPU supports SMP],
+  rtems_cv_HAS_SMP,
+  [dnl
+    case "$RTEMS_CPU" in
+    *)
+      if test "${RTEMS_HAS_SMP}" = "yes"; then
+        rtems_cv_HAS_SMP="yes";
+      else
+        rtems_cv_HAS_SMP="disabled";
+      fi
+      ;;
+    esac])
+])
+m4trace:aclocal/check-tool.m4:4: -1- AC_DEFUN([RTEMS_CHECK_TOOL], [
   AS_IF([test "x$build_alias" != "x$host_alias"],
     [rtems_tool_prefix=${ac_tool_prefix}])
   AC_CHECK_PROG($1, ${rtems_tool_prefix}$2, ${rtems_tool_prefix}$2, $3, $4)
 ])
-m4trace:aclocal/enable-cxx.m4:3: -1- AC_DEFUN([RTEMS_ENABLE_CXX], [
+m4trace:aclocal/enable-cxx.m4:1: -1- AC_DEFUN([RTEMS_ENABLE_CXX], [
 AC_ARG_ENABLE(cxx,
-[AS_HELP_STRING(--enable-cxx,enable C++ support and build the rtems++ library)],
+[AS_HELP_STRING([--enable-cxx],
+[enable C++ support])],
 [case "${enable_cxx}" in
   yes) RTEMS_HAS_CPLUSPLUS=yes ;;
   no) RTEMS_HAS_CPLUSPLUS=no   ;;
   *)  AC_MSG_ERROR(bad value ${enableval} for enable-cxx option) ;;
-esac], [RTEMS_HAS_CPLUSPLUS=no])
+esac], [RTEMS_HAS_CPLUSPLUS=yes])
 ])
-m4trace:aclocal/enable-multiprocessing.m4:3: -1- AC_DEFUN([RTEMS_ENABLE_MULTIPROCESSING], [
+m4trace:aclocal/enable-multiprocessing.m4:1: -1- AC_DEFUN([RTEMS_ENABLE_MULTIPROCESSING], [
 AC_ARG_ENABLE(multiprocessing,
-[AS_HELP_STRING(--enable-multiprocessing,enable multiprocessing interface)],
+[AS_HELP_STRING([--enable-multiprocessing],
+[enable multiprocessing interface; the multiprocessing interface is a
+communication interface between different RTEMS instances and allows
+synchronization of objects via message passing])],
 [case "${enable_multiprocessing}" in 
   yes) ;;
   no) ;;
   *)  AC_MSG_ERROR(bad value ${enableval} for enable-multiprocessing option) ;;
 esac],[enable_multiprocessing=no])
 ])
-m4trace:aclocal/enable-networking.m4:3: -1- AC_DEFUN([RTEMS_ENABLE_NETWORKING], [
+m4trace:aclocal/enable-networking.m4:1: -1- AC_DEFUN([RTEMS_ENABLE_NETWORKING], [
 ## AC_BEFORE([$0], [RTEMS_CHECK_NETWORKING])dnl
 
 AC_ARG_ENABLE(networking,
@@ -953,7 +978,7 @@ AC_ARG_ENABLE(networking,
 esac],[RTEMS_HAS_NETWORKING=yes])
 AC_SUBST(RTEMS_HAS_NETWORKING)dnl
 ])
-m4trace:aclocal/enable-posix.m4:3: -1- AC_DEFUN([RTEMS_ENABLE_POSIX], [
+m4trace:aclocal/enable-posix.m4:1: -1- AC_DEFUN([RTEMS_ENABLE_POSIX], [
 ## AC_BEFORE([$0], [RTEMS_CHECK_POSIX_API])dnl
 
 AC_ARG_ENABLE(posix,
@@ -973,7 +998,7 @@ case "${host}" in
 esac
 AC_SUBST(RTEMS_HAS_POSIX_API)
 ])
-m4trace:aclocal/enable-rtemsbsp.m4:6: -1- AC_DEFUN([RTEMS_ENABLE_RTEMSBSP], [
+m4trace:aclocal/enable-rtemsbsp.m4:4: -1- AC_DEFUN([RTEMS_ENABLE_RTEMSBSP], [
 AC_BEFORE([$0], [RTEMS_ENV_RTEMSBSP])
 AC_ARG_ENABLE(rtemsbsp,
 [AS_HELP_STRING(--enable-rtemsbsp="bsp1 bsp2 ..",BSPs to include in build)],
@@ -982,7 +1007,23 @@ AC_ARG_ENABLE(rtemsbsp,
   *) $1=$enableval;;
 esac],[$1=""])
 ])
-m4trace:aclocal/env-rtemsbsp.m4:5: -1- AC_DEFUN([RTEMS_ENV_RTEMSBSP], [dnl
+m4trace:aclocal/enable-smp.m4:1: -1- AC_DEFUN([RTEMS_ENABLE_SMP], [
+## AC_BEFORE([$0], [RTEMS_CHECK_SMP])dnl
+
+AC_ARG_ENABLE(smp,
+[AS_HELP_STRING([--enable-smp],[enable support for symmetric multiprocessing
+(SMP)])],
+[case "${enableval}" in 
+  yes) case "${RTEMS_CPU}" in
+         arm|powerpc|sparc|i386) RTEMS_HAS_SMP=yes ;;
+         *)          RTEMS_HAS_SMP=no ;;
+       esac
+       ;;
+  no) RTEMS_HAS_SMP=no ;;
+  *)  AC_MSG_ERROR(bad value ${enableval} for enable-smp option) ;;
+esac],[RTEMS_HAS_SMP=no]) 
+])
+m4trace:aclocal/env-rtemsbsp.m4:3: -1- AC_DEFUN([RTEMS_ENV_RTEMSBSP], [dnl
 AC_BEFORE([$0], [RTEMS_ENABLE_RTEMSBSP])dnl
 AC_BEFORE([$0], [RTEMS_PROJECT_ROOT])dnl
 AC_BEFORE([$0], [RTEMS_CHECK_CUSTOM_BSP])dnl
@@ -1016,7 +1057,7 @@ AC_SUBST([PROJECT_RELEASE],["\$(PROJECT_ROOT)/$RTEMS_BSP"])
 AC_SUBST([project_libdir],["\$(libdir)"])
 AC_SUBST([project_includedir],["\$(includedir)"])
 ])
-m4trace:aclocal/gcc-isystem.m4:7: -1- AC_DEFUN([RTEMS_GCC_ISYSTEM], [AC_REQUIRE([RTEMS_PROG_CC])
+m4trace:aclocal/gcc-isystem.m4:4: -1- AC_DEFUN([RTEMS_GCC_ISYSTEM], [AC_REQUIRE([RTEMS_PROG_CC])
 AC_CACHE_CHECK(whether $CC accepts -isystem,rtems_cv_gcc_isystem,
 [
 rtems_cv_gcc_isystem=no
@@ -1034,7 +1075,7 @@ EOF
 fi
 rm -f conftest*
 ])])
-m4trace:aclocal/gcc-pipe.m4:7: -1- AC_DEFUN([RTEMS_GCC_PIPE], [AC_REQUIRE([RTEMS_PROG_CC]) 
+m4trace:aclocal/gcc-pipe.m4:3: -1- AC_DEFUN([RTEMS_GCC_PIPE], [AC_REQUIRE([RTEMS_PROG_CC]) 
 AC_REQUIRE([AC_CANONICAL_HOST])
 AC_CACHE_CHECK(whether $CC accepts --pipe,rtems_cv_gcc_pipe,
 [
@@ -1048,7 +1089,7 @@ if test x"$GCC" = x"yes"; then
 fi
 ])
 ])
-m4trace:aclocal/gcc-specs.m4:7: -1- AC_DEFUN([RTEMS_GCC_SPECS], [AC_REQUIRE([RTEMS_PROG_CC])
+m4trace:aclocal/gcc-specs.m4:3: -1- AC_DEFUN([RTEMS_GCC_SPECS], [AC_REQUIRE([RTEMS_PROG_CC])
 AC_CACHE_CHECK(whether $CC accepts -specs,rtems_cv_gcc_specs,
 [
 rtems_cv_gcc_specs=no
@@ -1091,7 +1132,7 @@ AS_HELP_STRING(--enable-multilib,build many library versions (default=no)),
 
 AM_CONDITIONAL(MULTILIB,test x"${multilib}" = x"yes")
 ])
-m4trace:aclocal/prog-cc.m4:7: -1- AC_DEFUN([RTEMS_PROG_CC], [
+m4trace:aclocal/prog-cc.m4:5: -1- AC_DEFUN([RTEMS_PROG_CC], [
 AC_BEFORE([$0], [AC_PROG_CPP])dnl
 AC_BEFORE([$0], [AC_PROG_CC])dnl
 AC_BEFORE([$0], [RTEMS_CANONICALIZE_TOOLS])dnl
@@ -1102,7 +1143,7 @@ test -z "$CC" && \
 AC_PROG_CC
 AC_PROG_CPP
 ])
-m4trace:aclocal/prog-cc.m4:20: -1- AC_DEFUN([RTEMS_PROG_CC_FOR_TARGET], [
+m4trace:aclocal/prog-cc.m4:18: -1- AC_DEFUN([RTEMS_PROG_CC_FOR_TARGET], [
 dnl check target cc
 RTEMS_PROG_CC
 dnl check if the compiler supports -isystem
@@ -1130,12 +1171,56 @@ AS_IF([test "$GCC" = yes],[
 ])
 AC_SUBST(RTEMS_RELLDFLAGS)
 ])
-m4trace:aclocal/prog-ccas.m4:3: -1- AC_DEFUN([RTEMS_PROG_CCAS], [
+m4trace:aclocal/prog-ccas.m4:1: -1- AC_DEFUN([RTEMS_PROG_CCAS], [
 AC_REQUIRE([RTEMS_PROG_CC])
 AM_PROG_AS
 AC_SUBST(RTEMS_CCASFLAGS,["-DASM"])
 ])
-m4trace:aclocal/project-root.m4:5: -1- AC_DEFUN([RTEMS_PROJECT_ROOT], [dnl
+m4trace:aclocal/prog-cxx.m4:5: -1- AC_DEFUN([RTEMS_PROG_CXX_FOR_TARGET], [
+AC_BEFORE([$0], [RTEMS_CANONICALIZE_TOOLS])dnl
+AC_REQUIRE([RTEMS_ENABLE_CXX])
+AC_REQUIRE([RTEMS_CHECK_SMP])
+
+# If CXXFLAGS is not set, default to CFLAGS
+if test x"$rtems_cv_HAS_SMP" = x"yes" ; then
+  CXXFLAGS=${CXXFLAGS-${CFLAGS} -std=gnu++11}
+else
+  CXXFLAGS=${CXXFLAGS-${CFLAGS}}
+fi
+
+CXXFLAGS=`echo ${CXXFLAGS} | sed \
+  -e s/-Wmissing-prototypes// \
+  -e s/-Wimplicit-function-declaration// \
+  -e s/-Wstrict-prototypes// \
+  -e s/-Wnested-externs//`
+
+RTEMS_CHECK_TOOL(CXX,g++)
+if test "$RTEMS_HAS_CPLUSPLUS" = "yes";
+then
+  dnl Only accept g++
+  dnl NOTE: This might be too restrictive
+  if test -z "$CXX";
+  then
+    RTEMS_HAS_CPLUSPLUS=no
+    HAS_CPLUSPLUS=no
+    ## Work-around to a bug in automake
+    AM_CONDITIONAL([am__fastdepCXX],[false])
+  else
+    AC_PROG_CXX
+    AC_PROG_CXXCPP
+    if test "$ac_cv_prog_cc_cross" != "$ac_cv_prog_cxx_cross"; then
+      AC_MSG_ERROR([***]
+       [Inconsistency in compiler configuration:]
+       [Target C compiler and target C++ compiler]
+       [must both either be cross compilers or native compilers])
+    fi
+  fi
+else
+  ## Work-around to a bug in automake
+  AM_CONDITIONAL([am__fastdepCXX],[false])
+fi
+])
+m4trace:aclocal/project-root.m4:1: -1- AC_DEFUN([RTEMS_PROJECT_ROOT], [dnl
 AC_REQUIRE([RTEMS_TOP])
 AC_REQUIRE([RTEMS_AMPOLISH3])
 ])
@@ -1176,7 +1261,7 @@ m4trace:aclocal/quoting.m4:38: -1- AC_DEFUN([RTEMS_CONFIGURE_ARGS_QUOTE], [
 m4_expand_once([_RTEMS_CONFIGURE_ARGS_QUOTE([$1],[$2])])
 eval $1_prune m4_if([$3],,[$ac_configure_args],[[$]$3])
 ])
-m4trace:aclocal/rtems-ampolish.m4:3: -1- AC_DEFUN([RTEMS_AMPOLISH3], [
+m4trace:aclocal/rtems-ampolish.m4:1: -1- AC_DEFUN([RTEMS_AMPOLISH3], [
 AC_REQUIRE([AM_INIT_AUTOMAKE])
 AC_PATH_PROG([PERL],[perl],[])
 AC_SUBST(AMPOLISH3,["\$(PERL) ${am_aux_dir}/ampolish3"])
@@ -1194,22 +1279,26 @@ m4trace:aclocal/rtems-cpu-subdirs.m4:9: -1- AC_DEFUN([RTEMS_CPU_SUBDIRS], [
 case $RTEMS_CPU in
 _RTEMS_CPU_SUBDIR([arm],[$1]);;
 _RTEMS_CPU_SUBDIR([bfin],[$1]);;
-_RTEMS_CPU_SUBDIR([avr],[$1]);;
-_RTEMS_CPU_SUBDIR([h8300],[$1]);;
+_RTEMS_CPU_SUBDIR([epiphany],[$1]);;
 _RTEMS_CPU_SUBDIR([i386],[$1]);;
 _RTEMS_CPU_SUBDIR([lm32],[$1]);;
 _RTEMS_CPU_SUBDIR([m32c],[$1]);;
-_RTEMS_CPU_SUBDIR([m32r],[$1]);;
 _RTEMS_CPU_SUBDIR([m68k],[$1]);;
 _RTEMS_CPU_SUBDIR([mips],[$1]);;
+_RTEMS_CPU_SUBDIR([moxie],[$1]);;
+_RTEMS_CPU_SUBDIR([nios2],[$1]);;
 _RTEMS_CPU_SUBDIR([no_cpu],[$1]);;
+_RTEMS_CPU_SUBDIR([or1k],[$1]);;
 _RTEMS_CPU_SUBDIR([powerpc],[$1]);;
+_RTEMS_CPU_SUBDIR([riscv],[$1]);;
 _RTEMS_CPU_SUBDIR([sh],[$1]);;
 _RTEMS_CPU_SUBDIR([sparc],[$1]);;
+_RTEMS_CPU_SUBDIR([sparc64],[$1]);;
+_RTEMS_CPU_SUBDIR([v850],[$1]);;
 *) AC_MSG_ERROR([Invalid RTEMS_CPU <[$]{RTEMS_CPU}>])
 esac
 ])
-m4trace:aclocal/rtems-top.m4:11: -1- AC_DEFUN([RTEMS_TOP], [dnl
+m4trace:aclocal/rtems-top.m4:9: -1- AC_DEFUN([RTEMS_TOP], [dnl
 AC_REQUIRE([RTEMS_VERSIONING])
 AC_REQUIRE([AC_DISABLE_OPTION_CHECKING])
 AC_REQUIRE([AM_SET_LEADING_DOT])
@@ -1217,7 +1306,7 @@ AC_CONFIG_AUX_DIR([$1])
 AC_CHECK_PROGS(MAKE, gmake make)
 AC_BEFORE([$0], [AM_INIT_AUTOMAKE])dnl
 
-AC_PREFIX_DEFAULT([/opt/rtems-][RTEMS_API])
+AC_PREFIX_DEFAULT([/opt/rtems-][_RTEMS_API])
 
 AC_SUBST([RTEMS_TOPdir],["$1"])
 
@@ -1232,9 +1321,10 @@ AC_SUBST([PROJECT_TOPdir],[${project_top}${rtems_updir}'$(top_builddir)'])
 AC_SUBST([PROJECT_ROOT],[${with_project_root}${rtems_updir}'$(top_builddir)'])
 
 AC_SUBST([dirstamp],[\${am__leading_dot}dirstamp])
+AC_SUBST([pkgdatadir],["\${datadir}"/rtems]_RTEMS_API)
 ])
 m4trace:aclocal/version.m4:1: -1- AC_DEFUN([RTEMS_VERSIONING], [])
-m4trace:acinclude.m4:8: -1- AC_DEFUN([_RTEMS_CONFIG_SUBDIR], [
+m4trace:acinclude.m4:6: -1- AC_DEFUN([_RTEMS_CONFIG_SUBDIR], [
 if test "$no_recursion" != yes; then
   ac_sub_sourcedir=$2
   ac_sub_builddir=$1
@@ -1304,144 +1394,145 @@ if test "$no_recursion" != yes; then
   done
 fi
 ])
-m4trace:acinclude.m4:81: -1- AC_DEFUN([RTEMS_BSP_CONFIG_SUBDIR], [
+m4trace:acinclude.m4:79: -1- AC_DEFUN([RTEMS_BSP_CONFIG_SUBDIR], [
 m4_expand_once([RTEMS_CONFIGURE_ARGS_QUOTE([ac_sub_configure_args])])
 AS_IF([$4],[BSP_SUBDIRS="$BSP_SUBDIRS $1"])
 AC_CONFIG_COMMANDS_POST([
 AS_IF([$4],[_RTEMS_CONFIG_SUBDIR([$1],[$2],[$3])])])
 ])
-m4trace:configure.ac:6: -1- m4_pattern_forbid([^_?A[CHUM]_])
-m4trace:configure.ac:6: -1- m4_pattern_forbid([_AC_])
-m4trace:configure.ac:6: -1- m4_pattern_forbid([^LIBOBJS$], [do not use LIBOBJS directly, use AC_LIBOBJ (see section `AC_LIBOBJ vs LIBOBJS'])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^AS_FLAGS$])
-m4trace:configure.ac:6: -1- m4_pattern_forbid([^_?m4_])
-m4trace:configure.ac:6: -1- m4_pattern_forbid([^dnl$])
-m4trace:configure.ac:6: -1- m4_pattern_forbid([^_?AS_])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^SHELL$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^PATH_SEPARATOR$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^PACKAGE_NAME$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^PACKAGE_TARNAME$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^PACKAGE_VERSION$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^PACKAGE_STRING$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^PACKAGE_BUGREPORT$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^PACKAGE_URL$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^exec_prefix$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^prefix$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^program_transform_name$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^bindir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^sbindir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^libexecdir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^datarootdir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^datadir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^sysconfdir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^sharedstatedir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^localstatedir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^includedir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^oldincludedir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^docdir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^infodir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^htmldir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^dvidir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^pdfdir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^psdir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^libdir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^localedir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^mandir$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^PACKAGE_NAME$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^PACKAGE_TARNAME$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^PACKAGE_VERSION$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^PACKAGE_STRING$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^PACKAGE_BUGREPORT$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^PACKAGE_URL$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^DEFS$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^ECHO_C$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^ECHO_N$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^ECHO_T$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^LIBS$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^build_alias$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^host_alias$])
-m4trace:configure.ac:6: -1- m4_pattern_allow([^target_alias$])
-m4trace:configure.ac:8: -1- RTEMS_TOP([../..])
-m4trace:configure.ac:8: -1- RTEMS_VERSIONING
-m4trace:configure.ac:8: -1- AM_SET_LEADING_DOT
-m4trace:configure.ac:8: -1- m4_pattern_allow([^am__leading_dot$])
-m4trace:configure.ac:8: -1- m4_pattern_allow([^MAKE$])
-m4trace:configure.ac:8: -1- m4_pattern_allow([^RTEMS_TOPdir$])
-m4trace:configure.ac:8: -1- m4_pattern_allow([^PROJECT_TOPdir$])
-m4trace:configure.ac:8: -1- m4_pattern_allow([^PROJECT_ROOT$])
-m4trace:configure.ac:8: -1- m4_pattern_allow([^dirstamp$])
-m4trace:configure.ac:10: -1- RTEMS_ENABLE_CXX
-m4trace:configure.ac:11: -1- RTEMS_ENABLE_NETWORKING
-m4trace:configure.ac:11: -1- m4_pattern_allow([^RTEMS_HAS_NETWORKING$])
-m4trace:configure.ac:13: -1- RTEMS_CANONICAL_TARGET_CPU
-m4trace:configure.ac:13: -1- m4_pattern_allow([^build$])
-m4trace:configure.ac:13: -1- m4_pattern_allow([^build_cpu$])
-m4trace:configure.ac:13: -1- m4_pattern_allow([^build_vendor$])
-m4trace:configure.ac:13: -1- m4_pattern_allow([^build_os$])
-m4trace:configure.ac:13: -1- m4_pattern_allow([^host$])
-m4trace:configure.ac:13: -1- m4_pattern_allow([^host_cpu$])
-m4trace:configure.ac:13: -1- m4_pattern_allow([^host_vendor$])
-m4trace:configure.ac:13: -1- m4_pattern_allow([^host_os$])
-m4trace:configure.ac:13: -1- m4_pattern_allow([^RTEMS_CPU$])
-m4trace:configure.ac:15: -1- AM_INIT_AUTOMAKE([no-define subdir-objects no-exeext foreign 1.11.1])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^AM_[A-Z]+FLAGS$])
-m4trace:configure.ac:15: -1- AM_SET_CURRENT_AUTOMAKE_VERSION
-m4trace:configure.ac:15: -1- AM_AUTOMAKE_VERSION([1.14.1])
-m4trace:configure.ac:15: -1- _AM_AUTOCONF_VERSION([2.69])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^INSTALL_PROGRAM$])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^INSTALL_SCRIPT$])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^INSTALL_DATA$])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^am__isrc$])
-m4trace:configure.ac:15: -1- _AM_SUBST_NOTMAKE([am__isrc])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^CYGPATH_W$])
-m4trace:configure.ac:15: -1- _AM_SET_OPTIONS([no-define subdir-objects no-exeext foreign 1.11.1])
-m4trace:configure.ac:15: -1- _AM_SET_OPTION([no-define])
-m4trace:configure.ac:15: -2- _AM_MANGLE_OPTION([no-define])
-m4trace:configure.ac:15: -1- _AM_SET_OPTION([subdir-objects])
-m4trace:configure.ac:15: -2- _AM_MANGLE_OPTION([subdir-objects])
-m4trace:configure.ac:15: -1- _AM_SET_OPTION([no-exeext])
-m4trace:configure.ac:15: -2- _AM_MANGLE_OPTION([no-exeext])
-m4trace:configure.ac:15: -1- _AM_SET_OPTION([foreign])
-m4trace:configure.ac:15: -2- _AM_MANGLE_OPTION([foreign])
-m4trace:configure.ac:15: -1- _AM_SET_OPTION([1.11.1])
-m4trace:configure.ac:15: -2- _AM_MANGLE_OPTION([1.11.1])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^PACKAGE$])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^VERSION$])
-m4trace:configure.ac:15: -1- _AM_IF_OPTION([no-define], [], [AC_DEFINE_UNQUOTED([PACKAGE], ["$PACKAGE"], [Name of package])
+m4trace:configure.ac:5: -1- m4_pattern_forbid([^_?A[CHUM]_])
+m4trace:configure.ac:5: -1- m4_pattern_forbid([_AC_])
+m4trace:configure.ac:5: -1- m4_pattern_forbid([^LIBOBJS$], [do not use LIBOBJS directly, use AC_LIBOBJ (see section `AC_LIBOBJ vs LIBOBJS'])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^AS_FLAGS$])
+m4trace:configure.ac:5: -1- m4_pattern_forbid([^_?m4_])
+m4trace:configure.ac:5: -1- m4_pattern_forbid([^dnl$])
+m4trace:configure.ac:5: -1- m4_pattern_forbid([^_?AS_])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^SHELL$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PATH_SEPARATOR$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_NAME$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_TARNAME$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_VERSION$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_STRING$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_BUGREPORT$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_URL$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^exec_prefix$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^prefix$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^program_transform_name$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^bindir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^sbindir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^libexecdir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^datarootdir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^datadir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^sysconfdir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^sharedstatedir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^localstatedir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^includedir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^oldincludedir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^docdir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^infodir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^htmldir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^dvidir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^pdfdir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^psdir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^libdir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^localedir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^mandir$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_NAME$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_TARNAME$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_VERSION$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_STRING$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_BUGREPORT$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^PACKAGE_URL$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^DEFS$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^ECHO_C$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^ECHO_N$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^ECHO_T$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^LIBS$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^build_alias$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^host_alias$])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^target_alias$])
+m4trace:configure.ac:7: -1- RTEMS_TOP([../..])
+m4trace:configure.ac:7: -1- RTEMS_VERSIONING
+m4trace:configure.ac:7: -1- AM_SET_LEADING_DOT
+m4trace:configure.ac:7: -1- m4_pattern_allow([^am__leading_dot$])
+m4trace:configure.ac:7: -1- m4_pattern_allow([^MAKE$])
+m4trace:configure.ac:7: -1- m4_pattern_allow([^RTEMS_TOPdir$])
+m4trace:configure.ac:7: -1- m4_pattern_allow([^PROJECT_TOPdir$])
+m4trace:configure.ac:7: -1- m4_pattern_allow([^PROJECT_ROOT$])
+m4trace:configure.ac:7: -1- m4_pattern_allow([^dirstamp$])
+m4trace:configure.ac:7: -1- m4_pattern_allow([^pkgdatadir$])
+m4trace:configure.ac:9: -1- RTEMS_ENABLE_CXX
+m4trace:configure.ac:10: -1- RTEMS_ENABLE_NETWORKING
+m4trace:configure.ac:10: -1- m4_pattern_allow([^RTEMS_HAS_NETWORKING$])
+m4trace:configure.ac:12: -1- RTEMS_CANONICAL_TARGET_CPU
+m4trace:configure.ac:12: -1- m4_pattern_allow([^build$])
+m4trace:configure.ac:12: -1- m4_pattern_allow([^build_cpu$])
+m4trace:configure.ac:12: -1- m4_pattern_allow([^build_vendor$])
+m4trace:configure.ac:12: -1- m4_pattern_allow([^build_os$])
+m4trace:configure.ac:12: -1- m4_pattern_allow([^host$])
+m4trace:configure.ac:12: -1- m4_pattern_allow([^host_cpu$])
+m4trace:configure.ac:12: -1- m4_pattern_allow([^host_vendor$])
+m4trace:configure.ac:12: -1- m4_pattern_allow([^host_os$])
+m4trace:configure.ac:12: -1- m4_pattern_allow([^RTEMS_CPU$])
+m4trace:configure.ac:14: -1- AM_INIT_AUTOMAKE([no-define subdir-objects no-exeext foreign 1.12.2])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^AM_[A-Z]+FLAGS$])
+m4trace:configure.ac:14: -1- AM_SET_CURRENT_AUTOMAKE_VERSION
+m4trace:configure.ac:14: -1- AM_AUTOMAKE_VERSION([1.14.1])
+m4trace:configure.ac:14: -1- _AM_AUTOCONF_VERSION([2.69])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^INSTALL_PROGRAM$])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^INSTALL_SCRIPT$])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^INSTALL_DATA$])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^am__isrc$])
+m4trace:configure.ac:14: -1- _AM_SUBST_NOTMAKE([am__isrc])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^CYGPATH_W$])
+m4trace:configure.ac:14: -1- _AM_SET_OPTIONS([no-define subdir-objects no-exeext foreign 1.12.2])
+m4trace:configure.ac:14: -1- _AM_SET_OPTION([no-define])
+m4trace:configure.ac:14: -2- _AM_MANGLE_OPTION([no-define])
+m4trace:configure.ac:14: -1- _AM_SET_OPTION([subdir-objects])
+m4trace:configure.ac:14: -2- _AM_MANGLE_OPTION([subdir-objects])
+m4trace:configure.ac:14: -1- _AM_SET_OPTION([no-exeext])
+m4trace:configure.ac:14: -2- _AM_MANGLE_OPTION([no-exeext])
+m4trace:configure.ac:14: -1- _AM_SET_OPTION([foreign])
+m4trace:configure.ac:14: -2- _AM_MANGLE_OPTION([foreign])
+m4trace:configure.ac:14: -1- _AM_SET_OPTION([1.12.2])
+m4trace:configure.ac:14: -2- _AM_MANGLE_OPTION([1.12.2])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^PACKAGE$])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^VERSION$])
+m4trace:configure.ac:14: -1- _AM_IF_OPTION([no-define], [], [AC_DEFINE_UNQUOTED([PACKAGE], ["$PACKAGE"], [Name of package])
  AC_DEFINE_UNQUOTED([VERSION], ["$VERSION"], [Version number of package])])
-m4trace:configure.ac:15: -2- _AM_MANGLE_OPTION([no-define])
-m4trace:configure.ac:15: -1- AM_SANITY_CHECK
-m4trace:configure.ac:15: -1- AM_MISSING_PROG([ACLOCAL], [aclocal-${am__api_version}])
-m4trace:configure.ac:15: -1- AM_MISSING_HAS_RUN
-m4trace:configure.ac:15: -1- AM_AUX_DIR_EXPAND
-m4trace:configure.ac:15: -1- m4_pattern_allow([^ACLOCAL$])
-m4trace:configure.ac:15: -1- AM_MISSING_PROG([AUTOCONF], [autoconf])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^AUTOCONF$])
-m4trace:configure.ac:15: -1- AM_MISSING_PROG([AUTOMAKE], [automake-${am__api_version}])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^AUTOMAKE$])
-m4trace:configure.ac:15: -1- AM_MISSING_PROG([AUTOHEADER], [autoheader])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^AUTOHEADER$])
-m4trace:configure.ac:15: -1- AM_MISSING_PROG([MAKEINFO], [makeinfo])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^MAKEINFO$])
-m4trace:configure.ac:15: -1- AM_PROG_INSTALL_SH
-m4trace:configure.ac:15: -1- m4_pattern_allow([^install_sh$])
-m4trace:configure.ac:15: -1- AM_PROG_INSTALL_STRIP
-m4trace:configure.ac:15: -1- m4_pattern_allow([^STRIP$])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^INSTALL_STRIP_PROGRAM$])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^MKDIR_P$])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^mkdir_p$])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^AWK$])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^SET_MAKE$])
-m4trace:configure.ac:15: -1- _AM_IF_OPTION([tar-ustar], [_AM_PROG_TAR([ustar])], [_AM_IF_OPTION([tar-pax], [_AM_PROG_TAR([pax])],
+m4trace:configure.ac:14: -2- _AM_MANGLE_OPTION([no-define])
+m4trace:configure.ac:14: -1- AM_SANITY_CHECK
+m4trace:configure.ac:14: -1- AM_MISSING_PROG([ACLOCAL], [aclocal-${am__api_version}])
+m4trace:configure.ac:14: -1- AM_MISSING_HAS_RUN
+m4trace:configure.ac:14: -1- AM_AUX_DIR_EXPAND
+m4trace:configure.ac:14: -1- m4_pattern_allow([^ACLOCAL$])
+m4trace:configure.ac:14: -1- AM_MISSING_PROG([AUTOCONF], [autoconf])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^AUTOCONF$])
+m4trace:configure.ac:14: -1- AM_MISSING_PROG([AUTOMAKE], [automake-${am__api_version}])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^AUTOMAKE$])
+m4trace:configure.ac:14: -1- AM_MISSING_PROG([AUTOHEADER], [autoheader])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^AUTOHEADER$])
+m4trace:configure.ac:14: -1- AM_MISSING_PROG([MAKEINFO], [makeinfo])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^MAKEINFO$])
+m4trace:configure.ac:14: -1- AM_PROG_INSTALL_SH
+m4trace:configure.ac:14: -1- m4_pattern_allow([^install_sh$])
+m4trace:configure.ac:14: -1- AM_PROG_INSTALL_STRIP
+m4trace:configure.ac:14: -1- m4_pattern_allow([^STRIP$])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^INSTALL_STRIP_PROGRAM$])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^MKDIR_P$])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^mkdir_p$])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^AWK$])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^SET_MAKE$])
+m4trace:configure.ac:14: -1- _AM_IF_OPTION([tar-ustar], [_AM_PROG_TAR([ustar])], [_AM_IF_OPTION([tar-pax], [_AM_PROG_TAR([pax])],
 			     [_AM_PROG_TAR([v7])])])
-m4trace:configure.ac:15: -2- _AM_MANGLE_OPTION([tar-ustar])
-m4trace:configure.ac:15: -1- _AM_IF_OPTION([tar-pax], [_AM_PROG_TAR([pax])], [_AM_PROG_TAR([v7])])
-m4trace:configure.ac:15: -2- _AM_MANGLE_OPTION([tar-pax])
-m4trace:configure.ac:15: -1- _AM_PROG_TAR([v7])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^AMTAR$])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^am__tar$])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^am__untar$])
-m4trace:configure.ac:15: -1- _AM_IF_OPTION([no-dependencies], [], [AC_PROVIDE_IFELSE([AC_PROG_CC],
+m4trace:configure.ac:14: -2- _AM_MANGLE_OPTION([tar-ustar])
+m4trace:configure.ac:14: -1- _AM_IF_OPTION([tar-pax], [_AM_PROG_TAR([pax])], [_AM_PROG_TAR([v7])])
+m4trace:configure.ac:14: -2- _AM_MANGLE_OPTION([tar-pax])
+m4trace:configure.ac:14: -1- _AM_PROG_TAR([v7])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^AMTAR$])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^am__tar$])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^am__untar$])
+m4trace:configure.ac:14: -1- _AM_IF_OPTION([no-dependencies], [], [AC_PROVIDE_IFELSE([AC_PROG_CC],
 		  [_AM_DEPENDENCIES([CC])],
 		  [m4_define([AC_PROG_CC],
 			     m4_defn([AC_PROG_CC])[_AM_DEPENDENCIES([CC])])])dnl
@@ -1458,31 +1549,32 @@ AC_PROVIDE_IFELSE([AC_PROG_OBJCXX],
 		  [m4_define([AC_PROG_OBJCXX],
 			     m4_defn([AC_PROG_OBJCXX])[_AM_DEPENDENCIES([OBJCXX])])])dnl
 ])
-m4trace:configure.ac:15: -2- _AM_MANGLE_OPTION([no-dependencies])
-m4trace:configure.ac:15: -1- AM_SILENT_RULES
-m4trace:configure.ac:15: -1- m4_pattern_allow([^AM_V$])
-m4trace:configure.ac:15: -1- AM_SUBST_NOTMAKE([AM_V])
-m4trace:configure.ac:15: -1- _AM_SUBST_NOTMAKE([AM_V])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^AM_DEFAULT_V$])
-m4trace:configure.ac:15: -1- AM_SUBST_NOTMAKE([AM_DEFAULT_V])
-m4trace:configure.ac:15: -1- _AM_SUBST_NOTMAKE([AM_DEFAULT_V])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^AM_DEFAULT_VERBOSITY$])
-m4trace:configure.ac:15: -1- m4_pattern_allow([^AM_BACKSLASH$])
-m4trace:configure.ac:15: -1- _AM_SUBST_NOTMAKE([AM_BACKSLASH])
-m4trace:configure.ac:16: -1- AM_MAINTAINER_MODE
-m4trace:configure.ac:16: -1- AM_CONDITIONAL([MAINTAINER_MODE], [test $USE_MAINTAINER_MODE = yes])
-m4trace:configure.ac:16: -1- m4_pattern_allow([^MAINTAINER_MODE_TRUE$])
-m4trace:configure.ac:16: -1- m4_pattern_allow([^MAINTAINER_MODE_FALSE$])
-m4trace:configure.ac:16: -1- _AM_SUBST_NOTMAKE([MAINTAINER_MODE_TRUE])
-m4trace:configure.ac:16: -1- _AM_SUBST_NOTMAKE([MAINTAINER_MODE_FALSE])
-m4trace:configure.ac:16: -1- m4_pattern_allow([^MAINT$])
-m4trace:configure.ac:18: -1- RTEMS_ENABLE_MULTILIB
-m4trace:configure.ac:18: -1- AM_CONDITIONAL([MULTILIB], [test x"${multilib}" = x"yes"])
-m4trace:configure.ac:18: -1- m4_pattern_allow([^MULTILIB_TRUE$])
-m4trace:configure.ac:18: -1- m4_pattern_allow([^MULTILIB_FALSE$])
-m4trace:configure.ac:18: -1- _AM_SUBST_NOTMAKE([MULTILIB_TRUE])
-m4trace:configure.ac:18: -1- _AM_SUBST_NOTMAKE([MULTILIB_FALSE])
-m4trace:configure.ac:19: -1- RTEMS_ENABLE_MULTIPROCESSING
+m4trace:configure.ac:14: -2- _AM_MANGLE_OPTION([no-dependencies])
+m4trace:configure.ac:14: -1- AM_SILENT_RULES
+m4trace:configure.ac:14: -1- m4_pattern_allow([^AM_V$])
+m4trace:configure.ac:14: -1- AM_SUBST_NOTMAKE([AM_V])
+m4trace:configure.ac:14: -1- _AM_SUBST_NOTMAKE([AM_V])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^AM_DEFAULT_V$])
+m4trace:configure.ac:14: -1- AM_SUBST_NOTMAKE([AM_DEFAULT_V])
+m4trace:configure.ac:14: -1- _AM_SUBST_NOTMAKE([AM_DEFAULT_V])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^AM_DEFAULT_VERBOSITY$])
+m4trace:configure.ac:14: -1- m4_pattern_allow([^AM_BACKSLASH$])
+m4trace:configure.ac:14: -1- _AM_SUBST_NOTMAKE([AM_BACKSLASH])
+m4trace:configure.ac:15: -1- AM_MAINTAINER_MODE
+m4trace:configure.ac:15: -1- AM_CONDITIONAL([MAINTAINER_MODE], [test $USE_MAINTAINER_MODE = yes])
+m4trace:configure.ac:15: -1- m4_pattern_allow([^MAINTAINER_MODE_TRUE$])
+m4trace:configure.ac:15: -1- m4_pattern_allow([^MAINTAINER_MODE_FALSE$])
+m4trace:configure.ac:15: -1- _AM_SUBST_NOTMAKE([MAINTAINER_MODE_TRUE])
+m4trace:configure.ac:15: -1- _AM_SUBST_NOTMAKE([MAINTAINER_MODE_FALSE])
+m4trace:configure.ac:15: -1- m4_pattern_allow([^MAINT$])
+m4trace:configure.ac:17: -1- RTEMS_ENABLE_MULTILIB
+m4trace:configure.ac:17: -1- AM_CONDITIONAL([MULTILIB], [test x"${multilib}" = x"yes"])
+m4trace:configure.ac:17: -1- m4_pattern_allow([^MULTILIB_TRUE$])
+m4trace:configure.ac:17: -1- m4_pattern_allow([^MULTILIB_FALSE$])
+m4trace:configure.ac:17: -1- _AM_SUBST_NOTMAKE([MULTILIB_TRUE])
+m4trace:configure.ac:17: -1- _AM_SUBST_NOTMAKE([MULTILIB_FALSE])
+m4trace:configure.ac:18: -1- RTEMS_ENABLE_MULTIPROCESSING
+m4trace:configure.ac:19: -1- RTEMS_ENABLE_CXX
 m4trace:configure.ac:20: -1- RTEMS_ENV_RTEMSBSP
 m4trace:configure.ac:20: -1- m4_pattern_allow([^RTEMS_BSP_FAMILY$])
 m4trace:configure.ac:20: -1- m4_pattern_allow([^RTEMS_CPU_MODEL$])
@@ -1501,178 +1593,222 @@ m4trace:configure.ac:25: -1- RTEMS_CHECK_POSIX_API([RTEMS_BSP])
 m4trace:configure.ac:25: -1- RTEMS_ENABLE_POSIX
 m4trace:configure.ac:25: -1- m4_pattern_allow([^RTEMS_HAS_POSIX_API$])
 m4trace:configure.ac:25: -1- m4_pattern_allow([^HAS_POSIX_API$])
-m4trace:configure.ac:30: -1- AM_SET_DEPDIR
-m4trace:configure.ac:30: -1- m4_pattern_allow([^DEPDIR$])
-m4trace:configure.ac:48: -1- _RTEMS_CHECK_CUSTOM_BSP([$f], [cfg_file])
-m4trace:configure.ac:75: -1- m4_pattern_allow([^RTEMS_CPU_MODEL$])
-m4trace:configure.ac:79: -1- RTEMS_BSP_ALIAS([${RTEMS_BSP}], [ac_cv_env_RTEMS_BSP_FAMILY])
-m4trace:configure.ac:79: -1- _RTEMS_BSP_ALIAS([${RTEMS_BSP}], [ac_cv_env_RTEMS_BSP_FAMILY])
-m4trace:configure.ac:82: -1- m4_pattern_allow([^RTEMS_BSP_FAMILY$])
-m4trace:configure.ac:99: -1- RTEMS_PROG_CC_FOR_TARGET
-m4trace:configure.ac:99: -1- RTEMS_PROG_CC
-m4trace:configure.ac:99: -1- RTEMS_CHECK_TOOL([CC], [gcc])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^CC$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^CC$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^CFLAGS$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^LDFLAGS$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^LIBS$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^CPPFLAGS$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^CC$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^CC$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^CC$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^CC$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^ac_ct_CC$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^EXEEXT$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^OBJEXT$])
-m4trace:configure.ac:99: -1- _AM_PROG_CC_C_O
-m4trace:configure.ac:99: -1- AM_RUN_LOG([$CC -c conftest.$ac_ext -o conftest2.$ac_objext])
-m4trace:configure.ac:99: -1- _AM_DEPENDENCIES([CC])
-m4trace:configure.ac:99: -1- AM_OUTPUT_DEPENDENCY_COMMANDS
-m4trace:configure.ac:99: -1- AM_MAKE_INCLUDE
-m4trace:configure.ac:99: -1- m4_pattern_allow([^am__include$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^am__quote$])
-m4trace:configure.ac:99: -1- AM_DEP_TRACK
-m4trace:configure.ac:99: -1- AM_CONDITIONAL([AMDEP], [test "x$enable_dependency_tracking" != xno])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^AMDEP_TRUE$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^AMDEP_FALSE$])
-m4trace:configure.ac:99: -1- _AM_SUBST_NOTMAKE([AMDEP_TRUE])
-m4trace:configure.ac:99: -1- _AM_SUBST_NOTMAKE([AMDEP_FALSE])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^AMDEPBACKSLASH$])
-m4trace:configure.ac:99: -1- _AM_SUBST_NOTMAKE([AMDEPBACKSLASH])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^am__nodep$])
-m4trace:configure.ac:99: -1- _AM_SUBST_NOTMAKE([am__nodep])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^CCDEPMODE$])
-m4trace:configure.ac:99: -1- AM_CONDITIONAL([am__fastdepCC], [
+m4trace:configure.ac:26: -1- RTEMS_CHECK_SMP
+m4trace:configure.ac:26: -1- RTEMS_ENABLE_SMP
+m4trace:configure.ac:31: -1- AM_SET_DEPDIR
+m4trace:configure.ac:31: -1- m4_pattern_allow([^DEPDIR$])
+m4trace:configure.ac:49: -1- _RTEMS_CHECK_CUSTOM_BSP([$f], [cfg_file])
+m4trace:configure.ac:73: -1- m4_pattern_allow([^RTEMS_CPU_MODEL$])
+m4trace:configure.ac:77: -1- RTEMS_BSP_ALIAS([${RTEMS_BSP}], [ac_cv_env_RTEMS_BSP_FAMILY])
+m4trace:configure.ac:77: -1- _RTEMS_BSP_ALIAS([${RTEMS_BSP}], [ac_cv_env_RTEMS_BSP_FAMILY])
+m4trace:configure.ac:80: -1- m4_pattern_allow([^RTEMS_BSP_FAMILY$])
+m4trace:configure.ac:97: -1- RTEMS_PROG_CC_FOR_TARGET
+m4trace:configure.ac:97: -1- RTEMS_PROG_CC
+m4trace:configure.ac:97: -1- RTEMS_CHECK_TOOL([CC], [gcc])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^CC$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^CC$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^CFLAGS$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^LDFLAGS$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^LIBS$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^CPPFLAGS$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^CC$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^CC$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^CC$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^CC$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^ac_ct_CC$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^EXEEXT$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^OBJEXT$])
+m4trace:configure.ac:97: -1- _AM_PROG_CC_C_O
+m4trace:configure.ac:97: -1- AM_RUN_LOG([$CC -c conftest.$ac_ext -o conftest2.$ac_objext])
+m4trace:configure.ac:97: -1- _AM_DEPENDENCIES([CC])
+m4trace:configure.ac:97: -1- AM_OUTPUT_DEPENDENCY_COMMANDS
+m4trace:configure.ac:97: -1- AM_MAKE_INCLUDE
+m4trace:configure.ac:97: -1- m4_pattern_allow([^am__include$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^am__quote$])
+m4trace:configure.ac:97: -1- AM_DEP_TRACK
+m4trace:configure.ac:97: -1- AM_CONDITIONAL([AMDEP], [test "x$enable_dependency_tracking" != xno])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^AMDEP_TRUE$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^AMDEP_FALSE$])
+m4trace:configure.ac:97: -1- _AM_SUBST_NOTMAKE([AMDEP_TRUE])
+m4trace:configure.ac:97: -1- _AM_SUBST_NOTMAKE([AMDEP_FALSE])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^AMDEPBACKSLASH$])
+m4trace:configure.ac:97: -1- _AM_SUBST_NOTMAKE([AMDEPBACKSLASH])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^am__nodep$])
+m4trace:configure.ac:97: -1- _AM_SUBST_NOTMAKE([am__nodep])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^CCDEPMODE$])
+m4trace:configure.ac:97: -1- AM_CONDITIONAL([am__fastdepCC], [
   test "x$enable_dependency_tracking" != xno \
   && test "$am_cv_CC_dependencies_compiler_type" = gcc3])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^am__fastdepCC_TRUE$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^am__fastdepCC_FALSE$])
-m4trace:configure.ac:99: -1- _AM_SUBST_NOTMAKE([am__fastdepCC_TRUE])
-m4trace:configure.ac:99: -1- _AM_SUBST_NOTMAKE([am__fastdepCC_FALSE])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^CPP$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^CPPFLAGS$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^CPP$])
-m4trace:configure.ac:99: -1- RTEMS_GCC_ISYSTEM
-m4trace:configure.ac:99: -1- RTEMS_GCC_PIPE
-m4trace:configure.ac:99: -1- RTEMS_GCC_SPECS
-m4trace:configure.ac:99: -1- m4_pattern_allow([^GCCSPECS$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^RTEMS_CPPFLAGS$])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^RTEMS_RELLDFLAGS$])
-m4trace:configure.ac:100: -1- AM_PROG_CC_C_O
-m4trace:configure.ac:101: -1- RTEMS_PROG_CCAS
-m4trace:configure.ac:101: -1- AM_PROG_AS
-m4trace:configure.ac:101: -1- m4_pattern_allow([^CCAS$])
-m4trace:configure.ac:101: -1- m4_pattern_allow([^CCASFLAGS$])
-m4trace:configure.ac:101: -1- _AM_IF_OPTION([no-dependencies], [], [_AM_DEPENDENCIES([CCAS])])
-m4trace:configure.ac:101: -2- _AM_MANGLE_OPTION([no-dependencies])
-m4trace:configure.ac:101: -1- _AM_DEPENDENCIES([CCAS])
-m4trace:configure.ac:101: -1- m4_pattern_allow([^CCASDEPMODE$])
-m4trace:configure.ac:101: -1- AM_CONDITIONAL([am__fastdepCCAS], [
+m4trace:configure.ac:97: -1- m4_pattern_allow([^am__fastdepCC_TRUE$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^am__fastdepCC_FALSE$])
+m4trace:configure.ac:97: -1- _AM_SUBST_NOTMAKE([am__fastdepCC_TRUE])
+m4trace:configure.ac:97: -1- _AM_SUBST_NOTMAKE([am__fastdepCC_FALSE])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^CPP$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^CPPFLAGS$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^CPP$])
+m4trace:configure.ac:97: -1- RTEMS_GCC_ISYSTEM
+m4trace:configure.ac:97: -1- RTEMS_GCC_PIPE
+m4trace:configure.ac:97: -1- RTEMS_GCC_SPECS
+m4trace:configure.ac:97: -1- m4_pattern_allow([^GCCSPECS$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^RTEMS_CPPFLAGS$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^RTEMS_RELLDFLAGS$])
+m4trace:configure.ac:98: -1- RTEMS_PROG_CXX_FOR_TARGET
+m4trace:configure.ac:98: -1- RTEMS_CHECK_TOOL([CXX], [g++])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^CXX$])
+m4trace:configure.ac:98: -1- AM_CONDITIONAL([am__fastdepCXX], [false])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^am__fastdepCXX_TRUE$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^am__fastdepCXX_FALSE$])
+m4trace:configure.ac:98: -1- _AM_SUBST_NOTMAKE([am__fastdepCXX_TRUE])
+m4trace:configure.ac:98: -1- _AM_SUBST_NOTMAKE([am__fastdepCXX_FALSE])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^CXX$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^CXXFLAGS$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^LDFLAGS$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^LIBS$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^CPPFLAGS$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^CXX$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^ac_ct_CXX$])
+m4trace:configure.ac:98: -1- _AM_DEPENDENCIES([CXX])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^CXXDEPMODE$])
+m4trace:configure.ac:98: -1- AM_CONDITIONAL([am__fastdepCXX], [
+  test "x$enable_dependency_tracking" != xno \
+  && test "$am_cv_CXX_dependencies_compiler_type" = gcc3])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^am__fastdepCXX_TRUE$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^am__fastdepCXX_FALSE$])
+m4trace:configure.ac:98: -1- _AM_SUBST_NOTMAKE([am__fastdepCXX_TRUE])
+m4trace:configure.ac:98: -1- _AM_SUBST_NOTMAKE([am__fastdepCXX_FALSE])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^CXXCPP$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^CPPFLAGS$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^CXXCPP$])
+m4trace:configure.ac:98: -1- AM_CONDITIONAL([am__fastdepCXX], [false])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^am__fastdepCXX_TRUE$])
+m4trace:configure.ac:98: -1- m4_pattern_allow([^am__fastdepCXX_FALSE$])
+m4trace:configure.ac:98: -1- _AM_SUBST_NOTMAKE([am__fastdepCXX_TRUE])
+m4trace:configure.ac:98: -1- _AM_SUBST_NOTMAKE([am__fastdepCXX_FALSE])
+m4trace:configure.ac:99: -1- AM_PROG_CC_C_O
+m4trace:configure.ac:100: -1- RTEMS_PROG_CCAS
+m4trace:configure.ac:100: -1- AM_PROG_AS
+m4trace:configure.ac:100: -1- m4_pattern_allow([^CCAS$])
+m4trace:configure.ac:100: -1- m4_pattern_allow([^CCASFLAGS$])
+m4trace:configure.ac:100: -1- _AM_IF_OPTION([no-dependencies], [], [_AM_DEPENDENCIES([CCAS])])
+m4trace:configure.ac:100: -2- _AM_MANGLE_OPTION([no-dependencies])
+m4trace:configure.ac:100: -1- _AM_DEPENDENCIES([CCAS])
+m4trace:configure.ac:100: -1- m4_pattern_allow([^CCASDEPMODE$])
+m4trace:configure.ac:100: -1- AM_CONDITIONAL([am__fastdepCCAS], [
   test "x$enable_dependency_tracking" != xno \
   && test "$am_cv_CCAS_dependencies_compiler_type" = gcc3])
-m4trace:configure.ac:101: -1- m4_pattern_allow([^am__fastdepCCAS_TRUE$])
-m4trace:configure.ac:101: -1- m4_pattern_allow([^am__fastdepCCAS_FALSE$])
-m4trace:configure.ac:101: -1- _AM_SUBST_NOTMAKE([am__fastdepCCAS_TRUE])
-m4trace:configure.ac:101: -1- _AM_SUBST_NOTMAKE([am__fastdepCCAS_FALSE])
-m4trace:configure.ac:101: -1- m4_pattern_allow([^RTEMS_CCASFLAGS$])
-m4trace:configure.ac:102: -1- RTEMS_CANONICALIZE_TOOLS
-m4trace:configure.ac:102: -1- RTEMS_CHECK_TOOL([AR], [ar], [no])
-m4trace:configure.ac:102: -1- m4_pattern_allow([^AR$])
-m4trace:configure.ac:102: -1- RTEMS_CHECK_TOOL([AS], [as], [no])
-m4trace:configure.ac:102: -1- m4_pattern_allow([^AS$])
-m4trace:configure.ac:102: -1- RTEMS_CHECK_TOOL([LD], [ld], [no])
-m4trace:configure.ac:102: -1- m4_pattern_allow([^LD$])
-m4trace:configure.ac:102: -1- RTEMS_CHECK_TOOL([RANLIB], [ranlib], [:])
-m4trace:configure.ac:102: -1- m4_pattern_allow([^RANLIB$])
-m4trace:configure.ac:111: -1- RTEMS_CHECK_GCC_WEAK
-m4trace:configure.ac:113: -1- m4_pattern_allow([^CUSTOM_CFG_FILES$])
-m4trace:configure.ac:115: -1- RTEMS_CHECK_MULTIPROCESSING
-m4trace:configure.ac:115: -1- AM_CONDITIONAL([HAS_MP], [test x"$rtems_cv_HAS_MP" = x"yes"])
-m4trace:configure.ac:115: -1- m4_pattern_allow([^HAS_MP_TRUE$])
-m4trace:configure.ac:115: -1- m4_pattern_allow([^HAS_MP_FALSE$])
-m4trace:configure.ac:115: -1- _AM_SUBST_NOTMAKE([HAS_MP_TRUE])
-m4trace:configure.ac:115: -1- _AM_SUBST_NOTMAKE([HAS_MP_FALSE])
-m4trace:configure.ac:119: -1- RTEMS_BSP_CONFIG_SUBDIR([cpukit], [../../cpukit], ['--with-project-root=${with_project_root}../$RTEMS_BSP/' \
+m4trace:configure.ac:100: -1- m4_pattern_allow([^am__fastdepCCAS_TRUE$])
+m4trace:configure.ac:100: -1- m4_pattern_allow([^am__fastdepCCAS_FALSE$])
+m4trace:configure.ac:100: -1- _AM_SUBST_NOTMAKE([am__fastdepCCAS_TRUE])
+m4trace:configure.ac:100: -1- _AM_SUBST_NOTMAKE([am__fastdepCCAS_FALSE])
+m4trace:configure.ac:100: -1- m4_pattern_allow([^RTEMS_CCASFLAGS$])
+m4trace:configure.ac:101: -1- RTEMS_CANONICALIZE_TOOLS
+m4trace:configure.ac:101: -1- RTEMS_CHECK_TOOL([AR], [ar], [no])
+m4trace:configure.ac:101: -1- m4_pattern_allow([^AR$])
+m4trace:configure.ac:101: -1- RTEMS_CHECK_TOOL([AS], [as], [no])
+m4trace:configure.ac:101: -1- m4_pattern_allow([^AS$])
+m4trace:configure.ac:101: -1- RTEMS_CHECK_TOOL([LD], [ld], [no])
+m4trace:configure.ac:101: -1- m4_pattern_allow([^LD$])
+m4trace:configure.ac:101: -1- RTEMS_CHECK_TOOL([RANLIB], [ranlib], [:])
+m4trace:configure.ac:101: -1- m4_pattern_allow([^RANLIB$])
+m4trace:configure.ac:110: -1- RTEMS_CHECK_GCC_WEAK
+m4trace:configure.ac:112: -1- m4_pattern_allow([^CUSTOM_CFG_FILES$])
+m4trace:configure.ac:114: -1- RTEMS_CHECK_MULTIPROCESSING
+m4trace:configure.ac:114: -1- AM_CONDITIONAL([HAS_MP], [test x"$rtems_cv_HAS_MP" = x"yes"])
+m4trace:configure.ac:114: -1- m4_pattern_allow([^HAS_MP_TRUE$])
+m4trace:configure.ac:114: -1- m4_pattern_allow([^HAS_MP_FALSE$])
+m4trace:configure.ac:114: -1- _AM_SUBST_NOTMAKE([HAS_MP_TRUE])
+m4trace:configure.ac:114: -1- _AM_SUBST_NOTMAKE([HAS_MP_FALSE])
+m4trace:configure.ac:118: -1- RTEMS_BSP_CONFIG_SUBDIR([cpukit], [../../cpukit], ['--with-project-root=${with_project_root}../$RTEMS_BSP/' \
    '--includedir=${exec_prefix}/${RTEMS_BSP}/lib/include' \
    '--libdir=${exec_prefix}/${RTEMS_BSP}/lib' \
   ], [test x"$multilib" = xno])
-m4trace:configure.ac:119: -1- RTEMS_CONFIGURE_ARGS_QUOTE([ac_sub_configure_args])
-m4trace:configure.ac:119: -1- _RTEMS_CONFIGURE_ARGS_QUOTE([ac_sub_configure_args], [])
-m4trace:configure.ac:128: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:131: -1- RTEMS_CPU_SUBDIRS([lib/libcpu])
-m4trace:configure.ac:131: -1- _RTEMS_CPU_SUBDIR([arm], [lib/libcpu])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:131: -1- _RTEMS_CPU_SUBDIR([bfin], [lib/libcpu])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:131: -1- _RTEMS_CPU_SUBDIR([avr], [lib/libcpu])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:131: -1- _RTEMS_CPU_SUBDIR([h8300], [lib/libcpu])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:131: -1- _RTEMS_CPU_SUBDIR([i386], [lib/libcpu])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:131: -1- _RTEMS_CPU_SUBDIR([lm32], [lib/libcpu])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:131: -1- _RTEMS_CPU_SUBDIR([m32c], [lib/libcpu])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:131: -1- _RTEMS_CPU_SUBDIR([m32r], [lib/libcpu])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:131: -1- _RTEMS_CPU_SUBDIR([m68k], [lib/libcpu])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:131: -1- _RTEMS_CPU_SUBDIR([mips], [lib/libcpu])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:131: -1- _RTEMS_CPU_SUBDIR([no_cpu], [lib/libcpu])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:131: -1- _RTEMS_CPU_SUBDIR([powerpc], [lib/libcpu])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:131: -1- _RTEMS_CPU_SUBDIR([sh], [lib/libcpu])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:131: -1- _RTEMS_CPU_SUBDIR([sparc], [lib/libcpu])
-m4trace:configure.ac:131: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:137: -1- m4_pattern_allow([^libcpu_cpu_subdir$])
-m4trace:configure.ac:140: -1- RTEMS_CPU_SUBDIRS([lib/libbsp])
-m4trace:configure.ac:140: -1- _RTEMS_CPU_SUBDIR([arm], [lib/libbsp])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:140: -1- _RTEMS_CPU_SUBDIR([bfin], [lib/libbsp])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:140: -1- _RTEMS_CPU_SUBDIR([avr], [lib/libbsp])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:140: -1- _RTEMS_CPU_SUBDIR([h8300], [lib/libbsp])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:140: -1- _RTEMS_CPU_SUBDIR([i386], [lib/libbsp])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:140: -1- _RTEMS_CPU_SUBDIR([lm32], [lib/libbsp])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:140: -1- _RTEMS_CPU_SUBDIR([m32c], [lib/libbsp])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:140: -1- _RTEMS_CPU_SUBDIR([m32r], [lib/libbsp])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:140: -1- _RTEMS_CPU_SUBDIR([m68k], [lib/libbsp])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:140: -1- _RTEMS_CPU_SUBDIR([mips], [lib/libbsp])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:140: -1- _RTEMS_CPU_SUBDIR([no_cpu], [lib/libbsp])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:140: -1- _RTEMS_CPU_SUBDIR([powerpc], [lib/libbsp])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:140: -1- _RTEMS_CPU_SUBDIR([sh], [lib/libbsp])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:140: -1- _RTEMS_CPU_SUBDIR([sparc], [lib/libbsp])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:141: -1- m4_pattern_allow([^libbsp_cpu_subdir$])
-m4trace:configure.ac:146: -1- m4_pattern_allow([^subdirs$])
-m4trace:configure.ac:165: -1- RTEMS_BSP_CONFIG_SUBDIR([ada-tests], [ada-tests], ['--enable-rtems-root=../' \
-   '--enable-project-root=${with_project_root}../$RTEMS_BSP' \
-   '--with-project-top=${with_project_top}../' \
-   '--enable-rtemsbsp=$RTEMS_BSP' \
-  ], [test x"$enable_tests" = xyes && test x"$enable_ada" = xyes])
-m4trace:configure.ac:178: -1- RTEMS_BSP_CONFIG_SUBDIR([testsuites], [../../testsuites], ['--enable-rtems-root=../' \
+m4trace:configure.ac:118: -1- RTEMS_CONFIGURE_ARGS_QUOTE([ac_sub_configure_args])
+m4trace:configure.ac:118: -1- _RTEMS_CONFIGURE_ARGS_QUOTE([ac_sub_configure_args], [])
+m4trace:configure.ac:127: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- RTEMS_CPU_SUBDIRS([lib/libcpu])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([arm], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([bfin], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([epiphany], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([i386], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([lm32], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([m32c], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([m68k], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([mips], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([moxie], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([nios2], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([no_cpu], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([or1k], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([powerpc], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([riscv], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([sh], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([sparc], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([sparc64], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:130: -1- _RTEMS_CPU_SUBDIR([v850], [lib/libcpu])
+m4trace:configure.ac:130: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:136: -1- m4_pattern_allow([^libcpu_cpu_subdir$])
+m4trace:configure.ac:139: -1- RTEMS_CPU_SUBDIRS([lib/libbsp])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([arm], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([bfin], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([epiphany], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([i386], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([lm32], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([m32c], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([m68k], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([mips], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([moxie], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([nios2], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([no_cpu], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([or1k], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([powerpc], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([riscv], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([sh], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([sparc], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([sparc64], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:139: -1- _RTEMS_CPU_SUBDIR([v850], [lib/libbsp])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^subdirs$])
+m4trace:configure.ac:140: -1- m4_pattern_allow([^libbsp_cpu_subdir$])
+m4trace:configure.ac:160: -1- RTEMS_BSP_CONFIG_SUBDIR([testsuites], [../../testsuites], ['--enable-rtems-root=../' \
    '--enable-project-root=${with_project_root}../$RTEMS_BSP' \
    '--with-project-top=${with_project_top}../' \
    '--enable-rtemsbsp=$RTEMS_BSP' \
    '--includedir=${exec_prefix}/${RTEMS_BSP}/lib/include' \
    '--libdir=${exec_prefix}/${RTEMS_BSP}/lib' \
   ], [test x"$enable_tests" != x"no" && test x"$multilib" = xno])
-m4trace:configure.ac:190: -1- RTEMS_BSP_CONFIG_SUBDIR([testsuites], [../../testsuites], ['--enable-rtems-root=../' \
+m4trace:configure.ac:172: -1- RTEMS_BSP_CONFIG_SUBDIR([testsuites], [../../testsuites], ['--enable-rtems-root=../' \
    '--enable-cpukit-root=${with_project_root}..' \
    '--enable-project-root=${with_project_root}../$RTEMS_BSP' \
    '--with-project-top=${with_project_top}../' \
@@ -1680,59 +1816,54 @@ m4trace:configure.ac:190: -1- RTEMS_BSP_CONFIG_SUBDIR([testsuites], [../../tests
    '--includedir=${exec_prefix}/${RTEMS_BSP}/lib/include' \
    '--libdir=${exec_prefix}/${RTEMS_BSP}/lib' \
   ], [test x"$enable_tests" != x"no" && test x"$multilib" = xyes])
-m4trace:configure.ac:202: -1- m4_pattern_allow([^BSP_SUBDIRS$])
-m4trace:configure.ac:204: -1- m4_pattern_allow([^CPU_U32_FIX$])
-m4trace:configure.ac:209: -1- AM_CONDITIONAL([HAS_NETWORKING], [test "$HAS_NETWORKING" = "yes"])
-m4trace:configure.ac:209: -1- m4_pattern_allow([^HAS_NETWORKING_TRUE$])
-m4trace:configure.ac:209: -1- m4_pattern_allow([^HAS_NETWORKING_FALSE$])
-m4trace:configure.ac:209: -1- _AM_SUBST_NOTMAKE([HAS_NETWORKING_TRUE])
-m4trace:configure.ac:209: -1- _AM_SUBST_NOTMAKE([HAS_NETWORKING_FALSE])
-m4trace:configure.ac:211: -1- AM_CONDITIONAL([HAS_POSIX], [test "$HAS_POSIX_API" = "yes"])
-m4trace:configure.ac:211: -1- m4_pattern_allow([^HAS_POSIX_TRUE$])
-m4trace:configure.ac:211: -1- m4_pattern_allow([^HAS_POSIX_FALSE$])
-m4trace:configure.ac:211: -1- _AM_SUBST_NOTMAKE([HAS_POSIX_TRUE])
-m4trace:configure.ac:211: -1- _AM_SUBST_NOTMAKE([HAS_POSIX_FALSE])
-m4trace:configure.ac:213: -1- AM_CONDITIONAL([RTEMS_ADA], [test x"$enable_ada" = x"yes" \
+m4trace:configure.ac:184: -1- m4_pattern_allow([^BSP_SUBDIRS$])
+m4trace:configure.ac:186: -1- m4_pattern_allow([^CPU_U32_FIX$])
+m4trace:configure.ac:191: -1- AM_CONDITIONAL([HAS_NETWORKING], [test "$HAS_NETWORKING" = "yes"])
+m4trace:configure.ac:191: -1- m4_pattern_allow([^HAS_NETWORKING_TRUE$])
+m4trace:configure.ac:191: -1- m4_pattern_allow([^HAS_NETWORKING_FALSE$])
+m4trace:configure.ac:191: -1- _AM_SUBST_NOTMAKE([HAS_NETWORKING_TRUE])
+m4trace:configure.ac:191: -1- _AM_SUBST_NOTMAKE([HAS_NETWORKING_FALSE])
+m4trace:configure.ac:192: -1- AM_CONDITIONAL([HAS_SMP], [test "$rtems_cv_HAS_SMP" = "yes"])
+m4trace:configure.ac:192: -1- m4_pattern_allow([^HAS_SMP_TRUE$])
+m4trace:configure.ac:192: -1- m4_pattern_allow([^HAS_SMP_FALSE$])
+m4trace:configure.ac:192: -1- _AM_SUBST_NOTMAKE([HAS_SMP_TRUE])
+m4trace:configure.ac:192: -1- _AM_SUBST_NOTMAKE([HAS_SMP_FALSE])
+m4trace:configure.ac:194: -1- AM_CONDITIONAL([RTEMS_ADA], [test x"$enable_ada" = x"yes" \
   && test x"$rtems_cv_HAS_POSIX_API" = x"yes"])
-m4trace:configure.ac:213: -1- m4_pattern_allow([^RTEMS_ADA_TRUE$])
-m4trace:configure.ac:213: -1- m4_pattern_allow([^RTEMS_ADA_FALSE$])
-m4trace:configure.ac:213: -1- _AM_SUBST_NOTMAKE([RTEMS_ADA_TRUE])
-m4trace:configure.ac:213: -1- _AM_SUBST_NOTMAKE([RTEMS_ADA_FALSE])
-m4trace:configure.ac:216: -1- RTEMS_PROJECT_ROOT
-m4trace:configure.ac:216: -1- RTEMS_AMPOLISH3
-m4trace:configure.ac:216: -1- m4_pattern_allow([^PERL$])
-m4trace:configure.ac:216: -1- m4_pattern_allow([^AMPOLISH3$])
-m4trace:configure.ac:216: -1- AM_CONDITIONAL([AMPOLISH3], [test x"$USE_MAINTAINER_MODE" = x"yes" \
+m4trace:configure.ac:194: -1- m4_pattern_allow([^RTEMS_ADA_TRUE$])
+m4trace:configure.ac:194: -1- m4_pattern_allow([^RTEMS_ADA_FALSE$])
+m4trace:configure.ac:194: -1- _AM_SUBST_NOTMAKE([RTEMS_ADA_TRUE])
+m4trace:configure.ac:194: -1- _AM_SUBST_NOTMAKE([RTEMS_ADA_FALSE])
+m4trace:configure.ac:197: -1- RTEMS_PROJECT_ROOT
+m4trace:configure.ac:197: -1- RTEMS_AMPOLISH3
+m4trace:configure.ac:197: -1- m4_pattern_allow([^PERL$])
+m4trace:configure.ac:197: -1- m4_pattern_allow([^AMPOLISH3$])
+m4trace:configure.ac:197: -1- AM_CONDITIONAL([AMPOLISH3], [test x"$USE_MAINTAINER_MODE" = x"yes" \
   && test -n "${PERL}"])
-m4trace:configure.ac:216: -1- m4_pattern_allow([^AMPOLISH3_TRUE$])
-m4trace:configure.ac:216: -1- m4_pattern_allow([^AMPOLISH3_FALSE$])
-m4trace:configure.ac:216: -1- _AM_SUBST_NOTMAKE([AMPOLISH3_TRUE])
-m4trace:configure.ac:216: -1- _AM_SUBST_NOTMAKE([AMPOLISH3_FALSE])
-m4trace:configure.ac:242: -1- m4_pattern_allow([^LIB@&t@OBJS$])
-m4trace:configure.ac:242: -1- m4_pattern_allow([^LTLIBOBJS$])
-m4trace:configure.ac:242: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
-m4trace:configure.ac:242: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
-m4trace:configure.ac:242: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
-m4trace:configure.ac:242: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
-m4trace:configure.ac:242: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
-m4trace:configure.ac:242: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
-m4trace:configure.ac:242: -1- _RTEMS_CONFIG_SUBDIR([cpukit], [../../cpukit], ['--with-project-root=${with_project_root}../$RTEMS_BSP/' \
+m4trace:configure.ac:197: -1- m4_pattern_allow([^AMPOLISH3_TRUE$])
+m4trace:configure.ac:197: -1- m4_pattern_allow([^AMPOLISH3_FALSE$])
+m4trace:configure.ac:197: -1- _AM_SUBST_NOTMAKE([AMPOLISH3_TRUE])
+m4trace:configure.ac:197: -1- _AM_SUBST_NOTMAKE([AMPOLISH3_FALSE])
+m4trace:configure.ac:215: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.ac:215: -1- m4_pattern_allow([^LTLIBOBJS$])
+m4trace:configure.ac:215: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
+m4trace:configure.ac:215: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
+m4trace:configure.ac:215: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
+m4trace:configure.ac:215: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
+m4trace:configure.ac:215: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
+m4trace:configure.ac:215: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
+m4trace:configure.ac:215: -1- _RTEMS_CONFIG_SUBDIR([cpukit], [../../cpukit], ['--with-project-root=${with_project_root}../$RTEMS_BSP/' \
    '--includedir=${exec_prefix}/${RTEMS_BSP}/lib/include' \
    '--libdir=${exec_prefix}/${RTEMS_BSP}/lib' \
   ])
-m4trace:configure.ac:242: -1- _RTEMS_CONFIG_SUBDIR([ada-tests], [ada-tests], ['--enable-rtems-root=../' \
-   '--enable-project-root=${with_project_root}../$RTEMS_BSP' \
-   '--with-project-top=${with_project_top}../' \
-   '--enable-rtemsbsp=$RTEMS_BSP' \
-  ])
-m4trace:configure.ac:242: -1- _RTEMS_CONFIG_SUBDIR([testsuites], [../../testsuites], ['--enable-rtems-root=../' \
+m4trace:configure.ac:215: -1- _RTEMS_CONFIG_SUBDIR([testsuites], [../../testsuites], ['--enable-rtems-root=../' \
    '--enable-project-root=${with_project_root}../$RTEMS_BSP' \
    '--with-project-top=${with_project_top}../' \
    '--enable-rtemsbsp=$RTEMS_BSP' \
    '--includedir=${exec_prefix}/${RTEMS_BSP}/lib/include' \
    '--libdir=${exec_prefix}/${RTEMS_BSP}/lib' \
   ])
-m4trace:configure.ac:242: -1- _RTEMS_CONFIG_SUBDIR([testsuites], [../../testsuites], ['--enable-rtems-root=../' \
+m4trace:configure.ac:215: -1- _RTEMS_CONFIG_SUBDIR([testsuites], [../../testsuites], ['--enable-rtems-root=../' \
    '--enable-cpukit-root=${with_project_root}..' \
    '--enable-project-root=${with_project_root}../$RTEMS_BSP' \
    '--with-project-top=${with_project_top}../' \

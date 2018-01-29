@@ -9,13 +9,13 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <string.h>
 #include <fcntl.h>
+
+#include <rtems/counter.h>
 
 #include <libcpu/bat.h>
 #include <libcpu/spr.h>
@@ -32,10 +32,11 @@
  */
 unsigned int BSP_bus_frequency;
 
-/*
- *  Driver configuration parameters
- */
-uint32_t   bsp_clicks_per_usec;
+/* Configuration parameter for clock driver */
+uint32_t bsp_time_base_frequency;
+
+/* Legacy */
+uint32_t bsp_clicks_per_usec;
 
 /*
  * Memory on this board.
@@ -78,7 +79,9 @@ void bsp_start( void )
    * this should speed up some tests :-)
    */
   BSP_bus_frequency        = 20;
+  bsp_time_base_frequency  = 20000000;
   bsp_clicks_per_usec      = BSP_bus_frequency;
+  rtems_counter_initialize_converter(bsp_time_base_frequency);
 
   /*
    * Initialize the interrupt related settings.
@@ -91,14 +94,7 @@ void bsp_start( void )
   /*
    * Initialize default raw exception handlers.
    */
-  sc = ppc_exc_initialize(
-    PPC_INTERRUPT_DISABLE_MASK_DEFAULT,
-    intrStackStart,
-    intrStackSize
-  );
-  if (sc != RTEMS_SUCCESSFUL) {
-    BSP_panic("cannot initialize exceptions");
-  }
+  ppc_exc_initialize(intrStackStart, intrStackSize);
 
   /* Install default handler for the decrementer exception */
   sc = ppc_exc_set_handler( ASM_DEC_VECTOR, default_decrementer_exception_handler);
@@ -107,10 +103,7 @@ void bsp_start( void )
   }
 
   /* Initalize interrupt support */
-  sc = bsp_interrupt_initialize();
-  if (sc != RTEMS_SUCCESSFUL) {
-    BSP_panic("cannot intitialize interrupts");
-  }
+  bsp_interrupt_initialize();
 
 #if 0
   /*
@@ -124,6 +117,6 @@ void bsp_start( void )
   setdbat(2, 0xc<<24, 0xc<<24, 1<<24,  IO_PAGE);
 
   _write_MSR(_read_MSR() | MSR_DR | MSR_IR);
-  asm volatile("sync; isync");
+  __asm__ volatile("sync; isync");
 #endif
 }

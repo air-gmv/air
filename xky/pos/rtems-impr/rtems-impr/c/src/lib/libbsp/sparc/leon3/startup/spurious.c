@@ -1,8 +1,5 @@
-/**
- *  @file
- *  spurious.c
- *
- *  @brief LEON3 Spurious Trap Handler
+/*
+ *  LEON Spurious Trap Handler
  *
  *  This is just enough of a trap handler to let us know what
  *  the likely source of the trap was.
@@ -11,108 +8,185 @@
  *  of the SPARC by On-Line Applications Research Corporation (OAR)
  *  under contract to the European Space Agency (ESA).
  *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
  *  COPYRIGHT (c) 1995. European Space Agency.
  *
  *  Modified for LEON3 BSP.
  *  COPYRIGHT (c) 2004.
  *  Gaisler Research.
  *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  234     | 09/10/2008  | mcoutinho    | IPR 66
- *  2467    | 15/04/2009  | mcoutinho    | IPR 452
- *  4341    | 15/09/2009  | mcoutinho    | IPR 606
- *  4586    | 30/09/2009  | mcoutinho    | IPR 605
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  5513    | 11/11/2009  | mcoutinho    | IPR 866
- *  8183    | 15/06/2010  | mcoutinho    | IPR 451
- *  9872    | 18/03/2011  | aconstantino | SPR 2819
- *  $Rev: 9929 $ | $Date: 2011-03-23 12:02:26 +0000 (Wed, 23 Mar 2011) $| $Author: sfaustino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SPARC_LEON3_BSP SPARC LEON3 BSP
- *  @{
+ *  This terms of the RTEMS license apply to this file.
  */
 
-#include <xky.h>
 #include <bsp.h>
-#include <rtems/score/interr.h>
-#include <sharedBSPs.h>
+#include <rtems/score/cpu.h>
+#include <rtems/bspIo.h>
+#include <inttypes.h>
 
-
-rtems_isr bsp_spurious_handler(
-                               rtems_vector_number trap
-                               )
+void _CPU_Exception_frame_print( const CPU_Exception_frame *frame )
 {
-    /* call internal error with :
-     *   interrupt not handled
-     *   internal set to true
-     *   the interrupt vector number */
-    _Internal_error_Occurred(INTERNAL_ERROR_INTERRUPTION_NOT_HANDLED ,
-                             TRUE ,
-                             SPARC_REAL_TRAP_NUMBER(trap));
+  uint32_t                   trap;
+  uint32_t                   real_trap;
+  const CPU_Interrupt_frame *isf;
+
+  trap = frame->trap;
+  real_trap = SPARC_REAL_TRAP_NUMBER(trap);
+  isf = frame->isf;
+
+  printk(
+    "Unexpected trap (%2" PRId32 ") at address 0x%08" PRIx32 "\n",
+    real_trap,
+    isf->tpc
+  );
+
+  switch (real_trap) {
+
+    /*
+     *  First the ones defined by the basic architecture
+     */
+
+    case 0x00:
+      printk( "reset\n" );
+      break;
+    case 0x01:
+      printk( "instruction access exception\n" );
+      break;
+    case 0x02:
+      printk( "illegal instruction\n" );
+      break;
+    case 0x03:
+      printk( "privileged instruction\n" );
+      break;
+    case 0x04:
+      printk( "fp disabled\n" );
+      break;
+    case 0x07:
+      printk( "memory address not aligned\n" );
+      break;
+    case 0x08:
+      printk( "fp exception\n" );
+      break;
+    case 0x0A:
+      printk( "tag overflow\n" );
+      break;
+
+    /*
+     *  Then the ones defined by the LEON in particular
+     */
+      /* FIXME */
+
+      /*
+    case LEON_TRAP_TYPE( LEON_INTERRUPT_CORRECTABLE_MEMORY_ERROR ):
+      printk( "LEON_INTERRUPT_CORRECTABLE_MEMORY_ERROR\n" );
+      break;
+    case LEON_TRAP_TYPE( LEON_INTERRUPT_UART_2_RX_TX ):
+      printk( "LEON_INTERRUPT_UART_2_RX_TX\n" );
+      break;
+    case LEON_TRAP_TYPE( LEON_INTERRUPT_UART_1_RX_TX ):
+      printk( "LEON_INTERRUPT_UART_1_RX_TX\n" );
+      break;
+    case LEON_TRAP_TYPE( LEON_INTERRUPT_EXTERNAL_0 ):
+      printk( "LEON_INTERRUPT_EXTERNAL_0\n" );
+      break;
+    case LEON_TRAP_TYPE( LEON_INTERRUPT_EXTERNAL_1 ):
+      printk( "LEON_INTERRUPT_EXTERNAL_1\n" );
+      break;
+    case LEON_TRAP_TYPE( LEON_INTERRUPT_EXTERNAL_2 ):
+      printk( "LEON_INTERRUPT_EXTERNAL_2\n" );
+      break;
+    case LEON_TRAP_TYPE( LEON_INTERRUPT_EXTERNAL_3 ):
+      printk( "LEON_INTERRUPT_EXTERNAL_3\n" );
+      break;
+    case LEON_TRAP_TYPE( LEON_INTERRUPT_TIMER1 ):
+      printk( "LEON_INTERRUPT_TIMER1\n" );
+      break;
+    case LEON_TRAP_TYPE( LEON_INTERRUPT_TIMER2 ):
+      printk( "LEON_INTERRUPT_TIMER2\n" );
+      break;
+      */
+
+    default:
+      break;
+  }
 }
 
+static rtems_isr bsp_spurious_handler(
+   rtems_vector_number trap,
+   CPU_Interrupt_frame *isf
+)
+{
+  CPU_Exception_frame frame = {
+    .trap = trap,
+    .isf = isf
+  };
+
+#if !defined(SPARC_USE_LAZY_FP_SWITCH)
+  if ( SPARC_REAL_TRAP_NUMBER( trap ) == 4 ) {
+    _Internal_error( INTERNAL_ERROR_ILLEGAL_USE_OF_FLOATING_POINT_UNIT );
+  }
+#endif
+
+  rtems_fatal(
+    RTEMS_FATAL_SOURCE_EXCEPTION,
+    (rtems_fatal_code) &frame
+  );
+}
+
+/*
+ *  bsp_spurious_initialize
+ *
+ *  Install the spurious handler for most traps. Note that set_vector()
+ *  will unmask the corresponding asynchronous interrupt, so the initial
+ *  interrupt mask is restored after the handlers are installed.
+ */
 
 void bsp_spurious_initialize()
 {
-    /* old ISR handler */
-    proc_ptr old_isr_handler;
+  uint32_t trap;
+  uint32_t level;
+  /* uint32_t mask; */
+  
+  /* old ISR handler */
+  proc_ptr old_isr_handler;
+  
 
-    /* iterator trap number */
-    uint32_t trap;
+  level = sparc_disable_interrupts();
+  /* mask = LEON3_IrqCtrl_Regs->mask_p0; */
 
-    /* interrupt level */
-    uint32_t level;
+  for ( trap=0 ; trap<256 ; trap++ ) {
+      /* in case of an external interrupt */
+      if(( trap >= 0x11 ) && ( trap <= 0x1f ))
+      {
+      /* simply catch the interrupt and not unmask it */
+      _CPU_ISR_install_vector(trap ,
+                  bsp_spurious_handler ,
+                  &old_isr_handler);
 
+      /* and move on to the next trap */
+      continue;
+      }
 
-    /* disable interrutps */
-    level = xky_sparc_disable_interrupts();
+      /* skip window overflow, underflow as well as software
+    * trap 0 which we will use as a shutdown. Also avoid trap 0x70 - 0x7f
+    * which cannot happen and where some of the space is used to pass
+    * paramaters to the program */
+      if(( trap == 5 || trap == 6 ) ||
+      ( ( trap >= 0x70 ) && ( trap <= 0x83 ) ))
+      {
+      /* skip this vector */
+      continue;
+      }
 
-    /* iterate through all the SPARC traps */
-    for(trap = 0; trap < 256; trap++)
-    {
-        /* in case of an external interrupt */
-        if(( trap >= 0x11 ) && ( trap <= 0x1f ))
-        {
-            /* simply catch the interrupt and not unmask it */
-            _CPU_ISR_install_vector(trap ,
-                                    bsp_spurious_handler ,
-                                    &old_isr_handler);
+          
 
-            /* and move on to the next trap */
-            continue;
-        }
+    set_vector(
+        (rtems_isr_entry) bsp_spurious_handler,
+        SPARC_SYNCHRONOUS_TRAP( trap ),
+        1
+    );
+  }
 
-        /* skip window overflow, underflow as well as software
-         * trap 0 which we will use as a shutdown. Also avoid trap 0x70 - 0x7f
-         * which cannot happen and where some of the space is used to pass
-         * paramaters to the program */
-        if(( trap == 5 || trap == 6 ) ||
-           ( ( trap >= 0x70 ) && ( trap <= 0x80 ) ))
-        {
-            /* skip this vector */
-            continue;
-        }
+  /* LEON3_IrqCtrl_Regs->mask_p0 = mask; */
+  sparc_enable_interrupts(level);
 
-        /* set the default ISR handler to bsp_spurious_handler and unmask the
-         * interrupt */
-        set_vector(bsp_spurious_handler ,
-                   SPARC_SYNCHRONOUS_TRAP(trap));
-    }
-
-    /* re-enable interrupts */
-    xky_sparc_enable_interrupts(level);
+  
 }
-
-/**  
- *  @}
- */

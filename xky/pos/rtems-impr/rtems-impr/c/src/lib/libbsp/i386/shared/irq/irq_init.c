@@ -6,16 +6,17 @@
  *  Copyright (c) 2009 embedded brains GmbH
  *  CopyRight (C) 1998 valette@crf.canon.fr
  *
+ *  COPYRIGHT (c) 2011.
+ *  On-Line Applications Research Corporation (OAR).
+ *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <rtems/bspIo.h>
 
-#include <libcpu/cpu.h>
+#include <rtems/score/cpu.h>
 
 #include <bsp.h>
 #include <bsp/irq.h>
@@ -40,6 +41,7 @@ extern void rtems_irq_prologue_12(void);
 extern void rtems_irq_prologue_13(void);
 extern void rtems_irq_prologue_14(void);
 extern void rtems_irq_prologue_15(void);
+extern void rtems_irq_prologue_16(void);
 /*
  * default vectors
  */
@@ -64,7 +66,7 @@ static int raw_not_connected(
 
 static rtems_raw_irq_connect_data 	idtHdl[IDT_SIZE];
 
-static rtems_raw_irq_hdl rtemsIrq[BSP_IRQ_LINES_NUMBER] = {
+static rtems_raw_irq_hdl rtemsIrq[BSP_IRQ_VECTOR_NUMBER] = {
   rtems_irq_prologue_0,
   rtems_irq_prologue_1,
   rtems_irq_prologue_2,
@@ -80,7 +82,8 @@ static rtems_raw_irq_hdl rtemsIrq[BSP_IRQ_LINES_NUMBER] = {
   rtems_irq_prologue_12,
   rtems_irq_prologue_13,
   rtems_irq_prologue_14,
-  rtems_irq_prologue_15
+  rtems_irq_prologue_15,
+  rtems_irq_prologue_16,
 };
 
 static rtems_raw_irq_connect_data 	defaultRawIrq = {
@@ -95,6 +98,10 @@ static interrupt_gate_descriptor	idtEntry;
 
 static rtems_raw_irq_global_settings raw_initial_config;
 
+
+/*
+ *  This method is called from irq_asm.S and cannot be static.
+ */
 void raw_idt_notify(void)
 {
   printk("raw_idt_notify has been called \n");
@@ -117,7 +124,12 @@ void  rtems_irq_mngt_init(void)
        while(1);
     }
 
-    rtems_interrupt_disable(level);
+    /*
+     * The interrupt management can be initialized only once
+     * during system bootup and that should happen on boot
+     * CPU so there is no need to synchronize with others CPUs.
+     */
+    rtems_interrupt_local_disable(level);
 
     /*
      * Init the complete IDT vector table with defaultRawIrq value
@@ -142,7 +154,7 @@ void  rtems_irq_mngt_init(void)
      * Patch the entry that will be used by RTEMS for interrupt management
      * with RTEMS prologue.
      */
-    for (i = 0; i < BSP_IRQ_LINES_NUMBER; i++) {
+    for (i = 0; i < BSP_IRQ_VECTOR_NUMBER; i++) {
       create_interrupt_gate_descriptor(&idtEntry, rtemsIrq[i]);
       idt_entry_tbl[i + BSP_ASM_IRQ_VECTOR_BASE] = idtEntry;
     }
@@ -155,13 +167,7 @@ void  rtems_irq_mngt_init(void)
     /*
      * Init initial Interrupt management config
      */
-    if (bsp_interrupt_initialize() != RTEMS_SUCCESSFUL) {
-      /*
-       * put something here that will show the failure...
-       */
-      printk("Unable to initialize RTEMS interrupt Management!!! System locked\n");
-      while (1);
-    }
+    bsp_interrupt_initialize();
 
     /*
      * #define DEBUG

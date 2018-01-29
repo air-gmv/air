@@ -7,8 +7,6 @@
  *  Modifications for gen405 by Dennis Ehlin
  *  Modifications for virtex by Keith, Greg, and Bob
  *  Modifications for 405GP/EX by Michael Hamel
- *
- *  $Id$
  */
 
 OUTPUT_FORMAT("elf32-powerpc", "elf32-powerpc", "elf32-powerpc")
@@ -39,6 +37,7 @@ SECTIONS
      *(.text*)
      *(.rodata*)
      *(.rodata1)
+     KEEP (*(SORT(.rtemsroset.*)))
 
      /*
       * Special FreeBSD sysctl sections.
@@ -78,7 +77,7 @@ SECTIONS
     /* 
      *  C++ constructors and destructors for static objects.
      *  PowerPC EABI does not use crtstuff yet, so we build "old-style"
-     *  constructor and destructor lists that begin with the list lenght
+     *  constructor and destructor lists that begin with the list length
      *  end terminate with a NULL entry.
      */
      
@@ -143,6 +142,25 @@ SECTIONS
 
   text.size = text.end - text.start;
 
+  .tdata : {
+    _TLS_Data_begin = .;
+    *(.tdata .tdata.* .gnu.linkonce.td.*)
+    _TLS_Data_end = .;
+  } >RAM
+
+  .tbss : {
+    _TLS_BSS_begin = .;
+    *(.tbss .tbss.* .gnu.linkonce.tb.*) *(.tcommon)
+    _TLS_BSS_end = .;
+  } >RAM
+
+  _TLS_Data_size = _TLS_Data_end - _TLS_Data_begin;
+  _TLS_Data_begin = _TLS_Data_size != 0 ? _TLS_Data_begin : _TLS_BSS_begin;
+  _TLS_Data_end = _TLS_Data_size != 0 ? _TLS_Data_end : _TLS_BSS_begin;
+  _TLS_BSS_size = _TLS_BSS_end - _TLS_BSS_begin;
+  _TLS_Size = _TLS_BSS_end - _TLS_Data_begin;
+  _TLS_Alignment = MAX (ALIGNOF (.tdata), ALIGNOF (.tbss));
+
   .jcr : { KEEP (*(.jcr)) } >RAM
 
     .rel.dyn : {
@@ -191,6 +209,7 @@ SECTIONS
       data.start = .;
       *(.data)
       *(.data1)
+      KEEP (*(SORT(.rtemsrwset.*)))
       *(.data.* .gnu.linkonce.d.*)
       data.end = .;
     } > RAM

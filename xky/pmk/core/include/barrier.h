@@ -30,13 +30,13 @@
 typedef struct {
 
     /** maximum of cores that barrier can hold                          */
-    xky_u32_t size;
+    air_u32_t size;
     /** remaining number of cores to open the barrier                   */
     atomic_t count;
     /** current global sense                                            */
-    volatile xky_u32_t sense;
+    volatile air_u32_t sense;
     /** core current local sense (local lock variable)                  */
-    xky_u32_t local_sense[PMK_MAX_CORES];
+    air_u32_t local_sense[PMK_MAX_CORES];
 
 } pmk_barrier_t;
 
@@ -46,14 +46,14 @@ typedef struct {
  *  @param size Number of process to wait on the barrier
  *  @note The value of cannot be higher than the number of supported cores
  */
-void pmk_barrier_init(pmk_barrier_t *barrier, xky_u32_t size);
+void pmk_barrier_init(pmk_barrier_t *barrier, air_u32_t size);
 
 /**
  * @brief Barrier wait
  * @param barrier Barrier to wait on
  * @param core_id Current core id
  */
-void pmk_barrier_wait(pmk_barrier_t *barrier, xky_u32_t core_id);
+void pmk_barrier_wait(pmk_barrier_t *barrier, air_u32_t core_id);
 
 /** @} */
 

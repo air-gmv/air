@@ -6,7 +6,7 @@
  * ============================================================================
  */
 
-#include <xky.h>
+#include <air.h>
 #include <rtems.h>
 #include <imaspex.h>
 
@@ -18,16 +18,16 @@ extern int receiver() __attribute__ ((weak));
  * @brief Partition health-monitor callback
  */
 extern void partition_HM_callback(
-        xky_state_e state_id,
-        xky_error_e error_id) __attribute__ ((weak));
+        air_state_e state_id,
+        air_error_e error_id) __attribute__ ((weak));
 /**
  * @brief Health-Monitor ISR handler
  */
 static void hm_isr_handler(void) {
 
     /* get HM event */
-    xky_hm_event_t hm_event;
-    xky_syscall_get_hm_event(&hm_event);
+    air_hm_event_t hm_event;
+    air_syscall_get_hm_event(&hm_event);
 
     /* call partition HM callback */
     if (partition_HM_callback != NULL) {
@@ -44,7 +44,7 @@ rtems_task Init(rtems_task_argument ignored) {
     rtems_isr_entry isr_ignored;
     rtems_interrupt_catch(
             (rtems_isr_entry)hm_isr_handler,
-            XKY_IRQ_HM_EVENT,
+            AIR_IRQ_HM_EVENT,
             &isr_ignored);
 
     /* initialize IMASPEX */

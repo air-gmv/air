@@ -1,5 +1,3 @@
-dnl $Id: check-cxx.m4 179 2008-09-17 14:07:38Z hsilva $
-dnl
 AC_DEFUN([RTEMS_CHECK_CXX],
 [dnl
 AC_REQUIRE([RTEMS_PROG_CC_FOR_TARGET])dnl

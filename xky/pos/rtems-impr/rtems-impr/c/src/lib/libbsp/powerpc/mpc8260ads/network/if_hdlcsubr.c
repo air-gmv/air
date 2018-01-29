@@ -45,7 +45,6 @@
  * SUCH DAMAGE.
  *
  *	@(#)if_ethersubr.c	8.1 (Berkeley) 6/10/93
- * $Id$
  */
 
 #include <rtems/rtems_bsdnet.h>
@@ -58,7 +57,7 @@
 #include <sys/mbuf.h>
 #include <sys/protosw.h>
 #include <sys/socket.h>
-#include <sys/ioctl.h>
+#include <sys/sockio.h>
 #include <errno.h>
 #include <sys/syslog.h>
 #include <sys/sysctl.h>

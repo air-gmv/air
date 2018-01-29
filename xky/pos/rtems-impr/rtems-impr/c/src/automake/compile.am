@@ -1,7 +1,3 @@
-##
-## $Id: compile.am 179 2008-09-17 14:07:38Z hsilva $
-##
-
 ## -------------------------------------------------------------------------
 
 CC = @CC@ $(GCCSPECS)
@@ -11,6 +7,6 @@ CCAS = @CCAS@ $(GCCSPECS)
 
 ##
 AM_CPPFLAGS = @RTEMS_CPPFLAGS@
-AM_CFLAGS = @RTEMS_CFLAGS@
-AM_CXXFLAGS = @RTEMS_CFLAGS@
+AM_CFLAGS =
+AM_CXXFLAGS =
 AM_CCASFLAGS = @RTEMS_CCASFLAGS@

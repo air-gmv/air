@@ -11,6 +11,16 @@ HAS_MP = @HAS_MP@
 HAS_RDBG = no
 
 ##
+## Does this BSP support RTEMS's posix API ?
+##
+HAS_POSIX_API = @HAS_POSIX_API@
+
+##
+## Does this BSP support RTEMS's ITRON API ?
+##
+HAS_ITRON_API = no
+
+##
 ## Does this BSP support RTEMS's CXX API ?
 ##
 HAS_CPLUSPLUS = @HAS_CPLUSPLUS@
@@ -19,7 +29,3 @@ HAS_CPLUSPLUS = @HAS_CPLUSPLUS@
 ## Does this BSP support RTEMS's networking ?
 ##
 HAS_NETWORKING = @HAS_NETWORKING@
-
-## Only used for the bare bsp
-BARE_CPU_MODEL = @BARE_CPU_MODEL@
-BARE_CPU_CFLAGS = @BARE_CPU_CFLAGS@

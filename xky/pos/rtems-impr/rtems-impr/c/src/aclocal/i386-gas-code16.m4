@@ -1,7 +1,3 @@
-dnl
-dnl  $Id: i386-gas-code16.m4 179 2008-09-17 14:07:38Z hsilva $
-dnl 
-
 dnl check for i386 gas supporting 16 bit mode
 dnl     - binutils 2.9.1.0.7 and higher
 

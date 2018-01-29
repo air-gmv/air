@@ -1,6 +1,4 @@
 ##
-##  $Id: Makefile.am 373 2008-10-23 16:46:12Z mcoutinho $
-##
 ##  build and install "glommed" librtemsbsp.a
 ##
 
@@ -10,14 +8,26 @@ include $(top_srcdir)/automake/compile.am
 project_lib_DATA = o-optimize/librtemsbsp.a
 CLEANFILES = o-optimize/librtemsbsp.a
 
+SRCS = ../support/libsupport.a
 
-if HAS_LIBBSP
-SRCS = ../lib/libbsp/@RTEMS_CPU@/@RTEMS_BSP_FAMILY@/libbsp.a
-endif
+SRCS += ../lib/libbsp/@RTEMS_CPU@/@RTEMS_BSP_FAMILY@/libbsp.a
 
 # FIXME: ATM, there is no libcpu.a, anymore.
 # SRCS += $(wildcard $(PROJECT_LIB)/libcpu.a)
 
+SRCS += ../libchip/libflash.a
+SRCS += ../libchip/librtcio.a
+SRCS += ../libchip/libserialio.a
+SRCS += ../libchip/libide.a
+if HAS_NETWORKING
+SRCS += ../libchip/libnetchip.a
+endif
+SRCS += ../libchip/libi2cio.a
+SRCS += ../libchip/libdisplay.a
+
+if HAS_MP
+SRCS += ../libchip/shmdr.rel
+endif
 
 o-optimize/librtemsbsp.a: $(SRCS)
 	rm -f $@
@@ -46,13 +56,11 @@ o-optimize/librtemsbsp.a: $(SRCS)
 	    ;; \
 	  esac; \
 	done
-#TODO: remove xpto.txt and place the original values
-	if [ "`ls o-optimize/*.$(OBJEXT) 2>/dev/null | wc -l`" -gt "0" ]; then ls o-optimize/*.$(OBJEXT) o-optimize/*.rel > xpto.txt; else ls o-optimize/*.rel > xpto.txt; fi
-	$(AR) rc $@ @xpto.txt
-#	rm -f xpto.txt o-optimize/*.$(OBJEXT) o-optimize/*.rel
+	ls o-optimize/*.$(OBJEXT) > $@-list
+	-ls o-optimize/*.rel >> $@-list
+	$(AR) rc $@ @$@-list
+	rm -f $@-list o-optimize/*.$(OBJEXT) o-optimize/*.rel
 	$(RANLIB) $@
 
-	
 include $(srcdir)/preinstall.am
 include $(top_srcdir)/automake/local.am
-

@@ -22,7 +22,7 @@ m4trace:aclocal.m4:1226: -1- m4_include([../../../../aclocal/project-root.m4])
 m4trace:aclocal.m4:1227: -1- m4_include([../../../../aclocal/rtems-ampolish.m4])
 m4trace:aclocal.m4:1228: -1- m4_include([../../../../aclocal/rtems-top.m4])
 m4trace:aclocal.m4:1229: -1- m4_include([../../../../aclocal/version.m4])
-m4trace:configure.ac:9: -1- AC_INIT([rtems-c-src-lib-libbsp-arm-lpc24xx], [_RTEMS_VERSION], [rtems-bugs@rtems.com])
+m4trace:configure.ac:9: -1- AC_INIT([rtems-c-src-lib-libbsp-arm-lpc24xx], [_RTEMS_VERSION], [https://devel.rtems.org/newticket])
 m4trace:configure.ac:9: -1- m4_pattern_forbid([^_?A[CHUM]_])
 m4trace:configure.ac:9: -1- m4_pattern_forbid([_AC_])
 m4trace:configure.ac:9: -1- m4_pattern_forbid([^LIBOBJS$], [do not use LIBOBJS directly, use AC_LIBOBJ (see section `AC_LIBOBJ vs LIBOBJS'])
@@ -189,6 +189,9 @@ m4trace:configure.ac:11: -1- m4_pattern_allow([^PROJECT_ROOT$])
 m4trace:configure.ac:11: -1- AC_SUBST([dirstamp], [\${am__leading_dot}dirstamp])
 m4trace:configure.ac:11: -1- AC_SUBST_TRACE([dirstamp])
 m4trace:configure.ac:11: -1- m4_pattern_allow([^dirstamp$])
+m4trace:configure.ac:11: -1- AC_SUBST([pkgdatadir], ["\${datadir}"/rtems5])
+m4trace:configure.ac:11: -1- AC_SUBST_TRACE([pkgdatadir])
+m4trace:configure.ac:11: -1- m4_pattern_allow([^pkgdatadir$])
 m4trace:configure.ac:13: -1- AC_CANONICAL_HOST
 m4trace:configure.ac:13: -1- AC_CANONICAL_BUILD
 m4trace:configure.ac:13: -1- AC_REQUIRE_AUX_FILE([config.sub])
@@ -220,7 +223,7 @@ m4trace:configure.ac:13: -1- m4_pattern_allow([^host_os$])
 m4trace:configure.ac:13: -1- AC_SUBST([RTEMS_CPU])
 m4trace:configure.ac:13: -1- AC_SUBST_TRACE([RTEMS_CPU])
 m4trace:configure.ac:13: -1- m4_pattern_allow([^RTEMS_CPU$])
-m4trace:configure.ac:14: -1- AM_INIT_AUTOMAKE([no-define nostdinc foreign 1.11.1])
+m4trace:configure.ac:14: -1- AM_INIT_AUTOMAKE([no-define nostdinc foreign 1.12.2])
 m4trace:configure.ac:14: -1- m4_pattern_allow([^AM_[A-Z]+FLAGS$])
 m4trace:configure.ac:14: -1- AM_AUTOMAKE_VERSION([1.14.1])
 m4trace:configure.ac:14: -1- AC_REQUIRE_AUX_FILE([install-sh])
@@ -558,128 +561,165 @@ m4trace:configure.ac:22: -1- AC_SUBST_TRACE([HAS_NETWORKING_FALSE])
 m4trace:configure.ac:22: -1- m4_pattern_allow([^HAS_NETWORKING_FALSE$])
 m4trace:configure.ac:22: -1- _AM_SUBST_NOTMAKE([HAS_NETWORKING_TRUE])
 m4trace:configure.ac:22: -1- _AM_SUBST_NOTMAKE([HAS_NETWORKING_FALSE])
-m4trace:configure.ac:26: -1- AC_DEFINE_TRACE_LITERAL([BSP_SMALL_MEMORY])
-m4trace:configure.ac:26: -1- m4_pattern_allow([^BSP_SMALL_MEMORY$])
-m4trace:configure.ac:26: -1- AH_OUTPUT([BSP_SMALL_MEMORY], [/* disable testsuite samples with high memory demands */
-@%:@undef BSP_SMALL_MEMORY])
-m4trace:configure.ac:30: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_OSCILLATOR_MAIN])
-m4trace:configure.ac:30: -1- m4_pattern_allow([^LPC24XX_OSCILLATOR_MAIN$])
-m4trace:configure.ac:30: -1- AH_OUTPUT([LPC24XX_OSCILLATOR_MAIN], [/* main oscillator frequency in Hz */
+m4trace:configure.ac:26: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_OSCILLATOR_MAIN])
+m4trace:configure.ac:26: -1- m4_pattern_allow([^LPC24XX_OSCILLATOR_MAIN$])
+m4trace:configure.ac:26: -1- AH_OUTPUT([LPC24XX_OSCILLATOR_MAIN], [/* main oscillator frequency in Hz */
 @%:@undef LPC24XX_OSCILLATOR_MAIN])
-m4trace:configure.ac:33: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_OSCILLATOR_RTC])
-m4trace:configure.ac:33: -1- m4_pattern_allow([^LPC24XX_OSCILLATOR_RTC$])
-m4trace:configure.ac:33: -1- AH_OUTPUT([LPC24XX_OSCILLATOR_RTC], [/* RTC oscillator frequency in Hz */
+m4trace:configure.ac:29: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_OSCILLATOR_RTC])
+m4trace:configure.ac:29: -1- m4_pattern_allow([^LPC24XX_OSCILLATOR_RTC$])
+m4trace:configure.ac:29: -1- AH_OUTPUT([LPC24XX_OSCILLATOR_RTC], [/* RTC oscillator frequency in Hz */
 @%:@undef LPC24XX_OSCILLATOR_RTC])
-m4trace:configure.ac:37: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_CCLK])
-m4trace:configure.ac:37: -1- m4_pattern_allow([^LPC24XX_CCLK$])
-m4trace:configure.ac:37: -1- AH_OUTPUT([LPC24XX_CCLK], [/* CPU clock in Hz */
+m4trace:configure.ac:35: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_CCLK])
+m4trace:configure.ac:35: -1- m4_pattern_allow([^LPC24XX_CCLK$])
+m4trace:configure.ac:35: -1- AH_OUTPUT([LPC24XX_CCLK], [/* CPU clock in Hz */
 @%:@undef LPC24XX_CCLK])
-m4trace:configure.ac:40: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_UART_BAUD])
-m4trace:configure.ac:40: -1- m4_pattern_allow([^LPC24XX_UART_BAUD$])
-m4trace:configure.ac:40: -1- AH_OUTPUT([LPC24XX_UART_BAUD], [/* baud for UARTs */
+m4trace:configure.ac:39: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_PCLKDIV])
+m4trace:configure.ac:39: -1- m4_pattern_allow([^LPC24XX_PCLKDIV$])
+m4trace:configure.ac:39: -1- AH_OUTPUT([LPC24XX_PCLKDIV], [/* clock divider for default PCLK (PCLK = CCLK / PCLKDIV) */
+@%:@undef LPC24XX_PCLKDIV])
+m4trace:configure.ac:43: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_EMCCLKDIV])
+m4trace:configure.ac:43: -1- m4_pattern_allow([^LPC24XX_EMCCLKDIV$])
+m4trace:configure.ac:43: -1- AH_OUTPUT([LPC24XX_EMCCLKDIV], [/* clock divider for EMCCLK (EMCCLK = CCLK / EMCCLKDIV) */
+@%:@undef LPC24XX_EMCCLKDIV])
+m4trace:configure.ac:46: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_UART_BAUD])
+m4trace:configure.ac:46: -1- m4_pattern_allow([^LPC24XX_UART_BAUD$])
+m4trace:configure.ac:46: -1- AH_OUTPUT([LPC24XX_UART_BAUD], [/* baud for UARTs */
 @%:@undef LPC24XX_UART_BAUD])
-m4trace:configure.ac:44: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_ETHERNET_RMII])
-m4trace:configure.ac:44: -1- m4_pattern_allow([^LPC24XX_ETHERNET_RMII$])
-m4trace:configure.ac:44: -1- AH_OUTPUT([LPC24XX_ETHERNET_RMII], [/* enable RMII for Ethernet */
+m4trace:configure.ac:50: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_ETHERNET_RMII])
+m4trace:configure.ac:50: -1- m4_pattern_allow([^LPC24XX_ETHERNET_RMII$])
+m4trace:configure.ac:50: -1- AH_OUTPUT([LPC24XX_ETHERNET_RMII], [/* enable RMII for Ethernet */
 @%:@undef LPC24XX_ETHERNET_RMII])
-m4trace:configure.ac:47: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_EMC_MICRON])
-m4trace:configure.ac:47: -1- m4_pattern_allow([^LPC24XX_EMC_MICRON$])
-m4trace:configure.ac:47: -1- AH_OUTPUT([LPC24XX_EMC_MICRON], [/* enable Micron configuration for EMC */
-@%:@undef LPC24XX_EMC_MICRON])
-m4trace:configure.ac:50: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_EMC_NUMONYX])
-m4trace:configure.ac:50: -1- m4_pattern_allow([^LPC24XX_EMC_NUMONYX$])
-m4trace:configure.ac:50: -1- AH_OUTPUT([LPC24XX_EMC_NUMONYX], [/* enable Numonyx configuration for EMC */
-@%:@undef LPC24XX_EMC_NUMONYX])
-m4trace:configure.ac:53: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_EMC_TEST])
-m4trace:configure.ac:53: -1- m4_pattern_allow([^LPC24XX_EMC_TEST$])
-m4trace:configure.ac:53: -1- AH_OUTPUT([LPC24XX_EMC_TEST], [/* enable tests for EMC */
+m4trace:configure.ac:53: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_PIN_ETHERNET_POWER_DOWN])
+m4trace:configure.ac:53: -1- m4_pattern_allow([^LPC24XX_PIN_ETHERNET_POWER_DOWN$])
+m4trace:configure.ac:53: -1- AH_OUTPUT([LPC24XX_PIN_ETHERNET_POWER_DOWN], [/* optional Ethernet power-down pin, output is set to high to enable power */
+@%:@undef LPC24XX_PIN_ETHERNET_POWER_DOWN])
+m4trace:configure.ac:56: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_EMC_MT48LC4M16A2])
+m4trace:configure.ac:56: -1- m4_pattern_allow([^LPC24XX_EMC_MT48LC4M16A2$])
+m4trace:configure.ac:56: -1- AH_OUTPUT([LPC24XX_EMC_MT48LC4M16A2], [/* enable Micron MT48LC4M16A2 configuration for EMC */
+@%:@undef LPC24XX_EMC_MT48LC4M16A2])
+m4trace:configure.ac:58: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_EMC_W9825G2JB75I])
+m4trace:configure.ac:58: -1- m4_pattern_allow([^LPC24XX_EMC_W9825G2JB75I$])
+m4trace:configure.ac:58: -1- AH_OUTPUT([LPC24XX_EMC_W9825G2JB75I], [/* enable Winbond W9825G2JB75I configuration for EMC */
+@%:@undef LPC24XX_EMC_W9825G2JB75I])
+m4trace:configure.ac:61: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_EMC_IS42S32800D7])
+m4trace:configure.ac:61: -1- m4_pattern_allow([^LPC24XX_EMC_IS42S32800D7$])
+m4trace:configure.ac:61: -1- AH_OUTPUT([LPC24XX_EMC_IS42S32800D7], [/* enable ISSI IS42S32800D7 configuration for EMC */
+@%:@undef LPC24XX_EMC_IS42S32800D7])
+m4trace:configure.ac:64: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_EMC_IS42S32800B])
+m4trace:configure.ac:64: -1- m4_pattern_allow([^LPC24XX_EMC_IS42S32800B$])
+m4trace:configure.ac:64: -1- AH_OUTPUT([LPC24XX_EMC_IS42S32800B], [/* enable ISSI IS42S32800B configuration for EMC */
+@%:@undef LPC24XX_EMC_IS42S32800B])
+m4trace:configure.ac:67: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_EMC_M29W160E])
+m4trace:configure.ac:67: -1- m4_pattern_allow([^LPC24XX_EMC_M29W160E$])
+m4trace:configure.ac:67: -1- AH_OUTPUT([LPC24XX_EMC_M29W160E], [/* enable M29W160E configuration for EMC */
+@%:@undef LPC24XX_EMC_M29W160E])
+m4trace:configure.ac:70: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_EMC_M29W320E70])
+m4trace:configure.ac:70: -1- m4_pattern_allow([^LPC24XX_EMC_M29W320E70$])
+m4trace:configure.ac:70: -1- AH_OUTPUT([LPC24XX_EMC_M29W320E70], [/* enable M29W320E70 configuration for EMC */
+@%:@undef LPC24XX_EMC_M29W320E70])
+m4trace:configure.ac:72: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_EMC_SST39VF3201])
+m4trace:configure.ac:72: -1- m4_pattern_allow([^LPC24XX_EMC_SST39VF3201$])
+m4trace:configure.ac:72: -1- AH_OUTPUT([LPC24XX_EMC_SST39VF3201], [/* enable SST39VF3201 configuration for EMC */
+@%:@undef LPC24XX_EMC_SST39VF3201])
+m4trace:configure.ac:75: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_EMC_TEST])
+m4trace:configure.ac:75: -1- m4_pattern_allow([^LPC24XX_EMC_TEST$])
+m4trace:configure.ac:75: -1- AH_OUTPUT([LPC24XX_EMC_TEST], [/* enable tests for EMC */
 @%:@undef LPC24XX_EMC_TEST])
-m4trace:configure.ac:57: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_SPECIAL_TASK_STACKS_SUPPORT])
-m4trace:configure.ac:57: -1- m4_pattern_allow([^LPC24XX_SPECIAL_TASK_STACKS_SUPPORT$])
-m4trace:configure.ac:57: -1- AH_OUTPUT([LPC24XX_SPECIAL_TASK_STACKS_SUPPORT], [/* enable special task stack support for task stacks in internal RAM */
-@%:@undef LPC24XX_SPECIAL_TASK_STACKS_SUPPORT])
-m4trace:configure.ac:60: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_CONFIG_CONSOLE])
-m4trace:configure.ac:60: -1- m4_pattern_allow([^LPC24XX_CONFIG_CONSOLE$])
-m4trace:configure.ac:60: -1- AH_OUTPUT([LPC24XX_CONFIG_CONSOLE], [/* configuration for console (UART 0) */
+m4trace:configure.ac:78: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_CONFIG_CONSOLE])
+m4trace:configure.ac:78: -1- m4_pattern_allow([^LPC24XX_CONFIG_CONSOLE$])
+m4trace:configure.ac:78: -1- AH_OUTPUT([LPC24XX_CONFIG_CONSOLE], [/* configuration for console (UART 0) */
 @%:@undef LPC24XX_CONFIG_CONSOLE])
-m4trace:configure.ac:63: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_CONFIG_UART_1])
-m4trace:configure.ac:63: -1- m4_pattern_allow([^LPC24XX_CONFIG_UART_1$])
-m4trace:configure.ac:63: -1- AH_OUTPUT([LPC24XX_CONFIG_UART_1], [/* configuration for UART 1 */
+m4trace:configure.ac:81: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_CONFIG_UART_1])
+m4trace:configure.ac:81: -1- m4_pattern_allow([^LPC24XX_CONFIG_UART_1$])
+m4trace:configure.ac:81: -1- AH_OUTPUT([LPC24XX_CONFIG_UART_1], [/* configuration for UART 1 */
 @%:@undef LPC24XX_CONFIG_UART_1])
-m4trace:configure.ac:67: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_CONFIG_UART_2])
-m4trace:configure.ac:67: -1- m4_pattern_allow([^LPC24XX_CONFIG_UART_2$])
-m4trace:configure.ac:67: -1- AH_OUTPUT([LPC24XX_CONFIG_UART_2], [/* configuration for UART 2 */
+m4trace:configure.ac:86: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_CONFIG_UART_2])
+m4trace:configure.ac:86: -1- m4_pattern_allow([^LPC24XX_CONFIG_UART_2$])
+m4trace:configure.ac:86: -1- AH_OUTPUT([LPC24XX_CONFIG_UART_2], [/* configuration for UART 2 */
 @%:@undef LPC24XX_CONFIG_UART_2])
-m4trace:configure.ac:71: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_CONFIG_UART_3])
-m4trace:configure.ac:71: -1- m4_pattern_allow([^LPC24XX_CONFIG_UART_3$])
-m4trace:configure.ac:71: -1- AH_OUTPUT([LPC24XX_CONFIG_UART_3], [/* configuration for UART 3 */
+m4trace:configure.ac:90: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_CONFIG_UART_3])
+m4trace:configure.ac:90: -1- m4_pattern_allow([^LPC24XX_CONFIG_UART_3$])
+m4trace:configure.ac:90: -1- AH_OUTPUT([LPC24XX_CONFIG_UART_3], [/* configuration for UART 3 */
 @%:@undef LPC24XX_CONFIG_UART_3])
-m4trace:configure.ac:74: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_CONFIG_I2C_0])
-m4trace:configure.ac:74: -1- m4_pattern_allow([^LPC24XX_CONFIG_I2C_0$])
-m4trace:configure.ac:74: -1- AH_OUTPUT([LPC24XX_CONFIG_I2C_0], [/* configuration for I2C 0 */
+m4trace:configure.ac:93: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_CONFIG_I2C_0])
+m4trace:configure.ac:93: -1- m4_pattern_allow([^LPC24XX_CONFIG_I2C_0$])
+m4trace:configure.ac:93: -1- AH_OUTPUT([LPC24XX_CONFIG_I2C_0], [/* configuration for I2C 0 */
 @%:@undef LPC24XX_CONFIG_I2C_0])
-m4trace:configure.ac:77: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_CONFIG_I2C_1])
-m4trace:configure.ac:77: -1- m4_pattern_allow([^LPC24XX_CONFIG_I2C_1$])
-m4trace:configure.ac:77: -1- AH_OUTPUT([LPC24XX_CONFIG_I2C_1], [/* configuration for I2C 1 */
+m4trace:configure.ac:96: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_CONFIG_I2C_1])
+m4trace:configure.ac:96: -1- m4_pattern_allow([^LPC24XX_CONFIG_I2C_1$])
+m4trace:configure.ac:96: -1- AH_OUTPUT([LPC24XX_CONFIG_I2C_1], [/* configuration for I2C 1 */
 @%:@undef LPC24XX_CONFIG_I2C_1])
-m4trace:configure.ac:80: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_CONFIG_I2C_2])
-m4trace:configure.ac:80: -1- m4_pattern_allow([^LPC24XX_CONFIG_I2C_2$])
-m4trace:configure.ac:80: -1- AH_OUTPUT([LPC24XX_CONFIG_I2C_2], [/* configuration for I2C 2 */
+m4trace:configure.ac:99: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_CONFIG_I2C_2])
+m4trace:configure.ac:99: -1- m4_pattern_allow([^LPC24XX_CONFIG_I2C_2$])
+m4trace:configure.ac:99: -1- AH_OUTPUT([LPC24XX_CONFIG_I2C_2], [/* configuration for I2C 2 */
 @%:@undef LPC24XX_CONFIG_I2C_2])
-m4trace:configure.ac:83: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_HEAP_EXTEND])
-m4trace:configure.ac:83: -1- m4_pattern_allow([^LPC24XX_HEAP_EXTEND$])
-m4trace:configure.ac:83: -1- AH_OUTPUT([LPC24XX_HEAP_EXTEND], [/* enable heap extend by Ethernet and USB regions */
+m4trace:configure.ac:102: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_HEAP_EXTEND])
+m4trace:configure.ac:102: -1- m4_pattern_allow([^LPC24XX_HEAP_EXTEND$])
+m4trace:configure.ac:102: -1- AH_OUTPUT([LPC24XX_HEAP_EXTEND], [/* enable heap extend by Ethernet and USB regions */
 @%:@undef LPC24XX_HEAP_EXTEND])
-m4trace:configure.ac:86: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_STOP_GPDMA])
-m4trace:configure.ac:86: -1- m4_pattern_allow([^LPC24XX_STOP_GPDMA$])
-m4trace:configure.ac:86: -1- AH_OUTPUT([LPC24XX_STOP_GPDMA], [/* stop general purpose DMA at start-up to avoid DMA interference */
+m4trace:configure.ac:105: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_STOP_GPDMA])
+m4trace:configure.ac:105: -1- m4_pattern_allow([^LPC24XX_STOP_GPDMA$])
+m4trace:configure.ac:105: -1- AH_OUTPUT([LPC24XX_STOP_GPDMA], [/* stop general purpose DMA at start-up to avoid DMA interference */
 @%:@undef LPC24XX_STOP_GPDMA])
-m4trace:configure.ac:90: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_STOP_ETHERNET])
-m4trace:configure.ac:90: -1- m4_pattern_allow([^LPC24XX_STOP_ETHERNET$])
-m4trace:configure.ac:90: -1- AH_OUTPUT([LPC24XX_STOP_ETHERNET], [/* stop Ethernet controller at start-up to avoid DMA interference */
+m4trace:configure.ac:109: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_STOP_ETHERNET])
+m4trace:configure.ac:109: -1- m4_pattern_allow([^LPC24XX_STOP_ETHERNET$])
+m4trace:configure.ac:109: -1- AH_OUTPUT([LPC24XX_STOP_ETHERNET], [/* stop Ethernet controller at start-up to avoid DMA interference */
 @%:@undef LPC24XX_STOP_ETHERNET])
-m4trace:configure.ac:94: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_STOP_USB])
-m4trace:configure.ac:94: -1- m4_pattern_allow([^LPC24XX_STOP_USB$])
-m4trace:configure.ac:94: -1- AH_OUTPUT([LPC24XX_STOP_USB], [/* stop USB controller at start-up to avoid DMA interference */
+m4trace:configure.ac:113: -1- AC_DEFINE_TRACE_LITERAL([LPC24XX_STOP_USB])
+m4trace:configure.ac:113: -1- m4_pattern_allow([^LPC24XX_STOP_USB$])
+m4trace:configure.ac:113: -1- AH_OUTPUT([LPC24XX_STOP_USB], [/* stop USB controller at start-up to avoid DMA interference */
 @%:@undef LPC24XX_STOP_USB])
-m4trace:configure.ac:97: -1- AC_DEFINE_TRACE_LITERAL([BSP_START_RESET_VECTOR])
-m4trace:configure.ac:97: -1- m4_pattern_allow([^BSP_START_RESET_VECTOR$])
-m4trace:configure.ac:97: -1- AH_OUTPUT([BSP_START_RESET_VECTOR], [/* reset vector address for BSP start */
+m4trace:configure.ac:117: -1- AC_DEFINE_TRACE_LITERAL([LPC_DMA_CHANNEL_COUNT])
+m4trace:configure.ac:117: -1- m4_pattern_allow([^LPC_DMA_CHANNEL_COUNT$])
+m4trace:configure.ac:117: -1- AH_OUTPUT([LPC_DMA_CHANNEL_COUNT], [/* DMA channel count */
+@%:@undef LPC_DMA_CHANNEL_COUNT])
+m4trace:configure.ac:120: -1- AC_DEFINE_TRACE_LITERAL([BSP_START_RESET_VECTOR])
+m4trace:configure.ac:120: -1- m4_pattern_allow([^BSP_START_RESET_VECTOR$])
+m4trace:configure.ac:120: -1- AH_OUTPUT([BSP_START_RESET_VECTOR], [/* reset vector address for BSP start */
 @%:@undef BSP_START_RESET_VECTOR])
-m4trace:configure.ac:99: -1- AC_DEFINE_TRACE_LITERAL([BSP_PRESS_KEY_FOR_RESET])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^BSP_PRESS_KEY_FOR_RESET$])
-m4trace:configure.ac:99: -1- AH_OUTPUT([BSP_PRESS_KEY_FOR_RESET], [/* If defined, print a message and wait until pressed before resetting board
+m4trace:configure.ac:123: -1- AC_DEFINE_TRACE_LITERAL([BSP_USB_OTG_TRANSCEIVER_I2C_ADDR])
+m4trace:configure.ac:123: -1- m4_pattern_allow([^BSP_USB_OTG_TRANSCEIVER_I2C_ADDR$])
+m4trace:configure.ac:123: -1- AH_OUTPUT([BSP_USB_OTG_TRANSCEIVER_I2C_ADDR], [/* USB OTG transceiver I2C address used by USB stack */
+@%:@undef BSP_USB_OTG_TRANSCEIVER_I2C_ADDR])
+m4trace:configure.ac:125: -1- AC_DEFINE_TRACE_LITERAL([BSP_PRESS_KEY_FOR_RESET])
+m4trace:configure.ac:125: -1- m4_pattern_allow([^BSP_PRESS_KEY_FOR_RESET$])
+m4trace:configure.ac:125: -1- AH_OUTPUT([BSP_PRESS_KEY_FOR_RESET], [/* If defined, print a message and wait until pressed before resetting board
    when application exits. */
 @%:@undef BSP_PRESS_KEY_FOR_RESET])
-m4trace:configure.ac:99: -1- AC_DEFINE_TRACE_LITERAL([BSP_RESET_BOARD_AT_EXIT])
-m4trace:configure.ac:99: -1- m4_pattern_allow([^BSP_RESET_BOARD_AT_EXIT$])
-m4trace:configure.ac:99: -1- AH_OUTPUT([BSP_RESET_BOARD_AT_EXIT], [/* If defined, reset the board when the application exits. */
+m4trace:configure.ac:125: -1- AC_DEFINE_TRACE_LITERAL([BSP_RESET_BOARD_AT_EXIT])
+m4trace:configure.ac:125: -1- m4_pattern_allow([^BSP_RESET_BOARD_AT_EXIT$])
+m4trace:configure.ac:125: -1- AH_OUTPUT([BSP_RESET_BOARD_AT_EXIT], [/* If defined, reset the board when the application exits. */
 @%:@undef BSP_RESET_BOARD_AT_EXIT])
-m4trace:configure.ac:100: -1- AC_CONFIG_LINKS([startup/linkcmds:${LINKCMDS}])
-m4trace:configure.ac:102: -1- AC_CONFIG_FILES([Makefile])
-m4trace:configure.ac:103: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
-m4trace:configure.ac:103: -1- AC_SUBST_TRACE([LIB@&t@OBJS])
-m4trace:configure.ac:103: -1- m4_pattern_allow([^LIB@&t@OBJS$])
-m4trace:configure.ac:103: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
-m4trace:configure.ac:103: -1- AC_SUBST_TRACE([LTLIBOBJS])
-m4trace:configure.ac:103: -1- m4_pattern_allow([^LTLIBOBJS$])
-m4trace:configure.ac:103: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
-m4trace:configure.ac:103: -1- AC_SUBST([am__EXEEXT_TRUE])
-m4trace:configure.ac:103: -1- AC_SUBST_TRACE([am__EXEEXT_TRUE])
-m4trace:configure.ac:103: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
-m4trace:configure.ac:103: -1- AC_SUBST([am__EXEEXT_FALSE])
-m4trace:configure.ac:103: -1- AC_SUBST_TRACE([am__EXEEXT_FALSE])
-m4trace:configure.ac:103: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
-m4trace:configure.ac:103: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
-m4trace:configure.ac:103: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
-m4trace:configure.ac:103: -1- AC_SUBST_TRACE([top_builddir])
-m4trace:configure.ac:103: -1- AC_SUBST_TRACE([top_build_prefix])
-m4trace:configure.ac:103: -1- AC_SUBST_TRACE([srcdir])
-m4trace:configure.ac:103: -1- AC_SUBST_TRACE([abs_srcdir])
-m4trace:configure.ac:103: -1- AC_SUBST_TRACE([top_srcdir])
-m4trace:configure.ac:103: -1- AC_SUBST_TRACE([abs_top_srcdir])
-m4trace:configure.ac:103: -1- AC_SUBST_TRACE([builddir])
-m4trace:configure.ac:103: -1- AC_SUBST_TRACE([abs_builddir])
-m4trace:configure.ac:103: -1- AC_SUBST_TRACE([abs_top_builddir])
-m4trace:configure.ac:103: -1- AC_SUBST_TRACE([INSTALL])
-m4trace:configure.ac:103: -1- AC_SUBST_TRACE([MKDIR_P])
+m4trace:configure.ac:125: -1- AC_DEFINE_TRACE_LITERAL([BSP_PRINT_EXCEPTION_CONTEXT])
+m4trace:configure.ac:125: -1- m4_pattern_allow([^BSP_PRINT_EXCEPTION_CONTEXT$])
+m4trace:configure.ac:125: -1- AH_OUTPUT([BSP_PRINT_EXCEPTION_CONTEXT], [/* If defined, prints the exception context when an unexpected exception
+   occurs. */
+@%:@undef BSP_PRINT_EXCEPTION_CONTEXT])
+m4trace:configure.ac:126: -1- AC_CONFIG_LINKS([startup/linkcmds:${LINKCMDS}])
+m4trace:configure.ac:128: -1- AC_CONFIG_FILES([Makefile])
+m4trace:configure.ac:129: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
+m4trace:configure.ac:129: -1- AC_SUBST_TRACE([LIB@&t@OBJS])
+m4trace:configure.ac:129: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.ac:129: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
+m4trace:configure.ac:129: -1- AC_SUBST_TRACE([LTLIBOBJS])
+m4trace:configure.ac:129: -1- m4_pattern_allow([^LTLIBOBJS$])
+m4trace:configure.ac:129: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
+m4trace:configure.ac:129: -1- AC_SUBST([am__EXEEXT_TRUE])
+m4trace:configure.ac:129: -1- AC_SUBST_TRACE([am__EXEEXT_TRUE])
+m4trace:configure.ac:129: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
+m4trace:configure.ac:129: -1- AC_SUBST([am__EXEEXT_FALSE])
+m4trace:configure.ac:129: -1- AC_SUBST_TRACE([am__EXEEXT_FALSE])
+m4trace:configure.ac:129: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
+m4trace:configure.ac:129: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
+m4trace:configure.ac:129: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
+m4trace:configure.ac:129: -1- AC_SUBST_TRACE([top_builddir])
+m4trace:configure.ac:129: -1- AC_SUBST_TRACE([top_build_prefix])
+m4trace:configure.ac:129: -1- AC_SUBST_TRACE([srcdir])
+m4trace:configure.ac:129: -1- AC_SUBST_TRACE([abs_srcdir])
+m4trace:configure.ac:129: -1- AC_SUBST_TRACE([top_srcdir])
+m4trace:configure.ac:129: -1- AC_SUBST_TRACE([abs_top_srcdir])
+m4trace:configure.ac:129: -1- AC_SUBST_TRACE([builddir])
+m4trace:configure.ac:129: -1- AC_SUBST_TRACE([abs_builddir])
+m4trace:configure.ac:129: -1- AC_SUBST_TRACE([abs_top_builddir])
+m4trace:configure.ac:129: -1- AC_SUBST_TRACE([INSTALL])
+m4trace:configure.ac:129: -1- AC_SUBST_TRACE([MKDIR_P])

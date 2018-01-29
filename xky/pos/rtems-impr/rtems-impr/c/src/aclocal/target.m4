@@ -1,5 +1,3 @@
-dnl $Id: target.m4 179 2008-09-17 14:07:38Z hsilva $
-
 ## HACK: Work-around to structural issue with RTEMS
 ## The macros below violate most autoconf and canonicalization standards
 AC_DEFUN([RTEMS_CONFIG_BUILD_SUBDIRS],
@@ -33,7 +31,8 @@ if test "$no_recursion" != yes; then
     ],
     [rtems_configure_args])
 
-  for rtems_config_dir in $RTEMS_BUILD_SUBDIRS; do
+  for rtems_config_dir in : $RTEMS_BUILD_SUBDIRS; do test "x$rtems_config_dir" = x: && continue
+
     # Do not complain, so a configure script can configure whichever
     # parts of a large source tree are present.
     if test ! -d $srcdir/$rtems_config_dir; then
@@ -77,7 +76,7 @@ dnl Misc utility macros for subdir handling to work around missing abilities
 dnl in autoconf, automake and structural issues with RTEMS
 dnl
 dnl Contains parts derived from autoconf-2.13 AC_OUTPUT_SUBDIRS and Cygnus'
-dnl configure.in.
+dnl configure.ac.
 dnl
 
 dnl

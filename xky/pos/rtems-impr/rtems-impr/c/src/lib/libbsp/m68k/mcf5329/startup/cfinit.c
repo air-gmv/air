@@ -1,4 +1,3 @@
-
 /*********************************************************************
 * Initialisation Code for ColdFire MCF5329 Processor                 *
 **********************************************************************
@@ -10,8 +9,6 @@
  no liability for any loss arising out of its use. The person or
  persons making use of this file must make the final evaluation
  as to its suitability and correctness for a particular application.
-
- $Id$
 
 */
 
@@ -118,8 +115,8 @@ static void disable_watchdog_timer(void)
 **********************************************************************/
 static void disable_cache(void)
 {
-  asm("move.l   #0x01000000,%d0");
-  asm("movec    %d0,%CACR");
+  __asm__ ("move.l   #0x01000000,%d0");
+  __asm__ ("movec    %d0,%CACR");
 }
 
 /*********************************************************************
@@ -182,13 +179,13 @@ static void init_cache(void)
    * Cache is enabled in bspstart.c
    */
 #if 0
-  asm("move.l   #0xa0000600,%d0");
-  asm("movec    %d0,%CACR");
+  __asm__ ("move.l   #0xa0000600,%d0");
+  __asm__ ("movec    %d0,%CACR");
 #endif
-  asm("move.l   #0x4001c020,%d0");
-  asm("movec    %d0,%ACR0");
-  asm("move.l   #0x00000000,%d0");
-  asm("movec    %d0,%ACR1");
+  __asm__ ("move.l   #0x4001c020,%d0");
+  __asm__ ("movec    %d0,%ACR0");
+  __asm__ ("move.l   #0x00000000,%d0");
+  __asm__ ("movec    %d0,%ACR1");
 }
 
 /*********************************************************************

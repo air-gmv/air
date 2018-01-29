@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @ingroup i386_pc386
+ *
+ * @brief CRT controller definitions.
+ */
+
 /*
  * crt.h  - This file contains definitions for constants related to PC console.
  *          More information can be found at
@@ -7,10 +15,8 @@
  *                     Canon Centre Recherche France.
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- * $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef _CRT_H

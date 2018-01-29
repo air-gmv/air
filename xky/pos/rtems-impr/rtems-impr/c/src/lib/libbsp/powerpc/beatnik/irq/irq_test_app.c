@@ -15,12 +15,10 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  OAR init.c Template modified by T. Straumann who provided
  *  the implementation of this application.
- *
- *  init.c,v 1.12.4.1 2003/09/04 18:46:30 joel Exp
  */
 
 #define CONFIGURE_INIT
@@ -38,7 +36,6 @@ rtems_task Init(
 #define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
 #define CONFIGURE_MAXIMUM_TASKS            1
 #define CONFIGURE_RTEMS_INIT_TASKS_TABLE
-#define CONFIGURE_USE_MINIIMFS_AS_BASE_FILESYSTEM
 #include <confdefs.h>
 
 #include <stdio.h>

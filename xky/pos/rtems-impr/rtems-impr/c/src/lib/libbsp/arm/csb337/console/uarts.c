@@ -12,13 +12,11 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Modified and FrameBuffer Console Device Support added by
  *  Joel Sherrill, 2009.
- *
- *  $Id$
-*/
+ */
 
 #include <bsp.h>
 #include <rtems/libio.h>
@@ -31,26 +29,24 @@
 #include <libchip/sersupp.h>
 #include <bspopts.h>
 
-/* rtems console uses the following minor number */
-rtems_device_minor_number  Console_Port_Minor = 0;
-extern console_fns dbgu_fns;
+extern const console_fns dbgu_fns;
 
 #if ENABLE_LCD
-  extern console_fns fbcons_fns;
+  extern const console_fns fbcons_fns;
   #define LCD_DEV 1
 #else
   #define LCD_DEV 0
 #endif
 
 #if (ENABLE_UMON && ENABLE_UMON_CONSOLE)
-  extern console_fns umoncons_fns;
+  extern const console_fns umoncons_fns;
   #define UMON_CONS_DEV 1
 #else
   #define UMON_CONS_DEV 0
 #endif
 
 #if ENABLE_USART0 || ENABLE_USART1 || ENABLE_USART2 || ENABLE_USART3
-  extern console_fns usart_polling_fns;
+  extern const console_fns usart_polling_fns;
 #endif
 
 #if ENABLE_USART0
@@ -82,8 +78,7 @@ extern console_fns dbgu_fns;
   USART0_DEV + USART1_DEV + USART2_DEV + USART3_DEV)
 
 /* These are used by code in console.c */
-unsigned long Console_Port_Count = NUM_DEVS;
-console_data  Console_Port_Data[NUM_DEVS];
+unsigned long Console_Configuration_Count = NUM_DEVS;
 
 /*
  * There's one item in array for each UART.
@@ -94,9 +89,9 @@ console_data  Console_Port_Data[NUM_DEVS];
  * when we add other types of UARTS we will need to move this
  * structure to a generic uart.c file with only this in it
  */
-console_tbl Console_Port_Tbl[] = {
+console_tbl Console_Configuration_Ports[] = {
   {
-    "/dev/console",    /* sDeviceName */
+    "/dev/com0",       /* sDeviceName */
     SERIAL_CUSTOM,     /* deviceType */
     &dbgu_fns,         /* pDeviceFns */
     NULL,              /* deviceProbe */
@@ -244,5 +239,5 @@ console_tbl Console_Port_Tbl[] = {
 
 console_tbl *BSP_get_uart_from_minor(int minor)
 {
-    return &Console_Port_Tbl[minor];
+    return Console_Port_Tbl[minor];
 }

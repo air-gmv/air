@@ -1,7 +1,7 @@
 
-
 #include <rtems/bfin/bfin.h>
 
+#include <bsp.h>
 #include <bspopts.h>
 
 #ifndef LO
@@ -10,17 +10,6 @@
 #ifndef HI
 #define HI(con32) (((con32) >> 16) & 0xFFFF)
 #endif
-
-
-        .section .init
-        .globl  __init
-        .type   __init,@function
-__init:
-        .section .fini
-        .globl  __fini
-        .type   __fini,@function
-__fini:
-
 
 #if (BFIN_ON_SKYEYE)
     .section .init
@@ -94,12 +83,13 @@ __start:
 
     call (p0);
 
+    HLT
     p0.l = _exit;
     p0.h = _exit;
     P3 = P4;
     jump    (p0)        /* Should not return.  */
 
-.global _null_isr
-_null_isr:
+.global _bfin_null_isr
+_bfin_null_isr:
     rti;
 

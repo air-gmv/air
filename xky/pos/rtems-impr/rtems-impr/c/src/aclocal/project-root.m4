@@ -1,7 +1,3 @@
-dnl
-dnl $Id: project-root.m4 179 2008-09-17 14:07:38Z hsilva $
-dnl 
-
 AC_DEFUN([RTEMS_PROJECT_ROOT],
 [dnl
 AC_REQUIRE([RTEMS_TOP])
