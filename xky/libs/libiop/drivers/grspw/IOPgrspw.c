@@ -38,14 +38,13 @@
 #define GRSPW_SUPPORTED
 
 #include <bsp.h>
-#include <xky.h>
+#include <air.h>
 #include <rtems.h>
 #include <string.h>
 #include <amba.h>
 #include <ambapp.h>
 #include <ambaext.h>
 
-//#include <iop_debug.h>
 #include <IOPlibio.h>
 #include <IOPgrspw.h>
 #include <spw_support.h>
@@ -1260,8 +1259,8 @@ int spw_hw_init(SPW_DEV *pDev)
     pDev->tx = (SPACEWIRE_TXBD *) ( (((unsigned int)pDev->bdtable + 1024) & ~(1024-1)) + 1024 );
 
 	SPACEWIRE_DBG("pDev->rx : 0x%x = (physical)0x%x\n   pDev->tx : 0x%x = (physical)0x%x\n",
-			pDev->rx, (unsigned int)xky_syscall_get_physical_addr((uintptr_t)pDev->rx),
-			pDev->tx, (unsigned int)xky_syscall_get_physical_addr((uintptr_t)pDev->tx));
+			pDev->rx, (unsigned int)air_syscall_get_physical_addr((uintptr_t)pDev->rx),
+			pDev->tx, (unsigned int)air_syscall_get_physical_addr((uintptr_t)pDev->tx));
 				
 	/*Check if the RMAP sub core is present*/
 	pDev->config.is_rmap = ctrl & SPW_CTRL_RA;
@@ -1615,10 +1614,10 @@ int spw_hw_startup (SPW_DEV *pDev, int timeout){
 	spw_set_rxmaxlen(pDev);
 	
 	/*write pointer to the beginning of TX descritor table in respective register*/
-	SPW_WRITE(&pDev->regs->dma0txdesc, (uint8_t *)xky_syscall_get_physical_addr((uintptr_t) pDev->tx));
+	SPW_WRITE(&pDev->regs->dma0txdesc, (uint8_t *)air_syscall_get_physical_addr((uintptr_t) pDev->tx));
 	
 	/*write pointer to the beginning of RX descritor table in respective register*/
-	SPW_WRITE(&pDev->regs->dma0rxdesc, (uint8_t *)xky_syscall_get_physical_addr((uintptr_t) pDev->rx));
+	SPW_WRITE(&pDev->regs->dma0rxdesc, (uint8_t *)air_syscall_get_physical_addr((uintptr_t) pDev->rx));
 	
 	/*Read DMA Control register*/
 	dmactrl = SPW_READ(&pDev->regs->dma0ctrl);
@@ -1730,13 +1729,13 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, uint8_t *hdr, unsigned int dle
 #endif
 	
 	/* Setup header address on descriptor*/
-	pDev->tx[cur].addr_header = (uint8_t *)xky_syscall_get_physical_addr((uintptr_t)txh);
+	pDev->tx[cur].addr_header = (uint8_t *)air_syscall_get_physical_addr((uintptr_t)txh);
 
 	/* insert data size*/
 	pDev->tx[cur].len = dlen;
 	
 	/* setup data address in descriptor*/
-	pDev->tx[cur].addr_data = (uint8_t *)xky_syscall_get_physical_addr((uintptr_t)txd);
+	pDev->tx[cur].addr_data = (uint8_t *)air_syscall_get_physical_addr((uintptr_t)txd);
 
 #ifdef DEBUG_SPACEWIRE_ONOFF	
 	iop_debug("\n Descriptor virtual addresses\n");
@@ -1844,14 +1843,17 @@ int spw_hw_receive(SPW_DEV *pDev, uint8_t *b, int c) {
     if ( pDev->config.promiscuous ) {
 		
 		/* make sure address and prot can be read in promiscuous mode */
-		dump_start_len = 1;  /** @todo SpaceWire Routing with promiscous mode*/
-		
+		dump_start_len = 0;
 	} else if (pDev->config.rm_prot_id) {
 		
 		/* skip source address and protocol id */
 		dump_start_len = 2; 
+	} else {
+		
+		/* skip source address */
+		dump_start_len = 1; 
 	}
-    
+	
 	/* We haven't received nothing yet*/
 	rxlen = 0;
 	
@@ -1896,7 +1898,7 @@ int spw_hw_receive(SPW_DEV *pDev, uint8_t *b, int c) {
 		if (len > c) {
 			
 			/*We cannot exceed what the user requested*/
-			iop_debug("RXLEN exceeds user request rxlen: %x > user: %x\n", rxlen, c);
+			iop_debug("Received packet lenght exceeds user requested: %i > user: %i\n", len, c);
 			len = c;
 		}
 		

@@ -1,538 +1,518 @@
 /**
- *  @file
- *  heap.h
+ * @file
  *
- *  @brief contains the information pertaining to the Heap
- *  Handler.
+ * @ingroup ScoreHeap
  *
- *  A heap is a doubly linked list of variable size
- *  blocks which are allocated using the first fit method.  Garbage
- *  collection is performed each time a block is returned to the heap by
- *  coalescing neighbor blocks.  Control information for both allocated
- *  and unallocated blocks is contained in the heap space.  A heap control
- *  structure contains control information for the heap.
- *
- *  FIXME: the alignment routines could be made faster should we require only
- *         powers of two to be supported both for 'page_size' and for
- *         'alignment' arguments. However, both workspace and malloc heaps are
- *         initialized with CPU_HEAP_ALIGNMENT as 'page_size', and while all
- *         the BSPs seem to use CPU_ALIGNMENT (that is power of two) as
- *         CPU_HEAP_ALIGNMENT, for whatever reason CPU_HEAP_ALIGNMENT is only
- *         required to be multiple of CPU_ALIGNMENT and explicitly not
- *         required to be a power of two.
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
+ * @brief Heap Handler API
+ */
+
+/*
  *  COPYRIGHT (c) 1989-2006.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  601     | 17/11/2008  | mcoutinho    | IPR 71
- *  4773    | 09/10/2009  | mcoutinho    | IPR 802
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_CORE Super Core
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef _RTEMS_SCORE_HEAP_H
 #define _RTEMS_SCORE_HEAP_H
 
-#include <rtems/score/interr.h>
-
-/**
- *  @defgroup ScoreHeap Heap Handler
- *
- *   @brief This handler encapsulates functionality which provides the foundation
- *  Heap services used in all of the APIs supported by RTEMS.
- */
-/**@{*/
+#include <rtems/score/cpu.h>
+#include <rtems/score/thread.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-   /**
-    * @brief define unsigned integer type to store 'void *'.
-    *
-    *  Analog of C99 'uintptr_t'. This should work on 16/32/64 bit architectures.
-    *
-    * FIXME: Something like this should better be defined by
-    *        'rtems/score/types.h' and used here.
-    */
-   typedef uintptr_t _H_uptr_t;
+#ifdef RTEMS_DEBUG
+  #define HEAP_PROTECTION
+#endif
 
-   /**
-    *  @brief Heap block
-    */
-   typedef struct Heap_Block_struct Heap_Block;
+/**
+ * @defgroup ScoreHeap Heap Handler
+ *
+ * @ingroup Score
+ *
+ * @brief The Heap Handler provides a heap.
+ *
+ * A heap is a doubly linked list of variable size blocks which are allocated
+ * using the first fit method.  Garbage collection is performed each time a
+ * block is returned to the heap by coalescing neighbor blocks.  Control
+ * information for both allocated and free blocks is contained in the heap
+ * area.  A heap control structure contains control information for the heap.
+ *
+ * The alignment routines could be made faster should we require only powers of
+ * two to be supported for page size, alignment and boundary arguments.  The
+ * minimum alignment requirement for pages is currently CPU_ALIGNMENT and this
+ * value is only required to be multiple of two and explicitly not required to
+ * be a power of two.
+ *
+ * There are two kinds of blocks.  One sort describes a free block from which
+ * we can allocate memory.  The other blocks are used and provide an allocated
+ * memory area.  The free blocks are accessible via a list of free blocks.
+ *
+ * Blocks or areas cover a continuous set of memory addresses. They have a
+ * begin and end address.  The end address is not part of the set.  The size of
+ * a block or area equals the distance between the begin and end address in
+ * units of bytes.
+ *
+ * Free blocks look like:
+ * <table>
+ *   <tr>
+ *     <td rowspan=4>@ref Heap_Block</td><td>previous block size in case the
+ *       previous block is free, <br> otherwise it may contain data used by
+ *       the previous block</td>
+ *   </tr>
+ *   <tr>
+ *     <td>block size and a flag which indicates if the previous block is free
+ *       or used, <br> this field contains always valid data regardless of the
+ *       block usage</td>
+ *   </tr>
+ *   <tr><td>pointer to next block (this field is page size aligned)</td></tr>
+ *   <tr><td>pointer to previous block</td></tr>
+ *   <tr><td colspan=2>free space</td></tr>
+ * </table>
+ *
+ * Used blocks look like:
+ * <table>
+ *   <tr>
+ *     <td rowspan=4>@ref Heap_Block</td><td>previous block size in case the
+ *       previous block is free,<br>otherwise it may contain data used by
+ *       the previous block</td>
+ *   </tr>
+ *   <tr>
+ *     <td>block size and a flag which indicates if the previous block is free
+ *       or used, <br> this field contains always valid data regardless of the
+ *       block usage</td>
+ *   </tr>
+ *   <tr><td>begin of allocated area (this field is page size aligned)</td></tr>
+ *   <tr><td>allocated space</td></tr>
+ *   <tr><td colspan=2>allocated space</td></tr>
+ * </table>
+ *
+ * The heap area after initialization contains two blocks and looks like:
+ * <table>
+ *   <tr><th>Label</th><th colspan=2>Content</th></tr>
+ *   <tr><td>heap->area_begin</td><td colspan=2>heap area begin address</td></tr>
+ *   <tr>
+ *     <td>first_block->prev_size</td>
+ *     <td colspan=2>
+ *       subordinate heap area end address (this will be used to maintain a
+ *       linked list of scattered heap areas)
+ *     </td>
+ *   </tr>
+ *   <tr>
+ *     <td>first_block->size</td>
+ *     <td colspan=2>size available for allocation
+ *       | @c HEAP_PREV_BLOCK_USED</td>
+ *   </tr>
+ *   <tr>
+ *     <td>first_block->next</td><td>_Heap_Free_list_tail(heap)</td>
+ *     <td rowspan=3>memory area available for allocation</td>
+ *   </tr>
+ *   <tr><td>first_block->prev</td><td>_Heap_Free_list_head(heap)</td></tr>
+ *   <tr><td>...</td></tr>
+ *   <tr>
+ *     <td>last_block->prev_size</td><td colspan=2>size of first block</td>
+ *   </tr>
+ *   <tr>
+ *     <td>last_block->size</td>
+ *     <td colspan=2>first block begin address - last block begin address</td>
+ *   </tr>
+ *   <tr><td>heap->area_end</td><td colspan=2>heap area end address</td></tr>
+ * </table>
+ * The next block of the last block is the first block.  Since the first
+ * block indicates that the previous block is used, this ensures that the
+ * last block appears as used for the _Heap_Is_used() and _Heap_Is_free()
+ * functions.
+ */
+/**@{**/
 
-   /**
-    *  @brief Heap block declaration
-    *
-    *  The following defines the data structure used to manage individual blocks
-    *  in a heap.  When the block is allocated, the 'next' and 'prev' fields, as
-    *  well as 'prev_size' field of the next block, are not used by the heap
-    *  manager and thus the address returned for the block starts at the address
-    *  of the 'next' field and the size of the user accessible area includes the
-    *  size of the 'prev_size' field.
-    *
-    *  @note The 'next' and 'prev' pointers are only valid when the block is free.
-    *     Caution must be taken to ensure that every block is large enough to
-    *     hold them and that they are not accessed while the block is actually
-    *     allocated (i.e., not free).
-    *
-    *  @note The 'prev_size' field is only valid when HEAP_PREV_USED bit is clear
-    *     in the 'size' field indicating that previous block is not allocated.
-    *     If the bit is set, the 'prev_size' field is part of user-accessible
-    *     space of the previous allocated block and thus shouldn't be accessed
-    *     by the heap manager code. This trick allows to further decrease
-    *     overhead in the used blocks to the size of 'size' field (4 bytes).
-    *
-    */
-   struct Heap_Block_struct
-   {
-      /** size of prev block (if prev block is free) */
-      uint32_t prev_size;
-      /** size of block in bytes and status of prev block */
-      uint32_t size;
-      /** pointer to the next free block */
-      Heap_Block *next;
-      /** pointer to the previous free block */
-      Heap_Block *prev;
-   };
+typedef struct Heap_Control Heap_Control;
 
-   /**
-    *  @brief This flag used in the 'size' field of each heap block to indicate
-    *  if previous block is free or in use. As sizes are always multiples of
-    *  4, the 2 least significant bits would always be 0, and we use one of them
-    *  to store the flag.
-    */
-#define HEAP_PREV_USED    1     /* indicates previous block is in use */
+typedef struct Heap_Block Heap_Block;
 
-   /*
-    * The following constants reflect various requirements of the
-    *  heap data structures which impact the management of a heap.
-    */
+#ifndef HEAP_PROTECTION
+  #define HEAP_PROTECTION_HEADER_SIZE 0
+#else
+  #define HEAP_PROTECTOR_COUNT 2
 
-   /**
-    *  @brief heap minimum block size
-    *
-    */
-#define HEAP_MIN_BLOCK_SIZE (sizeof(Heap_Block))
+  #define HEAP_BEGIN_PROTECTOR_0 ((uintptr_t) 0xfd75a98f)
+  #define HEAP_BEGIN_PROTECTOR_1 ((uintptr_t) 0xbfa1f177)
+  #define HEAP_END_PROTECTOR_0 ((uintptr_t) 0xd6b8855e)
+  #define HEAP_END_PROTECTOR_1 ((uintptr_t) 0x13a44a5b)
 
-   /**
-    *  @brief Offset of the block header from the block pointer. Equal to the
-    *  offsetof(Heap_Block.size).
-    */
-#define HEAP_BLOCK_HEADER_OFFSET (sizeof(uint32_t))
+  #define HEAP_FREE_PATTERN ((uintptr_t) 0xe7093cdf)
 
-   /**
-    *  @brief Offset of user data pointer from the block pointer. Equal to the
-    *  offsetof(Heap_Block.next).
-    */
-#define HEAP_BLOCK_USER_OFFSET (sizeof(uint32_t) * 2)
+  #define HEAP_PROTECTION_OBOLUS ((Heap_Block *) 1)
 
-   /**
-    *  @brief Number of bytes of overhead in used block. Equal to the
-    *  sizeof(Heap_Block.size).
-    */
-#define HEAP_BLOCK_USED_OVERHEAD \
-  (HEAP_BLOCK_USER_OFFSET - HEAP_BLOCK_HEADER_OFFSET)
+  typedef void (*_Heap_Protection_handler)(
+     Heap_Control *heap,
+     Heap_Block *block
+  );
 
-   /**
-    * @brief Size of the permanent dummy last block.
-    */
-#define HEAP_OVERHEAD HEAP_BLOCK_USER_OFFSET
+  typedef struct {
+    _Heap_Protection_handler block_initialize;
+    _Heap_Protection_handler block_check;
+    _Heap_Protection_handler block_error;
+    void *handler_data;
+    Heap_Block *first_delayed_free_block;
+    Heap_Block *last_delayed_free_block;
+    uintptr_t delayed_free_block_count;
+    uintptr_t delayed_free_fraction;
+  } Heap_Protection;
 
-   /**
-    *  @brief Control block used to manage each heap.
-    */
-   typedef struct
-   {
-      /**
-       * @brief head and tail of circular list of free blocks
-       */
-      Heap_Block free_list;
-      /**
-       * @brief allocation unit and alignment
-       */
-      uint32_t page_size;
-      /**
-       * @brief minimum block size aligned on page_size
-       */
-      uint32_t min_block_size;
-      /**
-       * @brief first address of memory for the heap
-       */
-      void *begin;
-      /**
-       * @brief first address past end of memory for the heap
-       */
-      void *end;
-      /**
-       * @brief first valid block address in the heap
-       */
-      Heap_Block *start;
-      /**
-       * @brief last valid block address in the heap
-       */
-      Heap_Block *final;
-   } Heap_Control;
+  typedef struct {
+    uintptr_t protector [HEAP_PROTECTOR_COUNT];
+    Heap_Block *next_delayed_free_block;
+    Thread_Control *task;
+    void *tag;
+  } Heap_Protection_block_begin;
 
-   /**
-    *  @brief Status codes for _Heap_Extend
-    */
-   typedef enum
-   {
-      HEAP_EXTEND_SUCCESSFUL ,
-      HEAP_EXTEND_ERROR ,
-      HEAP_EXTEND_NOT_IMPLEMENTED
-   } Heap_Extend_status;
+  typedef struct {
+    uintptr_t protector [HEAP_PROTECTOR_COUNT];
+  } Heap_Protection_block_end;
 
-   /**
-    *  @brief Status codes for _Heap_Resize_block
-    */
-   typedef enum
-   {
-      HEAP_RESIZE_SUCCESSFUL ,
-      HEAP_RESIZE_UNSATISFIED ,
-      HEAP_RESIZE_FATAL_ERROR
-   } Heap_Resize_status;
+  #define HEAP_PROTECTION_HEADER_SIZE \
+    (sizeof(Heap_Protection_block_begin) + sizeof(Heap_Protection_block_end))
+#endif
 
-   /**
-    *  @brief Information block returned by the Heap routines used to
-    *  obtain heap information.  This information is returned about
-    *  either free or used blocks.
-    */
-   typedef struct
-   {
-      /**
-       * @brief Number of blocks of this type.
-       */
-      uint32_t number;
-      /**
-       * @brief Largest blocks of this type.
-       */
-      uint32_t largest;
-      /**
-       * @brief Total size of the blocks of this type.
-       */
-      uint32_t total;
-   } Heap_Information;
+/**
+ * @brief The block header consists of the two size fields
+ * (@ref Heap_Block.prev_size and @ref Heap_Block.size_and_flag).
+ */
+#define HEAP_BLOCK_HEADER_SIZE \
+  (2 * sizeof(uintptr_t) + HEAP_PROTECTION_HEADER_SIZE)
 
-   /**
-    *  @brief Information block returned by _Heap_Get_information
-    */
-   typedef struct
-   {
-      /**
-       * @brief This field is information on the used blocks in the heap.
-       */
-      Heap_Information Free;
-      /**
-       * @brief This field is information on the used blocks in the heap.
-       */
-      Heap_Information Used;
-   } Heap_Information_block;
+/**
+ * @brief Description for free or used blocks.
+ */
+struct Heap_Block {
+  /**
+   * @brief Size of the previous block or part of the allocated area of the
+   * previous block.
+   *
+   * This field is only valid if the previous block is free.  This case is
+   * indicated by a cleared @c HEAP_PREV_BLOCK_USED flag in the
+   * @a size_and_flag field of the current block.
+   *
+   * In a used block only the @a size_and_flag field needs to be valid.  The
+   * @a prev_size field of the current block is maintained by the previous
+   * block.  The current block can use the @a prev_size field in the next block
+   * for allocation.
+   */
+  uintptr_t prev_size;
 
-   /**
-    *  @brief initialize the heap
-    *
-    *  This kernel routine initializes a heap.
-    *  This is what a heap looks like in memory immediately after initialization:\n\n
-    *  +--------------------------------+ <- begin = starting_address\n
-    *  |  unused space due to alignment |\n
-    *  |       size < page_size         |\n
-    *  0  +--------------------------------+ <- first block\n
-    *  |  prev_size = page_size         |\n
-    *  4  +--------------------------------+\n
-    *  |  size = size0              | 1 |\n
-    *  8  +---------------------+----------+ <- aligned on page_size\n
-    *  |  next = HEAP_TAIL   |          |\n
-    *  12  +---------------------+          |\n
-    *  |  prev = HEAP_HEAD   |  memory  |\n
-    *  +---------------------+          |\n
-    *  |                     available  |\n
-    *  |                                |\n
-    *  |                for allocation  |\n
-    *  |                                |\n
-    *  size0  +--------------------------------+ <- last dummy block\n
-    *  |  prev_size = size0             |\n
-    *  +4  +--------------------------------+\n
-    *  |  size = page_size          | 0 | <- prev block is free\n
-    *  +8  +--------------------------------+ <- aligned on page_size\n
-    *  |  unused space due to alignment |\n
-    *  |       size < page_size         |\n
-    *  +--------------------------------+ <- end = begin + size\n
-    *  Below is what a heap looks like after first allocation of SIZE bytes using\n
-    *  _Heap_allocate(). BSIZE stands for SIZE + 4 aligned up on 'page_size'\n
-    *  boundary.\n
-    *  +--------------------------------+ <- begin = starting_address\n
-    *  |  unused space due to alignment |\n
-    *  |       size < page_size         |\n
-    *  0  +--------------------------------+ <- used block\n
-    *  |  prev_size = page_size         |\n
-    *  4  +--------------------------------+\n
-    *  |  size = BSIZE              | 1 | <- prev block is used\n
-    *  8  +--------------------------------+ <- aligned on page_size\n
-    *  |              .                 | Pointer returned to the user\n
-    *  |              .                 | is 8 for _Heap_Allocate()\n
-    *  |              .                 | and is in range\n
-    *  8 +        |         user-accessible        | [8,8+page_size) for\n
-    *  page_size +- - -                      - - -+ _Heap_Allocate_aligned()\n
-    *  |             area               |\n
-    *  |              .                 |\n
-    *  BSIZE  +- - - - -     .        - - - - -+ <- free block\n
-    *  |              .                 |\n
-    *  BSIZE  +4  +--------------------------------+\n
-    *  |  size = S = size0 - BSIZE  | 1 | <- prev block is used\n
-    *  BSIZE  +8  +-------------------+------------+ <- aligned on page_size\n
-    *  |  next = HEAP_TAIL |            |\n
-    *  BSIZE +12  +-------------------+            |\n
-    *  |  prev = HEAP_HEAD |     memory |\n
-    *  +-------------------+            |\n
-    *  |                   .  available |\n
-    *  |                   .            |\n
-    *  |                   .        for |\n
-    *  |                   .            |\n
-    *  BSIZE +S+0 +-------------------+ allocation + <- last dummy block\n
-    *  |  prev_size = S    |            |\n
-    *  +S+4 +-------------------+------------+\n
-    *  |  size = page_size          | 0 | <- prev block is free\n
-    *  +S+8 +--------------------------------+ <- aligned on page_size\n
-    *  |  unused space due to alignment |\n
-    *  |       size < page_size         |\n
-    *  +--------------------------------+ <- end = begin + size\n
-    *\n
-    *  @param[in] the_heap pointer to heap header
-    *  @param[in] starting_address starting address of heap
-    *  @param[in] size size of heap
-    *  @param[in] page_size allocatable unit of memory
-    *
-    *  @return returns maximum memory available if RTEMS_SUCCESSFUL
-    *  otherwise
-    *
-    *  @note If allocation were performed by _Heap_Allocate_aligned(), the
-    *  block size BSIZE is defined differently, and previously free block will
-    *  be split so that upper part of it will become used block
-    */
-   uint32_t _Heap_Initialize(
-                             Heap_Control *the_heap ,
-                             void *starting_address ,
-                             size_t size ,
-                             uint32_t page_size
-                             );
+  #ifdef HEAP_PROTECTION
+    Heap_Protection_block_begin Protection_begin;
+  #endif
 
-   /**
-    *  @brief extend the heap
-    *
-    *  This routine grows @a the_heap memory area using the size bytes which
-    *  begin at @a starting_address.
-    *
-    *  @param[in] the_heap is the heap to operate upon
-    *  @param[in] starting_address is the starting address of the memory
-    *  to add to the heap
-    *  @param[in] size is the size in bytes of the memory area to add
-    *  @param[in] amount_extended points to a user area to return the
-    *
-    *  @return a status indicating success or the reason for failure
-    *  size filled in with the amount of memory added to the heap
-    */
-   Heap_Extend_status _Heap_Extend(
-                                   Heap_Control *the_heap ,
-                                   void *starting_address ,
-                                   size_t size ,
-                                   uint32_t *amount_extended
-                                   );
+  /**
+   * @brief Contains the size of the current block and a flag which indicates
+   * if the previous block is free or used.
+   *
+   * If the flag @c HEAP_PREV_BLOCK_USED is set, then the previous block is
+   * used, otherwise the previous block is free.  A used previous block may
+   * claim the @a prev_size field for allocation.  This trick allows to
+   * decrease the overhead in the used blocks by the size of the @a prev_size
+   * field.  As sizes are required to be multiples of two, the least
+   * significant bits would be always zero. We use this bit to store the flag.
+   *
+   * This field is always valid.
+   */
+  uintptr_t size_and_flag;
 
-   /**
-    *  @brief allocate a block from the heap
-    *
-    *  This function attempts to allocate a block of @a size bytes from
-    *  @a the_heap.  If insufficient memory is free in @a the_heap to allocate
-    *  a block of the requested size, then NULL is returned.
-    *
-    *  @param[in] the_heap is the heap to operate upon
-    *  @param[in] size is the amount of memory to allocate in bytes
-    *
-    *  @return NULL if unsuccessful and a pointer to the block if successful
-    */
-   void *_Heap_Allocate(
-                        Heap_Control *the_heap ,
-                        size_t size
-                        );
+  #ifdef HEAP_PROTECTION
+    Heap_Protection_block_end Protection_end;
+  #endif
 
-   /**
-    *  @brief allocate an alligned block from a heap
-    *
-    *  This function attempts to allocate a memory block of @a size bytes from
-    *  @a the_heap so that the start of the user memory is aligned on the
-    *  @a alignment boundary. If @a alignment is 0, it is set to CPU_ALIGNMENT.
-    *  Any other value of @a alignment is taken "as is", i.e., even odd
-    *  alignments are possible.
-    *  Returns pointer to the start of the memory block if success, NULL if
-    *  failure.
-    *
-    *  @param[in] the_heap is the heap to operate upon
-    *  @param[in] size is the amount of memory to allocate in bytes
-    *  @param[in] alignment the required alignment
-    *
-    *  @return NULL if unsuccessful and a pointer to the block if successful
-    */
-   void *_Heap_Allocate_aligned(
-                                Heap_Control *the_heap ,
-                                size_t size ,
-                                uint32_t alignment
-                                );
+  /**
+   * @brief Pointer to the next free block or part of the allocated area.
+   *
+   * This field is page size aligned and begins of the allocated area in case
+   * the block is used.
+   *
+   * This field is only valid if the block is free and thus part of the free
+   * block list.
+   */
+  Heap_Block *next;
 
-   /**
-    *  @brief determine the size of the user block of memory
-    *
-    *  This function sets @a *size to the size of the block of user memory
-    *  which begins at @a starting_address. The size returned in @a *size could
-    *  be greater than the size requested for allocation.
-    *  Returns TRUE if the @a starting_address is in the heap, and FALSE
-    *  otherwise.
-    *
-    *  @param[in] the_heap is the heap to operate upon
-    *  @param[in] starting_address is the starting address of the user block
-    *  to obtain the size of
-    *  @param[in] size points to a user area to return the size in
-    *
-    *  @return TRUE if successfully able to determine the size, FALSE otherwise
-    *  *size filled in with the size of the user area for this block
-    */
-   boolean _Heap_Size_of_user_area(
-                                   Heap_Control *the_heap ,
-                                   void *starting_address ,
-                                   size_t *size
-                                   );
+  /**
+   * @brief Pointer to the previous free block or part of the allocated area.
+   *
+   * This field is only valid if the block is free and thus part of the free
+   * block list.
+   */
+  Heap_Block *prev;
+};
 
-   /**
-    *  @brief resize a block inside a heap
-    *
-    *  This function tries to resize in place the block that is pointed to by the
-    *  @a starting_address to the new @a size.
-    *
-    *  @param[in] the_heap is the heap to operate upon
-    *  @param[in] starting_address is the starting address of the user block
-    *  to be resized
-    *  @param[in] size is the new size
-    *  @param[in] old_mem_size points to a user area to return the size of the
-    *  user memory area of the block before resizing.
-    *  @param[in] avail_mem_size points to a user area to return the size of
-    *  the user memory area of the free block that has been enlarged or
-    *  created due to resizing, 0 if none.
-    *
-    *  @return HEAP_RESIZE_SUCCESSFUL if successfully able to resize the block,
-    *  HEAP_RESIZE_UNSATISFIED if the block can't be resized in place,
-    *  HEAP_RESIZE_FATAL_ERROR if failure
-    *   - *old_mem_size filled in with the size of the user memory area of
-    *     the block before resizing.
-    *   - *avail_mem_size filled in with the size of the user memory area
-    *     of the free block that has been enlarged or created due to
-    *     resizing, 0 if none.
-    */
-   Heap_Resize_status _Heap_Resize_block(
-                                         Heap_Control *the_heap ,
-                                         void *starting_address ,
-                                         size_t size ,
-                                         uint32_t *old_mem_size ,
-                                         uint32_t *avail_mem_size
-                                         );
+/**
+ * @brief Run-time heap statistics.
+ *
+ * The value @a searches / @a allocs gives the mean number of searches per
+ * allocation, while @a max_search gives maximum number of searches ever
+ * performed on a single allocation call.
+ */
+typedef struct {
+  /**
+   * @brief Lifetime number of bytes allocated from this heap.
+   *
+   * This value is an integral multiple of the page size.
+   */
+  uint64_t lifetime_allocated;
 
-   /**
-    *  @brief free a block from the heap
-    *
-    *  This routine returns the block of memory which begins
-    *  at @a starting_address to @a the_heap.  Any coalescing which is
-    *  possible with the freeing of this routine is performed.
-    *
-    *  @param[in] the_heap is the heap to operate upon
-    *  @param[in] starting_address is the starting address of the user block
-    *  to free
-    *
-    *  @return TRUE if successfully freed, FALSE otherwise
-    */
-   boolean _Heap_Free(
-                      Heap_Control *the_heap ,
-                      void *starting_address
-                      );
+  /**
+   * @brief Lifetime number of bytes freed to this heap.
+   *
+   * This value is an integral multiple of the page size.
+   */
+  uint64_t lifetime_freed;
 
-#if !defined(__RTEMS_APPLICATION__)
+  /**
+   * @brief Size of the allocatable area in bytes.
+   *
+   * This value is an integral multiple of the page size.
+   */
+  uintptr_t size;
 
-   /**
-    *  @brief pointer to unsigned integer conversion.
-    */
-#define _H_p2u(_p) ((_H_uptr_t)(_p))
+  /**
+   * @brief Current free size in bytes.
+   *
+   * This value is an integral multiple of the page size.
+   */
+  uintptr_t free_size;
 
-#include <rtems/score/heap.inl>
+  /**
+   * @brief Minimum free size ever in bytes.
+   *
+   * This value is an integral multiple of the page size.
+   */
+  uintptr_t min_free_size;
 
-   /**
-    *  @brief convert user requested 'size' of memory block to the block size.
-    *
-    *  @param[in] size is the size of the block requested
-    *  @param[in] page_size is the page size of this heap instance
-    *  @param[in] min_size is minimum size block that should be allocated
-    *  from this heap instance
-    *
-    *  @return This method returns block size on success, 0 if overflow occured.
-    *
-    *  @note This is an internal routine used by _Heap_Allocate() and
-    *  _Heap_Allocate_aligned().  Refer to 'heap.c' for details.
-    */
-   extern size_t _Heap_Calc_block_size(
-                                       size_t size ,
-                                       uint32_t page_size ,
-                                       uint32_t min_size
-                                       );
+  /**
+   * @brief Current number of free blocks.
+   */
+  uint32_t free_blocks;
 
-   /**
-    *  @brief allocate a block of memory from a heap
-    *
-    *  This method allocates a block of size @a alloc_size from @a the_block
-    *  belonging to @a the_heap. Split @a the_block if possible, otherwise
-    *  allocate it entirely.  When split, make the lower part used, and leave
-    *  the upper part free.
-    *  This is an internal routines used by _Heap_Allocate() and
-    *  _Heap_Allocate_aligned().  Refer to 'heap.c' for details.
-    *
-    *  @param[in] the_heap is the heap to operate upon
-    *  @param[in] the_block is the block to allocates the requested size from
-    *  @param[in] alloc_size is the requested number of bytes to take out of
-    *  the block
-    *
-    *  @return This methods returns the size of the allocated block.
-    */
-   extern uint32_t _Heap_Block_allocate(
-                                        Heap_Control* the_heap ,
-                                        Heap_Block* the_block ,
-                                        uint32_t alloc_size
-                                        );
+  /**
+   * @brief Maximum number of free blocks ever.
+   */
+  uint32_t max_free_blocks;
 
-#endif /* !defined(__RTEMS_APPLICATION__) */
+  /**
+   * @brief Current number of used blocks.
+   */
+  uint32_t used_blocks;
+
+  /**
+   * @brief Maximum number of blocks searched ever.
+   */
+  uint32_t max_search;
+
+  /**
+   * @brief Total number of searches.
+   */
+  uint32_t searches;
+
+  /**
+   * @brief Total number of successful allocations.
+   */
+  uint32_t allocs;
+
+  /**
+   * @brief Total number of failed allocations.
+   */
+  uint32_t failed_allocs;
+
+  /**
+   * @brief Total number of successful frees.
+   */
+  uint32_t frees;
+
+  /**
+   * @brief Total number of successful resizes.
+   */
+  uint32_t resizes;
+} Heap_Statistics;
+
+/**
+ * @brief Control block used to manage a heap.
+ */
+struct Heap_Control {
+  Heap_Block free_list;
+  uintptr_t page_size;
+  uintptr_t min_block_size;
+  uintptr_t area_begin;
+  uintptr_t area_end;
+  Heap_Block *first_block;
+  Heap_Block *last_block;
+  Heap_Statistics stats;
+  #ifdef HEAP_PROTECTION
+    Heap_Protection Protection;
+  #endif
+};
+
+/**
+ * @brief Information about blocks.
+ */
+typedef struct {
+  /**
+   * @brief Number of blocks of this type.
+   */
+  uintptr_t number;
+
+  /**
+   * @brief Largest block of this type.
+   */
+  uintptr_t largest;
+
+  /**
+   * @brief Total size of the blocks of this type.
+   */
+  uintptr_t total;
+} Heap_Information;
+
+/**
+ * @brief Information block returned by _Heap_Get_information().
+ */
+typedef struct {
+  Heap_Information Free;
+  Heap_Information Used;
+  Heap_Statistics Stats;
+} Heap_Information_block;
+
+/**
+ * @brief Heap area structure for table based heap initialization and
+ * extension.
+ *
+ * @see Heap_Initialization_or_extend_handler.
+ */
+typedef struct {
+  void *begin;
+  uintptr_t size;
+} Heap_Area;
+
+/**
+ * @brief Heap initialization and extend handler type.
+ *
+ * This helps to do a table based heap initialization and extension.  Create a
+ * table of Heap_Area elements and iterate through it.  Set the handler to
+ * _Heap_Initialize() in the first iteration and then to _Heap_Extend().
+ *
+ * @see Heap_Area, _Heap_Initialize(), _Heap_Extend(), or _Heap_No_extend().
+ */
+typedef uintptr_t (*Heap_Initialization_or_extend_handler)(
+  Heap_Control *heap,
+  void *area_begin,
+  uintptr_t area_size,
+  uintptr_t page_size_or_unused
+);
+
+/**
+ * @brief Extends the memory available for the heap @a heap using the memory
+ * area starting at @a area_begin of size @a area_size bytes.
+ *
+ * There are no alignment requirements for the memory area.  The memory area
+ * must be big enough to contain some maintenance blocks.  It must not overlap
+ * parts of the current heap memory areas.  Disconnected memory areas added to
+ * the heap will lead to used blocks which cover the gaps.  Extending with an
+ * inappropriate memory area will corrupt the heap resulting in undefined
+ * behaviour.
+ *
+ * The unused fourth parameter is provided to have the same signature as
+ * _Heap_Initialize().
+ *
+ * Returns the extended space available for allocation, or zero in case of failure.
+ *
+ * @see Heap_Initialization_or_extend_handler.
+ */
+uintptr_t _Heap_Extend(
+  Heap_Control *heap,
+  void *area_begin,
+  uintptr_t area_size,
+  uintptr_t unused
+);
+
+/**
+ * @brief This function returns always zero.
+ *
+ * This function only returns zero and does nothing else.
+ *
+ * Returns always zero.
+ *
+ * @see Heap_Initialization_or_extend_handler.
+ */
+uintptr_t _Heap_No_extend(
+  Heap_Control *unused_0,
+  void *unused_1,
+  uintptr_t unused_2,
+  uintptr_t unused_3
+);
+
+RTEMS_INLINE_ROUTINE uintptr_t _Heap_Align_up(
+  uintptr_t value,
+  uintptr_t alignment
+)
+{
+  uintptr_t remainder = value % alignment;
+
+  if ( remainder != 0 ) {
+    return value - remainder + alignment;
+  } else {
+    return value;
+  }
+}
+
+RTEMS_INLINE_ROUTINE uintptr_t _Heap_Min_block_size( uintptr_t page_size )
+{
+  return _Heap_Align_up( sizeof( Heap_Block ), page_size );
+}
+
+/**
+ * @brief Returns the worst case overhead to manage a memory area.
+ */
+RTEMS_INLINE_ROUTINE uintptr_t _Heap_Area_overhead(
+  uintptr_t page_size
+)
+{
+  if ( page_size != 0 ) {
+    page_size = _Heap_Align_up( page_size, CPU_ALIGNMENT );
+  } else {
+    page_size = CPU_ALIGNMENT;
+  }
+
+  return 2 * (page_size - 1) + HEAP_BLOCK_HEADER_SIZE;
+}
+
+/**
+ * @brief Returns the size with administration and alignment overhead for one
+ * allocation.
+ */
+RTEMS_INLINE_ROUTINE uintptr_t _Heap_Size_with_overhead(
+  uintptr_t page_size,
+  uintptr_t size,
+  uintptr_t alignment
+)
+{
+  if ( page_size != 0 ) {
+    page_size = _Heap_Align_up( page_size, CPU_ALIGNMENT );
+  } else {
+    page_size = CPU_ALIGNMENT;
+  }
+
+  if ( page_size < alignment ) {
+    page_size = alignment;
+  }
+
+  return HEAP_BLOCK_HEADER_SIZE + page_size - 1 + size;
+}
+
+/** @} */
 
 #ifdef __cplusplus
 }
 #endif
 
-/**@}*/
-
 #endif
 /* end of include file */
-
-/**  
- *  @}
- */

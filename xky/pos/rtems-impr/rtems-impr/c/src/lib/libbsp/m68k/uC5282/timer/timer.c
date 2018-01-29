@@ -10,11 +10,12 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <rtems.h>
 #include <bsp.h>
+#include <rtems/btimer.h>
 
 void
 benchmark_timer_initialize(void)
@@ -34,7 +35,7 @@ benchmark_timer_initialize(void)
 /*
  * Return timer value in microsecond units
  */
-int
+uint32_t
 benchmark_timer_read(void)
 {
     return MCF5282_TIMER3_DTCN;

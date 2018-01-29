@@ -1,7 +1,6 @@
 #ifndef FLASH_GLUE_INTERFACE_H
 #define FLASH_GLUE_INTERFACE_H
 
-/* $Id$         */
 
 /* Trivial flash programmer (for restrictions see below)     */
 
@@ -245,7 +244,7 @@ struct flash_bank_ops {
  * N may be assumed to be a multiple of 'stride'
  * RETURNS: failure status or zero on success.
  */
-	uint32_t       (*write_line)(struct bankdesc *b, uint32_t addr, char *src, uint32_t N);
+	uint32_t       (*write_line)(struct bankdesc *b, uint32_t addr, const char *src, uint32_t N);
 };
 
 /* BSP ops (detect banks, handle write-protection on board);

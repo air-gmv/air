@@ -6,9 +6,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Jukka Pietarinen <jukka.pietarinen@mrf.fi>, 2008,
  *  Micro-Research Finland Oy
@@ -19,8 +17,10 @@
 #include <rtems.h>
 #include <bsp.h>
 #include <stdio.h>
+#include <string.h>
 #include <errno.h>
 #include <rtems/error.h>
+#include <rtems/bspIo.h>
 #include <rtems/rtems_bsdnet.h>
 
 #include <sys/param.h>
@@ -134,7 +134,7 @@ static inline void tsmacregwrite(unsigned int reg, uint16_t value)
 
 rtems_isr tsmac_interrupt_handler(rtems_vector_number vector);
 
-extern lm32_isr_entry set_vector(rtems_isr_entry handler,
+extern rtems_isr_entry set_vector(rtems_isr_entry handler,
 				 rtems_vector_number vector, int type);
 
 /*
@@ -251,7 +251,7 @@ static void tsmac_rxDaemon(void *arg)
 	  if (rxq == 0)
 	    break;
 
-	  /* Get lenght of frame */
+	  /* Get length of frame */
 	  len = tsmacread(LM32_TSMAC_RX_LEN_FIFO);
 #ifdef DEBUG
 	  printk(TSMAC_NAME ": Frames %d, len 0x%04x (%d)\n",
@@ -562,7 +562,7 @@ void tsmac_init(void *arg)
   /*
    * Wake up receive task to receive packets in queue
    */
-  rtems_event_send(tsmac->rxDaemonTid, INTERRUPT_EVENT);
+  rtems_bsdnet_event_send(tsmac->rxDaemonTid, INTERRUPT_EVENT);
 }
 
 void tsmac_stop(struct ifnet *ifp)
@@ -587,7 +587,7 @@ void tsmac_start(struct ifnet *ifp)
 {
   struct tsmac_softc *tsmac = ifp->if_softc;
 
-  rtems_event_send (tsmac->txDaemonTid, START_TRANSMIT_EVENT);
+  rtems_bsdnet_event_send (tsmac->txDaemonTid, START_TRANSMIT_EVENT);
   ifp->if_flags |= IFF_OACTIVE;
 }
 
@@ -799,13 +799,13 @@ rtems_isr tsmac_interrupt_handler(rtems_vector_number vector)
   if (irq_stat & INTR_RX_PKT_RDY)
     {
       tsmac->rxInterrupts++;
-      rtems_event_send(tsmac->rxDaemonTid, INTERRUPT_EVENT);
+      rtems_bsdnet_event_send(tsmac->rxDaemonTid, INTERRUPT_EVENT);
     }
 
   if (irq_stat & INTR_TX_PKT_SENT)
     {
       tsmac->txInterrupts++;
-      rtems_event_send(tsmac->txDaemonTid, INTERRUPT_EVENT);
+      rtems_bsdnet_event_send(tsmac->txDaemonTid, INTERRUPT_EVENT);
     }
 
   rx_stat = tsmacread(LM32_TSMAC_RX_STATUS);

@@ -1,37 +1,33 @@
-/*  bsp.h
- *
+/*
  *  This include file contains all board IO definitions.
- *
- *  XXX : put yours in here
- *
- *  COPYRIGHT (c) 1989-1999.
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2014.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-#ifndef _BSP_H
-#define _BSP_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef LIBBSP_POWERPC_MPC8260ADS_BSP_H
+#define LIBBSP_POWERPC_MPC8260ADS_BSP_H
 
 #include <bspopts.h>
+#include <bsp/default-initial-extension.h>
 
 #include <rtems.h>
-#include <rtems/console.h>
-#include <rtems/clockdrv.h>
 #include <mpc8260.h>
 #include <mpc8260/cpm.h>
 #include <mpc8260/mmu.h>
 #include <mpc8260/console.h>
 #include <bsp/irq.h>
 #include <bsp/vectors.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*
  * Board configuration registers
@@ -46,12 +42,6 @@ typedef struct bcsr
     uint32_t          bcsr3;
 
 } BCSR;
-
-#define UART1_E	0x02000002		/* bit 6 of BCSR1 */
-#define UART2_E	0x01000001		/* bit 7 of BCSR1 */
-
-#define GP0_LED 0x02000002    /*  bit 6 of BCSR0 */
-#define GP1_LED 0x01000001    /*  bit 7 of BCSR0 */
 
 /*
  * Network driver configuration
@@ -81,11 +71,13 @@ void *M8260AllocateRiscTimers( int count );
 extern char M8260DefaultWatchdogFeeder;
 #endif
 
-rtems_isr_entry set_vector(                    /* returns old vector */
-  rtems_isr_entry     handler,                  /* isr routine        */
-  rtems_vector_number vector,                   /* vector number      */
-  int                 type                      /* RTEMS or RAW intr  */
-);
+/*
+ * Prototypes for items shared across file boundaries in the BSP
+ */
+extern uint32_t bsp_serial_per_sec;
+void *bsp_idle_thread( uintptr_t ignored );
+void  cpu_init(void);
+int mbx8xx_console_get_configuration(void);
 
 #ifdef __cplusplus
 }

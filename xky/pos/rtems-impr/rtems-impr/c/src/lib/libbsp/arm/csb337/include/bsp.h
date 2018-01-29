@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @ingroup arm_csb337
+ *
+ * @brief Global BSP definitions.
+ */
+
 /*
  * CSB337 BSP header file
  *
@@ -6,25 +14,29 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *
- *  http://www.rtems.com/license/LICENSE.
- *
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
-#ifndef _BSP_H
-#define _BSP_H
+#ifndef LIBBSP_ARM_CSB337_BSP_H
+#define LIBBSP_ARM_CSB337_BSP_H
+
+#include <bspopts.h>
+#include <bsp/default-initial-extension.h>
+
+#include <rtems.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <bspopts.h>
-
-#include <rtems.h>
-#include <rtems/console.h>
-#include <rtems/clockdrv.h>
-#include <libchip/serial.h>
+/**
+ * @defgroup arm_csb337 CSB337 Support
+ *
+ * @ingroup bsp_arm
+ *
+ * @brief CSB337 support package.
+ *
+ * @{
+ */
 
 #define BSP_FEATURE_IRQ_EXTENSION
 
@@ -35,13 +47,19 @@ extern "C" {
 /* What is the last interrupt? */
 #define BSP_MAX_INT AT91RM9200_MAX_INT
 
+/*
+ * forward reference the type to avoid conflicts between libchip serial
+ * and libchip rtc get and set register types.
+ */
+typedef struct _console_tbl console_tbl;
 console_tbl *BSP_get_uart_from_minor(int minor);
+
 static inline int32_t BSP_get_baud(void) {return 38400;}
 
 #define ST_PIMR_PIV	33	/* 33 ticks of the 32.768Khz clock ~= 1msec */
 
-/*
- * Network driver configuration
+/**
+ * @brief Network driver configuration
  */
 extern struct rtems_bsdnet_ifconfig *config;
 
@@ -49,6 +67,8 @@ extern struct rtems_bsdnet_ifconfig *config;
 int rtems_at91rm9200_emac_attach(struct rtems_bsdnet_ifconfig *config, int attaching);
 #define RTEMS_BSP_NETWORK_DRIVER_NAME	"eth0"
 #define RTEMS_BSP_NETWORK_DRIVER_ATTACH	rtems_at91rm9200_emac_attach
+
+/** @} */
 
 #ifdef __cplusplus
 }

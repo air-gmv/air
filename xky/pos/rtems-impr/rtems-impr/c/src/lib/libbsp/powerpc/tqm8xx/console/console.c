@@ -15,7 +15,7 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 | this file contains the console driver                           |
@@ -43,25 +43,25 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *
  *  http://www.OARcorp.com/rtems/license.html.
- *
- *  $Id$
  */
 
-#include <rtems.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <bsp.h>
-#include <mpc8xx.h>
-#include <rtems/irq.h>
-#include <bsp/irq.h>
-#include <rtems/libio.h>
 #include <termios.h>
 #include <unistd.h>
+
+#include <rtems.h>
+#include <rtems/console.h>
+#include <rtems/libio.h>
 #include <rtems/termiostypes.h>
 #include <rtems/bspIo.h>
 #include <rtems/error.h>
+#include <rtems/irq.h>
+
+#include <bsp.h>
+#include <mpc8xx.h>
+#include <bsp/irq.h>
 
 /*
  * Interrupt-driven input buffer
@@ -392,7 +392,7 @@ sccSetAttributes (int minor, const struct termios *t)
 {
   int baud;
 
-  switch (t->c_cflag & CBAUD) {
+  switch (t->c_ospeed) {
   default:	baud = -1;	break;
   case B50:	baud = 50;	break;
   case B75:	baud = 75;	break;
@@ -781,26 +781,29 @@ sccPollRead (int minor)
 static ssize_t
 sccInterruptWrite (int minor, const char *buf, size_t len)
 {
-  int chan = minor;
+  if (len > 0) {
+    int chan = minor;
 
-  if ((sccPrepTxBd[chan]->status & M8xx_BD_READY) == 0) {
-    sccPrepTxBd[chan]->buffer = (char *)buf;
-    sccPrepTxBd[chan]->length = len;
-    rtems_cache_flush_multiple_data_lines((const void *)buf,len);
-    /*
-     * clear status, set ready bit
-     */
-    sccPrepTxBd[chan]->status =
-      (sccPrepTxBd[chan]->status
-       & M8xx_BD_WRAP)
-      | M8xx_BD_READY | M8xx_BD_INTERRUPT;
-    if ((sccPrepTxBd[chan]->status & M8xx_BD_WRAP) != 0) {
-      sccPrepTxBd[chan] = sccFrstTxBd[chan];
-    }
-    else {
-      sccPrepTxBd[chan]++;
+    if ((sccPrepTxBd[chan]->status & M8xx_BD_READY) == 0) {
+      sccPrepTxBd[chan]->buffer = (char *)buf;
+      sccPrepTxBd[chan]->length = len;
+      rtems_cache_flush_multiple_data_lines((const void *)buf,len);
+      /*
+       * clear status, set ready bit
+       */
+      sccPrepTxBd[chan]->status =
+        (sccPrepTxBd[chan]->status
+         & M8xx_BD_WRAP)
+        | M8xx_BD_READY | M8xx_BD_INTERRUPT;
+      if ((sccPrepTxBd[chan]->status & M8xx_BD_WRAP) != 0) {
+        sccPrepTxBd[chan] = sccFrstTxBd[chan];
+      }
+      else {
+        sccPrepTxBd[chan]++;
+      }
     }
   }
+
   return 0;
 }
 
@@ -843,20 +846,17 @@ int BSP_output_chan = CONS_CHN_NONE; /* channel used for printk operation */
 static void console_debug_putc_onlcr(const char c)
 {
   rtems_interrupt_level irq_level;
-  static char cr_chr = '\r';
 
   if (BSP_output_chan != CONS_CHN_NONE) {
     rtems_interrupt_disable(irq_level);
 
-    if (c == '\n') {
-      sccPollWrite (BSP_output_chan,&cr_chr,1);
-    }
     sccPollWrite (BSP_output_chan,&c,1);
     rtems_interrupt_enable(irq_level);
   }
 }
 
-BSP_output_char_function_type BSP_output_char = console_debug_putc_onlcr;
+BSP_output_char_function_type     BSP_output_char = console_debug_putc_onlcr;
+BSP_polling_getchar_function_type BSP_poll_char = NULL;
 
 
 /*

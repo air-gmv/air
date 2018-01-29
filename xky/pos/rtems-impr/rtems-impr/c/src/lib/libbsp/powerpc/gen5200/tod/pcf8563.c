@@ -14,7 +14,7 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 | this file contains the tod driver for a Philips pcf8563 I2C RTC |
@@ -37,12 +37,11 @@
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
  *
- * http://www.rtems.com/license/LICENSE.
- *
- * @(#) ds1307.c,v 1.5 2004/04/21 10:42:52 ralf Exp
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #include <rtems.h>
+#include <bsp/fatal.h>
 #include <libchip/rtc.h>
 #include <string.h>
 #include "../tod/pcf8563.h"
@@ -59,7 +58,7 @@
  * PARAMETERS:
  *     minor -- minor RTC device number
  */
-void
+static void
 pcf8563_initialize(int minor)
 {
     i2c_message_status status;
@@ -104,7 +103,7 @@ pcf8563_initialize(int minor)
  *     0, if time obtained successfully
  *     -1, if error occured
  */
-int
+static int
 pcf8563_get_time(int minor, rtems_time_of_day *time)
 {
     i2c_bus_number bus;
@@ -171,7 +170,7 @@ pcf8563_get_time(int minor, rtems_time_of_day *time)
  *     0, if time obtained successfully
  *     -1, if error occured
  */
-int
+static int
 pcf8563_set_time(int minor, const rtems_time_of_day *time)
 {
     i2c_bus_number bus;
@@ -186,9 +185,8 @@ pcf8563_set_time(int minor, const rtems_time_of_day *time)
     bus = RTC_Table[minor].ulCtrlPort1;
     addr = RTC_Table[minor].ulDataPort;
 
-    if ((time->year >= 2100) ||
-	(time->year <  1900)) {
-      rtems_fatal_error_occurred(RTEMS_INVALID_NUMBER);
+    if ((time->year >= 2100) || (time->year <  1900)) {
+      bsp_fatal(MPC5200_FATAL_PCF8563_INVALID_YEAR);
     }
     info[0] = PCF8563_SECOND_ADR;
     info[1 + PCF8563_YEAR_ADR  -PCF8563_SECOND_ADR] = To_BCD(time->year % 100);

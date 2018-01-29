@@ -1,5 +1,5 @@
 #
-#  $Id: Makefile.dir 179 2008-09-17 14:07:38Z hsilva $
+#  Example Makefile for a directory
 #
 
 include $(RTEMS_MAKEFILE_PATH)/Makefile.inc

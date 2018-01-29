@@ -15,7 +15,7 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 | this file contains the console driver                           |
@@ -27,8 +27,6 @@
  *
  * this is derived from "timer.c" available in the m68k/gen68360 BSP
  * adapted by Thomas Doerfler <Thomas.Doerfler@embedded-brains.de>
- *
- *  $Id$
  */
 
 /*
@@ -45,11 +43,12 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <rtems.h>
 #include <bsp.h>
+#include <rtems/btimer.h>
 #include <mpc8xx.h>
 
 bool benchmark_timer_find_average_overhead;
@@ -86,9 +85,9 @@ benchmark_timer_initialize (void)
 /*
  * Return timer value in microsecond units
  */
-int benchmark_timer_read(void)
+benchmark_timer_t benchmark_timer_read(void)
 {
-  int retval;
+  uint32_t retval;
   retval = *(uint32_t*)&m8xx.tcn1;
   retval = retval * 1000000LL / BSP_bus_frequency;
   return retval;

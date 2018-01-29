@@ -4,9 +4,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <rtems.h>
@@ -15,5 +13,5 @@
 
 void bsp_reset( void )
 {
-  asm ("swi %a0" :: "i" (SWI_Exit));
+  __asm__ ("swi %a0" :: "i" (SWI_Exit));
 }

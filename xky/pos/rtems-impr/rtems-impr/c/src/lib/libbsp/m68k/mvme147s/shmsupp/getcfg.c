@@ -18,13 +18,11 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  MVME147 port for TNI - Telecom Bretagne
  *  by Dominique LE CAMPION (Dominique.LECAMPION@enst-bretagne.fr)
  *  June 1996
- *
- *  $Id$
  */
 
 #include <bsp.h>
@@ -36,7 +34,7 @@
 
 shm_config_table BSP_shm_cfgtbl;
 
-uint32_t         *BSP_int_address()
+static uint32_t *BSP_int_address(void)
 {
   uint32_t         id, offset;
 

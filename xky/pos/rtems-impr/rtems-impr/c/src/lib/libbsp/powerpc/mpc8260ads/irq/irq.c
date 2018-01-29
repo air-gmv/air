@@ -11,10 +11,8 @@
  *     on table in irq_init.c
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>
@@ -213,7 +211,7 @@ volatile unsigned int maxLoop = 0;
 /*
  * High level IRQ handler called from shared_raw_irq_code_entry
  */
-int C_dispatch_irq_handler (BSP_Exception_frame *frame, unsigned excNum)
+static int C_dispatch_irq_handler (BSP_Exception_frame *frame, unsigned excNum)
 {
   register unsigned int irq;
 #if 0
@@ -278,7 +276,7 @@ int C_dispatch_irq_handler (BSP_Exception_frame *frame, unsigned excNum)
        * make sure, that the masking operations in
        * ICTL and MSR are executed in order
        */
-      asm volatile("sync":::"memory");
+      __asm__ volatile("sync":::"memory");
 
       /* re-enable external exceptions */
       _CPU_MSR_GET(msr);
@@ -295,7 +293,7 @@ int C_dispatch_irq_handler (BSP_Exception_frame *frame, unsigned excNum)
        * make sure, that the masking operations in
        * ICTL and MSR are executed in order
        */
-      asm volatile("sync":::"memory");
+      __asm__ volatile("sync":::"memory");
 
       /* restore interrupt masks */
       m8260.simr_h = old_simr_h;
@@ -312,7 +310,7 @@ int C_dispatch_irq_handler (BSP_Exception_frame *frame, unsigned excNum)
 /*
  * Initialize CPM interrupt management
  */
-void
+static void
 BSP_CPM_irq_init(void)
 {
    m8260.simr_l = 0;
@@ -330,28 +328,28 @@ BSP_CPM_irq_init(void)
 
 }
 
-rtems_status_code bsp_interrupt_vector_enable( rtems_vector_number irqnum)
+void bsp_interrupt_vector_enable( rtems_vector_number irqnum)
 {
+  bsp_interrupt_assert(bsp_interrupt_is_valid_vector(irqnum));
+
   if (is_cpm_irq(irqnum)) {
     /*
      * Enable interrupt at PIC level
      */
     BSP_irq_enable_at_cpm (irqnum);
   }
-
-  return RTEMS_SUCCESSFUL;
 }
 
-rtems_status_code bsp_interrupt_vector_disable( rtems_vector_number irqnum)
+void bsp_interrupt_vector_disable( rtems_vector_number irqnum)
 {
+  bsp_interrupt_assert(bsp_interrupt_is_valid_vector(irqnum));
+
   if (is_cpm_irq(irqnum)) {
     /*
      * disable interrupt at PIC level
      */
     BSP_irq_disable_at_cpm (irqnum);
   }
-
-  return RTEMS_SUCCESSFUL;
 }
 
 rtems_status_code bsp_interrupt_facility_initialize()
@@ -371,9 +369,4 @@ rtems_status_code bsp_interrupt_facility_initialize()
   BSP_CPM_irq_init();
 
   return RTEMS_SUCCESSFUL;
-}
-
-void bsp_interrupt_handler_default( rtems_vector_number vector)
-{
-  printk( "Spurious interrupt: 0x%08x\n", vector);
 }

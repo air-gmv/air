@@ -8,13 +8,7 @@
  *	
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
-<<<<<<< start.S
- *  $Id$
-=======
- *  $Id$
->>>>>>> 1.25
+ *  http://www.rtems.org/license/LICENSE.
  *
  */
 
@@ -74,6 +68,7 @@ __rtems_entry_point:
 	mfmsr r0
 	oris  r0, r0, (1<<(31-16-6))
 	mtmsr r0
+	isync
 	/*
 	 * set vscr and vrsave to known values
 	 */
@@ -151,6 +146,12 @@ enter_C_code:
 	 */
 	li   r0, (CPU_STACK_ALIGNMENT-1)
 	andc r1, r9, r0
+	/*
+	 * NULL ptr to back chain
+	 */
+	li   r0, 0
+	stw  r0, 0(r1)
+
 	/*
 	 * We are now in a environment that is totally independent from
 	 * bootloader setup.

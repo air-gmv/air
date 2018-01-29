@@ -1,5 +1,12 @@
+/**
+ *  @file
+ *
+ *  @ingroup gen68360_bsp
+ *
+ *  @brief Board Support Package for `Generic' Motorola MC68360
+ */
+
 /*
- * Board Support Package for `Generic' Motorola MC68360
  *
  * Based on the `gen68302' board support package, and covered by the
  * original distribution terms.
@@ -9,8 +16,6 @@
  * University of Saskatchewan
  * Saskatoon, Saskatchewan, CANADA
  * eric@skatter.usask.ca
- *
- *  $Id$
  */
 
 /*  bsp.h
@@ -20,48 +25,35 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-#ifndef _BSP_H
-#define _BSP_H
+#ifndef LIBBSP_M68K_GEN68360_BSP_H
+#define LIBBSP_M68K_GEN68360_BSP_H
+
+#include <bspopts.h>
+#include <bsp/default-initial-extension.h>
+
+#include <rtems.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <bspopts.h>
-
-#include <rtems.h>
-#include <rtems/console.h>
-#include <rtems/iosupp.h>
-#include <rtems/clockdrv.h>
-
-/*
- * Network driver configuration
+/**
+ *  @defgroup gen68360_bsp Network driver
+ *
+ *  @ingroup m68k_gen68360
+ *
+ *  @brief Network driver configuration
  */
+
 struct rtems_bsdnet_ifconfig;
 extern int rtems_scc1_driver_attach (struct rtems_bsdnet_ifconfig *config, int attaching);
 #define RTEMS_BSP_NETWORK_DRIVER_NAME	"scc1"
 #define RTEMS_BSP_NETWORK_DRIVER_ATTACH	rtems_scc1_driver_attach
 
-/*
- *  Simple spin delay in microsecond units for device drivers.
- *  This is very dependent on the clock speed of the target.
- */
-
-#define rtems_bsp_delay( microseconds ) \
-  { register uint32_t         _delay=(microseconds); \
-    register uint32_t         _tmp=123; \
-    asm volatile( "0: \
-                     nbcd      %0 ; \
-                     nbcd      %0 ; \
-                     dbf       %1,0b" \
-                  : "=d" (_tmp), "=d" (_delay) \
-                  : "0"  (_tmp), "1"  (_delay) ); \
-  }
-
-extern m68k_isr_entry M68Kvec[];   /* vector table address */
+extern rtems_isr_entry M68Kvec[];   /* vector table address */
 
 /* functions */
 
@@ -72,7 +64,7 @@ extern char M360DefaultWatchdogFeeder;
 
 extern int m360_clock_rate; /* BRG clock rate, defined in console.c */
 
-m68k_isr_entry set_vector(
+rtems_isr_entry set_vector(
   rtems_isr_entry     handler,
   rtems_vector_number vector,
   int                 type
@@ -106,6 +98,11 @@ m68k_isr_entry set_vector(
 #define PGH360_PB_SPI_DISP4_CE_MSK   (1<<14)
 #define PGH360_PB_SPI_EEP_CE_MSK     (1<< 0)
 #endif /* defined(PGH360) */
+
+/*
+ * Prototypes for BSP methods which cross file boundaries
+ */
+void _Init68360(void);
 
 #ifdef __cplusplus
 }

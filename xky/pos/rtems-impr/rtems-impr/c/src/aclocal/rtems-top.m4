@@ -1,19 +1,21 @@
-dnl $Id: rtems-top.m4 179 2008-09-17 14:07:38Z hsilva $
+# AC_DISABLE_OPTION_CHECKING is not available before 2.62
+AC_PREREQ(2.62)
 
 dnl
 dnl RTEMS_TOP($1)
 dnl 
-dnl $1 .. relative path from this configure.in to the toplevel configure.in
+dnl $1 .. relative path from this configure.ac to the toplevel configure.ac
 dnl
 AC_DEFUN([RTEMS_TOP],
 [dnl
 AC_REQUIRE([RTEMS_VERSIONING])
+AC_REQUIRE([AC_DISABLE_OPTION_CHECKING])
 AC_REQUIRE([AM_SET_LEADING_DOT])
 AC_CONFIG_AUX_DIR([$1])
 AC_CHECK_PROGS(MAKE, gmake make)
 AC_BEFORE([$0], [AM_INIT_AUTOMAKE])dnl
 
-AC_PREFIX_DEFAULT([/opt/rtems-][RTEMS_API])
+AC_PREFIX_DEFAULT([/opt/rtems-][_RTEMS_API])
 
 AC_SUBST([RTEMS_TOPdir],["$1"])
 
@@ -28,4 +30,5 @@ AC_SUBST([PROJECT_TOPdir],[${project_top}${rtems_updir}'$(top_builddir)'])
 AC_SUBST([PROJECT_ROOT],[${with_project_root}${rtems_updir}'$(top_builddir)'])
 
 AC_SUBST([dirstamp],[\${am__leading_dot}dirstamp])
+AC_SUBST([pkgdatadir],["\${datadir}"/rtems]_RTEMS_API)
 ])dnl

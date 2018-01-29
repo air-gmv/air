@@ -24,12 +24,12 @@
  */
 typedef struct {
 
-    xky_identifier_t id;    /**< id of shared memory block              */
-    xky_name_t name;        /**< name of shared memory block            */
+    air_identifier_t id;    /**< id of shared memory block              */
+    air_name_t name;        /**< name of shared memory block            */
     pmk_list_t partitions;  /**< list of partitions                     */
     void *addr;             /**< virtual address of the memory block    */
-    xky_sz_t size;            /**< size of the memory block               */
-    xky_sz_t unit;            /**< unit of alocation of the memory block  */
+    air_sz_t size;            /**< size of the memory block               */
+    air_sz_t unit;            /**< unit of alocation of the memory block  */
 
 } pmk_shm_t;
 
@@ -49,13 +49,13 @@ typedef struct {
  * @param id id of the shared memory to look for
  * @return shared memory pointer if found, NULL otherwise
  */
-pmk_shm_t *pmk_sharedmemory_get_by_id(xky_identifier_t id);
+pmk_shm_t *pmk_sharedmemory_get_by_id(air_identifier_t id);
 /**
  * @brief Get shared memory by name
  * @param name name of the shared memory to look for
  * @return shared memory pointer if found, NULL otherwise
  */
-pmk_shm_t *pmk_sharedmemory_get_by_name(xky_name_ptr_t name);
+pmk_shm_t *pmk_sharedmemory_get_by_name(air_name_ptr_t name);
 /**
  * @brief Checks if a partition have access to a shared memory
  * @param sharedarea shared memory area pointer

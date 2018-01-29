@@ -10,8 +10,6 @@
  * University of Saskatchewan
  * Saskatoon, Saskatchewan, CANADA
  * eric@skatter.usask.ca
- *
- *  $Id$
  */
 
 /*
@@ -28,10 +26,11 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <rtems.h>
+#include <rtems/btimer.h>
 #include <bsp.h>
 #include <rtems/m68k/m68360.h>
 
@@ -69,7 +68,7 @@ benchmark_timer_initialize (void)
 /*
  * Return timer value in microsecond units
  */
-int
+uint32_t
 benchmark_timer_read (void)
 {
 	unsigned short val;

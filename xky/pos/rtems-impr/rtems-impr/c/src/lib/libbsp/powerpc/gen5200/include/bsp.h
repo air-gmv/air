@@ -14,14 +14,14 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 | this file contains board specific definitions                   |
 \*===============================================================*/
 
-#ifndef __GEN5200_BSP_h
-#define __GEN5200_BSP_h
+#ifndef LIBBSP_POWERPC_GEN5200_BSP_H
+#define LIBBSP_POWERPC_GEN5200_BSP_H
 
 #include <bspopts.h>
 
@@ -63,19 +63,37 @@ LINKER_SYMBOL(bsp_work_area_start);
 
 LINKER_SYMBOL(MBAR);
 
+/* Provide legacy defines */
+
+#ifdef MPC5200_BOARD_PM520_ZE30
+#define PM520_ZE30
+#endif
+
+#ifdef MPC5200_BOARD_PM520_CR825
+#define PM520_CR825
+#endif
+
+#ifdef MPC5200_BOARD_ICECUBE
+#define icecube
+#endif
+
+#ifdef MPC5200_BOARD_BRS5L
+#define BRS5L
+#endif
+
 /*
  * distinguish board characteristics
  */
 /*
  * for PM520 mdule on a ZE30 carrier
  */
-#if defined(PM520_ZE30)
+#if defined(MPC5200_BOARD_PM520_ZE30)
 #define PM520
 #endif
 /*
  * for PM520 mdule on a CR825 carrier
  */
-#if defined(PM520_CR825)
+#if defined(MPC5200_BOARD_PM520_CR825)
 #define PM520
 #endif
 
@@ -84,16 +102,28 @@ LINKER_SYMBOL(MBAR);
   #define NEED_LOW_LEVEL_INIT
 #endif
 
-#if defined(BRS5L)
+#if defined(MPC5200_BOARD_BRS5L)
 /*
  * IMD Custom Board BRS5L
  */
 
 #define HAS_NVRAM_93CXX
 
+#elif defined(MPC5200_BOARD_BRS6L)
+  #define MPC5200_BRS6L_FPGA_BEGIN 0x800000
+  #define MPC5200_BRS6L_FPGA_SIZE (64 * 1024)
+  #define MPC5200_BRS6L_FPGA_END \
+    (MPC5200_BRS6L_FPGA_BEGIN + MPC5200_BRS6L_FPGA_SIZE)
+
+  #define MPC5200_BRS6L_MRAM_BEGIN 0xff000000
+  #define MPC5200_BRS6L_MRAM_SIZE (4 * 1024 * 1024)
+  #define MPC5200_BRS6L_MRAM_END \
+    (MPC5200_BRS6L_MRAM_BEGIN + MPC5200_BRS6L_MRAM_SIZE)
 #elif defined (PM520)
 
-#elif defined (icecube)
+/* Nothing special */
+
+#elif defined (MPC5200_BOARD_ICECUBE)
 /*
  *  Codename: IceCube
  *  Compatible Boards:
@@ -101,33 +131,25 @@ LINKER_SYMBOL(MBAR);
  *     Embedded Planet EP5200
  */
 
+#elif defined (MPC5200_BOARD_DP2)
+
+/* Nothing special */
+
 #else
 #error "board type not defined"
 #endif
 
 #ifndef ASM
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
 #include <rtems.h>
-#include <rtems/console.h>
-#include <rtems/clockdrv.h>
-#include <rtems/rtc.h>
 #include <i2cdrv.h>
 #include <bsp/irq.h>
 #include <bsp/vectors.h>
+#include <bsp/u-boot.h>
+#include <bsp/default-initial-extension.h>
 
-#if defined(HAS_UBOOT)
-/* This is the define U-Boot uses to configure which entries in the structure are valid */
-#define CONFIG_MPC5xxx
-#include <u-boot.h>
-
-extern bd_t bsp_uboot_board_info;
-#else
-
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 /*
@@ -166,14 +188,6 @@ extern int rtems_mpc5200_fec_driver_attach_detach (struct rtems_bsdnet_ifconfig 
 
 /* functions */
 
-/* console modes (only termios) */
-#ifdef  PRINTK_MINOR
-#undef  PRINTK_MINOR
-#endif
-#define PRINTK_MINOR PSC1_MINOR
-
-#define SINGLE_CHAR_MODE
-/* #define UARTS_USE_TERMIOS_INT   1 */
 /* #define SHOW_MORE_INIT_SETTINGS 1 */
 
 /* ata modes */
@@ -185,6 +199,10 @@ extern int rtems_mpc5200_fec_driver_attach_detach (struct rtems_bsdnet_ifconfig 
 #define IPB_CLOCK (bsp_uboot_board_info.bi_ipbfreq)
 #define XLB_CLOCK (bsp_uboot_board_info.bi_busfreq)
 #define G2_CLOCK  (bsp_uboot_board_info.bi_intfreq)
+#elif defined(MPC5200_BOARD_BRS5L) || defined(MPC5200_BOARD_BRS6L)
+#define IPB_CLOCK 66000000   /* 66 MHz */
+#define XLB_CLOCK 132000000  /* 132 MHz */
+#define G2_CLOCK  396000000  /* 396 MHz */
 #else
 #define IPB_CLOCK 33000000   /* 33 MHz */
 #define XLB_CLOCK 66000000   /* 66 MHz */
@@ -194,7 +212,7 @@ extern int rtems_mpc5200_fec_driver_attach_detach (struct rtems_bsdnet_ifconfig 
 #if defined(HAS_UBOOT)
 #define GEN5200_CONSOLE_BAUD (bsp_uboot_board_info.bi_baudrate)
 #else
-#define GEN5200_CONSOLE_BAUD 9600
+#define GEN5200_CONSOLE_BAUD 115200
 #endif
 
 /*
@@ -231,6 +249,13 @@ void BSP_IRQ_Benchmarking_Report(void);
 #endif
 
 void cpu_init(void);
+
+int mpc5200_eth_mii_read(
+  int phyAddr,
+  void *arg,
+  unsigned regAddr,
+  uint32_t *retVal
+);
 
 #ifdef __cplusplus
 }

@@ -14,7 +14,7 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 | this file contains the irq controller handler                   |
@@ -48,8 +48,8 @@
 /*   Nested exception handlers not working yet.                        */
 /*                                                                     */
 /*   The license and distribution terms for this file may be           */
-/*   found in found in the file LICENSE in this distribution or at     */
-/*   http://www.rtems.com/license/LICENSE.                        */
+/*   found in the file LICENSE in this distribution or at     */
+/*   http://www.rtems.org/license/LICENSE.                        */
 /*                                                                     */
 /*---------------------------------------------------------------------*/
 /*                                                                     */
@@ -72,6 +72,8 @@
 /*   Version history:  1.0                                             */
 /*                                                                     */
 /***********************************************************************/
+
+#include <inttypes.h>
 
 #include <rtems.h>
 
@@ -171,10 +173,6 @@ static inline void BSP_enable_per_irq_at_siu(
   uint8_t lo_hi_ind = 0,
     prio_index_offset;
   uint32_t *reg;
-  volatile uint32_t per_pri_1,
-    main_pri_1,
-    crit_pri_main_mask,
-    per_mask;
 
   /* calculate the index offset of priority value bit field */
   prio_index_offset = (irqLine - BSP_PER_IRQ_LOWEST_OFFSET) % 8;
@@ -223,11 +221,11 @@ static inline void BSP_enable_per_irq_at_siu(
   /* enable (unmask) peripheral interrupt */
   mpc5200.per_mask &= ~(0x80000000 >> SIU_MaskBit [irqLine]);
 
-  main_pri_1 = mpc5200.main_pri_1;
-  crit_pri_main_mask = mpc5200.crit_pri_main_mask;
-  per_pri_1 = mpc5200.per_pri_1;
-  per_mask = mpc5200.per_mask;
-
+  /* FIXME: Why? */
+  mpc5200.main_pri_1;
+  mpc5200.crit_pri_main_mask;
+  mpc5200.per_pri_1;
+  mpc5200.per_mask;
 }
 
 static inline void BSP_enable_main_irq_at_siu(
@@ -361,69 +359,67 @@ static inline void BSP_disable_crit_irq_at_siu( rtems_vector_number
 /*
  * This function enables a given siu interrupt
  */
-rtems_status_code bsp_interrupt_vector_enable( rtems_vector_number irqLine)
+void bsp_interrupt_vector_enable( rtems_vector_number vector)
 {
-  int base_index = get_siu_irq_base_index( irqLine);
+  int base_index = get_siu_irq_base_index( vector);
 
-  if (is_siu_irq( irqLine)) {
+  bsp_interrupt_assert(bsp_interrupt_is_valid_vector(vector));
+
+  if (is_siu_irq( vector)) {
     rtems_interrupt_level level;
 
     rtems_interrupt_disable( level);
 
     switch (base_index) {
       case BSP_PER_IRQ_LOWEST_OFFSET:
-        BSP_enable_per_irq_at_siu( irqLine);
+        BSP_enable_per_irq_at_siu( vector);
         break;
       case BSP_MAIN_IRQ_LOWEST_OFFSET:
-        BSP_enable_main_irq_at_siu( irqLine);
+        BSP_enable_main_irq_at_siu( vector);
         break;
       case BSP_CRIT_IRQ_LOWEST_OFFSET:
-        BSP_enable_crit_irq_at_siu( irqLine);
+        BSP_enable_crit_irq_at_siu( vector);
         break;
       default:
-        rtems_interrupt_enable( level);
-        printk( "No valid base index\n");
-        return RTEMS_INVALID_NUMBER;
+        bsp_interrupt_assert(0);
+        break;
     }
 
     rtems_interrupt_enable( level);
   }
-
-  return RTEMS_SUCCESSFUL;
 }
 
 /*
  * This function disables a given siu interrupt
  */
-rtems_status_code bsp_interrupt_vector_disable( rtems_vector_number irqLine)
+void bsp_interrupt_vector_disable( rtems_vector_number vector)
 {
-  int base_index = get_siu_irq_base_index( irqLine);
+  int base_index = get_siu_irq_base_index( vector);
 
-  if (is_siu_irq( irqLine)) {
+  bsp_interrupt_assert(bsp_interrupt_is_valid_vector(vector));
+
+  if (is_siu_irq( vector)) {
     rtems_interrupt_level level;
 
     rtems_interrupt_disable( level);
 
     switch (base_index) {
       case BSP_PER_IRQ_LOWEST_OFFSET:
-        BSP_disable_per_irq_at_siu( irqLine);
+        BSP_disable_per_irq_at_siu( vector);
         break;
       case BSP_MAIN_IRQ_LOWEST_OFFSET:
-        BSP_disable_main_irq_at_siu( irqLine);
+        BSP_disable_main_irq_at_siu( vector);
         break;
       case BSP_CRIT_IRQ_LOWEST_OFFSET:
-        BSP_disable_crit_irq_at_siu( irqLine);
+        BSP_disable_crit_irq_at_siu( vector);
         break;
       default:
-        rtems_interrupt_enable( level);
-        printk( "No valid base index\n");
-        return RTEMS_INVALID_NUMBER;
+        bsp_interrupt_assert(0);
+        break;
     }
 
     rtems_interrupt_enable( level);
   }
-
-  return RTEMS_SUCCESSFUL;
 }
 
 #if (BENCHMARK_IRQ_PROCESSING == 0)
@@ -480,19 +476,37 @@ void BSP_IRQ_Benchmarking_Report( void)
 }
 #endif
 
+static void dispatch(uint32_t irq, uint32_t offset, volatile uint32_t *maskreg)
+{
+  #if (ALLOW_IRQ_NESTING == 1)
+    uint32_t msr;
+    uint32_t mask = *maskreg;
+  #endif
+
+  irq += offset;
+
+  #if (ALLOW_IRQ_NESTING == 1)
+    *maskreg = mask | irqMaskTable [irq];
+    /* Make sure that the write operation completed (cache inhibited area) */
+    *maskreg;
+    msr = ppc_external_exceptions_enable();
+  #endif
+
+  bsp_interrupt_handler_dispatch(irq);
+
+  #if (ALLOW_IRQ_NESTING == 1)
+    ppc_external_exceptions_disable(msr);
+    *maskreg = mask;
+  #endif
+}
+
 /*
  * High level IRQ handler called from shared_raw_irq_code_entry
  */
-int C_dispatch_irq_handler(BSP_Exception_frame *frame, unsigned excNum)
+static int C_dispatch_irq_handler(BSP_Exception_frame *frame, unsigned excNum)
 {
-  register unsigned int irq;
-  register unsigned int pmce;
-  register unsigned int crit_pri_main_mask,
-    per_mask;
-
-#if (ALLOW_IRQ_NESTING == 1)
-  uint32_t msr;
-#endif
+  uint32_t irq;
+  uint32_t pmce;
 
 #if (BENCHMARK_IRQ_PROCESSING == 1)
   uint64_t start,
@@ -507,333 +521,92 @@ int C_dispatch_irq_handler(BSP_Exception_frame *frame, unsigned excNum)
     printk( "not counting %d\n", excNum);
 #endif
 
-  switch (excNum) {
-      /*
-       * Handle decrementer interrupt
-       */
-    case ASM_DEC_VECTOR:
+  /* get the content of main interrupt status register */
+  pmce = mpc5200.pmce;
 
-      /* Dispatch interrupt handlers */
-      bsp_interrupt_handler_dispatch( BSP_DECREMENTER);
+  /* critical interrupts are routed to the core_int, see premature
+   * initialization
+   */
+  while ((pmce & (PMCE_CSE_STICKY | PMCE_MSE_STICKY)) != 0) {
+    /* first: check for critical interrupt sources (hierarchical order)
+     * -> HI_int indicates peripheral sources
+     */
+    if ((pmce & PMCE_CSE_STICKY) != 0) {
+      /* get source of critical interrupt */
+      irq = PMCE_CSE_SOURCE(pmce);
 
-      break;
+      switch (irq) {
+          /* peripheral HI_int interrupt source detected */
+        case 2:
+          /* check for valid peripheral interrupt source */
+          if ((pmce & PMCE_PSE_STICKY) != 0) {
+            /* get source of peripheral interrupt */
+            irq = PMCE_PSE_SOURCE(pmce);
 
-    case ASM_60X_SYSMGMT_VECTOR:
-
-      /* get the content of main interrupt status register */
-      pmce = mpc5200.pmce;
-
-      /* main interrupts may be routed to SMI, see bit SMI/INT select
-       * bit in main int. priorities
-       */
-      while (CHK_MSE_STICKY( pmce)) {
-
-        /* check for main interrupt sources (hirarchical order)
-         * -> LO_int indicates peripheral sources
-         */
-        if (CHK_MSE_STICKY( pmce)) {
-          /* get source of main interrupt */
-          irq = MSE_SOURCE( pmce);
-          switch (irq) {
-
-              /* irq1-3, RTC, GPIO, TMR0-7 detected (attention:
-               * slice timer 2 is always routed to SMI)
-               */
-            case 0:            /* slice timer 2 */
-            case 1:
-            case 2:
-            case 3:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-            case 12:
-            case 13:
-            case 14:
-            case 15:
-            case 16:
-
-              /* add proper offset for main interrupts in
-               * the siu handler array
-               */
-              irq += BSP_MAIN_IRQ_LOWEST_OFFSET;
-
-              /* save original mask and disable all lower
-               * priorized main interrupts
-               */
-              crit_pri_main_mask = mpc5200.crit_pri_main_mask;
-              mpc5200.crit_pri_main_mask |= irqMaskTable [irq];
-
-#if (ALLOW_IRQ_NESTING == 1)
-              /* enable interrupt nesting */
-              msr = ppc_external_exceptions_enable();
-#endif
-
-              /* Dispatch interrupt handlers */
-              bsp_interrupt_handler_dispatch( irq);
-
-#if (ALLOW_IRQ_NESTING == 1)
-              /* disable interrupt nesting */
-              ppc_external_exceptions_disable( msr);
-#endif
-
-              /* restore original interrupt mask */
-              mpc5200.crit_pri_main_mask = crit_pri_main_mask;
-
-              break;
-
-              /* peripheral LO_int interrupt source detected */
-            case 4:
-
-              /* check for valid peripheral interrupt source */
-              if (CHK_PSE_STICKY( pmce)) {
-                /* get source of peripheral interrupt */
-                irq = PSE_SOURCE( pmce);
-
-                /* add proper offset for peripheral interrupts
-                 * in the siu handler array
-                 */
-                irq += BSP_PER_IRQ_LOWEST_OFFSET;
-
-                /* save original mask and disable all lower
-                 * priorized main interrupts
-                 */
-                per_mask = mpc5200.per_mask;
-                mpc5200.per_mask |= irqMaskTable [irq];
-
-#if (ALLOW_IRQ_NESTING == 1)
-                /* enable interrupt nesting */
-                msr = ppc_external_exceptions_enable();
-#endif
-
-                /* Dispatch interrupt handlers */
-                bsp_interrupt_handler_dispatch( irq);
-
-#if (ALLOW_IRQ_NESTING == 1)
-                /* disable interrupt nesting */
-                ppc_external_exceptions_disable( msr);
-#endif
-
-                /* restore original interrupt mask */
-                mpc5200.per_mask = per_mask;
-
-                /* force re-evaluation of peripheral interrupts */
-                CLR_PSE_STICKY( mpc5200.pmce);
-              } else {
-                /* this case may not occur: no valid peripheral
-                 * interrupt source
-                 */
-                printk( "No valid peripheral LO_int interrupt source\n");
-              }
-              break;
-              /* error: unknown interrupt source */
-            default:
-              printk( "Unknown peripheral LO_int interrupt source\n");
-              break;
+            dispatch(irq, BSP_PER_IRQ_LOWEST_OFFSET, &mpc5200.per_mask);
+          } else {
+            /* this case may not occur: no valid peripheral
+             * interrupt source */
+            printk( "No valid peripheral HI_int interrupt source\n");
           }
+          break;
 
-          /* force re-evaluation of main interrupts */
-          CLR_MSE_STICKY( mpc5200.pmce);
-        }
+          /* irq0, slice timer 1 or ccs wakeup detected */
+        case 0:
+        case 1:
+        case 3:
 
-        /* get the content of main interrupt status register */
-        pmce = mpc5200.pmce;
+          /* add proper offset for critical interrupts in the siu
+           * handler array */
+          irq += BSP_CRIT_IRQ_LOWEST_OFFSET;
+
+          /* Dispatch interrupt handlers */
+          bsp_interrupt_handler_dispatch( irq);
+
+          break;
+
+        default:
+          /* error: unknown interrupt source */
+          printk( "Unknown HI_int interrupt source\n");
+          break;
       }
-      break;
+    }
 
-    case ASM_EXT_VECTOR:
-      /* get the content of main interrupt status register */
-      pmce = mpc5200.pmce;
+    /* second: check for main interrupt sources (hierarchical order)
+     * -> LO_int indicates peripheral sources */
+    if ((pmce & PMCE_MSE_STICKY) != 0) {
+      /* get source of main interrupt */
+      irq = PMCE_MSE_SOURCE(pmce);
 
-      /* critical interrupts may be routed to the core_int
-       * dependent on premature initialization, see bit 31 (CEbsH)
-       */
-      while ((CHK_CE_SHADOW( pmce) && CHK_CSE_STICKY( pmce))
-             || CHK_MSE_STICKY( pmce) || CHK_PSE_STICKY( pmce)) {
+      if (irq == 4) {
+          /* peripheral LO_int interrupt source detected */
+          /* check for valid peripheral interrupt source */
+          if ((pmce & PMCE_PSE_STICKY) != 0) {
+            /* get source of peripheral interrupt */
+            irq = PMCE_PSE_SOURCE(pmce);
 
-        /* first: check for critical interrupt sources (hierarchical order)
-         * -> HI_int indicates peripheral sources
-         */
-        if (CHK_CE_SHADOW( pmce) && CHK_CSE_STICKY( pmce)) {
-          /* get source of critical interrupt */
-          irq = CSE_SOURCE( pmce);
-          switch (irq) {
-              /* irq0, slice timer 1 or ccs wakeup detected */
-            case 0:
-            case 1:
-            case 3:
-
-              /* add proper offset for critical interrupts in the siu
-               * handler array */
-              irq += BSP_CRIT_IRQ_LOWEST_OFFSET;
-
-              /* Dispatch interrupt handlers */
-              bsp_interrupt_handler_dispatch( irq);
-
-              break;
-
-              /* peripheral HI_int interrupt source detected */
-            case 2:
-              /* check for valid peripheral interrupt source */
-              if (CHK_PSE_STICKY( pmce)) {
-                /* get source of peripheral interrupt */
-                irq = PSE_SOURCE( pmce);
-
-                /* add proper offset for peripheral interrupts in the
-                 * siu handler array */
-                irq += BSP_PER_IRQ_LOWEST_OFFSET;
-
-                /* save original mask and disable all lower
-                 * priorized main interrupts */
-                per_mask = mpc5200.per_mask;
-                mpc5200.per_mask |= irqMaskTable [irq];
-
-#if (ALLOW_IRQ_NESTING == 1)
-                /* enable interrupt nesting */
-                msr = ppc_external_exceptions_enable();
-#endif
-
-                /* Dispatch interrupt handlers */
-                bsp_interrupt_handler_dispatch( irq);
-
-#if (ALLOW_IRQ_NESTING == 1)
-                /* disable interrupt nesting */
-                ppc_external_exceptions_disable( msr);
-#endif
-
-                /* restore original interrupt mask */
-                mpc5200.per_mask = per_mask;
-
-                /* force re-evaluation of peripheral interrupts */
-                CLR_PSE_STICKY( mpc5200.pmce);
-              } else {
-                /* this case may not occur: no valid peripheral
-                 * interrupt source */
-                printk( "No valid peripheral HI_int interrupt source\n");
-              }
-              break;
-            default:
-              /* error: unknown interrupt source */
-              printk( "Unknown HI_int interrupt source\n");
-              break;
+            dispatch(irq, BSP_PER_IRQ_LOWEST_OFFSET, &mpc5200.per_mask);
+          } else {
+            /* this case may not occur: no valid peripheral
+             * interrupt source */
+            printk( "No valid peripheral LO_int interrupt source\n");
           }
-          /* force re-evaluation of critical interrupts */
-          CLR_CSE_STICKY( mpc5200.pmce);
-        }
-
-        /* second: check for main interrupt sources (hierarchical order)
-         * -> LO_int indicates peripheral sources */
-        if (CHK_MSE_STICKY( pmce)) {
-          /* get source of main interrupt */
-          irq = MSE_SOURCE( pmce);
-
-          switch (irq) {
-
-              /* irq1-3, RTC, GPIO, TMR0-7 detected (attention: slice timer
-               * 2 is always routed to SMI) */
-            case 1:
-            case 2:
-            case 3:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-            case 12:
-            case 13:
-            case 14:
-            case 15:
-            case 16:
-              /* add proper offset for main interrupts in the siu
-               * handler array */
-              irq += BSP_MAIN_IRQ_LOWEST_OFFSET;
-
-              /* save original mask and disable all lower priorized
-               * main interrupts*/
-              crit_pri_main_mask = mpc5200.crit_pri_main_mask;
-              mpc5200.crit_pri_main_mask |= irqMaskTable [irq];
-
-#if (ALLOW_IRQ_NESTING == 1)
-              /* enable interrupt nesting */
-              msr = ppc_external_exceptions_enable();
-#endif
-
-              /* Dispatch interrupt handlers */
-              bsp_interrupt_handler_dispatch( irq);
-
-#if (ALLOW_IRQ_NESTING == 1)
-              /* disable interrupt nesting */
-              ppc_external_exceptions_disable( msr);
-#endif
-
-              /* restore original interrupt mask */
-              mpc5200.crit_pri_main_mask = crit_pri_main_mask;
-              break;
-
-              /* peripheral LO_int interrupt source detected */
-            case 4:
-              /* check for valid peripheral interrupt source */
-              if (CHK_PSE_STICKY( pmce)) {
-                /* get source of peripheral interrupt */
-                irq = PSE_SOURCE( pmce);
-
-                /* add proper offset for peripheral interrupts in the siu
-                 * handler array */
-                irq += BSP_PER_IRQ_LOWEST_OFFSET;
-
-                /* save original mask and disable all lower priorized main
-                 * interrupts */
-                per_mask = mpc5200.per_mask;
-                mpc5200.per_mask |= irqMaskTable [irq];
-
-#if (ALLOW_IRQ_NESTING == 1)
-                /* enable interrupt nesting */
-                msr = ppc_external_exceptions_enable();
-#endif
-
-                /* Dispatch interrupt handlers */
-                bsp_interrupt_handler_dispatch( irq);
-
-#if (ALLOW_IRQ_NESTING == 1)
-                /* disable interrupt nesting */
-                ppc_external_exceptions_disable( msr);
-#endif
-
-                /* restore original interrupt mask */
-                mpc5200.per_mask = per_mask;
-
-                /* force re-evaluation of peripheral interrupts */
-                CLR_PSE_STICKY( mpc5200.pmce);
-              } else {
-                /* this case may not occur: no valid peripheral
-                 * interrupt source */
-                printk( "No valid peripheral LO_int interrupt source\n");
-              }
-              break;
-
-              /* error: unknown interrupt source */
-            default:
-              printk( "Unknown peripheral LO_int interrupt source\n");
-              break;
-          }
-          /* force re-evaluation of main interrupts */
-          CLR_MSE_STICKY( mpc5200.pmce);
-        }
-        /* get the content of main interrupt status register */
-        pmce = mpc5200.pmce;
+      } else if (irq <= 16) {
+          /* irq1-3, RTC, GPIO, TMR0-7 detected (attention: slice timer
+           * 2 is always routed to SMI) */
+          dispatch(irq, BSP_MAIN_IRQ_LOWEST_OFFSET, &mpc5200.crit_pri_main_mask);
+      } else {
+          /* error: unknown interrupt source */
+          printk( "Unknown peripheral LO_int interrupt source\n");
       }
-      break;
+    }
 
-    default:
-      printk( "Unknown processor exception\n");
-      break;
+    /* force re-evaluation of interrupts */
+    mpc5200.pmce = PMCE_CSE_STICKY | PMCE_MSE_STICKY | PMCE_PSE_STICKY;
 
-  }                             /* end of switch( excNum) */
+    /* get the content of main interrupt status register */
+    pmce = mpc5200.pmce;
+  }
 
 #if (BENCHMARK_IRQ_PROCESSING == 1)
   stop = PPC_Get_timebase_register();
@@ -849,7 +622,7 @@ int C_dispatch_irq_handler(BSP_Exception_frame *frame, unsigned excNum)
 /*
  * setup irqMaskTable to support a priorized/nested interrupt environment
  */
-void setup_irqMaskTable( void)
+static void setup_irqMaskTable( void)
 {
   rtems_irq_prio prio = 0;
   uint32_t i = 0,
@@ -896,7 +669,7 @@ void setup_irqMaskTable( void)
 /*
  * Initialize MPC5x00 SIU interrupt management
  */
-void BSP_SIU_irq_init( void)
+static void BSP_SIU_irq_init( void)
 {
 
   /* disable all peripheral interrupts */
@@ -934,9 +707,6 @@ rtems_status_code bsp_interrupt_facility_initialize( void)
   if (ppc_exc_set_handler( ASM_EXT_VECTOR, C_dispatch_irq_handler)) {
     return RTEMS_IO_ERROR;
   }
-  if (ppc_exc_set_handler( ASM_DEC_VECTOR, C_dispatch_irq_handler)) {
-    return RTEMS_IO_ERROR;
-  }
   if (ppc_exc_set_handler( ASM_E300_SYSMGMT_VECTOR, C_dispatch_irq_handler)) {
     return RTEMS_IO_ERROR;
   }
@@ -947,6 +717,6 @@ rtems_status_code bsp_interrupt_facility_initialize( void)
 void bsp_interrupt_handler_default( rtems_vector_number vector)
 {
   if (vector != BSP_DECREMENTER) {
-    printk( "Spurious interrupt: 0x%08x\n", vector);
+    printk( "Spurious interrupt: 0x%08" PRIx32 "\n", vector);
   }
 }

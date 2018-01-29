@@ -1,0 +1,16 @@
+# Copyright (c) 2013 Chirayu Desai <cdesai@cyanogenmod.org>
+#
+# The license and distribution terms for this file may be
+# found in the file LICENSE in this distribution or at
+# http://www.rtems.org/license/LICENSE.
+#
+
+test name:  sppagesize
+
+directives:
+  getpagesize
+
+concepts:
+
++ Verifies that the different declarations of pagesize have
+  the same value

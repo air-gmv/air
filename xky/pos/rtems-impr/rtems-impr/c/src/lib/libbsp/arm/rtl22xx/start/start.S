@@ -5,14 +5,10 @@
  * Change from CSB337's code by Jay Monkman <jtm@lopingdog.com>
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *
- *  http://www.rtems.com/license/LICENSE.
- *
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
 */
 
-/* Some standard definitions...*/
+#include <bsp/linker-symbols.h>
 
 /* Some standard definitions...*/
 .equ PSR_MODE_USR,       0x10
@@ -44,16 +40,16 @@ _start:
         mov     r0, #(PSR_MODE_IRQ | PSR_I | PSR_F)     /* No interrupts */
         bic	r0, r0, #PSR_T
         msr     cpsr, r0
-        ldr     r1, =_irq_stack_size
-        ldr     sp, =_irq_stack
+        ldr     r1, =bsp_stack_irq_size
+        ldr     sp, =bsp_stack_irq_begin
         add     sp, sp, r1
 
         /* Enter FIQ mode and set up the FIQ stack pointer */
         mov     r0, #(PSR_MODE_FIQ | PSR_I | PSR_F)     /* No interrupts */
         bic	r0, r0, #PSR_T
         msr     cpsr, r0
-        ldr     r1, =_fiq_stack_size
-        ldr     sp, =_fiq_stack
+        ldr     r1, =bsp_stack_fiq_size
+        ldr     sp, =bsp_stack_fiq_begin
         add     sp, sp, r1
 
         /* Enter ABT mode and set up the ABT stack pointer */
@@ -61,16 +57,16 @@ _start:
         bic	r0, r0, #PSR_T
         msr     cpsr, r0
         bic	r0, r0, #PSR_T
-        ldr     r1, =_abt_stack_size
-        ldr     sp, =_abt_stack
+        ldr     r1, =bsp_stack_abt_size
+        ldr     sp, =bsp_stack_abt_begin
         add     sp, sp, r1
 
         /* Set up the SVC stack pointer last and stay in SVC mode */
         mov     r0, #(PSR_MODE_SVC | PSR_I | PSR_F)     /* No interrupts */
         bic	r0, r0, #PSR_T
         msr     cpsr, r0
-        ldr     r1, =_svc_stack_size
-        ldr     sp, =_svc_stack
+        ldr     r1, =bsp_stack_svc_size
+        ldr     sp, =bsp_stack_svc_begin
         add     sp, sp, r1
         sub     sp, sp, #0x64
 
@@ -89,8 +85,8 @@ _start:
 
 
         /* zero the bss */
-        ldr     r1, =_bss_end_
-        ldr     r0, =_bss_start_
+        ldr     r1, =bsp_section_bss_end
+        ldr     r0, =bsp_section_bss_begin
 
 _bss_init:
         mov     r2, #0
@@ -127,80 +123,35 @@ _hang:  b       _hang
 ********************************************************/
 
 vector_block:
-	LDR	PC, Reset_Addr
-	LDR	PC, Undefined_Addr
-	LDR	PC, SWI_Addr
-	LDR	PC, Prefetch_Addr
-	LDR	PC, Abort_Addr
-	NOP
-	LDR	PC, IRQ_Addr
-	LDR	PC, FIQ_Addr
-
-	.globl Reset_Addr
-Reset_Addr:	.long   _start
-Undefined_Addr:	.long	Undefined_Handler
-SWI_Addr:	.long	SWI_Handler
-Prefetch_Addr:	.long	Prefetch_Handler
-Abort_Addr:	.long	Abort_Handler
-		.long	0
-IRQ_Addr:	.long	IRQ_Handler
-FIQ_Addr:	.long	FIQ_Handler
-
-/* The following handlers do not do anything useful */
-	.globl Undefined_Handler
-Undefined_Handler:
-        B       Undefined_Handler
-	.globl SWI_Handler
-SWI_Handler:
-        B       SWI_Handler
-	.globl Prefetch_Handler
-Prefetch_Handler:
-        B       Prefetch_Handler
-	.globl Abort_Handler
-Abort_Handler:
-        B       Abort_Handler
-	.globl IRQ_Handler
-IRQ_Handler:
-        B       IRQ_Handler
-	.globl FIQ_Handler
-FIQ_Handler:
-        B       FIQ_Handler
-
-
-
-
-/*
- * This is the exception vector table and the pointers to
- * the functions that handle the exceptions. It's a total
- * of 16 words (64 bytes)
- */
-
- /*******************************************************
-
-vector_block:
-        ldr     pc, Reset_Handler
-        ldr     pc, Undefined_Handler
-        ldr     pc, SWI_Handler
-        ldr     pc, Prefetch_Handler
-        ldr     pc, Abort_Handler
+        ldr    pc, handler_addr_reset
+        ldr    pc, handler_addr_undef
+        ldr    pc, handler_addr_swi
+        ldr    pc, handler_addr_prefetch
+        ldr    pc, handler_addr_abort
         nop
-        ldr     pc, IRQ_Handler
-        ldr     pc, FIQ_Handler
+        ldr    pc, handler_addr_irq
+        ldr    pc, handler_addr_fiq
 
-Reset_Handler:          b       bsp_reset
-Undefined_Handler:      b       Undefined_Handler
-SWI_Handler:            b       SWI_Handler
-Prefetch_Handler:       b       Prefetch_Handler
-Abort_Handler:          b       Abort_Handler
-                        nop
-IRQ_Handler:            b       IRQ_Handler
-FIQ_Handler:            b       FIQ_Handler
+handler_addr_reset:
+        .word  _start
 
-.globl Reset_Handler
-.globl Undefined_Handler
-.globl SWI_Handler
-.globl Prefetch_Handler
-.globl Abort_Handler
-.globl IRQ_Handler
-.globl FIQ_Handler
- */
+handler_addr_undef:
+        .word  _ARMV4_Exception_undef_default
+
+handler_addr_swi:
+        .word  _ARMV4_Exception_swi_default
+
+handler_addr_prefetch:
+        .word  _ARMV4_Exception_pref_abort_default
+
+handler_addr_abort:
+        .word  _ARMV4_Exception_data_abort_default
+
+handler_addr_reserved:
+        .word  _ARMV4_Exception_reserved_default
+
+handler_addr_irq:
+        .word  _ARMV4_Exception_interrupt
+
+handler_addr_fiq:
+        .word  _ARMV4_Exception_fiq_default

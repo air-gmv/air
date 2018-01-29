@@ -6,13 +6,12 @@
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
  *
- * http://www.rtems.com/license/LICENSE.
- *
- * @(#) $Id$
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>
 #include <i2c.h>
+#include <rtems/score/sysstate.h>
 
 /* i2c_transfer_sema_done_func --
  *     This function called from I2C driver layer to signal that I2C

@@ -22,31 +22,3 @@ $(PROJECT_LIB)/librtemscpu.a: librtemscpu.a $(PROJECT_LIB)/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_LIB)/librtemscpu.a
 TMPINSTALL_FILES += $(PROJECT_LIB)/librtemscpu.a
 
-$(PROJECT_LIB)/libsem.a: libsem.a $(PROJECT_LIB)/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_LIB)/libsem.a
-TMPINSTALL_FILES += $(PROJECT_LIB)/libsem.a
-
-$(PROJECT_LIB)/libmsg.a: libmsg.a $(PROJECT_LIB)/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_LIB)/libmsg.a
-TMPINSTALL_FILES += $(PROJECT_LIB)/libmsg.a
-
-$(PROJECT_LIB)/libevent.a: libevent.a $(PROJECT_LIB)/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_LIB)/libevent.a
-TMPINSTALL_FILES += $(PROJECT_LIB)/libevent.a
-
-$(PROJECT_LIB)/librtmon.a: librtmon.a $(PROJECT_LIB)/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_LIB)/librtmon.a
-TMPINSTALL_FILES += $(PROJECT_LIB)/librtmon.a
-
-$(PROJECT_LIB)/libtimer.a: libtimer.a $(PROJECT_LIB)/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_LIB)/libtimer.a
-TMPINSTALL_FILES += $(PROJECT_LIB)/libtimer.a
-
-$(PROJECT_LIB)/libext.a: libext.a $(PROJECT_LIB)/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_LIB)/libext.a
-TMPINSTALL_FILES += $(PROJECT_LIB)/libext.a
-
-$(PROJECT_LIB)/libio.a: libio.a $(PROJECT_LIB)/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_LIB)/libio.a
-TMPINSTALL_FILES += $(PROJECT_LIB)/libio.a
-

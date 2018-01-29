@@ -1,97 +1,157 @@
 /**
- *  @file
- *  threadqflush.c
+ * @file
  *
- *  @brief flush a thread queue
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-1999.
+ * @brief Thread Queue Flush
+ * @ingroup ScoreThreadQ
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2008.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  623     | 17/11/2008  | mcoutinho    | IPR 64
- *  3757    | 13/07/2009  | mcoutinho    | IPR 553
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  6325    | 01/03/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_CORE Super Core
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup ScoreThreadQ Thread Queue Handler
- *  @{
- */
-
-#include <rtems/system.h>
-#include <rtems/score/chain.h>
-#include <rtems/score/isr.h>
-#include <rtems/score/object.h>
-#include <rtems/score/states.h>
-#include <rtems/score/thread.h>
-#include <rtems/score/threadq.h>
-#include <rtems/score/tqdata.h>
-
-
-void _Thread_queue_Flush(
-                         Thread_queue_Control *the_thread_queue ,
-#if defined(RTEMS_MULTIPROCESSING)
-    Thread_queue_Flush_callout remote_extract_callout ,
+#if HAVE_CONFIG_H
+#include "config.h"
 #endif
-    uint32_t status
-                         )
+
+#include <rtems/score/threadimpl.h>
+#include <rtems/score/schedulerimpl.h>
+#include <rtems/score/status.h>
+
+Thread_Control *_Thread_queue_Flush_default_filter(
+  Thread_Control       *the_thread,
+  Thread_queue_Queue   *queue,
+  Thread_queue_Context *queue_context
+)
 {
-    /* thread to flush */
-    Thread_Control *the_thread;
-
-
-    /* iterate through all the threads on the queue
-     * and extract them */
-    while(( the_thread = _Thread_queue_Dequeue(the_thread_queue) ))
-    {
-
-        /* if multiprocessing is enabled */
-#if defined(RTEMS_MULTIPROCESSING)
-
-        /* if thread is not local */
-        if(!_Objects_Is_local_id(the_thread->Object.id))
-        {
-            /* remotely flush the thread */
-            ( *remote_extract_callout )( the_thread );
-        }
-        else
-        {
-
-#endif
-            /* set the thread return code */
-            the_thread->Wait.return_code = status;
-
-            /* if multiprocessing is enabled */
-#if defined(RTEMS_MULTIPROCESSING)
-
-            /* end bracket */
-        }
-        
-#endif
-
-    }
+  (void) queue;
+  (void) queue_context;
+  return the_thread;
 }
 
-/**  
- *  @}
- */
+Thread_Control *_Thread_queue_Flush_status_object_was_deleted(
+  Thread_Control       *the_thread,
+  Thread_queue_Queue   *queue,
+  Thread_queue_Context *queue_context
+)
+{
+  the_thread->Wait.return_code = STATUS_OBJECT_WAS_DELETED;
 
-/**
- *  @}
- */
+  (void) queue;
+  (void) queue_context;
+  return the_thread;
+}
+
+Thread_Control *_Thread_queue_Flush_status_unavailable(
+  Thread_Control       *the_thread,
+  Thread_queue_Queue   *queue,
+  Thread_queue_Context *queue_context
+)
+{
+  the_thread->Wait.return_code = STATUS_UNAVAILABLE;
+
+  (void) queue;
+  (void) queue_context;
+  return the_thread;
+}
+
+size_t _Thread_queue_Flush_critical(
+  Thread_queue_Queue            *queue,
+  const Thread_queue_Operations *operations,
+  Thread_queue_Flush_filter      filter,
+  Thread_queue_Context          *queue_context
+)
+{
+  size_t          flushed;
+  Chain_Control   unblock;
+  Thread_Control *owner;
+  Chain_Node     *node;
+  Chain_Node     *tail;
+
+  flushed = 0;
+  _Chain_Initialize_empty( &unblock );
+  owner = queue->owner;
+
+  while ( true ) {
+    Thread_queue_Heads *heads;
+    Thread_Control     *first;
+    bool                do_unblock;
+
+    heads = queue->heads;
+    if ( heads == NULL ) {
+      break;
+    }
+
+    first = ( *operations->first )( heads );
+    first = ( *filter )( first, queue, queue_context );
+    if ( first == NULL ) {
+      break;
+    }
+
+    /*
+     * We do not have enough space in the queue context to collect all priority
+     * updates, so clear it each time.  We unconditionally do the priority
+     * update for the owner later if it exists.
+     */
+    _Thread_queue_Context_clear_priority_updates( queue_context );
+
+    do_unblock = _Thread_queue_Extract_locked(
+      queue,
+      operations,
+      first,
+      queue_context
+    );
+    if ( do_unblock ) {
+      Scheduler_Node *scheduler_node;
+
+      scheduler_node = _Thread_Scheduler_get_home_node( first );
+      _Chain_Append_unprotected(
+        &unblock,
+        &scheduler_node->Wait.Priority.Node.Node.Chain
+      );
+    }
+
+    ++flushed;
+  }
+
+  node = _Chain_First( &unblock );
+  tail = _Chain_Tail( &unblock );
+
+  if ( node != tail ) {
+    Per_CPU_Control *cpu_self;
+
+    cpu_self = _Thread_queue_Dispatch_disable( queue_context );
+    _Thread_queue_Queue_release( queue, &queue_context->Lock_context.Lock_context );
+
+    do {
+      Scheduler_Node *scheduler_node;
+      Thread_Control *the_thread;
+      Chain_Node     *next;
+
+      next = _Chain_Next( node );
+      scheduler_node = SCHEDULER_NODE_OF_WAIT_PRIORITY_NODE( node );
+      the_thread = _Scheduler_Node_get_owner( scheduler_node );
+      _Thread_Remove_timer_and_unblock( the_thread, queue );
+
+      node = next;
+    } while ( node != tail );
+
+    if ( owner != NULL ) {
+      ISR_lock_Context lock_context;
+
+      _Thread_State_acquire( owner, &lock_context );
+      _Scheduler_Update_priority( owner );
+      _Thread_State_release( owner, &lock_context );
+    }
+
+    _Thread_Dispatch_enable( cpu_self );
+  } else {
+    _Thread_queue_Queue_release( queue, &queue_context->Lock_context.Lock_context );
+  }
+
+  return flushed;
+}

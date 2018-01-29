@@ -1,6 +1,4 @@
 /*  network.c: An 82596 ethernet driver for rtems-bsd.
- *
- *  $Id$
  */
 
 #define KERNEL
@@ -59,6 +57,7 @@
 #include <stdlib.h>
 
 #include <rtems/error.h>
+#include <rtems/bspIo.h>
 #include <rtems/rtems_bsdnet.h>
 #include <sys/param.h>
 #include <sys/mbuf.h>
@@ -68,7 +67,6 @@
 #include <net/if.h>
 #include <netinet/in.h>
 #include <netinet/if_ether.h>
-#include <arpa/inet.h>
 
 #include "uti596.h"
 
@@ -336,16 +334,17 @@ static unsigned long uti596_portSelfTest(
   stp->results = 0xFFFFFFFF;
   uti596_writePortFunction( stp, UTI596_SELFTEST_PORT_FUNCTION );
 
-  rtems_clock_get(RTEMS_CLOCK_GET_TICKS_PER_SECOND, &ticks_per_second);
-	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &start_ticks);
-	end_ticks = start_ticks + ticks_per_second;
+  ticks_per_second = rtems_clock_get_ticks_per_second();
+ 
+  start_ticks = rtems_clock_get_ticks_since_boot();
+  end_ticks = start_ticks + ticks_per_second;
 
   do {
     if( stp->results != 0xFFFFFFFF )
       break;
-		else
-			rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &start_ticks);
-	} while (start_ticks <= end_ticks);
+    else
+      start_ticks = rtems_clock_get_ticks_since_boot();
+  } while (start_ticks <= end_ticks);
 
   if (start_ticks > end_ticks ) {
     #ifdef DBG_SELFTEST_CMD
@@ -390,16 +389,16 @@ static int uti596_portDump(
   dp->dump_status = 0;
   uti596_writePortFunction( dp, UTI596_DUMP_PORT_FUNCTION );
 
-  rtems_clock_get(RTEMS_CLOCK_GET_TICKS_PER_SECOND, &ticks_per_second);
-	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &start_ticks);
-	end_ticks = start_ticks + ticks_per_second;
+  ticks_per_second = rtems_clock_get_ticks_per_second();
+  start_ticks = rtems_clock_get_ticks_since_boot();
+  end_ticks = start_ticks + ticks_per_second;
 
   do {
     if( dp->dump_status != 0xA006 )
       break;
-		else
-			rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &start_ticks);
-	} while (start_ticks <= end_ticks);
+    else
+      start_ticks = rtems_clock_get_ticks_since_boot();
+  } while (start_ticks <= end_ticks);
 
   if (start_ticks > end_ticks ) {
     #ifdef DBG_DUMP_CMD
@@ -441,9 +440,9 @@ static int uti596_wait(
 {
   rtems_interval ticks_per_second, start_ticks, end_ticks;
 
-  rtems_clock_get(RTEMS_CLOCK_GET_TICKS_PER_SECOND, &ticks_per_second);
-	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &start_ticks);
-	end_ticks = start_ticks + ticks_per_second;
+  ticks_per_second = rtems_clock_get_ticks_per_second();
+  start_ticks = rtems_clock_get_ticks_since_boot();
+  end_ticks = start_ticks + ticks_per_second;
 
   switch( waitType ) {
 
@@ -455,7 +454,8 @@ static int uti596_wait(
 			  if (sc->scb.command == 0)
 				  break;
 			  else
-				  rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &start_ticks);
+				  
+  				  start_ticks = rtems_clock_get_ticks_since_boot();
 
 		  } while (start_ticks <= end_ticks);
 
@@ -472,7 +472,7 @@ static int uti596_wait(
 		    if( !sc->iscp.busy )
 		      break;
 				else
-					rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &start_ticks);
+  				  start_ticks = rtems_clock_get_ticks_since_boot();
 			} while (start_ticks <= end_ticks);
 
 		  if (start_ticks > end_ticks ) {
@@ -493,7 +493,7 @@ static int uti596_wait(
 		   if( *sc->pCurrent_command_status & STAT_C )
 		      break;
 			 else
-					rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &start_ticks);
+  				  start_ticks = rtems_clock_get_ticks_since_boot();
 			} while (start_ticks <= end_ticks);
 
 		  if (start_ticks > end_ticks ) {
@@ -568,7 +568,7 @@ static void uti596_addCmd(
   pCmd->status = 0;
   pCmd->next = I596_NULL;
 
-  _ISR_Disable(level);
+  _ISR_Local_disable(level);
 
   if (uti596_softc.pCmdHead == I596_NULL) {
     uti596_softc.pCmdHead = uti596_softc.pCmdTail = uti596_softc.scb.pCmd = pCmd;
@@ -578,12 +578,12 @@ static void uti596_addCmd(
 		uti596_softc.scb.command = CUC_START;
   	uti596_issueCA ( &uti596_softc, UTI596_NO_WAIT );
 
-  	_ISR_Enable(level);
+  	_ISR_Local_enable(level);
   }
   else {
     uti596_softc.pCmdTail->next = (i596_cmd *) word_swap ((unsigned long)pCmd);
     uti596_softc.pCmdTail = pCmd;
-    _ISR_Enable(level);
+    _ISR_Local_enable(level);
 	}
 
 	#ifdef DBG_ADD_CMD
@@ -1138,7 +1138,7 @@ void uti596_reset_hardware(
    */
   if ( sc->txDaemonTid && pCmd != I596_NULL ) {
     printk(("****RESET: wakes transmitter!\n"))
-    status_code = rtems_event_send (sc->txDaemonTid,
+    status_code = rtems_bsdnet_event_send (sc->txDaemonTid,
                            INTERRUPT_EVENT);
 
     if ( status_code != RTEMS_SUCCESSFUL ) {
@@ -1272,11 +1272,11 @@ i596_rfd * uti596_dequeue(
   ISR_Level level;
   i596_rfd * pRfd;
 
-  _ISR_Disable(level);
+  _ISR_Local_disable(level);
 
   /* invalid address, or empty queue or emptied queue */
   if( ppQ == NULL || *ppQ == NULL || *ppQ == I596_NULL) {
-    _ISR_Enable(level);
+    _ISR_Local_enable(level);
      return I596_NULL;
   }
 
@@ -1288,7 +1288,7 @@ i596_rfd * uti596_dequeue(
   *ppQ = (i596_rfd *) word_swap ((unsigned long) pRfd->next);
   pRfd->next = I596_NULL;  /* unlink the rfd being returned */
 
-  _ISR_Enable(level);
+  _ISR_Local_enable(level);
   return pRfd;
 }
 
@@ -1801,7 +1801,7 @@ static void uti596_start(
   printk(("uti596_start: begins\n"))
 	#endif
 
-  rtems_event_send (sc->txDaemonTid, START_TRANSMIT_EVENT);
+  rtems_bsdnet_event_send (sc->txDaemonTid, START_TRANSMIT_EVENT);
   ifp->if_flags |= IFF_OACTIVE;
 }
 
@@ -2083,9 +2083,9 @@ void uti596_txDaemon(
 
        UTI_596_ASSERT(pRfd != I596_NULL, "Supplying NULL RFD\n")
 
-       _ISR_Disable(level);
+       _ISR_Local_disable(level);
        uti596_supplyFD ( pRfd );   /* Return RFD to RFA. */
-       _ISR_Enable(level);
+       _ISR_Local_enable(level);
 
        pRfd = uti596_dequeue( (i596_rfd **)&sc->pInboundFrameQueue); /* grab next frame */
 
@@ -2118,7 +2118,7 @@ void uti596_resetDaemon(
                                 RTEMS_EVENT_ANY | RTEMS_WAIT,
                                 RTEMS_NO_TIMEOUT, &events);
 
-    rtems_clock_get(RTEMS_CLOCK_GET_TOD, &tm_struct);
+    rtems_clock_get_tod(&tm_struct);
     printk(("reset daemon: Resetting NIC @ %d:%d:%d \n",
            tm_struct.hour, tm_struct.minute, tm_struct.second))
 
@@ -2274,7 +2274,7 @@ int fullStatus;
 				#ifdef DBG_ISR
         printk(("uti596_DynamicInterruptHandler: Wake %#x\n",uti596_softc.rxDaemonTid))
 				#endif
-        sc = rtems_event_send(uti596_softc.rxDaemonTid, INTERRUPT_EVENT);
+        sc = rtems_bsdnet_event_send(uti596_softc.rxDaemonTid, INTERRUPT_EVENT);
         if ( sc != RTEMS_SUCCESSFUL ) {
           rtems_panic("Can't notify rxDaemon: %s\n",
                     rtems_status_text (sc));
@@ -2369,7 +2369,7 @@ int fullStatus;
 					#endif
           if ( uti596_softc.txDaemonTid ) {
             /* Ensure that the transmitter is present */
-            sc = rtems_event_send (uti596_softc.txDaemonTid,
+            sc = rtems_bsdnet_event_send (uti596_softc.txDaemonTid,
                                  INTERRUPT_EVENT);
 
             if ( sc != RTEMS_SUCCESSFUL ) {
@@ -2434,7 +2434,7 @@ int fullStatus;
         uti596_softc.nic_reset = 1;
         if ( uti596_softc.txDaemonTid) {
           /* Ensure that a transmitter is present */
-          sc = rtems_event_send (uti596_softc.txDaemonTid,
+          sc = rtems_bsdnet_event_send (uti596_softc.txDaemonTid,
                                  INTERRUPT_EVENT);
           if ( sc != RTEMS_SUCCESSFUL ) {
             printk(("****ERROR:Could NOT send event to tid 0x%x : %s\n",
@@ -2586,7 +2586,7 @@ int fullStatus;
  /* Do this last, to ensure that the reset is called at the right time. */
   if ( uti596_softc.nic_reset ) {
     uti596_softc.nic_reset = 0;
-    sc = rtems_event_send(uti596_softc.resetDaemonTid, NIC_RESET_EVENT);
+    sc = rtems_bsdnet_event_send(uti596_softc.resetDaemonTid, NIC_RESET_EVENT);
     if ( sc != RTEMS_SUCCESSFUL )
       rtems_panic ("Can't notify resetDaemon: %s\n", rtems_status_text (sc));
   }

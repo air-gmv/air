@@ -7,37 +7,44 @@
  */
 
 /*
- * Copyright (c) 2008
- * Embedded Brains GmbH
- * Obere Lagerstr. 30
- * D-82178 Puchheim
- * Germany
- * rtems@embedded-brains.de
+ * Copyright (c) 2008-2012 embedded brains GmbH.  All rights reserved.
  *
- * The license and distribution terms for this file may be found in the file
- * LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
+ *  embedded brains GmbH
+ *  Obere Lagerstr. 30
+ *  82178 Puchheim
+ *  Germany
+ *  <rtems@embedded-brains.de>
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * http://www.rtems.org/license/LICENSE.
  */
 
-#ifndef LIBBSP_POWERPC_BSP_H
-#define LIBBSP_POWERPC_BSP_H
-
-#include <stdint.h>
-
-#include <rtems.h>
-#include <rtems/console.h>
-#include <rtems/clockdrv.h>
+#ifndef LIBBSP_POWERPC_MPC55XXEVB_BSP_H
+#define LIBBSP_POWERPC_MPC55XXEVB_BSP_H
 
 #include <bspopts.h>
 
+#define BSP_INTERRUPT_STACK_AT_WORK_AREA_BEGIN
+
+#define BSP_FEATURE_IRQ_EXTENSION
+
+#define MPC55XX_PERIPHERAL_CLOCK \
+  (MPC55XX_SYSTEM_CLOCK / MPC55XX_SYSTEM_CLOCK_DIVIDER)
+
+#ifndef ASM
+
+#include <rtems.h>
+
+#include <libcpu/powerpc-utility.h>
+
 #include <bsp/tictac.h>
+#include <bsp/linker-symbols.h>
+#include <bsp/default-initial-extension.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-#define BSP_SMALL_MEMORY 1
-
-#ifndef ASM
 
 /** @brief System clock frequency */
 extern unsigned int bsp_clock_speed;
@@ -64,10 +71,34 @@ int smsc9218i_attach_detach(
 
 #define RTEMS_BSP_NETWORK_DRIVER_NAME "eth0"
 
-#endif /* ASM */
+rtems_status_code bsp_register_i2c(void);
+
+void bsp_restart(void *addr);
+
+void *bsp_idle_thread(uintptr_t arg);
+
+#define BSP_IDLE_TASK_BODY bsp_idle_thread
+
+LINKER_SYMBOL(bsp_section_dsram_begin)
+LINKER_SYMBOL(bsp_section_dsram_end)
+LINKER_SYMBOL(bsp_section_dsram_size)
+LINKER_SYMBOL(bsp_section_dsram_load_begin)
+LINKER_SYMBOL(bsp_section_dsram_load_end)
+
+#define BSP_DSRAM_SECTION __attribute__((section(".bsp_dsram")))
+
+LINKER_SYMBOL(bsp_section_sysram_begin)
+LINKER_SYMBOL(bsp_section_sysram_end)
+LINKER_SYMBOL(bsp_section_sysram_size)
+LINKER_SYMBOL(bsp_section_sysram_load_begin)
+LINKER_SYMBOL(bsp_section_sysram_load_end)
+
+#define BSP_SYSRAM_SECTION __attribute__((section(".bsp_sysram")))
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* LIBBSP_POWERPC_BSP_H */
+#endif /* ASM */
+
+#endif /* LIBBSP_POWERPC_MPC55XXEVB_BSP_H */

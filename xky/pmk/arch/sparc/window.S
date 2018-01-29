@@ -52,7 +52,7 @@ SYM(sparc_window_overflow_handler):
     nop
 
     /* 2nd check if the address is in kernel zone */
-    set     SYM(xky_kernel_memory_end), %g3
+    set     SYM(air_kernel_memory_end), %g3
     cmp     %sp, %g3
     bleu    1f
     nop
@@ -161,7 +161,7 @@ SYM(sparc_window_underflow_handler):
     nop
 
     /* 2nd check if the address is in kernel zone */
-    set     SYM(xky_kernel_memory_end), %g1
+    set     SYM(air_kernel_memory_end), %g1
     cmp     %sp, %g1
     bleu    1f
     nop
@@ -278,7 +278,7 @@ pmk_window_flush_loop:
     nop
 
     /* check if the stack address is in kernel zone */
-    set     SYM(xky_kernel_memory_end), %g7
+    set     SYM(air_kernel_memory_end), %g7
     cmp     %sp, %g7
     bleu    1f
     nop

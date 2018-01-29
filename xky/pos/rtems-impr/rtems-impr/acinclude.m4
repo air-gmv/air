@@ -14,7 +14,7 @@ dnl Stripped down version of autoconf-2.52's AC_ARG_VAR.
 AC_DEFUN([_RTEMS_ARG_VAR],
 [
 m4_expand_once([m4_divert_once([HELP_VAR],
-[AC_HELP_STRING([$1], [$2], [              ])])],
+[AS_HELP_STRING([$1], [$2], [              ])])],
       [$0($1)])dnl
 ])
 
@@ -211,7 +211,7 @@ if test "$no_recursion" != yes; then
   esac
 
   ac_popdir=`pwd`
-  for ac_dir in $$1_configdirs; do
+  for ac_dir in : $$1_configdirs; do test "x$ac_dir" = x: && continue
 
     # Do not complain, so a configure script can configure whichever
     # parts of a large source tree are present.

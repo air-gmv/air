@@ -39,12 +39,12 @@
  */
 typedef struct {
 
-    xky_i8_t magic;                   /**< Magic number                       */
-    xky_u8_t parameters;             /**< Compression parameters             */
-    xky_u8_t checksum;               /**< Compression checksum               */
-    xky_u8_t dummy;                  /**< Dummy offset                       */
-    xky_u8_t encoded_size[4];        /**< Encoded_size size                  */
-    xky_u8_t decoded_size[4];        /**< Decoded size                       */
+    air_i8_t magic;                   /**< Magic number                       */
+    air_u8_t parameters;             /**< Compression parameters             */
+    air_u8_t checksum;               /**< Compression checksum               */
+    air_u8_t dummy;                  /**< Dummy offset                       */
+    air_u8_t encoded_size[4];        /**< Encoded_size size                  */
+    air_u8_t decoded_size[4];        /**< Decoded size                       */
 
 } lzss_header_t;
 
@@ -64,25 +64,25 @@ static char dictionary[WINDOW_SIZE];
  * @ingroup pmk_partition
  */
 static int lzss_decompress(
-        xky_u8_t *input, xky_u8_t *output, xky_sz_t output_size){
+        air_u8_t *input, air_u8_t *output, air_sz_t output_size){
 
     int i, j, k, r, c;
-    xky_u32_t flags;
-    xky_u8_t checksum = 0xff;
+    air_u32_t flags;
+    air_u8_t checksum = 0xff;
 
     /* get LZSS header */
     lzss_header_t *header = (lzss_header_t *)input;
 
     /* check if the magic match */
-    if ((xky_i8_t)header->magic  != (xky_i8_t)MAGIC_NUMBER){
+    if ((air_i8_t)header->magic  != (air_i8_t)MAGIC_NUMBER){
         return 1;
     }
 
     /* extract header information */
-    xky_u32_t ws = (header->parameters & 0xF0) << 6;
-    xky_u8_t threshold = (header->parameters & 0x03) + 1;
-    xky_u32_t lhs = (1 << ((header->parameters & 0x0c) >> 2)) * 9;
-    xky_sz_t input_size = \
+    air_u32_t ws = (header->parameters & 0xF0) << 6;
+    air_u8_t threshold = (header->parameters & 0x03) + 1;
+    air_u32_t lhs = (1 << ((header->parameters & 0x0c) >> 2)) * 9;
+    air_sz_t input_size = \
             (header->encoded_size[0] << 24) | (header->encoded_size[1] << 16) |
             (header->encoded_size[2] <<  8) | (header->encoded_size[3]);
 
@@ -96,8 +96,8 @@ static int lzss_decompress(
     }
 
     /* compute the end of the streams */
-    xky_u8_t *input_end = input + input_size;
-    xky_u8_t *output_end = output + output_size;
+    air_u8_t *input_end = input + input_size;
+    air_u8_t *output_end = output + output_size;
 
     /* de-compress the input stream */
     flags = 0;
@@ -177,9 +177,9 @@ void pmk_partition_load(pmk_elf_t *elf, void *p_addr, void *v_addr) {
     for (i = 0; i < elf->count; ++i) {
 
         /* de-compress partition */
-        xky_u32_t error = lzss_decompress(
-                (xky_u8_t *)(elf->data + (xky_sz_t)elf->segments[i].offset),
-                (xky_u8_t *)((xky_uptr_t)p_addr + elf->segments[i].addr),
+        air_u32_t error = lzss_decompress(
+                (air_u8_t *)(elf->data + (air_sz_t)elf->segments[i].offset),
+                (air_u8_t *)((air_uptr_t)p_addr + elf->segments[i].addr),
                 elf->segments[i].size);
 
         /* check if error occurred */

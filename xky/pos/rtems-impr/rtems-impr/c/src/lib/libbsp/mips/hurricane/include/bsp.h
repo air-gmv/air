@@ -1,32 +1,37 @@
+/**
+ *  @file
+ */
+
 /*
- *  COPYRIGHT (c) 1989-2008.
+ *  COPYRIGHT (c) 1989-2012.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-#ifndef _BSP_H
-#define _BSP_H
+#ifndef LIBBSP_MIPS_HURRICANE_BSP_H
+#define LIBBSP_MIPS_HURRICANE_BSP_H
+
+#ifndef ASM
+
+#include <bspopts.h>
+#include <bsp/default-initial-extension.h>
+
+#include <rtems.h>
+#include <libcpu/rm5231.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <bspopts.h>
-
-#include <rtems.h>
-#include <rtems/iosupp.h>
-#include <rtems/console.h>
-#include <rtems/clockdrv.h>
-#include <libcpu/rm5231.h>
-
 extern void WriteDisplay( char * string );
 
 extern uint32_t mips_get_timer( void );
+
+#define BSP_FEATURE_IRQ_EXTENSION
+#define BSP_SHARED_HANDLER_SUPPORT      1
 
 #define CPU_CLOCK_RATE_MHZ     (200)
 #define CLOCKS_PER_MICROSECOND ( CPU_CLOCK_RATE_MHZ ) /* equivalent to CPU clock speed in MHz */
@@ -59,13 +64,16 @@ extern uint32_t mips_get_timer( void );
 #define RAM_START 0
 #define RAM_END   0x100000
 
-/* functions */
-
-rtems_isr_entry set_vector(
-  rtems_isr_entry, rtems_vector_number, int );
+/*
+ * Prototypes for methods called from .S for dependency tracking
+ */
+void init_tlb(void);
+void resettlb(int i);
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* !ASM */
 
 #endif	/* __HURRICANE_BSP_h */

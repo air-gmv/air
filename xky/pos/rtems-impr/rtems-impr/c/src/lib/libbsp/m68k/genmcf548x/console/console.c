@@ -34,7 +34,7 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 |                                                                 |
@@ -52,13 +52,14 @@
 
 #include <stdio.h>
 #include <fcntl.h>
+#include <termios.h>
+#include <malloc.h>
+
+#include <bsp.h>
+#include <bsp/irq-generic.h>
 #include <rtems/libio.h>
 #include <rtems/termiostypes.h>
-#include <termios.h>
-#include <bsp.h>
-#include <malloc.h>
-#include <rtems/mw_uid.h>
-
+#include <rtems/console.h>
 #include <rtems/bspIo.h>
 
 #define UART_INTC0_IRQ_VECTOR(x) (64+35-(x))
@@ -76,8 +77,6 @@ _BSP_null_char( char c )
 {
 	int level;
 
-    if (c == '\n')
-        _BSP_null_char('\r');
 	rtems_interrupt_disable(level);
     while (!((MCF548X_PSC_SR(CONSOLE_PORT) & MCF548X_PSC_SR_TXRDY)))
         continue;
@@ -86,11 +85,11 @@ _BSP_null_char( char c )
         continue;
 	rtems_interrupt_enable(level);
 }
-BSP_output_char_function_type BSP_output_char = _BSP_null_char;
+BSP_output_char_function_type     BSP_output_char = _BSP_null_char;
+BSP_polling_getchar_function_type BSP_poll_char = NULL;
 
 #define MAX_UART_INFO     4
 #define RX_BUFFER_SIZE    248
-
 
 struct IntUartInfoStruct
 {
@@ -306,7 +305,7 @@ IntUartSetAttributes(int minor, const struct termios *t)
 	if ( t != (const struct termios *)0 )
 	{
 		/* determine baud rate index */
-		baud = GetBaud( t->c_cflag & CBAUD );
+    baud = GetBaud( t->c_ospeed );
 
 		/* determine data bits */
 		switch ( t->c_cflag & CSIZE )
@@ -456,7 +455,6 @@ IntUartInitialize(void)
     unsigned int        chan;
 	struct IntUartInfoStruct   *info;
 	rtems_isr_entry old_handler;
-    int level;
 
 	for ( chan = 0; chan < MAX_UART_INFO; chan++ )
 	{
@@ -483,35 +481,8 @@ IntUartInitialize(void)
 		/* set uart default values */
 		IntUartSetAttributes(chan, NULL);
 
-        /* unmask interrupt */
-		rtems_interrupt_disable(level);
-        switch(chan) {
-        case 0:
-            MCF548X_INTC_ICR35 =   MCF548X_INTC_ICRn_IL(PSC0_IRQ_LEVEL) |
-                               MCF548X_INTC_ICRn_IP(PSC0_IRQ_PRIORITY);
-            MCF548X_INTC_IMRH &= ~(MCF548X_INTC_IMRH_INT_MASK35);
-            break;
-
-        case 1:
-            MCF548X_INTC_ICR34 =   MCF548X_INTC_ICRn_IL(PSC1_IRQ_LEVEL) |
-                               MCF548X_INTC_ICRn_IP(PSC1_IRQ_PRIORITY);
-            MCF548X_INTC_IMRH &= ~(MCF548X_INTC_IMRH_INT_MASK34);
-            break;
-
-        case 2:
-            MCF548X_INTC_ICR33 =   MCF548X_INTC_ICRn_IL(PSC2_IRQ_LEVEL) |
-                               MCF548X_INTC_ICRn_IP(PSC2_IRQ_PRIORITY);
-            MCF548X_INTC_IMRH &= ~(MCF548X_INTC_IMRH_INT_MASK33);
-            break;
-
-        case 3:
-            MCF548X_INTC_ICR32 =   MCF548X_INTC_ICRn_IL(PSC3_IRQ_LEVEL) |
-                               MCF548X_INTC_ICRn_IP(PSC3_IRQ_PRIORITY);
-            MCF548X_INTC_IMRH &= ~(MCF548X_INTC_IMRH_INT_MASK32);
-            break;
-        }
-		rtems_interrupt_enable(level);
-
+		/* unmask interrupt */
+		bsp_interrupt_vector_enable(MCF548X_IRQ_PSC(chan));
 	} /* of chan loop */
 
 
@@ -528,18 +499,15 @@ IntUartInitialize(void)
 static ssize_t
 IntUartInterruptWrite (int minor, const char *buf, size_t len)
 {
-	int level;
+	if (len > 0) {
+		/* write out character */
+		*(volatile uint8_t *)(&MCF548X_PSC_TB(minor)) = *buf;
 
-	rtems_interrupt_disable(level);
+		/* enable tx interrupt */
+		IntUartInfo[minor].imr |= MCF548X_PSC_IMR_TXRDY;
+		MCF548X_PSC_IMR(minor) = IntUartInfo[minor].imr;
+	}
 
-	/* write out character */
-	*(volatile uint8_t *)(&MCF548X_PSC_TB(minor)) = *buf;
-
-	/* enable tx interrupt */
-	IntUartInfo[minor].imr |= MCF548X_PSC_IMR_TXRDY;
-	MCF548X_PSC_IMR(minor) = IntUartInfo[minor].imr;
-
-	rtems_interrupt_enable(level);
 	return 0;
 }
 
@@ -862,26 +830,3 @@ rtems_device_driver console_control(
 {
     return( rtems_termios_ioctl (arg) );
 }
-
-
-int DEBUG_OUTCHAR(int c)
-{
-    if(c == '\n')
-        DEBUG_OUTCHAR('\r');
-    _BSP_null_char(c);
-    return c;
-}
-void DEBUG_OUTSTR(const char *msg)
-{
-    while (*msg)
-        DEBUG_OUTCHAR(*msg++);
-}
-void DEBUG_OUTNUM(int i)
-{
-    int n;
-    static const char map[] = "0123456789ABCDEF";
-    DEBUG_OUTCHAR(' ');
-    for (n = 28 ; n >= 0 ; n -= 4)
-        DEBUG_OUTCHAR(map[(i >> n) & 0xF]);
-}
-

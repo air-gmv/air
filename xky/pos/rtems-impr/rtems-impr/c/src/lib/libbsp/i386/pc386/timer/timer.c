@@ -16,21 +16,19 @@
  *  This file is provided "AS IS" without warranty of any kind, either
  *  expressed or implied.
  *
- *  Based upon code by 
+ *  Based upon code by
  *  COPYRIGHT (c) 1989-1999.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <stdlib.h>
-
 #include <bsp.h>
-#include <bsp/irq.h>
+#include <rtems/btimer.h>
+#include <bsp/irq-generic.h>
 #include <libcpu/cpuModel.h>
 
 /*
@@ -46,6 +44,9 @@
 
 #define CMD_READ_BACK_STATUS 0xE2   /* command read back status */
 
+RTEMS_INTERRUPT_LOCK_DEFINE( /* visible global variable */ ,
+   rtems_i386_i8254_access_lock, "rtems_i386_i8254_access_lock" );
+
 /*
  * Global Variables
  */
@@ -53,9 +54,9 @@ volatile uint32_t         Ttimer_val;
 bool                      benchmark_timer_find_average_overhead = true;
 volatile unsigned int     fastLoop1ms, slowLoop1ms;
 
-void     (*benchmark_timer_initialize_function)(void) = 0;
-uint32_t (*benchmark_timer_read_function)(void) = 0;
-void     (*Timer_exit_function)(void) = 0;
+void              (*benchmark_timer_initialize_function)(void) = 0;
+benchmark_timer_t (*benchmark_timer_read_function)(void) = 0;
+void              (*Timer_exit_function)(void) = 0;
 
 /* timer (int 08h) Interrupt Service Routine (defined in 'timerisr.s') */
 extern void timerisr(void);
@@ -67,15 +68,16 @@ void Timer_exit(void);
  */
 
 /*
- *  Timer cleanup routine at RTEMS exit. NOTE: This routine is
- *  not really necessary, since there will be a reset at exit.
+ *  Timer cleanup routine at RTEMS exit.
+ *
+ *  NOTE: This routine is not really necessary, since there will be
+ *        a reset at exit.
  */
-
-void tsc_timer_exit(void)
+static void tsc_timer_exit(void)
 {
 }
 
-void tsc_timer_initialize(void)
+static void tsc_timer_initialize(void)
 {
   static bool First = true;
 
@@ -88,9 +90,9 @@ void tsc_timer_initialize(void)
 }
 
 /*
- *
+ * Read TSC timer value.
  */
-uint32_t tsc_read_timer(void)
+static uint32_t tsc_read_timer(void)
 {
   register uint32_t  total;
 
@@ -116,32 +118,39 @@ uint32_t tsc_read_timer(void)
  */
 static void timerOff(const rtems_raw_irq_connect_data* used)
 {
+  rtems_interrupt_lock_context lock_context;
   /*
    * disable interrrupt at i8259 level
    */
-   BSP_irq_disable_at_i8259s(used->idtIndex - BSP_IRQ_VECTOR_BASE);
+  bsp_interrupt_vector_disable(used->idtIndex - BSP_IRQ_VECTOR_BASE);
+
+  rtems_interrupt_lock_acquire(&rtems_i386_i8254_access_lock, &lock_context);
+
    /* reset timer mode to standard (DOS) value */
-   outport_byte(TIMER_MODE, TIMER_SEL0|TIMER_16BIT|TIMER_RATEGEN);
-   outport_byte(TIMER_CNTR0, 0);
-   outport_byte(TIMER_CNTR0, 0);
+  outport_byte(TIMER_MODE, TIMER_SEL0|TIMER_16BIT|TIMER_RATEGEN);
+  outport_byte(TIMER_CNTR0, 0);
+  outport_byte(TIMER_CNTR0, 0);
+
+  rtems_interrupt_lock_release(&rtems_i386_i8254_access_lock, &lock_context);
 }
 
 static void timerOn(const rtems_raw_irq_connect_data* used)
 {
+  rtems_interrupt_lock_context lock_context;
+
+  rtems_interrupt_lock_acquire(&rtems_i386_i8254_access_lock, &lock_context);
+
   /* load timer for US_PER_ISR microsecond period */
   outport_byte(TIMER_MODE, TIMER_SEL0|TIMER_16BIT|TIMER_RATEGEN);
   outport_byte(TIMER_CNTR0, US_TO_TICK(US_PER_ISR) >> 0 & 0xff);
   outport_byte(TIMER_CNTR0, US_TO_TICK(US_PER_ISR) >> 8 & 0xff);
 
+  rtems_interrupt_lock_release(&rtems_i386_i8254_access_lock, &lock_context);
+
   /*
    * enable interrrupt at i8259 level
    */
-  BSP_irq_enable_at_i8259s(used->idtIndex - BSP_IRQ_VECTOR_BASE);
-}
-
-static int timerIsOn(const rtems_raw_irq_connect_data *used)
-{
-  return BSP_irq_enabled_at_i8259s(used->idtIndex - BSP_IRQ_VECTOR_BASE);
+  bsp_interrupt_vector_enable(used->idtIndex - BSP_IRQ_VECTOR_BASE);
 }
 
 static rtems_raw_irq_connect_data timer_raw_irq_data = {
@@ -149,20 +158,22 @@ static rtems_raw_irq_connect_data timer_raw_irq_data = {
   timerisr,
   timerOn,
   timerOff,
-  timerIsOn
+  NULL
 };
 
 /*
- * Timer cleanup routine at RTEMS exit. NOTE: This routine is
- *  not really necessary, since there will be a reset at exit.
- */ void
-i386_timer_exit(void)
+ * Timer cleanup routine at RTEMS exit.
+ *
+ * NOTE: This routine is not really necessary, since there will be
+ *       a reset at exit.
+ */
+static void i386_timer_exit(void)
 {
   i386_delete_idt_entry (&timer_raw_irq_data);
 }
 
 extern void rtems_irq_prologue_0(void);
-void i386_timer_initialize(void)
+static void i386_timer_initialize(void)
 {
   static bool First = true;
 
@@ -194,14 +205,18 @@ void i386_timer_initialize(void)
 /*
  * Read hardware timer value.
  */
-uint32_t i386_read_timer(void)
+static uint32_t i386_read_timer(void)
 {
   register uint32_t         total, clicks;
   register uint8_t          lsb, msb;
+  rtems_interrupt_lock_context lock_context;
 
+  rtems_interrupt_lock_acquire(&rtems_i386_i8254_access_lock, &lock_context);
   outport_byte(TIMER_MODE, TIMER_SEL0|TIMER_LATCH);
   inport_byte(TIMER_CNTR0, lsb);
   inport_byte(TIMER_CNTR0, msb);
+  rtems_interrupt_lock_release(&rtems_i386_i8254_access_lock, &lock_context);
+
   clicks = (msb << 8) | lsb;
   total  = (Ttimer_val * US_PER_ISR) + (US_PER_ISR - TICK_TO_US(clicks));
 
@@ -251,7 +266,8 @@ uint32_t benchmark_timer_read(void)
 
 void Timer_exit(void)
 {
-  return (*Timer_exit_function)();
+  if ( Timer_exit_function )
+    return (*Timer_exit_function)();
 }
 
 /*
@@ -269,12 +285,15 @@ static unsigned short lastLoadedValue;
  *
  *  Returns: Nothing. Loaded value must be a number of clock bits...
  */
-void loadTimerValue( unsigned short loadedValue )
+static void loadTimerValue( unsigned short loadedValue )
 {
+  rtems_interrupt_lock_context lock_context;
+  rtems_interrupt_lock_acquire(&rtems_i386_i8254_access_lock, &lock_context);
   lastLoadedValue = loadedValue;
   outport_byte(TIMER_MODE, TIMER_SEL0|TIMER_16BIT|TIMER_SQWAVE);
   outport_byte(TIMER_CNTR0, loadedValue & 0xff);
   outport_byte(TIMER_CNTR0, (loadedValue >> 8) & 0xff);
+  rtems_interrupt_lock_release(&rtems_i386_i8254_access_lock, &lock_context);
 }
 
 /*
@@ -283,11 +302,13 @@ void loadTimerValue( unsigned short loadedValue )
  *
  * Returns: number of clock bits elapsed since last load.
  */
-unsigned int readTimer0(void)
+static unsigned int readTimer0(void)
 {
   unsigned short lsb, msb;
   unsigned char  status;
   unsigned int  count;
+  rtems_interrupt_lock_context lock_context;
+  rtems_interrupt_lock_acquire(&rtems_i386_i8254_access_lock, &lock_context);
 
   outport_byte(
     TIMER_MODE,
@@ -296,6 +317,9 @@ unsigned int readTimer0(void)
   inport_byte(TIMER_CNTR0, status);
   inport_byte(TIMER_CNTR0, lsb);
   inport_byte(TIMER_CNTR0, msb);
+
+  rtems_interrupt_lock_release(&rtems_i386_i8254_access_lock, &lock_context);
+
   count = ( msb << 8 ) | lsb ;
   if (status & RB_OUTPUT )
     count += lastLoadedValue;
@@ -303,19 +327,19 @@ unsigned int readTimer0(void)
   return (2*lastLoadedValue - count);
 }
 
-void Timer0Reset(void)
+static void Timer0Reset(void)
 {
   loadTimerValue(0xffff);
   readTimer0();
 }
 
-void fastLoop (unsigned int loopCount)
+static void fastLoop (unsigned int loopCount)
 {
   unsigned int i;
   for( i=0; i < loopCount; i++ )outport_byte( SLOW_DOWN_IO, 0 );
 }
 
-void slowLoop (unsigned int loopCount)
+static void slowLoop (unsigned int loopCount)
 {
   unsigned int j;
   for (j=0; j <100 ;  j++) {
@@ -335,7 +359,13 @@ Calibrate_loop_1ms(void)
   rtems_interrupt_level  level;
   int retries = 0;
 
-  rtems_interrupt_disable(level);
+  /*
+   * This code is designed to run before interrupt management
+   * is enabled and running it on multiple CPUs and or after
+   * secondary CPUs are bring up seems really broken.
+   * Disabling of local interrupts is enough.
+   */
+  rtems_interrupt_local_disable(level);
 
 retry:
   if ( ++retries >= 5 ) {
@@ -504,7 +534,7 @@ retry:
 #ifdef DEBUG_CALIBRATE
   printk("slowLoop1ms = %u, fastLoop1ms = %u\n", slowLoop1ms, fastLoop1ms);
 #endif
-  rtems_interrupt_enable(level);
+  rtems_interrupt_local_enable(level);
 
 }
 

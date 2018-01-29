@@ -1,168 +1,185 @@
 /**
- *  @file
- *  priority.h
+ * @file
  *
- *  @brief contains all thread priority manipulation routines.
- *  This Handler provides mechanisms which can be used to
- *  initialize and manipulate thread priorities.
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-2006.
+ * @brief Priority Handler API
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2011.
  *  On-Line Applications Research Corporation (OAR).
+ *
+ *  Copyright (c) 2016 embedded brains GmbH.
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  6356    | 02/03/2010  | mcoutinho    | IPR 1935
- *  9617    | 23/02/2011  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_CORE Super Core
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef _RTEMS_SCORE_PRIORITY_H
 #define _RTEMS_SCORE_PRIORITY_H
 
-/**
- *  @defgroup ScorePriority Priority Handler
- *
- *   @brief This handler encapsulates functionality which is used to manage
- *  thread priorities.
- *
- *  At the SuperCore level 256 priority levels
- *  are supported with lower numbers representing logically more important
- *  threads.  The priority level 0 is reserved for internal RTEMS use. 
- *  Typically it is assigned to threads which defer internal RTEMS 
- *  actions from an interrupt to thread level to improve interrupt response.
- *  Priority level 255 is assigned to the IDLE thread and really should not
- *  be used by application threads.  The default IDLE thread implementation
- *  is an infinite "branch to self" loop which never yields to other threads
- *  at the same priority.
- */
-/**@{*/
+#include <rtems/score/chain.h>
+#include <rtems/score/cpu.h>
+#include <rtems/score/rbtree.h>
+
+struct _Scheduler_Control;
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-   /**
-    *  @brief priority bit map
-    **/
-   typedef uint16_t Priority_Bit_map_control;
+/**
+ * @defgroup ScorePriority Priority Handler
+ *
+ * @ingroup Score
+ *
+ * This handler encapsulates functionality which is used to manage thread
+ * priorities.  The actual priority of a thread is an aggregation of priority
+ * nodes.  The thread priority aggregation for the home scheduler instance of a
+ * thread consists of at least one priority node, which is normally the real
+ * priority of the thread.  The locking protocols (e.g. priority ceiling and
+ * priority inheritance), rate-monotonic period objects and the POSIX sporadic
+ * server add, change and remove priority nodes.
+ *
+ * @{
+ */
 
-   /**
-    *  @brief control block used to manage thread priorities.
-    *
-    *  @note Priority 0 is reserved for internal threads only.
-    */
-   typedef uint32_t Priority_Control;
+/**
+ * @brief A plain thread priority value.
+ *
+ * Lower values represent higher priorities.  So, a priority value of zero
+ * represents the highest priority thread.  This value is reserved for internal
+ * threads and the priority ceiling protocol.
+ */
+typedef uint64_t Priority_Control;
 
-   /**
-    * @brief highest (most important) thread priority.
-    */
+/**
+ * @brief The highest (most important) thread priority value.
+ */
 #define PRIORITY_MINIMUM      0
 
-   /**
-    * @brief lowest (least important) thread priority.
-    */
-#define PRIORITY_MAXIMUM      255
+/**
+ * @brief The priority value of pseudo-ISR threads.
+ *
+ * Examples are the MPCI and timer server threads.
+ */
+#define PRIORITY_PSEUDO_ISR   PRIORITY_MINIMUM
 
-   /**
-    *  @brief information associated with
-    *  each thread to manage its interaction with the priority bit maps.
-    */
-   typedef struct
-   {
-      /**
-       * @brief This is the address of minor bit map slot.
-       */
-      Priority_Bit_map_control *minor;
-      /**
-       * @brief This is the priority bit map ready mask.
-       */
-      Priority_Bit_map_control ready_major;
-      /**
-       * @brief This is the priority bit map ready mask.
-       */
-      Priority_Bit_map_control ready_minor;
-      /**
-       * @brief This is the priority bit map block mask.
-       */
-      Priority_Bit_map_control block_major;
-      /**
-       * @brief This is the priority bit map block mask.
-       */
-      Priority_Bit_map_control block_minor;
-   } Priority_Information;
-
-   /**
-    *  @brief the priority major bitmap
-    *
-    *  Each sixteen bit entry in this array is associated with one of
-    *  the sixteen entries in the Priority Bit map.
-    */
-   extern volatile Priority_Bit_map_control _Priority_Major_bit_map;
-
-   /**
-    *  @brief priority bitmap table
-    *
-    *  Each bit in the Priority Bitmap indicates whether or not there are
-    *  threads ready at a particular priority.  The mapping of
-    *  individual priority levels to particular bits is processor
-    *  dependent as is the value of each bit used to indicate that
-    *  threads are ready at that priority.
-    */
-   extern Priority_Bit_map_control _Priority_Bit_map[16] CPU_STRUCTURE_ALIGNMENT;
-
-   /*
-    *  The definition of the Priority_Bit_map_control type is CPU dependent.
-    *
-    */
-
-#if ( CPU_USE_GENERIC_BITFIELD_CODE == FALSE )
-
-   /**
-    *  @brief determine the priority bit mask for the specified major
-    *  or minor bit number.
-    *
-    *  @param[in] _bit_number is the bit number for which we need a mask
-    *
-    *  @return the priority bit mask
-    *
-    *  @note This may simply be a pass through to a CPU dependent implementation.
-    */
-#define _Priority_Mask( _bit_number ) \
-  _CPU_Priority_Mask( _bit_number )
+/**
+ * @brief The default lowest (least important) thread priority value.
+ *
+ * This value is CPU port dependent.
+ */
+#if defined (CPU_PRIORITY_MAXIMUM)
+  #define PRIORITY_DEFAULT_MAXIMUM      CPU_PRIORITY_MAXIMUM
+#else
+  #define PRIORITY_DEFAULT_MAXIMUM      255
 #endif
 
-#if ( CPU_USE_GENERIC_BITFIELD_CODE == FALSE )
+/**
+ * @brief The priority node to build up a priority aggregation.
+ */
+typedef struct {
+  /**
+   * @brief Node component for a chain or red-black tree.
+   */
+  union {
+    Chain_Node Chain;
+    RBTree_Node RBTree;
+  } Node;
 
-   /**
-    *  @brief determine the bit index position for the specified priority.
-    *
-    *  @param[in] _priority is the priority for which we need the index.
-    *
-    *  @return This method returns the array index into the priority bit map.
-    *
-    *  @note This may simply be a pass through to a CPU dependent implementation.
-    */
-#define _Priority_Bits_index( _priority ) \
-  _CPU_Priority_bits_index( _priority )
+  /**
+   * @brief The priority value of this node.
+   */
+  Priority_Control priority;
+} Priority_Node;
+
+/**
+ * @brief The priority action type.
+ */
+typedef enum {
+  PRIORITY_ACTION_ADD,
+  PRIORITY_ACTION_CHANGE,
+  PRIORITY_ACTION_REMOVE,
+  PRIORITY_ACTION_INVALID
+} Priority_Action_type;
+
+typedef struct Priority_Aggregation Priority_Aggregation;
+
+/**
+ * @brief The priority aggregation.
+ *
+ * This structure serves two purposes.  Firstly, it provides a place to
+ * register priority nodes and reflects the overall priority of its
+ * contributors.  Secondly, it provides an action block to signal addition,
+ * change and removal of a priority node.
+ */
+struct Priority_Aggregation {
+  /**
+   * @brief This priority node reflects the overall priority of the aggregation.
+   *
+   * The overall priority of the aggregation is the minimum priority of the
+   * priority nodes in the contributors tree.
+   *
+   * This priority node may be used to add this aggregation to another
+   * aggregation to build up a recursive priority scheme.
+   *
+   * In case priority nodes of the contributors tree are added, changed or
+   * removed the priority of this node may change.  To signal such changes to a
+   * priority aggregation the action block may be used.
+   */
+  Priority_Node Node;
+
+  /**
+   * @brief A red-black tree to contain priority nodes contributing to the
+   * overall priority of this priority aggregation.
+   */
+  RBTree_Control Contributors;
+
+#if defined(RTEMS_SMP)
+  /**
+   * @brief The scheduler instance of this priority aggregation.
+   */
+  const struct _Scheduler_Control *scheduler;
 #endif
 
-#ifndef __RTEMS_APPLICATION__
-#include <rtems/score/priority.inl>
+  /**
+   * @brief A priority action block to manage priority node additions, changes
+   * and removals.
+   */
+  struct {
+#if defined(RTEMS_SMP)
+    /**
+     * @brief The next priority aggregation in the action list.
+     */
+    Priority_Aggregation *next;
 #endif
+
+    /**
+     * @brief The priority node of the action.
+     */
+    Priority_Node *node;
+
+    /**
+     * @brief The type of the action.
+     */
+    Priority_Action_type type;
+  } Action;
+};
+
+/**
+ * @brief A list of priority actions.
+ *
+ * Actions are only added to the list.  The action lists reside on the stack
+ * and have a short life-time.  They are moved, processed or destroyed as a
+ * whole.
+ */
+typedef struct {
+  /**
+   * @brief The first action of a priority action list.
+   */
+  Priority_Aggregation *actions;
+} Priority_Actions;
 
 #ifdef __cplusplus
 }
@@ -172,7 +189,3 @@ extern "C"
 
 #endif
 /* end of include file */
-
-/**
- *  @}
- */

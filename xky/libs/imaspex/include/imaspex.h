@@ -18,7 +18,7 @@
 #ifndef _IMASPEX_H
 #define _IMASPEX_H
 
-#include <xky.h>
+#include <air.h>
 #include <a653.h>
 
 /**
@@ -38,11 +38,11 @@ int imaspex_init(void);
 typedef enum {
 
     /** Instruction and Data cache          */
-	ALL_CACHES          = XKY_CACHE_ALL,
+	ALL_CACHES          = AIR_CACHE_ALL,
 	/** Data cache only                     */
-	DATA_CACHE          = XKY_CACHE_DATA,
+	DATA_CACHE          = AIR_CACHE_DATA,
 	/** Instruction cache only              */
-	INSTRUCTION_CACHE   = XKY_CACHE_INSTRUCTION,
+	INSTRUCTION_CACHE   = AIR_CACHE_INSTRUCTION,
 
 } CACHE_TYPE;
 

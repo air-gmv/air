@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @ingroup m68k_csb360
+ *
+ * @brief Global BSP definitions.
+ */
+
 /*
  * Board Support Package for CSB360 evaluation board
  * BSP definitions
@@ -12,15 +20,21 @@
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
  *
- * http://www.rtems.com/license/LICENSE.
- *
- *  bsp.h,v 1.1 2001/10/26 19:30:10 joel Exp
+ * http://www.rtems.org/license/LICENSE.
  */
 
-#ifndef _BSP_H
-#define _BSP_H
+#ifndef LIBBSP_M68K_CSB360_BSP_H
+#define LIBBSP_M68K_CSB360_BSP_H
 
 #include <mcf5272/mcf5272.h>
+
+/**
+ * @defgroup m68k_csb360 CSB360 Support
+ *
+ * @ingroup bsp_m68k
+ *
+ * @brief CSB360 support.
+ */
 
 
 /*** Board resources allocation ***/
@@ -103,15 +117,13 @@
 
 #ifndef ASM
 
+#include <bspopts.h>
+#include <rtems.h>
+#include <bsp/default-initial-extension.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <bspopts.h>
-#include <rtems.h>
-#include <rtems/console.h>
-#include <rtems/iosupp.h>
-#include <rtems/clockdrv.h>
 
 struct rtems_bsdnet_ifconfig;
 extern int rtems_enet_driver_attach (struct rtems_bsdnet_ifconfig *config);
@@ -126,10 +138,10 @@ extern int rtems_enet_driver_attach (struct rtems_bsdnet_ifconfig *config);
  *  This is very dependent on the clock speed of the target.
  */
 
-#define delay( microseconds ) \
+#define rtems_bsp_delay( microseconds ) \
   { register uint32_t _delay=(microseconds); \
     register uint32_t _tmp=123; \
-    asm volatile( "0: \
+    __asm__ volatile( "0: \
                      nbcd      %0 ; \
                      nbcd      %0 ; \
                      dbf       %1,0b" \
@@ -151,17 +163,22 @@ extern rtems_device_driver rtc_initialize(
 
 /* miscellaneous stuff assumed to exist */
 
-extern m68k_isr_entry M68Kvec[];   /* vector table address */
+extern rtems_isr_entry M68Kvec[];   /* vector table address */
 
 extern rtems_isr (*rtems_clock_hook)(rtems_vector_number);
 
 /* functions */
 
-m68k_isr_entry set_vector(
+rtems_isr_entry set_vector(
   rtems_isr_entry     handler,
   rtems_vector_number vector,
   int                 type
 );
+
+/*
+ * Prototypes for BSP methods which cross file boundaries
+ */
+void init5272(void);
 
 #ifdef __cplusplus
 }

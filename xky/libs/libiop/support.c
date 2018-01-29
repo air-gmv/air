@@ -27,7 +27,7 @@ void setup_iop_buffers(
 
         /* get virtual and physical addresses for this buffer */
         buffers[i].v_addr = &storage[i * IOP_BUFFER_SIZE];
-        buffers[i].p_addr = (void *)xky_syscall_get_physical_addr((uintptr_t)buffers[i].v_addr);
+        buffers[i].p_addr = (void *)air_syscall_get_physical_addr((uintptr_t)buffers[i].v_addr);
     }
 }
 
@@ -48,6 +48,14 @@ void copy_iop_buffer(iop_buffer_t *dst, iop_buffer_t *src) {
 void release_wrapper(iop_wrapper_t *wrapper) {
 
     wrapper->timer = 0;
+    iop_buffer_t *buf = wrapper->buffer;
+    memset(buf->v_addr, 0, buf->payload_size);
+    buf->header_off = 0;
+    buf->header_size = 0;
+    buf->payload_off = 0;
+    buf->payload_size = 0;
+    buf->size = 0;
+
     iop_chain_append(&usr_configuration.free_wrappers, &wrapper->node);
 }
 
@@ -152,3 +160,49 @@ void update_timers() {
     }
 }
 
+/**
+ * @brief Enable device with clock gating
+ * @param clk_amba_bus AMBA bus where the clock gating is located
+ * @param core_to_enable Which device to enable.
+ *        Available devices are: ETH0, ETH1, SPWR, PCI and 1553
+ */
+void clock_gating_enable(amba_confarea_type* clk_amba_bus, clock_gating_device core_to_enable)
+{
+    /* Amba APB device */
+    amba_apb_device ambadev;
+
+    /* Get AMBA AHB device info from Plug&Play */
+    if(amba_find_next_apbslv(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE,&ambadev, 0) == 0){
+
+        /* Device not found */
+		iop_debug("    Clock Gating unit not found!\n");
+        return;
+    }
+
+    /* From LEON4 UM:
+     * To enable the clock for a core, the following procedure should be applied
+     * 1. Write a 1 to the corresponding bit in the unlock register
+     * 2. Write a 1 to the corresponding bit in the core reset register
+     * 3. Write a 1 to the corresponding bit in the clock enable register
+     * 4. Write a 0 to the corresponding bit in the core reset register
+     * 5. Write a 0 to the corresponding bit in the unlock register
+     * /
+
+    /* Copy pointer to device's memory mapped registers */
+    struct clkgate_regs *gate_regs = (void *)ambadev.start;
+
+    /* 1. Unlock the GR1553 gate to allow enabling it */
+    SET_BIT_REG(&gate_regs->unlock, core_to_enable);
+
+    /* 2. Reset the GR1553 gate */
+    SET_BIT_REG(&gate_regs->core_reset, core_to_enable);
+
+    /* 3. Enable the GR1553 gate */
+    SET_BIT_REG(&gate_regs->clock_enable, core_to_enable);
+
+    /* 4. Clear the GR1553 gate reset*/
+    CLEAR_BIT_REG(&gate_regs->core_reset, core_to_enable);
+
+    /* 5. Lock the GR1553 gate */
+    CLEAR_BIT_REG(&gate_regs->unlock, core_to_enable);
+}

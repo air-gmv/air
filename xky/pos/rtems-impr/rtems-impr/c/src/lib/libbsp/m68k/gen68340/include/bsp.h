@@ -1,10 +1,16 @@
+/**
+ * @file
+ *
+ * @ingroup m68k_gen68340
+ *
+ * @brief Global BSP definitions.
+ */
+
 /*
  * Board Support Package for `Generic' Motorola MC68340
  *
  * Based on the `gen68360' board support package, and covered by the
  * original distribution terms.
- *
- *  $Id$
  */
 
 /*  bsp.h
@@ -14,55 +20,62 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-#ifndef _BSP_H
-#define _BSP_H
+#ifndef LIBBSP_M68K_GEN68340_BSP_H
+#define LIBBSP_M68K_GEN68340_BSP_H
+
+#ifndef ASM
+
+#include <bspopts.h>
+#include <bsp/default-initial-extension.h>
+
+#include <rtems.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <bspopts.h>
-
-#include <rtems.h>
-#include <rtems/console.h>
-#include <rtems/iosupp.h>
-#include <rtems/clockdrv.h>
-
-/*
- *  Simple spin delay in microsecond units for device drivers.
- *  This is very dependent on the clock speed of the target.
+/**
+ * @defgroup m68k_gen68340 Motorola MC68340 Support
+ *
+ * @ingroup bsp_m68k
+ *
+ * @brief Motorola MC68340 support.
  */
-
-#define rtems_bsp_delay( microseconds ) \
-  { register uint32_t         _delay=(microseconds); \
-    register uint32_t         _tmp=123; \
-    asm volatile( "0: \
-                     nbcd      %0 ; \
-                     nbcd      %0 ; \
-                     dbf       %1,0b" \
-                  : "=d" (_tmp), "=d" (_delay) \
-                  : "0"  (_tmp), "1"  (_delay) ); \
-  }
 
 /* Constants */
 
 /* Structures */
 
-extern m68k_isr_entry M68Kvec[];   /* vector table address */
+extern rtems_isr_entry M68Kvec[];   /* vector table address */
 
 /* functions */
 
-m68k_isr_entry set_vector(
+rtems_isr_entry set_vector(
   rtems_isr_entry     handler,
   rtems_vector_number vector,
   int                 type
 );
 
+/*
+ *  Methods used across files inside the BSP
+ */
+int dbug_in_char( int minor );
+void dbug_out_char( int minor, int ch );
+int dbug_char_present( int minor );
+void _dbug_dumpanic(void);
+
+/*
+ *  Only called from .S but prototyped here to capture the dependecy.
+ */
+void _Init68340 (void);
+
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* !ASM */
 
 #endif

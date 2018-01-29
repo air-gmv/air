@@ -6,12 +6,10 @@
  *
  *  The license and distribution terms for this file may in
  *  the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Modified to support the MPC750.
  *  Modifications Copyright (c) 1999 Eric Valette valette@crf.canon.fr
- *
- *  $Id$
  */
 
 #include <bsp.h>

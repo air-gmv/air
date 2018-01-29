@@ -9,6 +9,10 @@
    when application exits. */
 #undef BSP_PRESS_KEY_FOR_RESET
 
+/* If defined, prints the exception context when an unexpected exception
+   occurs. */
+#undef BSP_PRINT_EXCEPTION_CONTEXT
+
 /* If defined, reset the board when the application exits. */
 #undef BSP_RESET_BOARD_AT_EXIT
 

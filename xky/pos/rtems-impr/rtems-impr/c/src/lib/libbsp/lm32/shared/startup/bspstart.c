@@ -9,9 +9,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Jukka Pietarinen <jukka.pietarinen@mrf.fi>, 2008,
  *  Micro-Research Finland Oy
@@ -20,14 +18,9 @@
 #include <string.h>
 
 #include <bsp.h>
+#include <bsp/bootcard.h>
 #include "../include/system_conf.h"
 #include "../console/uart.h"
-#include <rtems/score/heap.h>
-
-#include <rtems/system.h>
-#include <rtems/score/isr.h>
-#include <rtems/score/timespec.h>
-#include <rtems/score/tod.h>
 
 /*
  *  bsp_start
@@ -35,10 +28,9 @@
  *  This routine does the bulk of the system initialization.
  */
 
-void bsp_start( void )
+void bsp_start(void)
 {
-  /* Setup console baud rate which we derive from
-     Mico System Builder (MSB) generated system_conf.h */
+  /* Setup console baud rate */
   BSP_uart_init(UART_BAUD_RATE);
 }
 

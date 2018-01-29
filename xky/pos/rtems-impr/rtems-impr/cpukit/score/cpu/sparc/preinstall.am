@@ -27,15 +27,27 @@ $(PROJECT_INCLUDE)/rtems/score/$(dirstamp):
 	@: > $(PROJECT_INCLUDE)/rtems/score/$(dirstamp)
 PREINSTALL_DIRS += $(PROJECT_INCLUDE)/rtems/score/$(dirstamp)
 
-$(PROJECT_INCLUDE)/rtems/score/cpu.h: rtems/score/cpu.h $(PROJECT_INCLUDE)/rtems/score/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/rtems/score/cpu.h
-PREINSTALL_FILES += $(PROJECT_INCLUDE)/rtems/score/cpu.h
-
 $(PROJECT_INCLUDE)/rtems/score/sparc.h: rtems/score/sparc.h $(PROJECT_INCLUDE)/rtems/score/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/rtems/score/sparc.h
 PREINSTALL_FILES += $(PROJECT_INCLUDE)/rtems/score/sparc.h
 
+$(PROJECT_INCLUDE)/rtems/score/cpu.h: rtems/score/cpu.h $(PROJECT_INCLUDE)/rtems/score/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/rtems/score/cpu.h
+PREINSTALL_FILES += $(PROJECT_INCLUDE)/rtems/score/cpu.h
+
+$(PROJECT_INCLUDE)/rtems/score/cpuimpl.h: rtems/score/cpuimpl.h $(PROJECT_INCLUDE)/rtems/score/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/rtems/score/cpuimpl.h
+PREINSTALL_FILES += $(PROJECT_INCLUDE)/rtems/score/cpuimpl.h
+
+$(PROJECT_INCLUDE)/rtems/score/sparcimpl.h: rtems/score/sparcimpl.h $(PROJECT_INCLUDE)/rtems/score/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/rtems/score/sparcimpl.h
+PREINSTALL_FILES += $(PROJECT_INCLUDE)/rtems/score/sparcimpl.h
+
 $(PROJECT_INCLUDE)/rtems/score/types.h: rtems/score/types.h $(PROJECT_INCLUDE)/rtems/score/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/rtems/score/types.h
 PREINSTALL_FILES += $(PROJECT_INCLUDE)/rtems/score/types.h
+
+$(PROJECT_INCLUDE)/rtems/score/cpuatomic.h: rtems/score/cpuatomic.h $(PROJECT_INCLUDE)/rtems/score/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/rtems/score/cpuatomic.h
+PREINSTALL_FILES += $(PROJECT_INCLUDE)/rtems/score/cpuatomic.h
 

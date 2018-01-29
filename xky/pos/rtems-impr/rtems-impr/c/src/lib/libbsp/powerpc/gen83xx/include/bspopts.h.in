@@ -1,36 +1,71 @@
 /* include/bspopts.h.in.  Generated from configure.ac by autoheader.  */
 
+/* default baud for console and other serial devices */
+#undef BSP_CONSOLE_BAUD
+
+/* enables the data cache, if defined to a value other than zero */
+#undef BSP_DATA_CACHE_ENABLED
+
 /* If defined, then the BSP Framework will put a non-zero pattern into the
    RTEMS Workspace and C program heap. This should assist in finding code that
    assumes memory starts set to zero. */
 #undef BSP_DIRTY_MEMORY
 
+/* enables the instruction cache, if defined to a value other than zero */
+#undef BSP_INSTRUCTION_CACHE_ENABLED
+
+/* indicate that the interrupt stack is at the work area begin */
+#undef BSP_INTERRUPT_STACK_AT_WORK_AREA_BEGIN
+
 /* If defined, print a message and wait until pressed before resetting board
    when application exits. */
 #undef BSP_PRESS_KEY_FOR_RESET
 
+/* If defined, prints the exception context when an unexpected exception
+   occurs. */
+#undef BSP_PRINT_EXCEPTION_CONTEXT
+
 /* If defined, reset the board when the application exits. */
 #undef BSP_RESET_BOARD_AT_EXIT
 
-/* If defined, the data cache will be enabled after address translation is
-   turned on. */
-#undef DATA_CACHE_ENABLE
+/* the board has an ULPI PHY connected to the USB EHCI controller */
+#undef BSP_USB_EHCI_MPC83XX_HAS_ULPI
 
-/* If defined, use custom settings for the hsc_cm01 BSP. */
-#undef HSC_CM01
+/* if defined, enables UART2 */
+#undef BSP_USE_UART2
 
-/* If defined, the instruction cache will be enabled after address translation
-   is turned on. */
-#undef INSTRUCTION_CACHE_ENABLE
+/* enable usage of interrupts for the UART modules */
+#undef BSP_USE_UART_INTERRUPTS
 
-/* If defined, use custom settings for the mpc8313erdb BSP. */
-#undef MPC8313ERDB
+/* enable interrupt nesting */
+#undef GEN83XX_ENABLE_INTERRUPT_NESTING
 
-/* If defined, use custom settings for the MPC8349 libcpu family. */
-#undef MPC8349
+/* if defined, enables U-Boot support */
+#undef HAS_UBOOT
 
-/* If defined, use custom settings for the mpc8349eamds BSP. */
-#undef MPC8349EAMDS
+/* if defined, then use settings for the BR UID board */
+#undef MPC83XX_BOARD_BR_UID
+
+/* if defined, then use settings for the HSC_CM01 board */
+#undef MPC83XX_BOARD_HSC_CM01
+
+/* if defined, then use settings for the MPC8309SOM board */
+#undef MPC83XX_BOARD_MPC8309SOM
+
+/* if defined, then use settings for the MPC8313ERDB board */
+#undef MPC83XX_BOARD_MPC8313ERDB
+
+/* if defined, then use settings for the MPC8349EAMDS board */
+#undef MPC83XX_BOARD_MPC8349EAMDS
+
+/* chip type of the MPC83XX family */
+#undef MPC83XX_CHIP_TYPE
+
+/* indicates if the board has a NAND large page flash on chip select 0 */
+#undef MPC83XX_HAS_NAND_LP_FLASH_ON_CS0
+
+/* PHY address of network interface 0 */
+#undef MPC83XX_NETWORK_INTERFACE_0_PHY_ADDR
 
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT

@@ -7,27 +7,35 @@
  */
 
 /*
- * Copyright (c) 2009
- * embedded brains GmbH
- * Obere Lagerstr. 30
- * D-82178 Puchheim
- * Germany
- * rtems@embedded-brains.de
+ * Copyright (c) 2009-2012 embedded brains GmbH.  All rights reserved.
+ *
+ *  embedded brains GmbH
+ *  Obere Lagerstr. 30
+ *  82178 Puchheim
+ *  Germany
+ *  <rtems@embedded-brains.de>
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
- * http://www.rtems.com/license/LICENSE.
+ * http://www.rtems.org/license/LICENSE.
  */
+
+#include <rtems.h>
 
 #include <mpc55xx/regs.h>
 
+#if defined(RTEMS_NETWORKING) && defined(MPC55XX_HAS_SIU)
+
+#define __INSIDE_RTEMS_BSD_TCPIP_STACK__ 1
+#define __BSD_VISIBLE 1
+
 #include <errno.h>
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <inttypes.h>
 
-#include <rtems.h>
 #include <rtems/rtems_bsdnet.h>
 #include <rtems/rtems_mii_ioctl.h>
 
@@ -51,11 +59,11 @@
 #include <libcpu/powerpc-utility.h>
 #include <bsp/smsc9218i.h>
 
-#include <rtems/status-checks.h>
-
 #if MCLBYTES != 2048
   #warning "unexpected MCLBYTES value"
 #endif
+
+#define ASSERT_SC(sc) assert((sc) == RTEMS_SUCCESSFUL)
 
 #define SMSC9218I_EVENT_TX RTEMS_EVENT_1
 
@@ -69,38 +77,46 @@
 
 #define SMSC9218I_EVENT_PHY RTEMS_EVENT_6
 
-#define SMSC9218I_EVENT_EDMA RTEMS_EVENT_7
+#define SMSC9218I_EVENT_DMA RTEMS_EVENT_7
 
-#define SMSC9218I_EVENT_EDMA_ERROR RTEMS_EVENT_8
+#define SMSC9218I_EVENT_DMA_ERROR RTEMS_EVENT_8
 
 /* Adjust by two bytes for proper IP header alignment */
 #define SMSC9218I_RX_DATA_OFFSET 2
 
-#define SMSC9218I_TX_JOBS 16U
+#define SMSC9218I_RX_JOBS 32
 
-#define SMSC9218I_TX_JOBS_MAX (SMSC9218I_TX_JOBS - 1U)
+#define SMSC9218I_TX_JOBS 64
 
 /* Maximum number of fragments per frame, see manual section 3.11.3.2 */
 #define SMSC9218I_TX_FRAGMENT_MAX 86
+
+#if SMSC9218I_TX_JOBS > SMSC9218I_TX_FRAGMENT_MAX
+  #error "too many TX jobs"
+#endif
 
 #define SMSC9218I_IRQ_CFG_GLOBAL_ENABLE \
   (SMSC9218I_IRQ_CFG_IRQ_EN | SMSC9218I_IRQ_CFG_IRQ_TYPE)
 
 #define SMSC9218I_IRQ_CFG_GLOBAL_DISABLE SMSC9218I_IRQ_CFG_IRQ_TYPE
 
-#define SMSC9218I_EDMA_RX_CHANNEL 48
-
 #define SMSC9218I_EDMA_RX_TCD_CDF 0x10004
 
 #define SMSC9218I_EDMA_RX_TCD_BMF 0x10003
 
-#define SMSC9218I_EDMA_TX_CHANNEL 49
+#define SMSC9218I_TCD_BMF_LINK 0x10011
 
-#define SMSC9218I_EDMA_TX_TCD_BMF_LINK 0x10011
+#define SMSC9218I_TCD_BMF_LAST 0x10003
 
-#define SMSC9218I_EDMA_TX_TCD_BMF_INTERRUPT 0x10003
+#define SMSC9218I_TCD_BMF_CLEAR 0x10000
 
-#define SMSC9218I_EDMA_TX_TCD_BMF_CLEAR 0x10000
+#define SMSC9218I_ERROR_INTERRUPTS \
+  (SMSC9218I_INT_TXSO \
+     | SMSC9218I_INT_RWT \
+     | SMSC9218I_INT_RXE \
+     | SMSC9218I_INT_TXE)
+
+#define SMSC9218I_UNLIKELY(x) __builtin_expect((x), 0)
 
 #ifdef DEBUG
   #define SMSC9218I_PRINTF(...) printf(__VA_ARGS__)
@@ -117,24 +133,39 @@ typedef enum {
   SMSC9218I_RUNNING
 } smsc9218i_state;
 
+static const char *const state_to_string [] = {
+  "NOT INITIALIZED",
+  "CONFIGURED",
+  "STARTED",
+  "RUNNING"
+};
+
 typedef struct {
   struct arpcom arpcom;
-  struct rtems_mdio_info mdio_info;
+  struct rtems_mdio_info mdio;
   smsc9218i_state state;
   rtems_id receive_task;
   rtems_id transmit_task;
-  mpc55xx_edma_channel_entry edma_receive;
-  mpc55xx_edma_channel_entry edma_transmit;
+  edma_channel_context edma_receive;
+  edma_channel_context edma_transmit;
+  unsigned phy_interrupts;
   unsigned received_frames;
+  unsigned receiver_errors;
   unsigned receive_interrupts;
-  unsigned transmitted_frames;
-  unsigned transmit_interrupts;
+  unsigned receive_dma_interrupts;
   unsigned receive_too_long_errors;
   unsigned receive_collision_errors;
   unsigned receive_crc_errors;
-  unsigned receive_edma_errors;
-  unsigned transmit_errors;
-  unsigned transmit_edma_errors;
+  unsigned receive_dma_errors;
+  unsigned receive_drop;
+  unsigned receive_watchdog_timeouts;
+  unsigned transmitted_frames;
+  unsigned transmitter_errors;
+  unsigned transmit_interrupts;
+  unsigned transmit_dma_interrupts;
+  unsigned transmit_status_overflows;
+  unsigned transmit_frame_errors;
+  unsigned transmit_dma_errors;
 } smsc9218i_driver_entry;
 
 typedef struct {
@@ -149,115 +180,170 @@ typedef struct {
   struct mbuf *fragment_table [SMSC9218I_TX_JOBS];
   struct mbuf *frame;
   struct mbuf *next_fragment;
-  unsigned empty_index;
-  unsigned transfer_index;
-  unsigned transfer_last_index;
-  unsigned todo_index;
-  unsigned empty;
-  unsigned transfer;
-  unsigned todo;
+  int empty_index;
+  int transfer_index;
+  int transfer_last_index;
+  int todo_index;
+  int empty;
+  int transfer;
+  int todo;
   uint32_t frame_length;
   uint32_t command_b;
   uint16_t tag;
   bool done;
+  unsigned frame_compact_count;
 } smsc9218i_transmit_job_control;
 
-static void smsc9218i_edma_done(
-  mpc55xx_edma_channel_entry *e,
+typedef struct {
+  struct tcd_t tcd_table [SMSC9218I_RX_JOBS];
+  struct mbuf *mbuf_table [SMSC9218I_RX_JOBS];
+  int consume;
+  int done;
+  int produce;
+} smsc9218i_receive_job_control;
+
+static smsc9218i_receive_job_control smsc_rx_jc __attribute__((aligned (32)));
+
+static void smsc9218i_transmit_dma_done(
+  edma_channel_context *ctx,
   uint32_t error_status
-)
-{
-  rtems_event_set event = error_status == 0 ?
-    SMSC9218I_EVENT_EDMA : SMSC9218I_EVENT_EDMA_ERROR;
+);
 
-  SMSC9218I_PRINTK(
-    "edma: id = 0x%08x, error status = 0x%08x\n",
-    e->id,
-    error_status
-  );
-
-  rtems_event_send(e->id, event);
-}
+static void smsc9218i_receive_dma_done(
+  edma_channel_context *ctx,
+  uint32_t error_status
+);
 
 static smsc9218i_driver_entry smsc9218i_driver_data = {
   .state = SMSC9218I_NOT_INITIALIZED,
   .receive_task = RTEMS_ID_NONE,
   .transmit_task = RTEMS_ID_NONE,
   .edma_receive = {
-    .channel = SMSC9218I_EDMA_RX_CHANNEL,
-    .done = smsc9218i_edma_done,
-    .id = RTEMS_ID_NONE
+    .edma_tcd = EDMA_TCD_BY_CHANNEL_INDEX(SMSC9218I_EDMA_RX_CHANNEL),
+    .done = smsc9218i_receive_dma_done
   },
   .edma_transmit = {
-    .channel = SMSC9218I_EDMA_TX_CHANNEL,
-    .done = smsc9218i_edma_done,
-    .id = RTEMS_ID_NONE
+    .edma_tcd = EDMA_TCD_BY_CHANNEL_INDEX(SMSC9218I_EDMA_TX_CHANNEL),
+    .done = smsc9218i_transmit_dma_done
   }
 };
 
-static void smsc9218i_mac_wait(volatile smsc9218i_registers *regs)
+static rtems_interval smsc9218i_timeout_init(void)
 {
-  while ((regs->mac_csr_cmd & SMSC9218I_MAC_CSR_CMD_BUSY) != 0) {
-    /* Wait */
-  }
+  return rtems_clock_get_ticks_since_boot();
 }
 
-static void smsc9218i_mac_write(
+static bool smsc9218i_timeout_not_expired(rtems_interval start)
+{
+  rtems_interval elapsed = rtems_clock_get_ticks_since_boot() - start;
+
+  return elapsed < rtems_clock_get_ticks_per_second();
+}
+
+static bool smsc9218i_mac_wait(volatile smsc9218i_registers *regs)
+{
+  rtems_interval start = smsc9218i_timeout_init();
+  bool busy;
+
+  while (
+    (busy = (regs->mac_csr_cmd & SMSC9218I_MAC_CSR_CMD_BUSY) != 0)
+      && smsc9218i_timeout_not_expired(start)
+  ) {
+    /* Wait */
+  }
+
+  return !busy;
+}
+
+static bool smsc9218i_mac_write(
   volatile smsc9218i_registers *regs,
   uint32_t address,
   uint32_t data
 )
 {
-  smsc9218i_mac_wait(regs);
-  regs->mac_csr_data = SMSC9218I_SWAP(data);
-  regs->mac_csr_cmd = SMSC9218I_MAC_CSR_CMD_BUSY
-    | SMSC9218I_MAC_CSR_CMD_ADDR(address);
-  smsc9218i_mac_wait(regs);
+  bool ok = smsc9218i_mac_wait(regs);
+
+  if (ok) {
+    regs->mac_csr_data = SMSC9218I_SWAP(data);
+    regs->mac_csr_cmd = SMSC9218I_MAC_CSR_CMD_BUSY
+      | SMSC9218I_MAC_CSR_CMD_ADDR(address);
+    ok = smsc9218i_mac_wait(regs);
+  }
+
+  return ok;
 }
 
 static uint32_t smsc9218i_mac_read(
   volatile smsc9218i_registers *regs,
-  uint32_t address
+  uint32_t address,
+  bool *ok_ptr
 )
 {
   uint32_t mac_csr_data = 0;
+  bool ok = smsc9218i_mac_wait(regs);
 
-  smsc9218i_mac_wait(regs);
-  regs->mac_csr_cmd = SMSC9218I_MAC_CSR_CMD_BUSY
-    | SMSC9218I_MAC_CSR_CMD_READ
-    | SMSC9218I_MAC_CSR_CMD_ADDR(address);
-  smsc9218i_mac_wait(regs);
-  mac_csr_data = regs->mac_csr_data;
+  if (ok) {
+    regs->mac_csr_cmd = SMSC9218I_MAC_CSR_CMD_BUSY
+      | SMSC9218I_MAC_CSR_CMD_READ
+      | SMSC9218I_MAC_CSR_CMD_ADDR(address);
+    ok = smsc9218i_mac_wait(regs);
+
+    if (ok) {
+      mac_csr_data = regs->mac_csr_data;
+    }
+  }
+
+  if (ok_ptr != NULL) {
+    *ok_ptr = ok;
+  }
 
   return SMSC9218I_SWAP(mac_csr_data);
 }
 
-static void smsc9218i_phy_wait(volatile smsc9218i_registers *regs)
+static bool smsc9218i_phy_wait(volatile smsc9218i_registers *regs)
 {
-  uint32_t mac_mii_acc = 0;
+  rtems_interval start = smsc9218i_timeout_init();
+  uint32_t mac_mii_acc;
+  bool busy;
 
   do {
-    mac_mii_acc = smsc9218i_mac_read(regs, SMSC9218I_MAC_MII_ACC);
-  } while ((mac_mii_acc & SMSC9218I_MAC_MII_ACC_BUSY) != 0);
+    mac_mii_acc = smsc9218i_mac_read(regs, SMSC9218I_MAC_MII_ACC, NULL);
+  } while (
+    (busy = (mac_mii_acc & SMSC9218I_MAC_MII_ACC_BUSY) != 0)
+      && smsc9218i_timeout_not_expired(start)
+  );
+
+  return !busy;
 }
 
-static void smsc9218i_phy_write(
+static bool smsc9218i_phy_write(
   volatile smsc9218i_registers *regs,
   uint32_t address,
   uint32_t data
 )
 {
-  smsc9218i_phy_wait(regs);
-  smsc9218i_mac_write(regs, SMSC9218I_MAC_MII_DATA, data);
-  smsc9218i_mac_write(
-    regs,
-    SMSC9218I_MAC_MII_ACC,
-    SMSC9218I_MAC_MII_ACC_PHY_DEFAULT
-      | SMSC9218I_MAC_MII_ACC_BUSY
-      | SMSC9218I_MAC_MII_ACC_WRITE
-      | SMSC9218I_MAC_MII_ACC_ADDR(address)
-  );
-  smsc9218i_phy_wait(regs);
+  bool ok = smsc9218i_phy_wait(regs);
+
+  if (ok) {
+    ok = smsc9218i_mac_write(regs, SMSC9218I_MAC_MII_DATA, data);
+
+    if (ok) {
+      ok = smsc9218i_mac_write(
+        regs,
+        SMSC9218I_MAC_MII_ACC,
+        SMSC9218I_MAC_MII_ACC_PHY_DEFAULT
+          | SMSC9218I_MAC_MII_ACC_BUSY
+          | SMSC9218I_MAC_MII_ACC_WRITE
+          | SMSC9218I_MAC_MII_ACC_ADDR(address)
+      );
+
+      if (ok) {
+        ok = smsc9218i_phy_wait(regs);
+      }
+    }
+  }
+
+  return ok;
 }
 
 static uint32_t smsc9218i_phy_read(
@@ -274,24 +360,30 @@ static uint32_t smsc9218i_phy_read(
       | SMSC9218I_MAC_MII_ACC_ADDR(address)
   );
   smsc9218i_phy_wait(regs);
-  return smsc9218i_mac_read(regs, SMSC9218I_MAC_MII_DATA);
+  return smsc9218i_mac_read(regs, SMSC9218I_MAC_MII_DATA, NULL);
 }
 
-static void smsc9218i_enable_promiscous_mode(
+static bool smsc9218i_enable_promiscous_mode(
   volatile smsc9218i_registers *regs,
   bool enable
 )
 {
-  uint32_t flags = SMSC9218I_MAC_CR_RXALL | SMSC9218I_MAC_CR_PRMS;
-  uint32_t mac_cr = smsc9218i_mac_read(regs, SMSC9218I_MAC_CR);
+  bool ok;
+  uint32_t mac_cr = smsc9218i_mac_read(regs, SMSC9218I_MAC_CR, &ok);
 
-  if (enable) {
-    mac_cr |= flags;
-  } else {
-    mac_cr &= ~flags;
+  if (ok) {
+    uint32_t flags = SMSC9218I_MAC_CR_RXALL | SMSC9218I_MAC_CR_PRMS;
+
+    if (enable) {
+      mac_cr |= flags;
+    } else {
+      mac_cr &= ~flags;
+    }
+
+    ok = smsc9218i_mac_write(regs, SMSC9218I_MAC_CR, mac_cr);
   }
 
-  smsc9218i_mac_write(regs, SMSC9218I_MAC_CR, mac_cr);
+  return ok;
 }
 
 #if defined(DEBUG)
@@ -337,8 +429,8 @@ static void smsc9218i_register_dump(volatile smsc9218i_registers *regs)
 
   reg = regs->rx_fifo_inf;
   printf(
-    "rx_fifo_inf: 0x%08" PRIx32 " (status unused = %" PRIu32
-      ", data unused = %" PRIu32 ")\n",
+    "rx_fifo_inf: 0x%08" PRIx32 " (status used = %" PRIu32
+      ", data used = %" PRIu32 ")\n",
     SMSC9218I_SWAP(reg),
     SMSC9218I_RX_FIFO_INF_GET_SUSED(reg),
     SMSC9218I_RX_FIFO_INF_GET_DUSED(reg)
@@ -377,26 +469,26 @@ static void smsc9218i_register_dump(volatile smsc9218i_registers *regs)
   reg = regs->afc_cfg;
   printf("afc_cfg: 0x%08" PRIx32 "\n", SMSC9218I_SWAP(reg));
 
-  printf("mac: cr: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_CR));
-  printf("mac: addrh: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_ADDRH));
-  printf("mac: addrl: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_ADDRL));
-  printf("mac: hashh: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_HASHH));
-  printf("mac: hashl: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_HASHL));
-  printf("mac: mii_acc: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_MII_ACC));
-  printf("mac: mii_data: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_MII_DATA));
-  printf("mac: flow: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_FLOW));
-  printf("mac: vlan1: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_VLAN1));
-  printf("mac: vlan2: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_VLAN2));
-  printf("mac: wuff: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_WUFF));
-  printf("mac: wucsr: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_WUCSR));
+  printf("mac: cr: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_CR, NULL));
+  printf("mac: addrh: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_ADDRH, NULL));
+  printf("mac: addrl: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_ADDRL, NULL));
+  printf("mac: hashh: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_HASHH, NULL));
+  printf("mac: hashl: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_HASHL, NULL));
+  printf("mac: mii_acc: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_MII_ACC, NULL));
+  printf("mac: mii_data: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_MII_DATA, NULL));
+  printf("mac: flow: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_FLOW, NULL));
+  printf("mac: vlan1: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_VLAN1, NULL));
+  printf("mac: vlan2: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_VLAN2, NULL));
+  printf("mac: wuff: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_WUFF, NULL));
+  printf("mac: wucsr: 0x%08" PRIx32 "\n", smsc9218i_mac_read(regs, SMSC9218I_MAC_WUCSR, NULL));
 
-  printf("phy: bcr: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, SMSC9218I_PHY_BCR));
-  printf("phy: bsr: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, SMSC9218I_PHY_BSR));
-  printf("phy: id1: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, SMSC9218I_PHY_ID1));
-  printf("phy: id2: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, SMSC9218I_PHY_ID2));
-  printf("phy: anar: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, SMSC9218I_PHY_ANAR));
-  printf("phy: anlpar: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, SMSC9218I_PHY_ANLPAR));
-  printf("phy: anexpr: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, SMSC9218I_PHY_ANEXPR));
+  printf("phy: bcr: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, MII_BMCR));
+  printf("phy: bsr: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, MII_BMSR));
+  printf("phy: id1: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, MII_PHYIDR1));
+  printf("phy: id2: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, MII_PHYIDR2));
+  printf("phy: anar: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, MII_ANAR));
+  printf("phy: anlpar: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, MII_ANLPAR));
+  printf("phy: anexpr: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, MII_ANER));
   printf("phy: mcsr: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, SMSC9218I_PHY_MCSR));
   printf("phy: spmodes: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, SMSC9218I_PHY_SPMODES));
   printf("phy: cisr: 0x%08" PRIx32 "\n", smsc9218i_phy_read(regs, SMSC9218I_PHY_CSIR));
@@ -406,12 +498,183 @@ static void smsc9218i_register_dump(volatile smsc9218i_registers *regs)
 }
 #endif
 
+static void smsc9218i_flush_tcd(struct tcd_t *tcd)
+{
+  ppc_data_cache_block_store(tcd);
+}
+
+static uint32_t smsc9218i_align_up(uint32_t val)
+{
+  return 4U + ((val - 1U) & ~0x3U);
+}
+
+static void smsc9218i_discard_frame(
+  smsc9218i_driver_entry *e,
+  volatile smsc9218i_registers *regs,
+  uint32_t rx_fifo_status,
+  uint32_t frame_length,
+  uint32_t data_length
+)
+{
+  /* Update error counters */
+  if ((rx_fifo_status & SMSC9218I_RX_STS_ERROR_TOO_LONG) != 0) {
+    ++e->receive_too_long_errors;
+  }
+  if ((rx_fifo_status & SMSC9218I_RX_STS_ERROR_COLLISION) != 0) {
+    ++e->receive_collision_errors;
+  }
+  if ((rx_fifo_status & SMSC9218I_RX_STS_ERROR_CRC) != 0) {
+    ++e->receive_crc_errors;
+  }
+
+  /* Discard frame */
+  if (frame_length > 16) {
+    /* Fast forward */
+    regs->rx_dp_ctl = SMSC9218I_RX_DP_CTRL_FFWD;
+
+    while ((regs->rx_dp_ctl & SMSC9218I_RX_DP_CTRL_FFWD) != 0) {
+      /* Wait */
+    }
+  } else {
+    uint32_t len = data_length / 4;
+    uint32_t i = 0;
+
+    /* Discard data */
+    for (i = 0; i < len; ++i) {
+      regs->rx_fifo_data;
+    }
+  }
+}
+
+static void smsc9218i_setup_receive_dma(
+  smsc9218i_driver_entry *e,
+  volatile smsc9218i_registers *regs,
+  smsc9218i_receive_job_control *jc
+)
+{
+  int c = jc->consume;
+  int p = jc->produce;
+  int np = (p + 1) % SMSC9218I_RX_JOBS;
+  struct tcd_t *first = &jc->tcd_table [p];
+  struct tcd_t *last = NULL;
+
+  while (np != c) {
+    uint32_t rx_fifo_inf = 0;
+    uint32_t status_used = 0;
+
+    /* Clear FIFO level status */
+    regs->int_sts = SMSC9218I_INT_RSFL;
+
+    /* Next FIFO status */
+    rx_fifo_inf = regs->rx_fifo_inf;
+    status_used = SMSC9218I_RX_FIFO_INF_GET_SUSED(rx_fifo_inf);
+
+    if (status_used > 0) {
+      uint32_t status = regs->rx_fifo_status;
+      uint32_t frame_length = SMSC9218I_RX_STS_GET_LENGTH(status);
+      uint32_t data_length = smsc9218i_align_up(
+        SMSC9218I_RX_DATA_OFFSET + frame_length
+      );
+      bool frame_ok = (status & SMSC9218I_RX_STS_ERROR) == 0;
+
+      if (frame_ok) {
+        struct mbuf *m = jc->mbuf_table [p];
+        int mbuf_length = (int) frame_length - ETHER_HDR_LEN - ETHER_CRC_LEN;
+        struct tcd_t *current = &jc->tcd_table [p];
+
+        m->m_len = mbuf_length;
+        m->m_pkthdr.len = mbuf_length;
+
+        current->NBYTES = data_length;
+        smsc9218i_flush_tcd(current);
+
+        last = current;
+        p = np;
+        np = (p + 1) % SMSC9218I_RX_JOBS;
+      } else {
+        smsc9218i_discard_frame(e, regs, status, frame_length, data_length);
+      }
+    } else {
+      break;
+    }
+  }
+
+  jc->produce = p;
+
+  if (last != NULL) {
+    volatile struct tcd_t *channel = e->edma_receive.edma_tcd;
+
+    /* Setup last TCD */
+    last->BMF.R = SMSC9218I_TCD_BMF_LAST;
+    smsc9218i_flush_tcd(last);
+    ppc_synchronize_data();
+
+    /* Start eDMA transfer */
+    channel->SADDR = first->SADDR;
+    channel->SDF.R = first->SDF.R;
+    channel->NBYTES = first->NBYTES;
+    channel->SLAST = first->SLAST;
+    channel->DADDR = first->DADDR;
+    channel->CDF.R = first->CDF.R;
+    channel->DLAST_SGA = first->DLAST_SGA;
+    channel->BMF.R = SMSC9218I_TCD_BMF_CLEAR;
+    channel->BMF.R = first->BMF.R;
+  }
+}
+
+static void smsc9218i_receive_dma_done(
+  edma_channel_context *ctx,
+  uint32_t error_status
+)
+{
+  rtems_status_code sc = RTEMS_SUCCESSFUL;
+  smsc9218i_driver_entry *e = &smsc9218i_driver_data;
+  smsc9218i_receive_job_control *jc = &smsc_rx_jc;
+
+  SMSC9218I_PRINTK(
+    "edma: id = 0x%08x, error status = 0x%08x\n",
+    channel_entry->id,
+    error_status
+  );
+
+  ++e->receive_dma_interrupts;
+  if (SMSC9218I_UNLIKELY(error_status != 0)) {
+    ++e->receive_dma_errors;
+  }
+
+  sc = rtems_bsdnet_event_send(e->receive_task, SMSC9218I_EVENT_DMA);
+  ASSERT_SC(sc);
+
+  jc->done = jc->produce;
+}
+
+static void smsc9218i_transmit_dma_done(
+  edma_channel_context *ctx,
+  uint32_t error_status
+)
+{
+  rtems_status_code sc = RTEMS_SUCCESSFUL;
+  smsc9218i_driver_entry *e = &smsc9218i_driver_data;
+  rtems_event_set event = error_status == 0 ?
+    SMSC9218I_EVENT_DMA : SMSC9218I_EVENT_DMA_ERROR;
+
+  SMSC9218I_PRINTK(
+    "edma: id = 0x%08x, error status = 0x%08x\n",
+    channel_entry->id,
+    error_status
+  );
+
+  ++e->transmit_dma_interrupts;
+
+  sc = rtems_bsdnet_event_send(e->transmit_task, event);
+  ASSERT_SC(sc);
+}
+
 static void smsc9218i_interrupt_handler(void *arg)
 {
+  rtems_status_code sc = RTEMS_SUCCESSFUL;
   smsc9218i_driver_entry *e = (smsc9218i_driver_entry *) arg;
   volatile smsc9218i_registers *const regs = smsc9218i;
-  rtems_event_set re = 0;
-  rtems_event_set te = 0;
   uint32_t int_en = regs->int_en;
   uint32_t int_sts = regs->int_sts & int_en;
   #ifdef DEBUG
@@ -435,36 +698,47 @@ static void smsc9218i_interrupt_handler(void *arg)
   /* Clear interrupts */
   regs->int_sts = int_sts;
 
+  /* Error interrupts */
+  if (SMSC9218I_UNLIKELY((int_sts & SMSC9218I_ERROR_INTERRUPTS) != 0)) {
+    if ((int_sts & SMSC9218I_INT_TXSO) != 0) {
+      ++e->transmit_status_overflows;
+    }
+    if ((int_sts & SMSC9218I_INT_RWT) != 0) {
+      ++e->receive_watchdog_timeouts;
+    }
+    if ((int_sts & SMSC9218I_INT_RXE) != 0) {
+      ++e->receiver_errors;
+    }
+    if ((int_sts & SMSC9218I_INT_TXE) != 0) {
+      ++e->transmitter_errors;
+    }
+  }
+
   /* Check receive interrupts */
-  if ((int_sts & SMSC9218I_INT_STS_RSFL) != 0) {
-    int_en &= ~SMSC9218I_INT_EN_RSFL;
-    re = SMSC9218I_EVENT_RX;
+  if ((int_sts & SMSC9218I_INT_RSFL) != 0) {
+    int_en &= ~SMSC9218I_INT_RSFL;
+    ++e->receive_interrupts;
+
+    sc = rtems_bsdnet_event_send(e->receive_task, SMSC9218I_EVENT_RX);
+    ASSERT_SC(sc);
   }
 
   /* Check PHY interrupts */
-  if ((int_sts & SMSC9218I_INT_STS_PHY) != 0) {
-    int_en &= ~SMSC9218I_INT_EN_PHY;
-    re |= SMSC9218I_EVENT_PHY;
-  }
-
-  /* Send events to receive task */
-  if (re != 0) {
-    SMSC9218I_PRINTK("interrupt: receive: 0x%08x\n", re);
-    ++e->receive_interrupts;
-    (void) rtems_event_send(e->receive_task, re);
+  if (SMSC9218I_UNLIKELY((int_sts & SMSC9218I_INT_PHY) != 0)) {
+    SMSC9218I_PRINTK("interrupt: phy\n");
+    int_en &= ~SMSC9218I_INT_PHY;
+    ++e->phy_interrupts;
+    sc = rtems_bsdnet_event_send(e->receive_task, SMSC9218I_EVENT_PHY);
+    ASSERT_SC(sc);
   }
 
   /* Check transmit interrupts */
-  if ((int_sts & SMSC9218I_INT_STS_TDFA) != 0) {
-    int_en &= ~SMSC9218I_INT_EN_TDFA;
-    te = SMSC9218I_EVENT_TX;
-  }
-
-  /* Send events to transmit task */
-  if (te != 0) {
-    SMSC9218I_PRINTK("interrupt: transmit: 0x%08x\n", te);
+  if ((int_sts & SMSC9218I_INT_TDFA) != 0) {
+    SMSC9218I_PRINTK("interrupt: transmit\n");
+    int_en &= ~SMSC9218I_INT_TDFA;
     ++e->transmit_interrupts;
-    (void) rtems_event_send(e->transmit_task, te);
+    sc = rtems_bsdnet_event_send(e->transmit_task, SMSC9218I_EVENT_TX);
+    ASSERT_SC(sc);
   }
 
   /* Update interrupt enable */
@@ -474,17 +748,6 @@ static void smsc9218i_interrupt_handler(void *arg)
   regs->irq_cfg = SMSC9218I_IRQ_CFG_GLOBAL_ENABLE;
 }
 
-static void smsc9218i_enable_receive_interrupts(
-  volatile smsc9218i_registers *regs
-)
-{
-  rtems_interrupt_level level;
-
-  rtems_interrupt_disable(level);
-  regs->int_en |= SMSC9218I_INT_EN_RSFL;
-  rtems_interrupt_enable(level);
-}
-
 static void smsc9218i_enable_transmit_interrupts(
   volatile smsc9218i_registers *regs
 )
@@ -492,7 +755,7 @@ static void smsc9218i_enable_transmit_interrupts(
   rtems_interrupt_level level;
 
   rtems_interrupt_disable(level);
-  regs->int_en |= SMSC9218I_INT_EN_TDFA;
+  regs->int_en |= SMSC9218I_INT_TDFA;
   rtems_interrupt_enable(level);
 }
 
@@ -503,65 +766,184 @@ static void smsc9218i_enable_phy_interrupts(
   rtems_interrupt_level level;
 
   rtems_interrupt_disable(level);
-  regs->int_en |= SMSC9218I_INT_EN_PHY;
+  regs->int_en |= SMSC9218I_INT_PHY;
   rtems_interrupt_enable(level);
 }
 
-static struct mbuf *smsc9218i_new_mbuf(struct ifnet *ifp, bool wait)
+static void smsc9218i_phy_clear_interrupts(
+  volatile smsc9218i_registers *regs
+)
 {
-  struct mbuf *m = NULL;
-  int mw = wait ? M_WAIT : M_DONTWAIT;
+  smsc9218i_phy_read(regs, SMSC9218I_PHY_ISR);
+}
 
-  MGETHDR(m, mw, MT_DATA);
-  if (m != NULL) {
-    MCLGET(m, mw);
-    if ((m->m_flags & M_EXT) != 0) {
-      /* Set receive interface */
-      m->m_pkthdr.rcvif = ifp;
+static bool smsc9218i_media_status(smsc9218i_driver_entry *e, int *media)
+{
+  struct ifnet *ifp = &e->arpcom.ac_if;
 
-      return m;
+  *media = IFM_MAKEWORD(0, 0, 0, SMSC9218I_MAC_MII_ACC_PHY_DEFAULT);
+
+  return (*ifp->if_ioctl)(ifp, SIOCGIFMEDIA, (caddr_t) media) == 0;
+}
+
+static void smsc9218i_media_status_change(
+  smsc9218i_driver_entry *e,
+  volatile smsc9218i_registers *regs
+)
+{
+  int media = 0;
+  bool media_ok = false;
+  uint32_t mac_cr = 0;
+
+  smsc9218i_phy_clear_interrupts(regs);
+  smsc9218i_enable_phy_interrupts(regs);
+
+  media_ok = smsc9218i_media_status(e, &media);
+  mac_cr = smsc9218i_mac_read(regs, SMSC9218I_MAC_CR, NULL);
+  if (media_ok && (IFM_OPTIONS(media) & IFM_FDX) == 0) {
+    mac_cr &= ~SMSC9218I_MAC_CR_FDPX;
+  } else {
+    mac_cr |= SMSC9218I_MAC_CR_FDPX;
+  }
+  smsc9218i_mac_write(regs, SMSC9218I_MAC_CR, mac_cr);
+}
+
+static bool smsc9218i_new_mbuf(
+  struct ifnet *ifp,
+  smsc9218i_receive_job_control *jc,
+  int i,
+  struct mbuf *old_m
+)
+{
+  bool ok = false;
+  int wait = old_m != NULL ? M_DONTWAIT : M_WAIT;
+  struct mbuf *new_m = m_gethdr(wait, MT_DATA);
+  struct tcd_t *tcd = &jc->tcd_table [i];
+  char *data = NULL;
+
+  if (new_m != NULL ) {
+    new_m->m_pkthdr.rcvif = ifp;
+    MCLGET(new_m, wait);
+
+    if ((new_m->m_flags & M_EXT) != 0) {
+      ok = true;
     } else {
-      m_freem(m);
+      m_free(new_m);
+      new_m = old_m;
     }
+  } else {
+    new_m = old_m;
   }
 
-  return NULL;
+  data = mtod(new_m, char *);
+  new_m->m_data = data + SMSC9218I_RX_DATA_OFFSET + ETHER_HDR_LEN;
+
+  jc->mbuf_table [i] = new_m;
+
+  tcd->DADDR = (uint32_t) data;
+  tcd->BMF.R = SMSC9218I_TCD_BMF_LINK;
+
+  /* FIXME: This is maybe a problem in case of a lot of small frames */
+  rtems_cache_invalidate_multiple_data_lines(
+    data,
+    SMSC9218I_RX_DATA_OFFSET + ETHER_HDR_LEN + ETHERMTU + ETHER_CRC_LEN
+  );
+
+  return ok;
+}
+
+static void smsc9218i_init_receive_jobs(
+  smsc9218i_driver_entry *e,
+  volatile smsc9218i_registers *regs,
+  volatile smsc9218i_registers *regs_dma,
+  smsc9218i_receive_job_control *jc
+)
+{
+  rtems_status_code sc = RTEMS_SUCCESSFUL;
+  struct ifnet *ifp = &e->arpcom.ac_if;
+  int i = 0;
+
+  /* Obtain receive eDMA channel */
+  sc = mpc55xx_edma_obtain_channel(
+    &e->edma_receive,
+    MPC55XX_INTC_DEFAULT_PRIORITY
+  );
+  ASSERT_SC(sc);
+
+  for (i = 0; i < SMSC9218I_RX_JOBS; ++i) {
+    struct tcd_t *tcd = &jc->tcd_table [i];
+    struct tcd_t *next_tcd = &jc->tcd_table [(i + 1) % SMSC9218I_RX_JOBS];
+
+    tcd->SADDR = (uint32_t) &regs_dma->rx_fifo_data;
+    tcd->SDF.B.SSIZE = 0x2;
+    tcd->SDF.B.DSIZE = 0x2;
+    tcd->CDF.B.CITER = 1;
+    tcd->CDF.B.DOFF = 4;
+    tcd->DLAST_SGA = (int32_t) next_tcd;
+
+    smsc9218i_new_mbuf(ifp, jc, i, NULL);
+  }
+}
+
+static void smsc9218i_ether_input(
+  smsc9218i_driver_entry *e,
+  volatile smsc9218i_registers *regs,
+  smsc9218i_receive_job_control *jc
+)
+{
+  rtems_interrupt_level level;
+  struct ifnet *ifp = &e->arpcom.ac_if;
+  int c = jc->consume;
+  int d = jc->done;
+
+  while (c != d) {
+    struct mbuf *m = jc->mbuf_table [c];
+    struct ether_header *eh = (struct ether_header *)
+      (mtod(m, char *) - ETHER_HDR_LEN);
+
+    ++e->received_frames;
+    if (smsc9218i_new_mbuf(ifp, jc, c, m)) {
+      ether_input(ifp, eh, m);
+    }
+
+    c = (c + 1) % SMSC9218I_RX_JOBS;
+  }
+
+  jc->consume = c;
+
+  rtems_interrupt_disable(level);
+  /* Enabling the receive interrupts while the DMA is active leads to chaos */
+  if (c == jc->produce) {
+    regs->int_en |= SMSC9218I_INT_RSFL;
+  }
+  rtems_interrupt_enable(level);
 }
 
 static void smsc9218i_receive_task(void *arg)
 {
   rtems_status_code sc = RTEMS_SUCCESSFUL;
-  rtems_event_set events = 0;
+  rtems_interrupt_level level;
+  smsc9218i_receive_job_control *jc = &smsc_rx_jc;
   smsc9218i_driver_entry *e = (smsc9218i_driver_entry *) arg;
-  struct ifnet *ifp = &e->arpcom.ac_if;
   volatile smsc9218i_registers *const regs = smsc9218i;
-  volatile struct tcd_t *tcd = &EDMA.TCD [e->edma_receive.channel];
-  struct tcd_t tcd_init = EDMA_TCD_DEFAULT;
+  volatile smsc9218i_registers *const regs_dma = smsc9218i_dma;
   uint32_t mac_cr = 0;
 
-  SMSC9218I_PRINTF("%s\n", __func__);
-
-  /* Obtain receive eDMA channel */
-  e->edma_receive.id = e->receive_task;
-  sc = mpc55xx_edma_obtain_channel(&e->edma_receive);
-  RTEMS_CLEANUP_SC(sc, cleanup, "obtain receive eDMA channel");
-
-  /* Setup receive eDMA channel */
-  tcd_init.SDF.B.SSIZE = 2;
-  tcd_init.SDF.B.DSIZE = 2;
-  tcd_init.SADDR = (uint32_t) &regs->rx_fifo_data;
-  *tcd = tcd_init;
+  smsc9218i_init_receive_jobs(e, regs, regs_dma, jc);
 
   /* Configure receiver */
   regs->rx_cfg = SMSC9218I_RX_CFG_END_ALIGN_4
     | SMSC9218I_RX_CFG_DOFF(SMSC9218I_RX_DATA_OFFSET);
 
   /* Enable MAC receiver */
-  mac_cr = smsc9218i_mac_read(regs, SMSC9218I_MAC_CR) | SMSC9218I_MAC_CR_RXEN;
+  mac_cr = smsc9218i_mac_read(regs, SMSC9218I_MAC_CR, NULL);
+  mac_cr |= SMSC9218I_MAC_CR_RXEN;
   smsc9218i_mac_write(regs, SMSC9218I_MAC_CR, mac_cr);
 
   /* Enable receive interrupts */
-  smsc9218i_enable_receive_interrupts(regs);
+  rtems_interrupt_disable(level);
+  regs->int_en |= SMSC9218I_INT_RSFL;
+  rtems_interrupt_enable(level);
 
   /* Enable PHY interrupts */
   smsc9218i_phy_write(
@@ -571,161 +953,29 @@ static void smsc9218i_receive_task(void *arg)
   );
   smsc9218i_enable_phy_interrupts(regs);
 
-  SMSC9218I_PRINTF(
-    "rx: phy_isr = 0x%08" PRIx32 ", phy_imr = 0x%08" PRIx32 "\n",
-    smsc9218i_phy_read(regs, SMSC9218I_PHY_ISR),
-    smsc9218i_phy_read(regs, SMSC9218I_PHY_IMR)
-  );
-
-  /* Main event loop */
   while (true) {
-    uint32_t rx_fifo_inf = 0;
-    uint32_t status_used = 0;
+    rtems_event_set events;
 
-    /* Wait for events */
     sc = rtems_bsdnet_event_receive(
-      SMSC9218I_EVENT_RX | SMSC9218I_EVENT_PHY,
+      SMSC9218I_EVENT_DMA | SMSC9218I_EVENT_PHY | SMSC9218I_EVENT_RX,
       RTEMS_EVENT_ANY | RTEMS_WAIT,
       RTEMS_NO_TIMEOUT,
       &events
     );
-    RTEMS_CLEANUP_SC(sc, cleanup, "wait for events");
+    ASSERT_SC(sc);
+
+    if ((events & (SMSC9218I_EVENT_RX | SMSC9218I_EVENT_DMA)) != 0) {
+      smsc9218i_setup_receive_dma(e, regs, jc);
+    }
+
+    if ((events & SMSC9218I_EVENT_DMA) != 0) {
+      smsc9218i_ether_input(e, regs, jc);
+    }
 
     if ((events & SMSC9218I_EVENT_PHY) != 0) {
-      uint32_t phy_isr = smsc9218i_phy_read(regs, SMSC9218I_PHY_ISR);
-
-      /* TODO */
-
-      printf("rx: PHY event: 0x%08" PRIx32 "\n", phy_isr);
-
-      smsc9218i_enable_phy_interrupts(regs);
+      smsc9218i_media_status_change(e, regs);
     }
-
-    rx_fifo_inf = regs->rx_fifo_inf;
-    status_used = SMSC9218I_RX_FIFO_INF_GET_SUSED(rx_fifo_inf);
-
-    SMSC9218I_PRINTF(
-      "rx: wake up: events = 0x%08" PRIx32 ", status used = %" PRIu32 "\n",
-      events,
-      status_used
-    );
-
-    while (status_used > 0) {
-      uint32_t rx_fifo_status = regs->rx_fifo_status;
-      uint32_t frame_length = SMSC9218I_RX_STS_GET_LENGTH(rx_fifo_status);
-      uint32_t data_length = frame_length + SMSC9218I_RX_DATA_OFFSET;
-      uint32_t data_misalign = data_length % 4;
-
-      /* Align data length on four byte boundary */
-      if (data_misalign > 0) {
-        data_length += 4 - data_misalign;
-      }
-
-      SMSC9218I_PRINTF(
-        "rx: status = 0x%08" PRIx32 ", frame length = %" PRIu32
-          ", data length = %" PRIu32 ", data used = %" PRIu32 "\n",
-        SMSC9218I_SWAP(rx_fifo_status),
-        frame_length,
-        data_length,
-        SMSC9218I_RX_FIFO_INF_GET_DUSED(rx_fifo_inf)
-      );
-
-      if ((rx_fifo_status & SMSC9218I_RX_STS_ERROR) == 0) {
-        struct mbuf *m = smsc9218i_new_mbuf(ifp, true);
-        struct ether_header *eh = (struct ether_header *)
-          (mtod(m, char *) + SMSC9218I_RX_DATA_OFFSET);
-        int mbuf_length = (int) frame_length - ETHER_HDR_LEN - ETHER_CRC_LEN;
-        char *data = mtod(m, char *);
-
-        /* Update mbuf */
-        m->m_len = mbuf_length;
-        m->m_pkthdr.len = mbuf_length;
-        m->m_data = data + ETHER_HDR_LEN + SMSC9218I_RX_DATA_OFFSET;
-
-        /* Invalidate data cache */
-        rtems_cache_invalidate_multiple_data_lines(data, data_length);
-
-        /* Start eDMA transfer */
-        tcd->DADDR = (uint32_t) data;
-        tcd->NBYTES = data_length;
-        tcd->CDF.R = SMSC9218I_EDMA_RX_TCD_CDF;
-        tcd->BMF.R = SMSC9218I_EDMA_RX_TCD_BMF;
-
-        /* Wait for eDMA events */
-        sc = rtems_bsdnet_event_receive(
-          SMSC9218I_EVENT_EDMA | SMSC9218I_EVENT_EDMA_ERROR,
-          RTEMS_EVENT_ANY | RTEMS_WAIT,
-          RTEMS_NO_TIMEOUT,
-          &events
-        );
-        RTEMS_CHECK_SC_TASK(sc, "wait for eDMA events");
-
-        if ((events & SMSC9218I_EVENT_EDMA_ERROR) == 0) {
-          /* Hand over */
-          ether_input(ifp, eh, m);
-
-          /* Increment received frames counter */
-          ++e->received_frames;
-        } else {
-          /* Increment receive eDMA error counter */
-          ++e->receive_edma_errors;
-        }
-
-        SMSC9218I_PRINTF("rx: eDMA done\n");
-      } else {
-        SMSC9218I_PRINTF("rx: error\n");
-
-        /* Update error counters */
-        if ((rx_fifo_status & SMSC9218I_RX_STS_ERROR_TOO_LONG) != 0) {
-          ++e->receive_too_long_errors;
-        }
-        if ((rx_fifo_status & SMSC9218I_RX_STS_ERROR_COLLISION) != 0) {
-          ++e->receive_collision_errors;
-        }
-        if ((rx_fifo_status & SMSC9218I_RX_STS_ERROR_CRC) != 0) {
-          ++e->receive_crc_errors;
-        }
-
-        /* Discard frame */
-        if (frame_length > 16) {
-          /* Fast forward */
-          regs->rx_dp_ctl = SMSC9218I_RX_DP_CTRL_FFWD;
-
-          while ((regs->rx_dp_ctl & SMSC9218I_RX_DP_CTRL_FFWD) != 0) {
-            /* Wait */
-          }
-        } else {
-          uint32_t len = data_length / 4;
-          uint32_t i = 0;
-
-          /* Discard data */
-          for (i = 0; i < len; ++i) {
-            regs->rx_fifo_data;
-          }
-        }
-      }
-
-      /* Clear FIFO level status */
-      regs->int_sts = SMSC9218I_INT_STS_RSFL;
-
-      /* Next FIFO status */
-      rx_fifo_inf = regs->rx_fifo_inf;
-      status_used = SMSC9218I_RX_FIFO_INF_GET_SUSED(rx_fifo_inf);
-    }
-
-    SMSC9218I_PRINTF("rx: done\n");
-
-    /* Nothing to do, enable receive interrupts */
-    smsc9218i_enable_receive_interrupts(regs);
   }
-
-cleanup:
-
-  /* Release network semaphore */
-  rtems_bsdnet_semaphore_release();
-
-  /* Terminate self */
-  (void) rtems_task_delete(RTEMS_SELF);
 }
 
 #if defined(DEBUG)
@@ -735,8 +985,8 @@ static void smsc9218i_transmit_job_dump(
 )
 {
   char out [SMSC9218I_TX_JOBS + 1];
-  unsigned c = 0;
-  unsigned s = 0;
+  int c = 0;
+  int s = 0;
 
   out [SMSC9218I_TX_JOBS] = '\0';
 
@@ -747,11 +997,7 @@ static void smsc9218i_transmit_job_dump(
   while (s > 0) {
     out [c] = 'E';
     --s;
-    if (c < SMSC9218I_TX_JOBS_MAX) {
-      ++c;
-    } else {
-      c = 0;
-    }
+    c = (c + 1) % SMSC9218I_TX_JOBS;
   }
 
   c = jc->transfer_index;
@@ -759,11 +1005,7 @@ static void smsc9218i_transmit_job_dump(
   while (s > 0) {
     out [c] = 'T';
     --s;
-    if (c < SMSC9218I_TX_JOBS_MAX) {
-      ++c;
-    } else {
-      c = 0;
-    }
+    c = (c + 1) % SMSC9218I_TX_JOBS;
   }
 
   c = jc->empty_index;
@@ -771,11 +1013,7 @@ static void smsc9218i_transmit_job_dump(
   while (s > 0) {
     out [c] = 'D';
     --s;
-    if (c < SMSC9218I_TX_JOBS_MAX) {
-      ++c;
-    } else {
-      c = 0;
-    }
+    c = (c + 1) % SMSC9218I_TX_JOBS;
   }
 
   printf(
@@ -788,6 +1026,35 @@ static void smsc9218i_transmit_job_dump(
   );
 }
 #endif /* defined(DEBUG) */
+
+static struct mbuf *smsc9218i_compact_frame(
+  smsc9218i_transmit_job_control *jc,
+  uint32_t frame_length
+)
+{
+  struct mbuf *old_m = jc->frame;
+  struct mbuf *new_m = m_gethdr(M_WAIT, MT_DATA);
+  char *data = NULL;
+
+  ++jc->frame_compact_count;
+
+  MCLGET(new_m, M_WAIT);
+  data = mtod(new_m, char *);
+
+  new_m->m_len = (int) frame_length;
+  new_m->m_pkthdr.len = (int) frame_length;
+
+  while (old_m != NULL) {
+    size_t len = (size_t) old_m->m_len;
+    memcpy(data, mtod(old_m, void *), len);
+    data += len;
+    old_m = m_free(old_m);
+  }
+
+  jc->frame = new_m;
+
+  return new_m;
+}
 
 static struct mbuf *smsc9218i_next_transmit_fragment(
   struct ifnet *ifp,
@@ -811,6 +1078,7 @@ static struct mbuf *smsc9218i_next_transmit_fragment(
       struct mbuf *p = NULL;
       uint32_t frame_length = 0;
       unsigned fragments = 0;
+      bool tiny = false;
 
       /* Calculate frame length and fragment number */
       do {
@@ -819,10 +1087,7 @@ static struct mbuf *smsc9218i_next_transmit_fragment(
         if (len > 0) {
           ++fragments;
           frame_length += (uint32_t) len;
-
-          if (len < 4) {
-            printf("FIXME\n");
-          }
+          tiny = tiny || len < 4;
 
           /* Next fragment */
           p = n;
@@ -840,8 +1105,9 @@ static struct mbuf *smsc9218i_next_transmit_fragment(
         }
       } while (n != NULL);
 
-      if (fragments > SMSC9218I_TX_FRAGMENT_MAX) {
-        printf("FIXME\n");
+      if (SMSC9218I_UNLIKELY(tiny || fragments > SMSC9218I_TX_JOBS)) {
+        fragments = 1;
+        m = smsc9218i_compact_frame(jc, frame_length);
       }
 
       /* Set frame length */
@@ -854,13 +1120,13 @@ static struct mbuf *smsc9218i_next_transmit_fragment(
       ++jc->tag;
 
       /* Command B */
-      jc->command_b = SMSC9218I_TX_B_TAG(jc->tag)
+      jc->command_b = ((uint32_t) SMSC9218I_TX_B_TAG(jc->tag))
         | SMSC9218I_TX_B_FRAME_LENGTH(jc->frame_length);
 
       SMSC9218I_PRINTF(
-        "tx: next frame: tag = %u, frame length = %" PRIu32
+        "tx: next frame: tag = %i, frame length = %" PRIu32
           ", fragments = %u\n",
-        (unsigned) jc->tag,
+        jc->tag,
         frame_length,
         fragments
       );
@@ -887,11 +1153,11 @@ static void smsc9218i_transmit_create_jobs(
   struct ifnet *ifp
 )
 {
-  unsigned n = jc->empty;
+  int n = jc->empty;
 
   if (n > 0) {
-    unsigned c = jc->todo_index;
-    unsigned i = 0;
+    int c = jc->todo_index;
+    int i = 0;
 
     #ifdef DEBUG
       smsc9218i_transmit_job_dump(jc, "create");
@@ -920,8 +1186,6 @@ static void smsc9218i_transmit_create_jobs(
           data_length
         );
 
-        asm volatile ( "sync");
-
         /* Remember fragement */
         jc->fragment_table [c] = m;
 
@@ -943,11 +1207,7 @@ static void smsc9218i_transmit_create_jobs(
         break;
       }
 
-      if (c < SMSC9218I_TX_JOBS_MAX) {
-        ++c;
-      } else {
-        c = 0;
-      }
+      c = (c + 1) % SMSC9218I_TX_JOBS;
     }
 
     /* Increment jobs to do */
@@ -977,11 +1237,10 @@ static void smsc9218i_transmit_do_jobs(
   if (jc->transfer == 0) {
     uint32_t tx_fifo_inf = regs->tx_fifo_inf;
     uint32_t data_free = SMSC9218I_TX_FIFO_INF_GET_FREE(tx_fifo_inf);
-    unsigned c = jc->transfer_index;
-    unsigned last_index = c;
-    unsigned i = 0;
-    unsigned n = jc->todo;
-    struct tcd_t *p = NULL;
+    int c = jc->transfer_index;
+    int last_index = c;
+    int i = 0;
+    int n = jc->todo;
 
     #ifdef DEBUG
       smsc9218i_transmit_job_dump(jc, "transfer");
@@ -989,7 +1248,7 @@ static void smsc9218i_transmit_do_jobs(
 
     for (i = 0; i < n; ++i) {
       struct tcd_t *tcd = &jc->data_tcd_table [c];
-      uint32_t data_length = tcd->NBYTES;
+      uint32_t data_length = tcd->NBYTES + 14;
 
       if (data_length <= data_free) {
         /* Reduce free FIFO space */
@@ -998,24 +1257,17 @@ static void smsc9218i_transmit_do_jobs(
         /* Index of last TCD */
         last_index = c;
 
-        /* Cache flush for previous data TCD */
-        if (p != NULL) {
-          rtems_cache_flush_multiple_data_lines(p, sizeof(*p));
-        }
+        /* Cache flush for data TCD */
+        smsc9218i_flush_tcd(tcd);
       } else {
         break;
       }
 
-      p = tcd;
-      if (c < SMSC9218I_TX_JOBS_MAX) {
-        ++c;
-      } else {
-        c = 0;
-      }
+      c = (c + 1) % SMSC9218I_TX_JOBS;
     }
 
     if (i > 0) {
-      volatile struct tcd_t *channel = &EDMA.TCD [e->edma_transmit.channel];
+      volatile struct tcd_t *channel = e->edma_transmit.edma_tcd;
       struct tcd_t *start = &jc->command_tcd_table [jc->transfer_index];
       struct tcd_t *last = &jc->data_tcd_table [last_index];
 
@@ -1038,10 +1290,9 @@ static void smsc9218i_transmit_do_jobs(
       );
 
       /* Enable interrupt for last data TCD */
-      last->BMF.R = SMSC9218I_EDMA_TX_TCD_BMF_INTERRUPT;
-
-      /* Cache flush for last data TCD */
-      rtems_cache_flush_multiple_data_lines(last, sizeof(*last));
+      last->BMF.R = SMSC9218I_TCD_BMF_LAST;
+      smsc9218i_flush_tcd(last);
+      ppc_synchronize_data();
 
       /* Start eDMA transfer */
       channel->SADDR = start->SADDR;
@@ -1051,7 +1302,7 @@ static void smsc9218i_transmit_do_jobs(
       channel->DADDR = start->DADDR;
       channel->CDF.R = start->CDF.R;
       channel->DLAST_SGA = start->DLAST_SGA;
-      channel->BMF.R = SMSC9218I_EDMA_TX_TCD_BMF_CLEAR;
+      channel->BMF.R = SMSC9218I_TCD_BMF_CLEAR;
       channel->BMF.R = start->BMF.R;
 
       /* Transmit task may wait for events */
@@ -1080,7 +1331,7 @@ static void smsc9218i_transmit_finish_jobs(
   uint32_t tx_fifo_inf = regs->tx_fifo_inf;
   uint32_t status_used = SMSC9218I_TX_FIFO_INF_GET_SUSED(tx_fifo_inf);
   uint32_t s = 0;
-  unsigned n = jc->transfer;
+  int n = jc->transfer;
 
   for (s = 0; s < status_used; ++s) {
     uint32_t tx_fifo_status = regs->tx_fifo_status;
@@ -1088,7 +1339,7 @@ static void smsc9218i_transmit_finish_jobs(
     if ((tx_fifo_status & SMSC9218I_TX_STS_ERROR) == 0) {
       ++e->transmitted_frames;
     } else {
-      ++e->transmit_errors;
+      ++e->transmit_frame_errors;
     }
 
     SMSC9218I_PRINTF(
@@ -1099,33 +1350,29 @@ static void smsc9218i_transmit_finish_jobs(
   }
 
   if (
-    (events & (SMSC9218I_EVENT_EDMA | SMSC9218I_EVENT_EDMA_ERROR)) != 0
+    (events & (SMSC9218I_EVENT_DMA | SMSC9218I_EVENT_DMA_ERROR)) != 0
       && n > 0
   ) {
-    unsigned c = jc->empty_index;
-    unsigned i = 0;
+    int c = jc->empty_index;
+    int i = 0;
 
     #ifdef DEBUG
       smsc9218i_transmit_job_dump(jc, "finish");
     #endif
 
-    if ((events & SMSC9218I_EVENT_EDMA_ERROR) != 0) {
-      ++e->transmit_edma_errors;
+    if ((events & SMSC9218I_EVENT_DMA_ERROR) != 0) {
+      ++e->transmit_dma_errors;
     }
 
     /* Restore last data TCD */
     jc->data_tcd_table [jc->transfer_last_index].BMF.R =
-      SMSC9218I_EDMA_TX_TCD_BMF_LINK;
+      SMSC9218I_TCD_BMF_LINK;
 
     for (i = 0; i < n; ++i) {
       /* Free fragment buffer */
       m_free(jc->fragment_table [c]);
 
-      if (c < SMSC9218I_TX_JOBS_MAX) {
-        ++c;
-      } else {
-        c = 0;
-      }
+      c = (c + 1) % SMSC9218I_TX_JOBS;
     }
 
     /* Increment empty count */
@@ -1147,7 +1394,7 @@ static void smsc9218i_transmit_finish_jobs(
 }
 
 /* FIXME */
-static smsc9218i_transmit_job_control smsc_jc  __attribute__ ((aligned (32))) = {
+static smsc9218i_transmit_job_control smsc_tx_jc __attribute__((aligned (32))) = {
   .frame = NULL,
   .next_fragment = NULL,
   .frame_length = 0,
@@ -1169,20 +1416,23 @@ static void smsc9218i_transmit_task(void *arg)
   smsc9218i_driver_entry *e = (smsc9218i_driver_entry *) arg;
   struct ifnet *ifp = &e->arpcom.ac_if;
   volatile smsc9218i_registers *const regs = smsc9218i;
+  volatile smsc9218i_registers *const regs_dma = smsc9218i_dma;
   uint32_t mac_cr = 0;
-  smsc9218i_transmit_job_control *jc = &smsc_jc;
+  smsc9218i_transmit_job_control *jc = &smsc_tx_jc;
   unsigned i = 0;
 
   SMSC9218I_PRINTF("%s\n", __func__);
 
   /* Obtain transmit eDMA channel */
-  e->edma_transmit.id = e->transmit_task;
-  sc = mpc55xx_edma_obtain_channel(&e->edma_transmit);
-  RTEMS_CLEANUP_SC(sc, cleanup, "obtain transmit eDMA channel");
+  sc = mpc55xx_edma_obtain_channel(
+    &e->edma_transmit,
+    MPC55XX_INTC_DEFAULT_PRIORITY
+  );
+  ASSERT_SC(sc);
 
   /* Setup transmit eDMA descriptors */
   for (i = 0; i < SMSC9218I_TX_JOBS; ++i) {
-    unsigned ii = i < SMSC9218I_TX_JOBS_MAX ? i + 1 : 0;
+    unsigned ii = (i + 1) % SMSC9218I_TX_JOBS;
     struct tcd_t tcd = EDMA_TCD_DEFAULT;
     struct tcd_t *command_tcd = &jc->command_tcd_table [i];
     struct tcd_t *data_tcd = &jc->data_tcd_table [i];
@@ -1192,15 +1442,16 @@ static void smsc9218i_transmit_task(void *arg)
     tcd.SDF.B.SOFF = 4;
     tcd.SDF.B.DSIZE = 2;
     tcd.CDF.B.CITER = 1;
-    tcd.BMF.R = SMSC9218I_EDMA_TX_TCD_BMF_LINK;
-    tcd.DADDR = (uint32_t) &regs->tx_fifo_data;
+    tcd.BMF.R = SMSC9218I_TCD_BMF_LINK;
 
-    tcd.DLAST_SGA = (uint32_t) next_command_tcd;
+    tcd.DADDR = (uint32_t) &regs_dma->tx_fifo_data;
+    tcd.DLAST_SGA = (int32_t) next_command_tcd;
     *data_tcd = tcd;
 
+    tcd.DADDR = (uint32_t) &regs->tx_fifo_data;
     tcd.SADDR = (uint32_t) &jc->command_table [i].a;
     tcd.NBYTES = 8;
-    tcd.DLAST_SGA = (uint32_t) data_tcd;
+    tcd.DLAST_SGA = (int32_t) data_tcd;
     *command_tcd = tcd;
   }
 
@@ -1217,7 +1468,7 @@ static void smsc9218i_transmit_task(void *arg)
   regs->tx_cfg = SMSC9218I_TX_CFG_SAO | SMSC9218I_TX_CFG_ON;
 
   /* Enable MAC transmitter */
-  mac_cr = smsc9218i_mac_read(regs, SMSC9218I_MAC_CR) | SMSC9218I_MAC_CR_TXEN;
+  mac_cr = smsc9218i_mac_read(regs, SMSC9218I_MAC_CR, NULL) | SMSC9218I_MAC_CR_TXEN;
   smsc9218i_mac_write(regs, SMSC9218I_MAC_CR, mac_cr);
 
   /* Main event loop */
@@ -1226,13 +1477,13 @@ static void smsc9218i_transmit_task(void *arg)
     sc = rtems_bsdnet_event_receive(
       SMSC9218I_EVENT_TX
         | SMSC9218I_EVENT_TX_START
-        | SMSC9218I_EVENT_EDMA
-        | SMSC9218I_EVENT_EDMA_ERROR,
+        | SMSC9218I_EVENT_DMA
+        | SMSC9218I_EVENT_DMA_ERROR,
       RTEMS_EVENT_ANY | RTEMS_WAIT,
       RTEMS_NO_TIMEOUT,
       &events
     );
-    RTEMS_CLEANUP_SC(sc, cleanup, "wait for events");
+    ASSERT_SC(sc);
 
     SMSC9218I_PRINTF("tx: wake up: events = 0x%08" PRIx32 "\n", events);
 
@@ -1245,8 +1496,6 @@ static void smsc9218i_transmit_task(void *arg)
 
     SMSC9218I_PRINTF("tx: done\n");
   }
-
-cleanup:
 
   /* Release network semaphore */
   rtems_bsdnet_semaphore_release();
@@ -1296,46 +1545,119 @@ static void smsc9218i_test_macros(void)
 }
 #endif
 
-static void smsc9218i_set_mac_address(
-  volatile smsc9218i_registers *regs,
-  unsigned char address [6]
+static bool smsc9218i_wait_for_eeprom_access(
+  volatile smsc9218i_registers *regs
 )
 {
-  smsc9218i_mac_write(
+  rtems_interval start = smsc9218i_timeout_init();
+  bool busy;
+
+  while (
+    (busy = (regs->e2p_cmd & SMSC9218I_E2P_CMD_EPC_BUSY) != 0)
+      && smsc9218i_timeout_not_expired(start)
+  ) {
+    /* Wait */
+  }
+
+  return !busy;
+}
+
+static bool smsc9218i_get_mac_address(
+  volatile smsc9218i_registers *regs,
+  uint8_t address [6]
+)
+{
+  bool ok = false;
+
+  uint32_t low = smsc9218i_mac_read(regs, SMSC9218I_MAC_ADDRL, &ok);
+  address [0] = (uint8_t) low;
+  address [1] = (uint8_t) (low >> 8) & 0xff;
+  address [2] = (uint8_t) (low >> 16);
+  address [3] = (uint8_t) (low >> 24);
+
+  if (ok) {
+    uint32_t high = smsc9218i_mac_read(regs, SMSC9218I_MAC_ADDRH, &ok);
+    address [4] = (uint8_t) high;
+    address [5] = (uint8_t) (high >> 8);
+  }
+
+  return ok;
+}
+
+static bool smsc9218i_set_mac_address(
+  volatile smsc9218i_registers *regs,
+  const uint8_t address [6]
+)
+{
+  bool ok = smsc9218i_mac_write(
     regs,
     SMSC9218I_MAC_ADDRL,
     ((uint32_t) address [3] << 24) | ((uint32_t) address [2] << 16)
       | ((uint32_t) address [1] << 8) | (uint32_t) address [0]
   );
-  smsc9218i_mac_write(
-    regs,
-    SMSC9218I_MAC_ADDRH,
-    ((uint32_t) address [5] << 8) | (uint32_t) address [4]
-  );
+
+  if (ok) {
+    ok = smsc9218i_mac_write(
+      regs,
+      SMSC9218I_MAC_ADDRH,
+      ((uint32_t) address [5] << 8) | (uint32_t) address [4]
+    );
+  }
+
+  return ok;
 }
 
+/* Sometimes the write of the MAC address was not reliable */
+static bool smsc9218i_set_and_verify_mac_address(
+  volatile smsc9218i_registers *regs,
+  const uint8_t address [6]
+)
+{
+  bool ok = true;
+  int i;
+
+  for (i = 0; ok && i < 3; ++i) {
+    ok = smsc9218i_set_mac_address(regs, address);
+
+    if (ok) {
+      uint8_t actual_address [6];
+
+      ok = smsc9218i_get_mac_address(regs, actual_address)
+        && memcmp(address, actual_address, sizeof(actual_address)) == 0;
+    }
+  }
+
+  return ok;
+}
+
+#if defined(DEBUG)
 static void smsc9218i_mac_address_dump(volatile smsc9218i_registers *regs)
 {
-  uint32_t low = smsc9218i_mac_read(regs, SMSC9218I_MAC_ADDRL);
-  uint32_t high = smsc9218i_mac_read(regs, SMSC9218I_MAC_ADDRH);
+  uint8_t mac_address [6];
+  bool ok = smsc9218i_get_mac_address(regs, mac_address);
 
-  printf(
-    "MAC address: %02" PRIx32 ":%02" PRIx32 ":%02" PRIx32
-      ":%02" PRIx32 ":%02" PRIx32 ":%02" PRIx32 "\n",
-    low & 0xff,
-    (low >> 8) & 0xff,
-    (low >> 16) & 0xff,
-    (low >> 24) & 0xff,
-    high & 0xff,
-    (high >> 8) & 0xff
-  );
+  if (ok) {
+    printf(
+      "MAC address: %02x:%02x:%02x:%02x:%02x:%02x\n",
+      mac_address [0],
+      mac_address [1],
+      mac_address [2],
+      mac_address [3],
+      mac_address [4],
+      mac_address [5]
+    );
+  } else {
+    printf("cannot read MAC address\n");
+  }
 }
+#endif
 
 static void smsc9218i_interrupt_init(
   smsc9218i_driver_entry *e,
   volatile smsc9218i_registers *regs
 )
 {
+#ifdef SMSC9218I_IRQ_PIN
   rtems_status_code sc = RTEMS_SUCCESSFUL;
   union SIU_PCR_tag pcr = MPC55XX_ZERO_FLAGS;
   union SIU_DIRER_tag direr = MPC55XX_ZERO_FLAGS;
@@ -1350,18 +1672,22 @@ static void smsc9218i_interrupt_init(
   pcr.B.PA = 2;
   pcr.B.OBE = 0;
   pcr.B.IBE = 1;
+#if MPC55XX_CHIP_FAMILY != 551
   pcr.B.DSC = 0;
+#endif
   pcr.B.ODE = 0;
   pcr.B.HYS = 0;
-  pcr.B.SRC = 3;
+  pcr.B.SRC = 0;
   pcr.B.WPE = 0;
   pcr.B.WPS = 1;
-  SIU.PCR [193].R = pcr.R;
+  SIU.PCR [SMSC9218I_IRQ_PIN].R = pcr.R;
 
   /* DMA/Interrupt Request Select */
   rtems_interrupt_disable(level);
   dirsr.R = SIU.DIRSR.R;
+#if MPC55XX_CHIP_FAMILY != 551
   dirsr.B.DIRS0 = 0;
+#endif
   SIU.DIRSR.R = dirsr.R;
   rtems_interrupt_enable(level);
 
@@ -1411,19 +1737,26 @@ static void smsc9218i_interrupt_init(
     smsc9218i_interrupt_handler,
     e
   );
-  RTEMS_SYSLOG_ERROR_SC(sc, "install interrupt handler\n");
+  ASSERT_SC(sc);
 
   /* Enable interrupts and use push-pull driver (active low) */
   regs->irq_cfg = SMSC9218I_IRQ_CFG_GLOBAL_ENABLE;
+
+  /* Enable error interrupts */
+  regs->int_en = SMSC9218I_ERROR_INTERRUPTS;
+#endif
 }
 
 static void smsc9218i_reset_signal(bool signal)
 {
-  SIU.GPDO [186].R = signal ? 1 : 0;
+#ifdef SMSC9218I_RESET_PIN
+  SIU.GPDO [SMSC9218I_RESET_PIN].R = signal ? 1 : 0;
+#endif
 }
 
 static void smsc9218i_reset_signal_init(void)
 {
+#ifdef SMSC9218I_RESET_PIN
   union SIU_PCR_tag pcr = MPC55XX_ZERO_FLAGS;
 
   smsc9218i_reset_signal(true);
@@ -1431,14 +1764,37 @@ static void smsc9218i_reset_signal_init(void)
   pcr.B.PA = 0;
   pcr.B.OBE = 1;
   pcr.B.IBE = 0;
+#if MPC55XX_CHIP_FAMILY != 551
   pcr.B.DSC = 0;
+#endif
   pcr.B.ODE = 0;
   pcr.B.HYS = 0;
-  pcr.B.SRC = 3;
+  pcr.B.SRC = 0;
   pcr.B.WPE = 1;
   pcr.B.WPS = 1;
 
-  SIU.PCR [186].R = pcr.R;
+  SIU.PCR [SMSC9218I_RESET_PIN].R = pcr.R;
+#endif
+}
+
+static bool smsc9218i_hardware_reset(volatile smsc9218i_registers *regs)
+{
+  rtems_interval start = smsc9218i_timeout_init();
+  bool not_ready;
+
+  smsc9218i_reset_signal_init();
+  smsc9218i_reset_signal(false);
+  rtems_bsp_delay(200);
+  smsc9218i_reset_signal(true);
+
+  while (
+    (not_ready = (regs->pmt_ctrl & SMSC9218I_PMT_CTRL_READY) == 0)
+      && smsc9218i_timeout_not_expired(start)
+  ) {
+    /* Wait */
+  }
+
+  return !not_ready;
 }
 
 static void smsc9218i_interface_init(void *arg)
@@ -1446,91 +1802,203 @@ static void smsc9218i_interface_init(void *arg)
   smsc9218i_driver_entry *e = (smsc9218i_driver_entry *) arg;
   struct ifnet *ifp = &e->arpcom.ac_if;
   volatile smsc9218i_registers *const regs = smsc9218i;
+  bool ok = true;
 
   SMSC9218I_PRINTF("%s\n", __func__);
 
   if (e->state == SMSC9218I_CONFIGURED) {
-    /* Hardware reset */
-    smsc9218i_reset_signal_init();
-    smsc9218i_reset_signal(false);
-    rtems_bsp_delay(200);
-    smsc9218i_reset_signal(true);
+    ok = smsc9218i_hardware_reset(regs);
+    if (ok) {
+      e->state = SMSC9218I_NOT_INITIALIZED;
+    }
+  }
 
+  if (e->state == SMSC9218I_NOT_INITIALIZED) {
 #if defined(DEBUG)
-    /* Register dump */
     smsc9218i_register_dump(regs);
 #endif
 
     /* Set hardware configuration */
     regs->hw_cfg = SMSC9218I_HW_CFG_MBO | SMSC9218I_HW_CFG_TX_FIF_SZ(5);
 
-    /* MAC address */
-    smsc9218i_set_mac_address(regs, e->arpcom.ac_enaddr);
-    smsc9218i_mac_address_dump(regs);
+    ok = smsc9218i_wait_for_eeprom_access(regs);
 
-    /* Initialize interrupts */
-    smsc9218i_interrupt_init(e, regs);
+    if (ok) {
+      ok = smsc9218i_set_and_verify_mac_address(regs, e->arpcom.ac_enaddr);
 
-    /* Set MAC control */
-    smsc9218i_mac_write(regs, SMSC9218I_MAC_CR, SMSC9218I_MAC_CR_FDPX);
+      if (ok) {
+#if defined(DEBUG)
+        smsc9218i_mac_address_dump(regs);
+#endif
 
-    /* Set FIFO interrupts */
-    regs->fifo_int = SMSC9218I_FIFO_INT_TDAL(32);
+        /* Auto-negotiation advertisment */
+        ok = smsc9218i_phy_write(
+          regs,
+          MII_ANAR,
+          ANAR_TX_FD | ANAR_TX | ANAR_10_FD | ANAR_10 | ANAR_CSMA
+        );
 
-    /* Start receive task */
-    if (e->receive_task == RTEMS_ID_NONE) {
-      e->receive_task = rtems_bsdnet_newproc(
-        "ntrx",
-        4096,
-        smsc9218i_receive_task,
-        e
-      );
-    }
+        if (ok) {
+#ifdef SMSC9218I_ENABLE_LED_OUTPUTS
+          regs->gpio_cfg = SMSC9218I_HW_CFG_LED_1
+            | SMSC9218I_HW_CFG_LED_2
+            | SMSC9218I_HW_CFG_LED_3;
+#endif
 
-    /* Start transmit task */
-    if (e->transmit_task == RTEMS_ID_NONE) {
-      e->transmit_task = rtems_bsdnet_newproc(
-        "nttx",
-        4096,
-        smsc9218i_transmit_task,
-        e
-      );
-    }
+          smsc9218i_interrupt_init(e, regs);
 
-    /* Change state */
-    if (e->receive_task != RTEMS_ID_NONE
-      && e->transmit_task != RTEMS_ID_NONE) {
-      e->state = SMSC9218I_STARTED;
+          /* Set MAC control */
+          ok = smsc9218i_mac_write(regs, SMSC9218I_MAC_CR, SMSC9218I_MAC_CR_FDPX);
+          if (ok) {
+            /* Set FIFO interrupts */
+            regs->fifo_int = SMSC9218I_FIFO_INT_TDAL(32);
+
+            /* Clear receive drop counter */
+            regs->rx_drop;
+
+            /* Start receive task */
+            if (e->receive_task == RTEMS_ID_NONE) {
+              e->receive_task = rtems_bsdnet_newproc(
+                "ntrx",
+                4096,
+                smsc9218i_receive_task,
+                e
+              );
+            }
+
+            /* Start transmit task */
+            if (e->transmit_task == RTEMS_ID_NONE) {
+              e->transmit_task = rtems_bsdnet_newproc(
+                "nttx",
+                4096,
+                smsc9218i_transmit_task,
+                e
+              );
+            }
+
+            /* Change state */
+            if (e->receive_task != RTEMS_ID_NONE
+              && e->transmit_task != RTEMS_ID_NONE) {
+              e->state = SMSC9218I_STARTED;
+            }
+          }
+        }
+      }
     }
   }
 
   if (e->state == SMSC9218I_STARTED) {
     /* Enable promiscous mode */
-    smsc9218i_enable_promiscous_mode(
+    ok = smsc9218i_enable_promiscous_mode(
       regs,
       (ifp->if_flags & IFF_PROMISC) != 0
     );
 
-    /* Set interface to running state */
-    ifp->if_flags |= IFF_RUNNING;
+    if (ok) {
+      /* Set interface to running state */
+      ifp->if_flags |= IFF_RUNNING;
 
-    /* Change state */
-    e->state = SMSC9218I_RUNNING;
+      /* Change state */
+      e->state = SMSC9218I_RUNNING;
+    }
   }
 }
 
-static void smsc9218i_interface_stats(const smsc9218i_driver_entry *e)
+static int smsc9218i_mdio_read(
+  int phy,
+  void *arg,
+  unsigned phy_reg,
+  uint32_t *val
+)
 {
-  printf("received frames:          %u\n", e->received_frames);
-  printf("receive interrupts:       %u\n", e->receive_interrupts);
-  printf("transmitted frames:       %u\n", e->transmitted_frames);
-  printf("transmit interrupts:      %u\n", e->transmit_interrupts);
-  printf("receive to long errors:   %u\n", e->receive_too_long_errors);
-  printf("receive collision errors: %u\n", e->receive_collision_errors);
-  printf("receive CRC errors:       %u\n", e->receive_crc_errors);
-  printf("receive eDMA errors:      %u\n", e->receive_edma_errors);
-  printf("transmit errors:          %u\n", e->transmit_errors);
-  printf("transmit eDMA errors:     %u\n", e->transmit_edma_errors);
+  volatile smsc9218i_registers *const regs = smsc9218i;
+
+  *val = smsc9218i_phy_read(regs, phy_reg);
+
+  return 0;
+}
+
+static int smsc9218i_mdio_write(
+  int phy,
+  void *arg,
+  unsigned phy_reg,
+  uint32_t data
+)
+{
+  volatile smsc9218i_registers *const regs = smsc9218i;
+
+  smsc9218i_phy_write(regs, phy_reg, data);
+
+  return 0;
+}
+
+static void smsc9218i_interface_stats(smsc9218i_driver_entry *e)
+{
+  volatile smsc9218i_registers *const regs = smsc9218i;
+  smsc9218i_transmit_job_control *jc = &smsc_tx_jc;
+  int media = 0;
+  bool media_ok = smsc9218i_media_status(e, &media);
+
+  if (media_ok) {
+    rtems_ifmedia2str(media, NULL, 0);
+    printf ("\n");
+  } else {
+    printf ("PHY communication error\n");
+  }
+
+  e->receive_drop += SMSC9218I_SWAP(regs->rx_drop);
+
+  printf("PHY interrupts:            %u\n", e->phy_interrupts);
+  printf("received frames:           %u\n", e->received_frames);
+  printf("receiver errors:           %u\n", e->receiver_errors);
+  printf("receive interrupts:        %u\n", e->receive_interrupts);
+  printf("receive DMA interrupts:    %u\n", e->receive_dma_interrupts);
+  printf("receive to long errors:    %u\n", e->receive_too_long_errors);
+  printf("receive collision errors:  %u\n", e->receive_collision_errors);
+  printf("receive CRC errors:        %u\n", e->receive_crc_errors);
+  printf("receive DMA errors:        %u\n", e->receive_dma_errors);
+  printf("receive drops:             %u\n", e->receive_drop);
+  printf("receive watchdog timeouts: %u\n", e->receive_watchdog_timeouts);
+  printf("transmitted frames:        %u\n", e->transmitted_frames);
+  printf("transmitter errors:        %u\n", e->transmitter_errors);
+  printf("transmit interrupts:       %u\n", e->transmit_interrupts);
+  printf("transmit DMA interrupts:   %u\n", e->transmit_dma_interrupts);
+  printf("transmit status overflows: %u\n", e->transmit_status_overflows);
+  printf("transmit frame errors:     %u\n", e->transmit_frame_errors);
+  printf("transmit DMA errors:       %u\n", e->transmit_dma_errors);
+  printf("frame compact count:       %u\n", jc->frame_compact_count);
+  printf("interface state:           %s\n", state_to_string [e->state]);
+}
+
+static void smsc9218i_interface_off(struct ifnet *ifp)
+{
+  smsc9218i_driver_entry *e = (smsc9218i_driver_entry *) ifp->if_softc;
+  rtems_status_code sc = RTEMS_SUCCESSFUL;
+
+  sc = rtems_task_suspend(e->receive_task);
+  ASSERT_SC(sc);
+
+  sc = rtems_task_suspend(e->transmit_task);
+  ASSERT_SC(sc);
+
+  /* remove interrupt handler */
+  sc = rtems_interrupt_handler_remove(
+    MPC55XX_IRQ_SIU_EXTERNAL_0,
+    smsc9218i_interrupt_handler,
+    e
+  );
+  ASSERT_SC(sc);
+
+  mpc55xx_edma_release_channel(
+    &e->edma_receive
+  );
+
+  mpc55xx_edma_release_channel(
+    &e->edma_transmit
+  );
+
+  /* set in reset state */
+  smsc9218i_reset_signal(false);
 }
 
 static int smsc9218i_interface_ioctl(
@@ -1546,19 +2014,17 @@ static int smsc9218i_interface_ioctl(
   switch (command)  {
     case SIOCGIFMEDIA:
     case SIOCSIFMEDIA:
-      rtems_mii_ioctl(&e->mdio_info, e, (int) command, (int *) data);
+      rtems_mii_ioctl(&e->mdio, e, command, (int *) data);
       break;
     case SIOCGIFADDR:
     case SIOCSIFADDR:
       ether_ioctl(ifp, command, data);
       break;
     case SIOCSIFFLAGS:
-      if (ifp->if_flags & IFF_RUNNING) {
-        /* TODO: off */
-      }
       if (ifp->if_flags & IFF_UP) {
-        ifp->if_flags |= IFF_RUNNING;
         /* TODO: init */
+      } else {
+        smsc9218i_interface_off(ifp);
       }
       break;
     case SIO_RTEMS_SHOW_STATS:
@@ -1580,8 +2046,8 @@ static void smsc9218i_interface_start(struct ifnet *ifp)
   /* Interface is now active */
   ifp->if_flags |= IFF_OACTIVE;
 
-  sc = rtems_event_send(e->transmit_task, SMSC9218I_EVENT_TX_START);
-  RTEMS_SYSLOG_ERROR_SC(sc, "send transmit start event");
+  sc = rtems_bsdnet_event_send(e->transmit_task, SMSC9218I_EVENT_TX_START);
+  ASSERT_SC(sc);
 }
 
 static void smsc9218i_interface_watchdog(struct ifnet *ifp)
@@ -1589,7 +2055,7 @@ static void smsc9218i_interface_watchdog(struct ifnet *ifp)
   SMSC9218I_PRINTF("%s\n", __func__);
 }
 
-static int smsc9218i_attach(struct rtems_bsdnet_ifconfig *config)
+static void smsc9218i_attach(struct rtems_bsdnet_ifconfig *config)
 {
   smsc9218i_driver_entry *e = &smsc9218i_driver_data;
   struct ifnet *ifp = &e->arpcom.ac_if;
@@ -1597,19 +2063,9 @@ static int smsc9218i_attach(struct rtems_bsdnet_ifconfig *config)
   int unit_number = rtems_bsdnet_parse_driver_name(config, &unit_name);
 
   /* Check parameter */
-  if (unit_number < 0) {
-    RTEMS_SYSLOG_ERROR("parse error for interface name\n");
-    return 0;
-  }
-  if (unit_number != 0) {
-    RTEMS_DO_CLEANUP(smsc9218i_attach_cleanup, "unexpected unit number");
-  }
-  if (config->hardware_address == NULL) {
-    RTEMS_DO_CLEANUP(smsc9218i_attach_cleanup, "MAC address missing");
-  }
-  if (e->state != SMSC9218I_NOT_INITIALIZED) {
-    RTEMS_DO_CLEANUP(smsc9218i_attach_cleanup, "already attached");
-  }
+  assert(unit_number == 0);
+  assert(config->hardware_address != NULL);
+  assert(e->state == SMSC9218I_NOT_INITIALIZED);
 
   /* Interrupt number */
   config->irno = MPC55XX_IRQ_SIU_EXTERNAL_0;
@@ -1640,33 +2096,30 @@ static int smsc9218i_attach(struct rtems_bsdnet_ifconfig *config)
   ifp->if_snd.ifq_maxlen = ifqmaxlen;
   ifp->if_timer = 0;
 
+  /* MDIO */
+  e->mdio.mdio_r = smsc9218i_mdio_read;
+  e->mdio.mdio_w = smsc9218i_mdio_write;
+
   /* Change status */
   e->state = SMSC9218I_CONFIGURED;
 
   /* Attach the interface */
   if_attach(ifp);
   ether_ifattach(ifp);
-
-  return 1;
-
-smsc9218i_attach_cleanup:
-
-  /* FIXME: Type */
-  free(unit_name, (int) 0xdeadbeef);
-
-  return 0;
 }
 
 int smsc9218i_attach_detach(
   struct rtems_bsdnet_ifconfig *config,
   int attaching
 ) {
-  /* FIXME: Return value */
-
   if (attaching) {
-    return smsc9218i_attach(config);
+    smsc9218i_attach(config);
   } else {
     /* TODO */
-    return 0;
   }
+
+  /* FIXME: Return value */
+  return 0;
 }
+
+#endif /* defined(RTEMS_NETWORKING) && defined(MPC55XX_HAS_SIU) */

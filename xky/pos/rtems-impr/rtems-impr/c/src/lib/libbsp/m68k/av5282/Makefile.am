@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -31,11 +27,12 @@ libbsp_a_SOURCES =
 
 # startup
 libbsp_a_SOURCES += ../../shared/bspclean.c ../../shared/bsppredriverhook.c \
-    ../../shared/bsplibc.c ../../shared/bsppost.c ../../shared/bspreset_loop.c \
-    ../../shared/bsppretaskinghook.c ../../shared/bspgetworkarea.c \
+    ../../shared/bspreset_loop.c \
+    ../../shared/bspgetworkarea.c \
     startup/init5282.c startup/bspstart.c \
     ../../shared/bootcard.c \
-    ../../shared/sbrk.c ../../m68k/shared/setvec.c \
+    ../../shared/getentropy-cpucounter.c \
+    ../../shared/sbrk.c ../../shared/setvec.c \
     ../../shared/gnatinstallhandler.c
 # clock
 libbsp_a_SOURCES += clock/clock.c ../../../shared/clockdrv_shell.h
@@ -54,6 +51,7 @@ endif
 
 libbsp_a_LIBADD = \
     ../../../libcpu/@RTEMS_CPU@/shared/cache.rel \
+    ../../../libcpu/@RTEMS_CPU@/mcf5282/cachepd.rel \
     ../../../libcpu/@RTEMS_CPU@/shared/misc.rel
 if HAS_NETWORKING
 libbsp_a_LIBADD += network.rel

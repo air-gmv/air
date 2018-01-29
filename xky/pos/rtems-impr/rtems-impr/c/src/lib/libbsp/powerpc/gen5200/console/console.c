@@ -14,7 +14,7 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 | this file contains the console driver functions                 |
@@ -71,7 +71,7 @@
 /*                                                                     */
 /*   The license and distribution terms for this file may be           */
 /*   found in the file LICENSE in this distribution or at              */
-/*   http://www.rtems.com/license/LICENSE.                        */
+/*   http://www.rtems.org/license/LICENSE.                        */
 /*                                                                     */
 /*---------------------------------------------------------------------*/
 /*                                                                     */
@@ -95,14 +95,17 @@
 /*                                                                     */
 /***********************************************************************/
 
+#include <assert.h>
+#include <string.h>
+
 #include <rtems.h>
 #include "../include/mpc5200.h"
 #include <bsp.h>
 #include <bsp/irq.h>
 
+#include <rtems/console.h>
 #include <rtems/bspIo.h>
 #include <rtems/libio.h>
-#include <string.h>
 #include <rtems/termiostypes.h>
 
 
@@ -178,7 +181,7 @@ uint8_t psc_minor_to_regset[MPC5200_PSC_NO] = {0,1,2,3,4,6};
 /* Used to track termios private data for callbacks */
 struct rtems_termios_tty *ttyp[NUM_PORTS];
 
-int mpc5200_psc_setAttributes(
+static int mpc5200_psc_setAttributes(
   int                   minor,
   const struct termios *t
 )
@@ -189,7 +192,7 @@ int mpc5200_psc_setAttributes(
     (struct mpc5200_psc *)(&mpc5200.psc[psc_minor_to_regset[minor]]);
 
   /* Baud rate */
-  baud = rtems_termios_baud_to_number(t->c_cflag & CBAUD);
+  baud = rtems_termios_baud_to_number(t->c_ospeed);
   if (baud > 0) {
    /*
     * Calculate baud rate
@@ -233,12 +236,12 @@ int mpc5200_psc_setAttributes(
  /*
   * Set upper timer counter
   */
-  psc->ctur = (uint16_t)(baud >> 16);
+  psc->ctur = (uint8_t) (baud >> 8);
 
  /*
   * Set lower timer counter
   */
-  psc->ctlr = (uint16_t)(baud & 0x0000FFFF);
+  psc->ctlr = (uint8_t) baud;
 
  /*
   * Reset mode pointer
@@ -262,7 +265,7 @@ int mpc5200_psc_setAttributes(
 }
 
 
-int mpc5200_uart_setAttributes(int minor, const struct termios *t)
+static int mpc5200_uart_setAttributes(int minor, const struct termios *t)
 {
   /*
    * Check that port number is valid
@@ -282,7 +285,6 @@ static void mpc5200_psc_interrupt_handler(rtems_irq_hdl_param handle)
 {
   unsigned char c;
   uint16_t isr;
-  int nb_overflow;
   int minor = (int)handle;
   struct mpc5200_psc *psc =
     (struct mpc5200_psc *)(&mpc5200.psc[psc_minor_to_regset[minor]]);
@@ -309,7 +311,7 @@ static void mpc5200_psc_interrupt_handler(rtems_irq_hdl_param handle)
        c = (psc->rb_tb >> 24);
 
       if (ttyp[minor] != NULL) {
-        nb_overflow = rtems_termios_enqueue_raw_characters(
+        rtems_termios_enqueue_raw_characters(
            (void *)ttyp[minor], (char *)&c, (int)1);
         channel_info[minor].rx_characters++;
       }
@@ -325,11 +327,6 @@ static void mpc5200_psc_interrupt_handler(rtems_irq_hdl_param handle)
    */
   if (isr & ISR_TX_RDY & channel_info[minor].shadow_imr) {
     channel_info[minor].tx_interrupts++;
-
-    /*
-     * mask interrupt
-     */
-    psc->isr_imr = channel_info[minor].shadow_imr &= ~(IMR_TX_RDY);
 
     if (ttyp[minor] != NULL) {
       #ifndef SINGLE_CHAR_MODE
@@ -360,7 +357,7 @@ static void mpc5200_psc_interrupt_handler(rtems_irq_hdl_param handle)
   }
 }
 
-void mpc5200_psc_enable(
+static void mpc5200_psc_enable(
   const rtems_irq_connect_data* ptr
 )
 {
@@ -375,7 +372,7 @@ void mpc5200_psc_enable(
 }
 
 
-void mpc5200_psc_disable(
+static void mpc5200_psc_disable(
   const rtems_irq_connect_data* ptr
 )
 {
@@ -389,7 +386,7 @@ void mpc5200_psc_disable(
   }
 }
 
-int mpc5200_psc_isOn(
+static int mpc5200_psc_isOn(
   const rtems_irq_connect_data* ptr
 )
 {
@@ -407,7 +404,7 @@ int mpc5200_psc_isOn(
 static rtems_irq_connect_data consoleIrqData;
 #endif
 
-void mpc5200_uart_psc_initialize(
+static void mpc5200_uart_psc_initialize(
   int minor
 )
 {
@@ -499,10 +496,7 @@ void mpc5200_uart_psc_initialize(
   /*
    * Install rtems irq handler
    */
-  if (!BSP_install_rtems_irq_handler (&consoleIrqData)) {
-    printk("Unable to connect PSC Irq handler\n");
-    rtems_fatal_error_occurred(1);
-  }
+  assert(BSP_install_rtems_irq_handler(&consoleIrqData) == 1);
 #endif
 
   /*
@@ -534,7 +528,7 @@ void mpc5200_uart_psc_initialize(
 }
 
 
-int mpc5200_uart_pollRead(
+static int mpc5200_uart_pollRead(
   int minor
 )
 {
@@ -551,7 +545,7 @@ int mpc5200_uart_pollRead(
 }
 
 
-ssize_t mpc5200_uart_pollWrite(
+static ssize_t mpc5200_uart_pollWrite(
   int minor,
   const char *buf,
   size_t len
@@ -577,39 +571,47 @@ ssize_t mpc5200_uart_pollWrite(
 
 }
 
-ssize_t mpc5200_uart_write(
+static ssize_t mpc5200_uart_write(
   int         minor,
   const char *buf,
   size_t len
 )
 {
-  int frame_len = len;
-  const char *frame_buf = buf;
   struct mpc5200_psc *psc =
     (struct mpc5200_psc *)(&mpc5200.psc[psc_minor_to_regset[minor]]);
 
- /*
-  * Check tx fifo space
-  */
-  if(len > (TX_FIFO_SIZE - psc->tfnum))
-    frame_len = TX_FIFO_SIZE - psc->tfnum;
+  if (len > 0) {
+    int frame_len = len;
+    const char *frame_buf = buf;
+
+   /*
+    * Check tx fifo space
+    */
+    if(len > (TX_FIFO_SIZE - psc->tfnum))
+      frame_len = TX_FIFO_SIZE - psc->tfnum;
 
 #ifndef SINGLE_CHAR_MODE
-  channel_info[minor].cur_tx_len = frame_len;
+    channel_info[minor].cur_tx_len = frame_len;
 #else
-  frame_len = 1;
+    frame_len = 1;
 #endif
 
- /*rtems_cache_flush_multiple_data_lines( (void *)frame_buf, frame_len);*/
+   /*rtems_cache_flush_multiple_data_lines( (void *)frame_buf, frame_len);*/
 
-  while (frame_len--)
-    /* perform byte write to avoid extra NUL characters */
-    (* (volatile char *)&(psc->rb_tb)) = *frame_buf++;
+    while (frame_len--)
+      /* perform byte write to avoid extra NUL characters */
+      (* (volatile char *)&(psc->rb_tb)) = *frame_buf++;
 
- /*
-  * unmask interrupt
-  */
-  psc->isr_imr = channel_info[minor].shadow_imr |= IMR_TX_RDY;
+   /*
+    * unmask interrupt
+    */
+    psc->isr_imr = channel_info[minor].shadow_imr |= IMR_TX_RDY;
+  } else {
+    /*
+     * mask interrupt
+     */
+    psc->isr_imr = channel_info[minor].shadow_imr &= ~(IMR_TX_RDY);
+  }
 
   return 0;
 }
@@ -621,8 +623,6 @@ static void A_BSP_output_char(
   char c
 )
 {
-  char cr = '\r';
-
   /*
    *  If we are using U-Boot, then the console is already initialized
    *  and we can just poll bytes out at any time.
@@ -635,9 +635,6 @@ static void A_BSP_output_char(
 #define PRINTK_WRITE mpc5200_uart_pollWrite
 
     PRINTK_WRITE(PRINTK_MINOR, &c, 1 );
-
-    if( c == '\n' )
-      PRINTK_WRITE( PRINTK_MINOR, &cr, 1 );
 }
 
 static int A_BSP_get_char(void)
@@ -675,6 +672,7 @@ rtems_device_driver console_initialize(
   rtems_device_minor_number console_minor;
   char dev_name[] = "/dev/ttyx";
   uint32_t tty_num = 0;
+  bool first = true;
 
   /*
    * Always use and set up TERMIOS
@@ -695,19 +693,26 @@ rtems_device_driver console_initialize(
       mpc5200_uart_psc_initialize(console_minor); /* /dev/tty0 */
       dev_name[8] = '0' + tty_num;
       status = rtems_io_register_name (dev_name, major, console_minor);
+      assert(status == RTEMS_SUCCESSFUL);
 
-      if (status != RTEMS_SUCCESSFUL)
-        rtems_fatal_error_occurred(status);
+      #ifdef MPC5200_PSC_INDEX_FOR_GPS_MODULE
+        if (console_minor == MPC5200_PSC_INDEX_FOR_GPS_MODULE) {
+          status = rtems_io_register_name("/dev/gps", major, console_minor);
+          assert(status == RTEMS_SUCCESSFUL);
+        }
+      #endif
+
+      if (first) {
+        first = false;
+
+        /* Now register the RTEMS console */
+        status = rtems_io_register_name ("/dev/console", major, console_minor);
+        assert(status == RTEMS_SUCCESSFUL);
+      }
 
       tty_num++;
     }
   }
-
-  /* Now register the RTEMS console */
-  status = rtems_io_register_name ("/dev/console", major, PSC1_MINOR);
-
-  if(status != RTEMS_SUCCESSFUL)
-    rtems_fatal_error_occurred (status);
 
   console_initialized = true;
   return RTEMS_SUCCESSFUL;

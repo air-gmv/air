@@ -1,6 +1,8 @@
 /*
  * Cirrus EP7312 Intererrupt handler
- *
+ */
+
+/*
  * Copyright (c) 2010 embedded brains GmbH.
  *
  * Copyright (c) 2002 by Jay Monkman <jtm@smoothsmoothie.com>
@@ -9,12 +11,10 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *
- *  http://www.rtems.com/license/LICENSE.
- *
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
 */
+
+#include <rtems/score/armv4.h>
 
 #include <bsp.h>
 #include <bsp/irq.h>
@@ -27,8 +27,10 @@ void edb7312_interrupt_dispatch(rtems_vector_number vector)
   bsp_interrupt_handler_dispatch(vector);
 }
 
-rtems_status_code bsp_interrupt_vector_enable(rtems_vector_number vector)
+void bsp_interrupt_vector_enable(rtems_vector_number vector)
 {
+    bsp_interrupt_assert(bsp_interrupt_is_valid_vector(vector));
+
     if(vector >= BSP_EXTFIQ && vector <= BSP_SSEOTI)
     {
         /* interrupt managed by INTMR1 and INTSR1 */
@@ -49,12 +51,12 @@ rtems_status_code bsp_interrupt_vector_enable(rtems_vector_number vector)
         /* interrupt managed by INTMR3 and INTSR3 */
         *EP7312_INTMR3 |= (1 << (vector - 21));
     }
-
-  return RTEMS_SUCCESSFUL;
 }
 
-rtems_status_code bsp_interrupt_vector_disable(rtems_vector_number vector)
+void bsp_interrupt_vector_disable(rtems_vector_number vector)
 {
+    bsp_interrupt_assert(bsp_interrupt_is_valid_vector(vector));
+
     if(vector >= BSP_EXTFIQ && vector <= BSP_SSEOTI)
     {
         /* interrupt managed by INTMR1 and INTSR1 */
@@ -75,8 +77,6 @@ rtems_status_code bsp_interrupt_vector_disable(rtems_vector_number vector)
         /* interrupt managed by INTMR3 and INTSR3 */
         *EP7312_INTMR3 &= ~(1 << (vector - 21));
     }
-
-  return RTEMS_SUCCESSFUL;
 }
 
 rtems_status_code bsp_interrupt_facility_initialize(void)
@@ -174,12 +174,7 @@ rtems_status_code bsp_interrupt_facility_initialize(void)
   }
   int_stat = *EP7312_INTSR3;
 
-  _CPU_ISR_install_vector(ARM_EXCEPTION_IRQ, arm_exc_interrupt, NULL);
+  _CPU_ISR_install_vector(ARM_EXCEPTION_IRQ, _ARMV4_Exception_interrupt, NULL);
 
   return RTEMS_SUCCESSFUL;
-}
-
-void bsp_interrupt_handler_default(rtems_vector_number vector)
-{
-  printk("spurious interrupt: %u\n", vector);
 }

@@ -11,12 +11,10 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Modifications of respective RTEMS files:
  *  Copyright (c) 1998, National Research Council of Canada
- *
- *  $Id$
  */
 
 #ifndef __PAGE_TABLE_H
@@ -25,7 +23,7 @@
 #include <rtems.h>
 
 void page_table_teardown( void );
-void page_table_init( rtems_configuration_table *config_table );
+void page_table_init( void );
 
 enum {
   CACHE_WRITE_THROUGH,

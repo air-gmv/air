@@ -1,5 +1,5 @@
 <%
-    import xky
+    import air
     import utils.templates as makoutils
     import parsers.a653.definitions as a653_definitions
 
@@ -55,7 +55,7 @@ pmk_partition_t usr_partition_table[USR_PARTITIONS] = ${'\\'}
 % if len(partition.permissions) > 0:
         .permissions = ${'\\'}
     % for j, permission in enumerate(partition.permissions):
-            XKY_PERMISSION_${permission.upper()}${',' if j == len(partition.permissions) - 1 else ' |'}
+            AIR_PERMISSION_${permission.upper()}${',' if j == len(partition.permissions) - 1 else ' |'}
     % endfor
 % else:
         .permissions = 0,
@@ -63,13 +63,13 @@ pmk_partition_t usr_partition_table[USR_PARTITIONS] = ${'\\'}
         .cores       = ${partition.core_count},
 <%
     if partition.cache_state[0] and partition.cache_state[1]:
-        cache = 'XKY_CACHE_ALL'
+        cache = 'AIR_CACHE_ALL'
     elif partition.cache_state[0]:
-        cache = 'XKY_CACHE_DATA'
+        cache = 'AIR_CACHE_DATA'
     elif partition.cache_state[1]:
-        cache = 'XKY_CACHE_INSTRUCTION'
+        cache = 'AIR_CACHE_INSTRUCTION'
     else:
-        cache = 'XKY_CACHE_NONE'
+        cache = 'AIR_CACHE_NONE'
 %>\
         .init_cache  = ${cache},
         .hm_table    = usr_hm_partition${i}_table,

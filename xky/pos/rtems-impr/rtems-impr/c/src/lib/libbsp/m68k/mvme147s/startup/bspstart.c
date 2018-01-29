@@ -1,37 +1,30 @@
 /*
- *  This routine starts the application.  It includes application,
- *  board, and monitor specific initialization and configuration.
- *  The generic CPU dependent initialization has been performed
- *  before this routine is invoked.
- *
+ *  This routine does the bulk of the system initialization.
+ */
+
+/*
  *  COPYRIGHT (c) 1989-1999.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  MVME147 port for TNI - Telecom Bretagne
  *  by Dominique LE CAMPION (Dominique.LECAMPION@enst-bretagne.fr)
  *  May 1996
- *
- *  $Id$
  */
 
 #include <bsp.h>
+#include <bsp/bootcard.h>
 
-/*
- *  bsp_start
- *
- *  This routine does the bulk of the system initialization.
- */
 void bsp_start( void )
 {
-  m68k_isr_entry       *monitors_vector_table;
+  rtems_isr_entry       *monitors_vector_table;
   int                   index;
   uint8_t               node_number;
 
-  monitors_vector_table = (m68k_isr_entry *)0;   /* 147Bug Vectors are at 0 */
+  monitors_vector_table = (rtems_isr_entry *)0;   /* 147Bug Vectors are at 0 */
   m68k_set_vbr( monitors_vector_table );
 
   for ( index=2 ; index<=255 ; index++ )
@@ -65,7 +58,7 @@ void bsp_start( void )
 
 #if defined(RTEMS_MULTIPROCESSING)
   node_number = (uint8_t)
-    (Configuration.User_multiprocessing_table->node - 1) & 0xF;
+    (rtems_configuration_get_user_multiprocessing_table()->node - 1) & 0xF;
 #else
    node_number = 1;
 #endif

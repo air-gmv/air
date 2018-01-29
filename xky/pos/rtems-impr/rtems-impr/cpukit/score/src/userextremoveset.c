@@ -1,62 +1,50 @@
 /**
- *  @file
- *  userextremoveset.c
+ * @file
  *
- *  @brief remove a set from a user extension
+ * @ingroup ScoreUserExt
  *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
+ * @brief User Extension Handler implementation.
+ */
+
+/*
  *  COPYRIGHT (c) 1989-2007.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  6325    | 01/03/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_CORE Super Core
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup ScoreUserExt User Extension Handler
- *  @{
- */
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#include <rtems/system.h>
-#include <rtems/score/userext.h>
+#include <rtems/score/userextimpl.h>
+#include <rtems/score/percpu.h>
 
-
-void _User_extensions_Remove_set(
-                                 User_extensions_Control *the_extension
-                                 )
+void _User_extensions_Remove_set (
+  User_extensions_Control  *the_extension
+)
 {
-    /* extract the extension node from the chain */
-    _Chain_Extract(&the_extension->Node);
+  ISR_lock_Context lock_context;
 
-    /* if a switch handler is present, remove it */
+  _User_extensions_Acquire( &lock_context );
+  _Chain_Iterator_registry_update(
+    &_User_extensions_List.Iterators,
+    &the_extension->Node
+  );
+  _Chain_Extract_unprotected( &the_extension->Node );
+  _User_extensions_Release( &lock_context );
 
-    /* if there is a thread switch extension */
-    if(the_extension->Callouts.thread_switch != NULL)
-    {
-        /* extract the user switch extension node from the chain */
-        _Chain_Extract(&the_extension->Switch.Node);
-    }
+  /*
+   * If a switch handler is present, remove it.
+   */
+
+  if ( the_extension->Callouts.thread_switch != NULL ) {
+    ISR_Level level;
+
+    _Per_CPU_Acquire_all( level );
+    _Chain_Extract_unprotected( &the_extension->Switch.Node );
+    _Per_CPU_Release_all( level );
+  }
 }
-
-/**  
- *  @}
- */
-
-/**
- *  @}
- */

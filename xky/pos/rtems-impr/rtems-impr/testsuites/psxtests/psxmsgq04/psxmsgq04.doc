@@ -1,0 +1,25 @@
+#  COPYRIGHT (c) 1989-2009.
+#  On-Line Applications Research Corporation (OAR).
+#
+#  The license and distribution terms for this file may be
+#  found in the file LICENSE in this distribution or at
+#  http://www.rtems.org/license/LICENSE.
+#
+
+This file describes the directives and concepts tested by this test set.
+
+test set name:  psxmsgq04
+
+directives:
+
+  mq_open
+  mq_unlink
+  mq_close
+
+concepts:
+
++ Ensure the case where there are more file descriptors than message queues
+  configured is properly handled.
+
++ Ensure that the case where we do not have enough Workspace memory
+  left to allocate the message buffers is properly handled.

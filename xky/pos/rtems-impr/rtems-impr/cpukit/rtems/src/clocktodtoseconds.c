@@ -1,88 +1,81 @@
 /**
  *  @file
- *  clocktodtoseconds.c
  *
- *  @brief convert the time of day to number of seconds
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
+ *  @brief TOD to Seconds
+ *  @ingroup ClassicClock
+ */
+
+/*
  *  COPYRIGHT (c) 1989-2007.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  5934    | 11/01/2010  | mcoutinho    | IPR 1046
- *  7069    | 09/04/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup RTEMS_API RTEMS API
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup RTEMS_API_CLOCK Clock Manager
- *  @{
- */
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#include <rtems/system.h>
 #include <rtems/rtems/clock.h>
+#include <rtems/score/todimpl.h>
+
+#define TOD_SECONDS_AT_2100_03_01_00_00 4107538800UL
+
+/*
+ *  The following array contains the number of days in all months
+ *  up to the month indicated by the index of the second dimension.
+ *  The first dimension should be 1 for leap years, and 0 otherwise.
+ */
+const uint16_t   _TOD_Days_to_date[2][13] = {
+  { 0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 },
+  { 0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335 }
+};
+
+/*
+ *  The following array contains the number of days in the years
+ *  since the last leap year.  The index should be 0 for leap
+ *  years, and the number of years since the beginning of a leap
+ *  year otherwise.
+ */
+const uint16_t   _TOD_Days_since_last_leap_year[4] = { 0, 366, 731, 1096 };
 
 
-uint32_t _TOD_To_seconds(
-                         rtems_time_of_day *the_tod
-                         )
+Watchdog_Interval   _TOD_To_seconds(
+  const rtems_time_of_day *the_tod
+)
 {
-    /* set the month to the tod month minus 2 (February) */
-   int32_t month = the_tod->month - 2;
+  uint32_t   time;
+  uint32_t   year_mod_4;
 
-   /* get the year */
-   int32_t year = the_tod->year;
+  time = the_tod->day - 1;
+  year_mod_4 = the_tod->year & 3;
 
-   /* the result */
-   uint32_t result;
+  if ( year_mod_4 == 0 )
+    time += _TOD_Days_to_date[ 1 ][ the_tod->month ];
+  else
+    time += _TOD_Days_to_date[ 0 ][ the_tod->month ];
 
-   
-   /* start the months in March (see Gauss Algorithm) */
-   if(month <= 0)
-   {
-      /* Puts Feb last since it has leap day */
-      month += 12;
+  time += ( (the_tod->year - TOD_BASE_YEAR) / 4 ) *
+            ( (TOD_DAYS_PER_YEAR * 4) + 1);
 
-      /* subtract one year */
-      year -= 1;
-   }
+  time += _TOD_Days_since_last_leap_year[ year_mod_4 ];
 
-   /* start with the number of days */
-   result = the_tod->day;
+  time *= TOD_SECONDS_PER_DAY;
 
-   /* add the number of days per month elapsed */
-   result += 367 * month / 12;
+  time += ((the_tod->hour * TOD_MINUTES_PER_HOUR) + the_tod->minute)
+             * TOD_SECONDS_PER_MINUTE;
 
-   /* add the number of leap days elapsed */
-   result += year / 4 - year / 100 + year / 400;
+  time += the_tod->second;
 
-   /* calculate number of days since 1970 */
-   result += year * 365 - 719499;
+  /* The year 2100 is not a leap year */
+  if ( time
+      >= (TOD_SECONDS_AT_2100_03_01_00_00 - TOD_SECONDS_1970_THROUGH_1988)) {
+    time -= TOD_SECONDS_PER_DAY;
+  }
 
-   /* have the total number of days, now just calculate the seconds */
-   return (((result * 24 + the_tod->hour) /* get hours */
-       * 60 + the_tod->minute) /* get minutes */
-       * 60 + the_tod->second); /* get seconds */
+  time += TOD_SECONDS_1970_THROUGH_1988;
+
+  return( time );
 }
-
-/**  
- *  @}
- */
-
-/**
- *  @}
- */

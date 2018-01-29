@@ -1,0 +1,30 @@
+
+
+*** POSIX TEST 1 ***
+Init: uname - EFAULT (invalid uts pointer argument)
+Init: uts.sysname: RTEMS
+Init: uts.nodename: Node 1
+Init: uts.release: 4.9.99.0
+Init: uts.version: 
+Init: uts.machine: ARM/ARMv4T
+
+Init: ID is 0x0b010001
+Init: sched_get_priority_min (SCHED_FIFO) -- 1
+Init: sched_get_priority_min -- EINVAL (invalid policy)
+Init: sched_get_priority_max (SCHED_FIFO) -- 254
+Init: sched_get_priority_max -- EINVAL (invalid policy)
+Init: sched_rr_get_interval -- ESRCH (invalid PID)
+Init: sched_rr_get_interval -- EINVAL (invalid interval pointer)
+Init: Round Robin quantum is 0 seconds, 500000000 nanoseconds
+Init: pthread_create - SUCCESSFUL
+Init: pthread_create - EAGAIN (too many threads)
+Init: sched_yield to Task_1
+Task_1: sched_yield to Init
+Init: pthread_exit
+
+Task_1: ID is 0x0b010002
+Task_1: pthread_equal - match case passed
+Task_1: pthread_equal - different case passed
+Task_1: pthread_equal - first id bad
+Task_1: pthread_equal - second id bad
+*** END OF POSIX TEST 1 ***

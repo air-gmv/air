@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -15,6 +11,7 @@ include_HEADERS += include/tm27.h
 
 nodist_include_HEADERS = include/bspopts.h
 nodist_include_bsp_HEADERS = ../../shared/include/bootcard.h
+nodist_include_bsp_HEADERS += ../../shared/include/console-polled.h
 DISTCLEANFILES = include/bspopts.h
 
 include_HEADERS += include/coverhd.h
@@ -31,14 +28,20 @@ noinst_LIBRARIES += libbsp.a
 libbsp_a_SOURCES =
 
 # startup
-libbsp_a_SOURCES += ../../shared/bspclean.c ../../shared/bsplibc.c \
-    ../../shared/bsppredriverhook.c ../../shared/bsppretaskinghook.c \
-    ../../shared/bsppost.c ../../shared/bspgetworkarea.c \
+libbsp_a_SOURCES += ../../shared/bspclean.c \
+    ../../shared/bsppredriverhook.c \
+    ../../shared/bspgetworkarea.c \
     ../../shared/bspstart.c startup/init5272.c ../../shared/bootcard.c \
-    ../../shared/sbrk.c ../../m68k/shared/setvec.c \
+    ../../shared/getentropy-cpucounter.c \
+    ../../shared/sbrk.c ../../shared/setvec.c \
     ../../shared/gnatinstallhandler.c
 # console
 libbsp_a_SOURCES += console/console-io.c ../../shared/console-polled.c
+
+# Cache
+libbsp_a_SOURCES += ../../../libcpu/shared/src/cache_manager.c
+libbsp_a_SOURCES += ../../shared/include/cache_.h
+libbsp_a_CPPFLAGS = -I$(srcdir)/../../shared/include
 
 libbsp_a_LIBADD = \
     ../../../libcpu/@RTEMS_CPU@/shared/misc.rel \

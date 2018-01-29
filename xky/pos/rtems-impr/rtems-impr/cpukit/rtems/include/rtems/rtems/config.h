@@ -1,108 +1,142 @@
 /**
- *  @file
- *  config.h
+ * @file rtems/rtems/config.h
  *
- *  @brief contains the table of user defined configuration
- *  parameters specific for the RTEMS API.
+ * @defgroup ClassicConfig Configuration
  *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
+ * @ingroup ClassicRTEMS
+ * @brief Configuration Table
  *
- *  COPYRIGHT (c) 1989-2006.
- *  On-Line Applications Research Corporation (OAR).
- *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  559     | 17/11/2008  | mcoutinho    | IPR 69
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  8320    | 21/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup RTEMS_API RTEMS API
- *  @{
+ * This include file contains the table of user defined configuration
+ * parameters specific for the RTEMS API.
  */
 
-/**
- *  @addtogroup RTEMS_API_COMMON Common
- *  @{
+/* COPYRIGHT (c) 1989-2013.
+ * On-Line Applications Research Corporation (OAR).
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef _RTEMS_RTEMS_CONFIG_H
 #define _RTEMS_RTEMS_CONFIG_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 #include <rtems/rtems/types.h>
 #include <rtems/rtems/tasks.h>
 
-   /**
-    *  @brief The following records define the Configuration Table.  The
-    *  information contained in this table is required in all
-    *  RTEMS systems, whether single or multiprocessor.  This
-    *  table primarily defines the following:
-    *  \n
-    *     + required number of each object type
-    */
-   typedef struct
-   {
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-      /**
-       * @brief maximum number of tasks in the system
-       */
-      uint32_t maximum_tasks;
+/**
+ *  @defgroup ClassicConfig Configuration
+ *
+ *  @ingroup ClassicRTEMS
+ *
+ *  This encapsulates functionality related to the application's configuration
+ *  of the Classic API including the maximum number of each class of objects.
+ */
+/**@{*/
 
-      /**
-       * @brief maximum number of timers in the system
-       */
-      uint32_t maximum_timers;
+/**
+ *  The following records define the Configuration Table.  The
+ *  information contained in this table is required in all
+ *  RTEMS systems, whether single or multiprocessor.  This
+ *  table primarily defines the following:
+ *
+ *     + required number of each object type
+ */
+typedef struct {
+  /**
+   * This field contains the maximum number of Classic API
+   * Tasks which are configured for this application.
+   */
+  uint32_t                    maximum_tasks;
 
-      /**
-       * @brief maximum number of semaphores in the system
-       */
-      uint32_t maximum_semaphores;
+  /**
+   * This field contains the maximum number of Classic API
+   * Timers which are configured for this application.
+   */
+  uint32_t                    maximum_timers;
 
-      /**
-       * @brief maximum number of maximum message queues in the system
-       */
-      uint32_t maximum_message_queues;
-      
-      /**
-       * @brief maximum number of rate monotonic periods
-       */
-      uint32_t maximum_periods;
+  /**
+   * This field contains the maximum number of Classic API
+   * Semaphores which are configured for this application.
+   */
+  uint32_t                    maximum_semaphores;
 
-      /**
-       * @brief number of user initialization tasks
-       */
-      uint32_t number_of_initialization_tasks;
+  /**
+   * This field contains the maximum number of Classic API
+   * Message Queues which are configured for this application.
+   */
+  uint32_t                    maximum_message_queues;
 
-      /**
-       * @brief table of the user initialization tasks
-       */
-      rtems_initialization_tasks_table *User_initialization_tasks_table;
+  /**
+   * This field contains the maximum number of Classic API
+   * Partitions which are configured for this application.
+   */
+  uint32_t                    maximum_partitions;
 
-   } rtems_api_configuration_table;
+  /**
+   * This field contains the maximum number of Classic API
+   * Regions which are configured for this application.
+   */
+  uint32_t                    maximum_regions;
+
+  /**
+   * This field contains the maximum number of Classic API
+   * Dual Ported Memory Areas which are configured for this
+   * application.
+   */
+  uint32_t                    maximum_ports;
+
+  /**
+   * This field contains the maximum number of Classic API
+   * Rate Monotonic Periods which are configured for this
+   * application.
+   */
+  uint32_t                    maximum_periods;
+
+  /**
+   * This field contains the maximum number of Classic API
+   * Barriers which are configured for this application.
+   */
+  uint32_t                    maximum_barriers;
+
+  /**
+   * This field contains the number of Classic API Initialization
+   * Tasks which are configured for this application.
+   */
+  uint32_t                    number_of_initialization_tasks;
+
+  /**
+   * This field is the set of Classic API Initialization
+   * Tasks which are configured for this application.
+   */
+  rtems_initialization_tasks_table *User_initialization_tasks_table;
+} rtems_api_configuration_table;
+
+/**
+ *  @brief RTEMS API Configuration Table
+ *
+ *  This is the RTEMS API Configuration Table expected to be generated
+ *  by confdefs.h.
+ */
+extern rtems_api_configuration_table Configuration_RTEMS_API;
+
+/**@}*/
+
+/**
+ *  This macro returns the number of Classic API semaphores configured.
+ */
+#define rtems_configuration_get_maximum_semaphores() \
+        rtems_configuration_get_rtems_api_configuration()->maximum_semaphores
 
 #ifdef __cplusplus
 }
 #endif
 
+/**@}*/
+
 #endif
 /* end of include file */
-
-/**
- *  @}
- */
-
-/**
- *  @}
- */

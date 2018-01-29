@@ -3,9 +3,7 @@
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
- * http://www.rtems.com/license/LICENSE.
- *
- * $Id$
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>
@@ -32,5 +30,3 @@ rtc_tbl RTC_Table[] = {
 #define NUM_RTCS (sizeof(RTC_Table)/sizeof(rtc_tbl))
 
 size_t RTC_Count = NUM_RTCS;
-
-rtems_device_minor_number RTC_Minor;

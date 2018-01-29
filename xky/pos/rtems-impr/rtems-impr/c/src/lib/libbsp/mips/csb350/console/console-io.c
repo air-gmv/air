@@ -1,20 +1,19 @@
 /*
  *  This file contains the hardware specific portions of the TTY driver
  *  for the serial ports on the csb350.
- *
- *  Logic based on the jmr3904-io.c file in newlib 1.8.2
- *
+ */
+
+/*
  *  COPYRIGHT (c) 1989-2000.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>
+#include <bsp/console-polled.h>
 #include <rtems/libio.h>
 #include <libcpu/au1x00.h>
 
@@ -24,7 +23,6 @@
  *  This routine initializes the console hardware.
  *
  */
-
 void console_initialize_hardware(void)
 {
     uart0->fifoctrl = 0xf1;   /* enable fifo, max sizes */
@@ -37,7 +35,6 @@ void console_initialize_hardware(void)
  *
  *  This routine transmits a character using polling.
  */
-
 void console_outbyte_polled(
   int  port,
   char ch
@@ -51,7 +48,6 @@ void console_outbyte_polled(
     uart0->txdata = ch;
     au_sync();
 }
-
 /*
  *  console_inbyte_nonblocking
  *
@@ -74,15 +70,12 @@ int console_inbyte_nonblocking(
 
 #include <rtems/bspIo.h>
 
-void csb250_output_char(char c)
+static void csb250_output_char(char c)
 {
     console_outbyte_polled( 0, c );
-    if (c == '\n') {
-        console_outbyte_polled( 0, '\r' );
-    }
 }
 
-int csb250_get_char(void)
+static int csb250_get_char(void)
 {
   return console_inbyte_nonblocking(0);
 }

@@ -14,9 +14,7 @@
 --
 --  The license and distribution terms for this file may in
 --  the file LICENSE in this distribution or at
---  http://www.rtems.com/license/LICENSE.
---
---  $Id$
+--  http://www.rtems.org/license/LICENSE.
 --
 
 package body RTEMS.Multiprocessing is

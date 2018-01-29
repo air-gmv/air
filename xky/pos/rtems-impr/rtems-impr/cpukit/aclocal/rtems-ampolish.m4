@@ -1,5 +1,3 @@
-# $Id: rtems-ampolish.m4 179 2008-09-17 14:07:38Z hsilva $
-
 AC_DEFUN([RTEMS_AMPOLISH3],
 [
 AC_REQUIRE([AM_MAINTAINER_MODE])

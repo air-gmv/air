@@ -1,12 +1,14 @@
 /*
  *  This file contains the MVME162 console IO package.
- *
- *  COPYRIGHT (c) 1989-1999.
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2013.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Modifications of respective RTEMS file: COPYRIGHT (c) 1994.
  *  EISCAT Scientific Association. M.Savitski
@@ -14,23 +16,22 @@
  *  This material is a part of the MVME162 Board Support Package
  *  for the RTEMS executive. Its licensing policies are those of the
  *  RTEMS above.
- *
- *  $Id$
  */
 
 #define M162_INIT
 
-#include <bsp.h>
+#include <rtems/bspIo.h>
+#include <rtems/console.h>
 #include <rtems/libio.h>
 #include <rtems/ringbuf.h>
+#include <bsp.h>
 
 Ring_buffer_t  Console_Buffer[2];
 
 /*
  *  Interrupt handler for receiver interrupts
  */
-
-rtems_isr C_Receive_ISR(rtems_vector_number vector)
+static rtems_isr C_Receive_ISR(rtems_vector_number vector)
 {
   register int    ipend, port;
 
@@ -61,7 +62,6 @@ rtems_device_driver console_initialize(
   /*
    * Initialise receiver interrupts on both ports
    */
-
   for (i = 0; i <= 1; i++) {
     Ring_buffer_Initialize( &Console_Buffer[i] );
     ZWRITE(i, 2, SCC_VECTOR);
@@ -109,7 +109,6 @@ rtems_device_driver console_initialize(
 /*
  *   Non-blocking char input
  */
-
 bool char_ready(int port, char *ch)
 {
   if ( Ring_buffer_Is_empty( &Console_Buffer[port] ) )
@@ -117,14 +116,13 @@ bool char_ready(int port, char *ch)
 
   Ring_buffer_Remove_character( &Console_Buffer[port], *ch );
 
-  return false;
+  return true;
 }
 
 /*
  *   Block on char input
  */
-
-char inbyte(int port)
+static char inbyte(int port)
 {
   char tmp_char;
 
@@ -136,8 +134,7 @@ char inbyte(int port)
  *   This routine transmits a character out the SCC.  It no longer supports
  *   XON/XOFF flow control.
  */
-
-void outbyte(char ch, int port)
+static void outbyte(char ch, int port)
 {
   while (1) {
     if (ZREAD0(port) & TX_BUFFER_EMPTY) break;
@@ -148,7 +145,6 @@ void outbyte(char ch, int port)
 /*
  *  Open entry point
  */
-
 rtems_device_driver console_open(
   rtems_device_major_number major,
   rtems_device_minor_number minor,
@@ -161,7 +157,6 @@ rtems_device_driver console_open(
 /*
  *  Close entry point
  */
-
 rtems_device_driver console_close(
   rtems_device_major_number major,
   rtems_device_minor_number minor,
@@ -174,7 +169,6 @@ rtems_device_driver console_close(
 /*
  * read bytes from the serial port. We only have stdin.
  */
-
 rtems_device_driver console_read(
   rtems_device_major_number major,
   rtems_device_minor_number minor,
@@ -209,7 +203,6 @@ rtems_device_driver console_read(
 /*
  * write bytes to the serial port. Stdout and stderr are the same.
  */
-
 rtems_device_driver console_write(
   rtems_device_major_number major,
   rtems_device_minor_number minor,
@@ -243,7 +236,6 @@ rtems_device_driver console_write(
 /*
  *  IO Control entry point
  */
-
 rtems_device_driver console_control(
   rtems_device_major_number major,
   rtems_device_minor_number minor,
@@ -252,3 +244,34 @@ rtems_device_driver console_control(
 {
   return RTEMS_SUCCESSFUL;
 }
+
+/*
+ *  _162Bug_output_char
+ *
+ *  Output a single character using the 162Bug functions.  The character
+ *  will be written to the default output port.
+ */
+static void _162Bug_output_char( char c )
+{
+  asm volatile( "moveb  %0, -(%%sp)\n\t"   /* char to output */
+                "trap   #15\n\t"           /* Trap to 162Bug */
+                ".short 0x20"              /* Code for .OUTCHR */
+    :: "d" (c) );
+}
+
+/*
+ *  _BSP_output_char
+ *
+ *  printk() function prototyped in bspIo.h. Does not use termios.
+ *
+ *  If we have initialized the console device then use it, otherwise
+ *  use the 162Bug routines to send it to the default output port.
+ */
+static void _BSP_output_char(char c)
+{
+  _162Bug_output_char(c);
+}
+
+/* Printk function */
+BSP_output_char_function_type           BSP_output_char = _BSP_output_char;
+BSP_polling_getchar_function_type       BSP_poll_char = NULL;

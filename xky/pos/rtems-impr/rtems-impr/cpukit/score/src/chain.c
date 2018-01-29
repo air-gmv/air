@@ -1,99 +1,53 @@
 /**
- *  @file
- *  chain.c
+ * @file
  *
- *  @brief Initialize a chain
+ * @brief Initialize a Chain Header
  *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
+ * @ingroup ScoreChain
+ */
+
+/*
  *  COPYRIGHT (c) 1989-2007.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  6325    | 01/03/2010  | mcoutinho    | IPR 1931
- *  8316    | 21/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_CORE Super Core
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup ScoreChain Chain Handler
- *  @{
- */
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#include <rtems/system.h>
+#include <rtems/score/chainimpl.h>
 #include <rtems/score/address.h>
-#include <rtems/score/chain.h>
-#include <rtems/score/isr.h>
-
+#include <rtems/score/assert.h>
 
 void _Chain_Initialize(
-                       Chain_Control *the_chain ,
-                       void *starting_address ,
-                       size_t number_nodes ,
-                       size_t node_size
-                       )
+  Chain_Control *the_chain,
+  void           *starting_address,
+  size_t         number_nodes,
+  size_t         node_size
+)
 {
-    /* number of nodes left to process */
-    size_t count;
+  size_t count = number_nodes;
+  Chain_Node *head = _Chain_Head( the_chain );
+  Chain_Node *tail = _Chain_Tail( the_chain );
+  Chain_Node *current = head;
+  Chain_Node *next = starting_address;
 
-    /* iterator node */
-    Chain_Node *current;
+  _Assert( node_size >= sizeof( *next ) );
 
-    /* next node on the chain */
-    Chain_Node *next;
+  head->previous = NULL;
 
-    /* get the initial number of nodes */
-    count = number_nodes;
+  while ( count-- ) {
+    current->next  = next;
+    next->previous = current;
+    current        = next;
+    next           = (Chain_Node *)
+                        _Addresses_Add_offset( (void *) next, node_size );
+  }
 
-    /* start at the chain head */
-    current = _Chain_Head(the_chain);
-
-    /* initialize the permanent null field of the chain */
-    the_chain->permanent_null = NULL;
-
-    /* initialize the next at the starting address */
-    next = starting_address;
-
-    /* run through every node */
-    while(count--)
-    {
-        /* set the current node next field */
-        current->next = next;
-
-        /* set next node previous field */
-        next->previous = current;
-
-        /* update the current node */
-        current = next;
-
-        /* update the next node */
-        next = (Chain_Node *)
-            _Addresses_Add_offset((void *) next , node_size);
-    }
-
-    /* the last node next is the tail of the chain */
-    current->next = _Chain_Tail(the_chain);
-
-    /* set the last element of the chain */
-    the_chain->last = current;
+  current->next = tail;
+  tail->previous = current;
 }
-
-/**  
- *  @}
- */
-
-/**
- *  @}
- */

@@ -1,5 +1,5 @@
 <%
-    import xky
+    import air
     import utils.templates as makoutils
     import parsers.a653.definitions as a653_definitions
 
@@ -25,7 +25,7 @@ static pmk_port_t usr_ports[] = ${'\\'}
     {   /* ${port} */
         .id         = ${j},
         .name       = "${port.name}",
-        .direction  = XKY_${port.direction}_PORT,
+        .direction  = AIR_${port.direction}_PORT,
     }, <% port.index = port_idx; port_idx += 1  %>
 % endfor
 % endfor
@@ -95,7 +95,7 @@ pmk_channel_t usr_channels_table[USR_CHANNELS] = ${'\\'}
     {   /* ${channel} */
         .id             = ${channel.id},
         .name           = "${channel.name}",
-        .type           = XKY_${channel.type},
+        .type           = AIR_${channel.type},
         .src            = ${'\\'}
         {
             .length     =  ${len(channel.src)},

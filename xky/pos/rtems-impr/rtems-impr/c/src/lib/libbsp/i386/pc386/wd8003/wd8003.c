@@ -7,8 +7,6 @@
  *    University of Saskatchewan
  *    Saskatoon, Saskatchewan, CANADA
  *    eric@skatter.usask.ca
- *
- *  $Id$
  */
 
 #include <bsp.h>
@@ -20,6 +18,7 @@
 #include <errno.h>
 #include <rtems/error.h>
 #include <rtems/rtems_bsdnet.h>
+#include <assert.h>
 
 #include <sys/param.h>
 #include <sys/mbuf.h>
@@ -75,7 +74,6 @@
  */
 struct wd_softc {
   struct arpcom			arpcom;
-  rtems_irq_connect_data	irqInfo;
   struct mbuf			**rxMbuf;
   struct mbuf			**txMbuf;
   int				acceptBroadcast;
@@ -86,6 +84,7 @@ struct wd_softc {
   int				txBdActiveCount;
   rtems_id			rxDaemonTid;
   rtems_id			txDaemonTid;
+  rtems_vector_number name;
 
   unsigned int 			port;
   unsigned char			*base;
@@ -129,7 +128,7 @@ static struct wd_softc wd_softc[NWDDRIVER];
  * WD interrupt handler
  */
 static void
-wd8003Enet_interrupt_handler (void *unused)
+wd8003Enet_interrupt_handler (void * unused)
 {
   unsigned int tport;
   unsigned char status, status2;
@@ -166,22 +165,9 @@ wd8003Enet_interrupt_handler (void *unused)
   if (status & (MSK_PRX+MSK_RXE)) {
     outport_byte(tport+ISR, status & (MSK_PRX+MSK_RXE));
     wd_softc[0].rxInterrupts++;
-    rtems_event_send (wd_softc[0].rxDaemonTid, INTERRUPT_EVENT);
+    rtems_bsdnet_event_send (wd_softc[0].rxDaemonTid, INTERRUPT_EVENT);
   }
 
-}
-
-static void nopOn(const rtems_irq_connect_data* notUsed)
-{
-  /*
-   * code should be moved from wd8003Enet_initialize_hardware
-   * to this location
-   */
-}
-
-static int wdIsOn(const rtems_irq_connect_data* irq)
-{
-  return BSP_irq_enabled_at_i8259s (irq->name);
 }
 
 /*
@@ -193,7 +179,7 @@ wd8003Enet_initialize_hardware (struct wd_softc *sc)
   int  i1, ultra;
   char cc1, cc2;
   unsigned char  temp;
-  rtems_status_code st;
+  rtems_status_code status;
   unsigned int tport;
   unsigned char *hwaddr;
 
@@ -259,15 +245,15 @@ wd8003Enet_initialize_hardware (struct wd_softc *sc)
   /*
    * Set up interrupts
    */
-  sc->irqInfo.hdl = wd8003Enet_interrupt_handler;
-  sc->irqInfo.on  = nopOn;
-  sc->irqInfo.off = nopOn;
-  sc->irqInfo.isOn = wdIsOn;
 
-  st = BSP_install_rtems_irq_handler (&sc->irqInfo);
-  if (!st)
-    rtems_panic ("Can't attach WD interrupt handler for irq %d\n",
-		  sc->irqInfo.name);
+  status = rtems_interrupt_handler_install(
+    sc->name,
+    "wd8003",
+    RTEMS_INTERRUPT_UNIQUE,
+    wd8003Enet_interrupt_handler,
+    NULL
+  );
+  assert(status == RTEMS_SUCCESSFUL);
 }
 
 static void
@@ -399,7 +385,7 @@ sendpacket (struct ifnet *ifp, struct mbuf *m)
 /*
  * Driver transmit daemon
  */
-void
+static void
 wd_txDaemon (void *arg)
 {
 	struct wd_softc *sc = (struct wd_softc *)arg;
@@ -437,7 +423,7 @@ wd_start (struct ifnet *ifp)
 {
 	struct wd_softc *sc = ifp->if_softc;
 
-	rtems_event_send (sc->txDaemonTid, START_TRANSMIT_EVENT);
+	rtems_bsdnet_event_send (sc->txDaemonTid, START_TRANSMIT_EVENT);
 	ifp->if_flags |= IFF_OACTIVE;
 }
 
@@ -609,9 +595,9 @@ rtems_wd_driver_attach (struct rtems_bsdnet_ifconfig *config, int attach)
 		mtu = ETHERMTU;
 
 	if (config->irno)
-		sc->irqInfo.name = config->irno;
+		sc->name = config->irno;
 	else
-		sc->irqInfo.name = 5;
+		sc->name = 5;
 
 	if (config->port)
 		sc->port = config->port;

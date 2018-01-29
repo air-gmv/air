@@ -1,39 +1,46 @@
-/*  bsp.h
- *
+/**
+ *  @file
+ *  
  *  This include file contains some definitions specific to the RBTX4925.
- *
- *  COPYRIGHT (c) 1989-2000.
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2012.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  bsp.h,v 1.7.6.1 2003/09/04 18:44:49 joel Exp
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-#ifndef _BSP_H
-#define _BSP_H
+#ifndef LIBBSP_MIPS_RBTX4925_BSP_H
+#define LIBBSP_MIPS_RBTX4925_BSP_H
+
+#ifndef ASM
+
+#include <bspopts.h>
+#include <bsp/default-initial-extension.h>
+
+#include <rtems.h>
+#include <libcpu/tx4925.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <bspopts.h>
+#define BSP_FEATURE_IRQ_EXTENSION
+#define BSP_SHARED_HANDLER_SUPPORT      1
 
-#include <rtems.h>
-#include <rtems/iosupp.h>
-#include <rtems/console.h>
-#include <rtems/clockdrv.h>
-#include <libcpu/tx4925.h>
-
-/* functions */
-
-rtems_isr_entry set_vector(
-  rtems_isr_entry, rtems_vector_number, int );
+/*
+ * Prototypes for methods called from .S for dependency tracking
+ */
+void init_tlb(void);
+void resettlb(int i);
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* !ASM */
 
 #endif

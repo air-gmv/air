@@ -1,5 +1,3 @@
-dnl $Id: check-tool.m4 179 2008-09-17 14:07:38Z hsilva $
-
 ## Check for a cross tool, similar to AC_CHECK_TOOL, but do not fall back to
 ## the un-prefixed version of PROG-TO-CHECK-FOR.
 dnl RTEMS_CHECK_TOOL(VARIABLE, PROG-TO-CHECK-FOR[, VALUE-IF-NOT-FOUND [, PATH]])

@@ -1,11 +1,13 @@
 /*
- *  tm27.h
- *
+ * @file
+ * @ingroup powerpc_mvme5500
+ * @brief Implementations for interrupt mechanisms for Time Test 27
+ */
+
+/*
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef _RTEMS_TMTEST27
@@ -42,23 +44,23 @@ void Install_tm27_vector(void (*_handler)())
 #define Cause_tm27_intr()  \
   do { \
     uint32_t _clicks = 1; \
-    asm volatile( "mtdec %0" : "=r" ((_clicks)) : "r" ((_clicks)) ); \
+    __asm__ volatile( "mtdec %0" : "=r" ((_clicks)) : "r" ((_clicks)) ); \
   } while (0)
 
 
 #define Clear_tm27_intr() \
   do { \
     uint32_t _clicks = 0xffffffff; \
-    asm volatile( "mtdec %0" : "=r" ((_clicks)) : "r" ((_clicks)) ); \
+    __asm__ volatile( "mtdec %0" : "=r" ((_clicks)) : "r" ((_clicks)) ); \
   } while (0)
 
 #define Lower_tm27_intr() \
   do { \
     uint32_t _msr = 0; \
     _ISR_Set_level( 0 ); \
-    asm volatile( "mfmsr %0 ;" : "=r" (_msr) : "r" (_msr) ); \
+    __asm__ volatile( "mfmsr %0 ;" : "=r" (_msr) : "r" (_msr) ); \
     _msr |=  0x8002; \
-    asm volatile( "mtmsr %0 ;" : "=r" (_msr) : "r" (_msr) ); \
+    __asm__ volatile( "mtmsr %0 ;" : "=r" (_msr) : "r" (_msr) ); \
   } while (0)
 
 #endif

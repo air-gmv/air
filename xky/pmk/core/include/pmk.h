@@ -15,7 +15,7 @@
 #ifndef __PMK_H__
 #define __PMK_H__
 
-#include <xky.h>
+#include <air.h>
 #include <cpu.h>
 
 #ifndef ASM
@@ -26,7 +26,7 @@
  */
 typedef struct {
 
-    xky_sz_t length;                      /**< length of the list             */
+    air_sz_t length;                      /**< length of the list             */
     void *elements;                     /**< elements in list               */
 
 } pmk_list_t;
@@ -42,38 +42,38 @@ typedef struct {
         &((type *)(list)->elements)[index]
 
 
-void *memset(void *, int, xky_sz_t);
-void *memcpy(void *, const void *, xky_sz_t);
-int strncmp(const char *, const char *, xky_sz_t);
+void *memset(void *, int, air_sz_t);
+void *memcpy(void *, const void *, air_sz_t);
+int strncmp(const char *, const char *, air_sz_t);
 
 
 
 #else /* ASM */
 
-/** @defgroup os_status_asm XKY-OS Status Code (ASM definitions)
+/** @defgroup os_status_asm AIR-OS Status Code (ASM definitions)
  *  Status code definitions for assembly
- *  @note The must match the status code values defined in xky.h
+ *  @note The must match the status code values defined in air.h
  *  @{
  */
-#define XKY_NO_ERROR                                             0x00
-#define XKY_SUCCESSFUL                                           0x00
-#define XKY_NO_ACTION                                            0x01
-#define XKY_NOT_AVAILABLE                                        0x02
-#define XKY_INVALID_PARAM                                        0x03
-#define XKY_INVALID_CONFIG                                       0x04
-#define XKY_INVALID_MODE                                         0x05
-#define XKY_TIMED_OUT                                            0x06
-#define XKY_INVALID_POINTER                                      0x07
-#define XKY_ERROR_MSGQUEUE_FULL                                  0x08
-#define XKY_ERROR_MSGQUEUE_EMPTY                                 0x09
-#define XKY_ERROR_MAX_PORT_NUM                                   0x0A
-#define XKY_INVALID_PORT_TYPE                                    0x0B
-#define XKY_UNSUCCESSFUL                                         0x0C
-#define XKY_INTERNAL_ERROR                                       0x0D
-#define XKY_INVALID_SIZE                                         0x0E
-#define XKY_INVALID_ADDRESS                                      0x0F
-#define XKY_OUT_OF_MEMORY                                        0x10
-#define XKY_DEVICE_NOT_FOUND                                     0x11
-#define XKY_DEVICE_ERROR                                         0x12
+#define AIR_NO_ERROR                                             0x00
+#define AIR_SUCCESSFUL                                           0x00
+#define AIR_NO_ACTION                                            0x01
+#define AIR_NOT_AVAILABLE                                        0x02
+#define AIR_INVALID_PARAM                                        0x03
+#define AIR_INVALID_CONFIG                                       0x04
+#define AIR_INVALID_MODE                                         0x05
+#define AIR_TIMED_OUT                                            0x06
+#define AIR_INVALID_POINTER                                      0x07
+#define AIR_ERROR_MSGQUEUE_FULL                                  0x08
+#define AIR_ERROR_MSGQUEUE_EMPTY                                 0x09
+#define AIR_ERROR_MAX_PORT_NUM                                   0x0A
+#define AIR_INVALID_PORT_TYPE                                    0x0B
+#define AIR_UNSUCCESSFUL                                         0x0C
+#define AIR_INTERNAL_ERROR                                       0x0D
+#define AIR_INVALID_SIZE                                         0x0E
+#define AIR_INVALID_ADDRESS                                      0x0F
+#define AIR_OUT_OF_MEMORY                                        0x10
+#define AIR_DEVICE_NOT_FOUND                                     0x11
+#define AIR_DEVICE_ERROR                                         0x12
 #endif /* ASM */
 #endif /* __PMK_H__ */

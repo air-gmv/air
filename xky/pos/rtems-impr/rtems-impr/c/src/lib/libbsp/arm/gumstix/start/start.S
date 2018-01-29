@@ -4,11 +4,10 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
+#include <bsp/linker-symbols.h>
 
 /* Some standard definitions...*/
 .equ PSR_MODE_USR,       0x10
@@ -38,8 +37,8 @@ _start:
 
 
         /* zero the bss */
-        ldr     r1, =_bss_end_
-        ldr     r0, =_bss_start_
+        ldr     r1, =bsp_section_bss_end
+        ldr     r0, =bsp_section_bss_begin
 
 _bss_init:
         mov     r2, #0
@@ -51,29 +50,29 @@ _bss_init:
         /* Enter IRQ mode and set up the IRQ stack pointer */
         mov     r0, #(PSR_MODE_IRQ | PSR_I | PSR_F)     /* No interrupts */
         msr     cpsr, r0
-        ldr     r1, =_irq_stack_size
-        ldr     sp, =_irq_stack
+        ldr     r1, =bsp_stack_irq_size
+        ldr     sp, =bsp_stack_irq_begin
         add     sp, sp, r1
 
         /* Enter FIQ mode and set up the FIQ stack pointer */
         mov     r0, #(PSR_MODE_FIQ | PSR_I | PSR_F)     /* No interrupts */
         msr     cpsr, r0
-        ldr     r1, =_fiq_stack_size
-        ldr     sp, =_fiq_stack
+        ldr     r1, =bsp_stack_fiq_size
+        ldr     sp, =bsp_stack_fiq_begin
         add     sp, sp, r1
 
         /* Enter ABT mode and set up the ABT stack pointer */
         mov     r0, #(PSR_MODE_ABT | PSR_I | PSR_F)     /* No interrupts */
         msr     cpsr, r0
-        ldr     r1, =_abt_stack_size
-        ldr     sp, =_abt_stack
+        ldr     r1, =bsp_stack_abt_size
+        ldr     sp, =bsp_stack_abt_begin
         add     sp, sp, r1
 
         /* Set up the SVC stack pointer last and stay in SVC mode */
         mov     r0, #(PSR_MODE_SVC | PSR_I | PSR_F)     /* No interrupts */
         msr     cpsr, r0
-        ldr     r1, =_svc_stack_size
-        ldr     sp, =_svc_stack
+        ldr     r1, =bsp_stack_und_size
+        ldr     sp, =bsp_stack_und_begin
         add     sp, sp, r1
         sub     sp, sp, #0x64
 
@@ -123,28 +122,35 @@ _hang:  b       _hang
  * of 16 words (64 bytes)
  */
 vector_block:
-        ldr     pc, Reset_Handler
-        ldr     pc, Undefined_Handler
-        ldr     pc, SWI_Handler
-        ldr     pc, Prefetch_Handler
-        ldr     pc, Abort_Handler
+        ldr    pc, handler_addr_reset
+        ldr    pc, handler_addr_undef
+        ldr    pc, handler_addr_swi
+        ldr    pc, handler_addr_prefetch
+        ldr    pc, handler_addr_abort
         nop
-        ldr     pc, IRQ_Handler
-        ldr     pc, FIQ_Handler
+        ldr    pc, handler_addr_irq
+        ldr    pc, handler_addr_fiq
 
-Reset_Handler:          b       bsp_reset
-Undefined_Handler:      b       Undefined_Handler
-SWI_Handler:            b       SWI_Handler
-Prefetch_Handler:       b       Prefetch_Handler
-Abort_Handler:          b       Abort_Handler
-                        nop
-IRQ_Handler:            b       IRQ_Handler
-FIQ_Handler:            b       FIQ_Handler
+handler_addr_reset:
+        .word  bsp_reset
 
-.globl Reset_Handler
-.globl Undefined_Handler
-.globl SWI_Handler
-.globl Prefetch_Handler
-.globl Abort_Handler
-.globl IRQ_Handler
-.globl FIQ_Handler
+handler_addr_undef:
+        .word  _ARMV4_Exception_undef_default
+
+handler_addr_swi:
+        .word  _ARMV4_Exception_swi_default
+
+handler_addr_prefetch:
+        .word  _ARMV4_Exception_pref_abort_default
+
+handler_addr_abort:
+        .word  _ARMV4_Exception_data_abort_default
+
+handler_addr_reserved:
+        .word  _ARMV4_Exception_reserved_default
+
+handler_addr_irq:
+        .word  _ARMV4_Exception_interrupt
+
+handler_addr_fiq:
+        .word  _ARMV4_Exception_fiq_default

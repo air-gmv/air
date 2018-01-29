@@ -11,9 +11,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <rtems.h>
@@ -49,9 +47,9 @@ void Shm_Lock(
 
   rtems_interrupt_disable( isr_level );
     Shm_isrstat = isr_level;
-    asm volatile( "lockit:"    : : );
-    asm volatile( "tas %0@"    : "=a" (lockptr) : "0" (lockptr) );
-    asm volatile( "bne lockit" : : );
+    __asm__ volatile( "lockit:"    : : );
+    __asm__ volatile( "tas %0@"    : "=a" (lockptr) : "0" (lockptr) );
+    __asm__ volatile( "bne lockit" : : );
 /* should delay */
 }
 

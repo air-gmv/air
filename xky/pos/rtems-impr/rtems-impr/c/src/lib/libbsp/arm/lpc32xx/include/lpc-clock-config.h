@@ -16,7 +16,7 @@
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
- * http://www.rtems.com/license/LICENSE.
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef LIBBSP_ARM_LPC32XX_LPC_CLOCK_CONFIG_H
@@ -43,6 +43,8 @@ extern "C" {
 #define LPC_CLOCK_INTERRUPT LPC32XX_IRQ_TIMER_0
 
 #define LPC_CLOCK_TIMER_BASE LPC32XX_BASE_TIMER_0
+
+#define LPC_CLOCK_TIMECOUNTER_BASE LPC32XX_BASE_TIMER_1
 
 #define LPC_CLOCK_REFERENCE LPC32XX_PERIPH_CLK
 

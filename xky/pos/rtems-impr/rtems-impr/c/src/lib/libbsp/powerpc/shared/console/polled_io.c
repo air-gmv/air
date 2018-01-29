@@ -9,10 +9,8 @@
  *  Copyright (C) 1999 Eric Valette. valette@crf.canon.fr
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- * $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <rtems/system.h>
@@ -48,7 +46,8 @@ void  pfree(void *);
 #endif
 
 #ifndef __BOOT__
-BSP_output_char_function_type	BSP_output_char = debug_putc_onlcr;
+BSP_output_char_function_type     BSP_output_char = debug_putc_onlcr;
+BSP_polling_getchar_function_type BSP_poll_char = NULL;
 #endif
 
 #ifdef USE_KBD_SUPPORT
@@ -372,9 +371,6 @@ unsigned int accent_table_size = 68;
 #define KBD_MODE_KCC 		0x40	/* Scan code conversion to PC format */
 #define KBD_MODE_RFU		0x80
 
-SPR_RW(DEC)
-SPR_RO(PVR)
-
 #endif /* USE_KBD_SUPPORT */
 
 /* Early messages after mm init but before console init are kept in log
@@ -414,48 +410,46 @@ struct _console_global_data {
 } console_global_data = {NULL, 0, 25, 80, 0, 24, 0, 0, 0, 0};
 
 typedef struct console_io {
-	void 	(*putc)	(const u_char);
-	int 	(*getc)	(void);
-	int 	(*tstc)	(void);
+	void 	(*console_io_putc)	(const u_char);
+	int 	(*console_io_getc)	(void);
+	int 	(*console_io_tstc)	(void);
 }console_io;
 
 extern console_io* curIo;
 
 void debug_putc(const u_char c)
 {
-  curIo->putc(c);
+  curIo->console_io_putc(c);
 }
 
 /* const char arg to be compatible with BSP_output_char decl. */
 void
 debug_putc_onlcr(const char c)
 {
-	if ('\n'==c)
-		debug_putc('\r');
 	debug_putc(c);
 }
 
 int debug_getc(void)
 {
-  return curIo->getc();
+  return curIo->console_io_getc();
 }
 
 int debug_tstc(void)
 {
-  return curIo->tstc();
+  return curIo->console_io_tstc();
 }
 
 #define vidmem ((__io_ptr)(ptr_mem_map->isa_mem_base+0xb8000))
 
-void vacuum_putc(u_char c) {
+static void vacuum_putc(u_char c) {
 	console_global_data.vacuum_sent++;
 }
 
-int vacuum_getc(void) {
+static int vacuum_getc(void) {
 	return -1;
 }
 
-int vacuum_tstc(void) {
+static int vacuum_tstc(void) {
 	return 0;
 }
 
@@ -500,7 +494,7 @@ static void pfree(void* p)
 }
 #endif
 
-void log_putc(const u_char c) {
+static void log_putc(const u_char c) {
 	console_log *l;
 	for(l=console_global_data.log; l; l=l->next) {
 		if (l->offset<PAGE_LOG_CHARS) break;
@@ -529,7 +523,7 @@ void my_puts(const u_char *s)
         char c;
 
         while ( ( c = *s++ ) != '\0' ) {
-				debug_putc_onlcr((const char)c);
+				rtems_putc(c);
         }
 }
 
@@ -553,19 +547,19 @@ void flush_log(void) {
 #error "BSP probably didn't define a console port"
 #endif
 
-void serial_putc(const u_char c)
+static void serial_putc(const u_char c)
 {
 	while ((INL_CONSOLE_INB(lsr) & LSR_THRE) == 0) ;
 	INL_CONSOLE_OUTB(thr, c);
 }
 
-int serial_getc(void)
+static int serial_getc(void)
 {
 	while ((INL_CONSOLE_INB(lsr) & LSR_DR) == 0) ;
 	return (INL_CONSOLE_INB(rbr));
 }
 
-int serial_tstc(void)
+static int serial_tstc(void)
 {
 	return ((INL_CONSOLE_INB(lsr) & LSR_DR) != 0);
 }
@@ -596,7 +590,7 @@ cursor(int x, int y)
 	vga_outb(0x15, pos);
 }
 
-void
+static void
 vga_putc(const u_char c)
 {
 	int x,y;
@@ -815,7 +809,7 @@ int kbdreset(void)
 	return 0;
 }
 
-int kbd_tstc(void)
+static int kbd_tstc(void)
 {
 	return ((kbd_inb(KBD_STATUS_REG) & KBD_STAT_OBF) != 0);
 }
@@ -891,7 +885,7 @@ static int skip_atoi(const char **s)
  */
 int k_vsprintf(char *buf, const char *fmt, va_list args);
 
-void  printk(const char *fmt, ...) {
+int  printk(const char *fmt, ...) {
 	va_list args;
 	int i;
 	/* Should not be a problem with 8kB of stack */
@@ -901,6 +895,7 @@ void  printk(const char *fmt, ...) {
 	i = k_vsprintf(buf, fmt, args);
 	va_end(args);
 	my_puts((u_char*)buf);
+	return i;
 }
 
 #endif
@@ -908,7 +903,7 @@ void  printk(const char *fmt, ...) {
 /* Necessary to avoid including a library, and GCC won't do this inline. */
 #define div10(num, rmd)							 \
 do {	uint32_t t1, t2, t3;							 \
-	asm("lis %4,0xcccd; "						 \
+	__asm__ ("lis %4,0xcccd; "						 \
 	    "addi %4,%4,0xffffcccd; "	/* Build 0xcccccccd */		 \
 	    "mulhwu %3,%0+1,%4; "	/* (num.l*cst.l).h  */		 \
 	    "mullw %2,%0,%4; "		/* (num.h*cst.l).l  */		 \

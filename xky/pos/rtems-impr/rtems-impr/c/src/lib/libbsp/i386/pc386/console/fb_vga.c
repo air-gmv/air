@@ -5,8 +5,6 @@
  * This module implements FB driver for "Bare VGA". It uses the
  * routines for "bare hardware" found in vgainit.c.
  *
- *  $Id$
- *
  */
 
 #include <stdlib.h>
@@ -20,13 +18,16 @@
 #include <rtems/libio.h>
 
 #include <rtems/fb.h>
+#include <rtems/framebuffer.h>
+
+#include <rtems/score/atomic.h>
 
 /* these routines are defined in vgainit.c.*/
 extern void ega_hwinit( void );
 extern void ega_hwterm( void );
 
-/* mutex attribure */
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+/* flag to limit driver to protect against multiple opens */
+static Atomic_Flag driver_mutex;
 
 /* screen information for the VGA driver */
 static struct fb_var_screeninfo fb_var =
@@ -81,11 +82,14 @@ rtems_device_driver frame_buffer_initialize(
   /*
    * Register the device
    */
-  status = rtems_io_register_name ("/dev/fb0", major, 0);
+  status = rtems_io_register_name (FRAMEBUFFER_DEVICE_0_NAME, major, 0);
   if (status != RTEMS_SUCCESSFUL) {
-    printk("Error registering /dev/fb0 FBVGA framebuffer device!\n");
+    printk("Error registering " FRAMEBUFFER_DEVICE_0_NAME
+           " FBVGA framebuffer device!\n");
     rtems_fatal_error_occurred( status );
   }
+
+  _Atomic_Flag_clear(&driver_mutex, ATOMIC_ORDER_RELEASE);
 
   return RTEMS_SUCCESSFUL;
 }
@@ -99,7 +103,7 @@ rtems_device_driver frame_buffer_open(
   void                      *arg
 )
 {
-  if (pthread_mutex_trylock(&mutex)== 0){
+  if (_Atomic_Flag_test_and_set(&driver_mutex, ATOMIC_ORDER_ACQUIRE) != 0 ) {
       /* restore previous state.  for VGA this means return to text mode.
        * leave out if graphics hardware has been initialized in
        * frame_buffer_initialize()
@@ -121,17 +125,13 @@ rtems_device_driver frame_buffer_close(
   void                      *arg
 )
 {
-  if (pthread_mutex_unlock(&mutex) == 0){
-    /* restore previous state.  for VGA this means return to text mode.
-     * leave out if graphics hardware has been initialized in
-     * frame_buffer_initialize() */
-    ega_hwterm();
-    printk( "FBVGA close called.\n" );
-    return RTEMS_SUCCESSFUL;
-  }
-
-  return RTEMS_UNSATISFIED;
-}
+  _Atomic_Flag_clear(&driver_mutex, ATOMIC_ORDER_RELEASE);
+  /* restore previous state.  for VGA this means return to text mode.
+   * leave out if graphics hardware has been initialized in
+   * frame_buffer_initialize() */
+  ega_hwterm();
+  printk( "FBVGA close called.\n" );
+  return RTEMS_SUCCESSFUL;
 
 /*
  * fbvga device driver READ entry point.

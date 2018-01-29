@@ -1,7 +1,3 @@
-#
-#  $Id:
-#
-
 Description: Motorola MCF52235EVB
 ============================================================================
 CPU: MCF52235, 60MHz
@@ -18,9 +14,7 @@ Currently this BSP must be configured with most RTEMS features turned
 off as RAM usage is too high.
 
 Configure as follows:
-configure --target=m68k-rtems4.9 --enable-rtemsbsp=mcf52235 \
-          --disable-networking --disable-posix --disable-itron --disable-cxx \
-          --disable-tests
+configure --target=m68k-rtems4.XXX --enable-rtemsbsp=mcf52235 \
 
 To get the tests to compile (but not run) change the linkcmds to specify
 a larger sram memory region (256K works).  This of course will let you 
@@ -32,7 +26,6 @@ you need for this BSP!
 In you project before you include confdefs.h, define some or all of the
 following:
 
-#define CONFIGURE_DISABLE_CLASSIC_API_NOTEPADS
 #define CONFIGURE_INIT_TASK_STACK_SIZE x
 #define CONFIGURE_MINIMUM_TASK_STACK_SIZE x
 #define CONFIGURE_INTERRUPT_STACK_SIZE x
@@ -94,8 +87,6 @@ rtems_task_suspend 0
 rtems_task_resume 0
 rtems_task_set_priority 0
 rtems_task_mode 0
-rtems_task_get_note 0
-rtems_task_set_note 0
 rtems_task_wake_when 0
 rtems_task_wake_after 0
 rtems_interrupt_catch 0

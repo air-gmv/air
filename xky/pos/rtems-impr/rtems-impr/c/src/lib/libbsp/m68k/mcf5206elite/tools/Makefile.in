@@ -60,7 +60,6 @@ am__make_running_with_option = \
   test $$has_opt = yes
 am__make_dryrun = (target_option=n; $(am__make_running_with_option))
 am__make_keepgoing = (target_option=k; $(am__make_running_with_option))
-pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkglibexecdir = $(libexecdir)/@PACKAGE@
@@ -75,26 +74,21 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = @build@
-host_triplet = @host@
 DIST_COMMON = $(top_srcdir)/../../../../../automake/host.am \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	../../../../../../../COPYING ChangeLog \
-	../../../../../../../ChangeLog ../../../../../../../INSTALL \
+	../../../../../../../COPYING ../../../../../../../INSTALL \
 	../../../../../../../README ../../../../../../../compile \
 	../../../../../../../config.guess \
 	../../../../../../../config.sub ../../../../../../../depcomp \
 	../../../../../../../install-sh ../../../../../../../mdate-sh \
-	../../../../../../../missing ../../../../../../../texinfo.tex \
-	$(top_srcdir)/../../../../../../../config.guess \
-	$(top_srcdir)/../../../../../../../config.sub \
+	../../../../../../../missing \
 	$(top_srcdir)/../../../../../../../install-sh \
 	$(top_srcdir)/../../../../../../../missing
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps =  \
-	$(top_srcdir)/../../../../../aclocal/canonical-target-name.m4 \
+	$(top_srcdir)/../../../../../aclocal/env-rtemsbsp.m4 \
 	$(top_srcdir)/../../../../../aclocal/project-root.m4 \
 	$(top_srcdir)/../../../../../aclocal/rtems-ampolish.m4 \
 	$(top_srcdir)/../../../../../aclocal/rtems-top.m4 \
@@ -174,6 +168,7 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
+pkgdatadir = @pkgdatadir@
 transform = 
 ACLOCAL = @ACLOCAL@
 AMPOLISH3 = @AMPOLISH3@
@@ -209,10 +204,14 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PERL = @PERL@
+PROJECT_INCLUDE = @PROJECT_INCLUDE@
+PROJECT_LIB = @PROJECT_LIB@
+PROJECT_RELEASE = @PROJECT_RELEASE@
 PROJECT_ROOT = @PROJECT_ROOT@
 PROJECT_TOPdir = @PROJECT_TOPdir@
 RTEMS_BSP = @RTEMS_BSP@
-RTEMS_CPU = @RTEMS_CPU@
+RTEMS_BSP_FAMILY = @RTEMS_BSP_FAMILY@
+RTEMS_CPU_MODEL = @RTEMS_CPU_MODEL@
 RTEMS_TOPdir = @RTEMS_TOPdir@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -226,11 +225,7 @@ am__leading_dot = @am__leading_dot@
 am__tar = @am__tar@
 am__untar = @am__untar@
 bindir = @bindir@
-build = @build@
 build_alias = @build_alias@
-build_cpu = @build_cpu@
-build_os = @build_os@
-build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
@@ -238,11 +233,7 @@ dirstamp = @dirstamp@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
-host = @host@
 host_alias = @host_alias@
-host_cpu = @host_cpu@
-host_os = @host_os@
-host_vendor = @host_vendor@
 htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@

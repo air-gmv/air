@@ -9,14 +9,18 @@
    when application exits. */
 #undef BSP_PRESS_KEY_FOR_RESET
 
+/* If defined, prints the exception context when an unexpected exception
+   occurs. */
+#undef BSP_PRINT_EXCEPTION_CONTEXT
+
 /* If defined, reset the board when the application exits. */
 #undef BSP_RESET_BOARD_AT_EXIT
 
-/* disable testsuite samples with high memory demands */
-#undef BSP_SMALL_MEMORY
-
 /* reset vector address for BSP start */
 #undef BSP_START_RESET_VECTOR
+
+/* USB OTG transceiver I2C address used by USB stack */
+#undef BSP_USB_OTG_TRANSCEIVER_I2C_ADDR
 
 /* CPU clock in Hz */
 #undef LPC24XX_CCLK
@@ -42,14 +46,32 @@
 /* configuration for UART 3 */
 #undef LPC24XX_CONFIG_UART_3
 
-/* enable Micron configuration for EMC */
-#undef LPC24XX_EMC_MICRON
+/* clock divider for EMCCLK (EMCCLK = CCLK / EMCCLKDIV) */
+#undef LPC24XX_EMCCLKDIV
 
-/* enable Numonyx configuration for EMC */
-#undef LPC24XX_EMC_NUMONYX
+/* enable ISSI IS42S32800B configuration for EMC */
+#undef LPC24XX_EMC_IS42S32800B
+
+/* enable ISSI IS42S32800D7 configuration for EMC */
+#undef LPC24XX_EMC_IS42S32800D7
+
+/* enable M29W160E configuration for EMC */
+#undef LPC24XX_EMC_M29W160E
+
+/* enable M29W320E70 configuration for EMC */
+#undef LPC24XX_EMC_M29W320E70
+
+/* enable Micron MT48LC4M16A2 configuration for EMC */
+#undef LPC24XX_EMC_MT48LC4M16A2
+
+/* enable SST39VF3201 configuration for EMC */
+#undef LPC24XX_EMC_SST39VF3201
 
 /* enable tests for EMC */
 #undef LPC24XX_EMC_TEST
+
+/* enable Winbond W9825G2JB75I configuration for EMC */
+#undef LPC24XX_EMC_W9825G2JB75I
 
 /* enable RMII for Ethernet */
 #undef LPC24XX_ETHERNET_RMII
@@ -63,8 +85,11 @@
 /* RTC oscillator frequency in Hz */
 #undef LPC24XX_OSCILLATOR_RTC
 
-/* enable special task stack support for task stacks in internal RAM */
-#undef LPC24XX_SPECIAL_TASK_STACKS_SUPPORT
+/* clock divider for default PCLK (PCLK = CCLK / PCLKDIV) */
+#undef LPC24XX_PCLKDIV
+
+/* optional Ethernet power-down pin, output is set to high to enable power */
+#undef LPC24XX_PIN_ETHERNET_POWER_DOWN
 
 /* stop Ethernet controller at start-up to avoid DMA interference */
 #undef LPC24XX_STOP_ETHERNET
@@ -77,6 +102,9 @@
 
 /* baud for UARTs */
 #undef LPC24XX_UART_BAUD
+
+/* DMA channel count */
+#undef LPC_DMA_CHANNEL_COUNT
 
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT

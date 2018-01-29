@@ -63,7 +63,6 @@ am__make_running_with_option = \
   test $$has_opt = yes
 am__make_dryrun = (target_option=n; $(am__make_running_with_option))
 am__make_keepgoing = (target_option=k; $(am__make_running_with_option))
-pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkglibexecdir = $(libexecdir)/@PACKAGE@
@@ -89,21 +88,22 @@ DIST_COMMON = $(top_srcdir)/../../../../automake/compile.am \
 	$(top_srcdir)/include/bspopts.h.in \
 	$(top_srcdir)/../../../../../../depcomp \
 	$(dist_project_lib_DATA) $(include_HEADERS) \
-	$(include_bsp_HEADERS) ../../../../../../COPYING ChangeLog \
-	../../../../../../ChangeLog ../../../../../../INSTALL README \
+	$(include_bestcomm_HEADERS) \
+	$(include_bestcomm_include_HEADERS) \
+	$(include_bestcomm_include_mgt5200_HEADERS) \
+	$(include_bestcomm_task_api_HEADERS) $(include_bsp_HEADERS) \
+	../../../../../../COPYING ../../../../../../INSTALL README \
 	../../../../../../README ../../../../../../compile \
 	../../../../../../config.guess ../../../../../../config.sub \
 	../../../../../../depcomp ../../../../../../install-sh \
 	../../../../../../mdate-sh ../../../../../../missing \
-	../../../../../../texinfo.tex \
 	$(top_srcdir)/../../../../../../compile \
 	$(top_srcdir)/../../../../../../config.guess \
 	$(top_srcdir)/../../../../../../config.sub \
 	$(top_srcdir)/../../../../../../install-sh \
 	$(top_srcdir)/../../../../../../missing
-noinst_PROGRAMS = $(am__EXEEXT_1)
-@HAS_NETWORKING_TRUE@am__append_1 = network.rel
-@HAS_NETWORKING_TRUE@am__append_2 = network.rel
+noinst_PROGRAMS =
+@HAS_NETWORKING_TRUE@am__append_1 = network_5200/network.c
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps =  \
@@ -155,7 +155,49 @@ libbsp_a_DEPENDENCIES =  \
 	../../../libcpu/@RTEMS_CPU@/@exceptions@/rtems-cpu.rel \
 	../../../libcpu/@RTEMS_CPU@/@exceptions@/exc_bspsupport.rel \
 	../../../libcpu/@RTEMS_CPU@/mpc6xx/mmu.rel \
-	../../../libcpu/@RTEMS_CPU@/mpc6xx/timer.rel $(am__append_2)
+	../../../libcpu/@RTEMS_CPU@/mpc6xx/timer.rel
+am__libbsp_a_SOURCES_DIST = bestcomm/include/ppctypes.h \
+	bestcomm/include/mgt5200/mgt5200.h \
+	bestcomm/include/mgt5200/sdma.h bestcomm/bestcomm_api.c \
+	bestcomm/bestcomm_api.h bestcomm/bestcomm_glue.c \
+	bestcomm/bestcomm_glue.h bestcomm/dma_image.c \
+	bestcomm/dma_image.capi.h bestcomm/dma_image.h \
+	bestcomm/dma_image.reloc.c bestcomm/load_task.c \
+	bestcomm/tasksetup_ata.c bestcomm/tasksetup_bdtable.c \
+	bestcomm/tasksetup_crc16_dp_0.c \
+	bestcomm/tasksetup_crc16_dp_1.c bestcomm/tasksetup_fec_rx_bd.c \
+	bestcomm/tasksetup_fec_tx_bd.c bestcomm/tasksetup_gen_dp_0.c \
+	bestcomm/tasksetup_gen_dp_1.c bestcomm/tasksetup_gen_dp_2.c \
+	bestcomm/tasksetup_gen_dp_3.c bestcomm/tasksetup_gen_dp_bd_0.c \
+	bestcomm/tasksetup_gen_dp_bd_1.c \
+	bestcomm/tasksetup_gen_rx_bd.c bestcomm/tasksetup_gen_tx_bd.c \
+	bestcomm/tasksetup_lpc.c bestcomm/tasksetup_pci_rx.c \
+	bestcomm/tasksetup_pci_tx.c bestcomm/bestcomm_priv.h \
+	bestcomm/task_api/bestcomm_api_mem.h \
+	bestcomm/task_api/bestcomm_cntrl.h \
+	bestcomm/task_api/tasksetup_bdtable.h \
+	bestcomm/task_api/tasksetup_general.h ../shared/clock/clock.c \
+	console/console.c i2c/i2c.c i2c/i2cdrv.c i2c/mpc5200mbus.c \
+	i2c/mpc5200mbus.h ide/idecfg.c ide/pcmcia_ide.c \
+	ide/pcmcia_ide.h ide/ata.c ide/ata-instance.c \
+	ide/ata-dma-pio-single.c include/irq.h irq/irq.c \
+	../../shared/src/irq-generic.c ../../shared/src/irq-legacy.c \
+	../../shared/src/irq-info.c ../../shared/src/irq-shell.c \
+	../../shared/src/irq-server.c mscan/mscan.c mscan/mscan-base.c \
+	mscan/mscan.h mscan/mscan_int.h nvram/nvram.c nvram/nvram.h \
+	nvram/m93cxx.h slicetimer/slicetimer.c slicetimer/slicetimer.h \
+	tod/todcfg.c tod/pcf8563.c tod/pcf8563.h ../../shared/tod.c \
+	../../shared/bootcard.c ../../shared/getentropy-cpucounter.c \
+	../../shared/bspclean.c ../../shared/bspgetworkarea.c \
+	../../shared/bsppredriverhook.c \
+	../../shared/gnatinstallhandler.c ../../shared/sbrk.c \
+	../../shared/src/bsp-uboot-board-info.c ../shared/showbats.c \
+	../shared/src/memcpy.c ../shared/startup/bspidle.c \
+	../shared/uboot_dump_bdinfo.c ../shared/uboot_getenv.c \
+	startup/bspreset.c startup/bspstart.c startup/cpuinit.c \
+	startup/uboot_support.c startup/bestcomm.c \
+	network_5200/network.c
+@HAS_NETWORKING_TRUE@am__objects_1 = network.$(OBJEXT)
 am_libbsp_a_OBJECTS = bestcomm_api.$(OBJEXT) bestcomm_glue.$(OBJEXT) \
 	dma_image.$(OBJEXT) dma_image.reloc.$(OBJEXT) \
 	load_task.$(OBJEXT) tasksetup_ata.$(OBJEXT) \
@@ -169,32 +211,26 @@ am_libbsp_a_OBJECTS = bestcomm_api.$(OBJEXT) bestcomm_glue.$(OBJEXT) \
 	tasksetup_pci_rx.$(OBJEXT) tasksetup_pci_tx.$(OBJEXT) \
 	clock.$(OBJEXT) console.$(OBJEXT) i2c.$(OBJEXT) \
 	i2cdrv.$(OBJEXT) mpc5200mbus.$(OBJEXT) idecfg.$(OBJEXT) \
-	pcmcia_ide.$(OBJEXT) irq.$(OBJEXT) irq-generic.$(OBJEXT) \
-	irq-legacy.$(OBJEXT) irq-info.$(OBJEXT) irq-shell.$(OBJEXT) \
-	irq-server.$(OBJEXT) mscan.$(OBJEXT) mscan-base.$(OBJEXT) \
-	nvram.$(OBJEXT) slicetimer.$(OBJEXT) todcfg.$(OBJEXT) \
-	pcf8563.$(OBJEXT) tod.$(OBJEXT) bootcard.$(OBJEXT) \
-	bsplibc.$(OBJEXT) bsppost.$(OBJEXT) \
-	bsppretaskinghook.$(OBJEXT) bsppredriverhook.$(OBJEXT) \
-	gnatinstallhandler.$(OBJEXT) sbrk.$(OBJEXT) showbats.$(OBJEXT) \
+	pcmcia_ide.$(OBJEXT) ata.$(OBJEXT) ata-instance.$(OBJEXT) \
+	ata-dma-pio-single.$(OBJEXT) irq.$(OBJEXT) \
+	irq-generic.$(OBJEXT) irq-legacy.$(OBJEXT) irq-info.$(OBJEXT) \
+	irq-shell.$(OBJEXT) irq-server.$(OBJEXT) mscan.$(OBJEXT) \
+	mscan-base.$(OBJEXT) nvram.$(OBJEXT) slicetimer.$(OBJEXT) \
+	todcfg.$(OBJEXT) pcf8563.$(OBJEXT) tod.$(OBJEXT) \
+	bootcard.$(OBJEXT) getentropy-cpucounter.$(OBJEXT) \
+	bspclean.$(OBJEXT) bspgetworkarea.$(OBJEXT) \
+	bsppredriverhook.$(OBJEXT) gnatinstallhandler.$(OBJEXT) \
+	sbrk.$(OBJEXT) bsp-uboot-board-info.$(OBJEXT) \
+	showbats.$(OBJEXT) memcpy.$(OBJEXT) bspidle.$(OBJEXT) \
 	uboot_dump_bdinfo.$(OBJEXT) uboot_getenv.$(OBJEXT) \
-	bspclean.$(OBJEXT) bspreset.$(OBJEXT) bspgetworkarea.$(OBJEXT) \
-	bspidle.$(OBJEXT) bspstart.$(OBJEXT) cpuinit.$(OBJEXT) \
-	uboot_support.$(OBJEXT)
+	bspreset.$(OBJEXT) bspstart.$(OBJEXT) cpuinit.$(OBJEXT) \
+	uboot_support.$(OBJEXT) bestcomm.$(OBJEXT) $(am__objects_1)
 libbsp_a_OBJECTS = $(am_libbsp_a_OBJECTS)
 libbspstart_a_AR = $(AR) $(ARFLAGS)
 libbspstart_a_LIBADD =
 am_libbspstart_a_OBJECTS = start.$(OBJEXT) rtems_crti.$(OBJEXT)
 libbspstart_a_OBJECTS = $(am_libbspstart_a_OBJECTS)
-@HAS_NETWORKING_TRUE@am__EXEEXT_1 = network.rel$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
-am__network_rel_SOURCES_DIST = network_5200/network.c
-@HAS_NETWORKING_TRUE@am_network_rel_OBJECTS =  \
-@HAS_NETWORKING_TRUE@	network_rel-network.$(OBJEXT)
-network_rel_OBJECTS = $(am_network_rel_OBJECTS)
-network_rel_LDADD = $(LDADD)
-network_rel_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(network_rel_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -233,10 +269,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libbsp_a_SOURCES) $(libbspstart_a_SOURCES) \
-	$(network_rel_SOURCES)
-DIST_SOURCES = $(libbsp_a_SOURCES) $(libbspstart_a_SOURCES) \
-	$(am__network_rel_SOURCES_DIST)
+SOURCES = $(libbsp_a_SOURCES) $(libbspstart_a_SOURCES)
+DIST_SOURCES = $(am__libbsp_a_SOURCES_DIST) $(libbspstart_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -271,11 +305,17 @@ am__uninstall_files_from_dir = { \
   }
 am__installdirs = "$(DESTDIR)$(project_libdir)" \
 	"$(DESTDIR)$(project_libdir)" "$(DESTDIR)$(includedir)" \
-	"$(DESTDIR)$(include_bspdir)" "$(DESTDIR)$(includedir)" \
-	"$(DESTDIR)$(include_bspdir)"
+	"$(DESTDIR)$(include_bestcommdir)" \
+	"$(DESTDIR)$(include_bestcomm_includedir)" \
+	"$(DESTDIR)$(include_bestcomm_include_mgt5200dir)" \
+	"$(DESTDIR)$(include_bestcomm_task_apidir)" \
+	"$(DESTDIR)$(include_bspdir)" "$(DESTDIR)$(includedir)"
 DATA = $(dist_project_lib_DATA) $(project_lib_DATA)
-HEADERS = $(include_HEADERS) $(include_bsp_HEADERS) \
-	$(nodist_include_HEADERS) $(nodist_include_bsp_HEADERS)
+HEADERS = $(include_HEADERS) $(include_bestcomm_HEADERS) \
+	$(include_bestcomm_include_HEADERS) \
+	$(include_bestcomm_include_mgt5200_HEADERS) \
+	$(include_bestcomm_task_api_HEADERS) $(include_bsp_HEADERS) \
+	$(nodist_include_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -314,6 +354,7 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
+pkgdatadir = @pkgdatadir@
 ACLOCAL = @ACLOCAL@
 AMPOLISH3 = @AMPOLISH3@
 AMTAR = @AMTAR@
@@ -445,19 +486,23 @@ AM_CFLAGS =
 AM_CXXFLAGS = 
 AM_CCASFLAGS = @RTEMS_CCASFLAGS@
 include_bspdir = $(includedir)/bsp
+include_bestcommdir = $(include_bspdir)/bestcomm
+include_bestcomm_includedir = $(include_bestcommdir)/include
+include_bestcomm_include_mgt5200dir = $(include_bestcomm_includedir)/mgt5200
+include_bestcomm_task_apidir = $(include_bestcommdir)/task_api
 dist_project_lib_DATA = bsp_specs startup/linkcmds.base
-include_HEADERS = include/bsp.h include/i2cdrv.h include/u-boot.h \
-	include/i2c.h include/tm27.h ../../shared/include/coverhd.h
-nodist_include_HEADERS = include/bspopts.h ../../shared/tod.h
-nodist_include_bsp_HEADERS = ../../shared/include/bootcard.h
+include_HEADERS = include/bsp.h include/i2cdrv.h include/i2c.h \
+	include/tm27.h ../../shared/include/coverhd.h
+nodist_include_HEADERS = include/bspopts.h
 DISTCLEANFILES = include/bspopts.h $(PREINSTALL_DIRS)
 noinst_LIBRARIES = libbspstart.a libbsp.a
 libbspstart_a_SOURCES = start/start.S \
 	../../powerpc/shared/start/rtems_crti.S
 project_lib_DATA = start.$(OBJEXT) rtems_crti.$(OBJEXT) \
 	startup/linkcmds
-EXTRA_DIST = startup/linkcmds.brs5l startup/linkcmds.icecube \
-	startup/linkcmds.pm520_cr825 startup/linkcmds.pm520_ze30
+EXTRA_DIST = startup/linkcmds.brs5l startup/linkcmds.brs6l \
+	startup/linkcmds.icecube startup/linkcmds.pm520_cr825 \
+	startup/linkcmds.pm520_ze30 startup/linkcmds.dp2
 
 # bestcomm
 
@@ -499,60 +544,100 @@ libbsp_a_SOURCES = bestcomm/include/ppctypes.h \
 	bestcomm/task_api/tasksetup_general.h ../shared/clock/clock.c \
 	console/console.c i2c/i2c.c i2c/i2cdrv.c i2c/mpc5200mbus.c \
 	i2c/mpc5200mbus.h ide/idecfg.c ide/pcmcia_ide.c \
-	ide/pcmcia_ide.h include/irq.h irq/irq.c \
+	ide/pcmcia_ide.h ide/ata.c ide/ata-instance.c \
+	ide/ata-dma-pio-single.c include/irq.h irq/irq.c \
 	../../shared/src/irq-generic.c ../../shared/src/irq-legacy.c \
 	../../shared/src/irq-info.c ../../shared/src/irq-shell.c \
 	../../shared/src/irq-server.c mscan/mscan.c mscan/mscan-base.c \
 	mscan/mscan.h mscan/mscan_int.h nvram/nvram.c nvram/nvram.h \
 	nvram/m93cxx.h slicetimer/slicetimer.c slicetimer/slicetimer.h \
 	tod/todcfg.c tod/pcf8563.c tod/pcf8563.h ../../shared/tod.c \
-	../../shared/bootcard.c ../../shared/bsplibc.c \
-	../../shared/bsppost.c ../../shared/bsppretaskinghook.c \
+	../../shared/bootcard.c ../../shared/getentropy-cpucounter.c \
+	../../shared/bspclean.c ../../shared/bspgetworkarea.c \
 	../../shared/bsppredriverhook.c \
 	../../shared/gnatinstallhandler.c ../../shared/sbrk.c \
-	../shared/showbats.c ../shared/uboot_dump_bdinfo.c \
-	../shared/uboot_getenv.c ../../shared/bspclean.c \
-	startup/bspreset.c ../../shared/bspgetworkarea.c \
-	../shared/startup/bspidle.c startup/bspstart.c \
-	startup/cpuinit.c startup/uboot_support.c
-include_bsp_HEADERS = ../../shared/include/irq-generic.h \
-	../../shared/include/irq-info.h include/irq.h include/i2cdrv.h \
-	include/i2c.h include/mpc5200.h include/mscan-base.h \
-	include/u-boot.h mscan/mscan.h nvram/nvram.h \
-	slicetimer/slicetimer.h
-@HAS_NETWORKING_TRUE@network_CPPFLAGS =  \
-@HAS_NETWORKING_TRUE@	-D__INSIDE_RTEMS_BSD_TCPIP_STACK__ \
-@HAS_NETWORKING_TRUE@	-D__BSD_VISIBLE
-@HAS_NETWORKING_TRUE@network_rel_SOURCES = network_5200/network.c
-@HAS_NETWORKING_TRUE@network_rel_CPPFLAGS = $(AM_CPPFLAGS) $(network_CPPFLAGS)
-@HAS_NETWORKING_TRUE@network_rel_LDFLAGS = $(RTEMS_RELLDFLAGS)
+	../../shared/src/bsp-uboot-board-info.c ../shared/showbats.c \
+	../shared/src/memcpy.c ../shared/startup/bspidle.c \
+	../shared/uboot_dump_bdinfo.c ../shared/uboot_getenv.c \
+	startup/bspreset.c startup/bspstart.c startup/cpuinit.c \
+	startup/uboot_support.c startup/bestcomm.c $(am__append_1)
+include_bestcomm_HEADERS = bestcomm/bestcomm_priv.h \
+	bestcomm/dma_image.h \
+	bestcomm/dma_image.capi.h \
+	bestcomm/bestcomm_api.h \
+	bestcomm/bestcomm_glue.h
+
+include_bestcomm_include_HEADERS = bestcomm/include/ppctypes.h \
+	bestcomm/include/mgt5200/sdma.h \
+	bestcomm/include/mgt5200/mgt5200.h
+
+include_bestcomm_include_mgt5200_HEADERS = bestcomm/include/mgt5200/mgt5200.h \
+	bestcomm/include/mgt5200/sdma.h
+
+include_bestcomm_task_api_HEADERS = bestcomm/task_api/tasksetup_general.h \
+	bestcomm/task_api/tasksetup_bdtable.h \
+	bestcomm/task_api/bestcomm_cntrl.h \
+	bestcomm/task_api/bestcomm_api_mem.h
+
+include_bsp_HEADERS = ../../shared/include/bootcard.h \
+	../../shared/include/irq-generic.h \
+	../../shared/include/irq-info.h ../../shared/include/u-boot.h \
+	../../shared/include/utility.h \
+	../shared/include/u-boot-board-info.h include/ata.h \
+	include/bestcomm.h include/bestcomm_ops.h include/i2cdrv.h \
+	include/i2c.h include/irq.h include/mpc5200.h \
+	include/mscan-base.h include/u-boot-config.h mscan/mscan.h \
+	nvram/nvram.h slicetimer/slicetimer.h
 libbsp_a_LIBADD = ../../../libcpu/@RTEMS_CPU@/shared/cpuIdent.rel \
 	../../../libcpu/@RTEMS_CPU@/shared/cache.rel \
 	../../../libcpu/@RTEMS_CPU@/shared/stack.rel \
 	../../../libcpu/@RTEMS_CPU@/@exceptions@/rtems-cpu.rel \
 	../../../libcpu/@RTEMS_CPU@/@exceptions@/exc_bspsupport.rel \
 	../../../libcpu/@RTEMS_CPU@/mpc6xx/mmu.rel \
-	../../../libcpu/@RTEMS_CPU@/mpc6xx/timer.rel $(am__append_2)
+	../../../libcpu/@RTEMS_CPU@/mpc6xx/timer.rel
+
 PREINSTALL_DIRS = $(PROJECT_LIB)/$(dirstamp) \
 	$(PROJECT_INCLUDE)/$(dirstamp) \
-	$(PROJECT_INCLUDE)/bsp/$(dirstamp)
+	$(PROJECT_INCLUDE)/bsp/$(dirstamp) \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/$(dirstamp) \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/include/$(dirstamp) \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/include/mgt5200/$(dirstamp) \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/task_api/$(dirstamp)
+PREINSTALL_FILES = $(PROJECT_LIB)/bsp_specs $(PROJECT_INCLUDE)/bsp.h \
+	$(PROJECT_INCLUDE)/i2cdrv.h $(PROJECT_INCLUDE)/i2c.h \
+	$(PROJECT_INCLUDE)/tm27.h $(PROJECT_INCLUDE)/bspopts.h \
+	$(PROJECT_INCLUDE)/coverhd.h $(PROJECT_LIB)/linkcmds.base \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/bestcomm_priv.h \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/dma_image.h \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/dma_image.capi.h \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/bestcomm_api.h \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/bestcomm_glue.h \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/include/ppctypes.h \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/include/sdma.h \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/include/mgt5200.h \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/include/mgt5200/mgt5200.h \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/include/mgt5200/sdma.h \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/task_api/tasksetup_general.h \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/task_api/tasksetup_bdtable.h \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/task_api/bestcomm_cntrl.h \
+	$(PROJECT_INCLUDE)/bsp/bestcomm/task_api/bestcomm_api_mem.h \
+	$(PROJECT_INCLUDE)/bsp/bootcard.h \
+	$(PROJECT_INCLUDE)/bsp/irq-generic.h \
+	$(PROJECT_INCLUDE)/bsp/irq-info.h \
+	$(PROJECT_INCLUDE)/bsp/u-boot.h \
+	$(PROJECT_INCLUDE)/bsp/utility.h \
+	$(PROJECT_INCLUDE)/bsp/u-boot-board-info.h \
+	$(PROJECT_INCLUDE)/bsp/ata.h $(PROJECT_INCLUDE)/bsp/bestcomm.h \
+	$(PROJECT_INCLUDE)/bsp/bestcomm_ops.h \
+	$(PROJECT_INCLUDE)/bsp/i2cdrv.h $(PROJECT_INCLUDE)/bsp/i2c.h \
+	$(PROJECT_INCLUDE)/bsp/irq.h $(PROJECT_INCLUDE)/bsp/mpc5200.h \
+	$(PROJECT_INCLUDE)/bsp/mscan-base.h \
+	$(PROJECT_INCLUDE)/bsp/u-boot-config.h \
+	$(PROJECT_INCLUDE)/bsp/mscan.h $(PROJECT_INCLUDE)/bsp/nvram.h \
+	$(PROJECT_INCLUDE)/bsp/slicetimer.h
+CLEANFILES = $(PREINSTALL_FILES) $(TMPINSTALL_FILES)
 TMPINSTALL_FILES = $(PROJECT_LIB)/start.$(OBJEXT) \
 	$(PROJECT_LIB)/rtems_crti.$(OBJEXT) $(PROJECT_LIB)/linkcmds
-CLEANFILES = $(TMPINSTALL_FILES) $(PREINSTALL_FILES)
-PREINSTALL_FILES = $(PROJECT_LIB)/bsp_specs $(PROJECT_INCLUDE)/bsp.h \
-	$(PROJECT_INCLUDE)/i2cdrv.h $(PROJECT_INCLUDE)/u-boot.h \
-	$(PROJECT_INCLUDE)/i2c.h $(PROJECT_INCLUDE)/tm27.h \
-	$(PROJECT_INCLUDE)/bspopts.h $(PROJECT_INCLUDE)/bsp/bootcard.h \
-	$(PROJECT_INCLUDE)/coverhd.h $(PROJECT_INCLUDE)/tod.h \
-	$(PROJECT_LIB)/linkcmds.base \
-	$(PROJECT_INCLUDE)/bsp/irq-generic.h \
-	$(PROJECT_INCLUDE)/bsp/irq-info.h $(PROJECT_INCLUDE)/bsp/irq.h \
-	$(PROJECT_INCLUDE)/bsp/i2cdrv.h $(PROJECT_INCLUDE)/bsp/i2c.h \
-	$(PROJECT_INCLUDE)/bsp/mpc5200.h \
-	$(PROJECT_INCLUDE)/bsp/mscan-base.h \
-	$(PROJECT_INCLUDE)/bsp/u-boot.h $(PROJECT_INCLUDE)/bsp/mscan.h \
-	$(PROJECT_INCLUDE)/bsp/nvram.h \
-	$(PROJECT_INCLUDE)/bsp/slicetimer.h
 PROJECT_TOOLS = $(PROJECT_RELEASE)/build-tools
 all: all-am
 
@@ -625,26 +710,24 @@ libbspstart.a: $(libbspstart_a_OBJECTS) $(libbspstart_a_DEPENDENCIES) $(EXTRA_li
 clean-noinstPROGRAMS:
 	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
 
-network.rel$(EXEEXT): $(network_rel_OBJECTS) $(network_rel_DEPENDENCIES) $(EXTRA_network_rel_DEPENDENCIES) 
-	@rm -f network.rel$(EXEEXT)
-	$(AM_V_CCLD)$(network_rel_LINK) $(network_rel_OBJECTS) $(network_rel_LDADD) $(LIBS)
-
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ata-dma-pio-single.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ata-instance.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ata.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bestcomm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bestcomm_api.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bestcomm_glue.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bootcard.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bsp-uboot-board-info.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bspclean.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bspgetworkarea.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bspidle.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bsplibc.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bsppost.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bsppredriverhook.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bsppretaskinghook.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bspreset.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bspstart.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/clock.Po@am__quote@
@@ -652,6 +735,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cpuinit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dma_image.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dma_image.reloc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getentropy-cpucounter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnatinstallhandler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i2c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i2cdrv.Po@am__quote@
@@ -663,10 +747,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/irq-shell.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/irq.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/load_task.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memcpy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mpc5200mbus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mscan-base.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mscan.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/network_rel-network.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/network.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nvram.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcf8563.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcmcia_ide.Po@am__quote@
@@ -1160,6 +1245,48 @@ pcmcia_ide.obj: ide/pcmcia_ide.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o pcmcia_ide.obj `if test -f 'ide/pcmcia_ide.c'; then $(CYGPATH_W) 'ide/pcmcia_ide.c'; else $(CYGPATH_W) '$(srcdir)/ide/pcmcia_ide.c'; fi`
 
+ata.o: ide/ata.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ata.o -MD -MP -MF $(DEPDIR)/ata.Tpo -c -o ata.o `test -f 'ide/ata.c' || echo '$(srcdir)/'`ide/ata.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ata.Tpo $(DEPDIR)/ata.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ide/ata.c' object='ata.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ata.o `test -f 'ide/ata.c' || echo '$(srcdir)/'`ide/ata.c
+
+ata.obj: ide/ata.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ata.obj -MD -MP -MF $(DEPDIR)/ata.Tpo -c -o ata.obj `if test -f 'ide/ata.c'; then $(CYGPATH_W) 'ide/ata.c'; else $(CYGPATH_W) '$(srcdir)/ide/ata.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ata.Tpo $(DEPDIR)/ata.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ide/ata.c' object='ata.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ata.obj `if test -f 'ide/ata.c'; then $(CYGPATH_W) 'ide/ata.c'; else $(CYGPATH_W) '$(srcdir)/ide/ata.c'; fi`
+
+ata-instance.o: ide/ata-instance.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ata-instance.o -MD -MP -MF $(DEPDIR)/ata-instance.Tpo -c -o ata-instance.o `test -f 'ide/ata-instance.c' || echo '$(srcdir)/'`ide/ata-instance.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ata-instance.Tpo $(DEPDIR)/ata-instance.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ide/ata-instance.c' object='ata-instance.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ata-instance.o `test -f 'ide/ata-instance.c' || echo '$(srcdir)/'`ide/ata-instance.c
+
+ata-instance.obj: ide/ata-instance.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ata-instance.obj -MD -MP -MF $(DEPDIR)/ata-instance.Tpo -c -o ata-instance.obj `if test -f 'ide/ata-instance.c'; then $(CYGPATH_W) 'ide/ata-instance.c'; else $(CYGPATH_W) '$(srcdir)/ide/ata-instance.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ata-instance.Tpo $(DEPDIR)/ata-instance.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ide/ata-instance.c' object='ata-instance.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ata-instance.obj `if test -f 'ide/ata-instance.c'; then $(CYGPATH_W) 'ide/ata-instance.c'; else $(CYGPATH_W) '$(srcdir)/ide/ata-instance.c'; fi`
+
+ata-dma-pio-single.o: ide/ata-dma-pio-single.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ata-dma-pio-single.o -MD -MP -MF $(DEPDIR)/ata-dma-pio-single.Tpo -c -o ata-dma-pio-single.o `test -f 'ide/ata-dma-pio-single.c' || echo '$(srcdir)/'`ide/ata-dma-pio-single.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ata-dma-pio-single.Tpo $(DEPDIR)/ata-dma-pio-single.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ide/ata-dma-pio-single.c' object='ata-dma-pio-single.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ata-dma-pio-single.o `test -f 'ide/ata-dma-pio-single.c' || echo '$(srcdir)/'`ide/ata-dma-pio-single.c
+
+ata-dma-pio-single.obj: ide/ata-dma-pio-single.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ata-dma-pio-single.obj -MD -MP -MF $(DEPDIR)/ata-dma-pio-single.Tpo -c -o ata-dma-pio-single.obj `if test -f 'ide/ata-dma-pio-single.c'; then $(CYGPATH_W) 'ide/ata-dma-pio-single.c'; else $(CYGPATH_W) '$(srcdir)/ide/ata-dma-pio-single.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ata-dma-pio-single.Tpo $(DEPDIR)/ata-dma-pio-single.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ide/ata-dma-pio-single.c' object='ata-dma-pio-single.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ata-dma-pio-single.obj `if test -f 'ide/ata-dma-pio-single.c'; then $(CYGPATH_W) 'ide/ata-dma-pio-single.c'; else $(CYGPATH_W) '$(srcdir)/ide/ata-dma-pio-single.c'; fi`
+
 irq.o: irq/irq.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT irq.o -MD -MP -MF $(DEPDIR)/irq.Tpo -c -o irq.o `test -f 'irq/irq.c' || echo '$(srcdir)/'`irq/irq.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/irq.Tpo $(DEPDIR)/irq.Po
@@ -1356,47 +1483,47 @@ bootcard.obj: ../../shared/bootcard.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bootcard.obj `if test -f '../../shared/bootcard.c'; then $(CYGPATH_W) '../../shared/bootcard.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/bootcard.c'; fi`
 
-bsplibc.o: ../../shared/bsplibc.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bsplibc.o -MD -MP -MF $(DEPDIR)/bsplibc.Tpo -c -o bsplibc.o `test -f '../../shared/bsplibc.c' || echo '$(srcdir)/'`../../shared/bsplibc.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bsplibc.Tpo $(DEPDIR)/bsplibc.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/bsplibc.c' object='bsplibc.o' libtool=no @AMDEPBACKSLASH@
+getentropy-cpucounter.o: ../../shared/getentropy-cpucounter.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT getentropy-cpucounter.o -MD -MP -MF $(DEPDIR)/getentropy-cpucounter.Tpo -c -o getentropy-cpucounter.o `test -f '../../shared/getentropy-cpucounter.c' || echo '$(srcdir)/'`../../shared/getentropy-cpucounter.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/getentropy-cpucounter.Tpo $(DEPDIR)/getentropy-cpucounter.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/getentropy-cpucounter.c' object='getentropy-cpucounter.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bsplibc.o `test -f '../../shared/bsplibc.c' || echo '$(srcdir)/'`../../shared/bsplibc.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o getentropy-cpucounter.o `test -f '../../shared/getentropy-cpucounter.c' || echo '$(srcdir)/'`../../shared/getentropy-cpucounter.c
 
-bsplibc.obj: ../../shared/bsplibc.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bsplibc.obj -MD -MP -MF $(DEPDIR)/bsplibc.Tpo -c -o bsplibc.obj `if test -f '../../shared/bsplibc.c'; then $(CYGPATH_W) '../../shared/bsplibc.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/bsplibc.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bsplibc.Tpo $(DEPDIR)/bsplibc.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/bsplibc.c' object='bsplibc.obj' libtool=no @AMDEPBACKSLASH@
+getentropy-cpucounter.obj: ../../shared/getentropy-cpucounter.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT getentropy-cpucounter.obj -MD -MP -MF $(DEPDIR)/getentropy-cpucounter.Tpo -c -o getentropy-cpucounter.obj `if test -f '../../shared/getentropy-cpucounter.c'; then $(CYGPATH_W) '../../shared/getentropy-cpucounter.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/getentropy-cpucounter.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/getentropy-cpucounter.Tpo $(DEPDIR)/getentropy-cpucounter.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/getentropy-cpucounter.c' object='getentropy-cpucounter.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bsplibc.obj `if test -f '../../shared/bsplibc.c'; then $(CYGPATH_W) '../../shared/bsplibc.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/bsplibc.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o getentropy-cpucounter.obj `if test -f '../../shared/getentropy-cpucounter.c'; then $(CYGPATH_W) '../../shared/getentropy-cpucounter.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/getentropy-cpucounter.c'; fi`
 
-bsppost.o: ../../shared/bsppost.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bsppost.o -MD -MP -MF $(DEPDIR)/bsppost.Tpo -c -o bsppost.o `test -f '../../shared/bsppost.c' || echo '$(srcdir)/'`../../shared/bsppost.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bsppost.Tpo $(DEPDIR)/bsppost.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/bsppost.c' object='bsppost.o' libtool=no @AMDEPBACKSLASH@
+bspclean.o: ../../shared/bspclean.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bspclean.o -MD -MP -MF $(DEPDIR)/bspclean.Tpo -c -o bspclean.o `test -f '../../shared/bspclean.c' || echo '$(srcdir)/'`../../shared/bspclean.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bspclean.Tpo $(DEPDIR)/bspclean.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/bspclean.c' object='bspclean.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bsppost.o `test -f '../../shared/bsppost.c' || echo '$(srcdir)/'`../../shared/bsppost.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bspclean.o `test -f '../../shared/bspclean.c' || echo '$(srcdir)/'`../../shared/bspclean.c
 
-bsppost.obj: ../../shared/bsppost.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bsppost.obj -MD -MP -MF $(DEPDIR)/bsppost.Tpo -c -o bsppost.obj `if test -f '../../shared/bsppost.c'; then $(CYGPATH_W) '../../shared/bsppost.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/bsppost.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bsppost.Tpo $(DEPDIR)/bsppost.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/bsppost.c' object='bsppost.obj' libtool=no @AMDEPBACKSLASH@
+bspclean.obj: ../../shared/bspclean.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bspclean.obj -MD -MP -MF $(DEPDIR)/bspclean.Tpo -c -o bspclean.obj `if test -f '../../shared/bspclean.c'; then $(CYGPATH_W) '../../shared/bspclean.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/bspclean.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bspclean.Tpo $(DEPDIR)/bspclean.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/bspclean.c' object='bspclean.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bsppost.obj `if test -f '../../shared/bsppost.c'; then $(CYGPATH_W) '../../shared/bsppost.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/bsppost.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bspclean.obj `if test -f '../../shared/bspclean.c'; then $(CYGPATH_W) '../../shared/bspclean.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/bspclean.c'; fi`
 
-bsppretaskinghook.o: ../../shared/bsppretaskinghook.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bsppretaskinghook.o -MD -MP -MF $(DEPDIR)/bsppretaskinghook.Tpo -c -o bsppretaskinghook.o `test -f '../../shared/bsppretaskinghook.c' || echo '$(srcdir)/'`../../shared/bsppretaskinghook.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bsppretaskinghook.Tpo $(DEPDIR)/bsppretaskinghook.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/bsppretaskinghook.c' object='bsppretaskinghook.o' libtool=no @AMDEPBACKSLASH@
+bspgetworkarea.o: ../../shared/bspgetworkarea.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bspgetworkarea.o -MD -MP -MF $(DEPDIR)/bspgetworkarea.Tpo -c -o bspgetworkarea.o `test -f '../../shared/bspgetworkarea.c' || echo '$(srcdir)/'`../../shared/bspgetworkarea.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bspgetworkarea.Tpo $(DEPDIR)/bspgetworkarea.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/bspgetworkarea.c' object='bspgetworkarea.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bsppretaskinghook.o `test -f '../../shared/bsppretaskinghook.c' || echo '$(srcdir)/'`../../shared/bsppretaskinghook.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bspgetworkarea.o `test -f '../../shared/bspgetworkarea.c' || echo '$(srcdir)/'`../../shared/bspgetworkarea.c
 
-bsppretaskinghook.obj: ../../shared/bsppretaskinghook.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bsppretaskinghook.obj -MD -MP -MF $(DEPDIR)/bsppretaskinghook.Tpo -c -o bsppretaskinghook.obj `if test -f '../../shared/bsppretaskinghook.c'; then $(CYGPATH_W) '../../shared/bsppretaskinghook.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/bsppretaskinghook.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bsppretaskinghook.Tpo $(DEPDIR)/bsppretaskinghook.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/bsppretaskinghook.c' object='bsppretaskinghook.obj' libtool=no @AMDEPBACKSLASH@
+bspgetworkarea.obj: ../../shared/bspgetworkarea.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bspgetworkarea.obj -MD -MP -MF $(DEPDIR)/bspgetworkarea.Tpo -c -o bspgetworkarea.obj `if test -f '../../shared/bspgetworkarea.c'; then $(CYGPATH_W) '../../shared/bspgetworkarea.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/bspgetworkarea.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bspgetworkarea.Tpo $(DEPDIR)/bspgetworkarea.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/bspgetworkarea.c' object='bspgetworkarea.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bsppretaskinghook.obj `if test -f '../../shared/bsppretaskinghook.c'; then $(CYGPATH_W) '../../shared/bsppretaskinghook.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/bsppretaskinghook.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bspgetworkarea.obj `if test -f '../../shared/bspgetworkarea.c'; then $(CYGPATH_W) '../../shared/bspgetworkarea.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/bspgetworkarea.c'; fi`
 
 bsppredriverhook.o: ../../shared/bsppredriverhook.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bsppredriverhook.o -MD -MP -MF $(DEPDIR)/bsppredriverhook.Tpo -c -o bsppredriverhook.o `test -f '../../shared/bsppredriverhook.c' || echo '$(srcdir)/'`../../shared/bsppredriverhook.c
@@ -1440,6 +1567,20 @@ sbrk.obj: ../../shared/sbrk.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sbrk.obj `if test -f '../../shared/sbrk.c'; then $(CYGPATH_W) '../../shared/sbrk.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/sbrk.c'; fi`
 
+bsp-uboot-board-info.o: ../../shared/src/bsp-uboot-board-info.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bsp-uboot-board-info.o -MD -MP -MF $(DEPDIR)/bsp-uboot-board-info.Tpo -c -o bsp-uboot-board-info.o `test -f '../../shared/src/bsp-uboot-board-info.c' || echo '$(srcdir)/'`../../shared/src/bsp-uboot-board-info.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bsp-uboot-board-info.Tpo $(DEPDIR)/bsp-uboot-board-info.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/src/bsp-uboot-board-info.c' object='bsp-uboot-board-info.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bsp-uboot-board-info.o `test -f '../../shared/src/bsp-uboot-board-info.c' || echo '$(srcdir)/'`../../shared/src/bsp-uboot-board-info.c
+
+bsp-uboot-board-info.obj: ../../shared/src/bsp-uboot-board-info.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bsp-uboot-board-info.obj -MD -MP -MF $(DEPDIR)/bsp-uboot-board-info.Tpo -c -o bsp-uboot-board-info.obj `if test -f '../../shared/src/bsp-uboot-board-info.c'; then $(CYGPATH_W) '../../shared/src/bsp-uboot-board-info.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/src/bsp-uboot-board-info.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bsp-uboot-board-info.Tpo $(DEPDIR)/bsp-uboot-board-info.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/src/bsp-uboot-board-info.c' object='bsp-uboot-board-info.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bsp-uboot-board-info.obj `if test -f '../../shared/src/bsp-uboot-board-info.c'; then $(CYGPATH_W) '../../shared/src/bsp-uboot-board-info.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/src/bsp-uboot-board-info.c'; fi`
+
 showbats.o: ../shared/showbats.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT showbats.o -MD -MP -MF $(DEPDIR)/showbats.Tpo -c -o showbats.o `test -f '../shared/showbats.c' || echo '$(srcdir)/'`../shared/showbats.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/showbats.Tpo $(DEPDIR)/showbats.Po
@@ -1453,6 +1594,34 @@ showbats.obj: ../shared/showbats.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../shared/showbats.c' object='showbats.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o showbats.obj `if test -f '../shared/showbats.c'; then $(CYGPATH_W) '../shared/showbats.c'; else $(CYGPATH_W) '$(srcdir)/../shared/showbats.c'; fi`
+
+memcpy.o: ../shared/src/memcpy.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT memcpy.o -MD -MP -MF $(DEPDIR)/memcpy.Tpo -c -o memcpy.o `test -f '../shared/src/memcpy.c' || echo '$(srcdir)/'`../shared/src/memcpy.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/memcpy.Tpo $(DEPDIR)/memcpy.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../shared/src/memcpy.c' object='memcpy.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o memcpy.o `test -f '../shared/src/memcpy.c' || echo '$(srcdir)/'`../shared/src/memcpy.c
+
+memcpy.obj: ../shared/src/memcpy.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT memcpy.obj -MD -MP -MF $(DEPDIR)/memcpy.Tpo -c -o memcpy.obj `if test -f '../shared/src/memcpy.c'; then $(CYGPATH_W) '../shared/src/memcpy.c'; else $(CYGPATH_W) '$(srcdir)/../shared/src/memcpy.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/memcpy.Tpo $(DEPDIR)/memcpy.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../shared/src/memcpy.c' object='memcpy.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o memcpy.obj `if test -f '../shared/src/memcpy.c'; then $(CYGPATH_W) '../shared/src/memcpy.c'; else $(CYGPATH_W) '$(srcdir)/../shared/src/memcpy.c'; fi`
+
+bspidle.o: ../shared/startup/bspidle.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bspidle.o -MD -MP -MF $(DEPDIR)/bspidle.Tpo -c -o bspidle.o `test -f '../shared/startup/bspidle.c' || echo '$(srcdir)/'`../shared/startup/bspidle.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bspidle.Tpo $(DEPDIR)/bspidle.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../shared/startup/bspidle.c' object='bspidle.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bspidle.o `test -f '../shared/startup/bspidle.c' || echo '$(srcdir)/'`../shared/startup/bspidle.c
+
+bspidle.obj: ../shared/startup/bspidle.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bspidle.obj -MD -MP -MF $(DEPDIR)/bspidle.Tpo -c -o bspidle.obj `if test -f '../shared/startup/bspidle.c'; then $(CYGPATH_W) '../shared/startup/bspidle.c'; else $(CYGPATH_W) '$(srcdir)/../shared/startup/bspidle.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bspidle.Tpo $(DEPDIR)/bspidle.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../shared/startup/bspidle.c' object='bspidle.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bspidle.obj `if test -f '../shared/startup/bspidle.c'; then $(CYGPATH_W) '../shared/startup/bspidle.c'; else $(CYGPATH_W) '$(srcdir)/../shared/startup/bspidle.c'; fi`
 
 uboot_dump_bdinfo.o: ../shared/uboot_dump_bdinfo.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT uboot_dump_bdinfo.o -MD -MP -MF $(DEPDIR)/uboot_dump_bdinfo.Tpo -c -o uboot_dump_bdinfo.o `test -f '../shared/uboot_dump_bdinfo.c' || echo '$(srcdir)/'`../shared/uboot_dump_bdinfo.c
@@ -1482,20 +1651,6 @@ uboot_getenv.obj: ../shared/uboot_getenv.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o uboot_getenv.obj `if test -f '../shared/uboot_getenv.c'; then $(CYGPATH_W) '../shared/uboot_getenv.c'; else $(CYGPATH_W) '$(srcdir)/../shared/uboot_getenv.c'; fi`
 
-bspclean.o: ../../shared/bspclean.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bspclean.o -MD -MP -MF $(DEPDIR)/bspclean.Tpo -c -o bspclean.o `test -f '../../shared/bspclean.c' || echo '$(srcdir)/'`../../shared/bspclean.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bspclean.Tpo $(DEPDIR)/bspclean.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/bspclean.c' object='bspclean.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bspclean.o `test -f '../../shared/bspclean.c' || echo '$(srcdir)/'`../../shared/bspclean.c
-
-bspclean.obj: ../../shared/bspclean.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bspclean.obj -MD -MP -MF $(DEPDIR)/bspclean.Tpo -c -o bspclean.obj `if test -f '../../shared/bspclean.c'; then $(CYGPATH_W) '../../shared/bspclean.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/bspclean.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bspclean.Tpo $(DEPDIR)/bspclean.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/bspclean.c' object='bspclean.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bspclean.obj `if test -f '../../shared/bspclean.c'; then $(CYGPATH_W) '../../shared/bspclean.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/bspclean.c'; fi`
-
 bspreset.o: startup/bspreset.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bspreset.o -MD -MP -MF $(DEPDIR)/bspreset.Tpo -c -o bspreset.o `test -f 'startup/bspreset.c' || echo '$(srcdir)/'`startup/bspreset.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bspreset.Tpo $(DEPDIR)/bspreset.Po
@@ -1509,34 +1664,6 @@ bspreset.obj: startup/bspreset.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='startup/bspreset.c' object='bspreset.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bspreset.obj `if test -f 'startup/bspreset.c'; then $(CYGPATH_W) 'startup/bspreset.c'; else $(CYGPATH_W) '$(srcdir)/startup/bspreset.c'; fi`
-
-bspgetworkarea.o: ../../shared/bspgetworkarea.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bspgetworkarea.o -MD -MP -MF $(DEPDIR)/bspgetworkarea.Tpo -c -o bspgetworkarea.o `test -f '../../shared/bspgetworkarea.c' || echo '$(srcdir)/'`../../shared/bspgetworkarea.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bspgetworkarea.Tpo $(DEPDIR)/bspgetworkarea.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/bspgetworkarea.c' object='bspgetworkarea.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bspgetworkarea.o `test -f '../../shared/bspgetworkarea.c' || echo '$(srcdir)/'`../../shared/bspgetworkarea.c
-
-bspgetworkarea.obj: ../../shared/bspgetworkarea.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bspgetworkarea.obj -MD -MP -MF $(DEPDIR)/bspgetworkarea.Tpo -c -o bspgetworkarea.obj `if test -f '../../shared/bspgetworkarea.c'; then $(CYGPATH_W) '../../shared/bspgetworkarea.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/bspgetworkarea.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bspgetworkarea.Tpo $(DEPDIR)/bspgetworkarea.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../../shared/bspgetworkarea.c' object='bspgetworkarea.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bspgetworkarea.obj `if test -f '../../shared/bspgetworkarea.c'; then $(CYGPATH_W) '../../shared/bspgetworkarea.c'; else $(CYGPATH_W) '$(srcdir)/../../shared/bspgetworkarea.c'; fi`
-
-bspidle.o: ../shared/startup/bspidle.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bspidle.o -MD -MP -MF $(DEPDIR)/bspidle.Tpo -c -o bspidle.o `test -f '../shared/startup/bspidle.c' || echo '$(srcdir)/'`../shared/startup/bspidle.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bspidle.Tpo $(DEPDIR)/bspidle.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../shared/startup/bspidle.c' object='bspidle.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bspidle.o `test -f '../shared/startup/bspidle.c' || echo '$(srcdir)/'`../shared/startup/bspidle.c
-
-bspidle.obj: ../shared/startup/bspidle.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bspidle.obj -MD -MP -MF $(DEPDIR)/bspidle.Tpo -c -o bspidle.obj `if test -f '../shared/startup/bspidle.c'; then $(CYGPATH_W) '../shared/startup/bspidle.c'; else $(CYGPATH_W) '$(srcdir)/../shared/startup/bspidle.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bspidle.Tpo $(DEPDIR)/bspidle.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../shared/startup/bspidle.c' object='bspidle.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bspidle.obj `if test -f '../shared/startup/bspidle.c'; then $(CYGPATH_W) '../shared/startup/bspidle.c'; else $(CYGPATH_W) '$(srcdir)/../shared/startup/bspidle.c'; fi`
 
 bspstart.o: startup/bspstart.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bspstart.o -MD -MP -MF $(DEPDIR)/bspstart.Tpo -c -o bspstart.o `test -f 'startup/bspstart.c' || echo '$(srcdir)/'`startup/bspstart.c
@@ -1580,19 +1707,33 @@ uboot_support.obj: startup/uboot_support.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o uboot_support.obj `if test -f 'startup/uboot_support.c'; then $(CYGPATH_W) 'startup/uboot_support.c'; else $(CYGPATH_W) '$(srcdir)/startup/uboot_support.c'; fi`
 
-network_rel-network.o: network_5200/network.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(network_rel_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT network_rel-network.o -MD -MP -MF $(DEPDIR)/network_rel-network.Tpo -c -o network_rel-network.o `test -f 'network_5200/network.c' || echo '$(srcdir)/'`network_5200/network.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/network_rel-network.Tpo $(DEPDIR)/network_rel-network.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='network_5200/network.c' object='network_rel-network.o' libtool=no @AMDEPBACKSLASH@
+bestcomm.o: startup/bestcomm.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bestcomm.o -MD -MP -MF $(DEPDIR)/bestcomm.Tpo -c -o bestcomm.o `test -f 'startup/bestcomm.c' || echo '$(srcdir)/'`startup/bestcomm.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bestcomm.Tpo $(DEPDIR)/bestcomm.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='startup/bestcomm.c' object='bestcomm.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(network_rel_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o network_rel-network.o `test -f 'network_5200/network.c' || echo '$(srcdir)/'`network_5200/network.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bestcomm.o `test -f 'startup/bestcomm.c' || echo '$(srcdir)/'`startup/bestcomm.c
 
-network_rel-network.obj: network_5200/network.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(network_rel_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT network_rel-network.obj -MD -MP -MF $(DEPDIR)/network_rel-network.Tpo -c -o network_rel-network.obj `if test -f 'network_5200/network.c'; then $(CYGPATH_W) 'network_5200/network.c'; else $(CYGPATH_W) '$(srcdir)/network_5200/network.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/network_rel-network.Tpo $(DEPDIR)/network_rel-network.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='network_5200/network.c' object='network_rel-network.obj' libtool=no @AMDEPBACKSLASH@
+bestcomm.obj: startup/bestcomm.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT bestcomm.obj -MD -MP -MF $(DEPDIR)/bestcomm.Tpo -c -o bestcomm.obj `if test -f 'startup/bestcomm.c'; then $(CYGPATH_W) 'startup/bestcomm.c'; else $(CYGPATH_W) '$(srcdir)/startup/bestcomm.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/bestcomm.Tpo $(DEPDIR)/bestcomm.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='startup/bestcomm.c' object='bestcomm.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(network_rel_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o network_rel-network.obj `if test -f 'network_5200/network.c'; then $(CYGPATH_W) 'network_5200/network.c'; else $(CYGPATH_W) '$(srcdir)/network_5200/network.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o bestcomm.obj `if test -f 'startup/bestcomm.c'; then $(CYGPATH_W) 'startup/bestcomm.c'; else $(CYGPATH_W) '$(srcdir)/startup/bestcomm.c'; fi`
+
+network.o: network_5200/network.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT network.o -MD -MP -MF $(DEPDIR)/network.Tpo -c -o network.o `test -f 'network_5200/network.c' || echo '$(srcdir)/'`network_5200/network.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/network.Tpo $(DEPDIR)/network.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='network_5200/network.c' object='network.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o network.o `test -f 'network_5200/network.c' || echo '$(srcdir)/'`network_5200/network.c
+
+network.obj: network_5200/network.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT network.obj -MD -MP -MF $(DEPDIR)/network.Tpo -c -o network.obj `if test -f 'network_5200/network.c'; then $(CYGPATH_W) 'network_5200/network.c'; else $(CYGPATH_W) '$(srcdir)/network_5200/network.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/network.Tpo $(DEPDIR)/network.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='network_5200/network.c' object='network.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o network.obj `if test -f 'network_5200/network.c'; then $(CYGPATH_W) 'network_5200/network.c'; else $(CYGPATH_W) '$(srcdir)/network_5200/network.c'; fi`
 install-dist_project_libDATA: $(dist_project_lib_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(dist_project_lib_DATA)'; test -n "$(project_libdir)" || list=; \
@@ -1656,6 +1797,90 @@ uninstall-includeHEADERS:
 	@list='$(include_HEADERS)'; test -n "$(includedir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(includedir)'; $(am__uninstall_files_from_dir)
+install-include_bestcommHEADERS: $(include_bestcomm_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(include_bestcomm_HEADERS)'; test -n "$(include_bestcommdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(include_bestcommdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(include_bestcommdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(include_bestcommdir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(include_bestcommdir)" || exit $$?; \
+	done
+
+uninstall-include_bestcommHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(include_bestcomm_HEADERS)'; test -n "$(include_bestcommdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(include_bestcommdir)'; $(am__uninstall_files_from_dir)
+install-include_bestcomm_includeHEADERS: $(include_bestcomm_include_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(include_bestcomm_include_HEADERS)'; test -n "$(include_bestcomm_includedir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(include_bestcomm_includedir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(include_bestcomm_includedir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(include_bestcomm_includedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(include_bestcomm_includedir)" || exit $$?; \
+	done
+
+uninstall-include_bestcomm_includeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(include_bestcomm_include_HEADERS)'; test -n "$(include_bestcomm_includedir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(include_bestcomm_includedir)'; $(am__uninstall_files_from_dir)
+install-include_bestcomm_include_mgt5200HEADERS: $(include_bestcomm_include_mgt5200_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(include_bestcomm_include_mgt5200_HEADERS)'; test -n "$(include_bestcomm_include_mgt5200dir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(include_bestcomm_include_mgt5200dir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(include_bestcomm_include_mgt5200dir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(include_bestcomm_include_mgt5200dir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(include_bestcomm_include_mgt5200dir)" || exit $$?; \
+	done
+
+uninstall-include_bestcomm_include_mgt5200HEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(include_bestcomm_include_mgt5200_HEADERS)'; test -n "$(include_bestcomm_include_mgt5200dir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(include_bestcomm_include_mgt5200dir)'; $(am__uninstall_files_from_dir)
+install-include_bestcomm_task_apiHEADERS: $(include_bestcomm_task_api_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(include_bestcomm_task_api_HEADERS)'; test -n "$(include_bestcomm_task_apidir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(include_bestcomm_task_apidir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(include_bestcomm_task_apidir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(include_bestcomm_task_apidir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(include_bestcomm_task_apidir)" || exit $$?; \
+	done
+
+uninstall-include_bestcomm_task_apiHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(include_bestcomm_task_api_HEADERS)'; test -n "$(include_bestcomm_task_apidir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(include_bestcomm_task_apidir)'; $(am__uninstall_files_from_dir)
 install-include_bspHEADERS: $(include_bsp_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(include_bsp_HEADERS)'; test -n "$(include_bspdir)" || list=; \
@@ -1698,27 +1923,6 @@ uninstall-nodist_includeHEADERS:
 	@list='$(nodist_include_HEADERS)'; test -n "$(includedir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(includedir)'; $(am__uninstall_files_from_dir)
-install-nodist_include_bspHEADERS: $(nodist_include_bsp_HEADERS)
-	@$(NORMAL_INSTALL)
-	@list='$(nodist_include_bsp_HEADERS)'; test -n "$(include_bspdir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(include_bspdir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(include_bspdir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(include_bspdir)'"; \
-	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(include_bspdir)" || exit $$?; \
-	done
-
-uninstall-nodist_include_bspHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(nodist_include_bsp_HEADERS)'; test -n "$(include_bspdir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(include_bspdir)'; $(am__uninstall_files_from_dir)
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -1946,7 +2150,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(DATA) $(HEADERS) all-local
 installdirs:
-	for dir in "$(DESTDIR)$(project_libdir)" "$(DESTDIR)$(project_libdir)" "$(DESTDIR)$(includedir)" "$(DESTDIR)$(include_bspdir)" "$(DESTDIR)$(includedir)" "$(DESTDIR)$(include_bspdir)"; do \
+	for dir in "$(DESTDIR)$(project_libdir)" "$(DESTDIR)$(project_libdir)" "$(DESTDIR)$(includedir)" "$(DESTDIR)$(include_bestcommdir)" "$(DESTDIR)$(include_bestcomm_includedir)" "$(DESTDIR)$(include_bestcomm_include_mgt5200dir)" "$(DESTDIR)$(include_bestcomm_task_apidir)" "$(DESTDIR)$(include_bspdir)" "$(DESTDIR)$(includedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -2006,8 +2210,12 @@ info: info-am
 info-am:
 
 install-data-am: install-dist_project_libDATA install-includeHEADERS \
+	install-include_bestcommHEADERS \
+	install-include_bestcomm_includeHEADERS \
+	install-include_bestcomm_include_mgt5200HEADERS \
+	install-include_bestcomm_task_apiHEADERS \
 	install-include_bspHEADERS install-nodist_includeHEADERS \
-	install-nodist_include_bspHEADERS install-project_libDATA
+	install-project_libDATA
 
 install-dvi: install-dvi-am
 
@@ -2055,8 +2263,12 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-dist_project_libDATA uninstall-includeHEADERS \
+	uninstall-include_bestcommHEADERS \
+	uninstall-include_bestcomm_includeHEADERS \
+	uninstall-include_bestcomm_include_mgt5200HEADERS \
+	uninstall-include_bestcomm_task_apiHEADERS \
 	uninstall-include_bspHEADERS uninstall-nodist_includeHEADERS \
-	uninstall-nodist_include_bspHEADERS uninstall-project_libDATA
+	uninstall-project_libDATA
 
 .MAKE: install-am install-strip
 
@@ -2071,25 +2283,32 @@ uninstall-am: uninstall-dist_project_libDATA uninstall-includeHEADERS \
 	install install-am install-data install-data-am \
 	install-dist_project_libDATA install-dvi install-dvi-am \
 	install-exec install-exec-am install-html install-html-am \
-	install-includeHEADERS install-include_bspHEADERS install-info \
-	install-info-am install-man install-nodist_includeHEADERS \
-	install-nodist_include_bspHEADERS install-pdf install-pdf-am \
-	install-project_libDATA install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-dist_project_libDATA \
-	uninstall-includeHEADERS uninstall-include_bspHEADERS \
-	uninstall-nodist_includeHEADERS \
-	uninstall-nodist_include_bspHEADERS uninstall-project_libDATA
+	install-includeHEADERS install-include_bestcommHEADERS \
+	install-include_bestcomm_includeHEADERS \
+	install-include_bestcomm_include_mgt5200HEADERS \
+	install-include_bestcomm_task_apiHEADERS \
+	install-include_bspHEADERS install-info install-info-am \
+	install-man install-nodist_includeHEADERS install-pdf \
+	install-pdf-am install-project_libDATA install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
+	ps ps-am tags tags-am uninstall uninstall-am \
+	uninstall-dist_project_libDATA uninstall-includeHEADERS \
+	uninstall-include_bestcommHEADERS \
+	uninstall-include_bestcomm_includeHEADERS \
+	uninstall-include_bestcomm_include_mgt5200HEADERS \
+	uninstall-include_bestcomm_task_apiHEADERS \
+	uninstall-include_bspHEADERS uninstall-nodist_includeHEADERS \
+	uninstall-project_libDATA
 
 
 @AMPOLISH3_TRUE@$(srcdir)/preinstall.am: Makefile.am
 @AMPOLISH3_TRUE@	$(AMPOLISH3) $(srcdir)/Makefile.am > $(srcdir)/preinstall.am
 
-all-local: $(TMPINSTALL_FILES)
-
 all-am: $(PREINSTALL_FILES)
+
+all-local: $(TMPINSTALL_FILES)
 
 $(PROJECT_LIB)/$(dirstamp):
 	@$(MKDIR_P) $(PROJECT_LIB)
@@ -2103,6 +2322,22 @@ $(PROJECT_INCLUDE)/bsp/$(dirstamp):
 	@$(MKDIR_P) $(PROJECT_INCLUDE)/bsp
 	@: > $(PROJECT_INCLUDE)/bsp/$(dirstamp)
 
+$(PROJECT_INCLUDE)/bsp/bestcomm/$(dirstamp):
+	@$(MKDIR_P) $(PROJECT_INCLUDE)/bsp/bestcomm
+	@: > $(PROJECT_INCLUDE)/bsp/bestcomm/$(dirstamp)
+
+$(PROJECT_INCLUDE)/bsp/bestcomm/include/$(dirstamp):
+	@$(MKDIR_P) $(PROJECT_INCLUDE)/bsp/bestcomm/include
+	@: > $(PROJECT_INCLUDE)/bsp/bestcomm/include/$(dirstamp)
+
+$(PROJECT_INCLUDE)/bsp/bestcomm/include/mgt5200/$(dirstamp):
+	@$(MKDIR_P) $(PROJECT_INCLUDE)/bsp/bestcomm/include/mgt5200
+	@: > $(PROJECT_INCLUDE)/bsp/bestcomm/include/mgt5200/$(dirstamp)
+
+$(PROJECT_INCLUDE)/bsp/bestcomm/task_api/$(dirstamp):
+	@$(MKDIR_P) $(PROJECT_INCLUDE)/bsp/bestcomm/task_api
+	@: > $(PROJECT_INCLUDE)/bsp/bestcomm/task_api/$(dirstamp)
+
 $(PROJECT_LIB)/bsp_specs: bsp_specs $(PROJECT_LIB)/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_LIB)/bsp_specs
 
@@ -2111,9 +2346,6 @@ $(PROJECT_INCLUDE)/bsp.h: include/bsp.h $(PROJECT_INCLUDE)/$(dirstamp)
 
 $(PROJECT_INCLUDE)/i2cdrv.h: include/i2cdrv.h $(PROJECT_INCLUDE)/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/i2cdrv.h
-
-$(PROJECT_INCLUDE)/u-boot.h: include/u-boot.h $(PROJECT_INCLUDE)/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/u-boot.h
 
 $(PROJECT_INCLUDE)/i2c.h: include/i2c.h $(PROJECT_INCLUDE)/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/i2c.h
@@ -2124,14 +2356,8 @@ $(PROJECT_INCLUDE)/tm27.h: include/tm27.h $(PROJECT_INCLUDE)/$(dirstamp)
 $(PROJECT_INCLUDE)/bspopts.h: include/bspopts.h $(PROJECT_INCLUDE)/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bspopts.h
 
-$(PROJECT_INCLUDE)/bsp/bootcard.h: ../../shared/include/bootcard.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bootcard.h
-
 $(PROJECT_INCLUDE)/coverhd.h: ../../shared/include/coverhd.h $(PROJECT_INCLUDE)/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/coverhd.h
-
-$(PROJECT_INCLUDE)/tod.h: ../../shared/tod.h $(PROJECT_INCLUDE)/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/tod.h
 
 $(PROJECT_LIB)/start.$(OBJEXT): start.$(OBJEXT) $(PROJECT_LIB)/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_LIB)/start.$(OBJEXT)
@@ -2145,14 +2371,74 @@ $(PROJECT_LIB)/linkcmds.base: startup/linkcmds.base $(PROJECT_LIB)/$(dirstamp)
 $(PROJECT_LIB)/linkcmds: startup/linkcmds $(PROJECT_LIB)/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_LIB)/linkcmds
 
+$(PROJECT_INCLUDE)/bsp/bestcomm/bestcomm_priv.h: bestcomm/bestcomm_priv.h $(PROJECT_INCLUDE)/bsp/bestcomm/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bestcomm/bestcomm_priv.h
+
+$(PROJECT_INCLUDE)/bsp/bestcomm/dma_image.h: bestcomm/dma_image.h $(PROJECT_INCLUDE)/bsp/bestcomm/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bestcomm/dma_image.h
+
+$(PROJECT_INCLUDE)/bsp/bestcomm/dma_image.capi.h: bestcomm/dma_image.capi.h $(PROJECT_INCLUDE)/bsp/bestcomm/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bestcomm/dma_image.capi.h
+
+$(PROJECT_INCLUDE)/bsp/bestcomm/bestcomm_api.h: bestcomm/bestcomm_api.h $(PROJECT_INCLUDE)/bsp/bestcomm/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bestcomm/bestcomm_api.h
+
+$(PROJECT_INCLUDE)/bsp/bestcomm/bestcomm_glue.h: bestcomm/bestcomm_glue.h $(PROJECT_INCLUDE)/bsp/bestcomm/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bestcomm/bestcomm_glue.h
+
+$(PROJECT_INCLUDE)/bsp/bestcomm/include/ppctypes.h: bestcomm/include/ppctypes.h $(PROJECT_INCLUDE)/bsp/bestcomm/include/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bestcomm/include/ppctypes.h
+
+$(PROJECT_INCLUDE)/bsp/bestcomm/include/sdma.h: bestcomm/include/mgt5200/sdma.h $(PROJECT_INCLUDE)/bsp/bestcomm/include/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bestcomm/include/sdma.h
+
+$(PROJECT_INCLUDE)/bsp/bestcomm/include/mgt5200.h: bestcomm/include/mgt5200/mgt5200.h $(PROJECT_INCLUDE)/bsp/bestcomm/include/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bestcomm/include/mgt5200.h
+
+$(PROJECT_INCLUDE)/bsp/bestcomm/include/mgt5200/mgt5200.h: bestcomm/include/mgt5200/mgt5200.h $(PROJECT_INCLUDE)/bsp/bestcomm/include/mgt5200/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bestcomm/include/mgt5200/mgt5200.h
+
+$(PROJECT_INCLUDE)/bsp/bestcomm/include/mgt5200/sdma.h: bestcomm/include/mgt5200/sdma.h $(PROJECT_INCLUDE)/bsp/bestcomm/include/mgt5200/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bestcomm/include/mgt5200/sdma.h
+
+$(PROJECT_INCLUDE)/bsp/bestcomm/task_api/tasksetup_general.h: bestcomm/task_api/tasksetup_general.h $(PROJECT_INCLUDE)/bsp/bestcomm/task_api/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bestcomm/task_api/tasksetup_general.h
+
+$(PROJECT_INCLUDE)/bsp/bestcomm/task_api/tasksetup_bdtable.h: bestcomm/task_api/tasksetup_bdtable.h $(PROJECT_INCLUDE)/bsp/bestcomm/task_api/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bestcomm/task_api/tasksetup_bdtable.h
+
+$(PROJECT_INCLUDE)/bsp/bestcomm/task_api/bestcomm_cntrl.h: bestcomm/task_api/bestcomm_cntrl.h $(PROJECT_INCLUDE)/bsp/bestcomm/task_api/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bestcomm/task_api/bestcomm_cntrl.h
+
+$(PROJECT_INCLUDE)/bsp/bestcomm/task_api/bestcomm_api_mem.h: bestcomm/task_api/bestcomm_api_mem.h $(PROJECT_INCLUDE)/bsp/bestcomm/task_api/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bestcomm/task_api/bestcomm_api_mem.h
+
+$(PROJECT_INCLUDE)/bsp/bootcard.h: ../../shared/include/bootcard.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bootcard.h
+
 $(PROJECT_INCLUDE)/bsp/irq-generic.h: ../../shared/include/irq-generic.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/irq-generic.h
 
 $(PROJECT_INCLUDE)/bsp/irq-info.h: ../../shared/include/irq-info.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/irq-info.h
 
-$(PROJECT_INCLUDE)/bsp/irq.h: include/irq.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/irq.h
+$(PROJECT_INCLUDE)/bsp/u-boot.h: ../../shared/include/u-boot.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/u-boot.h
+
+$(PROJECT_INCLUDE)/bsp/utility.h: ../../shared/include/utility.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/utility.h
+
+$(PROJECT_INCLUDE)/bsp/u-boot-board-info.h: ../shared/include/u-boot-board-info.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/u-boot-board-info.h
+
+$(PROJECT_INCLUDE)/bsp/ata.h: include/ata.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/ata.h
+
+$(PROJECT_INCLUDE)/bsp/bestcomm.h: include/bestcomm.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bestcomm.h
+
+$(PROJECT_INCLUDE)/bsp/bestcomm_ops.h: include/bestcomm_ops.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bestcomm_ops.h
 
 $(PROJECT_INCLUDE)/bsp/i2cdrv.h: include/i2cdrv.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/i2cdrv.h
@@ -2160,14 +2446,17 @@ $(PROJECT_INCLUDE)/bsp/i2cdrv.h: include/i2cdrv.h $(PROJECT_INCLUDE)/bsp/$(dirst
 $(PROJECT_INCLUDE)/bsp/i2c.h: include/i2c.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/i2c.h
 
+$(PROJECT_INCLUDE)/bsp/irq.h: include/irq.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/irq.h
+
 $(PROJECT_INCLUDE)/bsp/mpc5200.h: include/mpc5200.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/mpc5200.h
 
 $(PROJECT_INCLUDE)/bsp/mscan-base.h: include/mscan-base.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/mscan-base.h
 
-$(PROJECT_INCLUDE)/bsp/u-boot.h: include/u-boot.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
-	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/u-boot.h
+$(PROJECT_INCLUDE)/bsp/u-boot-config.h: include/u-boot-config.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/u-boot-config.h
 
 $(PROJECT_INCLUDE)/bsp/mscan.h: mscan/mscan.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/mscan.h
@@ -2177,7 +2466,6 @@ $(PROJECT_INCLUDE)/bsp/nvram.h: nvram/nvram.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
 
 $(PROJECT_INCLUDE)/bsp/slicetimer.h: slicetimer/slicetimer.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/slicetimer.h
-
 preinstall-am: $(PREINSTALL_FILES)
 preinstall: preinstall-am
 .PHONY: preinstall preinstall-am

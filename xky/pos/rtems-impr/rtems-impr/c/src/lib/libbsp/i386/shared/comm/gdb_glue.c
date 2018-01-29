@@ -7,16 +7,14 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>
 #include <stdio.h>
 #include <uart.h>
 
-#define BREAKPOINT() asm("   int $3");
+#define BREAKPOINT() __asm__ ("   int $3");
 
 extern int BSPConsolePort;
 void i386_stub_glue_init(int);

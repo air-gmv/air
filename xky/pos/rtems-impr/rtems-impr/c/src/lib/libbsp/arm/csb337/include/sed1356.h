@@ -1,3 +1,19 @@
+/**
+ * @file
+ *
+ * @ingroup arm_csb337
+ *
+ * @brief Public Interface for SED Video Controller Operations.
+ */
+
+/**
+ * @defgroup csb337_sed1356 SED Video Controller
+ *
+ * @ingroup arm_csb337
+ *
+ * @brief Public Interface for SED Video Controller Operations.
+ */
+
 /*
  * Public Interface for SED Video Controller Operations
  *
@@ -9,9 +25,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef __SED1356_h

@@ -22,7 +22,7 @@ static iop_header_t route_header[4] = \
     },
     {
         .spw_header = {
-            .hdr         = { 0x01,0x09 }
+            .hdr         = { 0x01,0x0B }
         }
     },
     {
@@ -47,7 +47,7 @@ static uint32_t route_schedule_1[1] = \
 static uint32_t route_schedule_2[1] = \
     { 0 };
 static uint32_t route_schedule_3[1] = \
-    { 0 };
+    { 1 };
 
 
 

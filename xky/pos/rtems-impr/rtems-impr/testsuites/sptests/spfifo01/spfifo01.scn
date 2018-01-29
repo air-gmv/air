@@ -1,0 +1,5 @@
+*** FIFO / PIPE OPEN TEST - 1 ***
+Configuration: Pipes disabled.
+Creating named fifo '/fifo01'.
+Must result in failure since pipes are disabled in the configuration.
+*** END OF FIFO / PIPE OPEN TEST - 1 ***

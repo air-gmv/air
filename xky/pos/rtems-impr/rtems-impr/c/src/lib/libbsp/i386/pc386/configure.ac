@@ -1,14 +1,12 @@
 ## Process this file with autoconf to produce a configure script.
-##
-## $Id$
 
-AC_PREREQ([2.68])
-AC_INIT([rtems-c-src-lib-libbsp-i386-pc386],[_RTEMS_VERSION],[http://www.rtems.org/bugzilla])
+AC_PREREQ([2.69])
+AC_INIT([rtems-c-src-lib-libbsp-i386-pc386],[_RTEMS_VERSION],[https://devel.rtems.org/newticket])
 AC_CONFIG_SRCDIR([bsp_specs])
 RTEMS_TOP(../../../../../..)
 
 RTEMS_CANONICAL_TARGET_CPU
-AM_INIT_AUTOMAKE([no-define nostdinc foreign 1.11.1])
+AM_INIT_AUTOMAKE([no-define nostdinc foreign 1.12.2])
 RTEMS_BSP_CONFIGURE
 
 RTEMS_PROG_CC_FOR_TARGET
@@ -17,6 +15,21 @@ RTEMS_CHECK_TOOL(OBJCOPY,objcopy,:)
 RTEMS_PROG_CCAS
 
 RTEMS_CHECK_NETWORKING
+RTEMS_CHECK_SMP
+
+RTEMS_BSPOPTS_SET([BSP_ENABLE_VGA],[*],[1])
+RTEMS_BSPOPTS_HELP([BSP_ENABLE_VGA],
+[Set if the VGA and keyboard console support is enabled.])
+AM_CONDITIONAL(RTEMS_VGA,[test "$BSP_ENABLE_VGA" = "1"])
+
+RTEMS_BSPOPTS_SET([BSP_ENABLE_COM1_COM4],[*],[1])
+RTEMS_BSPOPTS_HELP([BSP_ENABLE_COM1_COM4],
+[Set if COM1..COM4 support is enabled.])
+
+RTEMS_BSPOPTS_SET([BSP_ENABLE_IDE],[*],[1])
+RTEMS_BSPOPTS_HELP([BSP_ENABLE_IDE],
+[Set if IDE support is enabled.])
+AM_CONDITIONAL(HAS_IDE,[test "$BSP_ENABLE_IDE" = "1"])
 
 RTEMS_BSPOPTS_SET([USE_COM1_AS_CONSOLE],[*],[0])
 RTEMS_BSPOPTS_HELP([USE_COM1_AS_CONSOLE],
@@ -62,6 +75,7 @@ RTEMS_BSPOPTS_HELP([CLOCK_DRIVER_USE_TSC],
    from Intel and AMD will maintain a constant-rate TSC regardless.
 ])
 
+#define CLOCK_DRIVER_USE_8254 $CLOCK_DRIVER_USE_8254
 RTEMS_BSPOPTS_SET([CLOCK_DRIVER_USE_8254],[*],[0])
 RTEMS_BSPOPTS_HELP([CLOCK_DRIVER_USE_8254],
 [If enabled, the clock driver will use the good old 8254 chip
@@ -74,16 +88,62 @@ RTEMS_BSPOPTS_HELP([CLOCK_DRIVER_USE_8254],
  - you do not mind adding roughly 5 microseconds to each context switch.
 ])
 
+if test "${USE_CIRRUS_GD5446}" != "1" -a "${USE_VGA}" != "1"; then
+  USE_VBE_RM=1;
+  if test -z "${NUM_APP_DRV_GDT_DESCRIPTORS}"; then
+      NUM_APP_DRV_GDT_DESCRIPTORS=2 ;
+  else
+      NUM_APP_DRV_GDT_DESCRIPTORS+=2 ;
+  fi
+fi
+RTEMS_BSPOPTS_SET([NUM_APP_DRV_GDT_DESCRIPTORS],[*],[0])
+RTEMS_BSPOPTS_HELP([NUM_APP_DRV_GDT_DESCRIPTORS],
+[Defines how many descriptors in GDT may be allocated for application or
+ driver usage.])
+
+RTEMS_BSPOPTS_SET([USE_CIRRUS_GD5446],[*],[0])
+RTEMS_BSPOPTS_HELP([USE_CIRRUS_GD5446],
+[If defined, enables use of the Cirrus GD5446 controller rather than the
+ controller utilizing Vesa Bios Extensions - real mode interface.
+
+ NOTE: This has only been tested on Qemu.])
+AM_CONDITIONAL(USE_CIRRUS_GD5446,test "$USE_CIRRUS_GD5446" = "1")
+
+RTEMS_BSPOPTS_SET([USE_VGA],[*],[0])
+RTEMS_BSPOPTS_HELP([USE_VGA],
+[If defined, enables use of the very basic VGA driver for framebuffer support
+ rather than the controller utilizing Vesa Bios Extensions - real mode
+ interface.])
+AM_CONDITIONAL(USE_VGA,test "$USE_VGA" = "1")
+
+RTEMS_BSPOPTS_SET([USE_VBE_RM],[*],[0])
+RTEMS_BSPOPTS_HELP([USE_VBE_RM],
+[Defined by default. Enables use of the Vesa Bios Extensions - real mode
+ interface, which enables graphical mode and introduce it upon bootup.])
+AM_CONDITIONAL(USE_VBE_RM,test "$USE_VBE_RM" = "1")
+
 if test X${CLOCK_DRIVER_USE_TSC} = X1 -a X${CLOCK_DRIVER_USE_8254} = X1 ; then
   AC_MSG_ERROR([pc386 both TSC and 8254 specified for clock driver])
 fi
 
-#define CLOCK_DRIVER_USE_8254 $CLOCK_DRIVER_USE_8254
+## The PC386 BSP supports SMP configurations if this is enabled.
+RTEMS_BSPOPTS_SET([BSP_HAS_SMP],[*],[1])
+RTEMS_BSPOPTS_HELP([BSP_HAS_SMP],
+[Always defined when on a pc386 to enable the pc386 support for
+ determining the CPU core number in an SMP configuration.])
+
+RTEMS_BSPOPTS_SET([BSP_GDB_STUB],[*],[1])
+RTEMS_BSPOPTS_HELP([BSP_GDB_STUB],
+[Defined by default. Enables use of the GDB stub for debugging via a
+ serial port.])
+AM_CONDITIONAL(BSP_GDB_STUB, test "$BSP_GDB_STUB" = "1")
+
 ## if this is an i386, does gas have good code16 support?
 RTEMS_I386_GAS_CODE16
 AM_CONDITIONAL(RTEMS_GAS_CODE16,[test "$RTEMS_GAS_CODE16" = "yes"])
 
 AM_CONDITIONAL(HAS_NETWORKING,[test "$HAS_NETWORKING" = "yes"])
+AM_CONDITIONAL(HAS_SMP,[test "$rtems_cv_HAS_SMP" = "yes"])
 
 AC_SUBST([RTEMS_ROOT],[${rtems_updir}'$(top_builddir)'])
 

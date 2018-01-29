@@ -7,7 +7,7 @@
 #ifndef __AMBA_H__
 #define __AMBA_H__
 
-#include <xky_arch.h>
+#include <air_arch.h>
 #include <gaisler.h>
 
 
@@ -94,7 +94,7 @@ typedef struct {
  * @param amba_conf Pointer to the AMBA configuration area
  * @param io_area AMBA I/O area address
  */
-void amba_setup(amba_confarea_t *amba_conf, xky_uptr_t io_area);
+void amba_setup(amba_confarea_t *amba_conf, air_uptr_t io_area);
 
 /**
  * @brief Gets an AHB master device from the lookup table

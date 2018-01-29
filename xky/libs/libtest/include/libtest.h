@@ -15,7 +15,7 @@
 #ifndef __LIBTEST_H__
 #define __LIBTEST_H__
 
-#include <xky.h>
+#include <air.h>
 #include <stdarg.h>
 
 /**
@@ -80,17 +80,17 @@ typedef enum {
  */
 typedef struct {
 
-    xky_u32_t step_id;                    /**< partition current step       */
-    xky_u32_t iterations;                 /**< number of step repeats       */
+    air_u32_t step_id;                    /**< partition current step       */
+    air_u32_t iterations;                 /**< number of step repeats       */
     announce_flags flags;                 /**< announcement flags           */
 
-    xky_u32_t p_done;                     /**< flags partition exec. over   */
-    xky_u32_t p_pass;                     /**< flags partition test pass    */
+    air_u32_t p_done;                     /**< flags partition exec. over   */
+    air_u32_t p_pass;                     /**< flags partition test pass    */
 
-    xky_u32_t w_pos;                      /**< current writing position     */
-    xky_u32_t r_pos;                      /**< current reading position     */
-    xky_u32_t l_pos;                      /**< last end of line position    */
-    xky_i8_t buffer[PPRINTF_BUFFER_SIZE]; /**< output buffer                */
+    air_u32_t w_pos;                      /**< current writing position     */
+    air_u32_t r_pos;                      /**< current reading position     */
+    air_u32_t l_pos;                      /**< last end of line position    */
+    air_i8_t buffer[PPRINTF_BUFFER_SIZE]; /**< output buffer                */
 
 } partition_buffer_t;
 
@@ -99,8 +99,8 @@ typedef struct {
  */
 typedef struct {
 
-    volatile xky_u32_t test_id;           /**< test started                  */
-    volatile xky_u32_t step_id;           /**< current test step             */
+    volatile air_u32_t test_id;           /**< test started                  */
+    volatile air_u32_t step_id;           /**< current test step             */
     partition_buffer_t *buffers;          /**< partition test buffers        */
 
 } test_control_t;
@@ -112,13 +112,13 @@ extern void __test_step_report(char *, char *, int, test_result);
  * @param shm_name name of the shared memory for the test report
  * @return number of times that the partition have been reseted
  */
-xky_u32_t test_partition_init(xky_name_ptr_t shm_name);
+air_u32_t test_partition_init(air_name_ptr_t shm_name);
 /**
  * @brief Initializes the control partition
  * @param id current test id
  * @param shm_name name of the shared memory for the test report
  */
-void control_partition_init(xky_u32_t id, xky_name_ptr_t shm_name);
+void control_partition_init(air_u32_t id, air_name_ptr_t shm_name);
 /**
  * @brief Announces a test step
  * @param id id of the current step
@@ -126,7 +126,7 @@ void control_partition_init(xky_u32_t id, xky_name_ptr_t shm_name);
  *
  * @note This function blocks until the global test step allows it to run
  */
-xky_u32_t test_step_announce(xky_u32_t id, announce_flags flags);
+air_u32_t test_step_announce(air_u32_t id, announce_flags flags);
 
 /**
  * @brief Reports the result of a test

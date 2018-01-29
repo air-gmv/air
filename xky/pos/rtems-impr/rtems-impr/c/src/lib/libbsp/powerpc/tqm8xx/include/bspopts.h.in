@@ -1,13 +1,23 @@
 /* include/bspopts.h.in.  Generated from configure.ac by autoheader.  */
 
+/* enables the data cache, if defined to a value other than zero */
+#undef BSP_DATA_CACHE_ENABLED
+
 /* If defined, then the BSP Framework will put a non-zero pattern into the
    RTEMS Workspace and C program heap. This should assist in finding code that
    assumes memory starts set to zero. */
 #undef BSP_DIRTY_MEMORY
 
+/* enables the instruction cache, if defined to a value other than zero */
+#undef BSP_INSTRUCTION_CACHE_ENABLED
+
 /* If defined, print a message and wait until pressed before resetting board
    when application exits. */
 #undef BSP_PRESS_KEY_FOR_RESET
+
+/* If defined, prints the exception context when an unexpected exception
+   occurs. */
+#undef BSP_PRINT_EXCEPTION_CONTEXT
 
 /* If defined, reset the board when the application exits. */
 #undef BSP_RESET_BOARD_AT_EXIT
@@ -62,14 +72,6 @@
    used */
 #undef CONS_SMC2_MODE
 
-/* If defined, the data cache will be enabled after address translation is
-   turned on. */
-#undef DATA_CACHE_ENABLE
-
-/* If defined, the instruction cache will be enabled after address translation
-   is turned on. */
-#undef INSTRUCTION_CACHE_ENABLE
-
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
@@ -88,11 +90,6 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* If defined, then the PowerPC specific code in RTEMS will use data cache
-   instructions to optimize the context switch code. This code can conflict
-   with debuggers or emulators. */
-#undef PPC_USE_DATA_CACHE
-
 /* (BSP--console driver) Must be defined to be one of CONS_CHN_SMC1,
    CONS_CHN_SMC2, CONS_CHN_SCC2, CONS_CHN_SCC3, or CONS_CHN_SCC4. Determines
    which device is used for output by printk(). If the port that printk() uses
@@ -100,15 +97,3 @@
    ports should use the same type of I/O, otherwise the drivers will likely
    conflict with each other. */
 #undef PRINTK_CHN
-
-/* (BSP--SPI board init function) Specify the function that inits the board
-   port lines and further devices. */
-#undef SPI_BOARD_INIT_FNC
-
-/* (BSP--SPI send address function) Specify the function that addresses SPI
-   devices. Set to bsp_dummy_spi_sel_addr for dummy implementation */
-#undef SPI_SEND_ADDR_FNC
-
-/* (BSP--SPI send stop function) Specify the function that deaddresses SPI
-   devices. Set to bsp_dummy_spi_send_stop for dummy implementation */
-#undef SPI_SEND_STOP_FNC

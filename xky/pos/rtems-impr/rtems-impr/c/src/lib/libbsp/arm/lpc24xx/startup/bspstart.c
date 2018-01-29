@@ -7,16 +7,17 @@
  */
 
 /*
- * Copyright (c) 2008, 2009
- * embedded brains GmbH
- * Obere Lagerstr. 30
- * D-82178 Puchheim
- * Germany
- * <rtems@embedded-brains.de>
+ * Copyright (c) 2008-2014 embedded brains GmbH.  All rights reserved.
+ *
+ *  embedded brains GmbH
+ *  Dornierstr. 4
+ *  82178 Puchheim
+ *  Germany
+ *  <rtems@embedded-brains.de>
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
- * http://www.rtems.com/license/LICENSE.
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>
@@ -27,7 +28,6 @@
 #include <bsp/irq.h>
 #include <bsp/linker-symbols.h>
 #include <bsp/lpc24xx.h>
-#include <bsp/stackalloc.h>
 #include <bsp/system-clocks.h>
 #include <bsp/uart-output-char.h>
 
@@ -43,66 +43,54 @@
   extern Heap_Control *RTEMS_Malloc_Heap;
 #endif
 
-void bsp_pretasking_hook(void)
+static void heap_extend(void)
 {
   #ifdef LPC24XX_HEAP_EXTEND
     _Heap_Extend(
       RTEMS_Malloc_Heap,
       lpc24xx_region_heap_0_begin,
       (uintptr_t) lpc24xx_region_heap_0_size,
-      NULL
+      0
     );
     _Heap_Extend(
       RTEMS_Malloc_Heap,
       lpc24xx_region_heap_1_begin,
       (uintptr_t) lpc24xx_region_heap_1_size,
-      NULL
+      0
     );
+  #endif
+}
+
+static void initialize_console(void)
+{
+  #ifdef LPC24XX_CONFIG_CONSOLE
+    static const lpc24xx_pin_range pins [] = {
+      LPC24XX_PIN_UART_0_TXD,
+      LPC24XX_PIN_UART_0_RXD,
+      LPC24XX_PIN_TERMINAL
+    };
+
+    lpc24xx_module_enable(LPC24XX_MODULE_UART_0, LPC24XX_MODULE_PCLK_DEFAULT);
+    lpc24xx_pin_config(&pins [0], LPC24XX_PIN_SET_FUNCTION);
+    BSP_CONSOLE_UART_INIT(LPC24XX_PCLK / 16 / LPC24XX_UART_BAUD);
   #endif
 }
 
 void bsp_start(void)
 {
   /* Initialize Timer 1 */
-  lpc24xx_module_enable(LPC24XX_MODULE_TIMER_1, LPC24XX_MODULE_CCLK);
+  lpc24xx_module_enable(LPC24XX_MODULE_TIMER_1, LPC24XX_MODULE_PCLK_DEFAULT);
 
   /* Initialize standard timer */
   lpc24xx_timer_initialize();
 
-  /* Initialize console */
-  #ifdef LPC24XX_CONFIG_CONSOLE
-    lpc24xx_module_enable(LPC24XX_MODULE_UART_0, LPC24XX_MODULE_CCLK);
-    lpc24xx_io_config(LPC24XX_MODULE_UART_0, LPC24XX_CONFIG_CONSOLE);
-    BSP_CONSOLE_UART_INIT(lpc24xx_cclk() / 16 / LPC24XX_UART_BAUD);
-  #endif
+  initialize_console();
 
   /* Interrupts */
-  if (bsp_interrupt_initialize() != RTEMS_SUCCESSFUL) {
-    _CPU_Fatal_halt(0xe);
-  }
+  bsp_interrupt_initialize();
 
   /* DMA */
   lpc24xx_dma_initialize();
 
-  /* Task stacks */
-  #ifdef LPC24XX_SPECIAL_TASK_STACKS_SUPPORT
-    bsp_stack_initialize(
-      bsp_section_stack_begin,
-      (uintptr_t) bsp_section_stack_size
-    );
-  #endif
-
-  /* UART configurations */
-  #ifdef LPC24XX_CONFIG_UART_1
-    lpc24xx_module_enable(LPC24XX_MODULE_UART_1, LPC24XX_MODULE_CCLK);
-    lpc24xx_io_config(LPC24XX_MODULE_UART_1, LPC24XX_CONFIG_UART_1);
-  #endif
-  #ifdef LPC24XX_CONFIG_UART_2
-    lpc24xx_module_enable(LPC24XX_MODULE_UART_2, LPC24XX_MODULE_CCLK);
-    lpc24xx_io_config(LPC24XX_MODULE_UART_2, LPC24XX_CONFIG_UART_2);
-  #endif
-  #ifdef LPC24XX_CONFIG_UART_3
-    lpc24xx_module_enable(LPC24XX_MODULE_UART_3, LPC24XX_MODULE_CCLK);
-    lpc24xx_io_config(LPC24XX_MODULE_UART_3, LPC24XX_CONFIG_UART_3);
-  #endif
+  heap_extend();
 }

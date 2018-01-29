@@ -31,8 +31,8 @@ void CREATE_QUEUING_PORT (
         return;
     }
 
-    /* convert configuration to XKY format */
-    xky_queuing_port_configuration_t config;
+    /* convert configuration to AIR format */
+    air_queuing_port_configuration_t config;
 
     config.max_message_size = MAX_MESSAGE_SIZE;
     config.max_nb_message = MAX_NB_MESSAGE;
@@ -40,11 +40,11 @@ void CREATE_QUEUING_PORT (
     config.port_discipline = QUEUING_DISCIPLINE;
 
     /* create port via system call */
-    *RETURN_CODE = xky_syscall_create_port(
-            XKY_QUEUING_PORT,
-            (xky_name_ptr_t)QUEUING_PORT_NAME,
+    *RETURN_CODE = air_syscall_create_port(
+            AIR_QUEUING_PORT,
+            (air_name_ptr_t)QUEUING_PORT_NAME,
             (void *)&config,
-            (xky_identifier_t *)QUEUING_PORT_ID);
+            (air_identifier_t *)QUEUING_PORT_ID);
 }
 
 void SEND_QUEUING_MESSAGE (
@@ -61,11 +61,11 @@ void SEND_QUEUING_MESSAGE (
     }
 
     /* send message via system call */
-    *RETURN_CODE = xky_syscall_write_port(
-            XKY_QUEUING_PORT,
-            (xky_identifier_t)QUEUING_PORT_ID,
-            (xky_message_ptr_t)MESSAGE_ADDR,
-            (xky_sz_t)LENGTH,
+    *RETURN_CODE = air_syscall_write_port(
+            AIR_QUEUING_PORT,
+            (air_identifier_t)QUEUING_PORT_ID,
+            (air_message_ptr_t)MESSAGE_ADDR,
+            (air_sz_t)LENGTH,
             NULL);
 
     /** @todo TIME_OUT not implemented */
@@ -85,11 +85,11 @@ void RECEIVE_QUEUING_MESSAGE (
     }
 
     /* receive message via system call */
-	*RETURN_CODE = xky_syscall_read_port(
-	        XKY_QUEUING_PORT,
-	        (xky_identifier_t)QUEUING_PORT_ID,
-	        (xky_message_ptr_t)MESSAGE_ADDR,
-	        (xky_sz_t *)LENGTH,
+	*RETURN_CODE = air_syscall_read_port(
+	        AIR_QUEUING_PORT,
+	        (air_identifier_t)QUEUING_PORT_ID,
+	        (air_message_ptr_t)MESSAGE_ADDR,
+	        (air_sz_t *)LENGTH,
 	        NULL);
 
     /** @todo TIME_OUT not implemented */
@@ -107,10 +107,10 @@ void GET_QUEUING_PORT_ID (
     }
 
     /* get port id via system call */
-    *RETURN_CODE = xky_syscall_get_port_id(
-            XKY_QUEUING_PORT,
-            (xky_name_ptr_t)QUEUING_PORT_NAME,
-            (xky_identifier_t *)QUEUING_PORT_ID);
+    *RETURN_CODE = air_syscall_get_port_id(
+            AIR_QUEUING_PORT,
+            (air_name_ptr_t)QUEUING_PORT_NAME,
+            (air_identifier_t *)QUEUING_PORT_ID);
 }
 
 
@@ -126,10 +126,10 @@ void GET_QUEUING_PORT_STATUS(
     }
 
     /* get port status via system call */
-    xky_queuing_port_status_t status;
-    *RETURN_CODE = xky_syscall_get_port_status(
-            XKY_QUEUING_PORT,
-            (xky_identifier_t)QUEUING_PORT_ID,
+    air_queuing_port_status_t status;
+    *RETURN_CODE = air_syscall_get_port_status(
+            AIR_QUEUING_PORT,
+            (air_identifier_t)QUEUING_PORT_ID,
             (void *)&status);
 
     /* convert status back to the ARINC format */

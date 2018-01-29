@@ -76,10 +76,28 @@ SECTIONS
   PROVIDE (__DTOR_END__ = .);
   .jcr            : { KEEP (*(.jcr))	} > ROM =0
 
+  .tdata : {
+    _TLS_Data_begin = .;
+    *(.tdata .tdata.* .gnu.linkonce.td.*)
+    _TLS_Data_end = .;
+  } >ROM =0
+  .tbss : {
+    _TLS_BSS_begin = .;
+    *(.tbss .tbss.* .gnu.linkonce.tb.*) *(.tcommon)
+    _TLS_BSS_end = .;
+  } >ROM =0
+  _TLS_Data_size = _TLS_Data_end - _TLS_Data_begin;
+  _TLS_Data_begin = _TLS_Data_size != 0 ? _TLS_Data_begin : _TLS_BSS_begin;
+  _TLS_Data_end = _TLS_Data_size != 0 ? _TLS_Data_end : _TLS_BSS_begin;
+  _TLS_BSS_size = _TLS_BSS_end - _TLS_BSS_begin;
+  _TLS_Size = _TLS_BSS_end - _TLS_Data_begin;
+  _TLS_Alignment = MAX (ALIGNOF (.tdata), ALIGNOF (.tbss));
+
   .rodata :
   {
     *(.rodata .rodata.* .gnu.linkonce.r.*)
     *(.rodata1)
+    KEEP (*(SORT(.rtemsroset.*)))
     . = ALIGN (bsp_section_align);
     __rodata_end = .;
   } >ROM =0
@@ -110,6 +128,7 @@ SECTIONS
   {
     __data_start = .;
     *(.data .data.* .gnu.linkonce.d.*)
+    KEEP (*(SORT(.rtemsrwset.*)))
     KEEP (*(.gnu.linkonce.d.*personality*))
     SORT(CONSTRUCTORS)
     *(.data1)

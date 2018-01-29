@@ -16,7 +16,7 @@
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
- * http://www.rtems.com/license/LICENSE.
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef LIBBSP_ARM_LPC24XX_LPC_CLOCK_CONFIG_H
@@ -35,10 +35,12 @@ extern "C" {
 
 #define LPC_CLOCK_TIMER_BASE TMR0_BASE_ADDR
 
-#define LPC_CLOCK_REFERENCE LPC24XX_CCLK
+#define LPC_CLOCK_TIMECOUNTER_BASE TMR1_BASE_ADDR
+
+#define LPC_CLOCK_REFERENCE LPC24XX_PCLK
 
 #define LPC_CLOCK_MODULE_ENABLE() \
-  lpc24xx_module_enable(LPC24XX_MODULE_TIMER_0, LPC24XX_MODULE_CCLK)
+  lpc24xx_module_enable(LPC24XX_MODULE_TIMER_0, LPC24XX_MODULE_PCLK_DEFAULT)
 
 #ifdef __cplusplus
 }

@@ -1,7 +1,5 @@
 /***************************************************************************
  *
- * $Header$
- *
  * MODULE DESCRIPTION:
  * This module implements the RTEMS drivers for the PC serial ports
  * as /dev/ttyS1 for COM1 and /dev/ttyS2 as COM2. If one of the ports
@@ -17,72 +15,31 @@
  *
  ****************************************************************************/
 
+
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
 #include <bsp.h>
 #include <bsp/irq.h>
+#include <rtems/bspIo.h>
 #include <rtems/libio.h>
 #include <rtems/termiostypes.h>
 #include <termios.h>
 #include <uart.h>
 #include <libcpu/cpuModel.h>
+#include "tty_drv.h"
 
 int BSP_poll_read(int);
 
 /* Internal routines */
 static int tty1_conSetAttr( int minor, const struct termios *t);
 static int tty2_conSetAttr( int minor, const struct termios *t);
-static void isr_on(const rtems_irq_connect_data *);
-static void isr_off(const rtems_irq_connect_data *);
-static int  isr_is_on(const rtems_irq_connect_data *);
 
 extern BSP_polling_getchar_function_type BSP_poll_char;
 extern int BSPConsolePort;
 extern void rtems_set_waiting_id_comx( int port,  rtems_id id, rtems_event_set event );
-
-/*
- * Interrupt structure for tty1
- */
-static rtems_irq_connect_data tty1_isr_data =
-{
-  BSP_UART_COM1_IRQ,
-  BSP_uart_termios_isr_com1,
-  0,
-  isr_on,
-  isr_off,
-  isr_is_on};
-
-/*
- * Interrupt structure for tty2
- */
-static rtems_irq_connect_data tty2_isr_data =
-{
-  BSP_UART_COM2_IRQ,
-  BSP_uart_termios_isr_com2,
-  0,
-  isr_on,
-  isr_off,
-  isr_is_on};
-
-static void
-isr_on(const rtems_irq_connect_data *unused)
-{
-  return;
-}
-
-static void
-isr_off(const rtems_irq_connect_data *unused)
-{
-  return;
-}
-
-static int
-isr_is_on(const rtems_irq_connect_data *irq)
-{
-  return BSP_irq_enabled_at_i8259s(irq->name);
-}
 
 /*
  *  TTYS1 - device driver INITIALIZE entry point.
@@ -112,12 +69,14 @@ tty1_initialize(rtems_device_major_number major,
    */
   /* 9600-8-N-1, without hardware flow control */
   BSP_uart_init( BSP_UART_COM1, 9600, CHR_8_BITS, 0, 0, 0 );
-  status = BSP_install_rtems_irq_handler( &tty1_isr_data );
-  if( !status )
-  {
-    printk("Error installing ttyS1 interrupt handler!\n");
-    rtems_fatal_error_occurred(status);
-  }
+  status = rtems_interrupt_handler_install(
+    BSP_UART_COM1_IRQ,
+    "tty_drv",
+    RTEMS_INTERRUPT_UNIQUE,
+    BSP_uart_termios_isr_com1,
+    NULL
+  );
+  assert(status == RTEMS_SUCCESSFUL);
   /*
    * Register the device
    */
@@ -133,7 +92,14 @@ tty1_initialize(rtems_device_major_number major,
 
 static int tty1_last_close(int major, int minor, void *arg)
 {
-  BSP_remove_rtems_irq_handler( &tty1_isr_data );
+  rtems_status_code status;
+
+  status = rtems_interrupt_handler_remove(
+    BSP_UART_COM1_IRQ,
+    BSP_uart_termios_isr_com1,
+    NULL
+  );
+  assert(status == RTEMS_SUCCESSFUL);
   return 0;
 }
 
@@ -261,7 +227,7 @@ conSetAttr(int port, int minor, const struct termios *t)
 {
   unsigned long baud, databits, parity, stopbits;
 
-  baud = rtems_termios_baud_to_number(t->c_cflag & CBAUD);
+  baud = rtems_termios_baud_to_number(t->c_ospeed);
   if ( baud > 115200 )
     rtems_fatal_error_occurred (RTEMS_INTERNAL_ERROR);
 
@@ -298,7 +264,8 @@ conSetAttr(int port, int minor, const struct termios *t)
     stopbits = 0;
   }
 
-  printk("Setting attributes, port=%X, baud=%d, linemode = 0x%02x\n", port, baud, databits | parity | stopbits );
+  printk("Setting attributes, port=%X, baud=%" PRId32 ", linemode = 0x%02" PRIx32 "\n",
+         port, baud, databits | parity | stopbits );
   BSP_uart_set_attributes(port, baud, databits, parity, stopbits);
   return 0;
 }
@@ -340,12 +307,15 @@ tty2_initialize(rtems_device_major_number major,
    */
   /* 9600-8-N-1, without hardware flow control */
   BSP_uart_init( BSP_UART_COM2, 9600, CHR_8_BITS, 0, 0, 0);
-  status = BSP_install_rtems_irq_handler( &tty2_isr_data );
-  if( !status )
-  {
-    printk("Error installing serial console interrupt handler!\n");
-    rtems_fatal_error_occurred(status);
-  }
+  status = rtems_interrupt_handler_install(
+    BSP_UART_COM2_IRQ,
+    "tty_drv",
+    RTEMS_INTERRUPT_UNIQUE,
+    BSP_uart_termios_isr_com2,
+    NULL
+  );
+  assert(status == RTEMS_SUCCESSFUL);
+
   /*
    * Register the device
    */
@@ -361,7 +331,14 @@ tty2_initialize(rtems_device_major_number major,
 
 static int tty2_last_close(int major, int minor, void *arg)
 {
-  BSP_remove_rtems_irq_handler( &tty2_isr_data );
+  rtems_status_code status;
+
+  status = rtems_interrupt_handler_remove(
+    BSP_UART_COM2_IRQ,
+    BSP_uart_termios_isr_com2,
+    NULL
+  );
+  assert(status == RTEMS_SUCCESSFUL);
   return 0;
 }
 

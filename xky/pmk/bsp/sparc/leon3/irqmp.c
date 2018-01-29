@@ -33,29 +33,29 @@
  */
 typedef struct {
 
-    volatile xky_u32_t ilevel;           /**< Interrupt Level                */
-    volatile xky_u32_t ipend;            /**< Interrupt Pending              */
-    volatile xky_u32_t iforce;           /**< Force Interrupt                */
-    volatile xky_u32_t iclear;           /**< Interrupt Clear                */
-    volatile xky_u32_t mpstat;           /**< Multiprocessor Status          */
-    volatile xky_u32_t bcast;            /**< Broadcast interrupt            */
-    volatile xky_u32_t dummy00;        /**< Reserved                       */
-    volatile xky_u32_t wtchdog_ctrl;     /**< Watch-dog Control              */
-    volatile xky_u32_t ampctrl;          /**< AMP control                    */
-    volatile xky_u32_t icsel[2];         /**< IRQ Controller Select          */
-    volatile xky_u32_t dummy01;          /**< Reserved                       */
-    volatile xky_u32_t dummy02;          /**< Reserved                       */
-    volatile xky_u32_t dummy03;          /**< Reserved                       */
-    volatile xky_u32_t dummy04;          /**< Reserved                       */
-    volatile xky_u32_t dummy05;          /**< Reserved                       */
-    volatile xky_u32_t mask[16];         /**< Interrupt Mask per Core        */
-    volatile xky_u32_t force[16];        /**< Force Mask per Core            */
-    volatile xky_u32_t intid[16];        /**< Extended Interrupt per core    */
-    volatile xky_u32_t timestamp[8];     /**< Interrupt Time-stamp Registers */
-    volatile xky_u32_t dummy06[56];      /**< Reserved                       */
-    volatile xky_u32_t start_addr[16];   /**< Reset Start Address            */
-    volatile xky_u32_t boot;             /**< Processor Boot Register        */
-    volatile xky_u32_t dummy07[0x36F];   /**< Alignment to 4Kb boundary      */
+    volatile air_u32_t ilevel;           /**< Interrupt Level                */
+    volatile air_u32_t ipend;            /**< Interrupt Pending              */
+    volatile air_u32_t iforce;           /**< Force Interrupt                */
+    volatile air_u32_t iclear;           /**< Interrupt Clear                */
+    volatile air_u32_t mpstat;           /**< Multiprocessor Status          */
+    volatile air_u32_t bcast;            /**< Broadcast interrupt            */
+    volatile air_u32_t dummy00;        /**< Reserved                       */
+    volatile air_u32_t wtchdog_ctrl;     /**< Watch-dog Control              */
+    volatile air_u32_t ampctrl;          /**< AMP control                    */
+    volatile air_u32_t icsel[2];         /**< IRQ Controller Select          */
+    volatile air_u32_t dummy01;          /**< Reserved                       */
+    volatile air_u32_t dummy02;          /**< Reserved                       */
+    volatile air_u32_t dummy03;          /**< Reserved                       */
+    volatile air_u32_t dummy04;          /**< Reserved                       */
+    volatile air_u32_t dummy05;          /**< Reserved                       */
+    volatile air_u32_t mask[16];         /**< Interrupt Mask per Core        */
+    volatile air_u32_t force[16];        /**< Force Mask per Core            */
+    volatile air_u32_t intid[16];        /**< Extended Interrupt per core    */
+    volatile air_u32_t timestamp[8];     /**< Interrupt Time-stamp Registers */
+    volatile air_u32_t dummy06[56];      /**< Reserved                       */
+    volatile air_u32_t start_addr[16];   /**< Reset Start Address            */
+    volatile air_u32_t boot;             /**< Processor Boot Register        */
+    volatile air_u32_t dummy07[0x36F];   /**< Alignment to 4Kb boundary      */
 
 } irqmp_regmap_t;
 
@@ -66,9 +66,9 @@ typedef struct {
 typedef struct {
 
     /** Device found                                                        */
-    xky_u32_t found;
+    air_u32_t found;
     /** Number of CPUs (Cores)                                              */
-    xky_u32_t ncpus;
+    air_u32_t ncpus;
     /** IRQASMP Control registers                                           */
     irqmp_regmap_t *regs[IRQMP_MAX_CORES];
 
@@ -79,32 +79,32 @@ typedef struct {
  * @brief IRQ level register
  * * @ingroup bsp_leon_irqmp
  */
-volatile xky_u32_t *IRQ_pedding_register;
+volatile air_u32_t *IRQ_pedding_register;
 /**
  * @brief IRQ level register
  * * @ingroup bsp_leon_irqmp
  */
-volatile xky_u32_t *IRQ_level_register;
+volatile air_u32_t *IRQ_level_register;
 /**
  * @brief IRQ mask register pointer
  * * @ingroup bsp_leon_irqmp
  */
-volatile xky_u32_t *IRQ_mask_register;
+volatile air_u32_t *IRQ_mask_register;
 /**
  * @brief IRQ force register pointer
  * * @ingroup bsp_leon_irqmp
  */
-volatile xky_u32_t *IRQ_force_register;
+volatile air_u32_t *IRQ_force_register;
 /**
  * @brief IRQ mask protected interrupts
  * * @ingroup bsp_leon_irqmp
  */
-xky_u32_t IRQ_mask_protected_interrupts = 0;
+air_u32_t IRQ_mask_protected_interrupts = 0;
 /**
  * @brief IRQ force protected interrupts
  * * @ingroup bsp_leon_irqmp
  */
-xky_u32_t IRQ_force_protected_interrupts = ~0;
+air_u32_t IRQ_force_protected_interrupts = ~0;
 
 /**
  * @brief IRQASMP control and registers
@@ -118,8 +118,8 @@ static irqmp_ctrl_t irqasmp;
  */
 #define trap_to_irq_number(tn)             ((tn) - 0x10)
 
-xky_u32_t pmk_force_mask = ~0;
-xky_u32_t pmk_irq_mask[IRQMP_MAX_CORES] = { 0 };
+air_u32_t pmk_force_mask = ~0;
+air_u32_t pmk_irq_mask[IRQMP_MAX_CORES] = { 0 };
 
 int irqmp_init(void) {
 
@@ -155,18 +155,18 @@ int irqmp_init(void) {
     return 1;
 }
 
-xky_u32_t irqmp_get_number_of_cores(){
+air_u32_t irqmp_get_number_of_cores(){
 
     return irqasmp.ncpus;
 }
 
-void irqmp_set_interrupt_mask(xky_u32_t core_id, xky_u32_t irq_mask) {
+void irqmp_set_interrupt_mask(air_u32_t core_id, air_u32_t irq_mask) {
 
     IRQ_mask_register[core_id] = irq_mask;
     return;
 }
 
-void irqmp_enable_interrupt(xky_u32_t core_id, xky_u32_t tn) {
+void irqmp_enable_interrupt(air_u32_t core_id, air_u32_t tn) {
 
     tn = trap_to_irq_number(tn);
 
@@ -182,7 +182,7 @@ void irqmp_enable_interrupt(xky_u32_t core_id, xky_u32_t tn) {
     return;
 }
 
-void irqmp_disable_interrupt(xky_u32_t core_id, xky_u32_t tn) {
+void irqmp_disable_interrupt(air_u32_t core_id, air_u32_t tn) {
 
     tn = trap_to_irq_number(tn);
 
@@ -198,7 +198,7 @@ void irqmp_disable_interrupt(xky_u32_t core_id, xky_u32_t tn) {
     return;
 }
 
-void irqmp_interrupt_set_priority(xky_u32_t tn, xky_u32_t p) {
+void irqmp_interrupt_set_priority(air_u32_t tn, air_u32_t p) {
 
     tn = trap_to_irq_number(tn);
 
@@ -223,7 +223,7 @@ void irqmp_interrupt_set_priority(xky_u32_t tn, xky_u32_t p) {
     return;
 }
 
-void irqmp_interrupt_core(xky_u32_t core_id, xky_u32_t tn) {
+void irqmp_interrupt_core(air_u32_t core_id, air_u32_t tn) {
 
     tn = trap_to_irq_number(tn);
 
@@ -235,7 +235,7 @@ void irqmp_interrupt_core(xky_u32_t core_id, xky_u32_t tn) {
     return;
 }
 
-void irqmp_interrupt_broadcast(xky_u32_t tn) {
+void irqmp_interrupt_broadcast(air_u32_t tn) {
 
     tn = trap_to_irq_number(tn);
 
@@ -243,8 +243,8 @@ void irqmp_interrupt_broadcast(xky_u32_t tn) {
     if (tn >= 0 && tn < 15) {
 
         /* interrupt all cores except the current one */
-        xky_u32_t i;
-        xky_u32_t core_id = bsp_get_core_id();
+        air_u32_t i;
+        air_u32_t core_id = bsp_get_core_id();
         for (i = 0; i < irqasmp.ncpus; ++i) {
             if (core_id != i) {
                 irqasmp.regs[0]->force[i] |= (1 << tn);
@@ -254,13 +254,13 @@ void irqmp_interrupt_broadcast(xky_u32_t tn) {
     return;
 }
 
-void irqmp_boot_core(xky_u32_t core_id, void *entry_point) {
+void irqmp_boot_core(air_u32_t core_id, void *entry_point) {
 
     /* check if core id is valid */
     if (core_id >= irqasmp.ncpus) return;
 
     /* boot core */
-    irqasmp.regs[0]->start_addr[core_id] = (xky_u32_t)entry_point;
+    irqasmp.regs[0]->start_addr[core_id] = (air_u32_t)entry_point;
     irqasmp.regs[0]->boot |= ((1 << core_id) & 0xF);
     return;
 }

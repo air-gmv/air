@@ -1,0 +1,17 @@
+CC = @CC@ $(GCCSPECS)
+CXX = @CXX@ $(GCCSPECS)
+CPP = @CPP@ $(GCCSPECS)
+
+LD = @LD@
+OBJCOPY = @OBJCOPY@
+NM = @NM@
+SIZE = @SIZE@
+STRIP = @STRIP@
+
+##
+AM_CPPFLAGS = $(TEST_FLAGS)
+AM_CFLAGS   = $(TEST_C_FLAGS)
+AM_CXXFLAGS = $(TEST_CXX_FLAGS)
+AM_LDFLAGS  = $(TEST_LD_FLAGS)
+
+CLEANFILES = *.num *.nxe *.elf *.srec* *.bin *.bt *.ralf

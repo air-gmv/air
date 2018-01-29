@@ -1,127 +1,57 @@
 /**
  *  @file
- *  taskrestart.c
  *
- *  @brief restart a task
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-1999.
+ *  @brief RTEMS Task Restart
+ *  @ingroup ClassicTasks
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2014.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  5317    | 02/11/2009  | mcoutinho    | IPR 831
- *  7115    | 09/04/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup RTEMS_API RTEMS API
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup RTEMS_API_TASK Task Manager
- *  @{
- */
-
-#include <rtems/system.h>
-#include <rtems/rtems/status.h>
-#include <rtems/rtems/support.h>
-#include <rtems/rtems/modes.h>
-#include <rtems/score/object.h>
-#include <rtems/score/stack.h>
-#include <rtems/score/states.h>
-#include <rtems/rtems/tasks.h>
-#include <rtems/score/thread.h>
-#include <rtems/score/threadq.h>
-#include <rtems/score/tod.h>
-#include <rtems/score/userext.h>
-#include <rtems/score/wkspace.h>
-#include <rtems/score/apiext.h>
-#include <rtems/score/sysstate.h>
-
-
-rtems_status_code rtems_task_restart(
-                                     Objects_Id id ,
-                                     uint32_t argument
-                                     )
-{
-    /* task to restart */
-   register Thread_Control *the_thread;
-
-   /* task to restart location */
-   Objects_Locations location;
-
-
-   /* get the thread */
-   the_thread = _Thread_Get(id , &location);
-
-   /* check the task location */
-   switch(location)
-   {
-
-#if defined(RTEMS_MULTIPROCESSING)
-
-       /* task is remote */
-      case OBJECTS_REMOTE:
-
-          /* dispatch the threads */
-         _Thread_Dispatch();
-
-         /* and return remote illegal operation (cannot restart a remote task) */
-         return RTEMS_ILLEGAL_ON_REMOTE_OBJECT;
-
+#if HAVE_CONFIG_H
+#include "config.h"
 #endif
 
-         /* task id is invalid */
-      case OBJECTS_ERROR:
+#include <rtems/rtems/tasks.h>
+#include <rtems/score/threadimpl.h>
 
-          /* return invalid id */
-         return RTEMS_INVALID_ID;
+rtems_status_code rtems_task_restart(
+  rtems_id  id,
+  uint32_t  argument
+)
+{
+  Thread_Control           *the_thread;
+  ISR_lock_Context          lock_context;
+  Thread_Entry_information  entry;
+  bool                      ok;
 
-         /* task is local (nominal case) */
-      case OBJECTS_LOCAL:
+  the_thread = _Thread_Get( id, &lock_context );
 
-         /* try to restart the thread */
-         if(_Thread_Restart(the_thread , NULL , argument))
-         {
-            /* enable dispacth (disabled by _Thread_Get) */
-            _Thread_Enable_dispatch();
+  if ( the_thread == NULL ) {
+#if defined(RTEMS_MULTIPROCESSING)
+    if ( _Thread_MP_Is_remote( id ) ) {
+      return RTEMS_ILLEGAL_ON_REMOTE_OBJECT;
+    }
+#endif
 
-            /* return success */
-            return RTEMS_SUCCESSFUL;
-         }
-         else
-         {
-            /* enable dispacth (disabled by _Thread_Get) */
-            _Thread_Enable_dispatch();
+    return RTEMS_INVALID_ID;
+  }
 
-            /* return the thread restart failed */
-            return RTEMS_INCORRECT_STATE;
-         }
+  entry = the_thread->Start.Entry;
+  entry.Kinds.Numeric.argument = argument;
 
-         /* default clause: the object location is invalid */
-      default:
+  if ( the_thread == _Thread_Executing ) {
+    _Thread_Restart_self( the_thread, &entry, &lock_context );
+    RTEMS_UNREACHABLE();
+  }
 
-         /* an internal error occured and the object location is invalid */
-         return RTEMS_INTERNAL_INVALID_OBJECT_LOCATION;
-   }
+  ok = _Thread_Restart_other( the_thread, &entry, &lock_context );
 
+  return ok ? RTEMS_SUCCESSFUL : RTEMS_INCORRECT_STATE;
 }
-
-/**  
- *  @}
- */
-
-/**
- *  @}
- */

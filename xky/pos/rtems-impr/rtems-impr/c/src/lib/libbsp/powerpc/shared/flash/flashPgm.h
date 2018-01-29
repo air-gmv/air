@@ -1,6 +1,5 @@
 #ifndef BSP_FLASH_PGM_API_H
 #define BSP_FLASH_PGM_API_H
-/* $Id$         */
 
 /* Trivial Flash Programmer                                  */
 
@@ -111,7 +110,7 @@ BSP_flashErase(int bank, uint32_t offset, uint32_t size, int quiet);
  *  RETURNS: 0 on success, nonzero on error (message printed to stderr).
  */
 int
-BSP_flashWrite(int bank, uint32_t offset, char *src, uint32_t n_bytes, int quiet);
+BSP_flashWrite(int bank, uint32_t offset, const char *src, uint32_t n_bytes, int quiet);
 
 /* Copy contents of a file to flash.
  *
@@ -123,7 +122,7 @@ BSP_flashWrite(int bank, uint32_t offset, char *src, uint32_t n_bytes, int quiet
  *          args and return value.
  */
 int
-BSP_flashWriteFile(int bank, uint32_t offset, char *path, int quiet);
+BSP_flashWriteFile(int bank, uint32_t offset, const char *path, int quiet);
 
 /* Dump info about available flash to file
  * (stdout is used if f==NULL).

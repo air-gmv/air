@@ -15,7 +15,7 @@
 #ifndef __CLOCK_H__
 #define __CLOCK_H__
 
-#include <xky_arch.h>
+#include <air_arch.h>
 
 /**
  * @defgroup bsp_leon_clock BSP - LEON 3 & 4 Clock/Timer
@@ -29,8 +29,8 @@
 typedef struct {
 
     volatile void *regs;    /**< Base register                  */
-    xky_u32_t irq;           /**< IRQ number                     */
-    xky_u32_t frequency;     /**< Frequency                      */
+    air_u32_t irq;           /**< IRQ number                     */
+    air_u32_t frequency;     /**< Frequency                      */
 
 } timer_ctrl_t;
 

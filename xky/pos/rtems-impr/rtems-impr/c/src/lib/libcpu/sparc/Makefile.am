@@ -1,32 +1,38 @@
-##
-## $Id: Makefile.am 8702 2010-08-18 10:23:50Z mcoutinho $
-##
-
 ACLOCAL_AMFLAGS = -I ../../../aclocal
-
-GCOV_FLAGS =
-if RTEMS_TEST_HAS_COVERAGE
-GCOV_FLAGS += -O0 -fprofile-arcs -ftest-coverage
-else
-GCOV_FLAGS += -O2
-endif
 
 include $(top_srcdir)/../../../automake/compile.am
 
 noinst_PROGRAMS =
 
 include_libcpudir = $(includedir)/libcpu
-include_libcpu_HEADERS = $(top_srcdir)/../shared/include/cache.h $(top_srcdir)/../sparc/cache/include/cache_.h $(top_srcdir)/../shared/include/sharedCPUs.h $(top_srcdir)/../sparc/include/sharedSPARCCPUs.h $(top_srcdir)/../sparc/reg_win/window.h $(top_srcdir)/../sparc/syscall/syscall.h
+include_libcpu_HEADERS = ../shared/include/cache.h
+include_libcpu_HEADERS += include/libcpu/byteorder.h
+include_libcpu_HEADERS += include/libcpu/access.h
+
+noinst_PROGRAMS += cache.rel
+cache_rel_SOURCES = cache/cache_.h \
+    ../shared/src/cache_manager.c
+cache_rel_CPPFLAGS = $(AM_CPPFLAGS) -I$(srcdir)/cache
+cache_rel_LDFLAGS = $(RTEMS_RELLDFLAGS)
+
+if has_instruction_cache
+cache_rel_CPPFLAGS += -DHAS_INSTRUCTION_CACHE
+endif
 
 noinst_PROGRAMS += syscall.rel
 syscall_rel_SOURCES = syscall/syscall.S syscall/syscall.h
-syscall_rel_CPPFLAGS = $(AM_CPPFLAGS) $(GCOV_FLAGS)
+syscall_rel_CPPFLAGS = $(AM_CPPFLAGS)
 syscall_rel_LDFLAGS = $(RTEMS_RELLDFLAGS)
 
 noinst_PROGRAMS += reg_win.rel
-reg_win_rel_SOURCES = reg_win/window.S reg_win/window.h
-reg_win_rel_CPPFLAGS = $(AM_CPPFLAGS) $(GCOV_FLAGS)
+reg_win_rel_SOURCES = reg_win/window.S
+reg_win_rel_CPPFLAGS = $(AM_CPPFLAGS)
 reg_win_rel_LDFLAGS = $(RTEMS_RELLDFLAGS)
+
+noinst_PROGRAMS += access.rel
+access_rel_SOURCES = access/access.S access/access_le.c
+access_rel_CPPFLAGS = $(AM_CPPFLAGS)
+access_rel_LDFLAGS = $(RTEMS_RELLDFLAGS)
 
 include $(srcdir)/preinstall.am
 include $(top_srcdir)/../../../automake/local.am

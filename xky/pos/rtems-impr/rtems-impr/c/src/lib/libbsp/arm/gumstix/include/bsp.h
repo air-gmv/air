@@ -1,45 +1,58 @@
+/**
+ * @file
+ * @ingroup arm_gumstix
+ * @brief Global BSP definitions.
+ */
+
 /*
  *  By Yang Xi <hiyangxi@gmail.com>.
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-#ifndef _BSP_H
-#define _BSP_H
+#ifndef LIBBSP_ARM_GUMSTIX_BSP_H
+#define LIBBSP_ARM_GUMSTIX_BSP_H
+
+#include <bspopts.h>
+#include <bsp/default-initial-extension.h>
+
+#include <rtems.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <bspopts.h>
-
-#include <rtems.h>
-#include <rtems/console.h>
-#include <rtems/clockdrv.h>
-#include <libchip/serial.h>
+/**
+ * @defgroup arm_gumstix Gumstix Support
+ * @ingroup bsp_arm
+ * @brief Gumstix support package
+ * @{
+ */
 
 #define BSP_FEATURE_IRQ_EXTENSION
 
 #define BSP_HAS_FRAME_BUFFER 1
 
-/* What is the input clock freq in hertz */
+/** @brief What is the input clock freq in hertz */
 #define BSP_MAIN_FREQ 3686400      /* 3.6864 MHz */
 #define BSP_SLCK_FREQ   32768      /* 32.768 KHz */
 
-/* What is the last interrupt */
+/** @brief What is the last interrupt */
 #define BSP_MAX_INT AT91RM9200_MAX_INT
 
+/*
+ * forward reference the type to avoid conflicts between libchip serial
+ * and libchip rtc get and set register types.
+ */
+typedef struct _console_tbl console_tbl;
 console_tbl *BSP_get_uart_from_minor(int minor);
+
 static inline int32_t BSP_get_baud(void) {return 115200;}
 
-/* How big should the interrupt stack be? */
+/** @brief How big should the interrupt stack be? */
 #define CONFIGURE_INTERRUPT_STACK_MEMORY  (16 * 1024)
-
-extern rtems_configuration_table Configuration;
 
 #define ST_PIMR_PIV	33	/* 33 ticks of the 32.768Khz clock ~= 1msec */
 
@@ -60,6 +73,8 @@ extern int rtems_ne_driver_attach(struct rtems_bsdnet_ifconfig *, int);
 #ifndef RTEMS_BSP_NETWORK_DRIVER_ATTACH
 #define RTEMS_BSP_NETWORK_DRIVER_ATTACH BSP_NE2000_NETWORK_DRIVER_ATTACH
 #endif
+
+/** @} */
 
 #ifdef __cplusplus
 }

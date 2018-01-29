@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -34,26 +30,35 @@ libbsp_a_SOURCES =
 
 include_HEADERS += ../../arm/shared/comm/uart.h
 # startup
-libbsp_a_SOURCES += ../../shared/bsplibc.c ../../shared/bsppost.c \
-    ../../shared/bsppredriverhook.c ../../shared/bsppretaskinghook.c \
+libbsp_a_SOURCES += \
+    ../../shared/bsppredriverhook.c \
     ../../shared/bspgetworkarea.c startup/bspstart.c \
     ../../shared/bspclean.c startup/bspreset.c \
     ../../shared/bootcard.c ../../shared/sbrk.c \
+    ../../shared/getentropy-cpucounter.c \
     ../../shared/gnatinstallhandler.c
+libbsp_a_SOURCES += ../../shared/cpucounterread.c
+libbsp_a_SOURCES += ../../shared/cpucounterdiff.c
 # console
-libbsp_a_SOURCES += ../../shared/console.c
+libbsp_a_SOURCES += ../../shared/console.c \
+    ../../shared/console_select.c ../../shared/console_control.c \
+    ../../shared/console_read.c ../../shared/console_write.c
 # IRQ
 include_bsp_HEADERS += ../../shared/include/irq-generic.h \
 	../../shared/include/irq-info.h
-libbsp_a_SOURCES += ../../shared/src/irq-generic.c \
-	../../shared/src/irq-legacy.c \
-	../../shared/src/irq-info.c \
-	../../shared/src/irq-shell.c \
-	../../shared/src/irq-server.c
-# simple_abort
-libbsp_a_SOURCES += ../shared/abort/simple_abort.c
+libbsp_a_SOURCES += ../../shared/src/irq-default-handler.c
+libbsp_a_SOURCES += ../../shared/src/irq-generic.c
+libbsp_a_SOURCES += ../../shared/src/irq-info.c
+libbsp_a_SOURCES += ../../shared/src/irq-legacy.c
+libbsp_a_SOURCES += ../../shared/src/irq-server.c
+libbsp_a_SOURCES += ../../shared/src/irq-shell.c
 # debugio
 libbsp_a_SOURCES += console/uart.c
+
+# Cache
+libbsp_a_SOURCES += ../../../libcpu/shared/src/cache_manager.c
+libbsp_a_SOURCES += ../../shared/include/cache_.h
+libbsp_a_CPPFLAGS = -I$(srcdir)/../../shared/include
 
 if HAS_NETWORKING
 network_CPPFLAGS = -D__INSIDE_RTEMS_BSD_TCPIP_STACK__

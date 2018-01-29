@@ -6,12 +6,13 @@
 
 #include <stdio.h>
 #include <fcntl.h>
-#include <rtems/libio.h>
-#include <rtems/termiostypes.h>
 #include <termios.h>
-#include <bsp.h>
 #include <malloc.h>
-#include <rtems/mw_uid.h>
+
+#include <rtems/libio.h>
+#include <rtems/console.h>
+#include <rtems/termiostypes.h>
+#include <bsp.h>
 
 #include <rtems/bspIo.h>
 
@@ -151,7 +152,7 @@ static int IntUartSetAttributes(int minor, const struct termios *t)
   /* check to see if input is valid */
   if (t != (const struct termios *) 0) {
     /* determine baud rate index */
-    baud = rtems_termios_baud_to_number(t->c_cflag & CBAUD);
+    baud = rtems_termios_baud_to_number(t->c_ospeed);
 
     /* determine data bits */
     switch (t->c_cflag & CSIZE) {
@@ -341,18 +342,15 @@ static void IntUartInitialize(void)
  ***************************************************************************/
 static ssize_t IntUartInterruptWrite(int minor, const char *buf, size_t len)
 {
-  int level;
+  if (len > 0) {
+    /* write out character */
+    MCF_UART_UTB(minor) = *buf;
 
-  rtems_interrupt_disable(level);
+    /* enable tx interrupt */
+    IntUartInfo[minor].uimr |= MCF_UART_UIMR_TXRDY;
+    MCF_UART_UIMR(minor) = IntUartInfo[minor].uimr;
+  }
 
-  /* write out character */
-  MCF_UART_UTB(minor) = *buf;
-
-  /* enable tx interrupt */
-  IntUartInfo[minor].uimr |= MCF_UART_UIMR_TXRDY;
-  MCF_UART_UIMR(minor) = IntUartInfo[minor].uimr;
-
-  rtems_interrupt_enable(level);
   return (0);
 }
 
@@ -600,8 +598,10 @@ rtems_device_driver console_open(rtems_device_major_number major,
     struct termios term;
 
     if (tcgetattr(STDIN_FILENO, &term) >= 0) {
-      term.c_cflag &= ~(CBAUD | CSIZE);
-      term.c_cflag |= CS8 | B19200;
+      term.c_cflag &= ~(CSIZE);
+      term.c_cflag |= CS8;
+      term.c_ispeed = B19200;
+      term.c_ospeed = B19200;
       tcsetattr(STDIN_FILENO, TCSANOW, &term);
     }
   }

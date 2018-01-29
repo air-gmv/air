@@ -34,7 +34,7 @@ void test(PARTITION_ID_TYPE self_id) {
 	char message[18]= "This is sample 0\0";
 
 	/* get the number of ticks per second */
-	int tps = 1000000 / xky_syscall_get_us_per_tick();
+	int tps = 1000000 / air_syscall_get_us_per_tick();
 	pprintf("TPS %i\n", tps);
 
 	RETURN_CODE_TYPE rc = NO_ERROR;
@@ -82,7 +82,7 @@ int entry_func() {
 	
 	/*Creating Source sampling Port*/
 	SAMPLING_PORT_NAME_TYPE NAME = "ssampling";
-	MESSAGE_SIZE_TYPE SIZE = 1024;
+	MESSAGE_SIZE_TYPE SIZE = 1520;
 	SYSTEM_TIME_TYPE PERIOD= 1000000000ll;
 	
 	CREATE_SAMPLING_PORT (NAME, SIZE, SOURCE, PERIOD, &SEND_PORT, &rc);

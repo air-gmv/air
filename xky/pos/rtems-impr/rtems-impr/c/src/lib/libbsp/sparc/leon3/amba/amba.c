@@ -1,127 +1,166 @@
-/**
- *  @file
- *  amba.c
- *
- *  @brief AMBA Plag & Play Bus Driver
+/*
+ *  AMBA Plug & Play Bus Driver
  *
  *  This driver hook performs bus scanning.
  *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 2004.
- *  Gaisler Research
+ *  COPYRIGHT (c) 2011.
+ *  Aeroflex Gaisler
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  5393    | 03/11/2009  | mcoutinho    | IPR 64
- *  5970    | 14/01/2010  | mcoutinho    | IPR 1053
- *  9619    | 23/02/2011  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SPARC_LEON3_BSP SPARC LEON3 BSP
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>
+#include <bsp/fatal.h>
+#include <leon.h>
+#include <ambapp.h>
+#include <rtems/sysinit.h>
 
+unsigned int leon3_timer_prescaler __attribute__((weak)) = 0;
+int leon3_timer_core_index __attribute__((weak)) = 0;
 
-amba_confarea_type amba_conf;
-
-/**
- * @brief pointers to Interrupt Controller configuration registers
- */
-volatile LEON3_IrqCtrl_Regs_Map *LEON3_IrqCtrl_Regs;
-
-
-#if defined(RTEMS_MULTIPROCESSING)
-
-int LEON3_Cpu_Index = 0;
-
-/**
- *  @brief get register ASR 17 used for multiprocessing
+/* AMBA Plug&Play information description.
  *
- *  BSP predriver hook.  Called just before drivers are initialized.
- *  Used to scan system bus. Probes for AHB masters, AHB slaves and 
+ * After software has scanned AMBA PnP it builds a tree to make
+ * it easier for drivers to work with the bus architecture.
+ */
+struct ambapp_bus ambapp_plb;
+
+/* If RTEMS_DRVMGR_STARTUP is defined extra code is added that
+ * registers the GRLIB AMBA PnP bus driver as root driver.
+ */
+#ifdef RTEMS_DRVMGR_STARTUP
+#include <drvmgr/drvmgr.h>
+#include <drvmgr/ambapp_bus_grlib.h>
+
+extern void gptimer_register_drv (void);
+extern void apbuart_cons_register_drv(void);
+/* All drivers included by BSP, this is overridden by the user by including
+ * the drvmgr_confdefs.h. By default the Timer and UART driver are included.
+ */
+drvmgr_drv_reg_func drvmgr_drivers[] __attribute__((weak)) =
+{
+  gptimer_register_drv,
+  apbuart_cons_register_drv,
+  NULL /* End array with NULL */
+};
+
+/* Driver resources configuration for AMBA root bus. It is declared weak
+ * so that the user may override it, if the defualt settings are not
+ * enough.
+ */
+struct drvmgr_bus_res grlib_drv_resources __attribute__((weak)) =
+{
+  .next = NULL,
+  .resource =
+  {
+    DRVMGR_RES_EMPTY,
+  }
+};
+
+/* GRLIB AMBA bus configuration (the LEON3 root bus configuration) */
+struct grlib_config grlib_bus_config =
+{
+  &ambapp_plb,              /* AMBAPP bus setup */
+  &grlib_drv_resources,     /* Driver configuration */
+};
+#endif
+
+rtems_interrupt_lock LEON3_IrqCtrl_Lock =
+  RTEMS_INTERRUPT_LOCK_INITIALIZER("LEON3 IrqCtrl");
+
+/* Pointers to Interrupt Controller configuration registers */
+volatile struct irqmp_regs *LEON3_IrqCtrl_Regs;
+struct ambapp_dev *LEON3_IrqCtrl_Adev;
+volatile struct gptimer_regs *LEON3_Timer_Regs;
+struct ambapp_dev *LEON3_Timer_Adev;
+
+/*
+ *  amba_initialize
+ *
+ *  Must be called just before drivers are initialized.
+ *  Used to scan system bus. Probes for AHB masters, AHB slaves and
  *  APB slaves. Addresses to configuration areas of the AHB masters,
- *  AHB slaves, APB slaves and APB master are storeds in 
+ *  AHB slaves, APB slaves and APB master are storeds in
  *  amba_ahb_masters, amba_ahb_slaves and amba.
  */
-unsigned int getasr17();
 
-asm(" .text  \n"
-    "getasr17:   \n"
-    "retl \n"
-    "mov %asr17, %o0\n");
-
-#endif
-
-
-void bsp_leon3_predriver_hook(void)
+static void amba_initialize(void)
 {
-    /* number of slaves found */
-    int i;
+  int icsel;
+  struct ambapp_dev *adev;
 
-#if defined(RTEMS_MULTIPROCESSING)
+  /* Scan AMBA Plug&Play read-only information. The routine builds a PnP
+   * tree into ambapp_plb in RAM, after this we never access the PnP
+   * information in hardware directly any more.
+   * Since on Processor Local Bus (PLB) memory mapping is 1:1
+   */
+  ambapp_scan(&ambapp_plb, LEON3_IO_AREA, NULL, NULL);
 
-    /* register ASR 17 */
-    unsigned int tmp;
+  /* Find LEON3 Interrupt controller */
+  adev = (void *)ambapp_for_each(&ambapp_plb, (OPTIONS_ALL|OPTIONS_APB_SLVS),
+                                 VENDOR_GAISLER, GAISLER_IRQMP,
+                                 ambapp_find_by_idx, NULL);
+  if (adev == NULL) {
+    /* PANIC IRQ controller not found!
+     *
+     *  What else can we do but stop ...
+     */
+    bsp_fatal(LEON3_FATAL_NO_IRQMP_CONTROLLER);
+  }
 
+  LEON3_IrqCtrl_Regs = (volatile struct irqmp_regs *)DEV_TO_APB(adev)->start;
+  LEON3_IrqCtrl_Adev = adev;
+  if ((LEON3_IrqCtrl_Regs->ampctrl >> 28) > 0) {
+    /* IRQ Controller has support for multiple IRQ Controllers, each
+     * CPU can be routed to different Controllers, we find out which
+     * controller by looking at the IRQCTRL Select Register for this CPU.
+     * Each Controller is located at a 4KByte offset.
+     */
+    icsel = LEON3_IrqCtrl_Regs->icsel[LEON3_Cpu_Index/8];
+    icsel = (icsel >> ((7 - (LEON3_Cpu_Index & 0x7)) * 4)) & 0xf;
+    LEON3_IrqCtrl_Regs += icsel;
+  }
+  LEON3_IrqCtrl_Regs->mask[LEON3_Cpu_Index] = 0;
+  LEON3_IrqCtrl_Regs->force[LEON3_Cpu_Index] = 0;
+  LEON3_IrqCtrl_Regs->iclear = 0xffffffff;
+
+  /* Init Extended IRQ controller if available */
+  leon3_ext_irq_init();
+
+  /* find GP Timer */
+  adev = (void *)ambapp_for_each(&ambapp_plb, (OPTIONS_ALL|OPTIONS_APB_SLVS),
+                                 VENDOR_GAISLER, GAISLER_GPTIMER,
+                                 ambapp_find_by_idx, &leon3_timer_core_index);
+  if (adev) {
+    LEON3_Timer_Regs = (volatile struct gptimer_regs *)DEV_TO_APB(adev)->start;
+    LEON3_Timer_Adev = adev;
+
+    /* Register AMBA Bus Frequency */
+    ambapp_freq_init(
+      &ambapp_plb,
+      LEON3_Timer_Adev,
+      (LEON3_Timer_Regs->scaler_reload + 1)
+        * LEON3_GPTIMER_0_FREQUENCY_SET_BY_BOOT_LOADER
+    );
+    /* Set user prescaler configuration. Use this to increase accuracy of timer
+     * and accociated services like cpucounter.
+     * Note that minimum value is the number of timer instances present in
+     * GRTIMER/GPTIMER hardware. See HW manual.
+     */
+    if (leon3_timer_prescaler)
+      LEON3_Timer_Regs->scaler_reload = leon3_timer_prescaler;
+  }
+
+#ifdef RTEMS_DRVMGR_STARTUP
+  /* Register Root bus, Use GRLIB AMBA PnP bus as root bus for LEON3 */
+  ambapp_grlib_root_register(&grlib_bus_config);
 #endif
-
-    /* amba APB device for the IRQ MP */
-    amba_apb_device dev;
-
-    /* Scan the AMBA Plug&Play info at the default LEON3 area */
-    amba_scan(&amba_conf , LEON3_IO_AREA , NULL);
-
-    /* Find LEON3 Interrupt controller */
-    i = amba_find_apbslv(&amba_conf , VENDOR_GAISLER , GAISLER_IRQMP , &dev);
-
-    /* if found any interrupt controller */
-    if(i > 0)
-    {
-        /* found APB IRQ_MP Interrupt Controller */
-
-        /* get the start address */
-        LEON3_IrqCtrl_Regs = ( volatile LEON3_IrqCtrl_Regs_Map * ) dev.start;
-
-        /* if multiprocessing is enabled */
-#if defined(RTEMS_MULTIPROCESSING)
-
-        /* if use multiprocessing */
-        if(Configuration.User_multiprocessing_table != NULL)
-        {
-            /* get ASR 17 */
-            tmp = getasr17();
-
-            /* determine the CPU index based on the ASR 17 */
-            LEON3_Cpu_Index = ( tmp >> 28 ) & 3;
-        }
-
-#endif
-        /* initialize the interrupt handlers */
-        bsp_spurious_initialize();
-    }
-
-    /* find GP Timer */
-    i = amba_find_apbslv(&amba_conf , VENDOR_GAISLER , GAISLER_GPTIMER , &dev);
-
-    /* if found any GP Timer */
-    if(i > 0)
-    {
-        /* get the start address for the timer register */
-        LEON3_Timer_Regs = ( volatile LEON3_Timer_Regs_Map * ) dev.start;
-    }
 }
 
-/**  
- *  @}
- */
+RTEMS_SYSINIT_ITEM(
+  amba_initialize,
+  RTEMS_SYSINIT_BSP_START,
+  RTEMS_SYSINIT_ORDER_SECOND
+);

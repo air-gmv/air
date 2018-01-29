@@ -1,14 +1,12 @@
 ## Process this file with autoconf to produce a configure script.
-##
-## $Id$
 
-AC_PREREQ([2.68])
-AC_INIT([rtems-c-src-lib-libbsp-powerpc-tqm8xx],[_RTEMS_VERSION],[http://www.rtems.org/bugzilla])
+AC_PREREQ([2.69])
+AC_INIT([rtems-c-src-lib-libbsp-powerpc-tqm8xx],[_RTEMS_VERSION],[https://devel.rtems.org/newticket])
 AC_CONFIG_SRCDIR([bsp_specs])
 RTEMS_TOP(../../../../../..)
 
 RTEMS_CANONICAL_TARGET_CPU
-AM_INIT_AUTOMAKE([no-define nostdinc foreign 1.11.1])
+AM_INIT_AUTOMAKE([no-define nostdinc foreign 1.12.2])
 RTEMS_BSP_CONFIGURE
 
 RTEMS_PROG_CC_FOR_TARGET
@@ -18,21 +16,11 @@ RTEMS_PROG_CCAS
 RTEMS_CHECK_NETWORKING
 AM_CONDITIONAL(HAS_NETWORKING,test "$HAS_NETWORKING" = "yes")
 
-RTEMS_BSPOPTS_SET([PPC_USE_DATA_CACHE],[*],[1])
-RTEMS_BSPOPTS_HELP([PPC_USE_DATA_CACHE],
-[If defined, then the PowerPC specific code in RTEMS will use
- data cache instructions to optimize the context switch code.
- This code can conflict with debuggers or emulators.])
+RTEMS_BSPOPTS_SET_DATA_CACHE_ENABLED([*],[1])
+RTEMS_BSPOPTS_HELP_DATA_CACHE_ENABLED
 
-RTEMS_BSPOPTS_SET([DATA_CACHE_ENABLE],[*],[1])
-RTEMS_BSPOPTS_HELP([DATA_CACHE_ENABLE],
-[If defined, the data cache will be enabled after address translation
- is turned on.])
-
-RTEMS_BSPOPTS_SET([INSTRUCTION_CACHE_ENABLE],[*],[1])
-RTEMS_BSPOPTS_HELP([INSTRUCTION_CACHE_ENABLE],
-[If defined, the instruction cache will be enabled after address translation
- is turned on.])
+RTEMS_BSPOPTS_SET_INSTRUCTION_CACHE_ENABLED([*],[1])
+RTEMS_BSPOPTS_HELP_INSTRUCTION_CACHE_ENABLED
 
 RTEMS_BSPOPTS_SET([CONSOLE_CHN],[*],[CONS_CHN_SMC1])
 RTEMS_BSPOPTS_HELP([CONSOLE_CHN],
@@ -88,24 +76,6 @@ RTEMS_BSPOPTS_HELP([CONS_SCC4_MODE],
 [(BSP--SCC4 UART IF mode) Must be defined if SCC4 is used as a tty (UART)
  channel. Set it to CONS_MODE_POLLED for polled operation, CONS_MODE_IRQ for
  interrupt driven (spooled) operation. Set it to CONS_MODE_UNUSED, if not used])
-
-RTEMS_BSPOPTS_SET([SPI_BOARD_INIT_FNC],[pghplus],[bsp_pghplus_spi_init])
-RTEMS_BSPOPTS_SET([SPI_BOARD_INIT_FNC],[*],[bsp_dummy_spi_init])
-RTEMS_BSPOPTS_HELP([SPI_BOARD_INIT_FNC],
-[(BSP--SPI board init function) Specify the function that inits the board 
- port lines and further devices.])
-
-RTEMS_BSPOPTS_SET([SPI_SEND_STOP_FNC],[pghplus],[bsp_pghplus_spi_send_stop])
-RTEMS_BSPOPTS_SET([SPI_SEND_STOP_FNC],[*],[bsp_dummy_spi_send_stop])
-RTEMS_BSPOPTS_HELP([SPI_SEND_STOP_FNC],
-[(BSP--SPI send stop function) Specify the function that deaddresses SPI 
- devices. Set to bsp_dummy_spi_send_stop for dummy implementation])
-
-RTEMS_BSPOPTS_SET([SPI_SEND_ADDR_FNC],[pghplus],[bsp_pghplus_spi_sel_addr])
-RTEMS_BSPOPTS_SET([SPI_SEND_ADDR_FNC],[*],[bsp_dummy_spi_sel_addr])
-RTEMS_BSPOPTS_HELP([SPI_SEND_ADDR_FNC],
-[(BSP--SPI send address function) Specify the function that addresses SPI 
- devices. Set to bsp_dummy_spi_sel_addr for dummy implementation])
 
 # add selection of primary network interface
 RTEMS_BSPOPTS_SET([BSP_USE_NETWORK_FEC],[pghplus],[1])

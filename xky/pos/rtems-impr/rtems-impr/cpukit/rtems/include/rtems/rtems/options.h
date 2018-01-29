@@ -1,85 +1,79 @@
 /**
- *  @file
- *  options.h
+ * @file rtems/rtems/options.h
  *
- *  @brief contains information which defines the
- *  options available on many directives.
+ * @defgroup ClassicOptions Classic API Options
  *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
+ * @ingroup ClassicRTEMS
+ * @brief Options Available on Many Directives
  *
- *  COPYRIGHT (c) 1989-1999.
- *  On-Line Applications Research Corporation (OAR).
- *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup RTEMS_API RTEMS API
- *  @{
+ * This include file contains information which defines the
+ * options available on many directives.
  */
 
-/**
- *  @addtogroup RTEMS_API_COMMON Common
- *  @{
+/* COPYRIGHT (c) 1989-2008.
+ * On-Line Applications Research Corporation (OAR).
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef _RTEMS_RTEMS_OPTIONS_H
 #define _RTEMS_RTEMS_OPTIONS_H
 
+#include <rtems/score/basedefs.h>
+
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-   /**
-    *  @brief define the control block used to manage
-    *  option sets.
-    */
-   typedef uint32_t rtems_option;
+/**
+ * @defgroup ClassicOptions Classic API Options
+ *
+ * @ingroup ClassicRTEMS
+ *
+ * This encapsulates functionality related to the options argument
+ * to Classic API blocking operations. The primary option is whether
+ * or not a task is willing to wait for the operation to complete.
+ */
+/**@{*/
 
-   /*
-    *  The following constants define the individual options which may
-    *  be used to compose an option set.
-    */
+/**
+ *  The following type defines the control block used to manage
+ *  option sets.
+ */
+typedef uint32_t   rtems_option;
 
-
-   /**
-    * @brief define the default options (wait or events all)
-    **/
+/**
+ *  The following constants define the individual options which may
+ *  be used to compose an option set.
+ */
 #define RTEMS_DEFAULT_OPTIONS   0x00000000
 
-   /**
-    * @brief define the wait on resource
-    **/
+/**
+ *  This option constants indicates that the task is to wait on resource.
+ */
 #define RTEMS_WAIT      0x00000000
-
-   /**
-    * @brief define the no wait on resource
-    **/
+/**
+ *  This option constants indicates that the task is to not wait on
+ *  the resource.  If it is not available, return immediately with
+ *  a status to indicate unsatisfied.
+ */
 #define RTEMS_NO_WAIT   0x00000001
 
-   /**
-    * @brief define the wait for all events
-    **/
+/**
+ *  This option constants indicates that the task wishes to wait until
+ *  all events of interest are available.
+ */
 #define RTEMS_EVENT_ALL 0x00000000
 
-   /**
-    * @brief define the wait on any event
-    **/
+/**
+ *  This option constants indicates that the task wishes to wait until
+ *  ANY events of interest are available.
+ */
 #define RTEMS_EVENT_ANY 0x00000002
 
-#ifndef __RTEMS_APPLICATION__
-#include <rtems/rtems/options.inl>
-#endif
+/**@}*/
 
 #ifdef __cplusplus
 }
@@ -87,11 +81,3 @@ extern "C"
 
 #endif
 /* end of include file */
-
-/**
- *  @}
- */
-
-/**
- *  @}
- */

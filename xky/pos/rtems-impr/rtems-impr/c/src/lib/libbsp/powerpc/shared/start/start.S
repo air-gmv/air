@@ -4,10 +4,9 @@
  *  Copyright (C) 1999 Eric Valette. valette@crf.canon.fr
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  *
- *  $Id$
  */
 
 #include <rtems/asm.h>
@@ -65,6 +64,7 @@ __rtems_entry_point:
 	mfmsr r0
 	oris  r0, r0, (1<<(31-16-6))
 	mtmsr r0
+	isync
 	/*
 	 * set vscr and vrsave to known values
 	 */
@@ -128,6 +128,12 @@ enter_C_code:
 	 */
 	li   r0, (CPU_STACK_ALIGNMENT-1)
 	andc r1, r9, r0
+	/*
+	 * Tag TOS with a NULL (terminator for stack dump)
+	 */
+	li   r0, 0
+	stw  r0, 0(r1)
+	
 	/*
 	 * We are now in a environment that is totally independent from
 	 * bootloader setup.

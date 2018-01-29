@@ -11,12 +11,11 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 | this file contains the startup assembly code                    |
 \*===============================================================*/
-/* $Id$ */
 
 
 #include <libcpu/powerpc-utility.h>
@@ -54,33 +53,16 @@ PUBLIC_VAR (reset_vec)
 reset_vec:
 	bl rom_entry
 
-.section ".entry"
-PUBLIC_VAR (start)
-start:
-
-#ifdef HAS_UBOOT
-
-.extern bsp_uboot_board_info
-.extern bsp_uboot_board_info_size
-
+.section ".bsp_start_text", "ax"
+PUBLIC_VAR (_start)
+_start:
 	/* Reset time base */
 	li	r0, 0
 	mtspr	TBWU, r0
 	mtspr	TBWL, r0
 
-	/* Copy board info */
-	LA	r6, bsp_uboot_board_info
-	LW	r5, bsp_uboot_board_info_size
-        mtctr   r5
-
-copy_uboot_board_info:
-
-	lwz     r5, 0(r3)
-        addi    r3, r3, 4
-        stw     r5, 0(r6)
-        addi    r6, r6, 4
-        bdnz    copy_uboot_board_info
-
+#ifdef HAS_UBOOT
+	mr	r14, r3
 #endif /* HAS_UBOOT */
 
 	/*
@@ -155,12 +137,22 @@ start_code_in_rom:
 #ifdef LBLAWAR0_VAL
 	SET_IMM_REGW r31,r30,LBLAWAR0_OFF,LBLAWAR0_VAL
 #endif
+
+/*
+ * Local access window 1 is a special case since we used it for a temporary
+ * mapping.  If we do not use it then restore the reset value.
+ */
 #ifdef LBLAWBAR1_VAL
 	SET_IMM_REGW r31,r30,LBLAWBAR1_OFF,LBLAWBAR1_VAL
+#else
+	SET_IMM_REGW r31,r30,LBLAWBAR1_OFF,0
 #endif
 #ifdef LBLAWAR1_VAL
 	SET_IMM_REGW r31,r30,LBLAWAR1_OFF,LBLAWAR1_VAL
+#else
+	SET_IMM_REGW r31,r30,LBLAWAR1_OFF,0
 #endif
+
 #ifdef LBLAWBAR2_VAL
 	SET_IMM_REGW r31,r30,LBLAWBAR2_OFF,LBLAWBAR2_VAL
 #endif
@@ -366,14 +358,13 @@ start_rom_skip1:
 	/*
 	 * ROM or relocatable startup: copy startup code to SDRAM
 	 */
-	/* get start address of text section in RAM */
-	LA	r29, bsp_section_text_start
-	/* get start address of text section in ROM (add reloc offset) */
+	/* get start address of start section in RAM */
+	LA	r29, bsp_section_start_begin
+	/* get start address of start section in ROM (add reloc offset) */
 	add	r30, r20, r29
 	/* get size of startup code */
-	LA	r28, end_reloc_startup
-	LA	r31, bsp_section_text_start
-	sub	28,r28,r31
+	LA	r28, bsp_section_start_end
+	sub	28,r28,r29
 	/* copy startup code from ROM to RAM location */
 	bl	copy_image
 
@@ -385,59 +376,36 @@ start_rom_skip1:
 	mtlr	r29
 	blr                     /* now further execution RAM */
 copy_rest_of_text:
+	LWI  r31,IMMRBAR
 #ifdef LCRR_VAL
 	SET_IMM_REGW r31,r30,LCRR_OFF,LCRR_VAL
 #endif
 	/*
 	 * ROM or relocatable startup: copy rest of code to SDRAM
 	 */
-	/* get start address of rest of code in RAM */
-	LA	r29, end_reloc_startup
-	/* get start address of text section in ROM (add reloc offset) */
+	/* get start address of rest of loadable sections in RAM */
+	LA	r29, bsp_section_text_begin
+	/* get start address of loadable sections in ROM (add reloc offset) */
 	add	r30, r20, r29
-	/* get size of rest of code */
-	LA	r28, bsp_section_text_start
-	LA	r31, bsp_section_text_size
-	add	r28,r28,r31
+	/* get size of rest of loadable sections */
+	LA	r28, bsp_section_data_end
 	sub	r28,r28,r29
 	bl	copy_image      /* copy text section from ROM to RAM location */
-
-	/*
-	 * ROM or relocatable startup: copy data to SDRAM
-	 */
-	/* get start address of data section in RAM */
-	LA	r29, bsp_section_data_start
-	/* get start address of data section in ROM (add reloc offset) */
-	add	r30, r20, r29
-	/* get size of RAM image */
-	LA	r28, bsp_section_data_size
-	/* copy initialized data section from ROM to RAM location */
-	bl	copy_image
 
 start_code_in_ram:
 
 	/*
 	 * ROM/RAM startup: clear bss in SDRAM
 	 */
-	LA	r3, bsp_section_bss_start  /* get start address of bss section */
-	LWI	r4, bsp_section_bss_size   /* get size of bss section */
-	bl	mpc83xx_zero_4          /* Clear the bss section */
-	/*
-	 * call boot_card
-	 */
+	LA	r3, bsp_section_sbss_begin  /* get start address of bss section */
+	LA	r4, bsp_section_bss_end     /* get end address of bss section */
+	sub	r4, r4, r3                  /* get size of bss section */
+	bl	mpc83xx_zero_4              /* Clear the bss section */
 
-	/* Set stack pointer (common for RAM/ROM startup) */
-	LA	r1, bsp_section_text_start
-        addi    r1, r1, -0x10 /* Set up stack pointer = beginning of text section - 0x10 */
-
-	/* Create NULL */
-	li r0, 0
-
-	/* Return address */
-	stw r0, 4(r1)
-
-	/* Back chain */
-	stw r0, 0(r1)
+#ifdef HAS_UBOOT
+	mr	r3, r14
+	bl	bsp_uboot_copy_board_info
+#endif /* HAS_UBOOT */
 
 	/* Read-only small data */
 	LA r2, _SDA2_BASE_
@@ -445,12 +413,16 @@ start_code_in_ram:
 	/* Read-write small data */
 	LA r13, _SDA_BASE_
 
-/* clear arguments and do further init. in C (common for RAM/ROM startup) */
-
         /* Clear cmdline */
-        xor r3, r3, r3
+	li	r3, 0
 
-        bl      SYM (boot_card)  /* Call the first C routine */
+	/* Set start stack pointer */
+	LA	r1, start_stack_end
+	stwu	r3, -4(r1)
+	stwu	r3, -4(r1)
+
+	/* Call the first C routine */
+        bl      SYM (boot_card)
 
 twiddle:
 	/* We don't expect to return from boot_card but if we do */
@@ -458,6 +430,9 @@ twiddle:
 	b	twiddle
 
 copy_image:
+	cmpwi	r28, 0
+	beqlr
+
 	mr	r27, r28
 	srwi	r28, r28, 2
 	mtctr	r28
@@ -546,4 +521,9 @@ mpc83xx_zero_4_tail:
 	/* Return */
 	blr
 
-end_reloc_startup:
+.section ".bsp_rwextra", "aw", @nobits
+
+	/* Start stack area */
+.align 4
+.space 4096
+start_stack_end:

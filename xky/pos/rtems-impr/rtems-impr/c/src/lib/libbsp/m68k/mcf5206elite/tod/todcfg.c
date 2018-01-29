@@ -8,12 +8,10 @@
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
  *
- * http://www.rtems.com/license/LICENSE.
- *
- * @(#) $Id$
+ * http://www.rtems.org/license/LICENSE.
  */
 
-#include <bsp.h>
+#include <i2c.h>
 #include <libchip/rtc.h>
 #include <ds1307.h>
 
@@ -42,8 +40,6 @@ rtc_tbl RTC_Table[] = {
 #define NUM_RTCS (sizeof(RTC_Table)/sizeof(rtc_tbl))
 
 size_t RTC_Count = NUM_RTCS;
-
-rtems_device_minor_number RTC_Minor;
 
 /* mcf5206elite_ds1307_probe --
  *     RTC presence probe function. Return TRUE, if device is present.

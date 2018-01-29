@@ -1,10 +1,5 @@
-/*
- * $Id$
- */
-
+#include <bsp.h>
 #include <rtems/mips/idtcpu.h>
-
-extern void resettlb( int i );
 
 void init_tlb(void)
 {

@@ -1,100 +1,60 @@
 /**
- *  @file
- *  extensioncreate.c
+ * @file
  *
- *  @brief create an user extension
+ * @ingroup ClassicUserExtensions
  *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-2002.
+ * @brief User Extensions Implementation.
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2007.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  7132    | 09/04/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_API Super API
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup SUPER_API_EXTENSION Extension Manager
- *  @{
- */
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <rtems/system.h>
 #include <rtems/rtems/support.h>
-#include <rtems/score/object.h>
 #include <rtems/score/thread.h>
-#include <rtems/extension.h>
-
+#include <rtems/score/userextimpl.h>
+#include <rtems/extensionimpl.h>
 
 rtems_status_code rtems_extension_create(
-                                         rtems_name name ,
-                                         rtems_extensions_table *extension_table ,
-                                         Objects_Id *id
-                                         )
+  rtems_name                    name,
+  const rtems_extensions_table *extension_table,
+  rtems_id                     *id
+)
 {
-    /* user extension to create */
-    Extension_Control *the_extension;
+  Extension_Control *the_extension;
 
+  if ( !id )
+    return RTEMS_INVALID_ADDRESS;
 
-    /* check if the name is valid */
-    if(!rtems_is_name_valid(name))
-    {
-        /* return invalid user extension name */
-        return RTEMS_INVALID_NAME;
-    }
+  if ( !rtems_is_name_valid( name ) )
+    return RTEMS_INVALID_NAME;
 
-    /* disable thread dispatch to prevent deletion */
-    _Thread_Disable_dispatch();
+  the_extension = _Extension_Allocate();
 
-    /* allocate the extension */
-    the_extension = _Extension_Allocate();
+  if ( !the_extension ) {
+    _Objects_Allocator_unlock();
+    return RTEMS_TOO_MANY;
+  }
 
-    /* if the extension could not be allocated */
-    if(!the_extension)
-    {
-        /* re-enable thread dispatch */
-        _Thread_Enable_dispatch();
+  _User_extensions_Add_set_with_table( &the_extension->Extension, extension_table );
 
-        /* return too many user extensions created */
-        return RTEMS_TOO_MANY;
-    }
+  _Objects_Open(
+    &_Extension_Information,
+    &the_extension->Object,
+    (Objects_Name) name
+  );
 
-    /* add the extension to the system extension set */
-    _User_extensions_Add_set(&the_extension->Extension , extension_table);
-
-    /* open an object extension information */
-    _Objects_Open(&_Extension_Information ,
-                  &the_extension->Object ,
-                  (Objects_Name) name);
-
-    /* return the identifier */
-    *id = the_extension->Object.id;
-
-    /* re-enable thread dispatch */
-    _Thread_Enable_dispatch();
-
-    /* and return success */
-    return RTEMS_SUCCESSFUL;
+  *id = the_extension->Object.id;
+  _Objects_Allocator_unlock();
+  return RTEMS_SUCCESSFUL;
 }
-
-/**  
- *  @}
- */
-
-/**  
- *  @}
- */
-

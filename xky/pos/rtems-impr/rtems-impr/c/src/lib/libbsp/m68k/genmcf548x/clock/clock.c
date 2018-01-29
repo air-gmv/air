@@ -33,7 +33,7 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 |                                                                 |
@@ -50,12 +50,13 @@
 
 #include <rtems.h>
 #include <bsp.h>
+#include <bsp/irq-generic.h>
 #include <mcf548x/mcf548x.h>
 
 /*
  * Use SLT 0
  */
-#define CLOCK_VECTOR (64+54)
+#define CLOCK_IRQ MCF548X_IRQ_SLT0
 
 /*
  * Periodic interval timer interrupt handler
@@ -68,10 +69,8 @@
 /*
  * Attach clock interrupt handler
  */
-#define Clock_driver_support_install_isr( _new, _old )                   \
-    do {                                                                 \
-        _old = (rtems_isr_entry)set_vector(_new, CLOCK_VECTOR, 1);       \
-    } while(0)
+#define Clock_driver_support_install_isr( _new ) \
+    set_vector(_new, CLOCK_IRQ + 64, 1)
 
 /*
  * Turn off the clock
@@ -89,18 +88,15 @@
  */
 #define Clock_driver_support_initialize_hardware()			\
   do {									\
-    int level;								\
-    MCF548X_INTC_ICR54 =   MCF548X_INTC_ICRn_IL(SLT0_IRQ_LEVEL) |	\
-      MCF548X_INTC_ICRn_IP(SLT0_IRQ_PRIORITY);				\
-    rtems_interrupt_disable( level );					\
-    MCF548X_INTC_IMRH &= ~(MCF548X_INTC_IMRH_INT_MASK54);		\
-    rtems_interrupt_enable( level );					\
+    bsp_interrupt_vector_enable(CLOCK_IRQ);				\
     MCF548X_SLT_SLTCNT0 = get_CPU_clock_speed()				\
       / 1000								\
       * rtems_configuration_get_microseconds_per_tick()			\
       / 1000;								\
     MCF548X_SLT_SCR0 |= (MCF548X_SLT_SCR_TEN | MCF548X_SLT_SCR_RUN | MCF548X_SLT_SCR_IEN); \
   } while (0)
+
+#define CLOCK_DRIVER_USE_DUMMY_TIMECOUNTER
 
 #include "../../../shared/clockdrv_shell.h"
 

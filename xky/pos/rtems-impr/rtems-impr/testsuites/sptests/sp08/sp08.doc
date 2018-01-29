@@ -1,0 +1,21 @@
+﻿#  COPYRIGHT (c) 1989-2013.
+#  On-Line Applications Research Corporation (OAR).
+#
+#  The license and distribution terms for this file may be
+#  found in the file LICENSE in this distribution or at
+#  http://www.rtems.org/license/LICENSE.
+#
+
+test set name:  sp08
+
+directives:
+  rtems_task_create
+  rtems_task_start
+  rtems_clock_tick
+  rtems_task_mode
+
+concepts:
+
+  + Verifies every mode change possible.
+
+  + Verifies the fatal error handler.

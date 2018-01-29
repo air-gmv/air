@@ -1,9 +1,10 @@
-/*  exception.S
- *
+/*
  *  This file contains a customized MIPS exception handler.
  *  It hooks into the exception handler present in the resident
  *  PMON debug monitor.
- *
+ */
+
+/*
  *  Author: Bruce Robinson
  *
  *  This code was derived from cpu_asm.S with the following copyright:
@@ -28,13 +29,12 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <bspopts.h>
 #include <rtems/asm.h>
+#include <rtems/score/percpu.h>
 #include <rtems/mips/iregdef.h>
 #include <rtems/mips/idtcpu.h>
 #if BSP_HAS_USC320
@@ -80,20 +80,7 @@
 #define ISR_VEC_SIZE	4
 #define EXCP_STACK_SIZE (NREGS*R_SZ)
 
-
-#ifdef __GNUC__
-#define EXTERN(x,size) .extern x,size
-#else
-#define EXTERN(x,size)
-#endif
-
-
-EXTERN(_ISR_Nest_level, 4)
-EXTERN(_Thread_Dispatch_disable_level,4)
-EXTERN(_Context_Switch_necessary,1)
-EXTERN(_ISR_Signals_to_thread_executing,1)
 .extern _Thread_Dispatch
-.extern _ISR_Vector_table
 
 /*  void __ISR_Handler()
  *
@@ -236,17 +223,17 @@ _chk_int:
   /*
    *  _ISR_Nest_level++;
    */
-        lw	t0,_ISR_Nest_level
+        lw	t0,ISR_NEST_LEVEL
 	NOP
         add	t0,t0,1
-        sw	t0,_ISR_Nest_level
+        sw	t0,ISR_NEST_LEVEL
   /*
    *  _Thread_Dispatch_disable_level++;
    */
-        lw	t1,_Thread_Dispatch_disable_level
+        lw	t1,THREAD_DISPATCH_DISABLE_LEVEL
 	NOP
         add	t1,t1,1
-        sw	t1,_Thread_Dispatch_disable_level
+        sw	t1,THREAD_DISPATCH_DISABLE_LEVEL
 
 	/* DEBUG - Add the following code to disable interrupts and clear
 	 *	   EXL in status register, this will allow memory
@@ -299,17 +286,17 @@ _ISR_Handler_cleanup:
   /*
    *  --_ISR_Nest_level;
    */
-        lw	t2,_ISR_Nest_level
+        lw	t2,ISR_NEST_LEVEL
 	NOP
         add	t2,t2,-1
-        sw	t2,_ISR_Nest_level
+        sw	t2,ISR_NEST_LEVEL
   /*
    *  --_Thread_Dispatch_disable_level;
    */
-        lw	t1,_Thread_Dispatch_disable_level
+        lw	t1,THREAD_DISPATCH_DISABLE_LEVEL
 	NOP
         add	t1,t1,-1
-        sw	t1,_Thread_Dispatch_disable_level
+        sw	t1,THREAD_DISPATCH_DISABLE_LEVEL
   /*
    *  if ( _Thread_Dispatch_disable_level || _ISR_Nest_level )
    *    goto the label "exit interrupt (simple case)"
@@ -324,13 +311,12 @@ _ISR_Handler_cleanup:
    *    restore stack
    *  #endif
    *
-   *  if ( !_Context_Switch_necessary && !_ISR_Signals_to_thread_executing )
+   *  if ( !_Thread_Dispatch_necessary )
    *    goto the label "exit interrupt (simple case)"
    */
-        lb	t0,_Context_Switch_necessary
-        lb	t1,_ISR_Signals_to_thread_executing
+        lb	t0,DISPATCH_NEEDED
 	NOP
-        or 	t0,t0,t1
+        or 	t0,t0,t0
         beq	t0,zero,_ISR_Handler_exit
         NOP
 

@@ -1,8 +1,6 @@
 #
 #  Timing Test Suite Results for this BSP on the MVME2307
 #
-#  $Id$
-#
 
 Thanks to Jay Kulpinski (jskulpin@eng01.gdds.com) for providing these
 times.
@@ -59,8 +57,6 @@ Column Y:
    rtems_task_mode: no reschedule                                      3.766
    rtems_task_mode: reschedule -- returns to caller                    5.933
    rtems_task_mode: reschedule -- preempts caller                     22.613
-   rtems_task_set_note                                                10.115
-   rtems_task_get_note                                                10.236
    rtems_clock_set                                                    21.466
    rtems_clock_get                                                     2.286
 

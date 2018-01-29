@@ -1,103 +1,138 @@
 /**
- *  @file
- *  wkspace.h
+ *  @file rtems/score/wkspace.h
  *
- *  @brief contains information related to the
+ *  @brief Information Related to the RAM Workspace
+ *
+ *  This include file contains information related to the
  *  RAM Workspace.  This Handler provides mechanisms which can be used to
  *  define, initialize and manipulate the workspace.
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-2006.
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2009.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  6356    | 02/03/2010  | mcoutinho    | IPR 1935
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_CORE Super Core
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef _RTEMS_SCORE_WKSPACE_H
 #define _RTEMS_SCORE_WKSPACE_H
 
+#include <rtems/score/heap.h>
+#include <rtems/score/interr.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  *  @defgroup ScoreWorkspace Workspace Handler
  *
- *  @brief This handler encapsulates functionality related to the management of
+ *  @ingroup Score
+ *
+ *  This handler encapsulates functionality related to the management of
  *  the RTEMS Executive Workspace.
  */
 /**@{*/
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+/**
+ *  @brief Executive workspace control.
+ *
+ *  This is the heap control structure used to manage the RTEMS Executive
+ *  Workspace.
+ */
+extern Heap_Control _Workspace_Area;
 
-#include <rtems/score/heap.h>
-#include <rtems/score/interr.h>
+/**
+ * @brief Initilize workspace handler.
+ *
+ *  This routine performs the initialization necessary for this handler.
+ */
+void _Workspace_Handler_initialization(
+  Heap_Area *areas,
+  size_t area_count,
+  Heap_Initialization_or_extend_handler extend
+);
 
-   /** @brief Executive Workspace Control
-    *
-    *  The is the heap control structure that used to manage the
-    *  RTEMS Executive Workspace.
-    */
-   extern Heap_Control _Workspace_Area; /* executive heap header */
+/**
+ * @brief Allocate memory from workspace.
+ *
+ *  This routine returns the address of a block of memory of size
+ *  bytes.  If a block of the appropriate size cannot be allocated
+ *  from the workspace, then NULL is returned.
+ *
+ *  @param size is the requested size
+ *
+ *  @retval a pointer to the requested memory or NULL.
+ */
+void *_Workspace_Allocate(
+  size_t   size
+);
 
-   /**
-    *  @brief initialize the Workspace Handler
-    *
-    *  This routine performs the initialization necessary for this handler.
-    *
-    *  @param[in] starting_address is the base address of the RTEMS Executive
-    *  Workspace
-    *  @param[in] size is the number of bytes in the RTEMS Executive Workspace
-    */
-   void _Workspace_Handler_initialization(
-                                          void *starting_address ,
-                                          size_t size
-                                          );
+/**
+ * @brief Allocate aligned memory from workspace.
+ *
+ * @param[in] size The size of the requested memory.
+ * @param[in] alignment The alignment of the requested memory.
+ *
+ * @retval NULL Not enough resources.
+ * @retval other The memory area begin.
+ */
+void *_Workspace_Allocate_aligned( size_t size, size_t alignment );
 
-   /**
-    *  @brief allocate memory from the Workspace Handler or raise a fatal error if
-    *  it cannot
-    *
-    *  This routine returns the address of a block of memory of @a size
-    *  bytes.  If a block of the appropriate size cannot be allocated
-    *  from the workspace, then the internal error handler is invoked.
-    *
-    *  @param[in] size is the desired number of bytes to allocate
-    *
-    *  @return If successful, the starting address of the allocated memory
-    */
-   void *_Workspace_Allocate_or_fatal_error(
-                                            size_t size
-                                            );
+/**
+ * @brief Free memory to the workspace.
+ *
+ *  This function frees the specified block of memory.  If the block
+ *  belongs to the Workspace and can be successfully freed, then
+ *  true is returned.  Otherwise false is returned.
+ *
+ *  @param block is the memory to free
+ *
+ *  @note If @a block is equal to NULL, then the request is ignored.
+ *        This allows the caller to not worry about whether or not
+ *        a pointer is NULL.
+ */
 
-#ifndef __RTEMS_APPLICATION__
-#include <rtems/score/wkspace.inl>
-#endif
+void _Workspace_Free(
+  void *block
+);
+
+/**
+ * @brief Workspace allocate or fail with fatal error.
+ *
+ *  This routine returns the address of a block of memory of @a size
+ *  bytes.  If a block of the appropriate size cannot be allocated
+ *  from the workspace, then the internal error handler is invoked.
+ *
+ *  @param[in] size is the desired number of bytes to allocate
+ *  @retval If successful, the starting address of the allocated memory
+ */
+void *_Workspace_Allocate_or_fatal_error(
+  size_t  size
+);
+
+/**
+ * @brief Duplicates string with memory from the workspace.
+ *
+ * @param[in] string is the pointer to a zero terminated string.
+ * @param[in] len is the length of the string (equal to strlen(string)).
+ *
+ * @retval NULL Not enough memory.
+ * @retval other Duplicated string.
+ */
+char *_Workspace_String_duplicate(
+  const char *string,
+  size_t len
+);
+
+/**@}*/
 
 #ifdef __cplusplus
 }
 #endif
 
-/**@}*/
-
 #endif
 /* end of include file */
-
-/**  
- *  @}
- */

@@ -1,8 +1,6 @@
 #
 #  Timing Test Suite Results for the Motorola MVME162 BSP
 #
-#  $Id$
-#
 
 NOTE:  This BSP is used submitted and no information is currently available. 
 
@@ -57,8 +55,6 @@ Column B:             unused
    rtems_task_mode: no reschedule                                        5
    rtems_task_mode: reschedule -- returns to caller                      8
    rtems_task_mode: reschedule -- preempts caller                       39
-   rtems_task_set_note                                                  13
-   rtems_task_get_note                                                  13
    rtems_clock_set                                                      33
    rtems_clock_get                                                       3
 

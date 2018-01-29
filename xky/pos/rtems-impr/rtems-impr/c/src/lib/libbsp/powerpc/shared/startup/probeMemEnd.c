@@ -1,9 +1,3 @@
-/* $Id$ */
-#include <rtems.h>
-#include <libcpu/spr.h>
-#include <libcpu/cpuIdent.h>
-#include <rtems/bspIo.h>
-
 /*
  * Authorship
  * ----------
@@ -49,6 +43,11 @@
  * ------------------ SLAC Software Notices, Set 4 OTT.002a, 2004 FEB 03
  */
 
+#include <bsp.h>
+#include <libcpu/spr.h>
+#include <libcpu/cpuIdent.h>
+#include <rtems/bspIo.h>
+#include <inttypes.h>
 
 /* Simple memory probing routine
  *
@@ -110,25 +109,25 @@ extern uint32_t __rtems_end[];
 
 SPR_RW(L2CR)
 SPR_RW(L3CR)
-SPR_RO(PVR)
+SPR_RO(PPC_PVR)
 SPR_RW(HID0)
 
 
 /* Shouldn't matter if the caches are enabled or not... */
 
 /* FIXME: This should go into libcpu, really... */
-int
+static int
 CPU_lockUnlockCaches(register int doLock)
 {
 register uint32_t v, x;
 	if ( _read_MSR() & MSR_VE ) {
 #define DSSALL  0x7e00066c  /* dssall opcode */
-        asm volatile("  .long %0"::"i"(DSSALL));
+        __asm__ volatile("  .long %0"::"i"(DSSALL));
 #undef  DSSALL
 	}
 	asm volatile("sync");
-	switch ( _read_PVR()>>16 ) {
-		default:		printk(__FILE__" CPU_lockUnlockCaches(): unknown CPU (PVR = 0x%08x)\n",_read_PVR());
+	switch ( _read_PPC_PVR()>>16 ) {
+		default:		printk(__FILE__" CPU_lockUnlockCaches(): unknown CPU (PVR = 0x%08" PRIx32 ")\n",_read_PPC_PVR());
 						return -1;
 		case PPC_750:	printk("CPU_lockUnlockCaches(): Can't lock L2 on a mpc750, sorry :-(\n");
 						return -2;	/* cannot lock L2 :-( */

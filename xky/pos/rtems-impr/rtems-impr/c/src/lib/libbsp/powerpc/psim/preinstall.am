@@ -8,15 +8,15 @@ endif
 PREINSTALL_DIRS =
 DISTCLEANFILES += $(PREINSTALL_DIRS)
 
-all-local: $(TMPINSTALL_FILES)
-
-TMPINSTALL_FILES =
-CLEANFILES = $(TMPINSTALL_FILES)
-
 all-am: $(PREINSTALL_FILES)
 
 PREINSTALL_FILES =
-CLEANFILES += $(PREINSTALL_FILES)
+CLEANFILES = $(PREINSTALL_FILES)
+
+all-local: $(TMPINSTALL_FILES)
+
+TMPINSTALL_FILES =
+CLEANFILES += $(TMPINSTALL_FILES)
 
 $(PROJECT_LIB)/$(dirstamp):
 	@$(MKDIR_P) $(PROJECT_LIB)
@@ -49,6 +49,10 @@ $(PROJECT_INCLUDE)/psim.h: include/psim.h $(PROJECT_INCLUDE)/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/psim.h
 PREINSTALL_FILES += $(PROJECT_INCLUDE)/psim.h
 
+$(PROJECT_INCLUDE)/bsp/linker-symbols.h: ../shared/include/linker-symbols.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/linker-symbols.h
+PREINSTALL_FILES += $(PROJECT_INCLUDE)/bsp/linker-symbols.h
+
 $(PROJECT_INCLUDE)/bspopts.h: include/bspopts.h $(PROJECT_INCLUDE)/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bspopts.h
 PREINSTALL_FILES += $(PROJECT_INCLUDE)/bspopts.h
@@ -56,6 +60,10 @@ PREINSTALL_FILES += $(PROJECT_INCLUDE)/bspopts.h
 $(PROJECT_INCLUDE)/bsp/bootcard.h: ../../shared/include/bootcard.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/bootcard.h
 PREINSTALL_FILES += $(PROJECT_INCLUDE)/bsp/bootcard.h
+
+$(PROJECT_INCLUDE)/bsp/console-polled.h: ../../shared/include/console-polled.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/console-polled.h
+PREINSTALL_FILES += $(PROJECT_INCLUDE)/bsp/console-polled.h
 
 $(PROJECT_INCLUDE)/coverhd.h: include/coverhd.h $(PROJECT_INCLUDE)/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/coverhd.h
@@ -69,6 +77,10 @@ $(PROJECT_LIB)/rtems_crti.$(OBJEXT): rtems_crti.$(OBJEXT) $(PROJECT_LIB)/$(dirst
 	$(INSTALL_DATA) $< $(PROJECT_LIB)/rtems_crti.$(OBJEXT)
 TMPINSTALL_FILES += $(PROJECT_LIB)/rtems_crti.$(OBJEXT)
 
+$(PROJECT_LIB)/linkcmds.base: ../shared/startup/linkcmds.base $(PROJECT_LIB)/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_LIB)/linkcmds.base
+PREINSTALL_FILES += $(PROJECT_LIB)/linkcmds.base
+
 $(PROJECT_LIB)/linkcmds: startup/linkcmds $(PROJECT_LIB)/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_LIB)/linkcmds
 PREINSTALL_FILES += $(PROJECT_LIB)/linkcmds
@@ -80,6 +92,10 @@ PREINSTALL_FILES += $(PROJECT_INCLUDE)/bsp/irq.h
 $(PROJECT_INCLUDE)/bsp/openpic.h: ../shared/openpic/openpic.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/openpic.h
 PREINSTALL_FILES += $(PROJECT_INCLUDE)/bsp/openpic.h
+
+$(PROJECT_INCLUDE)/bsp/irq-generic.h: ../../shared/include/irq-generic.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/irq-generic.h
+PREINSTALL_FILES += $(PROJECT_INCLUDE)/bsp/irq-generic.h
 
 $(PROJECT_INCLUDE)/bsp/irq_supp.h: ../../../libcpu/@RTEMS_CPU@/@exceptions@/bspsupport/irq_supp.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
 	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/irq_supp.h

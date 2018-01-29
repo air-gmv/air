@@ -24,15 +24,13 @@
 | following copyright applies:
 |
 | **************************************************************************
-| *  COPYRIGHT (c) 1989-1999.
+| *  COPYRIGHT (c) 1989-2012.
 | *  On-Line Applications Research Corporation (OAR).
 | *
 | *  The license and distribution terms for this file may be
 | *  found in the file LICENSE in this distribution or at
-| *  http://www.rtems.com/license/LICENSE.
+| *  http://www.rtems.org/license/LICENSE.
 | **************************************************************************
-|
-|  $Id$
 +--------------------------------------------------------------------------*/
 
 /*
@@ -43,6 +41,7 @@
 
 #include <rtems/asm.h>
 #include <rtems/score/cpu.h>
+#include <bspopts.h>
 
 /*----------------------------------------------------------------------------+
 | Size of heap and stack:
@@ -63,12 +62,14 @@ BEGIN_CODE
 	PUBLIC (start)		# GNU default entry point
 
 	EXTERN (boot_card)
+#if USE_VBE_RM
+        EXTERN (vesa_realmode_bootup_init)
+#endif
 	EXTERN (_load_segments)
 	EXTERN (_return_to_monitor)
 	EXTERN (_IBMPC_initVideo)
 	EXTERN (debugPollingGetChar)
 	EXTERN (checkCPUtypeSetCr0)
-	EXTERN (BSP_console_select)
 	EXTERN (printk)
 #ifdef __SSE__
 	EXTERN (x86_capability)
@@ -197,6 +198,7 @@ SYM (zero_bss):
 	repne				# while ecx != 0
 	stosl				#   clear a long in the bss
 
+#if BSP_ENABLE_VGA
 /*-------------------------------------------------------------------+
 | Initialize the video because zero_bss has cleared initVideo parameters
 | if it was called earlier
@@ -204,15 +206,36 @@ SYM (zero_bss):
 +-------------------------------------------------------------------*/
 	call _IBMPC_initVideo
 
+#if USE_VBE_RM
+        call    vesa_realmode_bootup_init
+#endif
+#endif
+
 /*---------------------------------------------------------------------+
 | Check CPU type. Enable Cache and init coprocessor if needed.
 +---------------------------------------------------------------------*/
 	call checkCPUtypeSetCr0
 
+#ifdef __SSE__
+	call SYM(enable_sse)
+#endif
+
 /*---------------------------------------------------------------------+
-| Redirect printk (and console) port if desired
+| Transfer control to User's Board Support Package
+| Note: at the top we reserved space for the argument
+|       so that
+|          initial_esp = ( TOS - 4 ) & ~(CPU_STACK_ALIGNMENT-1)
+|       this ensures that
+|       1) esp is now aligned
+|       2) there is space for the cmdline pointer which we just
+|          may store at *(esp)
 +---------------------------------------------------------------------*/
-	call SYM(BSP_console_select)
+
+	movl	$SYM(_boot_multiboot_cmdline), (esp)
+	call	SYM (boot_card)
+
+	cli	# stops interrupts from being processed after hlt!
+	hlt	# shutdown
 
 #ifdef __SSE__
 /*--------------------------------------------------------------------+
@@ -221,6 +244,8 @@ SYM (zero_bss):
  | But as a courtesy we make sure we don't execute on hardware
  | that doesn't support features possibly used by the compiler.
 +---------------------------------------------------------------------*/
+	PUBLIC (enable_sse)
+SYM(enable_sse):
 	movl	SYM (x86_capability), eax
 	testl   $0x01000000, eax
 	jne     1f
@@ -250,30 +275,8 @@ SYM (zero_bss):
 	mov     cr4, eax		# OK to enable now
 	or      $0x600, eax
 	mov     eax, cr4
-#endif
+	ret
 
-/*---------------------------------------------------------------------+
-| Transfer control to User's Board Support Package
-| Note: at the top we reserved space for the argument
-|       so that
-|          initial_esp = ( TOS - 4 ) & ~(CPU_STACK_ALIGNMENT-1)
-|       this ensures that
-|       1) esp is now aligned
-|       2) there is space for the cmdline pointer which we just
-|          may store at *(esp)
-+---------------------------------------------------------------------*/
-
-	movl	$SYM(_boot_multiboot_cmdline), (esp)
-	call	SYM (boot_card)
-
-/*---------------------------------------------------------------------+
-| Clean up - we do not know anything about it, so we will
-| jump to BSP specific code to do cleanup
-+---------------------------------------------------------------------*/
-
-	jmp	SYM (_return_to_monitor)
-
-#ifdef __SSE__
 SYM(_sse_panic):
 	call SYM(printk)
 1:	hlt

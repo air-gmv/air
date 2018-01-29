@@ -1,0 +1,40 @@
+#  COPYRIGHT (c) 2014.
+#  On-Line Applications Research Corporation (OAR).
+#  Cynthia Rempel <cynthia@rtems.org>
+#  The license and distribution terms for this file may be
+#  found in the file LICENSE in this distribution or at
+#  http://www.rtems.org/license/LICENSE.
+#
+This file describes the directives and concepts tested by this test set.
+
+test set name: complex
+
+directives:
+  + cabs
+  + cacos
+  + cacosh
+  + carg
+  + casin
+  + casinh
+  + catan
+  + catanh
+  + ccos
+  + ccosh
+  + cexp
+  + cimag
+  + clog
+  + conj
+  + cpow
+  + cproj
+  + creal
+  + csin
+  + csinh
+  + csqrt
+  + ctan
+  + ctanh
+  + printf
+  
+concepts:
+  + verifies the functionality of complex mathematical routines
+  + printf using float and long double formats
+

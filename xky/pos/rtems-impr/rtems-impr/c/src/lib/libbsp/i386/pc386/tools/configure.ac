@@ -1,17 +1,13 @@
 ## Process this file with autoconf to produce a configure script.
-##
-## $Id$
 
-AC_PREREQ([2.68])
-AC_INIT([rtems-c-src-lib-libbsp-i386-pc386-tools],[_RTEMS_VERSION],[http://www.rtems.org/bugzilla])
+AC_PREREQ([2.69])
+AC_INIT([rtems-c-src-lib-libbsp-i386-pc386-tools],[_RTEMS_VERSION],[https://devel.rtems.org/newticket])
 AC_CONFIG_SRCDIR([Spec.doc])
 RTEMS_TOP(../../../../../../..)
 
-RTEMS_CANONICAL_TARGET_CPU
-
 CFLAGS="-g -O2 -Wall"
 
-AM_INIT_AUTOMAKE([no-define foreign 1.11.1])
+AM_INIT_AUTOMAKE([no-define foreign 1.12.2])
 AM_MAINTAINER_MODE
 
 RTEMS_ENV_RTEMSBSP

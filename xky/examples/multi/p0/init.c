@@ -6,7 +6,7 @@
  * ============================================================================
  */
 
-#include <xky.h>
+#include <air.h>
 #include <rtems.h>
 #include <imaspex.h>
 
@@ -20,8 +20,8 @@ extern int producer() __attribute__ ((weak));
 static void hm_isr_handler(void) {
 
     /* get HM event */
-    xky_hm_event_t hm_event;
-    xky_syscall_get_hm_event(&hm_event);
+    air_hm_event_t hm_event;
+    air_syscall_get_hm_event(&hm_event);
 }
 
 /**
@@ -33,7 +33,7 @@ rtems_task Init(rtems_task_argument ignored) {
     rtems_isr_entry isr_ignored;
     rtems_interrupt_catch(
             (rtems_isr_entry)hm_isr_handler,
-            XKY_IRQ_HM_EVENT,
+            AIR_IRQ_HM_EVENT,
             &isr_ignored);
 
     /* initialize IMASPEX */

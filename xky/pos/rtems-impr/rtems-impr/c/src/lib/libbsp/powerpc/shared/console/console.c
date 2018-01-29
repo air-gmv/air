@@ -16,22 +16,19 @@
  *
  * Instituto Superior Tecnico * Lisboa * PORTUGAL
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- * $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <stdlib.h>
 #include <assert.h>
-#include <stdlib.h>
-
-extern int close(int fd);
+#include <inttypes.h>
 
 #include <bsp.h>
 #include <bsp/irq.h>
 #include <rtems/bspIo.h>
 #include <rtems/libio.h>
+#include <rtems/console.h>
 #include <rtems/termiostypes.h>
 #include <termios.h>
 #include <bsp/uart.h>
@@ -53,16 +50,12 @@ int BSPBaseBaud    = BSP_UART_BAUD_BASE;
  * we could even make it a link-time option (but that would require
  * small changes)...
  */
-#ifndef TERMIOS_OUTPUT_MODE
-  #if 1
-    #define TERMIOS_OUTPUT_MODE TERMIOS_IRQ_DRIVEN
-  #else
-    #define TERMIOS_OUTPUT_MODE TERMIOS_TASK_DRIVEN
-  #endif
-#endif
-
-#if ! defined(USE_POLLED_IO) && (TERMIOS_OUTPUT_MODE == TERMIOS_POLLED)
-  #define USE_POLLED_IO
+#if defined(USE_POLLED_IO)
+  #define TERMIOS_OUTPUT_MODE TERMIOS_POLLED
+#elif defined(USE_TASK_DRIVEN_IO)
+  #define TERMIOS_OUTPUT_MODE TERMIOS_TASK_DRIVEN
+#else
+  #define TERMIOS_OUTPUT_MODE TERMIOS_IRQ_DRIVEN
 #endif
 
 /*-------------------------------------------------------------------------+
@@ -136,7 +129,7 @@ rtems_device_driver console_initialize(
      */
     status = rtems_io_register_name ((nm=ttyS[minor].name), major, minor);
     if ( RTEMS_SUCCESSFUL==status && BSPConsolePort == minor) {
-      printk("Registering /dev/console as minor %d (==%s)\n",
+      printk("Registering /dev/console as minor %" PRIu32 " (==%s)\n",
               minor,
               ttyS[minor].name);
       /* also register an alias */
@@ -152,6 +145,7 @@ rtems_device_driver console_initialize(
   return RTEMS_SUCCESSFUL;
 } /* console_initialize */
 
+#if !defined(USE_POLLED_IO)
 static int console_first_open(int major, int minor, void *arg)
 {
   rtems_status_code status;
@@ -178,12 +172,15 @@ static int console_first_open(int major, int minor, void *arg)
 
   return 0;
 }
+#endif
 
+#if !defined(USE_POLLED_IO)
 static int console_last_close(int major, int minor, void *arg)
 {
   BSP_uart_remove_isr(minor, ttyS[minor].isr);
   return 0;
 }
+#endif
 
 /*-------------------------------------------------------------------------+
 | Console device driver OPEN entry point
@@ -211,7 +208,7 @@ rtems_device_driver console_open(
   {
      console_first_open,                /* firstOpen */
      console_last_close,                /* lastClose */
-#if ( TERMIOS_OUTPUT_MODE == TERMIOS_TASK_DRIVEN )
+#ifdef USE_TASK_DRIVEN_IO
      BSP_uart_termios_read_com,         /* pollRead */
 #else
      NULL,                              /* pollRead */
@@ -307,7 +304,7 @@ static int conSetAttr(
 {
   rtems_termios_baud_t baud;
 
-  baud = rtems_termios_baud_to_number(t->c_cflag & CBAUD);
+  baud = rtems_termios_baud_to_number(t->c_ospeed);
   if ( baud > 115200 )
     rtems_fatal_error_occurred (RTEMS_INTERNAL_ERROR);
 

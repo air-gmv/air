@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* 
  * Acknowledgements:
  * Valuable information was obtained from the following drivers
@@ -59,6 +57,7 @@
 #include <bsp.h>
 #include <bsp/gtreg.h>
 #include <bsp/pci.h>
+#include <stdint.h>
 
 #ifndef PCI_VENDOR_ID_MARVELL
 #define PCI_VENDOR_ID_MARVELL 0x11ab
@@ -80,16 +79,16 @@
 static unsigned long
 pci_early_config_read(int offset, int width)
 {
-	out_be32((unsigned int*) pci.pci_config_addr, 
+	out_be32((uint32_t*) pci.pci_config_addr,
 		 0x80|(0<<8)|(PCI_DEVFN(0,0)<<16)|((offset&~3)<<24));
 	switch (width) {
 		default:
 		case 1:
-			return in_8((unsigned char*)pci.pci_config_data + (offset&3));
+			return in_8((uint8_t*)pci.pci_config_data + (offset&3));
 		case 2:
-			return in_le16((unsigned short*)pci.pci_config_data + (offset&3));
+			return in_le16((uint16_t*)pci.pci_config_data + (offset&3));
 		case 4:
-			return in_le32((unsigned long *)pci.pci_config_data + (offset&3));
+			return in_le32((uint32_t *)pci.pci_config_data + (offset&3));
 	}
 }
 #endif
@@ -107,8 +106,8 @@ static DiscoveryVersion rval = unknown;
 		 * access methods are installed or not (as a matter of fact this shouldn't
 		 * matter for any device on hose 0)
 		 */
-printk("config addr is 0x%08x\n", BSP_pci_configuration.pci_config_addr);
-printk("config data is 0x%08x\n", BSP_pci_configuration.pci_config_data);
+printk("config addr is %p\n", BSP_pci_configuration.pci_config_addr);
+printk("config data is %p\n", BSP_pci_configuration.pci_config_data);
 		pci_read_config_word(0,0,0,PCI_VENDOR_ID, &ds);
 		if ( PCI_VENDOR_ID_MARVELL != ds ) {
 			if ( assertion ) {

@@ -14,7 +14,7 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 | this file configures the pcf8563 RTC for a PM520 board          |
@@ -29,9 +29,7 @@
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
  *
- * http://www.rtems.com/license/LICENSE.
- *
- * @(#) todcfg.c,v 1.4 2005/01/22 04:12:39 ralf Exp
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>
@@ -64,8 +62,6 @@ rtc_tbl RTC_Table[] = {
 #define NUM_RTCS (sizeof(RTC_Table)/sizeof(rtc_tbl))
 
 size_t RTC_Count = NUM_RTCS;
-
-rtems_device_minor_number RTC_Minor;
 
 /* mpc5200_pcf8563_probe --
  *     RTC presence probe function. Return TRUE, if device is present.

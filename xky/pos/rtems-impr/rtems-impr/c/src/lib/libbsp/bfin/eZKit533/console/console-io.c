@@ -9,9 +9,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 
@@ -19,6 +17,7 @@
 #include <rtems/libio.h>
 #include <bsp.h>
 #include <rtems/bspIo.h>
+#include <rtems/console.h>
 
 #include <libcpu/bf533.h>
 #include <libcpu/interrupt.h>

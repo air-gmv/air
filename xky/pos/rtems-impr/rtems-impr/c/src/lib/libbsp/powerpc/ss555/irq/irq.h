@@ -18,10 +18,8 @@
  *  the STREAM API Specification Document link.
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef LIBBSP_POWERPC_SS555_IRQ_IRQ_H
@@ -46,6 +44,7 @@ int CPU_get_current_rtems_irq_handler(rtems_irq_connect_data* irq);
 int CPU_remove_rtems_irq_handler(const rtems_irq_connect_data* irq);
 int CPU_rtems_irq_mngt_set(rtems_irq_global_settings* config);
 int CPU_rtems_irq_mngt_get(rtems_irq_global_settings** config);
+void C_default_exception_handler(CPU_Exception_frame* excPtr);
 
 /*
  * The SS555 has no external interrupt controller chip, so use the standard

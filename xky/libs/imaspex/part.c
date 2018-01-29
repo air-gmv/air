@@ -15,7 +15,7 @@
 #include <imaspex.h>
 
 extern int imaspex_tsal_init;
-extern xky_clocktick_t imaspex_ns_per_tick;
+extern air_clocktick_t imaspex_ns_per_tick;
 
 void GET_PARTITION_STATUS (
 	PARTITION_STATUS_TYPE *PARTITION_STATUS,
@@ -28,8 +28,8 @@ void GET_PARTITION_STATUS (
     }
 
     /* get partition status via system call */
-    xky_partition_status_t status;
-    *RETURN_CODE = xky_syscall_get_partition_status(-1, &status);
+    air_partition_status_t status;
+    *RETURN_CODE = air_syscall_get_partition_status(-1, &status);
 
     /* convert status to ARINC status */
     if (*RETURN_CODE == NO_ERROR) {
@@ -51,7 +51,7 @@ void SET_PARTITION_MODE (
         return;
     }
 
-	*RETURN_CODE = xky_syscall_set_partition_mode(-1, OPERATING_MODE);
+	*RETURN_CODE = air_syscall_set_partition_mode(-1, OPERATING_MODE);
 }
 
 void GET_TIME(SYSTEM_TIME_TYPE *SYSTEM_TIME,
@@ -63,7 +63,7 @@ void GET_TIME(SYSTEM_TIME_TYPE *SYSTEM_TIME,
         return;
     }
 
-    xky_clocktick_t ticks = xky_syscall_get_elapsed_ticks();
+    air_clocktick_t ticks = air_syscall_get_elapsed_ticks();
     *SYSTEM_TIME = ticks * imaspex_ns_per_tick;
 	*RETURN_CODE = NO_ERROR;
 }
@@ -80,7 +80,7 @@ void SET_A_PARTITION_MODE (
 	}
 
 	/* set partition mode via system call */
-    *RETURN_CODE = xky_syscall_set_partition_mode(PARTITION_IDENTIFIER, OPERATING_MODE);
+    *RETURN_CODE = air_syscall_set_partition_mode(PARTITION_IDENTIFIER, OPERATING_MODE);
 }
 
 void GET_A_PARTITION_STATUS (
@@ -95,8 +95,8 @@ void GET_A_PARTITION_STATUS (
     }
 
     /* get partition status via system call */
-    xky_partition_status_t status;
-    *RETURN_CODE = xky_syscall_get_partition_status(
+    air_partition_status_t status;
+    *RETURN_CODE = air_syscall_get_partition_status(
             PARTITION_IDENTIFIER,
             &status);
 
@@ -122,7 +122,7 @@ void GET_A_PARTITION_ID (
     }
 
     /* get partition id via system call */
-    *RETURN_CODE = xky_syscall_get_partition_id(PARTITION_NAME, PARTITION_ID);
+    *RETURN_CODE = air_syscall_get_partition_id(PARTITION_NAME, PARTITION_ID);
 }
 
 void GET_PARTITION_ID (
@@ -136,7 +136,7 @@ void GET_PARTITION_ID (
     }
 
     /* get partition id via system call */
-    *RETURN_CODE = xky_syscall_get_partition_id(NULL, PARTITION_ID);
+    *RETURN_CODE = air_syscall_get_partition_id(NULL, PARTITION_ID);
 }
 
 void SIGNAL_ACTIVITY_COMPLETION (

@@ -23,7 +23,7 @@
 
 void pmk_segregation_int(void) {
 	
-	xky_u32_t i, j;
+	air_u32_t i, j;
 
 #ifdef PMK_DEBUG
     printk(" :: Segregation initialization\n");
@@ -32,7 +32,7 @@ void pmk_segregation_int(void) {
 	/* arch dependent initialization */
 	cpu_segregation_init();
 	
-	xky_uptr_t p_addr = (xky_uptr_t)&xky_kernel_memory_end;
+	air_uptr_t p_addr = (air_uptr_t)&air_kernel_memory_end;
 
 	/* get lists of partitions and shared memory areas */
     pmk_list_t *partition_list = pmk_get_usr_partitions();

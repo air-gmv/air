@@ -16,7 +16,7 @@
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
- * http://www.rtems.com/license/LICENSE.
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef LIBBSP_ARM_LPC32XX_LPC_ETHERNET_CONFIG_H
@@ -70,6 +70,11 @@ extern "C" {
     LPC32XX_MAC_CLK_CTRL = 0x0f;
   }
 #endif
+
+static void lpc_eth_config_module_disable(void)
+{
+  LPC32XX_MAC_CLK_CTRL = 0;
+}
 
 #define LPC_ETH_CONFIG_USE_TRANSMIT_DMA
 

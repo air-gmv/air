@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @ingroup arm_csb336
+ *
+ * @brief Helper functions for SMSC LAN91C11x
+ */
+
 /*
  *  Helper functions for SMSC LAN91C11x
  *
@@ -6,10 +14,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 #include <rtems.h>
 #include "lan91c11x.h"

@@ -6,7 +6,7 @@
  *
  *  The license and distribution terms for this file may in
  *  the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  SS555 port sponsored by Defence Research and Development Canada - Suffield
  *  Copyright (C) 2004, Real-Time Systems Inc. (querbach@realtime.bc.ca)
@@ -15,18 +15,12 @@
  *
  *  Modified to support the MPC750.
  *  Modifications Copyright (c) 1999 Eric Valette valette@crf.canon.fr
- *
- *  $Id$
  */
 
 #include <bsp.h>
 #include <bsp/irq.h>
 #include <rtems/bspIo.h>
-
-extern void clockOn(void*);
-extern void clockOff (void*);
-extern int clockIsOn(void*);
-extern void Clock_isr(void *);
+#include <mpc5xx.h>
 
 static rtems_irq_connect_data clockIrqData = {
   CPU_PERIODIC_TIMER,

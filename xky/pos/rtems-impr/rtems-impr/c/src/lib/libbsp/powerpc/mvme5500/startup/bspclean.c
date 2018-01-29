@@ -8,7 +8,11 @@
 
 #define AUTO_BOOT 0
 
-void bsp_cleanup(void)
+void bsp_fatal_extension(
+  rtems_fatal_source source,
+  bool always_set_to_false,
+  rtems_fatal_code error
+)
 {
 #if AUTO_BOOT
   /* Till Straumann <strauman@slac.stanford.edu> for SVGM */

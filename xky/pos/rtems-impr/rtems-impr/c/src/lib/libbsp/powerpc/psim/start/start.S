@@ -13,8 +13,6 @@
  * and need not follow the licensing terms described here, provided that
  * the new terms are clearly indicated on the first page of each file where
  * they apply.
- *
- *  $Id$
  */
 
 #include <rtems/asm.h>
@@ -43,10 +41,10 @@ FUNC_NAME(__atexit):			/* tell C's eabi-ctor's we have an atexit function */
 	.long	.LCTOC1			/* address we think .LCTOC1 is loaded at */
 
 .Lbss_start = .-.LCTOC1
-	.long	__bss_start
+	.long	bsp_section_sbss_begin
 
 .Lend = .-.LCTOC1
-	.long	_end
+	.long	bsp_section_bss_end
 
 .Lstack = .-.LCTOC1			/* stack address if set by user */
 	.long	__stack
@@ -105,6 +103,7 @@ _start:
 	mfmsr r0
 	oris  r0, r0, (1<<(31-16-6))
 	mtmsr r0
+	isync
 	/*
 	 * set vscr and vrsave to known values
 	 */
@@ -127,8 +126,16 @@ _start:
 	li	r3, 0			/* command line */
 	bl	FUNC_NAME(boot_card)
 
+       .globl  FUNC_NAME(bsp_reset)
+FUNC_NAME(bsp_reset):
 	li  10,99			/* 0x63 */
   	sc
 
 .Lstart:
 	.size	_start,.Lstart-_start
+
+	/* Start stack area */
+.section ".bsp_rwextra", "aw", @nobits
+.align 4
+.space 4096
+__stack:

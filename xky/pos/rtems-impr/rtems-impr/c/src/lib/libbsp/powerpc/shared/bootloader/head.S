@@ -9,15 +9,14 @@
  *  Copyright (C) 1999 Eric Valette. valette@crf.canon.fr
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- * $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <rtems/asm.h>
 #include <rtems/score/cpu.h>
 #include "bootldr.h"
+#include <bspopts.h>
 
 #define TEST_PPCBUG_CALLS
 #undef TEST_PPCBUG_CALLS
@@ -27,7 +26,9 @@
 #define INVL_CACHES (HID0_DCI | HID0_ICFI)
 #define ENBL_CACHES (HID0_DCE | HID0_ICE)
 
+#ifndef qemu
 #define USE_PPCBUG
+#endif
 
 #define PRINT_CHAR(c)		\
 	addi	r20,r3,0	; \

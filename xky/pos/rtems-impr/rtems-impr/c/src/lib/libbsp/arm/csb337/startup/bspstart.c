@@ -11,9 +11,7 @@
  * 
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>
@@ -25,8 +23,6 @@
 #include <at91rm9200_usart.h>
 
 /* Function prototypes */
-extern void rtems_exception_init_mngt(void);
-void bsp_libc_init( void *, uint32_t, int );
 static void fix_mac_addr(void);
 void bsp_usart_init(void);
 
@@ -41,7 +37,7 @@ void bsp_usart_init(void);
  * RESTRICTIONS/LIMITATIONS:
  *   Since RTEMS is not configured, no RTEMS functions can be called.
  */
-void bsp_start_default( void )
+static void bsp_start_default( void )
 {
   /* disable interrupts */
   AIC_CTL_REG(AIC_IDCR) = 0xffffffff;
@@ -58,16 +54,9 @@ void bsp_start_default( void )
   bsp_usart_init(); 
 
   /*
-   * Init rtems exceptions management
-   */
-  rtems_exception_init_mngt();
-
-  /*
    * Init rtems interrupt management
    */
-  if (bsp_interrupt_initialize() != RTEMS_SUCCESSFUL) {
-    _CPU_Fatal_halt(0xe);
-  }
+  bsp_interrupt_initialize();
 
 } /* bsp_start */
 

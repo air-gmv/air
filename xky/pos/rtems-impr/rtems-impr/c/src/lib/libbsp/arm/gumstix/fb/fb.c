@@ -3,9 +3,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <stdlib.h>
@@ -13,14 +11,17 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <pthread.h>
+#include <string.h>
 
 #include <pxa255.h>
 #include <bsp.h>
 #include <rtems/libio.h>
+#include <rtems/bspIo.h>
 
+#include <rtems.h>
+#include <rtems/inttypes.h>
 #include <rtems/fb.h>
 #include <rtems/framebuffer.h>
-#include <rtems.h>
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
@@ -101,7 +102,7 @@ frame_buffer_initialize(rtems_device_major_number major,
   /*
    * Register the device
    */
-  status = rtems_io_register_name ("/dev/fb0", major, 0);
+  status = rtems_io_register_name (FRAMEBUFFER_DEVICE_0_NAME, major, 0);
   if (status != RTEMS_SUCCESSFUL)
     {
       printk("Error registering FBSKYEYE device!\n");
@@ -207,7 +208,10 @@ frame_buffer_control( rtems_device_major_number major,
 		  )
 {
   rtems_libio_ioctl_args_t *args = arg;
-  printk( "FBSKYEYE ioctl called, cmd=%x\n", args->command  );
+  printk(
+    "FBSKYEYE ioctl called, cmd=%" PRIdioctl_command_t "\n",
+    args->command
+  );
   switch( args->command )
     {
     case FBIOGET_FSCREENINFO:

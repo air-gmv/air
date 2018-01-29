@@ -33,7 +33,7 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 |                                                                 |
@@ -44,6 +44,7 @@
 \*===============================================================*/
 
 #include <bsp.h>
+#include <bsp/bootcard.h>
 
 extern uint32_t _CPU_cacr_shadow;
 
@@ -66,12 +67,14 @@ extern char WorkAreaBase [];
 /*
  * CPU-space access
  */
-#define m68k_set_acr2(_acr2) asm volatile ("movec %0,#0x0005" : : "d" (_acr2))
-#define m68k_set_acr3(_acr3) asm volatile ("movec %0,#0x0007" : : "d" (_acr3))
+#define m68k_set_acr2(_acr2) __asm__ volatile ("movec %0,#0x0005" : : "d" (_acr2))
+#define m68k_set_acr3(_acr3) __asm__ volatile ("movec %0,#0x0007" : : "d" (_acr3))
 
 /*
- * Set initial cacr mode, mainly enables branch/intruction/data cache and
- * switch off FPU.
+ * Set initial CACR mode, mainly enables branch/instruction/data cache.  The
+ * FPU must be switched on in the BSP startup code since the
+ * _Thread_Start_multitasking() will restore the floating-point context of the
+ * initialization task if necessary.
  */
 static const uint32_t BSP_CACR_INIT = MCF548X_CACR_DEC /* enable data cache */
   | MCF548X_CACR_BEC /* enable branch cache */
@@ -80,8 +83,7 @@ static const uint32_t BSP_CACR_INIT = MCF548X_CACR_DEC /* enable data cache */
       /* set data cache mode to write-through */
   | MCF548X_CACR_DESB /* enable data store buffer */
   | MCF548X_CACR_DDSP /* data access only in supv. mode */
-  | MCF548X_CACR_IDSP /* instr. access only in supv. mode */
-  | MCF548X_CACR_DF; /* disable FPU */
+  | MCF548X_CACR_IDSP; /* instr. access only in supv. mode */
 
 /*
  * CACR maintenance functions
@@ -119,101 +121,9 @@ void bsp_cacr_clear_flags( uint32_t flags)
 }
 
 /*
- * There is no complete cache lock (only 2 ways of 4 can be locked)
- */
-void _CPU_cache_freeze_data(void)
-{
-  /* Do nothing */
-}
-
-void _CPU_cache_unfreeze_data(void)
-{
-  /* Do nothing */
-}
-
-void _CPU_cache_freeze_instruction(void)
-{
-  /* Do nothing */
-}
-
-void _CPU_cache_unfreeze_instruction(void)
-{
-  /* Do nothing */
-}
-
-void _CPU_cache_enable_instruction(void)
-{
-  bsp_cacr_clear_flags( MCF548X_CACR_IDCM);
-}
-
-void _CPU_cache_disable_instruction(void)
-{
-  bsp_cacr_set_flags( MCF548X_CACR_IDCM);
-}
-
-void _CPU_cache_invalidate_entire_instruction(void)
-{
-  bsp_cacr_set_self_clear_flags( MCF548X_CACR_ICINVA);
-}
-
-void _CPU_cache_invalidate_1_instruction_line(const void *addr)
-{
-  uint32_t a = (uint32_t) addr & ~0x3;
-
-  asm volatile ("cpushl %%ic,(%0)" :: "a" (a | 0x0));
-  asm volatile ("cpushl %%ic,(%0)" :: "a" (a | 0x1));
-  asm volatile ("cpushl %%ic,(%0)" :: "a" (a | 0x2));
-  asm volatile ("cpushl %%ic,(%0)" :: "a" (a | 0x3));
-}
-
-void _CPU_cache_enable_data(void)
-{
-  bsp_cacr_clear_flags( MCF548X_CACR_DDCM( DCACHE_OFF_IMPRECISE));
-}
-
-void _CPU_cache_disable_data(void)
-{
-  bsp_cacr_set_flags( MCF548X_CACR_DDCM( DCACHE_OFF_IMPRECISE));
-}
-
-void _CPU_cache_invalidate_entire_data(void)
-{
-  bsp_cacr_set_self_clear_flags( MCF548X_CACR_DCINVA);
-}
-
-void _CPU_cache_invalidate_1_data_line( const void *addr)
-{
-  uint32_t a = (uint32_t) addr & ~0x3;
-
-  asm volatile ("cpushl %%dc,(%0)" :: "a" (a | 0x0));
-  asm volatile ("cpushl %%dc,(%0)" :: "a" (a | 0x1));
-  asm volatile ("cpushl %%dc,(%0)" :: "a" (a | 0x2));
-  asm volatile ("cpushl %%dc,(%0)" :: "a" (a | 0x3));
-}
-
-void _CPU_cache_flush_1_data_line( const void *addr)
-{
-  uint32_t a = (uint32_t) addr & ~0x3;
-
-  asm volatile ("cpushl %%dc,(%0)" :: "a" (a | 0x0));
-  asm volatile ("cpushl %%dc,(%0)" :: "a" (a | 0x1));
-  asm volatile ("cpushl %%dc,(%0)" :: "a" (a | 0x2));
-  asm volatile ("cpushl %%dc,(%0)" :: "a" (a | 0x3));
-}
-
-void _CPU_cache_flush_entire_data( void)
-{
-  uint32_t line = 0;
-
-  for (line = 0; line < 512; ++line) {
-    _CPU_cache_flush_1_data_line( (const void *) (line * 16));
-  }
-}
-
-/*
  * Coldfire acr and mmu settings
  */
- void acr_mmu_mapping(void)
+ static void acr_mmu_mapping(void)
    {
 
   /*
@@ -272,15 +182,6 @@ void bsp_start( void )
 {
   /* Initialize CACR shadow register */
   _CPU_cacr_shadow = BSP_CACR_INIT;
-
-  /* Switch on FPU in CACR shadow register if necessary */
-  if ((Configuration_POSIX_API.number_of_initialization_threads > 0) ||
-      ((Configuration_RTEMS_API.number_of_initialization_tasks > 0) &&
-       (Configuration_RTEMS_API.User_initialization_tasks_table
-	->attribute_set & RTEMS_FLOATING_POINT) != 0)
-      ) {
-    _CPU_cacr_shadow &= ~MCF548X_CACR_DF;
-  }
 
   /*
    * Load the shadow variable of CACR with initial mode and write it to the

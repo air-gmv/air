@@ -1,4 +1,10 @@
-
+/**
+ *  @file
+ *
+ *  @ingroup arm_comm
+ *
+ *  @brief UART Support
+ */
 
 /*
  * This software is Copyright (C) 1998 by T.sqware - all rights limited
@@ -10,12 +16,14 @@
  * Emmanuel Raguet, mailto:raguet@crf.canon.fr
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef _BSPUART_H
 #define _BSPUART_H
+
+#include <rtems/bspIo.h>
 
 void BSP_uart_init(int uart, int baud, int hwFlow);
 void BSP_uart_set_baud(int aurt, int baud);

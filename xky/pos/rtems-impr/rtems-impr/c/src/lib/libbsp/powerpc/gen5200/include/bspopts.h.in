@@ -6,25 +6,36 @@
 /* If set to !0, enable code to benchmark IRQ processing. */
 #undef BENCHMARK_IRQ_PROCESSING
 
-/* If defined, use custom settings of for the brs5l BSP */
-#undef BRS5L
+/* enables the data cache, if defined to a value other than zero */
+#undef BSP_DATA_CACHE_ENABLED
 
 /* If defined, then the BSP Framework will put a non-zero pattern into the
    RTEMS Workspace and C program heap. This should assist in finding code that
    assumes memory starts set to zero. */
 #undef BSP_DIRTY_MEMORY
 
-/* defines the bits modified in the MPC5200 GPIOPCR register during init. Must
-   match the hardware requirements */
+/* Defines the bits cleared in the MPC5200 GPIOPCR register during
+   initialization. Must match the hardware requirements. Must be consistent
+   with BSP_GPIOPCR_INITVAL. The bits are cleared via BSP_GPIOPCR_INITMASK and
+   then set via BSP_GPIOPCR_INITVAL. */
 #undef BSP_GPIOPCR_INITMASK
 
-/* defines the bit values written in the MPC5200 GPIOPCR register during init.
-   Must match the hardware requirements */
+/* Defines the bits set in the MPC5200 GPIOPCR register during initialization.
+   Must match the hardware requirements. Must be consistent with
+   BSP_GPIOPCR_INITMASK. The bits are cleared via BSP_GPIOPCR_INITMASK and
+   then set via BSP_GPIOPCR_INITVAL. */
 #undef BSP_GPIOPCR_INITVAL
+
+/* enables the instruction cache, if defined to a value other than zero */
+#undef BSP_INSTRUCTION_CACHE_ENABLED
 
 /* If defined, print a message and wait until pressed before resetting board
    when application exits. */
 #undef BSP_PRESS_KEY_FOR_RESET
+
+/* If defined, prints the exception context when an unexpected exception
+   occurs. */
+#undef BSP_PRINT_EXCEPTION_CONTEXT
 
 /* If defined, reset the board when the application exits. */
 #undef BSP_RESET_BOARD_AT_EXIT
@@ -33,16 +44,29 @@
    board. Must match the hardware requirements. PSC1 corresponds to the LSB */
 #undef BSP_UART_AVAIL_MASK
 
-/* If defined, the data cache will be enabled after address translation is
-   turned on. */
-#undef DATA_CACHE_ENABLE
-
-/* If defined, board boots via U-Boot */
+/* enable U-Boot startup */
 #undef HAS_UBOOT
 
-/* If defined, the instruction cache will be enabled after address translation
-   is turned on. */
-#undef INSTRUCTION_CACHE_ENABLE
+/* enable settings for BRS5L */
+#undef MPC5200_BOARD_BRS5L
+
+/* enable settings for BRS6L */
+#undef MPC5200_BOARD_BRS6L
+
+/* enable settings for DP2 */
+#undef MPC5200_BOARD_DP2
+
+/* enable settings for IceCube */
+#undef MPC5200_BOARD_ICECUBE
+
+/* enable settings for PM520 CR825 */
+#undef MPC5200_BOARD_PM520_CR825
+
+/* enable settings for PM520 ZE30 */
+#undef MPC5200_BOARD_PM520_ZE30
+
+/* PSC index for GPS module, if defined results in '/dev/gps' */
+#undef MPC5200_PSC_INDEX_FOR_GPS_MODULE
 
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
@@ -62,11 +86,11 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* If defined, use custom settings of for the pm520_cr825 BSP */
-#undef PM520_CR825
+/* console minor number used by printk() */
+#undef PRINTK_MINOR
 
-/* If defined, use custom settings of for the pm520_ze30 BSP */
-#undef PM520_ZE30
+/* enable single character mode for the PSC console driver */
+#undef SINGLE_CHAR_MODE
 
-/* If defined, use custom settings of for the icecube BSP */
-#undef icecube
+/* enable interrupt support for the PSC console driver */
+#undef UARTS_USE_TERMIOS_INT

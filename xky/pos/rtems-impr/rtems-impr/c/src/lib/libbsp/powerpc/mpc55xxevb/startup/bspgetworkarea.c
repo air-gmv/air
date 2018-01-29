@@ -2,45 +2,52 @@
  * @file
  *
  * @ingroup mpc55xx
- *
- * @brief BSP Get Work Area of Memory.
  */
 
 /*
- * Copyright (c) 2008
- * Embedded Brains GmbH
- * Obere Lagerstr. 30
- * D-82178 Puchheim
- * Germany
- * rtems@embedded-brains.de
+ * Copyright (c) 2012 embedded brains GmbH.  All rights reserved.
  *
- * The license and distribution terms for this file may be found in the file
- * LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
+ *  embedded brains GmbH
+ *  Obere Lagerstr. 30
+ *  82178 Puchheim
+ *  Germany
+ *  <rtems@embedded-brains.de>
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>
 #include <bsp/bootcard.h>
-#include <libcpu/powerpc-utility.h>
+#include <bsp/linker-symbols.h>
 
-#define MPC55XX_INTERRUPT_STACK_SIZE 0x1000
+LINKER_SYMBOL(bsp_section_work_bonus_begin);
+LINKER_SYMBOL(bsp_section_work_bonus_size);
 
-/* Symbols defined in linker command file */
-LINKER_SYMBOL(bsp_workspace_start);
-LINKER_SYMBOL(bsp_workspace_end);
-LINKER_SYMBOL(bsp_external_ram_end);
-
-void bsp_get_work_area(
-  void      **work_area_start,
-  uintptr_t   *work_area_size,
-  void      **heap_start,
-  uintptr_t  *heap_size
-)
+void bsp_work_area_initialize(void)
 {
-  size_t free_ram_size;
-  *work_area_start = bsp_workspace_start;
+  Heap_Area areas [] = {
+    {
+      bsp_section_work_begin,
+      (uintptr_t) bsp_section_work_size
+    }, {
+      bsp_section_work_bonus_begin,
+      (uintptr_t) bsp_section_work_bonus_size
+    }
+  };
 
-  free_ram_size = (uint8_t *)bsp_external_ram_end - (uint8_t *)*work_area_start;
-  *work_area_size = (free_ram_size / 2);
-  *heap_start = (void *)((uint8_t *)*work_area_start + *work_area_size);
-  *heap_size = (free_ram_size / 2);
+  #ifdef BSP_INTERRUPT_STACK_AT_WORK_AREA_BEGIN
+    {
+      uint32_t stack_size = rtems_configuration_get_interrupt_stack_size();
+
+      areas [0].begin = (char *) areas [0].begin + stack_size;
+      areas [0].size -= stack_size;
+    }
+  #endif
+
+  bsp_work_area_initialize_with_table(
+    areas,
+    sizeof(areas) / sizeof(areas [0])
+  );
 }

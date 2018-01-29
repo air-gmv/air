@@ -25,8 +25,6 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *	$Id$
  */
 
 /*
@@ -37,7 +35,12 @@
 
 #include "elink.h"
 
-extern void outb( unsigned short io_addr, unsigned char out_data );
+#include <bsp.h>
+
+static void outb( unsigned short io_addr, unsigned char out_data )
+{
+  outport_byte( io_addr, out_data );
+}
 
 /*
  * Issue a `global reset' to all cards.  We have to be careful to do this only

@@ -9,10 +9,8 @@
  *  Copyright (C) 1999 Eric Valette. valette@crf.canon.fr
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- * $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <sys/types.h>
@@ -24,6 +22,7 @@
 #include <libcpu/page.h>
 #include <bsp/consoleIo.h>
 #include <string.h>
+#include <bsp.h>
 
 #include <string.h>
 
@@ -68,7 +67,7 @@ typedef struct _pci_area_head {
 #define PCI_AREA_IO 2
 
 struct _pci_private {
-      volatile u_int * config_addr;
+      volatile void * config_addr;
       volatile u_char * config_data;
       struct pci_dev **last_dev_p;
       struct pci_bus pci_root;
@@ -480,6 +479,14 @@ static void reconfigure_pci(void) {
    pci_resource *r;
    struct pci_dev *dev;
 
+   u_long bus0_mem_start = BUS0_MEM_START;
+   u_long bus0_mem_end   = BUS0_MEM_END;
+
+   if ( residual_fw_is_qemu( bd->residual ) ) {
+     bus0_mem_start += PREP_ISA_MEM_BASE;
+     bus0_mem_end   += PREP_ISA_MEM_BASE;
+   }
+
    /* FIXME: for now memory is relocated from low, it's better
     * to start from higher addresses.
     */
@@ -489,7 +496,7 @@ static void reconfigure_pci(void) {
    */
 
    init_free_area(&pci->io, BUS0_IO_START, BUS0_IO_END, 0xfff, 0);
-   init_free_area(&pci->mem, BUS0_MEM_START, BUS0_MEM_END, 0xfffff, 0);
+   init_free_area(&pci->mem, bus0_mem_start, bus0_mem_end, 0xfffff, 0);
 
    /* First reconfigure the I/O space, this will be more
     * complex when there is more than 1 bus. And 64 bits
@@ -520,6 +527,14 @@ static void reconfigure_pci(void) {
       pci_bootloader_write_config_dword(r->dev,
                              PCI_BASE_ADDRESS_0+(r->reg<<2),
                              r->base);
+
+      if ( residual_fw_is_qemu( bd->residual ) && r->dev->sysdata ) {
+        if ( PCI_BASE_ADDRESS_SPACE_IO == (r->type &  PCI_BASE_ADDRESS_SPACE) )
+			((pci_resource*)r->dev->sysdata)->cmd |= PCI_COMMAND_IO;
+		else
+			((pci_resource*)r->dev->sysdata)->cmd |= PCI_COMMAND_MEMORY;
+      }
+
       if ((r->type&
            (PCI_BASE_ADDRESS_SPACE|
             PCI_BASE_ADDRESS_MEM_TYPE_MASK)) ==
@@ -556,7 +571,7 @@ indirect_pci_read_config_word(unsigned char bus, unsigned char dev_fn,
    if (offset&1) return PCIBIOS_BAD_REGISTER_NUMBER;
    out_be32(pci->config_addr,
             0x80|(bus<<8)|(dev_fn<<16)|((offset&~3)<<24));
-   *val=in_le16((volatile u_short *)(pci->config_data + (offset&3)));
+   *val=in_le16((volatile uint16_t *)(pci->config_data + (offset&3)));
    return PCIBIOS_SUCCESSFUL;
 }
 
@@ -567,7 +582,7 @@ indirect_pci_read_config_dword(unsigned char bus, unsigned char dev_fn,
    if (offset&3) return PCIBIOS_BAD_REGISTER_NUMBER;
    out_be32(pci->config_addr,
             0x80|(bus<<8)|(dev_fn<<16)|(offset<<24));
-   *val=in_le32((volatile u_int *)pci->config_data);
+   *val=in_le32((volatile uint32_t *)pci->config_data);
    return PCIBIOS_SUCCESSFUL;
 }
 
@@ -586,7 +601,7 @@ indirect_pci_write_config_word(unsigned char bus, unsigned char dev_fn,
    if (offset&1) return PCIBIOS_BAD_REGISTER_NUMBER;
    out_be32(pci->config_addr,
             0x80|(bus<<8)|(dev_fn<<16)|((offset&~3)<<24));
-   out_le16((volatile u_short *)(pci->config_data + (offset&3)), val);
+   out_le16((volatile uint16_t *)(pci->config_data + (offset&3)), val);
    return PCIBIOS_SUCCESSFUL;
 }
 
@@ -596,7 +611,7 @@ indirect_pci_write_config_dword(unsigned char bus, unsigned char dev_fn,
    if (offset&3) return PCIBIOS_BAD_REGISTER_NUMBER;
    out_be32(pci->config_addr,
             0x80|(bus<<8)|(dev_fn<<16)|(offset<<24));
-   out_le32((volatile u_int *)pci->config_data, val);
+   out_le32((volatile uint32_t *)pci->config_data, val);
    return PCIBIOS_SUCCESSFUL;
 }
 
@@ -629,7 +644,7 @@ direct_pci_read_config_word(unsigned char bus, unsigned char dev_fn,
    if (bus != 0 || (1<<PCI_SLOT(dev_fn) & 0xff8007fe)) {
       return PCIBIOS_DEVICE_NOT_FOUND;
    }
-   *val=in_le16((volatile u_short *)
+   *val=in_le16((volatile uint16_t *)
                 (pci->config_data + ((1<<PCI_SLOT(dev_fn))&~1)
                  + (PCI_FUNC(dev_fn)<<8) + offset));
    return PCIBIOS_SUCCESSFUL;
@@ -643,7 +658,7 @@ direct_pci_read_config_dword(unsigned char bus, unsigned char dev_fn,
    if (bus != 0 || (1<<PCI_SLOT(dev_fn) & 0xff8007fe)) {
       return PCIBIOS_DEVICE_NOT_FOUND;
    }
-   *val=in_le32((volatile u_int *)
+   *val=in_le32((volatile uint32_t *)
                 (pci->config_data + ((1<<PCI_SLOT(dev_fn))&~1)
                  + (PCI_FUNC(dev_fn)<<8) + offset));
    return PCIBIOS_SUCCESSFUL;
@@ -668,7 +683,7 @@ direct_pci_write_config_word(unsigned char bus, unsigned char dev_fn,
    if (bus != 0 || (1<<PCI_SLOT(dev_fn) & 0xff8007fe)) {
       return PCIBIOS_DEVICE_NOT_FOUND;
    }
-   out_le16((volatile u_short *)
+   out_le16((volatile uint16_t *)
             (pci->config_data + ((1<<PCI_SLOT(dev_fn))&~1)
              + (PCI_FUNC(dev_fn)<<8) + offset),
             val);
@@ -682,7 +697,7 @@ direct_pci_write_config_dword(unsigned char bus, unsigned char dev_fn,
    if (bus != 0 || (1<<PCI_SLOT(dev_fn) & 0xff8007fe)) {
       return PCIBIOS_DEVICE_NOT_FOUND;
    }
-   out_le32((volatile u_int *)
+   out_le32((volatile uint32_t *)
             (pci->config_data + ((1<<PCI_SLOT(dev_fn))&~1)
              + (PCI_FUNC(dev_fn)<<8) + offset),
             val);
@@ -698,7 +713,7 @@ static const struct pci_bootloader_config_access_functions direct_functions = {
    direct_pci_write_config_dword
 };
 
-void pci_read_bases(struct pci_dev *dev, unsigned int howmany)
+static void pci_read_bases(struct pci_dev *dev, unsigned int howmany)
 {
    unsigned int reg, nextreg;
 
@@ -783,7 +798,7 @@ void pci_read_bases(struct pci_dev *dev, unsigned int howmany)
    }
 }
 
-u_int pci_scan_bus(struct pci_bus *bus)
+static u_int pci_scan_bus(struct pci_bus *bus)
 {
    unsigned int devfn, max;
    uint32_t class;
@@ -1313,7 +1328,7 @@ void pci_init(void)
           * but we should not use residual data in
           * this case anyway.
           */
-         pci->config_addr = ((volatile u_int *)
+         pci->config_addr = ((volatile void *)
                              (ptr_mem_map->io_base+0xcf8));
          pci->config_data = ptr_mem_map->io_base+0xcfc;
       } else if(hostbridge->DeviceId.Interface==PCIBridgeDirect) {

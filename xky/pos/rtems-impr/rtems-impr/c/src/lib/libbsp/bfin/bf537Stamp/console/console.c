@@ -1,13 +1,13 @@
 /*  Console driver for bf537Stamp
- *
+ */
+
+/*
  *  Copyright (c) 2008 Kallisti Labs, Los Gatos, CA, USA
  *             written by Allan Hessenflow <allanh@kallisti.com>
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 
@@ -15,6 +15,7 @@
 #include <rtems/libio.h>
 #include <bsp.h>
 #include <rtems/bspIo.h>
+#include <rtems/console.h>
 
 #include <libcpu/bf537.h>
 #include <libcpu/interrupt.h>
@@ -44,7 +45,7 @@ static bfin_uart_channel_t channels[] = {
 #if (!BFIN_ON_SKYEYE)
 ,
   {"/dev/tty1",
-   (char *) UART1_BASE_ADDRESS,
+   UART1_BASE_ADDRESS,
    CONSOLE_USE_INTERRUPTS,
    0,
    NULL,

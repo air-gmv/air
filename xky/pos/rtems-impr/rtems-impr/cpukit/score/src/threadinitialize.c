@@ -1,316 +1,321 @@
 /**
  *  @file
- *  threadinitialize.c
  *
- *  @brief initialize a thread structure
+ *  @brief Initialize Thread
  *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-2006.
+ *  @ingroup ScoreThread
+ */
+/*
+ *  COPYRIGHT (c) 1989-2014.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  234     | 09/10/2008  | mcoutinho    | IPR 67
- *  622     | 17/11/2008  | mcoutinho    | IPR 70
- *  3704    | 09/07/2009  | mcoutinho    | IPR 548
- *  3909    | 21/07/2009  | mcoutinho    | IPR 99
- *  3909    | 21/07/2009  | mcoutinho    | IPR 553
- *  4430    | 21/09/2009  | mcoutinho    | IPR 685
- *  4441    | 21/09/2009  | mcoutinho    | IPR 574
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  6325    | 01/03/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_CORE Super Core
- *  @{
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup ScoreThread Thread Handler
- *  @{
- */
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#include <rtems/system.h>
-#include <rtems/score/apiext.h>
-#include <rtems/score/context.h>
-#include <rtems/score/interr.h>
-#include <rtems/score/isr.h>
-#include <rtems/score/object.h>
-#include <rtems/score/priority.h>
-#include <rtems/score/states.h>
-#include <rtems/score/sysstate.h>
-#include <rtems/score/thread.h>
-#include <rtems/score/threadq.h>
-#include <rtems/score/userext.h>
-#include <rtems/score/watchdog.h>
+#include <rtems/score/threadimpl.h>
+#include <rtems/score/schedulerimpl.h>
+#include <rtems/score/stackimpl.h>
+#include <rtems/score/tls.h>
+#include <rtems/score/userextimpl.h>
+#include <rtems/score/watchdogimpl.h>
 #include <rtems/score/wkspace.h>
+#include <rtems/config.h>
 
-
-boolean _Thread_Initialize(
-                           Objects_Information *information ,
-                           Thread_Control *the_thread ,
-                           size_t stack_size ,
-                           boolean is_fp ,
-                           Priority_Control priority ,
-                           boolean is_preemptible ,
-                           Thread_CPU_budget_algorithms budget_algorithm ,
-                           Thread_CPU_budget_algorithm_callout budget_callout ,
-                           uint32_t isr_level ,
-                           Objects_Name name
-                           )
+bool _Thread_Initialize(
+  Thread_Information                   *information,
+  Thread_Control                       *the_thread,
+  const Scheduler_Control              *scheduler,
+  void                                 *stack_area,
+  size_t                                stack_size,
+  bool                                  is_fp,
+  Priority_Control                      priority,
+  bool                                  is_preemptible,
+  Thread_CPU_budget_algorithms          budget_algorithm,
+  Thread_CPU_budget_algorithm_callout   budget_callout,
+  uint32_t                              isr_level,
+  Objects_Name                          name
+)
 {
-    /* thread stack size */
-    size_t actual_stack_size = 0;
-
-    /* pointer to the stack area */
-    void *stack = NULL;
-
-    /* if the CPU has hardware or software FP */
-#if ( CPU_HARDWARE_FP == TRUE ) || ( CPU_SOFTWARE_FP == TRUE )
-
-    /* pointer to the FP area */
-    void *fp_area;
-
+  uintptr_t                tls_size = _TLS_Get_size();
+  size_t                   actual_stack_size = 0;
+  void                    *stack = NULL;
+  #if ( CPU_HARDWARE_FP == TRUE ) || ( CPU_SOFTWARE_FP == TRUE )
+    void                  *fp_area = NULL;
+  #endif
+  bool                     extension_status;
+  size_t                   i;
+  Scheduler_Node          *scheduler_node;
+#if defined(RTEMS_SMP)
+  Scheduler_Node          *scheduler_node_for_index;
+  const Scheduler_Control *scheduler_for_index;
 #endif
+  size_t                   scheduler_index;
+  Per_CPU_Control         *cpu = _Per_CPU_Get_by_index( 0 );
 
-    /* pointer to the extensions area */
-    void *extensions_area;
-
-
-    /* initialize the Ada self pointer */
-    the_thread->rtems_ada_self = NULL;
-
-    /* allocate and Initialize the stack for this thread */
-    actual_stack_size = _Thread_Stack_Allocate(the_thread , stack_size);
-
-    /* if could not allocate sufficient stack */
-    if(!actual_stack_size || actual_stack_size < stack_size)
-    {
-        /* return false (could not initialize thread) */
-        return FALSE;
+#if defined( RTEMS_SMP )
+  if ( rtems_configuration_is_smp_enabled() ) {
+    if ( !is_preemptible ) {
+      return false;
     }
 
-    /* get the thread stack area */
+    if ( isr_level != 0 ) {
+      return false;
+    }
+  }
+#endif
+
+  memset(
+    &the_thread->Join_queue,
+    0,
+    information->Objects.size - offsetof( Thread_Control, Join_queue )
+  );
+
+  for ( i = 0 ; i < _Thread_Control_add_on_count ; ++i ) {
+    const Thread_Control_add_on *add_on = &_Thread_Control_add_ons[ i ];
+
+    *(void **) ( (char *) the_thread + add_on->destination_offset ) =
+      (char *) the_thread + add_on->source_offset;
+  }
+
+  /*
+   *  Allocate and Initialize the stack for this thread.
+   */
+  #if !defined(RTEMS_SCORE_THREAD_ENABLE_USER_PROVIDED_STACK_VIA_API)
+    actual_stack_size = _Thread_Stack_Allocate( the_thread, stack_size );
+    if ( !actual_stack_size || actual_stack_size < stack_size )
+      return false;                     /* stack allocation failed */
+
     stack = the_thread->Start.stack;
+  #else
+    if ( !stack_area ) {
+      actual_stack_size = _Thread_Stack_Allocate( the_thread, stack_size );
+      if ( !actual_stack_size || actual_stack_size < stack_size )
+        return false;                     /* stack allocation failed */
 
-    /* set the thread allocated stack flag to true */
-    the_thread->Start.core_allocated_stack = TRUE;
-
-    /* initialize the stack information */
-    _Stack_Initialize(&the_thread->Start.Initial_stack ,
-                      stack ,
-                      actual_stack_size);
-
-    /* if the CPU has hardware or software FP */
-#if ( CPU_HARDWARE_FP == TRUE ) || ( CPU_SOFTWARE_FP == TRUE )
-
-    /* if the thread has FP */
-    if(is_fp)
-    {
-        /* allocate the floating point area for this thread */
-        fp_area = _Workspace_Allocate(CONTEXT_FP_SIZE);
-
-        /* if could not allocate */
-        if(!fp_area)
-        {
-            /* undo previous steps */
-
-            /* free the stack */
-            _Thread_Stack_Free(the_thread);
-
-            /* and return false (could not initialize thread) */
-            return FALSE;
-        }
-
-        /* get the address of the FP context start */
-        fp_area = _Context_Fp_start(fp_area , 0);
-
+      stack = the_thread->Start.stack;
+      the_thread->Start.core_allocated_stack = true;
+    } else {
+      stack = stack_area;
+      actual_stack_size = stack_size;
+      the_thread->Start.core_allocated_stack = false;
     }
-    else
-    {
-        /* thread does not have FP */
+  #endif
 
-        /* set the FP area to NULL */
-        fp_area = NULL;
+  _Stack_Initialize(
+     &the_thread->Start.Initial_stack,
+     stack,
+     actual_stack_size
+  );
+
+  scheduler_index = 0;
+
+  /* Thread-local storage (TLS) area allocation */
+  if ( tls_size > 0 ) {
+    uintptr_t tls_align = _TLS_Heap_align_up( (uintptr_t) _TLS_Alignment );
+    uintptr_t tls_alloc = _TLS_Get_allocation_size( tls_size, tls_align );
+
+    the_thread->Start.tls_area =
+      _Workspace_Allocate_aligned( tls_alloc, tls_align );
+
+    if ( the_thread->Start.tls_area == NULL ) {
+      goto failed;
     }
+  }
 
-    /* set the thread FP context */
-    the_thread->fp_context = fp_area;
-
-    /* set the thread start FP context */
+  /*
+   *  Allocate the floating point area for this thread
+   */
+  #if ( CPU_HARDWARE_FP == TRUE ) || ( CPU_SOFTWARE_FP == TRUE )
+    if ( is_fp ) {
+      fp_area = _Workspace_Allocate( CONTEXT_FP_SIZE );
+      if ( !fp_area )
+        goto failed;
+    }
+    the_thread->fp_context       = fp_area;
     the_thread->Start.fp_context = fp_area;
+  #endif
 
+  /*
+   *  Get thread queue heads
+   */
+  the_thread->Wait.spare_heads = _Freechain_Get(
+    &information->Free_thread_queue_heads,
+    _Workspace_Allocate,
+    _Objects_Extend_size( &information->Objects ),
+    THREAD_QUEUE_HEADS_SIZE( _Scheduler_Count )
+  );
+  if ( the_thread->Wait.spare_heads == NULL ) {
+    goto failed;
+  }
+  _Thread_queue_Heads_initialize( the_thread->Wait.spare_heads );
+
+  /*
+   *  General initialization
+   */
+
+  the_thread->is_fp                  = is_fp;
+  the_thread->Start.isr_level        = isr_level;
+  the_thread->Start.is_preemptible   = is_preemptible;
+  the_thread->Start.budget_algorithm = budget_algorithm;
+  the_thread->Start.budget_callout   = budget_callout;
+
+  _Thread_Timer_initialize( &the_thread->Timer, cpu );
+
+  switch ( budget_algorithm ) {
+    case THREAD_CPU_BUDGET_ALGORITHM_NONE:
+    case THREAD_CPU_BUDGET_ALGORITHM_RESET_TIMESLICE:
+      break;
+    #if defined(RTEMS_SCORE_THREAD_ENABLE_EXHAUST_TIMESLICE)
+      case THREAD_CPU_BUDGET_ALGORITHM_EXHAUST_TIMESLICE:
+        the_thread->cpu_time_budget =
+          rtems_configuration_get_ticks_per_timeslice();
+        break;
+    #endif
+    #if defined(RTEMS_SCORE_THREAD_ENABLE_SCHEDULER_CALLOUT)
+      case THREAD_CPU_BUDGET_ALGORITHM_CALLOUT:
+	break;
+    #endif
+  }
+
+#if defined(RTEMS_SMP)
+  scheduler_node = NULL;
+  scheduler_node_for_index = the_thread->Scheduler.nodes;
+  scheduler_for_index = &_Scheduler_Table[ 0 ];
+
+  while ( scheduler_index < _Scheduler_Count ) {
+    Priority_Control priority_for_index;
+
+    if ( scheduler_for_index == scheduler ) {
+      priority_for_index = priority;
+      scheduler_node = scheduler_node_for_index;
+    } else {
+      /*
+       * Use the idle thread priority for the non-home scheduler instances by
+       * default.
+       */
+      priority_for_index = _Scheduler_Map_priority(
+        scheduler_for_index,
+        scheduler_for_index->maximum_priority
+      );
+    }
+
+    _Scheduler_Node_initialize(
+      scheduler_for_index,
+      scheduler_node_for_index,
+      the_thread,
+      priority_for_index
+    );
+    scheduler_node_for_index = (Scheduler_Node *)
+      ( (uintptr_t) scheduler_node_for_index + _Scheduler_Node_size );
+    ++scheduler_for_index;
+    ++scheduler_index;
+  }
+
+  _Assert( scheduler_node != NULL );
+  _Chain_Initialize_one(
+    &the_thread->Scheduler.Wait_nodes,
+    &scheduler_node->Thread.Wait_node
+  );
+  _Chain_Initialize_one(
+    &the_thread->Scheduler.Scheduler_nodes,
+    &scheduler_node->Thread.Scheduler_node.Chain
+  );
+#else
+  scheduler_node = _Thread_Scheduler_get_home_node( the_thread );
+  _Scheduler_Node_initialize(
+    scheduler,
+    scheduler_node,
+    the_thread,
+    priority
+  );
+  scheduler_index = 1;
 #endif
 
-    /* initialize the thread timer */
-    _Watchdog_Initialize(&the_thread->Timer , NULL , 0 , NULL);
+  _Priority_Node_initialize( &the_thread->Real_priority, priority );
+  _Priority_Initialize_one(
+    &scheduler_node->Wait.Priority,
+    &the_thread->Real_priority
+  );
 
-
-    /* allocate the extensions area for this thread */
-
-    /* if there are thread extensions */
-    if(_Thread_Maximum_extensions)
-    {
-        /* allocate the extension area */
-        extensions_area = _Workspace_Allocate(( _Thread_Maximum_extensions + 1 ) *
-            sizeof ( void *));
-
-        /* if could not allocate */
-        if(!extensions_area)
-        {
-            /* undo previous steps */
-
-            /* if the CPU has hardware or software FP */
-#if ( CPU_HARDWARE_FP == TRUE ) || ( CPU_SOFTWARE_FP == TRUE )
-            /* if the thread has FP */
-            if(fp_area)
-            {
-                /* free the FP area */
-                (void) _Workspace_Free(fp_area);
-            }
-#endif
-            /* free the allocated stack */
-            _Thread_Stack_Free(the_thread);
-
-            /* and return false (could not initialize thread) */
-            return FALSE;
-        }
-    }
-    else
-    {
-        /* there is no extension area */
-        extensions_area = NULL;
-    }
-
-    /* set the thread extensions area */
-    the_thread->extensions = (void **) extensions_area;
-
-    /* clear the extensions area so extension users can determine
-     * if they are linked to the thread. An extension user may
-     * create the extension long after tasks have been created
-     * so they cannot rely on the thread create user extension
-     * call */
-
-    /* if there are extensions */
-    if(the_thread->extensions)
-    {
-        /* iterator through the extensions */
-        int i;
-
-        /* run through every extension */
-        for(i = 0; i < ( _Thread_Maximum_extensions + 1 ); i++)
-        {
-            /* and initialize them to NULL */
-            the_thread->extensions[i] = NULL;
-        }
-    }
-
-    /* general initialization */
-
-    /* initialize the thread preemption attribute */
-    the_thread->Start.is_preemptible = is_preemptible;
-
-    /* initialize the thread budget algorithm attribute */
-    the_thread->Start.budget_algorithm = budget_algorithm;
-
-    /* initialize the thread budget callout function */
-    the_thread->Start.budget_callout = budget_callout;
-
-    /* initialize the thread interrupt level attribute */
-    the_thread->Start.isr_level = isr_level;
-
-    /* set the thread initial state */
-    the_thread->current_state = STATES_DORMANT;
-
-    /* initialize the thread wait thread queue to none */
-    the_thread->Wait.queue = NULL;
-
-    /* initialize the thread wait thread itself */
-    the_thread->Wait.thread = the_thread;
-
-    /* initialize the thread wait node next to none */
-    the_thread->Wait.node.next = NULL;
-
-    /* initialize the thread wait node previous to none */
-    the_thread->Wait.node.previous = NULL;
-
-    /* the thread does not hold any mutexes */
-    _Chain_Initialize_empty(&the_thread->Wait.mutexes_hold);
-
-    /* no threads are blocking on this thread */
-    _Chain_Initialize_empty(&the_thread->Wait.threads_blocked);
-
-    /* dont have any blocked mutexes */
-    the_thread->Wait.mutex_blocked = NULL;
-
-    /* initialize the thread resource count to none */
-    the_thread->resource_count = 0;
-
-    /* initialize the thread suspend count to none */
-    the_thread->suspend_count = 0;
-
-    /* initialize the thread real priority the initial priority */
-    the_thread->real_priority = priority;
-
-    /* initialize the thread current priority the initial priority */
-    the_thread->Start.initial_priority = priority;
-
-    /* set the thread priority in the system */
-    _Thread_Set_priority(the_thread , priority);
-
-    /* open the object */
-    _Objects_Open(information , &the_thread->Object , name);
-
-    /* invoke create extensions */
-
-    /* if there is a thread create user extension which tells not to create the
-     * thread */
-    if(!_User_extensions_Thread_create(the_thread))
-    {
-        /* then undo previous steps */
-
-        /* if there was an extension area */
-        if(extensions_area)
-        {
-            /* then free the extension area */
-            (void) _Workspace_Free(extensions_area);
-        }
-
-        /* if the CPU has hardware or software FP */
-#if ( CPU_HARDWARE_FP == TRUE ) || ( CPU_SOFTWARE_FP == TRUE )
-
-        /* if the thread was FP */
-        if(fp_area)
-        {
-            /* then free the FP area */
-            (void) _Workspace_Free(fp_area);
-        }
+#if defined(RTEMS_SMP)
+  RTEMS_STATIC_ASSERT( THREAD_SCHEDULER_BLOCKED == 0, Scheduler_state );
+  the_thread->Scheduler.home = scheduler;
+  _ISR_lock_Initialize( &the_thread->Scheduler.Lock, "Thread Scheduler" );
+  _Processor_mask_Assign(
+    &the_thread->Scheduler.Affinity,
+    _SMP_Get_online_processors()
+   );
+  _ISR_lock_Initialize( &the_thread->Wait.Lock.Default, "Thread Wait Default" );
+  _Thread_queue_Gate_open( &the_thread->Wait.Lock.Tranquilizer );
+  _RBTree_Initialize_node( &the_thread->Wait.Link.Registry_node );
+  _SMP_lock_Stats_initialize( &the_thread->Potpourri_stats, "Thread Potpourri" );
+  _SMP_lock_Stats_initialize( &the_thread->Join_queue.Lock_stats, "Thread State" );
 #endif
 
-        /* free the stack */
-        _Thread_Stack_Free(the_thread);
+  /* Initialize the CPU for the non-SMP schedulers */
+  _Thread_Set_CPU( the_thread, cpu );
 
-        /* and return false (could not initialize thread) */
-        return FALSE;
-    }
+  the_thread->current_state           = STATES_DORMANT;
+  the_thread->Wait.operations         = &_Thread_queue_Operations_default;
+  the_thread->Start.initial_priority  = priority;
 
-    /* initialized the thread */
-    return TRUE;
+  RTEMS_STATIC_ASSERT( THREAD_WAIT_FLAGS_INITIAL == 0, Wait_flags );
+
+  /* POSIX Keys */
+  _RBTree_Initialize_empty( &the_thread->Keys.Key_value_pairs );
+  _ISR_lock_Initialize( &the_thread->Keys.Lock, "POSIX Key Value Pairs" );
+
+  _Thread_Action_control_initialize( &the_thread->Post_switch_actions );
+
+  /*
+   *  Open the object
+   */
+  _Objects_Open( &information->Objects, &the_thread->Object, name );
+
+  /*
+   *  We assume the Allocator Mutex is locked and dispatching is
+   *  enabled when we get here.  We want to be able to run the
+   *  user extensions with dispatching enabled.  The Allocator
+   *  Mutex provides sufficient protection to let the user extensions
+   *  run safely.
+   */
+  extension_status = _User_extensions_Thread_create( the_thread );
+  if ( extension_status )
+    return true;
+
+failed:
+
+#if defined(RTEMS_SMP)
+  while ( scheduler_index > 0 ) {
+    scheduler_node_for_index = (Scheduler_Node *)
+      ( (uintptr_t) scheduler_node_for_index - _Scheduler_Node_size );
+    --scheduler_for_index;
+    --scheduler_index;
+    _Scheduler_Node_destroy( scheduler_for_index, scheduler_node_for_index );
+  }
+#else
+  if ( scheduler_index > 0 ) {
+    _Scheduler_Node_destroy( scheduler, scheduler_node );
+  }
+#endif
+
+  _Workspace_Free( the_thread->Start.tls_area );
+
+  _Freechain_Put(
+    &information->Free_thread_queue_heads,
+    the_thread->Wait.spare_heads
+  );
+
+  #if ( CPU_HARDWARE_FP == TRUE ) || ( CPU_SOFTWARE_FP == TRUE )
+    _Workspace_Free( fp_area );
+  #endif
+
+   _Thread_Stack_Free( the_thread );
+  return false;
 }
-
-/**  
- *  @}
- */
-
-/**
- *  @}
- */

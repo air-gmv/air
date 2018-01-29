@@ -14,8 +14,9 @@
  * Germany
  * rtems@embedded-brains.de
  *
- * The license and distribution terms for this file may be found in the file
- * LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #include <stdio.h>
@@ -27,6 +28,8 @@
 #include <bsp.h>
 
 #include <rtems/status-checks.h>
+
+#ifdef MPC55XX_BOARD_MPC5566EVB
 
 static rtems_status_code mpc55xx_dspi_init(void)
 {
@@ -156,3 +159,5 @@ rtems_status_code mpc55xx_sd_card_init( bool mount)
 
 	return RTEMS_SUCCESSFUL;
 }
+
+#endif /* MPC55XX_BOARD_MPC5566EVB */

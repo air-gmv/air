@@ -38,12 +38,12 @@
 /* The actual size of these base types is system specific and the */
 /* sizes must match the sizes used by the implementation of the */
 /* underlying Operating System. */
-typedef xky_u8_t     APEX_BYTE;         /* 8-bit unsigned  */
-typedef xky_i32_t    APEX_INTEGER;      /* 32-bit signed   */
-typedef xky_u32_t    APEX_UNSIGNED;     /* 32-bit unsigned */
-typedef xky_i64_t    APEX_LONG_INTEGER; /* 64-bit signed   */
+typedef air_u8_t     APEX_BYTE;         /* 8-bit unsigned  */
+typedef air_i32_t    APEX_INTEGER;      /* 32-bit signed   */
+typedef air_u32_t    APEX_UNSIGNED;     /* 32-bit unsigned */
+typedef air_i64_t    APEX_LONG_INTEGER; /* 64-bit signed   */
 
-typedef xky_name_t                           NAME_TYPE;
+typedef air_name_t                           NAME_TYPE;
 typedef void                                 (* SYSTEM_ADDRESS_TYPE);
 typedef APEX_BYTE                            * MESSAGE_ADDR_TYPE;
 typedef APEX_INTEGER                         MESSAGE_SIZE_TYPE;
@@ -51,8 +51,8 @@ typedef APEX_INTEGER                         MESSAGE_RANGE_TYPE;
 
 typedef enum
 {
-    SOURCE                  = XKY_SOURCE_PORT,
-    DESTINATION             = XKY_DESTINATION_PORT
+    SOURCE                  = AIR_SOURCE_PORT,
+    DESTINATION             = AIR_DESTINATION_PORT
 
 } PORT_DIRECTION_TYPE;
 
@@ -70,33 +70,33 @@ typedef APEX_INTEGER  PRIORITY_TYPE;
 
 typedef enum {
 
-	NO_ERROR                = XKY_NO_ERROR,          /* request valid and operation performed */
-	NO_ACTION               = XKY_NO_ACTION,         /* status of system unaffected by request */
-	NOT_AVAILABLE           = XKY_NOT_AVAILABLE,     /* resource required by request unavailable */
-	INVALID_PARAM           = XKY_INVALID_PARAM,     /* invalid parameter specified in request */
-	INVALID_CONFIG          = XKY_INVALID_CONFIG,    /* parameter incompatible with configuration */
-	INVALID_MODE            = XKY_INVALID_MODE,      /* request incompatible with current mode */
-	TIMED_OUT               = XKY_TIMED_OUT          /* time-out tied up with request has expired */
+	NO_ERROR                = AIR_NO_ERROR,          /* request valid and operation performed */
+	NO_ACTION               = AIR_NO_ACTION,         /* status of system unaffected by request */
+	NOT_AVAILABLE           = AIR_NOT_AVAILABLE,     /* resource required by request unavailable */
+	INVALID_PARAM           = AIR_INVALID_PARAM,     /* invalid parameter specified in request */
+	INVALID_CONFIG          = AIR_INVALID_CONFIG,    /* parameter incompatible with configuration */
+	INVALID_MODE            = AIR_INVALID_MODE,      /* request incompatible with current mode */
+	TIMED_OUT               = AIR_TIMED_OUT          /* time-out tied up with request has expired */
 
 } RETURN_CODE_TYPE;
 
 typedef enum {
 
-	IDLE                    = XKY_MODE_IDLE,
-	COLD_START              = XKY_MODE_COLD_START,
-	WARM_START              = XKY_MODE_WARM_START,
-	NORMAL                  = XKY_MODE_NORMAL
+	IDLE                    = AIR_MODE_IDLE,
+	COLD_START              = AIR_MODE_COLD_START,
+	WARM_START              = AIR_MODE_WARM_START,
+	NORMAL                  = AIR_MODE_NORMAL
 
 } OPERATING_MODE_TYPE;
 
-typedef xky_identifier_t PARTITION_ID_TYPE;
+typedef air_identifier_t PARTITION_ID_TYPE;
 
 typedef enum {
 
-	NORMAL_START            = XKY_START_CONDITION_NORMAL,
-	PARTITION_RESTART       = XKY_START_CONDITION_PARTITION_RESTART,
-	HM_MODULE_RESTART       = XKY_START_CONDITION_HM_MODULE_RESTART,
-	HM_PARTITION_RESTART    = XKY_START_CONDITION_HM_PARTITION_RESTART
+	NORMAL_START            = AIR_START_CONDITION_NORMAL,
+	PARTITION_RESTART       = AIR_START_CONDITION_PARTITION_RESTART,
+	HM_MODULE_RESTART       = AIR_START_CONDITION_HM_MODULE_RESTART,
+	HM_PARTITION_RESTART    = AIR_START_CONDITION_HM_PARTITION_RESTART
 } START_CONDITION_TYPE;
 
 typedef struct {
@@ -129,8 +129,8 @@ typedef NAME_TYPE SAMPLING_PORT_NAME_TYPE;
 typedef APEX_INTEGER SAMPLING_PORT_ID_TYPE;
 
 typedef enum {
-    INVALID         = XKY_MESSAGE_INVALID,
-    VALID           = XKY_MESSAGE_VALID
+    INVALID         = AIR_MESSAGE_INVALID,
+    VALID           = AIR_MESSAGE_VALID
 } VALIDITY_TYPE;
 
 typedef struct {
@@ -299,14 +299,14 @@ extern void GET_MODULE_SCHEDULE_ID (
  * management services --------------------------------------- */
 
 typedef enum {
-	EMPTY_PORT 			= XKY_EMPTY_PORT,
-	CONSUMED_MESSAGE 	= XKY_CONSUMED_MESSAGE,
-	NEW_MESSAGE 		= XKY_NEW_MESSAGE
+	EMPTY_PORT 			= AIR_EMPTY_PORT,
+	CONSUMED_MESSAGE 	= AIR_CONSUMED_MESSAGE,
+	NEW_MESSAGE 		= AIR_NEW_MESSAGE
 } UPDATED_TYPE;
 
 typedef enum {
-	STALE               = XKY_MESSAGE_STALE,
-	FRESH               = XKY_MESSAGE_FRESH
+	STALE               = AIR_MESSAGE_STALE,
+	FRESH               = AIR_MESSAGE_FRESH
 } AGE_TYPE;
 
 typedef struct {

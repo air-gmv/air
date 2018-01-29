@@ -1,39 +1,34 @@
 /*
  *  This file contains the MVME147 console IO package.
- *
+ */
+
+/*
  *  COPYRIGHT (c) 1989-1999.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  MVME147 port for TNI - Telecom Bretagne
  *  by Dominique LE CAMPION (Dominique.LECAMPION@enst-bretagne.fr)
  *  May 1996
  *
  *  This file was taken from the DMV152 bsp
- *
- *  $Id$
  */
 
 #define M147_INIT
 
-#include <bsp.h>
+#include <rtems/console.h>
 #include <rtems/libio.h>
 #include <rtems/zilog/z8530.h>
+#include <rtems/iosupp.h>
+#include <bsp.h>
 
 /*  console_initialize
  *
  *  This routine initializes the console IO driver.
- *
- *  Input parameters: NONE
- *
- *  Output parameters:  NONE
- *
- *  Return values:
  */
-
 rtems_device_driver console_initialize(
   rtems_device_major_number  major,
   rtems_device_minor_number  minor,
@@ -54,46 +49,11 @@ rtems_device_driver console_initialize(
   return RTEMS_SUCCESSFUL;
 }
 
-/*  is_character_ready
- *
- *  This routine returns TRUE if a character is available.
- *
- *  Input parameters: NONE
- *
- *  Output parameters:  NONE
- *
- *  Return values:
- */
-
-bool is_character_ready(
-  char *ch
-)
-{
-  uint8_t         rr_0;
-
-  for ( ; ; ) {
-    Z8x30_READ_CONTROL( CONSOLE_CONTROL, RR_0, rr_0 );
-    if ( !(rr_0 & RR_0_RX_DATA_AVAILABLE) )
-      return false;
-
-    Z8x30_READ_DATA( CONSOLE_DATA, *ch );
-    return true;
-  }
-}
-
 /*  inbyte
  *
  *  This routine reads a character from the SCC.
- *
- *  Input parameters: NONE
- *
- *  Output parameters:  NONE
- *
- *  Return values:
- *    character read from SCC
  */
-
-char inbyte( void )
+static char inbyte( void )
 {
   uint8_t         rr_0;
   char ch;
@@ -112,14 +72,8 @@ char inbyte( void )
  *
  *  This routine transmits a character out the SCC.  It supports
  *  XON/XOFF flow control.
- *
- *  Input parameters:
- *    ch  - character to be transmitted
- *
- *  Output parameters:  NONE
  */
-
-void outbyte(
+static void outbyte(
   char ch
 )
 {
@@ -154,7 +108,6 @@ void outbyte(
 /*
  *  Open entry point
  */
-
 rtems_device_driver console_open(
   rtems_device_major_number major,
   rtems_device_minor_number minor,
@@ -167,7 +120,6 @@ rtems_device_driver console_open(
 /*
  *  Close entry point
  */
-
 rtems_device_driver console_close(
   rtems_device_major_number major,
   rtems_device_minor_number minor,
@@ -180,7 +132,6 @@ rtems_device_driver console_close(
 /*
  * read bytes from the serial port. We only have stdin.
  */
-
 rtems_device_driver console_read(
   rtems_device_major_number major,
   rtems_device_minor_number minor,
@@ -212,7 +163,6 @@ rtems_device_driver console_read(
 /*
  * write bytes to the serial port. Stdout and stderr are the same.
  */
-
 rtems_device_driver console_write(
   rtems_device_major_number major,
   rtems_device_minor_number minor,
@@ -243,7 +193,6 @@ rtems_device_driver console_write(
 /*
  *  IO Control entry point
  */
-
 rtems_device_driver console_control(
   rtems_device_major_number major,
   rtems_device_minor_number minor,

@@ -7,15 +7,14 @@
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <assert.h>
 
 #include <bsp.h>
+#include <rtems/btimer.h>
 
 bool benchmark_timer_find_average_overhead;
 
@@ -45,7 +44,7 @@ void benchmark_timer_initialize(void)
 #define LEAST_VALID       1  /* Don't trust a value lower than this */
                              /* tx39 simulator can count instructions. :) */
 
-int benchmark_timer_read(void)
+benchmark_timer_t benchmark_timer_read(void)
 {
   uint32_t          total;
 

@@ -3,7 +3,9 @@
  *
  *  Based upon code from MicroMonitor 1.17 from http://www.umonfw.com/
  *  which includes this notice:
- *
+ */
+
+/*
  **************************************************************************
  *  General notice:
  *  This code is part of a boot-monitor package developed as a generic base
@@ -29,8 +31,6 @@
  *  Fernando Nicodemos <fgnicodemos@terra.com.br> from NCB - Sistemas
  *  Embarcados Ltda. (Brazil) to be more compliant with RTEMS coding
  *  standards and to eliminate C++ style comments.
- *
- *  $Id$
  */
 
 #include <bsp.h>
@@ -361,7 +361,7 @@ void sed_writechar(uint8_t c)
   }
 } /* sed_writechar() */
 
-void sed_update_fb_offset(void)
+static void sed_update_fb_offset(void)
 {
   /* write the new sed_fb_offset value */
   if (sed_disp_mode_crt) {

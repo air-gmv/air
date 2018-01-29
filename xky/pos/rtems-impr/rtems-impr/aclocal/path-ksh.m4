@@ -1,5 +1,3 @@
-dnl $Id: path-ksh.m4 179 2008-09-17 14:07:38Z hsilva $
-
 AC_DEFUN([RTEMS_PATH_KSH],
 [
 dnl NOTE: prefer bash over ksh over sh

@@ -12,20 +12,22 @@ AC_DEFUN([RTEMS_CPU_SUBDIRS],
 case $RTEMS_CPU in
 _RTEMS_CPU_SUBDIR([arm],[$1]);;
 _RTEMS_CPU_SUBDIR([bfin],[$1]);;
-_RTEMS_CPU_SUBDIR([avr],[$1]);;
-_RTEMS_CPU_SUBDIR([c4x],[$1]);;
-_RTEMS_CPU_SUBDIR([h8300],[$1]);;
-_RTEMS_CPU_SUBDIR([hppa1.1],[$1]);;
+_RTEMS_CPU_SUBDIR([epiphany],[$1]);;
 _RTEMS_CPU_SUBDIR([i386],[$1]);;
+_RTEMS_CPU_SUBDIR([lm32],[$1]);;
+_RTEMS_CPU_SUBDIR([m32c],[$1]);;
 _RTEMS_CPU_SUBDIR([m68k],[$1]);;
 _RTEMS_CPU_SUBDIR([mips],[$1]);;
+_RTEMS_CPU_SUBDIR([moxie],[$1]);;
 _RTEMS_CPU_SUBDIR([nios2],[$1]);;
 _RTEMS_CPU_SUBDIR([no_cpu],[$1]);;
-_RTEMS_CPU_SUBDIR([or32],[$1]);;
+_RTEMS_CPU_SUBDIR([or1k],[$1]);;
 _RTEMS_CPU_SUBDIR([powerpc],[$1]);;
+_RTEMS_CPU_SUBDIR([riscv],[$1]);;
 _RTEMS_CPU_SUBDIR([sh],[$1]);;
 _RTEMS_CPU_SUBDIR([sparc],[$1]);;
-_RTEMS_CPU_SUBDIR([unix],[$1]);;
+_RTEMS_CPU_SUBDIR([sparc64],[$1]);;
+_RTEMS_CPU_SUBDIR([v850],[$1]);;
 *) AC_MSG_ERROR([Invalid RTEMS_CPU <[$]{RTEMS_CPU}>])
 esac
 ])

@@ -1,83 +1,166 @@
 /**
- *  @file
- *  support.h
+ * @file
  *
- *  @brief contains information about support functions for
- *  the RTEMS API.
+ * @defgroup ClassicRTEMSWorkspace Workspace
  *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-1999.
- *  On-Line Applications Research Corporation (OAR).
- *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  4844    | 15/10/2009  | mcoutinho    | IPR 2517
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup RTEMS_API RTEMS API
- *  @{
+ * @ingroup ClassicRTEMS
+ * @brief Classic API support.
  */
 
-/**
- *  @addtogroup RTEMS_API_COMMON Common
- *  @{
+/* COPYRIGHT (c) 1989-2008.
+ * On-Line Applications Research Corporation (OAR).
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef _RTEMS_RTEMS_SUPPORT_H
 #define _RTEMS_RTEMS_SUPPORT_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 #include <rtems/rtems/types.h>
+#include <rtems/config.h>
 
-   /**
-    *  @brief build a rtems name
-    *
-    *  This function returns an object name composed of the four characters
-    *  C1, C2, C3, and C4.
-    *
-    *  NOTE:
-    *  This must be implemented as a macro for use in Configuration Tables.
-    *
-    */
-#define rtems_build_name( _C1, _C2, _C3, _C4 ) \
-  ( (uint32_t  )(_C1) << 24 | (uint32_t  )(_C2) << 16 | (uint32_t  )(_C3) << 8 | (uint32_t  )(_C4) )
-
-   /**
-    *  @brief get object identifier index
-    *
-    *  This function returns the index portion of the ID.
-    */
-#define rtems_get_index( _id ) \
-  _Objects_Get_index( _id )
-
-   /*
-    *  Time related
-    */
-
-#define RTEMS_MILLISECONDS_TO_MICROSECONDS(_ms) \
-        TOD_MILLISECONDS_TO_MICROSECONDS(_ms)
-#define RTEMS_MILLISECONDS_TO_TICKS(_ms) \
-        TOD_MILLISECONDS_TO_TICKS(_ms)
-#define RTEMS_MICROSECONDS_TO_TICKS(_ms) \
-        TOD_MICROSECONDS_TO_TICKS(_ms)
-
-#ifndef __RTEMS_APPLICATION__
-#include <rtems/rtems/support.inl>
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+/**
+ * @addtogroup ClassicRTEMS
+ */
+/**@{**/
+
+/**
+ * @brief Returns the number of micro seconds for the milli seconds value @a _ms.
+ */
+#define RTEMS_MILLISECONDS_TO_MICROSECONDS(_ms) ((_ms) * 1000UL)
+
+/**
+ * @brief Returns the number of ticks for the milli seconds value @a _ms.
+ */
+#define RTEMS_MILLISECONDS_TO_TICKS(_ms) \
+       (RTEMS_MILLISECONDS_TO_MICROSECONDS(_ms) / \
+          rtems_configuration_get_microseconds_per_tick())
+
+/**
+ * @brief Returns the number of ticks for the micro seconds value @a _us.
+ */
+#define RTEMS_MICROSECONDS_TO_TICKS(_us) \
+       ((_us) / rtems_configuration_get_microseconds_per_tick())
+
+/**
+ * @brief Returns @c true if the name is valid, and @c false otherwise.
+ */
+RTEMS_INLINE_ROUTINE bool rtems_is_name_valid (
+  rtems_name name
+)
+{
+  return ( name != 0 );
+}
+
+/**
+ * @brief Breaks the object name into the four component characters @a c1,
+ * @a c2, @a c3, and @a c4.
+ */
+RTEMS_INLINE_ROUTINE void rtems_name_to_characters(
+  rtems_name    name,
+  char         *c1,
+  char         *c2,
+  char         *c3,
+  char         *c4
+)
+{
+  *c1 = (char) ((name >> 24) & 0xff);
+  *c2 = (char) ((name >> 16) & 0xff);
+  *c3 = (char) ((name >> 8) & 0xff);
+  *c4 = (char) ( name & 0xff);
+}
+
+/** @} */
+
+/**
+ * @defgroup ClassicRTEMSWorkspace Workspace
+ *
+ * @ingroup ClassicRTEMS
+ *
+ * Workspace definitions.
+ */
+/**@{**/
+
+/**
+ * @brief Gets Workspace Information
+ *
+ * Returns information about the heap that is used as the RTEMS Executive
+ * Workspace in @a the_info.
+ *
+ * Returns @c true if successful, and @a false otherwise.
+ */
+bool rtems_workspace_get_information(
+  Heap_Information_block  *the_info
+);
+
+/**
+ * @brief Allocates Memory from the Workspace
+ *
+ * A number of @a bytes bytes will be allocated from the RTEMS Executive
+ * Workspace and returned in @a pointer.
+ *
+ * Returns @c true if successful, and @a false otherwise.
+ */
+bool rtems_workspace_allocate(
+  size_t   bytes,
+  void   **pointer
+);
+
+/**
+ * @brief Frees Memory Allocated from the Workspace
+ *
+ * This frees the memory indicated by @a pointer that was allocated from the
+ * RTEMS Executive Workspace.
+ *
+ * Returns @c true if successful, and @a false otherwise.
+ */
+bool rtems_workspace_free(
+  void *pointer
+);
+
+/**
+ * @brief Greedy allocate that empties the workspace.
+ *
+ * Afterwards the heap has at most @a block_count allocatable blocks of sizes
+ * specified by @a block_sizes.  The @a block_sizes must point to an array with
+ * @a block_count members.  All other blocks are used.
+ *
+ * @see rtems_workspace_greedy_free().
+ */
+void *rtems_workspace_greedy_allocate(
+  const uintptr_t *block_sizes,
+  size_t block_count
+);
+
+/**
+ * @brief Greedy allocate all blocks except the largest free block.
+ *
+ * Afterwards the heap has at most one allocatable block.  This block is the
+ * largest free block if it exists.  The allocatable size of this block is
+ * stored in @a allocatable_size.  All other blocks are used.
+ *
+ * @see rtems_workspace_greedy_free().
+ */
+void *rtems_workspace_greedy_allocate_all_except_largest(
+  uintptr_t *allocatable_size
+);
+
+/**
+ * @brief Frees space of a greedy allocation.
+ *
+ * The @a opaque argument must be the return value of
+ * rtems_workspace_greedy_allocate() or
+ * rtems_workspace_greedy_allocate_all_except_largest().
+ */
+void rtems_workspace_greedy_free( void *opaque );
+
+/** @} */
 
 #ifdef __cplusplus
 }
@@ -85,11 +168,3 @@ extern "C"
 
 #endif
 /* end of include file */
-
-/**
- *  @}
- */
-
-/**
- *  @}
- */

@@ -1,12 +1,4 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
-
-# wrapup is the one that actually builds and installs the library
-# from the individual .rel files built in other directories
-SUBDIRS = .
 
 include $(top_srcdir)/../../../../automake/compile.am
 include $(top_srcdir)/../../bsp.am
@@ -25,7 +17,6 @@ DISTCLEANFILES = include/bspopts.h
 noinst_PROGRAMS =
 
 include_HEADERS += ../../shared/include/coverhd.h
-include_HEADERS += ../../shared/tod.h
 
 project_lib_DATA =
 
@@ -60,10 +51,11 @@ libbsp_a_SOURCES =
 # startup
 libbsp_a_SOURCES += startup/bspstart.c \
     startup/misc.c ../../powerpc/shared/startup/bspgetworkarea.c \
-    ../../powerpc/shared/startup/pretaskinghook.c \
+    ../../powerpc/shared/startup/bsppredriverhook.c \
     ../../powerpc/shared/startup/zerobss.c \
     ../../powerpc/shared/startup/sbrk.c ../../shared/bootcard.c \
-    ../../shared/bspclean.c ../../shared/bsplibc.c ../../shared/bsppost.c \
+    ../../shared/getentropy-cpucounter.c \
+    ../../shared/bspclean.c \
     ../../shared/gnatinstallhandler.c
 # tod
 libbsp_a_SOURCES += ../../shared/tod.c tod/todcfg.c
@@ -153,7 +145,7 @@ if HAS_NETWORKING
 libbsp_a_LIBADD += network.rel
 endif
 
-EXTRA_DIST += LICENSE ChangeLog README KNOWN_PROBLEMS
+EXTRA_DIST += LICENSE README KNOWN_PROBLEMS
 
 include $(srcdir)/preinstall.am
 include $(top_srcdir)/../../../../automake/local.am

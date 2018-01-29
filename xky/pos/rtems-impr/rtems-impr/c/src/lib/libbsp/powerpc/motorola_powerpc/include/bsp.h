@@ -1,28 +1,26 @@
 /*
- *  bsp.h  -- contain BSP API definition.
- *
- *  Copyright (C) 1999 Eric Valette. valette@crf.canon.fr
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- * $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
-#ifndef _BSP_H
-#define _BSP_H
+#ifndef LIBBSP_POWERPC_MOTOROLA_POWERPC_BSP_H
+#define LIBBSP_POWERPC_MOTOROLA_POWERPC_BSP_H
 
 #include <bspopts.h>
+#include <bsp/default-initial-extension.h>
 
 #include <rtems.h>
-#include <rtems/console.h>
 #include <libcpu/io.h>
-#include <rtems/clockdrv.h>
 #include <bsp/vectors.h>
-
-/*
- *  confdefs.h overrides for this BSP:
- */
+  
+#ifdef qemu
+#include <rtems/bspcmdline.h>
+#endif
+  
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*
  * diagram illustrating the role of the configuration
@@ -86,11 +84,17 @@
 #else
 #define	_IO_BASE		PREP_ISA_IO_BASE
 #define	_ISA_MEM_BASE		PREP_ISA_MEM_BASE
+#ifndef qemu
 /* address of our ram on the PCI bus   */
 #define	PCI_DRAM_OFFSET		PREP_PCI_DRAM_OFFSET
 /* offset of pci memory as seen from the CPU */
 #define PCI_MEM_BASE		PREP_ISA_MEM_BASE
 #define PCI_MEM_WIN0		0
+#else
+#define	PCI_DRAM_OFFSET		0
+#define PCI_MEM_BASE		0
+#define PCI_MEM_WIN0		PREP_ISA_MEM_BASE
+#endif
 #endif
 
 
@@ -112,8 +116,10 @@
 #define BSP_UART_IOBASE_COM1 ((_IO_BASE)+0x3f8)
 #define BSP_UART_IOBASE_COM2 ((_IO_BASE)+0x2f8)
 
+#if ! defined(qemu)
 #define BSP_KBD_IOBASE       ((_IO_BASE)+0x60)
 #define BSP_VGA_IOBASE       ((_IO_BASE)+0x3c0)
+#endif
 
 #if defined(mvme2300)
 #define MVME_HAS_DEC21140
@@ -128,6 +134,17 @@ struct rtems_bsdnet_ifconfig;
 #define RTEMS_BSP_NETWORK_DRIVER_NAME "dc1"
 #define RTEMS_BSP_NETWORK_DRIVER_ATTACH rtems_dec21140_driver_attach
 extern int rtems_dec21140_driver_attach();
+#endif
+
+#ifdef qemu
+#define RTEMS_BSP_NETWORK_DRIVER_NAME "ne1"
+#define RTEMS_BSP_NETWORK_DRIVER_ATTACH rtems_ne_driver_attach
+extern int rtems_ne_driver_attach();
+#endif
+
+#ifdef qemu
+#define BSP_IDLE_TASK_BODY bsp_ppc_idle_task_body
+extern void *bsp_ppc_idle_task_body(uintptr_t arg);
 #endif
 
 #include <bsp/openpic.h>
@@ -206,6 +223,27 @@ extern int BSP_connect_clock_handler (void);
  */
 extern unsigned long _BSP_clear_hostbridge_errors(int enableMCP, int quiet);
 
+/*
+ * Prototypes for methods called only from .S for dependency tracking
+ */
+char *save_boot_params(
+  void *r3,
+  void *r4,
+  void *r5,
+  char *cmdline_start,
+  char *cmdline_end
+);
+void zero_bss(void);
+
+/*
+ * Prototypes for BSP methods which cross file boundaries
+ */
+void VIA_isa_bridge_interrupts_setup(void);
+
+#endif
+
+#ifdef __cplusplus
+};
 #endif
 
 #endif

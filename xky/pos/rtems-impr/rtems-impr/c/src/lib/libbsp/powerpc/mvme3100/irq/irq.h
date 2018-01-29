@@ -1,3 +1,12 @@
+/**
+ *  @file
+ *
+ *  @ingroup powerpc_irq
+ *
+ *  @brief This include file describe the data structure and the functions
+ *  implemented by RTEMS to write interrupt handlers.
+ */
+
 /* irq.h
  *
  *  This include file describe the data structure and the functions implemented
@@ -12,12 +21,10 @@
  *  the STREAM API Specification Document link.
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Adapted for the mvme3100 BSP by T. Straumann, 2007.
- *
- *  $Id$
  */
 
 #ifndef BSP_POWERPC_IRQ_H
@@ -32,8 +39,12 @@
 extern "C" {
 #endif
 
-/*
- * rtems_irq_number Definitions
+/**
+ *  @defgroup powerpc_irq Definitions
+ *
+ *  @ingroup powerpc_mvme3100
+ *
+ *  @brief rtems_irq_number Definitions
  */
 
 /* Must pad number of external sources to 16 because

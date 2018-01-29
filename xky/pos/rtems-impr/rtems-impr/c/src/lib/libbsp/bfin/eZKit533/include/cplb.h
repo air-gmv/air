@@ -1,3 +1,9 @@
+/**
+ * @file
+ * @ingroup ezkit533_cplb
+ * @brief CPLB configurations.
+ */
+
 /*  cplb.h
  *
  *  Copyright (c) 2006 by Atos Automacao Industrial Ltda.
@@ -5,12 +11,17 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 #ifndef _CPLB_H
 #define _CPLB_H
+
+/**
+ * @defgroup ezkit533_cplb CPLB Configuration
+ * @ingroup bfin_ezkit533
+ * @brief CPLB Configuration
+ * @{
+ */
 
 /* CPLB configurations */
 #define CPLB_DEF_CACHE_WT	CPLB_L1_CHBL | CPLB_WT
@@ -30,5 +41,7 @@
 
 #define CPLB_DDOCACHE_WT	CPLB_DNOCACHE | CPLB_DEF_CACHE_WT
 #define CPLB_DDOCACHE_WB	CPLB_DNOCACHE | CPLB_DEF_CACHE_WB
+
+/** @} */
 
 #endif /* _CPLB_H */

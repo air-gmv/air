@@ -1,39 +1,38 @@
-/*  bsp.h
+/**
+ *  @file
  *
  *  Following defines must reflect the setup of the particular MVME167.
  *  All page references are to the MVME166/MVME167/MVME187 Single Board
  *  Computer Programmer's Reference Guide (MVME187PG/D2) with the April
  *  1993 supplements/addenda (MVME187PG/D2A1).
- *
- *  COPYRIGHT (c) 1989-2009.
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2012.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Modifications of respective RTEMS file:
  *  Copyright (c) 1998, National Research Council of Canada
- *
- *  $Id$
  */
 
-#ifndef _BSP_H
-#define _BSP_H
+#ifndef LIBBSP_M68K_MVME167_BSP_H
+#define LIBBSP_M68K_MVME167_BSP_H
+
+#include <bspopts.h>
+#include <bsp/default-initial-extension.h>
+
+#include <rtems.h>
+#include <rtems/bspIo.h>
+
+#include <mvme16x_hw.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <bspopts.h>
-
-#include <rtems.h>
-#include <rtems/clockdrv.h>
-#include <rtems/console.h>
-#include <rtems/iosupp.h>
-#include <rtems/bspIo.h>
-
-#include <mvme16x_hw.h>
 
 /* GCSR is in mvme16x_hw.h */
 /* LCSR is in mvme16x_hw.h */
@@ -296,7 +295,7 @@ typedef volatile struct cd2401_regs_ {
 
 /* BSP-wide functions */
 
-m68k_isr_entry set_vector(
+rtems_isr_entry set_vector(
   rtems_isr_entry     handler,
   rtems_vector_number vector,
   int                 type
@@ -310,7 +309,7 @@ m68k_isr_entry set_vector(
 #define EXTERN extern
 #endif
 
-extern m68k_isr_entry M68Kvec[];   /* vector table address */
+extern void *M68Kvec[];   /* vector table address */
 
 #ifdef __cplusplus
 }

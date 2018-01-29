@@ -34,18 +34,12 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  *
  */
 
-#ifndef _BSP_H
-#define _BSP_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef LIBBSP_POWERPC_VIRTEX_BSP_H
+#define LIBBSP_POWERPC_VIRTEX_BSP_H
 
 #include <bspopts.h>
 
@@ -55,12 +49,17 @@ extern "C" {
 
 #else
 #include <rtems.h>
-#include <rtems/console.h>
-#include <rtems/clockdrv.h>
-#include <rtems/console.h>
-#include <rtems/iosupp.h>
 #include <bsp/irq.h>
 #include <bsp/vectors.h>
+#include <bsp/default-initial-extension.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define BSP_FEATURE_IRQ_EXTENSION
+
+#define BSP_INTERRUPT_STACK_AT_WORK_AREA_BEGIN
 
 /* miscellaneous stuff assumed to exist */
 extern bool bsp_timer_internal_clock;   /* TRUE, when timer runs with CPU clk */
@@ -72,22 +71,14 @@ extern bool bsp_timer_internal_clock;   /* TRUE, when timer runs with CPU clk */
 #include "xiltemac.h"
 #define RTEMS_BSP_NETWORK_DRIVER_NAME     XILTEMAC_DRIVER_PREFIX
 #endif
-extern xilTemac_driver_attach(struct rtems_bsdnet_ifconfig*, int );
+struct rtems_bsdnet_ifconfig;
+extern int xilTemac_driver_attach(struct rtems_bsdnet_ifconfig*, int );
 #define RTEMS_BSP_NETWORK_DRIVER_ATTACH xilTemac_driver_attach
-
-#define BSP_PPC403_CLOCK_HOOK_EXCEPTION ASM_BOOKE_DEC_VECTOR
-
-/* functions */
-
-rtems_isr_entry set_vector(                    /* returns old vector */
-  rtems_isr_entry     handler,                  /* isr routine        */
-  rtems_vector_number vector,                   /* vector number      */
-  int                 type                      /* RTEMS or RAW intr  */
-);
-#endif /* ASM */
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* ASM */
 
 #endif

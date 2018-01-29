@@ -15,12 +15,20 @@
    when application exits. */
 #undef BSP_PRESS_KEY_FOR_RESET
 
+/* If defined, prints the exception context when an unexpected exception
+   occurs. */
+#undef BSP_PRINT_EXCEPTION_CONTEXT
+
 /* If defined, reset the board when the application exits. */
 #undef BSP_RESET_BOARD_AT_EXIT
 
+/* If defined, we will not boot from RESET, but from Freescale DBug monitor.
+   */
+#undef HAS_DBUG
+
 /* If defined, we will do all the low level init of the chip (like
    bus/memory...). */
-#undef HAS_DBUG
+#undef HAS_LOW_LEVEL_INIT
 
 /* If defined, use custom settings for the m5484FireEngine BSP. */
 #undef M5484FIREENGINE

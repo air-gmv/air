@@ -14,7 +14,7 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 | this file contains declarations for the PCMCIA IDE Interface    |
@@ -80,11 +80,7 @@
 #define ATA_HCFG_IORDY                               (1 << 24)
 #define ATA_HCFG_IE                                  (1 << 25)
 
-#if 0
-#define COUNT_VAL(nsec)                              (((nsec)%(IPB_CLOCK/1000000)) ? (((nsec)/(IPB_CLOCK/1000000)) + 1) : ((nsec)/(IPB_CLOCK/1000000)))
-#else
-#define COUNT_VAL(nsec)                              (((nsec)*(IPB_CLOCK/1000000)/1000) + 1)
-#endif
+#define COUNT_VAL(nsec)                              (((nsec) * (IPB_CLOCK / 1000000) + 999) / 1000)
 
 #define PIO_3                                        0
 #define PIO_4                                        1

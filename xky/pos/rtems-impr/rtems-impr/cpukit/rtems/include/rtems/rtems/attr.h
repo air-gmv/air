@@ -1,204 +1,187 @@
 /**
- *  @file
- *  attr.h
+ * @file rtems/rtems/attr.h
  *
- *  @brief all information about the Object Attributes Handler.
+ * @defgroup ClassicAttributes Attributes
  *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
+ * @ingroup ClassicRTEMS
+ * @brief Object Attributes Handler
  *
- *  COPYRIGHT (c) 1989-1999.
- *  On-Line Applications Research Corporation (OAR).
- *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  7369    | 14/04/2010  | mcoutinho    | IPR 1886
- *  8322    | 21/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup RTEMS_API RTEMS API
- *  @{
+ * This include file contains all information about the Object Attributes
+ * Handler.
  */
 
-/**
- *  @addtogroup RTEMS_API_COMMON Common
- *  @{
+/* COPYRIGHT (c) 1989-2008.
+ * On-Line Applications Research Corporation (OAR).
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef _RTEMS_RTEMS_ATTR_H
 #define _RTEMS_RTEMS_ATTR_H
 
+#include <rtems/score/basedefs.h>
+
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
+/**
+ *  @defgroup ClassicAttributes Attributes
+ *
+ *  @ingroup ClassicRTEMS
+ *
+ *  This encapsulates functionality which defines and manages the
+ *  set of Classic API object attributes.
+ */
+/**@{*/
 
-   /* types */
+/**
+ *  This defines the type used to contain Classic API attributes.  These
+ *  are primarily used when creating objects.
+ */
+typedef uint32_t   rtems_attribute;
 
+/** This is the default value for an attribute set. */
 
-   /**
-    * @brief RTEMS attribute
-    */
-   typedef uint32_t rtems_attribute;
-
-
-   /* constants */
-
-
-   /**
-    * @brief default attributes
-    */
 #define RTEMS_DEFAULT_ATTRIBUTES  0x00000000
 
-   /**
-    * @brief local resource
-    */
-#define RTEMS_LOCAL               0x00000000 
+/**
+ *  This is the attribute constant to indicate local resource.
+ */
+#define RTEMS_LOCAL               0x00000000
 
+/**
+ *  This is the attribute constant to indicate global resource.
+ */
+#define RTEMS_GLOBAL              0x00000002
 
-#ifdef RTEMS_MULTIPROCESSING
-
-   /**
-    * @brief global resource
-    */
-#define RTEMS_GLOBAL              0x00000002 
-
-#endif
-
-
-   /**
-    * @brief queueing discipline is FIFO
-    */
+/**
+ *  This is the attribute constant which reflects that blocking
+ *  tasks will be managed using FIFO discipline.
+ */
 #define RTEMS_FIFO                0x00000000
 
-   /**
-    * @brief queueing discipline is by priority
-    */
-#define RTEMS_PRIORITY            0x00000004 
+/**
+ *  This is the attribute constant which reflects that blocking
+ *  tasks will be managed using task priority discipline.
+ */
+#define RTEMS_PRIORITY            0x00000004
 
+/******************** RTEMS Task Specific Attributes *********************/
 
-   /* RTEMS Task Specific Attributes */
-
-
-   /**
-    * @brief attribute stating no FP is necessary
-    */
+/**
+ *  This attribute constant indicates that the task will not use the
+ *  floating point hardware.  If the architecture permits it, then
+ *  the FPU will be disabled when the task is executing.
+ */
 #define RTEMS_NO_FLOATING_POINT   0x00000000
 
-   /**
-    * @brief attribute stating FP is necessary
-    */
-#define RTEMS_FLOATING_POINT      0x00000001 
+/**
+ *  This attribute constant indicates that the task will use the
+ *  floating point hardware.  There will be a floating point
+ *  context associated with this task.
+ */
+#define RTEMS_FLOATING_POINT      0x00000001
 
+/***************** RTEMS Semaphore Specific Attributes ********************/
 
-   /* RTEMS Semaphore Specific Attributes */
-
-   /**
-    * @brief semaphore class
-    */
+/**
+ *  This is the mask for the attribute bits associated with the
+ *  Classic API Semaphore Manager.
+ */
 #define RTEMS_SEMAPHORE_CLASS         0x00000030
 
-   /**
-    * @brief counting semaphore
-    */
+/**
+ *  This attribute constant indicates that the Classic API Semaphore
+ *  instance created will be a counting semaphore.
+ */
 #define RTEMS_COUNTING_SEMAPHORE      0x00000000
 
-   /**
-    * @brief binary semaphore
-    */
+/**
+ *  This attribute constant indicates that the Classic API Semaphore
+ *  instance created will be a proper binary semaphore or mutex.
+ */
 #define RTEMS_BINARY_SEMAPHORE        0x00000010
 
-   /**
-    * @brief simple binary semaphore
-    */
+/**
+ *  This attribute constant indicates that the Classic API Semaphore
+ *  instance created will be a simple binary semaphore.
+ */
 #define RTEMS_SIMPLE_BINARY_SEMAPHORE 0x00000020
 
-   /**
-    * @brief dont use priority inheritance (normal inheritance nor ceiling)
-    * protocols
-    */
+/**
+ *  This attribute constant indicates that the Classic API Semaphore
+ *  instance created will NOT use the Priority Inheritance Protocol.
+ */
 #define RTEMS_NO_INHERIT_PRIORITY     0x00000000
 
-   /**
-    * @brief use inherit priority protocol
-    */
+/**
+ *  This attribute constant indicates that the Classic API Semaphore
+ *  instance created will use the Priority Inheritance Protocol.
+ *
+ *  @note The semaphore instance must be a binary semaphore.
+ */
 #define RTEMS_INHERIT_PRIORITY        0x00000040
 
-   /**
-    * @brief ceiling protocol is not used
-    */
+/**
+ *  This attribute constant indicates that the Classic API Semaphore
+ *  instance created will NOT use the Priority Ceiling Protocol.
+ */
 #define RTEMS_NO_PRIORITY_CEILING     0x00000000
 
-   /**
-    * @brief use ceiling priority protocol
-    */
+/**
+ *  This attribute constant indicates that the Classic API Semaphore
+ *  instance created will use the Priority Ceiling Protocol.
+ *
+ *  @note The semaphore instance must be a binary semaphore.
+ */
 #define RTEMS_PRIORITY_CEILING        0x00000080
 
+/**
+ *  This attribute constant indicates that the Classic API Semaphore instance
+ *  created will NOT use the Multiprocessor Resource Sharing Protocol.
+ */
+#define RTEMS_NO_MULTIPROCESSOR_RESOURCE_SHARING 0x00000000
 
-   /* RTEMS Internal Task Specific Attributes */
+/**
+ *  This attribute constant indicates that the Classic API Semaphore instance
+ *  created will use the Multiprocessor Resource Sharing Protocol.
+ *
+ *  @note The semaphore instance must be a binary semaphore.
+ */
+#define RTEMS_MULTIPROCESSOR_RESOURCE_SHARING 0x00000100
+
+/******************** RTEMS Barrier Specific Attributes ********************/
+
+/**
+ *  This attribute constant indicates that the Classic API Barrier
+ *  instance created will use an automatic release protocol.
+ */
+#define RTEMS_BARRIER_AUTOMATIC_RELEASE 0x00000010
+
+/**
+ *  This attribute constant indicates that the Classic API Barrier
+ *  instance created will use the manual release protocol.
+ */
+#define RTEMS_BARRIER_MANUAL_RELEASE    0x00000000
+
+/**************** RTEMS Internal Task Specific Attributes ****************/
+
+/**
+ *  This attribute constant indicates that the task was created
+ *  by the application using normal Classic API methods.
+ */
 #define RTEMS_APPLICATION_TASK        0x00000000
 
-   /**
-    * @brief attribute that specifies an RTEMS internal task
-    **/
+/**
+ *  This attribute constant indicates that the task was created
+ *  by RTEMS as a support task.
+ */
 #define RTEMS_SYSTEM_TASK             0x00008000
 
-
-   /* determine the value of attributes when atributes are not supported */
-#if ( CPU_HARDWARE_FP == TRUE ) || ( CPU_SOFTWARE_FP == TRUE )
-
-   /**
-    * @brief all attributes are supported (FP is supported)
-    */
-#define ATTRIBUTES_NOT_SUPPORTED       0
-
-#else
-
-   /**
-    * @brief FP attribute not supported
-    */
-#define ATTRIBUTES_NOT_SUPPORTED       RTEMS_FLOATING_POINT
-
-#endif
-
-   /* determine the default attributes required */
-#if ( CPU_ALL_TASKS_ARE_FP == TRUE )
-
-   /**
-    * @brief FP is required for all tasks
-    */
-#define ATTRIBUTES_REQUIRED            RTEMS_FLOATING_POINT
-
-#else
-
-   /**
-    * @brief no attribute is required for all tasks
-    */
-#define ATTRIBUTES_REQUIRED            0
-
-#endif
-
-   /**
-    *  @brief initialize the attributes
-    *
-    *  This routine performs initialization for this handler.
-    *
-    *  NOTE: There is no initialization required in C.  Conditional compilation
-    *        takes care of this in C.
-    */
-#define _Attributes_Handler_initialization()
-
-#ifndef __RTEMS_APPLICATION__
-#include <rtems/rtems/attr.inl>
-#endif
+/**@}*/
 
 #ifdef __cplusplus
 }
@@ -206,11 +189,3 @@ extern "C"
 
 #endif
 /* end of include file */
-
-/**
- *  @}
- */
-
-/**
- *  @}
- */

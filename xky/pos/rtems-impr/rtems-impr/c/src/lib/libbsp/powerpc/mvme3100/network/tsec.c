@@ -62,6 +62,7 @@
 #endif
 
 #include <rtems/rtems_bsdnet.h>
+#include <sys/param.h>
 #include <sys/mbuf.h>
 #include <sys/socket.h>
 #include <sys/sockio.h>
@@ -442,7 +443,7 @@ static inline void membarrier(void)
 	asm volatile("sync":::"memory");
 }
 
-#define EIEIO(mem) do { asm volatile("eieio"); } while (0)
+#define EIEIO(mem) do { __asm__ volatile("eieio"); } while (0)
 
 #else
 #error "memory barrier not implemented for your CPU architecture"
@@ -2256,7 +2257,7 @@ rtems_interrupt_level l;
 	if ( mp->isr )
 		mp->isr( mp->isr_arg );
 	else
-		rtems_event_send( mp->tid, mp->event );
+		rtems_bsdnet_event_send( mp->tid, mp->event );
 }
 
 static void tsec_risr(rtems_irq_hdl_param arg)
@@ -2273,7 +2274,7 @@ rtems_interrupt_level l;
 	if ( mp->isr )
 		mp->isr( mp->isr_arg );
 	else
-		rtems_event_send( mp->tid, mp->event );
+		rtems_bsdnet_event_send( mp->tid, mp->event );
 }
 
 static void tsec_eisr(rtems_irq_hdl_param arg)
@@ -2295,7 +2296,7 @@ uint32_t              pending;
 	if ( mp->isr )
 		mp->isr( mp->isr_arg );
 	else
-		rtems_event_send( mp->tid, mp->event );
+		rtems_bsdnet_event_send( mp->tid, mp->event );
 
 	if ( (TSEC_IEVENT_TXE & pending) ) {
 		if ( (TSEC_IEVENT_EBERR & pending) && ++mp->stats.eberrs > MAXEBERRS ) {
@@ -2325,7 +2326,7 @@ rtems_interrupt_level l;
 		if ( mp->isr )
 			mp->isr( mp->isr_arg );
 		else
-			rtems_event_send( mp->tid, mp->event );
+			rtems_bsdnet_event_send( mp->tid, mp->event );
 	}
 }
 

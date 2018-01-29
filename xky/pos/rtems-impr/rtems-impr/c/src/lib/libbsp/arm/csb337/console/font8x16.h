@@ -1,3 +1,19 @@
+/**
+ * @file
+ *
+ * @ingroup arm_csb337
+ *
+ * @brief Simple 8 x 16 font, printable characters only.
+ */
+
+/**
+ * @defgroup csb337_font Simple 8 x 16 font
+ *
+ * @ingroup arm_csb337
+ *
+ * @brief Simple 8 x 16 font, printable characters only.
+ */
+
 /*
  * font8x16.h
  *
@@ -33,8 +49,6 @@
  *  Fernando Nicodemos <fgnicodemos@terra.com.br> from NCB - Sistemas
  *  Embarcados Ltda. (Brazil) to be more compliant with RTEMS coding
  *  standards and to eliminate C++ style comments.
- *
- *  $Id$
  */
 
 #define FONT_WIDTH		8

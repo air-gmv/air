@@ -22,11 +22,9 @@
 | *  On-Line Applications Research Corporation (OAR).
 | *
 | *  The license and distribution terms for this file may be
-| *  found in found in the file LICENSE in this distribution or at
-| *  http://www.rtems.com/license/LICENSE.
+| *  found in the file LICENSE in this distribution or at
+| *  http://www.rtems.org/license/LICENSE.
 | **************************************************************************
-|
-|  $Id$
 +--------------------------------------------------------------------------*/
 
 #include <bsp.h>
@@ -208,9 +206,11 @@ _IBMPC_scankey(char *outChar)
 static bool
 _IBMPC_chrdy(char *c)
 {
+#if CCJ_REMOVED_NO_IDEA_ABOUT_THIS_CODE_OR_COMMENT
   /* FIX ME!!! It doesn't work without something like the following line.
      Find out why! */
   printk("");
+#endif
 
   /* Check buffer our ISR builds */
   if (kbd_first != kbd_last)
@@ -241,12 +241,10 @@ _IBMPC_inch(void)
     return c;
 } /* _IBMPC_inch */
 
- /*
-  * Routine that can be used before interrupt management is initialized.
-  */
-
-int
-BSP_wait_polled_input(void)
+/*
+ * Routine that can be used before interrupt management is initialized.
+ */
+int BSP_wait_polled_input(void)
 {
   char c;
   while (!_IBMPC_scankey(&c))
@@ -262,13 +260,17 @@ BSP_wait_polled_input(void)
 int rtems_kbpoll( void )
 {
   int                    rc;
-  rtems_interrupt_level level;
 
-  rtems_interrupt_disable(level);
+  /*
+   * The locking or disable of interrupts does not help
+   * there because if interrupts are enabled after leave of this
+   * function the state can change without notice anyway.
+   */
+  RTEMS_COMPILER_MEMORY_BARRIER();
 
   rc = ( kbd_first != kbd_last ) ? TRUE : FALSE;
 
-  rtems_interrupt_enable(level);
+  RTEMS_COMPILER_MEMORY_BARRIER();
 
   return rc;
 }

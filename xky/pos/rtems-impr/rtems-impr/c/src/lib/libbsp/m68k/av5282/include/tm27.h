@@ -1,7 +1,15 @@
+/**
+ * @file
+ *
+ * @ingroup m68k_av5282
+ *
+ * @brief Time Test 27 routines.
+ */
+
 /*
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef _RTEMS_TMTEST27

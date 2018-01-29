@@ -1,15 +1,13 @@
-/*
- *  $Id$
- */
-
 #include <libcpu/io.h>
 #include <libcpu/spr.h>
+#include <inttypes.h>
 
 #include <bsp.h>
 #include <bsp/pci.h>
 #include <bsp/consoleIo.h>
 #include <bsp/residual.h>
 #include <bsp/openpic.h>
+#include <bsp/irq.h>
 
 #include <rtems/bspIo.h>
 #include <libcpu/cpuIdent.h>
@@ -152,7 +150,7 @@ void detect_host_bridge(void)
   }
   pci_read_config_dword(0, 0, 0, 0, &id0);
 #ifdef SHOW_RAVEN_SETTINGS
-  printk("idreg 0 = 0x%x\n",id0);
+  printk("idreg 0 = 0x%" PRIu32 "\n",id0);
 #endif
   if((id0 == PCI_VENDOR_ID_MOTOROLA +
       (PCI_DEVICE_ID_MOTOROLA_RAVEN<<16)) ||
@@ -184,12 +182,15 @@ void detect_host_bridge(void)
       printk("Raven MPIC is accessed via memory Space Access at address : %x\n", tmp);
 #endif
       OpenPIC=(volatile struct OpenPIC *) (tmp + PREP_ISA_MEM_BASE);
-      printk("OpenPIC found at %x.\n", OpenPIC);
+      printk("OpenPIC found at %p.\n", OpenPIC);
     }
   }
+
+#if BSP_PCI_IRQ_NUMBER > 0
   if (OpenPIC == (volatile struct OpenPIC *)0) {
     BSP_panic("OpenPic Not found\n");
   }
+#endif
 
 }
 

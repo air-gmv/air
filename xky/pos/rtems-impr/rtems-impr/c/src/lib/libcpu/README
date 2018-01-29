@@ -1,7 +1,3 @@
-#
-#  $Id: README 179 2008-09-17 14:07:38Z hsilva $
-#
-
 This is the README file for libcpu.
 
 This directory contains reusable libraries which are CPU dependent but not

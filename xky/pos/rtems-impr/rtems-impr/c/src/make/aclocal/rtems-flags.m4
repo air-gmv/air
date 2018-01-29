@@ -1,4 +1,3 @@
-## $Id: rtems-flags.m4 179 2008-09-17 14:07:38Z hsilva $
 ## 
 ## Some hacks to set up RTEMS_*FLAGS
 ## Internal macro, not supposed to be explictly used in configure.ac's

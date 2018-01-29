@@ -14,8 +14,9 @@
  * Germany
  * rtems@embedded-brains.de
  *
- * The license and distribution terms for this file may be found in the file
- * LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #include <libchip/rtc.h>
@@ -78,9 +79,7 @@ const rtc_fns lpc24xx_rtc_ops = {
   .deviceSetTime = lpc24xx_rtc_set_time
 };
 
-unsigned long RTC_Count = LPC24XX_RTC_NUMBER;
-
-rtems_device_minor_number RTC_Minor = 0;
+size_t RTC_Count = LPC24XX_RTC_NUMBER;
 
 rtc_tbl	RTC_Table [LPC24XX_RTC_NUMBER] = {
   {

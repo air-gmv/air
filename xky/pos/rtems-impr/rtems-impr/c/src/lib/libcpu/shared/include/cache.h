@@ -1,17 +1,12 @@
-/**
- *  @file
- *  cache.h
- *
- *  @brief libcpu Cache Manager Support 
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
+/*
+ *  libcpu Cache Manager Support
  *
  *  COPYRIGHT (c) 1989-1999.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  The functions declared in this file are implemented for
  *  each processor in the cache.c file under libcpu/CPU/.
@@ -21,45 +16,25 @@
  *
  *  The API for the RTEMS Cache Manager can be found in
  *  c/src/exec/rtems/include/rtems/rtems/cache.h
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  4414    | 21/09/2009  | mcoutinho    | IPR 614
- *  6116    | 18/02/2010  | mcoutinho    | IPR 1818
- *  8183    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9877 $ | $Date: 2011-03-18 18:39:36 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SHARED_BETWEEN_CPUS Shared between CPUs
- *  @{
  */
 
 #ifndef __LIBCPU_CACHE_h
 #define __LIBCPU_CACHE_h
 
-#include <rtems/score/types.h>
-#include <rtems/score/cpu.h>
-#include <bsp.h>
-
-#if (HAS_INSTRUCTION_CACHE == TRUE)
-
-/**
- *  @brief invalidate the entire cache instruction set
- *
- *  This function is responsible for performing an instruction cache
- *  invalidate. It invalidates the entire instruction cache.
- */
-void rtems_cache_invalidate_entire_instruction(void);
-
-#endif
-
+void _CPU_cache_flush_1_data_line(const void *d_addr);
+void _CPU_cache_invalidate_1_data_line(const void *d_addr);
+void _CPU_cache_freeze_data(void);
+void _CPU_cache_unfreeze_data(void);
+void _CPU_cache_invalidate_1_instruction_line(const void *d_addr);
+void _CPU_cache_freeze_instruction(void);
+void _CPU_cache_unfreeze_instruction(void);
+void _CPU_cache_flush_entire_data(void);
+void _CPU_cache_invalidate_entire_data(void);
+void _CPU_cache_enable_data(void);
+void _CPU_cache_disable_data(void);
+void _CPU_cache_invalidate_entire_instruction(void);
+void _CPU_cache_enable_instruction(void);
+void _CPU_cache_disable_instruction(void);
 
 #endif
-
 /* end of include file */
-
-/**  
- *  @}
- */

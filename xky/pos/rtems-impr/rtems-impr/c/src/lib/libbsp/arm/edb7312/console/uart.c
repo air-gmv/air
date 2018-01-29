@@ -5,10 +5,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>                /* Must be before libio.h */
@@ -31,10 +28,9 @@ static void    uart_init(int minor);
 static void    uart_write_polled(int minor, char c);
 static int     uart_set_attributes(int minor, const struct termios *t);
 
-unsigned long Console_Port_Count = NUM_DEVS;
-console_data  Console_Port_Data[NUM_DEVS];
-rtems_device_minor_number  Console_Port_Minor = 0;
-console_fns uart_fns =
+unsigned long Console_Configuration_Count = NUM_DEVS;
+
+const console_fns uart_fns =
 {
     libchip_serial_default_probe,
     uart_first_open,
@@ -46,7 +42,7 @@ console_fns uart_fns =
     uart_set_attributes,
     FALSE
 };
-console_tbl Console_Port_Tbl[] = {
+console_tbl Console_Configuration_Ports[] = {
     {
         "/dev/com0",                      /* sDeviceName */
         SERIAL_CUSTOM,                    /* deviceType */
@@ -87,14 +83,12 @@ static int     uart_set_attributes(int minor, const struct termios *t)
 int uart_poll_read(int minor)
 {
     volatile uint32_t   *data_reg;
-    volatile uint32_t   *ctrl_reg1;
     volatile uint32_t   *ctrl_reg2;
     char        c;
     int         err;
 
-    data_reg = (uint32_t*)Console_Port_Tbl[minor].ulDataPort;
-    ctrl_reg1 = (uint32_t*)Console_Port_Tbl[minor].ulCtrlPort1;
-    ctrl_reg2 = (uint32_t*)Console_Port_Tbl[minor].ulCtrlPort2;
+    data_reg  = (uint32_t *)Console_Port_Tbl[minor]->ulDataPort;
+    ctrl_reg2 = (uint32_t *)Console_Port_Tbl[minor]->ulCtrlPort2;
 
     if ((*ctrl_reg2 & EP7312_UART_URXFE1) != 0) {
         return -1;
@@ -107,40 +101,43 @@ int uart_poll_read(int minor)
     return c;
 }
 
-static ssize_t uart_write(int minor, const char *buf, size_t len)
+static ssize_t uart_do_write(
+    volatile uint32_t *uartdr,
+    const char *buf,
+    size_t len,
+    volatile uint32_t *sysflg
+)
 {
-    volatile uint32_t   *data_reg;
-    volatile uint32_t   *ctrl_reg1;
-    volatile uint32_t   *ctrl_reg2;
     size_t i;
-    char c;
-
-    data_reg = (uint32_t*)Console_Port_Tbl[minor].ulDataPort;
-    ctrl_reg1 = (uint32_t*)Console_Port_Tbl[minor].ulCtrlPort1;
-    ctrl_reg2 = (uint32_t*)Console_Port_Tbl[minor].ulCtrlPort2;
 
     for (i = 0; i < len; i++) {
         /* Wait for fifo to have room */
-        while ((*ctrl_reg2 & EP7312_UART_UTXFF1) != 0) {
+        while ((*sysflg & EP7312_UART_UTXFF1) != 0) {
             continue;
         }
 
-        c = (char) buf[i];
-        *data_reg = c;
+        *uartdr = buf[i];
     }
 
     return len;
 }
 
-static void uart_init(int minor)
+static ssize_t uart_write(int minor, const char *buf, size_t len)
 {
     volatile uint32_t   *data_reg;
-    volatile uint32_t   *ctrl_reg1;
     volatile uint32_t   *ctrl_reg2;
 
-    data_reg = (uint32_t*)Console_Port_Tbl[minor].ulDataPort;
-    ctrl_reg1 = (uint32_t*)Console_Port_Tbl[minor].ulCtrlPort1;
-    ctrl_reg2 = (uint32_t*)Console_Port_Tbl[minor].ulCtrlPort2;
+    data_reg  = (uint32_t *)Console_Port_Tbl[minor]->ulDataPort;
+    ctrl_reg2 = (uint32_t *)Console_Port_Tbl[minor]->ulCtrlPort2;
+
+    return uart_do_write(data_reg, buf, len, ctrl_reg2);
+}
+
+static void uart_init(int minor)
+{
+    volatile uint32_t   *ctrl_reg1;
+
+    ctrl_reg1 = (uint32_t *)Console_Port_Tbl[minor]->ulCtrlPort1;
 
     /*   *ctrl_reg = (BSP_UART_DATA8       |
                  BSP_UART_STOP1       |
@@ -159,7 +156,7 @@ static void uart_init(int minor)
  */
 static void _BSP_null_char(char c)
 {
-  uart_write_polled(0, c);
+  uart_do_write(EP7312_UARTDR1, &c, 1, EP7312_SYSFLG1);
 }
 
 static int _BSP_get_char(void)

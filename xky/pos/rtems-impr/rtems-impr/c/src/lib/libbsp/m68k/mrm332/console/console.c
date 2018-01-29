@@ -1,31 +1,24 @@
 /*
- *  This file contains the generic console driver shell used
- *  by all console drivers using libchip.
- *
- *  This driver uses the termios pseudo driver.
- *
  *  COPYRIGHT (c) 1989-1997.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-#include <bsp.h>
-#include <rtems/libio.h>
 #include <termios.h>
+
+#include <rtems/console.h>
+#include <rtems/libio.h>
+#include <bsp.h>
 #include "sci.h"
 
-/*PAGE
- *
+/*
  *  console_open
  *
  *  open a port as a termios console.
  */
-
 rtems_device_driver console_open(
   rtems_device_major_number major,
   rtems_device_minor_number minor,
@@ -44,18 +37,16 @@ rtems_device_driver console_open(
 
     /* SCI internal uart */
 
-    status = rtems_termios_open( major, minor, arg, SciGetTermiosHandlers( TRUE ) );
+    status = rtems_termios_open( major, minor, arg, SciGetTermiosHandlers( FALSE ) );
 
     return status;
 }
 
-/*PAGE
- *
+/*
  *  console_close
  *
  *  This routine closes a port that has been opened as console.
  */
-
 rtems_device_driver console_close(
   rtems_device_major_number major,
   rtems_device_minor_number minor,
@@ -65,13 +56,11 @@ rtems_device_driver console_close(
   return rtems_termios_close (arg);
 }
 
-/*PAGE
- *
+/*
  *  console_read
  *
  *  This routine uses the termios driver to read a character.
  */
-
 rtems_device_driver console_read(
   rtems_device_major_number major,
   rtems_device_minor_number minor,
@@ -81,13 +70,11 @@ rtems_device_driver console_read(
   return rtems_termios_read (arg);
 }
 
-/*PAGE
- *
+/*
  *  console_write
  *
  *  this routine uses the termios driver to write a character.
  */
-
 rtems_device_driver console_write(
   rtems_device_major_number major,
   rtems_device_minor_number minor,
@@ -97,8 +84,7 @@ rtems_device_driver console_write(
   return rtems_termios_write (arg);
 }
 
-/*PAGE
- *
+/*
  *  console_control
  *
  *  this routine uses the termios driver to process io
@@ -113,13 +99,11 @@ rtems_device_driver console_control(
   return rtems_termios_ioctl (arg);
 }
 
-/*PAGE
- *
+/*
  *  console_initialize
  *
  *  Routine called to initialize the console device driver.
  */
-
 rtems_device_driver console_initialize(
   rtems_device_major_number  major,
   rtems_device_minor_number  minor_arg,

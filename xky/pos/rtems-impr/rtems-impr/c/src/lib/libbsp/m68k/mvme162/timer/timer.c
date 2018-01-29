@@ -6,7 +6,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Modifications of respective RTEMS file: COPYRIGHT (c) 1994.
  *  EISCAT Scientific Association. M.Savitski
@@ -14,11 +14,10 @@
  *  This material is a part of the MVME162 Board Support Package
  *  for the RTEMS executive. Its licensing policies are those of the
  *  RTEMS above.
- *
- *  $Id$
  */
 
 #include <rtems.h>
+#include <rtems/btimer.h>
 #include <bsp.h>
 
 /* Periodic tick interval */
@@ -28,7 +27,7 @@
 uint32_t            Ttimer_val;
 bool                benchmark_timer_find_average_overhead;
 
-rtems_isr timerisr(void);
+rtems_isr timerisr(rtems_vector_number vector);
 
 void benchmark_timer_initialize(void)
 {
@@ -51,7 +50,7 @@ void benchmark_timer_initialize(void)
                                 /* (3 countdowns) to start/stop the timer. */
 #define LEAST_VALID       10U   /* Don't trust a value lower than this */
 
-int benchmark_timer_read(void)
+benchmark_timer_t benchmark_timer_read(void)
 {
   uint32_t            total;
 

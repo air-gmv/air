@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -31,13 +27,11 @@ libbsp_a_SOURCES = \
     ../../shared/bspclean.c \
     ../../shared/bspreset_loop.c \
     ../../shared/bsppredriverhook.c \
-    ../../shared/bsplibc.c \
-    ../../shared/bsppost.c \
-    ../../shared/bsppretaskinghook.c \
     ../../shared/bspgetworkarea.c \
     startup/init5225x.c startup/bspstart.c \
     ../../shared/bootcard.c \
-    ../../shared/sbrk.c ../../m68k/shared/setvec.c \
+    ../../shared/getentropy-cpucounter.c \
+    ../../shared/sbrk.c ../../shared/setvec.c \
     ../../shared/gnatinstallhandler.c
 libbsp_a_SOURCES += clock/clock.c
 libbsp_a_SOURCES += console/console.c
@@ -46,6 +40,7 @@ libbsp_a_SOURCES += timer/timer.c
 
 libbsp_a_LIBADD = \
     ../../../libcpu/@RTEMS_CPU@/shared/cache.rel \
+    ../../../libcpu/@RTEMS_CPU@/mcf5225x/cachepd.rel \
     ../../../libcpu/@RTEMS_CPU@/shared/misc.rel
 
 include $(srcdir)/preinstall.am

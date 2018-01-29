@@ -1,23 +1,25 @@
-/*
+/**
+ *  @file
+ *  
  *  Instantiate the clock driver shell.
  *
  *  The TX3904 simulator in gdb counts instructions.
- *
- *  COPYRIGHT (c) 1989-2009.
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2012.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <rtems.h>
-#include <libcpu/tx3904.h>
+#include <bsp/irq.h>
 #include <bsp.h>
 
-#define CLOCK_DRIVER_USE_FAST_IDLE
+#define CLOCK_DRIVER_USE_FAST_IDLE 1
 
 #define CLOCK_VECTOR TX3904_IRQ_TMR0
 
@@ -26,10 +28,9 @@
  */
 
 #define CLICKS 5000
-#define Clock_driver_support_install_isr( _new, _old ) \
-  do { \
-    _old = set_vector( _new, CLOCK_VECTOR, 1 ); \
-  } while(0)
+
+#define Clock_driver_support_install_isr( _new ) \
+  rtems_interrupt_handler_install( CLOCK_VECTOR, "clock", 0, _new, NULL )
 
 #define Clock_driver_support_initialize_hardware() \
   do { \
@@ -42,8 +43,8 @@
     *((volatile uint32_t*) 0xFFFFC01C) = 0x00000700; \
   } while(0)
 
-#define Clock_driver_support_at_tick()
-
 #define Clock_driver_support_shutdown_hardware()
+
+#define CLOCK_DRIVER_USE_DUMMY_TIMECOUNTER
 
 #include "../../../shared/clockdrv_shell.h"

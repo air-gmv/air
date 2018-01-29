@@ -17,7 +17,7 @@
 #define ASM
 #endif
 
-#include <xky.h>
+#include <air.h>
 #include <asm.h>
 #include <sparc.h>
 
@@ -29,8 +29,8 @@
 SYM(bare_start):
 
     /* get core id */
-    set     XKY_SYSCALL_GET_CORE_ID, %o5
-    ta      XKY_SYSCALL_OS_TRAP
+    set     AIR_SYSCALL_GET_CORE_ID, %o5
+    ta      AIR_SYSCALL_OS_TRAP
     mov     %o0, %l0
 
     /* clear BSS if core id is 0 */
@@ -60,16 +60,16 @@ SYM(bare_start):
 
     /* setup partition trap table */
     set     SYM(bare_trap_table), %o0
-    set     XKY_SYSCALL_SPARC_SET_TBR, %o5
-    ta      XKY_SYSCALL_SPARC_TRAP
+    set     AIR_SYSCALL_SPARC_SET_TBR, %o5
+    ta      AIR_SYSCALL_SPARC_TRAP
 
     /* enable traps */
-    set     XKY_SYSCALL_SPARC_ENABLE_TRAPS, %o5
-    ta      XKY_SYSCALL_SPARC_TRAP
+    set     AIR_SYSCALL_SPARC_ENABLE_TRAPS, %o5
+    ta      AIR_SYSCALL_SPARC_TRAP
 
     /* enable FPU */
-    set     XKY_SYSCALL_SPARC_ENABLE_FPU, %o5
-    ta      XKY_SYSCALL_SPARC_TRAP
+    set     AIR_SYSCALL_SPARC_ENABLE_FPU, %o5
+    ta      AIR_SYSCALL_SPARC_TRAP
 
     /* get core entry point */
     umul    %l0, 0x04, %o0
@@ -93,10 +93,10 @@ SYM(bare_start):
 /*
  * set partitition to idle
  */
-    set     XKY_SYSCALL_SET_PARTITION_MODE, %o5
-    set     XKY_MODE_IDLE, %o1
+    set     AIR_SYSCALL_SET_PARTITION_MODE, %o5
+    set     AIR_MODE_IDLE, %o1
     set     0xFFFFFFFF, %o0
-    ta      XKY_SYSCALL_OS_TRAP
+    ta      AIR_SYSCALL_OS_TRAP
 
 /*
  * put core in idle loop

@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -16,10 +12,9 @@ include_HEADERS += ../../shared/include/tm27.h
 
 nodist_include_HEADERS = include/bspopts.h
 nodist_include_bsp_HEADERS = ../../shared/include/bootcard.h
+nodist_include_bsp_HEADERS += ../../shared/include/console-polled.h
 DISTCLEANFILES = include/bspopts.h
 noinst_PROGRAMS =
-
-SUBDIRS = . tools
 
 nodist_include_HEADERS += ../../shared/include/coverhd.h
 
@@ -30,10 +25,11 @@ project_lib_DATA = start.$(OBJEXT)
 
 dist_project_lib_DATA += startup/linkcmds
 
-startup_SOURCES = ../../shared/bspclean.c ../../shared/bsplibc.c \
-    ../../shared/bsppredriverhook.c ../../shared/bsppretaskinghook.c \
-    ../../shared/bspgetworkarea.c ../../shared/bsppost.c \
+startup_SOURCES = ../../shared/bspclean.c \
+    ../../shared/bsppredriverhook.c \
+    ../../shared/bspgetworkarea.c \
     startup/bspstart.c ../../shared/bootcard.c ../../shared/sbrk.c \
+    ../../shared/getentropy-cpucounter.c \
     ../../shared/gnatinstallhandler.c startup/crtn.S
 clock_SOURCES = ../../shared/clock_driver_simidle.c
 console_SOURCES = ../../shared/console-polled.c console/console-io.c \
@@ -44,7 +40,10 @@ noinst_LIBRARIES = libbsp.a
 libbsp_a_SOURCES = $(startup_SOURCES) $(clock_SOURCES) $(console_SOURCES) \
     $(timer_SOURCES)
 
-EXTRA_DIST += times
+# Cache
+libbsp_a_SOURCES += ../../../libcpu/shared/src/cache_manager.c
+libbsp_a_SOURCES += ../../shared/include/cache_.h
+libbsp_a_CPPFLAGS = -I$(srcdir)/../../shared/include
 
 include $(srcdir)/preinstall.am
 include $(top_srcdir)/../../../../automake/local.am

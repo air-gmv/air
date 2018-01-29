@@ -5,44 +5,37 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *
- *  http://www.rtems.com/license/LICENSE.
- *
- *
- *  $Id$
-*/
+ *  http://www.rtems.org/license/LICENSE.
+ */
+
 #include <rtems.h>
 #include <ep7312.h>
 #include <bsp.h>
 #include <bsp/irq.h>
+#include <assert.h>
 
 #if ON_SKYEYE==1
-  #define CLOCK_DRIVER_USE_FAST_IDLE
+  #define CLOCK_DRIVER_USE_FAST_IDLE 1
 #endif
 
-rtems_isr Clock_isr(rtems_vector_number vector);
-static void clock_isr_on(const rtems_irq_connect_data *unused);
-static void clock_isr_off(const rtems_irq_connect_data *unused);
-static int clock_isr_is_on(const rtems_irq_connect_data *irq);
-
-rtems_irq_connect_data clock_isr_data = {BSP_TC1OI,
-                                         (rtems_irq_hdl)Clock_isr,
-					 NULL,
-                                         clock_isr_on,
-                                         clock_isr_off,
-                                         clock_isr_is_on};
-
-#define CLOCK_VECTOR 0
+void Clock_isr(void * arg);
 
 #define Clock_driver_support_at_tick()                \
   do {                                                \
     *EP7312_TC1EOI = 0xffffffff;                      \
   } while(0)
 
-#define Clock_driver_support_install_isr( _new, _old ) \
+#define Clock_driver_support_install_isr( _new )       \
   do {                                                 \
-      (_old) = NULL; /* avoid warning */;              \
-      BSP_install_rtems_irq_handler(&clock_isr_data);  \
+    rtems_status_code status = RTEMS_SUCCESSFUL;       \
+    status = rtems_interrupt_handler_install(          \
+        BSP_TC1OI,                                     \
+        "Clock",                                       \
+        RTEMS_INTERRUPT_UNIQUE,                        \
+        Clock_isr,                                     \
+        NULL                                           \
+    );                                                 \
+    assert(status == RTEMS_SUCCESSFUL);                \
   } while(0)
 
 /*
@@ -63,35 +56,17 @@ rtems_irq_connect_data clock_isr_data = {BSP_TC1OI,
     *EP7312_TC1EOI = 0xFFFFFFFF;                    \
   } while (0)
 
-#define Clock_driver_support_shutdown_hardware()                        \
-  do {                                                                  \
-    BSP_remove_rtems_irq_handler(&clock_isr_data);                  \
+#define Clock_driver_support_shutdown_hardware()    \
+  do {                                              \
+    rtems_status_code status = RTEMS_SUCCESSFUL;    \
+    status = rtems_interrupt_handler_remove(        \
+        BSP_TC1OI,                                  \
+        Clock_isr,                                  \
+        NULL                                        \
+    );                                              \
+    assert(status == RTEMS_SUCCESSFUL);             \
   } while (0)
 
-/**
- *  Return the nanoseconds since last tick
- */
-uint32_t clock_driver_get_nanoseconds_since_last_tick(void)
-{
-  return 0;
-}
-
-#define Clock_driver_nanoseconds_since_last_tick \
-  clock_driver_get_nanoseconds_since_last_tick
-
-static void clock_isr_on(const rtems_irq_connect_data *unused)
-{
-    return;
-}
-
-static void clock_isr_off(const rtems_irq_connect_data *unused)
-{
-    return;
-}
-
-static int clock_isr_is_on(const rtems_irq_connect_data *irq)
-{
-    return 1;
-}
+#define CLOCK_DRIVER_USE_DUMMY_TIMECOUNTER
 
 #include "../../../shared/clockdrv_shell.h"

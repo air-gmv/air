@@ -1,0 +1,4 @@
+*** POSIX MESSAGE QUEUE 02 TEST ***
+Init's ID is 0x0b010001
+Init: mq_open - Workspace not available - ENOMEM
+*** END POSIX MESSAGE QUEUE 02 TEST ***

@@ -14,7 +14,7 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 | this file contains the BSP initialization code                  |
@@ -69,8 +69,8 @@
 /*   On-Line Applications Research Corporation (OAR).                  */
 /*                                                                     */
 /*   The license and distribution terms for this file may be           */
-/*   found in found in the file LICENSE in this distribution or at     */
-/*   http://www.rtems.com/license/LICENSE.                             */
+/*   found in the file LICENSE in this distribution or at     */
+/*   http://www.rtems.org/license/LICENSE.                             */
 /*                                                                     */
 /*---------------------------------------------------------------------*/
 /*                                                                     */
@@ -95,6 +95,7 @@
 /***********************************************************************/
 
 #include <rtems.h>
+#include <rtems/counter.h>
 
 #include <libcpu/powerpc-utility.h>
 
@@ -103,18 +104,13 @@
 #include <bsp/bootcard.h>
 #include <bsp/irq.h>
 #include <bsp/irq-generic.h>
+#include <bsp/mpc5200.h>
 
-#if defined(HAS_UBOOT)
-/* will be overwritten from startup code */
-bd_t *bsp_uboot_board_info_ptr = (bd_t *)1;
-/* will be overwritten with copy of board information */
-bd_t bsp_uboot_board_info;
-#endif
+/* Configuration parameter for clock driver */
+uint32_t bsp_time_base_frequency;
 
-/*
- *  Driver configuration parameters
- */
-uint32_t   bsp_clicks_per_usec;
+/* Legacy */
+uint32_t bsp_clicks_per_usec;
 
 void BSP_panic(char *s)
 {
@@ -130,59 +126,49 @@ void _BSP_Fatal_error(unsigned int v)
 
 void bsp_start(void)
 {
-  rtems_status_code sc = RTEMS_SUCCESSFUL;
-  ppc_cpu_id_t myCpu;
-  ppc_cpu_revision_t myCpuRevision;
-
   /*
    * Get CPU identification dynamically. Note that the get_ppc_cpu_type()
    * function store the result in global variables so that it can be used
    * later...
    */
-  myCpu         = get_ppc_cpu_type();
-  myCpuRevision = get_ppc_cpu_revision();
-
-  #if defined(HAS_UBOOT)
-    bsp_uboot_board_info = *bsp_uboot_board_info_ptr;
-  #endif
+  get_ppc_cpu_type();
+  get_ppc_cpu_revision();
 
   #if defined(HAS_UBOOT) && defined(SHOW_MORE_INIT_SETTINGS)
     {
       void dumpUBootBDInfo( bd_t * );
-      dumpUBootBDInfo( bsp_uboot_board_info_ptr );
+      dumpUBootBDInfo( &bsp_uboot_board_info );
     }
   #endif
 
   cpu_init();
 
-  bsp_clicks_per_usec    = (XLB_CLOCK/4000000);
+  if(get_ppc_cpu_revision() >= 0x2014) {
+    /* Special settings for MPC5200B (B variant) */
+    uint32_t xlb_cfg = mpc5200.config;
 
-  /*
-   * Enable instruction and data caches. Do not force writethrough mode.
-   */
-  #if INSTRUCTION_CACHE_ENABLE
-    rtems_cache_enable_instruction();
-  #endif
-  #if DATA_CACHE_ENABLE
-    rtems_cache_enable_data();
-  #endif
+    /* XXX: The Freescale documentation for BSDIS seems to be wrong */
+    xlb_cfg |= XLB_CFG_BSDIS;
+
+    xlb_cfg &= ~XLB_CFG_PLDIS;
+
+    mpc5200.config = xlb_cfg;
+  }
+
+  bsp_time_base_frequency = XLB_CLOCK / 4;
+  bsp_clicks_per_usec    = (XLB_CLOCK/4000000);
+  rtems_counter_initialize_converter(bsp_time_base_frequency);
 
   /* Initialize exception handler */
   ppc_exc_cache_wb_check = 0;
-  sc = ppc_exc_initialize(
-    PPC_INTERRUPT_DISABLE_MASK_DEFAULT,
+  ppc_exc_initialize(
     (uintptr_t) bsp_interrupt_stack_start,
     (uintptr_t) bsp_interrupt_stack_size
   );
-  if (sc != RTEMS_SUCCESSFUL) {
-    BSP_panic("cannot initialize exceptions");
-  }
+  ppc_exc_set_handler(ASM_ALIGN_VECTOR, ppc_exc_alignment_handler);
 
   /* Initalize interrupt support */
-  sc = bsp_interrupt_initialize();
-  if (sc != RTEMS_SUCCESSFUL) {
-    BSP_panic("cannot intitialize interrupts");
-  }
+  bsp_interrupt_initialize();
 
   /*
    *  If the BSP was built with IRQ benchmarking enabled,

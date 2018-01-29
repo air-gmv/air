@@ -1,55 +1,36 @@
 /**
- *  @file
- *  fatal.c
+ * @file
  *
- *  @brief announce that an application fatal error occurred
+ * @brief Invokes the internal error handler with a source of
+ *        INTERNAL_ERROR_RTEMS_API and is internal set to false.
  *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
+ * @ingroup ClassicFatal
+ */
+
+/*
+ *  Fatal Error Manager
  *
- *  COPYRIGHT (c) 1989-1999.
+ *  COPYRIGHT (c) 1989-2009.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  7132    | 09/04/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_API Super API
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup SUPER_API_FATAL Fatal Error Manager
- *  @{
- */
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <rtems/system.h>
 #include <rtems/fatal.h>
 #include <rtems/score/interr.h>
 
-
 void rtems_fatal_error_occurred(
-                                uint32_t the_error
-                                )
+  uint32_t   the_error
+)
 {
-    /* raise an internal error */
-    _Internal_error_Occurred(INTERNAL_ERROR_RTEMS_API , FALSE , the_error);
+  _Terminate( INTERNAL_ERROR_RTEMS_API, the_error );
+
+/* will not return from this routine */
 }
-
-/**  
- *  @}
- */
-
-/**  
- *  @}
- */
-

@@ -4,15 +4,14 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  MVME147 port for TNI - Telecom Bretagne
  *  by Dominique LE CAMPION (Dominique.LECAMPION@enst-bretagne.fr)
  *  May 1996
- *
- *  $Id$
  */
 
+#include <rtems/btimer.h>
 #include <bsp.h>
 
 #define TIMER_INT_LEVEL 6
@@ -24,7 +23,7 @@
 int Ttimer_val;
 bool benchmark_timer_find_average_overhead;
 
-rtems_isr_entry timerisr(rtems_vector_number);
+rtems_isr timerisr(rtems_vector_number);
 
 void benchmark_timer_initialize(void)
 {
@@ -46,7 +45,7 @@ void benchmark_timer_initialize(void)
 				synchronized whith the counter updates*/
 #define LEAST_VALID       10 /* Don't trust a value lower than this */
 
-int benchmark_timer_read(void)
+benchmark_timer_t benchmark_timer_read(void)
 {
   uint32_t         total;
   uint16_t         counter_value;

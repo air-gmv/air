@@ -1,35 +1,5 @@
-/*  bspstart.c
- *
- *  This set of routines starts the application. It includes application,
- *  board, and monitor specific initialization and configuration. The generic
- *  CPU dependent initialization has been performed before any of these are
- *  invoked.
- *
- *  COPYRIGHT (c) 1989-2010.
- *  On-Line Applications Research Corporation (OAR).
- *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Modifications of respective RTEMS files:
- *  Copyright (c) 1998, National Research Council of Canada
- *
- *  $Id$
- */
-
-#include <bsp.h>
-#include <page_table.h>
-#include <fatal.h>
-
-/* XXX If RTEMS let the BSP replace the default fatal error handler... */
-rtems_extensions_table user_extension_table;
-
-void M68KFPSPInstallExceptionHandlers (void);
-extern m68k_isr_entry  M68Kvec[];
-
-/*
- *  bsp_start()
+/**
+ *  @file
  *
  *  Board-specific initialization code. Called from the generic boot_card()
  *  function defined in rtems/c/src/lib/libbsp/shared/main.c. That function
@@ -48,22 +18,35 @@ extern m68k_isr_entry  M68Kvec[];
  *
  *  ASSUMES THAT 167BUG IS PRESENT TO CATCH ANY EXCEPTIONS DURING
  *  INITIALIZATION.
- *
- *  Input parameters: NONE
- *
- *  Output parameters: NONE
- *
- *  Return values: NONE
  */
+
+/*
+ *  COPYRIGHT (c) 1989-2012.
+ *  On-Line Applications Research Corporation (OAR).
+ *
+ *  The license and distribution terms for this file may be
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
+ *
+ *  Modifications of respective RTEMS files:
+ *  Copyright (c) 1998, National Research Council of Canada
+ */
+
+#include <bsp.h>
+#include <bsp/bootcard.h>
+#include <page_table.h>
+
+void M68KFPSPInstallExceptionHandlers (void);
+
 void bsp_start( void )
 {
-  m68k_isr_entry *rom_monitor_vector_table;
+  void **rom_monitor_vector_table;
   int index;
 
   /*
    *  167Bug Vectors are at 0xFFE00000
    */
-  rom_monitor_vector_table = (m68k_isr_entry *)0xFFE00000;
+  rom_monitor_vector_table = (void **)0xFFE00000;
   m68k_set_vbr( rom_monitor_vector_table );
 
   /*
@@ -92,17 +75,6 @@ void bsp_start( void )
 
   /*
    *  Initialize address translation
-   *  May need to pass the multiprocessor configuration table.
    */
-  page_table_init( &Configuration );
-
-  /*
-   *  If the application has not overriden the default User_extension_table,
-   *  supply one with our own fatal error handler that returns control to
-   *  167Bug.
-   */
-  if ( Configuration.User_extension_table == NULL ) {
-    user_extension_table.fatal = bsp_fatal_error_occurred;
-    Configuration.User_extension_table = &user_extension_table;
-  }
+  page_table_init();
 }

@@ -101,7 +101,7 @@ void eth_reader(iop_physical_device_t *pdev){
 
 	uint32_t i;
 	uint32_t skip;
-	uint32_t reads = pdev->reads_per_period[xky_schedule.current_schedule_index];
+	uint32_t reads = pdev->reads_per_period[air_schedule.current_schedule_index];
 	for (i = 0; i < reads; ++i){
 
 		/* get an empty reply wrapper */

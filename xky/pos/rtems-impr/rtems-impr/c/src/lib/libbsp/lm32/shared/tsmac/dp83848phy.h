@@ -1,3 +1,9 @@
+/**
+ * @file
+ * @ingroup lm32_tsmac
+ * @brief LatticeMico32 TSMAC (Tri-Speed MAC) definitions
+ */
+
 /*
  *  This file contains definitions for LatticeMico32 TSMAC (Tri-Speed MAC)
  *
@@ -6,9 +12,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Jukka Pietarinen <jukka.pietarinen@mrf.fi>, 2008,
  *  Micro-Research Finland Oy

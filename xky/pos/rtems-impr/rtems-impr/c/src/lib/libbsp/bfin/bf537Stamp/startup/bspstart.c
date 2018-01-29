@@ -1,23 +1,21 @@
 /*  bspstart.c for bf537Stamp
  *
- *  This routine starts the application.  It includes application,
- *  board, and monitor specific initialization and configuration.
- *  The generic CPU dependent initialization has been performed
- *  before this routine is invoked.
- *
+ *  This routine does the bulk of the system initialisation.
+ */
+
+/*
  *  Copyright (c) 2006 by Atos Automacao Industrial Ltda.
  *             written by Alain Schaefer <alain.schaefer@easc.ch>
  *                    and Antonio Giovanini <antonio@atos.com.br>
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 
 #include <bsp.h>
+#include <bsp/bootcard.h>
 #include <libcpu/bf537.h>
 #include <libcpu/ebiuRegs.h>
 #include <libcpu/gpioRegs.h>
@@ -67,25 +65,18 @@ static bfin_mmu_config_t mmuRegions = {
     }
 };
 
-void Init_RTC(void);
-
 static void initPLL(void);
 static void initEBIU(void);
 static void initGPIO(void);
 
 /*
- *  BSP pretasking hook.
+ *  BSP predriver hook.
  */
-void bsp_pretasking_hook(void)
+void bsp_predriver_hook(void)
 {
   bfin_interrupt_init();
 }
 
-/*
- *  bsp_start
- *
- *  This routine does the bulk of the BSP initialization.
- */
 void bsp_start(void)
 {
   /* BSP Hardware Initialization*/
@@ -121,9 +112,9 @@ static void initPLL(void) {
   *((uint16_t*)PLL_CTL) = PLL_MSEL|PLL_DF;
 
   /* Commands to set PLL values */
-  asm("cli r0;");
-  asm("idle;");
-  asm("sti r0;");
+  __asm__ ("cli r0;");
+  __asm__ ("idle;");
+  __asm__ ("sti r0;");
 
   /* Delay for PLL stabilization */
   for (n=0; n<200; n++) {}

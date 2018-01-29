@@ -8,13 +8,11 @@
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
  *
- * http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ * http://www.rtems.org/license/LICENSE.
  */
 
-#ifndef _BSP_H
-#define _BSP_H
+#ifndef LIBBSP_M68K_MCF5206ELITE_BSP_H
+#define LIBBSP_M68K_MCF5206ELITE_BSP_H
 
 #include "mcf5206/mcf5206e.h"
 
@@ -119,18 +117,13 @@
 
 #ifndef ASM
 
+#include <bspopts.h>
+#include <rtems.h>
+#include <bsp/default-initial-extension.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <bspopts.h>
-#include <rtems.h>
-#include <rtems/console.h>
-#include <rtems/iosupp.h>
-#include <rtems/clockdrv.h>
-#include <rtems/rtc.h>
-
-#include "i2c.h"
 
 /* System frequency */
 #define BSP_SYSTEM_FREQUENCY ((unsigned int)&_SYS_CLOCK_FREQUENCY)
@@ -150,10 +143,10 @@ extern char _SYS_CLOCK_FREQUENCY; /* Don't use this variable directly!!! */
  *  This is very dependent on the clock speed of the target.
  */
 
-#define delay( microseconds ) \
+#define rtems_bsp_delay( microseconds ) \
   { register uint32_t         _delay=(microseconds); \
     register uint32_t         _tmp=123; \
-    asm volatile( "0: \
+    __asm__ volatile( "0: \
                      nbcd      %0 ; \
                      nbcd      %0 ; \
                      dbf       %1,0b" \
@@ -162,17 +155,22 @@ extern char _SYS_CLOCK_FREQUENCY; /* Don't use this variable directly!!! */
   }
 
 
-extern m68k_isr_entry M68Kvec[];   /* vector table address */
+extern rtems_isr_entry M68Kvec[];   /* vector table address */
 
 extern rtems_isr (*rtems_clock_hook)(rtems_vector_number);
 
 /* functions */
 
-m68k_isr_entry set_vector(
+rtems_isr_entry set_vector(
   rtems_isr_entry     handler,
   rtems_vector_number vector,
   int                 type
 );
+
+/*
+ * Prototypes for BSP methods that cross file boundaries
+ */
+void Init5206e(void);
 
 #ifdef __cplusplus
 }

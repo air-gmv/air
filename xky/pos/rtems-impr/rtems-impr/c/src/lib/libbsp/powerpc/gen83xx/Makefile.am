@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -17,11 +13,23 @@ nodist_include_HEADERS = include/bspopts.h
 nodist_include_bsp_HEADERS = ../../shared/include/bootcard.h
 DISTCLEANFILES = include/bspopts.h
 
+include_bsp_HEADERS =
+include_bsp_HEADERS += ../../shared/include/irq-generic.h
+include_bsp_HEADERS += ../../shared/include/irq-info.h
+include_bsp_HEADERS += ../../shared/include/u-boot.h
+include_bsp_HEADERS += ../../shared/include/utility.h
+include_bsp_HEADERS += ../shared/include/linker-symbols.h
+include_bsp_HEADERS += ../shared/include/start.h
+include_bsp_HEADERS += ../shared/include/tictac.h
+include_bsp_HEADERS += ../shared/include/u-boot-board-info.h
+include_bsp_HEADERS += include/hwreg_vals.h
+include_bsp_HEADERS += include/irq.h
+include_bsp_HEADERS += include/tsec-config.h
+include_bsp_HEADERS += include/u-boot-config.h
+
 noinst_PROGRAMS =
 
 include_HEADERS += ../../shared/include/coverhd.h
-
-nodist_include_HEADERS += ../../shared/tod.h
 
 noinst_LIBRARIES = libbspstart.a
 libbspstart_a_SOURCES = start/start.S
@@ -31,23 +39,22 @@ libbspstart_a_SOURCES += ../../powerpc/shared/start/rtems_crti.S
 project_lib_DATA += rtems_crti.$(OBJEXT)
 
 dist_project_lib_DATA += startup/linkcmds \
-    startup/linkcmds.base \
+    ../shared/startup/linkcmds.base \
+    startup/linkcmds.mpc83xx \
+    startup/linkcmds.mpc8309som \
     startup/linkcmds.mpc8313erdb \
+    startup/linkcmds.br_uid \
     startup/linkcmds.mpc8349eamds \
     startup/linkcmds.hsc_cm01
 
 noinst_LIBRARIES += libbsp.a
 libbsp_a_SOURCES =
 
-# mpc83xx_regs
-libbsp_a_SOURCES += startup/mpc83xx_regs.c
-
 # startup
-libbsp_a_SOURCES += ../../shared/bsplibc.c \
-	../../shared/bsppost.c \
+libbsp_a_SOURCES += \
 	../../shared/bootcard.c \
+	../../shared/getentropy-cpucounter.c \
 	../../shared/bsppredriverhook.c \
-	../../shared/bsppretaskinghook.c \
 	../../shared/sbrk.c \
 	../../shared/gnatinstallhandler.c \
 	../shared/src/tictac.c \
@@ -56,30 +63,28 @@ libbsp_a_SOURCES += ../../shared/bsplibc.c \
 	startup/bspstart.c \
 	../../shared/bspclean.c \
 	startup/bspreset.c \
+	startup/bsprestart.c \
 	../../shared/bspgetworkarea.c \
-        startup/uboot_support.c \
+        ../../shared/src/bsp-uboot-board-info.c \
         ../shared/uboot_getenv.c
 
 # clock
 libbsp_a_SOURCES += ../shared/clock/clock.c
 
-include_bsp_HEADERS = include/irq.h \
-	../../shared/include/irq-generic.h \
-	../../shared/include/irq-info.h \
-	include/hwreg_vals.h \
-	../shared/include/u-boot.h \
-	../shared/include/tictac.h
-
 # irq
-libbsp_a_SOURCES += irq/irq.c \
-	../../shared/src/irq-generic.c \
-	../../shared/src/irq-legacy.c \
-	../../shared/src/irq-info.c \
-	../../shared/src/irq-shell.c \
-	../../shared/src/irq-server.c
+libbsp_a_SOURCES += ../../shared/src/irq-default-handler.c
+libbsp_a_SOURCES += ../../shared/src/irq-generic.c
+libbsp_a_SOURCES += ../../shared/src/irq-info.c
+libbsp_a_SOURCES += ../../shared/src/irq-legacy.c
+libbsp_a_SOURCES += ../../shared/src/irq-server.c
+libbsp_a_SOURCES += ../../shared/src/irq-shell.c
+libbsp_a_SOURCES += irq/irq.c
 
 # console
-libbsp_a_SOURCES += console/console.c console/ns16550cfg.c
+libbsp_a_SOURCES += ../../shared/console-termios-init.c
+libbsp_a_SOURCES += ../../shared/console-termios.c
+libbsp_a_SOURCES += console/console-config.c
+
 # bsp_i2c
 libbsp_a_SOURCES += i2c/i2c_init.c
 # bsp_spi
@@ -109,8 +114,6 @@ libbsp_a_LIBADD += ../../../libcpu/@RTEMS_CPU@/mpc83xx/tsec.rel
 endif
 
 EXTRA_DIST = README.mpc8349eamds
-EXTRA_DIST += times.mpc8349eamds
-### XXX
 
 include $(srcdir)/preinstall.am
 include $(top_srcdir)/../../../../automake/local.am

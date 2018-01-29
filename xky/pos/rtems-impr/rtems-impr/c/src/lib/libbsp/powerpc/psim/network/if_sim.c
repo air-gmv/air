@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /* Trivial driver for PSIM's emulated ethernet device 'hw_ethtap'.
  *
  * NOTE: At the time of this writing (2009/1) 'hw_ethtap' requires
@@ -13,7 +11,7 @@
  * LICENSE
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  */
 
@@ -33,6 +31,7 @@
 #endif
 
 #include <rtems/rtems_bsdnet.h>
+#include <sys/param.h>
 #include <sys/mbuf.h>
 #include <sys/socket.h>
 #include <sys/sockio.h>
@@ -109,16 +108,16 @@ struct ifsim_softc theIfSims[IFSIM_SLOTS] = {{{{0}}} };
 
 rtems_id           ifsim_tid = 0;
 
-__inline__ uint32_t
+static __inline__ uint32_t
 ifsim_in(struct ifsim_softc *sc, unsigned regno)
 {
-	return in_be32( sc->pvt.base + regno );
+	return in_be32((volatile uint32_t *) (sc->pvt.base + regno));
 }
 
-__inline__ void
+static __inline__ void
 ifsim_out(struct ifsim_softc *sc, unsigned regno, uint32_t v)
 {
-	out_be32(sc->pvt.base + regno, v);
+	out_be32((volatile uint32_t *) (sc->pvt.base + regno), v);
 }
 
 static void *
@@ -305,7 +304,7 @@ struct ifsim_softc *sc = arg;
 #endif
 
 	ifsim_out(sc, IFSIM_IEN_REG, 0);
-	rtems_event_send(ifsim_tid, (1<<(sc-theIfSims)));
+	rtems_bsdnet_event_send(ifsim_tid, (1<<(sc-theIfSims)));
 }
 
 static void
@@ -328,7 +327,7 @@ rtems_event_set    evs;
 		evs &= ((1<<IFSIM_SLOTS)-1);
 
 #ifdef IRQ_DEBUG
-		printf("Task got evs %u\n", evs);
+		printk("Task got evs %u\n", evs);
 #endif
 
 		for ( sc = theIfSims; evs; evs>>=1, sc++ ) {
@@ -367,20 +366,20 @@ rtems_event_set    evs;
 							{
 								int i;
 								for ( i=0; i<len + crc_len; ) {
-									printf("%02X ",((char*)eh)[i]);
+									printk("%02X ",((char*)eh)[i]);
 									if ( 0 == (++i & 0xf) )
 										fputc('\n',stdout);
 								}
 								if ( i & 0xf )
 									fputc('\n', stdout);
-								printf("*****\n");
+								printk("*****\n");
 							}
 #endif
 
 							if ( crc_len
 								 && (memcpy(&crc_net, (char*)eh + len, crc_len),
 							        (crc = (ether_crc32_le((uint8_t *)eh, len) ^ 0xffffffff)) != crc_net) ) {
-								printk("CSUM: me 0x%08X, them 0x%08x\n", crc, crc_net);
+								printk("CSUM: me 0x%08" PRIx32 ", them 0x%08" PRIx32 "\n", crc, crc_net);
 								sc->pvt.rx_cserrs++;
 							} else {
 

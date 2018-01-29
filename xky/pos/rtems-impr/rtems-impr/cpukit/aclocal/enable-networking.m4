@@ -1,5 +1,3 @@
-dnl $Id: enable-networking.m4 179 2008-09-17 14:07:38Z hsilva $
-
 AC_DEFUN([RTEMS_ENABLE_NETWORKING],
 [
 ## AC_BEFORE([$0], [RTEMS_CHECK_NETWORKING])dnl

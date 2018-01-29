@@ -1,8 +1,4 @@
 /*
- *  $Id$
- */
-
-/*
  * Declare some sizes.
  */
 _RamBase = DEFINED(_RamBase) ? _RamBase : 0x200000;
@@ -57,6 +53,7 @@ SECTIONS
     KEEP (*(.init))
     KEEP (*(.fini))
     *(.rodata .rodata.* .gnu.linkonce.r.*)
+    KEEP (*(SORT(.rtemsroset.*)))
     *(.rodata1)
     *(.eh_frame_hdr)
     KEEP (*(.eh_frame))
@@ -64,6 +61,23 @@ SECTIONS
     . = ALIGN(2);
     PROVIDE(__romdatastart = .); /* IF_ROROM */
   } > RAM
+
+  .tdata : {
+    __TLS_Data_begin = .;
+    *(.tdata .tdata.* .gnu.linkonce.td.*)
+    __TLS_Data_end = .;
+  } > RAM
+  .tbss : {
+    __TLS_BSS_begin = .;
+    *(.tbss .tbss.* .gnu.linkonce.tb.*) *(.tcommon)
+    __TLS_BSS_end = .;
+  } > RAM
+  __TLS_Data_size = __TLS_Data_end - __TLS_Data_begin;
+  __TLS_Data_begin = __TLS_Data_size != 0 ? __TLS_Data_begin : __TLS_BSS_begin;
+  __TLS_Data_end = __TLS_Data_size != 0 ? __TLS_Data_end : __TLS_BSS_begin;
+  __TLS_BSS_size = __TLS_BSS_end - __TLS_BSS_begin;
+  __TLS_Size = __TLS_BSS_end - __TLS_Data_begin;
+  __TLS_Alignment = MAX (ALIGNOF (.tdata), ALIGNOF (.tbss));
 
   .data : {
     . = ALIGN(32 / 8);
@@ -106,6 +120,7 @@ SECTIONS
     *(.dynamic)
 
     *(.data .data.* .gnu.linkonce.d.*)
+    KEEP (*(SORT(.rtemsrwset.*)))
     KEEP (*(.gnu.linkonce.d.*personality*))
     SORT(CONSTRUCTORS)
     *(.data1)
