@@ -386,15 +386,22 @@ class Configuration(object):
 
         return input_file, output_file
 
-    ##
-    # @brief Execute POS git checkout
-    # @param pos_name Name of the pos
-    # @return Path to the makefile template
-    #def git_pos_checkout(self, pos_name, logger):
-    #    if self.supported_pos[pos_name].git_id is not "":
-    #        logger.information(1, 'Checking out ' + pos_name + ' from GIT')
-    #        FNULL = open(os.devnull, 'w')
-    #        subprocess.call(['git','checkout', self.supported_pos[pos_name].git_id], cwd="pos/" + pos_name+ "/" + pos_name, stdout=FNULL, stderr=subprocess.STDOUT)
+     ##
+    # @brief Execute POS git checkout and then patchit
+     # @param pos_name Name of the pos
+     # @return Path to the makefile template
+
+    #    def pos_checkout_and_patch(self, pos_name, logger):
+    #        if self.supported_pos[pos_name].git_id is not "":            
+    #            logger.information(1, 'Checking out ' + pos_name + ' from GIT')
+    #            FNULL = open(os.devnull, 'w')
+    # git stash current files to merge ahead and patch on pos checkout
+    #            subprocess.call(['git','stash'], cwd="pos", stdout=FNULL, stderr=subprocess.STDOUT)
+    # git checkout call
+    #            subprocess.call(['git','checkout', self.supported_pos[pos_name].git_id], cwd="pos/" + pos_name+ "/" + pos_name, stdout=FNULL, stderr=subprocess.STDOUT)
+            # patch pos by doing git stash pop
+    #            subprocess.call(['git','stash', 'pop'], cwd="pos", stdout=FNULL, stderr=subprocess.STDOUT)
+
         
 
     ##
