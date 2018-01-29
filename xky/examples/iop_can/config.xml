@@ -9,7 +9,7 @@
     <Sampling_Port Name="iop_receiver"
       Direction="DESTINATION" MaxMessageSize="8" RefreshRateSeconds="1.0"/>
     <PartitionConfiguration Personality="RTEMS" IOP="iop.xml" Cores="1">
-        <Libs>LIBXKY; LIBIOP; LIBPRINTF</Libs>
+        <Libs>LIBAIR; LIBIOP; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x400000" />
@@ -27,7 +27,7 @@
     <Sampling_Port Name="partition_sender" 
       Direction="SOURCE" MaxMessageSize="8" RefreshRateSeconds="1.0"/>
     <PartitionConfiguration Personality="RTEMS" Cores="1">
-        <Libs>LIBXKY; IMASPEX; LIBPRINTF</Libs>
+        <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x400000" />
@@ -78,5 +78,5 @@
   </Connection_Table>
   
   <!-- Module configuration -->
-  <XKY_Configuration TicksPerSecond="1000" RequiredCores="1"/>
+  <AIR_Configuration TicksPerSecond="1000" RequiredCores="1"/>
 </ARINC_653_Module>

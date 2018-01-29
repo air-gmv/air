@@ -16,7 +16,7 @@
 
 #include <ambapp.h>
 
-#include <xky.h>
+#include <air.h>
 #include <iop.h>
 #include <can_support.h>
 
