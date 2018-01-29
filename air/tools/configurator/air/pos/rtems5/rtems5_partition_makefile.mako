@@ -60,6 +60,9 @@ CPPFLAGS+=${'\\'}
 -B../common/${'\\'}
 ${template.LibraryIncludes(partition.libraries)}\
 
+# build LD falgs
+LDFLAGS += -Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar
+
 OBJS = $(COBJS) $(ASOBJS)
  
 all:    $(ARCH) $(PGM)  
