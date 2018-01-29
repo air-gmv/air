@@ -1,7 +1,7 @@
 #ifndef __OCCAN_MSG_QUEUE_H__
 #define __OCCAN_MSG_QUEUE_H__
 
-#include <xky.h>
+#include <air.h>
 #include <iop.h>
 
 /* CAN MESSAGE */
