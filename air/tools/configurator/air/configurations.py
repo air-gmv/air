@@ -133,7 +133,7 @@ class Configuration(object):
         self.bsp = bsp.lower()
         self.fpu_enabled = fpu_enabled;
         self.debug_mode = False
-        logging.info ('Initializing Configuration class architecture: %s, bsp: %s', self.arch, self.bsp)        
+        #logging.info ('Initializing Configuration class architecture: %s, bsp: %s', self.arch, self.bsp)        
         
 
         # get supported pos
