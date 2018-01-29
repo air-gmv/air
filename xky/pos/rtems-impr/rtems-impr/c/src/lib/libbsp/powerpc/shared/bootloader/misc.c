@@ -9,10 +9,8 @@
  *  Copyright (C) 1999 Eric Valette. valette@crf.canon.fr
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- * $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <rtems/system.h>
@@ -26,8 +24,7 @@
 #include <rtems/bspIo.h>
 #include <bsp.h>
 
-SPR_RW(DEC)
-SPR_RO(PVR)
+SPR_RO(PPC_PVR)
 
 struct inode;
 struct wait_queue;
@@ -89,7 +86,7 @@ void hang(const char *s, u_long x, ctxt *p) {
 	exit();
 };
 
-void *zalloc(void *x, unsigned items, unsigned size)
+static void *zalloc(void *x, unsigned items, unsigned size)
 {
 	void *p = salloc(items*size);
 
@@ -99,7 +96,7 @@ void *zalloc(void *x, unsigned items, unsigned size)
 	return p;
 }
 
-void zfree(void *x, void *addr, unsigned nb)
+static void zfree(void *x, void *addr, unsigned nb)
 {
 	sfree(addr);
 }
@@ -176,15 +173,17 @@ void decompress_kernel(int kernel_size, void * zimage_start, int len,
 		printk("Not enough memory to uncompress the kernel.");
 		exit();
 	}
+
+	rescopy=salloc(sizeof(RESIDUAL));
+	/* Let us hope that residual data is aligned on word boundary */
+	*rescopy =  *bd->residual;
+	bd->residual = (void *)PAGE_ALIGN(kernel_size);
+
 	/* Note that this clears the bss as a side effect, so some code
 	 * with ugly special case for SMP could be removed from the kernel!
 	 */
 	memset(parea, 0, kernel_size);
 	printk("\nUncompressing the kernel...\n");
-	rescopy=salloc(sizeof(RESIDUAL));
-	/* Let us hope that residual data is aligned on word boundary */
-	*rescopy =  *bd->residual;
-	bd->residual = (void *)PAGE_ALIGN(kernel_size);
 
 	gunzip(parea, kernel_size, zimage_start, &zimage_size);
 
@@ -231,9 +230,11 @@ void decompress_kernel(int kernel_size, void * zimage_start, int len,
 
 static int ticks_per_ms=0;
 
-/* this is from rtems_bsp_delay from libcpu */
+/*
+ * This is based on rtems_bsp_delay from libcpu
+ */
 void
-boot_udelay(uint32_t   _microseconds)
+boot_udelay(uint32_t _microseconds)
 {
    uint32_t   start, ticks, now;
 
@@ -253,16 +254,13 @@ setup_hw(void)
 	struct pci_dev *default_vga;
 	int timer, err;
 	u_short default_vga_cmd;
-	static unsigned int indic;
-
-	indic = 0;
 
 	res=bd->residual;
 	default_vga=NULL;
 	default_vga_cmd = 0;
 
 #define vpd res->VitalProductData
-	if (_read_PVR()>>16 != 1) {
+	if (_read_PPC_PVR()>>16 != 1) {
 		if ( res && vpd.ProcessorBusHz ) {
 			ticks_per_ms = vpd.ProcessorBusHz/
 			    (vpd.TimeBaseDivisor ? vpd.TimeBaseDivisor : 4000);
@@ -287,13 +285,16 @@ setup_hw(void)
 	printk("\nModel: %s\nSerial: %s\n"
 	       "Processor/Bus frequencies (Hz): %ld/%ld\n"
 	       "Time Base Divisor: %ld\n"
-	       "Memory Size: %lx\n",
+	       "Memory Size: %lx\n"
+		   "Residual: %lx (length %lu)\n",
  	       vpd.PrintableModel,
 	       vpd.Serial,
 	       vpd.ProcessorHz,
                vpd.ProcessorBusHz,
 	       (vpd.TimeBaseDivisor ? vpd.TimeBaseDivisor : 4000),
-	       res->TotalMemory);
+	       res->TotalMemory,
+	       (unsigned long)res,
+	       res->ResidualLength);
 
 	/* This reconfigures all the PCI subsystem */
         pci_init();

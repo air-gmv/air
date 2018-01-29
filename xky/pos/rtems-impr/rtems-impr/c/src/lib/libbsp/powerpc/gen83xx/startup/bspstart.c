@@ -7,18 +7,22 @@
  */
 
 /*
- * Copyright (c) 2008
- * Embedded Brains GmbH
- * Obere Lagerstr. 30
- * D-82178 Puchheim
- * Germany
- * rtems@embedded-brains.de
+ * Copyright (c) 2008-2014 embedded brains GmbH.  All rights reserved.
  *
- * The license and distribution terms for this file may be found in the file
- * LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
+ *  embedded brains GmbH
+ *  Dornierstr. 4
+ *  82178 Puchheim
+ *  Germany
+ *  <info@embedded-brains.de>
  *
- * $Id$
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * http://www.rtems.org/license/LICENSE.
  */
+
+#include <rtems/counter.h>
+
+#include <libchip/ns16550.h>
 
 #include <libcpu/powerpc-utility.h>
 
@@ -26,24 +30,17 @@
 #include <bsp/vectors.h>
 #include <bsp/bootcard.h>
 #include <bsp/irq-generic.h>
-
-#ifdef HAS_UBOOT
-
-/*
- * We want this in the data section, because the startup code clears the BSS
- * section after the initialization of the board info.
- */
-bd_t bsp_uboot_board_info = { .bi_baudrate = 123 };
-
-/* Size in words */
-const size_t bsp_uboot_board_info_size = (sizeof( bd_t) + 3) / 4;
-
-#endif /* HAS_UBOOT */
+#include <bsp/linker-symbols.h>
+#include <bsp/u-boot.h>
+#include <bsp/console-termios.h>
 
 /* Configuration parameters for console driver, ... */
 unsigned int BSP_bus_frequency;
 
-/* Configuration parameters for clock driver, ... */
+/* Configuration parameter for clock driver */
+uint32_t bsp_time_base_frequency;
+
+/* Legacy */
 uint32_t bsp_clicks_per_usec;
 
 /* Default decrementer exception handler */
@@ -59,6 +56,7 @@ void BSP_panic(char *s)
   rtems_interrupt_level level;
 
   rtems_interrupt_disable(level);
+  (void) level;
 
   printk("%s PANIC %s\n", rtems_get_version_string(), s);
 
@@ -72,6 +70,7 @@ void _BSP_Fatal_error(unsigned n)
   rtems_interrupt_level level;
 
   rtems_interrupt_disable( level);
+  (void) level;
 
   printk( "%s PANIC ERROR %u\n", rtems_get_version_string(), n);
 
@@ -83,19 +82,14 @@ void _BSP_Fatal_error(unsigned n)
 void bsp_start( void)
 {
   rtems_status_code sc = RTEMS_SUCCESSFUL;
-
-  ppc_cpu_id_t myCpu;
-  ppc_cpu_revision_t myCpuRevision;
-
-  uintptr_t interrupt_stack_start = (uintptr_t) bsp_interrupt_stack_start;
-  uintptr_t interrupt_stack_size = (uintptr_t) bsp_interrupt_stack_size;
+  unsigned long i = 0;
 
   /*
    * Get CPU identification dynamically. Note that the get_ppc_cpu_type() function
    * store the result in global variables so that it can be used latter...
    */
-  myCpu = get_ppc_cpu_type();
-  myCpuRevision = get_ppc_cpu_revision();
+  get_ppc_cpu_type();
+  get_ppc_cpu_revision();
 
   /* Basic CPU initialization */
   cpu_init();
@@ -104,11 +98,11 @@ void bsp_start( void)
    * Enable instruction and data caches. Do not force writethrough mode.
    */
 
-#if INSTRUCTION_CACHE_ENABLE
+#ifdef BSP_INSTRUCTION_CACHE_ENABLED
   rtems_cache_enable_instruction();
 #endif
 
-#if DATA_CACHE_ENABLE
+#ifdef BSP_DATA_CACHE_ENABLED
   rtems_cache_enable_data();
 #endif
 
@@ -121,21 +115,32 @@ void bsp_start( void)
 
 #ifdef HAS_UBOOT
   BSP_bus_frequency = bsp_uboot_board_info.bi_busfreq;
-  bsp_clicks_per_usec = bsp_uboot_board_info.bi_busfreq / 4000000;
 #else /* HAS_UBOOT */
   BSP_bus_frequency = BSP_CLKIN_FRQ * BSP_SYSPLL_MF / BSP_SYSPLL_CKID;
-  bsp_clicks_per_usec = BSP_bus_frequency / 4000000;
 #endif /* HAS_UBOOT */
+  bsp_time_base_frequency = BSP_bus_frequency / 4;
+  bsp_clicks_per_usec = bsp_time_base_frequency / 1000000;
+  rtems_counter_initialize_converter(bsp_time_base_frequency);
+
+  /* Initialize some console parameters */
+  for (i = 0; i < console_device_count; ++i) {
+    ns16550_context *ctx = (ns16550_context *) console_device_table[i].context;
+
+    ctx->clock = BSP_bus_frequency;
+
+    #ifdef HAS_UBOOT
+      ctx->initial_baud = bsp_uboot_board_info.bi_baudrate;
+    #endif
+  }
 
   /* Initialize exception handler */
-  sc = ppc_exc_initialize(
-    PPC_INTERRUPT_DISABLE_MASK_DEFAULT,
-    interrupt_stack_start,
-    interrupt_stack_size
+#ifndef BSP_DATA_CACHE_ENABLED
+  ppc_exc_cache_wb_check = 0;
+#endif
+  ppc_exc_initialize(
+    (uintptr_t) bsp_section_work_begin,
+    rtems_configuration_get_interrupt_stack_size()
   );
-  if (sc != RTEMS_SUCCESSFUL) {
-    BSP_panic("cannot initialize exceptions");
-  }
 
   /* Install default handler for the decrementer exception */
   sc = ppc_exc_set_handler( ASM_DEC_VECTOR, mpc83xx_decrementer_exception_handler);
@@ -144,10 +149,7 @@ void bsp_start( void)
   }
 
   /* Initalize interrupt support */
-  sc = bsp_interrupt_initialize();
-  if (sc != RTEMS_SUCCESSFUL) {
-    BSP_panic("cannot intitialize interrupts\n");
-  }
+  bsp_interrupt_initialize();
 
 #ifdef SHOW_MORE_INIT_SETTINGS
   printk("Exit from bspstart\n");

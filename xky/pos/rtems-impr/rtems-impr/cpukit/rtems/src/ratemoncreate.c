@@ -1,114 +1,86 @@
 /**
- *  @file
- *  ratemoncreate.c
+ * @file
  *
- *  @brief create a rate monotonic object
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
+ * @brief Create a Period
+ * @ingroup ClassicRateMon Rate Monotonic Scheduler
+ */
+
+/*
  *  COPYRIGHT (c) 1989-2007.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  575     | 17/11/2008  | mcoutinho    | IPR 70
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  7093    | 09/04/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup RTEMS_API RTEMS API
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup RTEMS_API_RATEMON Rate Monotonic Manager
- *  @{
- */
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <rtems/system.h>
 #include <rtems/rtems/status.h>
 #include <rtems/rtems/support.h>
 #include <rtems/score/isr.h>
-#include <rtems/score/object.h>
-#include <rtems/rtems/ratemon.h>
+#include <rtems/rtems/ratemonimpl.h>
 #include <rtems/score/thread.h>
+#include <rtems/score/watchdogimpl.h>
 
+/*
+ *  rtems_rate_monotonic_create
+ *
+ *  This directive creates a rate monotonic timer and performs
+ *  some initialization.
+ *
+ *  Input parameters:
+ *    name - name of period
+ *    id   - pointer to rate monotonic id
+ *
+ *  Output parameters:
+ *    id               - rate monotonic id
+ *    RTEMS_SUCCESSFUL - if successful
+ *    error code       - if unsuccessful
+ */
 
 rtems_status_code rtems_rate_monotonic_create(
-                                              rtems_name name ,
-                                              Objects_Id *id
-                                              )
+  rtems_name  name,
+  rtems_id   *id
+)
 {
-    /* period to be created */
-    Rate_monotonic_Control *the_period;
+  Rate_monotonic_Control *the_period;
 
+  if ( !rtems_is_name_valid( name ) )
+    return RTEMS_INVALID_NAME;
 
-    /*  check if name is valid */
-    if(!rtems_is_name_valid(name))
-    {
-        /* return invalid name */
-        return RTEMS_INVALID_NAME;
-    }
+  if ( !id )
+    return RTEMS_INVALID_ADDRESS;
 
-    /* check if id address is valid */
-    if(!id)
-    {
-        /* return invalid address */
-        return RTEMS_INVALID_ADDRESS;
-    }
+  the_period = _Rate_monotonic_Allocate();
 
-    /* disable dispatch to prevent deletion */
-    _Thread_Disable_dispatch();
+  if ( !the_period ) {
+    _Objects_Allocator_unlock();
+    return RTEMS_TOO_MANY;
+  }
 
-    /* allocate the period */
-    the_period = _Rate_monotonic_Allocate();
+  _ISR_lock_Initialize( &the_period->Lock, "Rate Monotonic Period" );
+  _Priority_Node_initialize( &the_period->Priority, 0 );
+  _Priority_Node_set_inactive( &the_period->Priority );
 
-    /* check if the period was allocated */
-    if(!the_period)
-    {
-        /* enable the dispatch (undo previous step) */
-        _Thread_Enable_dispatch();
+  the_period->owner = _Thread_Get_executing();
+  the_period->state = RATE_MONOTONIC_INACTIVE;
 
-        /* too many periods were created */
-        return RTEMS_TOO_MANY;
-    }
+  _Watchdog_Preinitialize( &the_period->Timer, _Per_CPU_Get_by_index( 0 ) );
+  _Watchdog_Initialize( &the_period->Timer, _Rate_monotonic_Timeout );
 
-    /* set the period owner (only one onwer and must the calling thread) */
-    the_period->owner = _Thread_Executing;
+  _Rate_monotonic_Reset_statistics( the_period );
 
-    /* set the initial period state to inactive */
-    the_period->state = RATE_MONOTONIC_INACTIVE;
+  _Objects_Open(
+    &_Rate_monotonic_Information,
+    &the_period->Object,
+    (Objects_Name) name
+  );
 
-    /* initialize the watchdog */
-    _Watchdog_Initialize(&the_period->Timer , NULL , 0 , NULL);
-
-    /* initialize the rate monotonic object information */
-    _Objects_Open(&_Rate_monotonic_Information ,
-                  &the_period->Object ,
-                  (Objects_Name) name);
-
-    /* set the output identifier for the user */
-    *id = the_period->Object.id;
-
-    /* enable the dispatch */
-    _Thread_Enable_dispatch();
-
-    /* return success */
-    return RTEMS_SUCCESSFUL;
+  *id = the_period->Object.id;
+  _Objects_Allocator_unlock();
+  return RTEMS_SUCCESSFUL;
 }
-
-/**  
- *  @}
- */
-
-/**
- *  @}
- */

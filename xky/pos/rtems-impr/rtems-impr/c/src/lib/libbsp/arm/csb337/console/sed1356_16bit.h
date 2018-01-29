@@ -1,3 +1,21 @@
+/**
+ * @file
+ *
+ * @ingroup arm_csb337
+ *
+ * @brief SED1356 LCD/CRT Controllers for KIT637_V6 (CSB637)
+ *        16-Bit access mode
+ */
+
+/**
+ * @defgroup csb337_sed1356 SED Video Controller.
+ *
+ * @ingroup arm_csb337
+ *
+ * @brief SED1356 LCD/CRT Controllers for KIT637_V6 (CSB637)
+ *        16-Bit access mode
+ */
+
 /*
  * sed1356.h: SED1356 LCD/CRT Controllers for KIT637_V6 (CSB637)
  *            16-Bit access mode
@@ -30,8 +48,6 @@
  *  Fernando Nicodemos <fgnicodemos@terra.com.br> from NCB - Sistemas
  *  Embarcados Ltda. (Brazil) to be more compliant with RTEMS coding standards 
  *  and to eliminate C++ style comments.
- *
- *  $Id$
  */
 
 #ifndef __sed1356_16bit_h

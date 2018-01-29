@@ -1,6 +1,3 @@
-dnl
-dnl $Id: gcc-pipe.m4 179 2008-09-17 14:07:38Z hsilva $
-dnl
 dnl Check whether the target compiler accepts -pipe
 dnl
 

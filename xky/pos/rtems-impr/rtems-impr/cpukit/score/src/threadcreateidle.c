@@ -1,143 +1,100 @@
 /**
  *  @file
- *  threadcreateidle.c
  *
- *  @brief create an idle thread
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-1999.
+ *  @brief Create Idle Thread
+ *  @ingroup ScoreThread
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2011.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  4429    | 21/09/2009  | mcoutinho    | IPR 685
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  6325    | 01/03/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_CORE Super Core
- *  @{
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup ScoreThread Thread Handler
- *  @{
- */
-
-#include <rtems/system.h>
-#include <rtems/score/apiext.h>
-#include <rtems/score/context.h>
-#include <rtems/score/interr.h>
-#include <rtems/score/isr.h>
-#include <rtems/score/object.h>
-#include <rtems/score/priority.h>
-#include <rtems/score/states.h>
-#include <rtems/score/sysstate.h>
-#include <rtems/score/thread.h>
-#include <rtems/score/threadq.h>
-#include <rtems/score/userext.h>
-#include <rtems/score/wkspace.h>
-
-/* idle thread name */
-const char *_Thread_Idle_name = "IDLE";
-
-
-void _Thread_Create_idle(void)
-{
-    /* idle thread entry point */
-    void *idle;
-
-    /* idle thread stack size */
-    uint32_t idle_task_stack_size;
-
-
-    /* the entire workspace is zeroed during its initialization.  Thus, all
-     * fields not explicitly assigned were explicitly zeroed by
-     * _Workspace_Initialization */
-
-    /* allocate space for the idle thread */
-    _Thread_Idle = _Thread_Internal_allocate();
-
-    /* initialize the idle thread */
-
-    /* if the CPU has the idle thread entry point */
-#if (CPU_PROVIDES_IDLE_THREAD_BODY == TRUE)
-
-    /* idle thread body is the CPU/BSP specific body */
-    idle = (void *) _CPU_Thread_Idle_body;
-
-#else
-
-    /* idle thread body is the RTEMS default */
-    idle = (void *) _Thread_Idle_body;
-
+#if HAVE_CONFIG_H
+#include "config.h"
 #endif
 
-    /* or, if the CPU table contains a idle thread, then override it */
-    if(_CPU_Table.idle_task)
-    {
-        /* override the idle thread entry point */
-        idle = _CPU_Table.idle_task;
-    }
+#include <rtems/score/threadimpl.h>
+#include <rtems/score/assert.h>
+#include <rtems/score/schedulerimpl.h>
+#include <rtems/score/stackimpl.h>
+#include <rtems/score/sysstate.h>
+#include <rtems/score/userextimpl.h>
+#include <rtems/config.h>
 
-    /* the idle thread stack corresponds to the size on the CPU table */
-    idle_task_stack_size = _CPU_Table.idle_task_stack_size;
+static void _Thread_Create_idle_for_CPU( Per_CPU_Control *cpu )
+{
+  Objects_Name             name;
+  Thread_Control          *idle;
+  const Scheduler_Control *scheduler;
 
-    /* check the stack and place at least the minimum size */
-    if(idle_task_stack_size < STACK_MINIMUM_SIZE)
-    {
-        /* set the stack size to the minimum allowed */
-        idle_task_stack_size = STACK_MINIMUM_SIZE;
-    }
+  scheduler = _Scheduler_Get_by_CPU( cpu );
 
-    /* initialize the idle thread */
-    _Thread_Initialize(&_Thread_Internal_information ,
-                       _Thread_Idle ,
-                       idle_task_stack_size ,
-                       CPU_IDLE_TASK_IS_FP ,
-                       PRIORITY_MAXIMUM ,
-                       TRUE , /* preemptable */
-                       THREAD_CPU_BUDGET_ALGORITHM_NONE ,
-                       NULL , /* no budget algorithm callout */
-                       0 , /* all interrupts enabled */
-                       (Objects_Name) _Thread_Idle_name);
+#if defined(RTEMS_SMP)
+  if (scheduler == NULL) {
+    return;
+  }
+#endif
 
-    /* WARNING!!! This is necessary to "kick" start the system and
-     *            MUST be done before _Thread_Start is invoked */
+  name.name_u32 = _Objects_Build_name( 'I', 'D', 'L', 'E' );
 
-    /* set the executing thread */
-    _Thread_Executing = _Thread_Idle;
+  /*
+   *  The entire workspace is zeroed during its initialization.  Thus, all
+   *  fields not explicitly assigned were explicitly zeroed by
+   *  _Workspace_Initialization.
+   */
+  idle = _Thread_Internal_allocate();
+  _Assert( idle != NULL );
 
-    /* set the heir thread */
-    _Thread_Heir = _Thread_Executing;
+  _Thread_Initialize(
+    &_Thread_Internal_information,
+    idle,
+    scheduler,
+    NULL,        /* allocate the stack */
+    _Stack_Ensure_minimum( rtems_configuration_get_idle_task_stack_size() ),
+    CPU_IDLE_TASK_IS_FP,
+    _Scheduler_Map_priority( scheduler, scheduler->maximum_priority ),
+    true,        /* preemptable */
+    THREAD_CPU_BUDGET_ALGORITHM_NONE,
+    NULL,        /* no budget algorithm callout */
+    0,           /* all interrupts enabled */
+    name
+  );
 
-    /* start the idle thread with:
-     *   the idle thread
-     *   the numeric type of thread
-     *   the entry point
-     *   no pointer argument
-     *   no mumeric argument */
-    _Thread_Start(_Thread_Idle ,
-                  THREAD_START_NUMERIC ,
-                  idle ,
-                  NULL ,
-                  0);
+  /*
+   *  WARNING!!! This is necessary to "kick" start the system and
+   *             MUST be done before _Thread_Start is invoked.
+   */
+  cpu->heir      =
+  cpu->executing = idle;
 
+  idle->is_idle = true;
+  idle->Start.Entry.adaptor = _Thread_Entry_adaptor_idle;
+  idle->Start.Entry.Kinds.Idle.entry = rtems_configuration_get_idle_task();
+
+  _Thread_Load_environment( idle );
+
+  idle->current_state = STATES_READY;
+  _Scheduler_Start_idle( scheduler, idle, cpu );
+  _User_extensions_Thread_start( idle );
 }
 
-/**  
- *  @}
- */
+void _Thread_Create_idle( void )
+{
+  uint32_t cpu_count = _SMP_Get_processor_count();
+  uint32_t cpu_index;
 
-/**
- *  @}
- */
+  _System_state_Set( SYSTEM_STATE_BEFORE_MULTITASKING );
+
+  for ( cpu_index = 0 ; cpu_index < cpu_count ; ++cpu_index ) {
+    Per_CPU_Control *cpu = _Per_CPU_Get_by_index( cpu_index );
+
+    if ( _Per_CPU_Is_processor_online( cpu ) ) {
+      _Thread_Create_idle_for_CPU( cpu );
+    }
+  }
+}

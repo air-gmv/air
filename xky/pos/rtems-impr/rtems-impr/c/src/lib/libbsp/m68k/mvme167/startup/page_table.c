@@ -41,8 +41,6 @@
  *  NOT enabled. If jumper J1-6 is removed, the instruction cache is not enabled.
  *
  *  Copyright (c) 1998, National Research Council of Canada
- *
- *  $Id$
  */
 
 #include <bsp.h>
@@ -60,16 +58,11 @@
  *  is mapped to the physical address range 0xFF000000--0xFFFFFFFF as
  *  caching disabled, serialized access.
  *
- *  Input parameters:
- *    config_table - ignored for now
- *
  *  Output parameters: NONE
  *
  *  Return values: NONE
  */
-void page_table_init(
-  rtems_configuration_table *config_table
-)
+void page_table_init( void )
 {
   unsigned char j1;               /* State of J1 jumpers */
   register unsigned long dtt0;    /* Content of dtt0 */
@@ -120,7 +113,7 @@ void page_table_init(
 	}
 
   /* do it ! */
-  asm volatile("movec %0, %%tc\n\t"    /* turn off paged address translation */
+  __asm__ volatile("movec %0, %%tc\n\t"    /* turn off paged address translation */
                "movec %0, %%cacr\n\t"  /* disable both caches */
                "cinva %%bc\n\t"        /* clear both caches */
                "movec %1,%%dtt0\n\t"   /* block address translation on */
@@ -145,7 +138,7 @@ void page_table_init(
  */
 void page_table_teardown( void )
 {
-  asm volatile ("movec %0,%%tc\n\t"
+  __asm__ volatile ("movec %0,%%tc\n\t"
                 "movec %0,%%cacr\n\t"
                 "cpusha %%bc\n\t"
                 "movec %0,%%dtt0\n\t"

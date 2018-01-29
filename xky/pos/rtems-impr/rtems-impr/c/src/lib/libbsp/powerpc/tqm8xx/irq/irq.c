@@ -15,7 +15,7 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 | this file contains the console driver                           |
@@ -35,58 +35,54 @@
  * functions to enable/disable a source at the SIU/CPM irq controller
  */
 
-rtems_status_code bsp_irq_disable_at_SIU(rtems_vector_number irqnum)
+static rtems_status_code bsp_irq_disable_at_SIU(rtems_vector_number irqnum)
 {
   rtems_vector_number vecnum = irqnum - BSP_SIU_IRQ_LOWEST_OFFSET;
   m8xx.simask &= ~(1 << (31 - vecnum));
   return RTEMS_SUCCESSFUL;
 }
 
-rtems_status_code bsp_irq_enable_at_SIU(rtems_vector_number irqnum)
+static rtems_status_code bsp_irq_enable_at_SIU(rtems_vector_number irqnum)
 {
   rtems_vector_number vecnum = irqnum - BSP_SIU_IRQ_LOWEST_OFFSET;
   m8xx.simask |= (1 << (31 - vecnum));
   return RTEMS_SUCCESSFUL;
 }
 
-rtems_status_code bsp_irq_disable_at_CPM(rtems_vector_number irqnum)
+static rtems_status_code bsp_irq_disable_at_CPM(rtems_vector_number irqnum)
 {
   rtems_vector_number vecnum = irqnum - BSP_CPM_IRQ_LOWEST_OFFSET;
   m8xx.cimr &= ~(1 << (vecnum));
   return RTEMS_SUCCESSFUL;
 }
 
-rtems_status_code bsp_irq_enable_at_CPM(rtems_vector_number irqnum)
+static rtems_status_code bsp_irq_enable_at_CPM(rtems_vector_number irqnum)
 {
   rtems_vector_number vecnum = irqnum - BSP_CPM_IRQ_LOWEST_OFFSET;
   m8xx.cimr |= (1 << (vecnum));
   return RTEMS_SUCCESSFUL;
 }
 
-rtems_status_code bsp_interrupt_vector_enable( rtems_vector_number irqnum)
+void bsp_interrupt_vector_enable(rtems_vector_number vector)
 {
-  if (BSP_IS_CPM_IRQ(irqnum)) {
-    bsp_irq_enable_at_CPM(irqnum);
-    return RTEMS_SUCCESSFUL;
+  bsp_interrupt_assert(bsp_interrupt_is_valid_vector(vector));
+
+  if (BSP_IS_CPM_IRQ(vector)) {
+    bsp_irq_enable_at_CPM(vector);
+  } else if (BSP_IS_SIU_IRQ(vector)) {
+    bsp_irq_enable_at_SIU(vector);
   }
-  else if (BSP_IS_SIU_IRQ(irqnum)) {
-    bsp_irq_enable_at_SIU(irqnum);
-    return RTEMS_SUCCESSFUL;
-  }
-  return RTEMS_INVALID_ID;
 }
 
-rtems_status_code bsp_interrupt_vector_disable( rtems_vector_number irqnum)
+void bsp_interrupt_vector_disable(rtems_vector_number vector)
 {
-  if (BSP_IS_CPM_IRQ(irqnum)) {
-    bsp_irq_disable_at_CPM(irqnum);
-    return RTEMS_SUCCESSFUL;
+  bsp_interrupt_assert(bsp_interrupt_is_valid_vector(vector));
+
+  if (BSP_IS_CPM_IRQ(vector)) {
+    bsp_irq_disable_at_CPM(vector);
+  } else if (BSP_IS_SIU_IRQ(vector)) {
+    bsp_irq_disable_at_SIU(vector);
   }
-  else if (BSP_IS_SIU_IRQ(irqnum)) {
-    bsp_irq_disable_at_SIU(irqnum);
-    return RTEMS_SUCCESSFUL;
-  }
-  return RTEMS_INVALID_ID;
 }
 
 /*
@@ -184,7 +180,7 @@ static int BSP_irq_handle_at_siu( unsigned excNum)
 /*
  * Activate the CPIC
  */
-rtems_status_code mpc8xx_cpic_initialize( void)
+static rtems_status_code mpc8xx_cpic_initialize( void)
 {
   /*
    * mask off all interrupts
@@ -204,7 +200,7 @@ rtems_status_code mpc8xx_cpic_initialize( void)
 /*
  * Activate the SIU interrupt controller
  */
-rtems_status_code mpc8xx_siu_int_initialize( void)
+static rtems_status_code mpc8xx_siu_int_initialize( void)
 {
   /*
    * mask off all interrupts
@@ -214,7 +210,7 @@ rtems_status_code mpc8xx_siu_int_initialize( void)
   return RTEMS_SUCCESSFUL;
 }
 
-int mpc8xx_exception_handler(BSP_Exception_frame *frame,
+static int mpc8xx_exception_handler(BSP_Exception_frame *frame,
 			     unsigned exception_number)
 {
   return BSP_irq_handle_at_siu(exception_number);
@@ -232,9 +228,4 @@ rtems_status_code bsp_interrupt_facility_initialize()
   }
   /* Initialize the CPIC interrupt controller */
   return mpc8xx_cpic_initialize();
-}
-
-void bsp_interrupt_handler_default( rtems_vector_number vector)
-{
-	printk( "Spurious interrupt: 0x%08x\n", vector);
 }

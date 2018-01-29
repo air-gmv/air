@@ -1,113 +1,47 @@
 /**
  *  @file
- *  timerdelete.c
  *
- *  @brief delete a timer
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-2002.
+ *  @brief RTEMS Delete Timer
+ *  @ingroup ClassicTimer
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2007.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  590     | 17/11/2008  | mcoutinho    | IPR 64
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  5317    | 02/11/2009  | mcoutinho    | IPR 831
- *  7124    | 09/04/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup RTEMS_API RTEMS API
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup RTEMS_API_TIMER Timer Manager
- *  @{
- */
-
-#include <rtems/system.h>
-#include <rtems/rtems/status.h>
-#include <rtems/rtems/support.h>
-#include <rtems/score/object.h>
-#include <rtems/score/thread.h>
-#include <rtems/rtems/timer.h>
-#include <rtems/score/tod.h>
-#include <rtems/score/watchdog.h>
-
-
-rtems_status_code rtems_timer_delete(
-                                     Objects_Id id
-                                     )
-{
-    /* timer to delete */
-    Timer_Control *the_timer;
-
-    /* timer to delete location */
-    Objects_Locations location;
-
-
-    /* get the timer */
-    the_timer = _Timer_Get(id , &location);
-
-    /* check the timer location */
-    switch(location)
-    {
-#if defined(RTEMS_MULTIPROCESSING)
-        
-        /* timer is remote */
-        case OBJECTS_REMOTE: 
-            
-            /* should never return this */
-
-            /* return internal error */
-            return RTEMS_INTERNAL_ERROR;
+#if HAVE_CONFIG_H
+#include "config.h"
 #endif
 
-            /* timer id is invalid */
-        case OBJECTS_ERROR:
+#include <rtems/rtems/timerimpl.h>
 
-            /* return invalid identifier error */
-            return RTEMS_INVALID_ID;
+rtems_status_code rtems_timer_delete(
+  rtems_id id
+)
+{
+  Timer_Control    *the_timer;
+  ISR_lock_Context  lock_context;
 
-            /* timer is local (nominal case) */
-        case OBJECTS_LOCAL:
+  _Objects_Allocator_lock();
 
-            /* close the timer object information */
-            _Objects_Close(&_Timer_Information , &the_timer->Object);
+  the_timer = _Timer_Get( id, &lock_context );
+  if ( the_timer != NULL ) {
+    Per_CPU_Control *cpu;
 
-            /* remove the watchdog */
-            (void) _Watchdog_Remove(&the_timer->Ticker);
+    _Objects_Close( &_Timer_Information, &the_timer->Object );
+    cpu = _Timer_Acquire_critical( the_timer, &lock_context );
+    _Timer_Cancel( cpu, the_timer );
+    _Timer_Release( cpu, &lock_context );
+    _Timer_Free( the_timer );
+    _Objects_Allocator_unlock();
+    return RTEMS_SUCCESSFUL;
+  }
 
-            /* free the timer memory */
-            _Timer_Free(the_timer);
-
-            /* enable dispatch (disabled by _Timer_Get) */
-            _Thread_Enable_dispatch();
-
-            /* return success */
-            return RTEMS_SUCCESSFUL;
-
-            /* default clause: the object location is invalid */
-        default:
-
-            /* an internal error occured and the object location is invalid */
-            return RTEMS_INTERNAL_INVALID_OBJECT_LOCATION;
-    }
+  _Objects_Allocator_unlock();
+  return RTEMS_INVALID_ID;
 }
-
-/**  
- *  @}
- */
-
-/**
- *  @}
- */

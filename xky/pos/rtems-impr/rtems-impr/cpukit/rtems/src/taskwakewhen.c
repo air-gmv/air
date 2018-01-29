@@ -1,125 +1,63 @@
 /**
  *  @file
- *  taskwakewhen.c
  *
- *  @brief wake a task at a given time wall
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
+ *  @brief RTEMS Task Wake When
+ *  @ingroup ClassicTasks
+ */
+
+/*
  *  COPYRIGHT (c) 1989-1999.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  7124    | 09/04/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup RTEMS_API RTEMS API
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup RTEMS_API_TASK Task Manager
- *  @{
- */
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#include <rtems/system.h>
-#include <rtems/rtems/status.h>
-#include <rtems/rtems/support.h>
-#include <rtems/rtems/modes.h>
-#include <rtems/rtems/clock.h>
-#include <rtems/score/object.h>
-#include <rtems/score/stack.h>
-#include <rtems/score/states.h>
 #include <rtems/rtems/tasks.h>
-#include <rtems/score/thread.h>
-#include <rtems/score/threadq.h>
-#include <rtems/score/tod.h>
-#include <rtems/score/userext.h>
-#include <rtems/score/wkspace.h>
-#include <rtems/score/apiext.h>
-#include <rtems/score/sysstate.h>
-
+#include <rtems/rtems/clock.h>
+#include <rtems/score/threadimpl.h>
+#include <rtems/score/todimpl.h>
+#include <rtems/score/watchdogimpl.h>
 
 rtems_status_code rtems_task_wake_when(
-                                       rtems_time_of_day *time_buffer
-                                       )
+  rtems_time_of_day *time_buffer
+)
 {
-    /* number of seconds since epoch to wake up the task */
-    Watchdog_Interval seconds;
+  uint32_t         seconds;
+  Thread_Control  *executing;
+  Per_CPU_Control *cpu_self;
 
+  if ( !_TOD_Is_set() )
+    return RTEMS_NOT_DEFINED;
 
-    /* check if the time of day has been set */
-    if(!_TOD_Is_set)
-    {
-        /* return not defined error */
-        return RTEMS_NOT_DEFINED;
-    }
+  if ( !time_buffer )
+    return RTEMS_INVALID_ADDRESS;
 
-    /* check the address of the time buffer */
-    if(!time_buffer)
-    {
-        /* if NULL, return invalid address error */
-        return RTEMS_INVALID_ADDRESS;
-    }
+  time_buffer->ticks = 0;
 
-    /* initialize the time buffer ticks to zero (wake when only has second
-     * resolution) */
-    time_buffer->ticks = 0;
+  if ( !_TOD_Validate( time_buffer ) )
+    return RTEMS_INVALID_CLOCK;
 
-    /* check if time buffer has a valid date */
-    if(!_TOD_Validate(time_buffer))
-    {
-        /* if not valid, return invalid clock error */
-        return RTEMS_INVALID_CLOCK;
-    }
+  seconds = _TOD_To_seconds( time_buffer );
 
-    /* convert the time buffer to seconds */
-    seconds = _TOD_To_seconds(time_buffer);
+  if ( seconds <= _TOD_Seconds_since_epoch() )
+    return RTEMS_INVALID_CLOCK;
 
-    /* if seconds is too low */
-    if(seconds <= _TOD_Seconds_since_epoch)
-    {
-        /* return invalid clock error */
-        return RTEMS_INVALID_CLOCK;
-    }
-
-    /* disable thread dispatching */
-    _Thread_Disable_dispatch();
-
-    /* set the thread state to waiting for time */
-    _Thread_Set_state(_Thread_Executing , STATES_WAITING_FOR_TIME);
-
-    /* initialize the watchdog */
-    _Watchdog_Initialize(&_Thread_Executing->Timer ,
-                         _Thread_Delay_ended ,
-                         _Thread_Executing->Object.id ,
-                         NULL);
-
-    /* and insert it on the watchdog seconds chain */
-    _Watchdog_Insert_seconds(&_Thread_Executing->Timer ,
-                             seconds - _TOD_Seconds_since_epoch);
-
-    /* re-enable thread dispatch */
-    _Thread_Enable_dispatch();
-
-    /* return success */
-    return RTEMS_SUCCESSFUL;
+  cpu_self = _Thread_Dispatch_disable();
+    executing = _Thread_Executing;
+    _Thread_Set_state( executing, STATES_WAITING_FOR_TIME );
+    _Thread_Wait_flags_set( executing, THREAD_WAIT_STATE_BLOCKED );
+    _Thread_Timer_insert_realtime(
+      executing,
+      cpu_self,
+      _Thread_Timeout,
+      _Watchdog_Realtime_from_seconds( seconds )
+    );
+  _Thread_Dispatch_enable( cpu_self );
+  return RTEMS_SUCCESSFUL;
 }
-
-/**  
- *  @}
- */
-
-/**
- *  @}
- */

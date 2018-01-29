@@ -11,8 +11,6 @@
     REGARD TO THIS SOFTWARE INCLUDING BUT NOT LIMITED TO THE WARRANTIES
     OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
-    $Id$
-
 ********************************************************************************
 *
 *   r46kstub.c -- target debugging stub for the IDT R4600 Orion processor
@@ -208,6 +206,16 @@ static char do_threads;      /* != 0 means we are supporting threads */
  */
 extern char getDebugChar (void);
 extern void putDebugChar (char);
+
+/*
+ * Exception handler
+ */
+void handle_exception (rtems_vector_number vector, CPU_Interrupt_frame *frame);
+
+/*
+ * Prototype needed by this code and to keep it self contained.
+ */
+void rtems_interrupt_catch( rtems_isr_entry, int, rtems_isr_entry *);
 
 /*
  * The following definitions are used for the gdb stub memory map
@@ -872,8 +880,7 @@ computeSignal (void)
  *  This support function prepares and sends the message containing the
  *  basic information about this exception.
  */
-
-void gdb_stub_report_exception_info(
+static void gdb_stub_report_exception_info(
   rtems_vector_number vector,
   CPU_Interrupt_frame *frame,
   int                  thread

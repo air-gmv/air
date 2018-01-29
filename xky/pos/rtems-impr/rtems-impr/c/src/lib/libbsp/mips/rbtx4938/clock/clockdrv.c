@@ -1,11 +1,20 @@
-/*
+/**
+ *  @file
+ *  
  *  Instantiate the clock driver shell.
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2012.
+ *  On-Line Applications Research Corporation (OAR).
  *
- *  clockdrv.c,v 1.5 2001/01/09 17:05:57 joel Exp
+ *  The license and distribution terms for this file may be
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <rtems.h>
-#include <libcpu/tx4938.h>
+#include <bsp/irq.h>
 #include <bsp.h>
 
 #include <stdio.h>
@@ -14,7 +23,7 @@
 #include "yamon_api.h"
 
 
-/* #define CLOCK_DRIVER_USE_FAST_IDLE */
+/* #define CLOCK_DRIVER_USE_FAST_IDLE 1 */
 
 #define CLOCK_VECTOR TX4938_IRQ_TMR0
 
@@ -30,6 +39,7 @@
 #error "Build Error: unsupported timer mode"
 #endif
 
+void new_brk_esr(void);
 
 t_yamon_retfunc esr_retfunc = 0;
 t_yamon_ref original_brk_esr = 0;
@@ -47,10 +57,16 @@ void new_brk_esr(void)
 }
 
 
-#define Clock_driver_support_install_isr( _new, _old ) \
+#define Clock_driver_support_install_isr( _new ) \
   do { \
-    _old = set_vector( _new, CLOCK_VECTOR, 1 ); \
- 	YAMON_FUNC_REGISTER_IC_ISR(17,(t_yamon_isr)_new,0,&original_tmr0_isr); /* Call Yamon to enable interrupt */ \
+    rtems_interrupt_handler_install( \
+      CLOCK_VECTOR, \
+      "clock", \
+      0, \
+      _new, \
+      NULL \
+    ); \
+    YAMON_FUNC_REGISTER_IC_ISR(17,(t_yamon_isr)_new,0,&original_tmr0_isr); /* Call Yamon to enable interrupt */ \
   } while(0)
 
 
@@ -97,5 +113,7 @@ void new_brk_esr(void)
     TX4938_REG_WRITE( TX4938_REG_BASE, TX4938_TIMER0_BASE + TX4938_TIMER_TCR, 0x0 ); /* Disable timer */ \
   } while(0)
 
+
+#define CLOCK_DRIVER_USE_DUMMY_TIMECOUNTER
 
 #include "../../../shared/clockdrv_shell.h"

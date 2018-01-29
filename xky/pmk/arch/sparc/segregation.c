@@ -52,11 +52,11 @@ void sparc_mmu_initialize(void *context_tables);
 #define MMU_ENTRY_TYPE_MASK             (3)
 
 /** Align an address for a PTP entry */
-#define MMU_PTD_PTP(addr)               (((xky_i32_t)addr >> 6U) << 2U)
+#define MMU_PTD_PTP(addr)               (((air_i32_t)addr >> 6U) << 2U)
 #define MMU_PTD_ET                      (1)
 
 /** Align an address for a PPN entry (Physical Page Number : first 24 bits on a PTE*/
-#define MMU_PTE_PPN(addr)               ((((xky_i32_t)addr) >> 12U) << 8U)
+#define MMU_PTE_PPN(addr)               ((((air_i32_t)addr) >> 12U) << 8U)
 #define MMU_PTE_ET                      (2)
 
 #define MMU_INVALID_PAGE                (0)
@@ -64,15 +64,15 @@ void sparc_mmu_initialize(void *context_tables);
 /**
  * @brief MMU Context Table pointer
  */
-static xky_u32_t *mmu_context;
+static air_u32_t *mmu_context;
 /**
  * @brief MMU L1, L2, L3 Table pointers
  */
-static xky_u32_t *ln_tables[4];
+static air_u32_t *ln_tables[4];
 
-static xky_u32_t ln_index[3] = { 0, 0, 0 };
-static xky_u32_t ln_size[3] = { L1_SIZE, L2_SIZE, L3_SIZE };
-static xky_u32_t ln_entries[3] = { L1_ENTRIES, L2_ENTRIES, L3_ENTRIES };
+static air_u32_t ln_index[3] = { 0, 0, 0 };
+static air_u32_t ln_size[3] = { L1_SIZE, L2_SIZE, L3_SIZE };
+static air_u32_t ln_entries[3] = { L1_ENTRIES, L2_ENTRIES, L3_ENTRIES };
 
 
 /**
@@ -80,9 +80,9 @@ static xky_u32_t ln_entries[3] = { L1_ENTRIES, L2_ENTRIES, L3_ENTRIES };
  * @brief flags PMK MMU abstraction flags
  * @return SPARC MMU hardware flags
  */
-static xky_u32_t sparc_get_mmu_access_type(xky_u32_t flags) {
+static air_u32_t sparc_get_mmu_access_type(air_u32_t flags) {
 
-    xky_u32_t access_type = 0;
+    air_u32_t access_type = 0;
 
     /* MMU device isn't required by SPARC */
     flags &= ~PMK_MMU_DEVICE;
@@ -136,14 +136,14 @@ static xky_u32_t sparc_get_mmu_access_type(xky_u32_t flags) {
  * @param n level of the table minus one
  * @return L(n + 1) MMU table pointer
  */
-static xky_u32_t *sparc_mmu_get_table(xky_u32_t n) {
+static air_u32_t *sparc_mmu_get_table(air_u32_t n) {
 
-    xky_u32_t i;
-    xky_u32_t *table = ln_tables[n]; /* [ln_index[n]]; */
+    air_u32_t i;
+    air_u32_t *table = ln_tables[n]; /* [ln_index[n]]; */
     for (i = 0; i < ln_entries[n]; ++i) {
         table[i] = MMU_INVALID_PAGE;
     }
-    if ((xky_u32_t)table >= (xky_u32_t)ln_tables[n + 1]) {
+    if ((air_u32_t)table >= (air_u32_t)ln_tables[n + 1]) {
 
         printk("  L%i table overflow...\n", n + 1);
     }
@@ -159,21 +159,21 @@ static xky_u32_t *sparc_mmu_get_table(xky_u32_t n) {
  * @param n level of the table minus one
  * @return L(n + 1) MMU table index
  */
-static xky_u32_t sparc_mmu_get_level_index(xky_u32_t n, void *v_addr) {
+static air_u32_t sparc_mmu_get_level_index(air_u32_t n, void *v_addr) {
 
-    xky_u32_t idx = 0;
+    air_u32_t idx = 0;
     switch (n) {
 
         case 0:
-            idx = ((xky_uptr_t)v_addr) / L1_SIZE;
+            idx = ((air_uptr_t)v_addr) / L1_SIZE;
             break;
 
         case 1:
-            idx = (((xky_uptr_t)v_addr) & (L1_SIZE - L2_SIZE)) >> 18;
+            idx = (((air_uptr_t)v_addr) & (L1_SIZE - L2_SIZE)) >> 18;
             break;
 
         case 2:
-            idx = (((xky_uptr_t)v_addr) & (L2_SIZE - L3_SIZE)) >> 12;
+            idx = (((air_uptr_t)v_addr) & (L2_SIZE - L3_SIZE)) >> 12;
             break;
     }
     return idx;
@@ -192,15 +192,15 @@ static xky_u32_t sparc_mmu_get_level_index(xky_u32_t n, void *v_addr) {
  *
  * @note This function recursive but bounded
  */
-static xky_u32_t sparc_mmu_fill_table(
-        xky_u32_t *table, void *p_addr, void *v_addr,
-        xky_u32_t n, xky_u32_t unit, xky_sz_t size, xky_u32_t access) {
+static air_u32_t sparc_mmu_fill_table(
+        air_u32_t *table, void *p_addr, void *v_addr,
+        air_u32_t n, air_u32_t unit, air_sz_t size, air_u32_t access) {
 
-    xky_u32_t i = 0;
-    xky_u32_t consumed = 0;
-    xky_u32_t l_consumed = 0;
-    xky_u32_t level_unit = ln_size[n];
-    xky_u32_t level_entries = ln_entries[n];
+    air_u32_t i = 0;
+    air_u32_t consumed = 0;
+    air_u32_t l_consumed = 0;
+    air_u32_t level_unit = ln_size[n];
+    air_u32_t level_entries = ln_entries[n];
 
     while (size > 0 && i < level_entries - 1) {
 
@@ -209,7 +209,7 @@ static xky_u32_t sparc_mmu_fill_table(
         /* lower unit ? */
         if (unit < level_unit) {
 
-            xky_u32_t *ltable;
+            air_u32_t *ltable;
 
             /* check if required table already exists */
             switch (table[i] & MMU_ENTRY_TYPE_MASK) {
@@ -217,7 +217,7 @@ static xky_u32_t sparc_mmu_fill_table(
                 /* page table descriptor */
                 case MMU_PTD_ET:
 
-                    ltable = (xky_u32_t *)((table[i] >> 2) << 6);
+                    ltable = (air_u32_t *)((table[i] >> 2) << 6);
                     break;
 
                 /* page table entry */
@@ -258,7 +258,7 @@ static xky_u32_t sparc_mmu_fill_table(
 
 void sparc_segregation_init() {
 
-    xky_u32_t i;
+    air_u32_t i;
 
     /* allocate the MMU tables */
     arch_configuration_t *configuration = \
@@ -267,10 +267,10 @@ void sparc_segregation_init() {
     ln_index[1] = 0;
     ln_index[2] = 0;
 
-    xky_u32_t l0_space = configuration->mmu_context_entries * sizeof(xky_u32_t);
-    xky_u32_t l1_space = configuration->mmu_l1_tables_entries * L1_ENTRIES * sizeof(xky_u32_t);
-    xky_u32_t l2_space = configuration->mmu_l2_tables_entries * L2_ENTRIES * sizeof(xky_u32_t);
-    xky_u32_t l3_space = configuration->mmu_l3_tables_entries * L3_ENTRIES * sizeof(xky_u32_t);
+    air_u32_t l0_space = configuration->mmu_context_entries * sizeof(air_u32_t);
+    air_u32_t l1_space = configuration->mmu_l1_tables_entries * L1_ENTRIES * sizeof(air_u32_t);
+    air_u32_t l2_space = configuration->mmu_l2_tables_entries * L2_ENTRIES * sizeof(air_u32_t);
+    air_u32_t l3_space = configuration->mmu_l3_tables_entries * L3_ENTRIES * sizeof(air_u32_t);
 
     mmu_context  = pmk_workspace_aligned_alloc(l0_space, 0x400);
     ln_tables[0] = pmk_workspace_aligned_alloc(l1_space, 0x400);
@@ -297,7 +297,7 @@ void sparc_segregation_init() {
 
 void sparc_map_memory(
         mmu_context_t *ctrl, void *p_addr, void *v_addr,
-        xky_sz_t size, xky_sz_t unit, xky_u32_t permissions) {
+        air_sz_t size, air_sz_t unit, air_u32_t permissions) {
 
     /* sanity check */
     if (size != 0) {
@@ -308,7 +308,7 @@ void sparc_map_memory(
         }
 
         /* convert permissions */
-        xky_u32_t sparc_permissions = sparc_get_mmu_access_type(permissions);
+        air_u32_t sparc_permissions = sparc_get_mmu_access_type(permissions);
 
 #ifdef PMK_DEBUG
         printk("      [%p-%p]->[%p-%p] (u:%p, p:0x%03x)\n",
@@ -330,7 +330,7 @@ void sparc_map_memory(
 
 
 extern void sparc_mmu_disable_faults(core_context_t *core_ctx);
-extern xky_u32_t sparc_mmu_enable_faults(core_context_t *core_ctx);
+extern air_u32_t sparc_mmu_enable_faults(core_context_t *core_ctx);
 
 /**
  * @brief Check if the access to the partition is valid
@@ -339,16 +339,16 @@ extern xky_u32_t sparc_mmu_enable_faults(core_context_t *core_ctx);
  * @return 1 if the address might be accessible to the partition, 0 if the
  *         address isn't accessible to the partition
  */
-static xky_u32_t sparc_segregation_access_ok(void *addr, xky_sz_t size) {
+static air_u32_t sparc_segregation_access_ok(void *addr, air_sz_t size) {
 
     /* check alignment
-    if (((xky_uptr_t)addr & 0x03) != 0) {
+    if (((air_uptr_t)addr & 0x03) != 0) {
 
         return 0;
     }*/
 
     /* check if address is in the range of the partitions */
-    if ((xky_uptr_t)addr < PMK_PARTITION_BASE_ADDR) {
+    if ((air_uptr_t)addr < PMK_PARTITION_BASE_ADDR) {
 
         return 0;
     }
@@ -363,8 +363,8 @@ static xky_u32_t sparc_segregation_access_ok(void *addr, xky_sz_t size) {
  * @param size size of the memory block
  * @retun 0 if no faults, 1 otherwise
  */
-static xky_u32_t sparc_segregation_memcpy(
-        core_context_t *core_ctx, void *dst, void *src, xky_sz_t size) {
+static air_u32_t sparc_segregation_memcpy(
+        core_context_t *core_ctx, void *dst, void *src, air_sz_t size) {
 
     /* disable MMU faults */
     sparc_mmu_disable_faults(core_ctx);
@@ -376,8 +376,8 @@ static xky_u32_t sparc_segregation_memcpy(
     return sparc_mmu_enable_faults(core_ctx);
 }
 
-xky_u32_t sparc_copy_to_user(
-        core_context_t *core_ctx, void *dst, void *src, xky_sz_t size) {
+air_u32_t sparc_copy_to_user(
+        core_context_t *core_ctx, void *dst, void *src, air_sz_t size) {
 
     /* check if access is ok (destination is in user space) */
     if (sparc_segregation_access_ok(dst, size) == 0) {
@@ -389,8 +389,8 @@ xky_u32_t sparc_copy_to_user(
     return sparc_segregation_memcpy(core_ctx, dst, src, size);
 }
 
-xky_u32_t sparc_copy_from_user(
-        core_context_t *core_ctx, void *dst, void *src, xky_sz_t size) {
+air_u32_t sparc_copy_from_user(
+        core_context_t *core_ctx, void *dst, void *src, air_sz_t size) {
 
     /* check if access is ok (source is in user space) */
     if (sparc_segregation_access_ok(src, size) == 0) {
@@ -405,20 +405,20 @@ xky_u32_t sparc_copy_from_user(
 void *sparc_get_physical_addr(mmu_context_t *context, void *v_addr) {
 
     /* get partition L1 tables */
-    xky_u32_t *tbl = context->l1_tables;
+    air_u32_t *tbl = context->l1_tables;
 
     /* walk tables */
-    xky_u32_t j;
+    air_u32_t j;
     void *p_addr = NULL;
-    xky_u32_t mask = 0x00FFFFFF;
+    air_u32_t mask = 0x00FFFFFF;
 
     for (j = 0; j < 3; ++j) {
 
         /* get current level index */
-        xky_u32_t i = sparc_mmu_get_level_index(j, v_addr);
+        air_u32_t i = sparc_mmu_get_level_index(j, v_addr);
 
         /* get entry type */
-        xky_u32_t et = tbl[i] & MMU_ENTRY_TYPE_MASK;
+        air_u32_t et = tbl[i] & MMU_ENTRY_TYPE_MASK;
 
         /* invalid entry */
         if (et == 0 || et == 3) {
@@ -428,7 +428,7 @@ void *sparc_get_physical_addr(mmu_context_t *context, void *v_addr) {
         /* page table pointer */
         if (et == 1) {
             mask >>= 6;
-            tbl = (xky_u32_t *)((tbl[i] >> 2) << 6);
+            tbl = (air_u32_t *)((tbl[i] >> 2) << 6);
             continue;
         }
 
@@ -439,7 +439,7 @@ void *sparc_get_physical_addr(mmu_context_t *context, void *v_addr) {
             if (((tbl[i] & 0x1C) >> 2) < 6) {
 
                 p_addr = (void *)(((tbl[i] << 4) & ~mask) |
-                                  ((xky_uptr_t)v_addr & mask));
+                                  ((air_uptr_t)v_addr & mask));
             }
 
             break;

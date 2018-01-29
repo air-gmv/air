@@ -20,10 +20,8 @@ two paragraphs in the transferred software.
 COPYRIGHT IDT CORPORATION 1996
 LICENSED MATERIAL - PROGRAM PROPERTY OF IDT
 
-  $Id$
-*/
 
-/*************************************************************************
+*************************************************************************
 **
 ** Copyright 1991-95 Integrated Device Technology, Inc.
 **	All Rights Reserved
@@ -34,6 +32,8 @@ LICENSED MATERIAL - PROGRAM PROPERTY OF IDT
 #include <rtems/mips/iregdef.h>
 #include <rtems/mips/idtcpu.h>
 #include <rtems/asm.h>
+
+#include <bsp.h>
 
 	.extern	mon_flush_cache
 

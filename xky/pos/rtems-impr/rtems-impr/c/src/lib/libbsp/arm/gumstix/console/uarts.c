@@ -9,9 +9,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>
@@ -27,12 +25,9 @@
 #define NUM_DEVS       1
 
 /* These are used by code in console.c */
-unsigned long Console_Port_Count = NUM_DEVS;
-console_data  Console_Port_Data[NUM_DEVS];
+unsigned long Console_Configuration_Count = NUM_DEVS;
 
-/* rtems console uses the following minor number */
-rtems_device_minor_number  Console_Port_Minor = 0;
-extern console_fns ffuart_fns;
+extern const console_fns ffuart_fns;
 
 /*
  * There's one item in array for each UART.
@@ -43,17 +38,17 @@ extern console_fns ffuart_fns;
  * when we add other types of UARTS we will need to move this
  * structure to a generic uart.c file with only this in it
  */
-console_tbl Console_Port_Tbl[] = {
+console_tbl Console_Configuration_Ports[] = {
     {
-        "/dev/console",    /* sDeviceName */
+        "/dev/com0",       /* sDeviceName */
         SERIAL_CUSTOM,     /* deviceType */
-        &ffuart_fns,         /* pDeviceFns */
+        &ffuart_fns,       /* pDeviceFns */
         NULL,              /* deviceProbe */
         NULL,              /* pDeviceFlow */
         0,                 /* ulMargin - NOT USED */
         0,                 /* ulHysteresis - NOT USED */
         NULL,              /* pDeviceParams */
-        FFUART_BASE,         /* ulCtrlPort1  - Pointer to DBGU regs */
+        FFUART_BASE,       /* ulCtrlPort1  - Pointer to DBGU regs */
         0,                 /* ulCtrlPort2  - NOT USED */
         0,                 /* ulDataPort  - NOT USED */
         NULL,              /* getRegister - NOT USED */
@@ -67,5 +62,5 @@ console_tbl Console_Port_Tbl[] = {
 
 console_tbl *BSP_get_uart_from_minor(int minor)
 {
-    return &Console_Port_Tbl[minor];
+    return Console_Port_Tbl[minor];
 }

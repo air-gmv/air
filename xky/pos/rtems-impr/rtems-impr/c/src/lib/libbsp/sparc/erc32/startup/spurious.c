@@ -1,8 +1,5 @@
-/**
- *  @file
- *  spurious.c
- *
- *  @brief ERC32 Spurious Trap Handler
+/*
+ *  ERC32 Spurious Trap Handler
  *
  *  This is just enough of a trap handler to let us know what
  *  the likely source of the trap was.
@@ -11,114 +8,187 @@
  *  of the SPARC by On-Line Applications Research Corporation (OAR)
  *  under contract to the European Space Agency (ESA).
  *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
  *  COPYRIGHT (c) 1995. European Space Agency.
  *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  234     | 09/10/2008  | mcoutinho    | IPR 66
- *  1902    | 16/03/2009  | mcoutinho    | IPR 60
- *  2465    | 15/04/2009  | mcoutinho    | IPR 452
- *  4341    | 15/09/2009  | mcoutinho    | IPR 606
- *  4586    | 30/09/2009  | mcoutinho    | IPR 605
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  5513    | 11/11/2009  | mcoutinho    | IPR 866
- *  8183    | 15/06/2010  | mcoutinho    | IPR 451
- *  9872    | 18/03/2011  | aconstantino | SPR 2819
- *  $Rev: 9929 $ | $Date: 2011-03-23 12:02:26 +0000 (Wed, 23 Mar 2011) $| $Author: sfaustino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SPARC_ERC32_BSP SPARC ERC32 BSP
- *  @{
+ *  This terms of the RTEMS license apply to this file.
  */
 
 #include <bsp.h>
-#include <sparc_syscal.h>
-#include <rtems/score/interr.h>
-#include <sharedBSPs.h>
+#include <rtems/bspIo.h>
+#include <inttypes.h>
 
-
-rtems_isr bsp_spurious_handler(
-                               rtems_vector_number trap
-                               )
+void _CPU_Exception_frame_print( const CPU_Exception_frame *frame )
 {
-    /* call internal error with :
-     *   interrupt not handled
-     *   internal set to true
-     *   the interrupt vector number */
-    _Internal_error_Occurred(INTERNAL_ERROR_INTERRUPTION_NOT_HANDLED ,
-                             TRUE ,
-                             SPARC_REAL_TRAP_NUMBER(trap));
+  uint32_t                   trap;
+  uint32_t                   real_trap;
+  const CPU_Interrupt_frame *isf;
+
+  trap = frame->trap;
+  real_trap = SPARC_REAL_TRAP_NUMBER(trap);
+  isf = frame->isf;
+
+  printk(
+    "Unexpected trap (%2" PRId32 ") at address 0x%08" PRIx32 "\n",
+    real_trap,
+    isf->tpc
+  );
+
+  switch (real_trap) {
+
+    /*
+     *  First the ones defined by the basic architecture
+     */
+
+    case 0x00:
+      printk( "reset\n" );
+      break;
+    case 0x01:
+      printk( "instruction access exception\n" );
+      break;
+    case 0x02:
+      printk( "illegal instruction\n" );
+      break;
+    case 0x03:
+      printk( "privileged instruction\n" );
+      break;
+    case 0x04:
+      printk( "fp disabled\n" );
+      break;
+    case 0x07:
+      printk( "memory address not aligned\n" );
+      break;
+    case 0x08:
+      printk( "fp exception\n" );
+      break;
+    case 0x09:
+      printk("data access exception at 0x%08" PRIx32 "\n",
+        ERC32_MEC.First_Failing_Address );
+      break;
+    case 0x0A:
+      printk( "tag overflow\n" );
+      break;
+
+    /*
+     *  Then the ones defined by the ERC32 in particular
+     */
+
+    case ERC32_TRAP_TYPE( ERC32_INTERRUPT_MASKED_ERRORS ):
+      printk( "ERC32_INTERRUPT_MASKED_ERRORS\n" );
+      break;
+    case ERC32_TRAP_TYPE( ERC32_INTERRUPT_EXTERNAL_1 ):
+      printk( "ERC32_INTERRUPT_EXTERNAL_1\n" );
+      break;
+    case ERC32_TRAP_TYPE( ERC32_INTERRUPT_EXTERNAL_2 ):
+      printk( "ERC32_INTERRUPT_EXTERNAL_2\n" );
+      break;
+    case ERC32_TRAP_TYPE( ERC32_INTERRUPT_UART_A_RX_TX ):
+      printk( "ERC32_INTERRUPT_UART_A_RX_TX\n" );
+      break;
+    case ERC32_TRAP_TYPE( ERC32_INTERRUPT_UART_B_RX_TX ):
+      printk( "ERC32_INTERRUPT_UART_A_RX_TX\n" );
+      break;
+    case ERC32_TRAP_TYPE( ERC32_INTERRUPT_CORRECTABLE_MEMORY_ERROR ):
+      printk( "ERC32_INTERRUPT_CORRECTABLE_MEMORY_ERROR\n" );
+      break;
+    case ERC32_TRAP_TYPE( ERC32_INTERRUPT_UART_ERROR ):
+      printk( "ERC32_INTERRUPT_UART_ERROR\n" );
+      break;
+    case ERC32_TRAP_TYPE( ERC32_INTERRUPT_DMA_ACCESS_ERROR ):
+      printk( "ERC32_INTERRUPT_DMA_ACCESS_ERROR\n" );
+      break;
+    case ERC32_TRAP_TYPE( ERC32_INTERRUPT_DMA_TIMEOUT ):
+      printk( "ERC32_INTERRUPT_DMA_TIMEOUT\n" );
+      break;
+    case ERC32_TRAP_TYPE( ERC32_INTERRUPT_EXTERNAL_3 ):
+      printk( "ERC32_INTERRUPT_EXTERNAL_3\n" );
+      break;
+    case ERC32_TRAP_TYPE( ERC32_INTERRUPT_EXTERNAL_4 ):
+      printk( "ERC32_INTERRUPT_EXTERNAL_4\n" );
+      break;
+    case ERC32_TRAP_TYPE( ERC32_INTERRUPT_GENERAL_PURPOSE_TIMER ):
+      printk( "ERC32_INTERRUPT_GENERAL_PURPOSE_TIMER\n" );
+      break;
+    case ERC32_TRAP_TYPE( ERC32_INTERRUPT_REAL_TIME_CLOCK ):
+      printk( "ERC32_INTERRUPT_REAL_TIME_CLOCK\n" );
+      break;
+    case ERC32_TRAP_TYPE( ERC32_INTERRUPT_EXTERNAL_5 ):
+      printk( "ERC32_INTERRUPT_EXTERNAL_5\n" );
+      break;
+    case ERC32_TRAP_TYPE( ERC32_INTERRUPT_WATCHDOG_TIMEOUT ):
+      printk( "ERC32_INTERRUPT_WATCHDOG_TIMEOUT\n" );
+      break;
+
+    default:
+      break;
+  }
 }
 
+static rtems_isr bsp_spurious_handler(
+   rtems_vector_number trap,
+   CPU_Interrupt_frame *isf
+)
+{
+  CPU_Exception_frame frame = {
+    .trap = trap,
+    .isf = isf
+  };
+
+#if !defined(SPARC_USE_LAZY_FP_SWITCH)
+  if ( SPARC_REAL_TRAP_NUMBER( trap ) == 4 ) {
+    _Internal_error( INTERNAL_ERROR_ILLEGAL_USE_OF_FLOATING_POINT_UNIT );
+  }
+#endif
+
+  rtems_fatal(
+    RTEMS_FATAL_SOURCE_EXCEPTION,
+    (rtems_fatal_code) &frame
+  );
+}
+
+/*
+ *  bsp_spurious_initialize
+ *
+ *  Install the spurious handler for most traps. Note that set_vector()
+ *  will unmask the corresponding asynchronous interrupt, so the initial
+ *  interrupt mask is restored after the handlers are installed.
+ */
 
 void bsp_spurious_initialize()
 {
-    /* old ISR handler */
-    proc_ptr old_isr_handler;
+  uint32_t   trap;
+  uint32_t   level = 15;
+  uint32_t   mask;
 
-    /* iterator trap number */
-    uint32_t trap;
+  level = sparc_disable_interrupts();
+  mask = ERC32_MEC.Interrupt_Mask;
 
-    /* interrupt level */
-    uint32_t level = 15;
+  for ( trap=0 ; trap<256 ; trap++ ) {
 
-    /* interrupt mask */
-    uint32_t mask;
+    /*
+     *  Skip window overflow, underflow, and flush as well as software
+     *  trap 0,9,10 which we will use as a shutdown, IRQ disable, IRQ enable.
+     *  Also avoid trap 0x70 - 0x7f which cannot happen and where some of the
+     *  space is used to pass parameters to the program.
+     */
 
+    if (( trap == 5 || trap == 6 ) ||
+#if defined(SPARC_USE_LAZY_FP_SWITCH)
+        ( trap == 4 ) ||
+#endif
+        (( trap >= 0x11 ) && ( trap <= 0x1f )) ||
+        (( trap >= 0x70 ) && ( trap <= 0x83 )) ||
+        ( trap == 0x80 + SPARC_SWTRAP_IRQDIS ) ||
+#if defined(SPARC_USE_SYNCHRONOUS_FP_SWITCH)
+        ( trap == 0x80 + SPARC_SWTRAP_IRQDIS_FP ) ||
+#endif
+        ( trap == 0x80 + SPARC_SWTRAP_IRQEN ))
+      continue;
 
-    /* disable interrutps */
-    level = xky_sparc_disable_interrupts();
+    set_vector( (rtems_isr_entry) bsp_spurious_handler,
+         SPARC_SYNCHRONOUS_TRAP( trap ), 1 );
+  }
 
-    /* save the interrupt mask */
-    mask = ERC32_MEC.Interrupt_Mask;
-
-    /* iterate through all the SPARC traps */
-    for(trap = 0; trap < 256; trap++)
-    {
-        /* in case of an external interrupt */
-        if(( trap >= 0x11 ) && ( trap <= 0x1f ))
-        {
-            /* simply catch the interrupt and not unmask it */
-            _CPU_ISR_install_vector(trap , 
-                                    bsp_spurious_handler ,
-                                    &old_isr_handler);
-
-            /* and move on to the next trap */
-            continue;
-        }
-
-        /* skip window overflow, underflow as well as software
-         * trap 0 which we will use as a shutdown. Also avoid trap 0x70 - 0x7f
-         * which cannot happen and where some of the space is used to pass
-         * paramaters to the program */
-        if(( trap == 5 || trap == 6 ) ||
-           ( ( trap >= 0x70 ) && ( trap <= 0x80 ) ))
-        {
-            /* skip this vector */
-            continue;
-        }
-
-        /* set the default ISR handler to bsp_spurious_handler */
-        set_vector(bsp_spurious_handler ,
-                   SPARC_SYNCHRONOUS_TRAP(trap));
-    }
-
-    /* restore previous interrupt mask */
-    ERC32_MEC.Interrupt_Mask = mask;
-
-    /* re-enable interrupts */
-    xky_sparc_enable_interrupts(level);
+  ERC32_MEC.Interrupt_Mask = mask;
+  sparc_enable_interrupts(level);
 
 }
-
-/**  
- *  @}
- */

@@ -1,373 +1,269 @@
 /**
- *  @file
- *  threaddispatch.c
- *
- *  @brief performs thread dispatch if needed
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-2007.
+ * @file
+ * 
+ * @brief Dispatch Thread
+ * @ingroup ScoreThread
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2009.
  *  On-Line Applications Research Corporation (OAR).
  *
+ *  Copyright (c) 2014, 2016 embedded brains GmbH.
+ *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  621     | 17/11/2008  | mcoutinho    | IPR 69
- *  621     | 17/11/2008  | mcoutinho    | IPR 70
- *  3247    | 20/05/2009  | mcoutinho    | IPR 516
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  6325    | 01/03/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_CORE Super Core
- *  @{
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup ScoreThread Thread Handler
- *  @{
- */
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#include <rtems/system.h>
-#include <rtems/score/apiext.h>
-#include <rtems/score/context.h>
-#include <rtems/score/interr.h>
+#include <rtems/score/threaddispatch.h>
+#include <rtems/score/assert.h>
 #include <rtems/score/isr.h>
-#include <rtems/score/object.h>
-#include <rtems/score/priority.h>
-#include <rtems/score/states.h>
-#include <rtems/score/sysstate.h>
-#include <rtems/score/thread.h>
-#include <rtems/score/threadq.h>
-#include <rtems/score/userext.h>
+#include <rtems/score/schedulerimpl.h>
+#include <rtems/score/threadimpl.h>
+#include <rtems/score/todimpl.h>
+#include <rtems/score/userextimpl.h>
 #include <rtems/score/wkspace.h>
+#include <rtems/config.h>
 
-/* plugin clocktick callback								*/
-extern void pmk_plugin_kernel_thread_tick(void);
-/* Reset plugin clocktick callback delayed flag 			*/
-extern void pmk_reset_dpp_flag(void);
+#if ( CPU_HARDWARE_FP == TRUE ) || ( CPU_SOFTWARE_FP == TRUE )
+Thread_Control *_Thread_Allocated_fp;
+#endif
 
-#if ( CPU_INLINE_ENABLE_DISPATCH == FALSE )
+CHAIN_DEFINE_EMPTY( _User_extensions_Switches_list );
 
-
-void _Thread_Enable_dispatch(void)
+#if defined(RTEMS_SMP)
+static void _Thread_Ask_for_help( Thread_Control *the_thread )
 {
-    /* decrease the thread dispatch disable level */
-    /* if it is not zero */
-    if(--_Thread_Dispatch_disable_level)
-    {
-        /* then just return */
-        return;
+  Chain_Node       *node;
+  const Chain_Node *tail;
+
+  node = _Chain_First( &the_thread->Scheduler.Scheduler_nodes );
+  tail = _Chain_Immutable_tail( &the_thread->Scheduler.Scheduler_nodes );
+
+  do {
+    Scheduler_Node          *scheduler_node;
+    const Scheduler_Control *scheduler;
+    ISR_lock_Context         lock_context;
+    bool                     success;
+
+    scheduler_node = SCHEDULER_NODE_OF_THREAD_SCHEDULER_NODE( node );
+    scheduler = _Scheduler_Node_get_scheduler( scheduler_node );
+
+    _Scheduler_Acquire_critical( scheduler, &lock_context );
+    success = ( *scheduler->Operations.ask_for_help )(
+      scheduler,
+      the_thread,
+      scheduler_node
+    );
+    _Scheduler_Release_critical( scheduler, &lock_context );
+
+    if ( success ) {
+      break;
     }
 
-    /* else, call thread dispatch */
-    _Thread_Dispatch();
+    node = _Chain_Next( node );
+  } while ( node != tail );
+}
+
+static bool _Thread_Can_ask_for_help( const Thread_Control *executing )
+{
+  return executing->Scheduler.helping_nodes > 0
+    && _Thread_Is_ready( executing );
 }
 #endif
 
-
-void _Thread_Dispatch(void)
+static void _Thread_Preemption_intervention( Per_CPU_Control *cpu_self )
 {
-    /* RVS_Ipoint _Thread_Dispatch_Start */
-#ifdef RVS
-    RVS_Ipoint(0xF50A);
+#if defined(RTEMS_SMP)
+  _Per_CPU_Acquire( cpu_self );
+
+  while ( !_Chain_Is_empty( &cpu_self->Threads_in_need_for_help ) ) {
+    Chain_Node       *node;
+    Thread_Control   *the_thread;
+    ISR_lock_Context  lock_context;
+
+    node = _Chain_Get_first_unprotected( &cpu_self->Threads_in_need_for_help );
+    _Chain_Set_off_chain( node );
+    the_thread = THREAD_OF_SCHEDULER_HELP_NODE( node );
+
+    _Per_CPU_Release( cpu_self );
+    _Thread_State_acquire( the_thread, &lock_context );
+    _Thread_Ask_for_help( the_thread );
+    _Thread_State_release( the_thread, &lock_context );
+    _Per_CPU_Acquire( cpu_self );
+  }
+
+  _Per_CPU_Release( cpu_self );
+#else
+  (void) cpu_self;
+#endif
+}
+
+static void _Thread_Post_switch_cleanup( Thread_Control *executing )
+{
+#if defined(RTEMS_SMP)
+  Chain_Node       *node;
+  const Chain_Node *tail;
+
+  if ( !_Thread_Can_ask_for_help( executing ) ) {
+    return;
+  }
+
+  node = _Chain_First( &executing->Scheduler.Scheduler_nodes );
+  tail = _Chain_Immutable_tail( &executing->Scheduler.Scheduler_nodes );
+
+  do {
+    Scheduler_Node          *scheduler_node;
+    const Scheduler_Control *scheduler;
+    ISR_lock_Context         lock_context;
+
+    scheduler_node = SCHEDULER_NODE_OF_THREAD_SCHEDULER_NODE( node );
+    scheduler = _Scheduler_Node_get_scheduler( scheduler_node );
+
+    _Scheduler_Acquire_critical( scheduler, &lock_context );
+    ( *scheduler->Operations.reconsider_help_request )(
+      scheduler,
+      executing,
+      scheduler_node
+    );
+    _Scheduler_Release_critical( scheduler, &lock_context );
+
+    node = _Chain_Next( node );
+  } while ( node != tail );
+#else
+  (void) executing;
+#endif
+}
+
+static Thread_Action *_Thread_Get_post_switch_action(
+  Thread_Control *executing
+)
+{
+  Chain_Control *chain = &executing->Post_switch_actions.Chain;
+
+  return (Thread_Action *) _Chain_Get_unprotected( chain );
+}
+
+static void _Thread_Run_post_switch_actions( Thread_Control *executing )
+{
+  ISR_lock_Context  lock_context;
+  Thread_Action    *action;
+
+  _Thread_State_acquire( executing, &lock_context );
+  _Thread_Post_switch_cleanup( executing );
+  action = _Thread_Get_post_switch_action( executing );
+
+  while ( action != NULL ) {
+    _Chain_Set_off_chain( &action->Node );
+
+    ( *action->handler )( executing, action, &lock_context );
+
+    _Thread_State_acquire( executing, &lock_context );
+    action = _Thread_Get_post_switch_action( executing );
+  }
+
+  _Thread_State_release( executing, &lock_context );
+}
+
+void _Thread_Do_dispatch( Per_CPU_Control *cpu_self, ISR_Level level )
+{
+  Thread_Control *executing;
+
+  _Assert( cpu_self->thread_dispatch_disable_level == 1 );
+
+#if defined(RTEMS_SCORE_ROBUST_THREAD_DISPATCH)
+  if (
+    !_ISR_Is_enabled( level )
+#if defined(RTEMS_SMP)
+      && rtems_configuration_is_smp_enabled()
+#endif
+  ) {
+    _Internal_error( INTERNAL_ERROR_BAD_THREAD_DISPATCH_ENVIRONMENT );
+  }
 #endif
 
-    /* thread executing */
-    Thread_Control *executing;
+  executing = cpu_self->executing;
 
-    /* heir thread */
+  do {
     Thread_Control *heir;
 
-    /* interrupt level */
-    ISR_Level level;
+    _Thread_Preemption_intervention( cpu_self );
+    heir = _Thread_Get_heir_and_make_it_executing( cpu_self );
 
-    /* get the executing thread */
-    executing = _Thread_Executing;
+    /*
+     *  When the heir and executing are the same, then we are being
+     *  requested to do the post switch dispatching.  This is normally
+     *  done to dispatch signals.
+     */
+    if ( heir == executing )
+      goto post_switch;
 
-    /* enter critical section */
-    _ISR_Disable(level);
+    /*
+     *  Since heir and executing are not the same, we need to do a real
+     *  context switch.
+     */
+    if ( heir->budget_algorithm == THREAD_CPU_BUDGET_ALGORITHM_RESET_TIMESLICE )
+      heir->cpu_time_budget = rtems_configuration_get_ticks_per_timeslice();
 
-    /* while context switch is necessary */
-    while(_Context_Switch_necessary == TRUE)
-    {
-        /* get heir thread */
-        heir = _Thread_Heir;
+    _ISR_Local_enable( level );
 
-        /* disable thread dispatch */
-        _Thread_Dispatch_disable_level = 1;
+    _User_extensions_Thread_switch( executing, heir );
+    _Thread_Save_fp( executing );
+    _Context_Switch( &executing->Registers, &heir->Registers );
+    _Thread_Restore_fp( executing );
 
-        /* context switch is not necessary now */
-        _Context_Switch_necessary = FALSE;
+    /*
+     * We have to obtain this value again after the context switch since the
+     * heir thread may have migrated from another processor.  Values from the
+     * stack or non-volatile registers reflect the old execution environment.
+     */
+    cpu_self = _Per_CPU_Get();
 
-        /* set the new thread executing to be the heir thread */
-        _Thread_Executing = heir;
+    _ISR_Local_disable( level );
+  } while ( cpu_self->dispatch_necessary );
 
-        /* ada stuff */
-        executing->rtems_ada_self = rtems_ada_self;
-        rtems_ada_self = heir->rtems_ada_self;
+post_switch:
+  _Assert( cpu_self->thread_dispatch_disable_level == 1 );
+  cpu_self->thread_dispatch_disable_level = 0;
+  _Profiling_Thread_dispatch_enable( cpu_self, 0 );
 
-        /* reset the heir thread cpu time budget (if any) */
-        if(heir->budget_algorithm == THREAD_CPU_BUDGET_ALGORITHM_RESET_TIMESLICE)
-        {
-            /* resest the heir thread budget */
-            heir->cpu_time_budget = _Thread_Ticks_per_timeslice;
-        }
+  _ISR_Local_enable( level );
 
-        /* leave critical section */
-        _ISR_Enable(level);
-
-        /* call user thread switch extensions */
-        _User_extensions_Thread_switch(executing , heir);
-
-        /* 
-         * Instrument RVS: We use the object API class (bit 24 - 26) to distinguish
-         * between IDLE task and the init task 
-         */
-#ifdef RVS        
-        RVS_Ipoint((0xF800) | (((((unsigned int)(heir->Object.id)) >> 24) & 0x1) << 9)
-                            | (((unsigned int)(heir->Object.id)) & (0x1FF)));
-#endif
-
-        /* if the CPU has hardware floating point, then we must address saving
-         * and restoring it as part of the context switch.
-         * The second conditional compilation section selects the algorithm used
-         * to context switch between floating point tasks.  The deferred algorithm
-         * can be significantly better in a system with few floating point tasks
-         * because it reduces the total number of save and restore FP context
-         * operations.  However, this algorithm can not be used on all CPUs due
-         * to unpredictable use of FP registers by some compilers for integer
-         * operations */
-
-        /* if the CPU has hardware or software FP */
-#if ( CPU_HARDWARE_FP == TRUE ) || ( CPU_SOFTWARE_FP == TRUE )
-
-        /* if not use deferred FP */
-    #if ( CPU_USE_DEFERRED_FP_SWITCH != TRUE )
-
-        /* if the executing thread has FP */
-        if(executing->fp_context != NULL)
-        {
-            /* then save it */
-            _Context_Save_fp(&executing->fp_context);
-        }
-
-    #endif
-
-#endif
-
-        /* perform context switch here! */
-        _Context_Switch(&executing->Registers , &heir->Registers);
-
-        /* if the CPU has hardware or software FP */
-#if ( CPU_HARDWARE_FP == TRUE ) || ( CPU_SOFTWARE_FP == TRUE )
-
-        /* if use deferred FP */
-    #if ( CPU_USE_DEFERRED_FP_SWITCH == TRUE )
-
-        /* if the executing thread has FP */
-        if(( executing->fp_context != NULL ) &&
-           !_Thread_Is_allocated_fp(executing))
-        {
-            /* if there is a thread FP */
-            if(_Thread_Allocated_fp != NULL)
-            {
-                /* save the FP context */
-                _Context_Save_fp(&_Thread_Allocated_fp->fp_context);
-            }
-
-            /* restore the FP context of the running thread */
-            _Context_Restore_fp(&executing->fp_context);
-
-            /* set the thread FP to the running thread */
-            _Thread_Allocated_fp = executing;
-        }
-
-    #else
-
-        /* if the executing thread has FP */
-        if(executing->fp_context != NULL)
-        {
-            /* restore the FP context of the executing thread */
-            _Context_Restore_fp(&executing->fp_context);
-        }
-
-    #endif
-
-#endif
-
-        /* get the executing thread */
-        executing = _Thread_Executing;
-
-        /* enter critical section again */
-        _ISR_Disable(level);
-    }
-
-    /* reset the thread dispatch disable level */
-    _Thread_Dispatch_disable_level = 0;
-
-    /* leave critical section */
-    _ISR_Enable(level);
-
-    /* RVS_Ipoint _Thread_Dispatch_End */
-#ifdef RVS        
-    RVS_Ipoint(0xF50B);
-#endif
+  _Thread_Run_post_switch_actions( executing );
 }
 
-#ifdef RVS
-void _ISR_Thread_Dispatch(void)
+void _Thread_Dispatch( void )
 {
-    /* RVS_Ipoint _ISR_Thread_Dispatch_Start */
-    RVS_Ipoint(0xF510);
+  ISR_Level        level;
+  Per_CPU_Control *cpu_self;
 
-    /* thread executing */
-    Thread_Control *executing;
+  _ISR_Local_disable( level );
 
-    /* heir thread */
-    Thread_Control *heir;
+  cpu_self = _Per_CPU_Get();
 
-    /* interrupt level */
-    ISR_Level level;
-
-    /* get the executing thread */
-    executing = _Thread_Executing;
-
-    /* enter critical section */
-    _ISR_Disable(level);
-
-    /* while context switch is necessary */
-    while(_Context_Switch_necessary == TRUE)
-    {
-        /* get heir thread */
-        heir = _Thread_Heir;
-
-        /* disable thread dispatch */
-        _Thread_Dispatch_disable_level = 1;
-
-        /* context switch is not necessary now */
-        _Context_Switch_necessary = FALSE;
-
-        /* set the new thread executing to be the heir thread */
-        _Thread_Executing = heir;
-
-        /* ada stuff */
-        executing->rtems_ada_self = rtems_ada_self;
-        rtems_ada_self = heir->rtems_ada_self;
-
-        /* reset the heir thread cpu time budget (if any) */
-        if(heir->budget_algorithm == THREAD_CPU_BUDGET_ALGORITHM_RESET_TIMESLICE)
-        {
-            /* resest the heir thread budget */
-            heir->cpu_time_budget = _Thread_Ticks_per_timeslice;
-        }
-
-        /* leave critical section */
-        _ISR_Enable(level);
-
-        /* call user thread switch extensions */
-        _User_extensions_Thread_switch(executing , heir);
-
-        /* Instrument RVS */
-        RVS_Ipoint((0xF800) | (((((unsigned int)(heir->Object.id)) >> 24) & 0x1) << 9)
-                            | (((unsigned int)(heir->Object.id)) & (0x1FF)));
-
-        /* if the CPU has hardware floating point, then we must address saving
-         * and restoring it as part of the context switch.
-         * The second conditional compilation section selects the algorithm used
-         * to context switch between floating point tasks.  The deferred algorithm
-         * can be significantly better in a system with few floating point tasks
-         * because it reduces the total number of save and restore FP context
-         * operations.  However, this algorithm can not be used on all CPUs due
-         * to unpredictable use of FP registers by some compilers for integer
-         * operations */
-
-        /* if the CPU has hardware or software FP */
-#if ( CPU_HARDWARE_FP == TRUE ) || ( CPU_SOFTWARE_FP == TRUE )
-
-        /* if not use deferred FP */
-    #if ( CPU_USE_DEFERRED_FP_SWITCH != TRUE )
-
-        /* if the executing thread has FP */
-        if(executing->fp_context != NULL)
-        {
-            /* then save it */
-            _Context_Save_fp(&executing->fp_context);
-        }
-
-    #endif
-
-#endif
-
-        /* perform context switch here! */
-        _Context_Switch(&executing->Registers , &heir->Registers);
-
-        /* if the CPU has hardware or software FP */
-#if ( CPU_HARDWARE_FP == TRUE ) || ( CPU_SOFTWARE_FP == TRUE )
-
-        /* if use deferred FP */
-    #if ( CPU_USE_DEFERRED_FP_SWITCH == TRUE )
-
-        /* if the executing thread has FP */
-        if(( executing->fp_context != NULL ) &&
-           !_Thread_Is_allocated_fp(executing))
-        {
-            /* if there is a thread FP */
-            if(_Thread_Allocated_fp != NULL)
-            {
-                /* save the FP context */
-                _Context_Save_fp(&_Thread_Allocated_fp->fp_context);
-            }
-
-            /* restore the FP context of the running thread */
-            _Context_Restore_fp(&executing->fp_context);
-
-            /* set the thread FP to the running thread */
-            _Thread_Allocated_fp = executing;
-        }
-
-    #else
-
-        /* if the executing thread has FP */
-        if(executing->fp_context != NULL)
-        {
-            /* restore the FP context of the executing thread */
-            _Context_Restore_fp(&executing->fp_context);
-        }
-
-    #endif
-
-#endif
-
-        /* get the executing thread */
-        executing = _Thread_Executing;
-
-        /* enter critical section again */
-        _ISR_Disable(level);
-    }
-
-    /* reset the thread dispatch disable level */
-    _Thread_Dispatch_disable_level = 0;
-
-    /* leave critical section */
-    _ISR_Enable(level);
-
-    /* RVS_Ipoint _ISR_Thread_Dispatch_End */
-    RVS_Ipoint(0xF511);
+  if ( cpu_self->dispatch_necessary ) {
+    _Profiling_Thread_dispatch_disable( cpu_self, 0 );
+    _Assert( cpu_self->thread_dispatch_disable_level == 0 );
+    cpu_self->thread_dispatch_disable_level = 1;
+    _Thread_Do_dispatch( cpu_self, level );
+  } else {
+    _ISR_Local_enable( level );
+  }
 }
-#endif /* RVS */
 
-/**  
- *  @}
- */
+void _Thread_Dispatch_direct( Per_CPU_Control *cpu_self )
+{
+  ISR_Level level;
 
-/**
- *  @}
- */
+  if ( cpu_self->thread_dispatch_disable_level != 1 ) {
+    _Internal_error( INTERNAL_ERROR_BAD_THREAD_DISPATCH_DISABLE_LEVEL );
+  }
+
+  _ISR_Local_disable( level );
+  _Thread_Do_dispatch( cpu_self, level );
+}

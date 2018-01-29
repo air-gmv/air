@@ -1,9 +1,8 @@
 /*
- *  This routine starts the application.  It includes application,
- *  board, and monitor specific initialization and configuration.
- *  The generic CPU dependent initialization has been performed
- *  before this routine is invoked.
- *
+ *  This routine does the bulk of the system initialization.
+ */
+
+/*
  *  COPYRIGHT (c) 1989-1998.
  *  On-Line Applications Research Corporation (OAR).
  *
@@ -31,10 +30,12 @@
 #include <rtems/libio.h>
 #include <rtems/libcsupport.h>
 #include <rtems/bspIo.h>
+#include <rtems/counter.h>
 #include <rtems/powerpc/powerpc.h>
 /*#include <bsp/consoleIo.h>*/
 #include <libcpu/spr.h>   /* registers.h is included here */
 #include <bsp.h>
+#include <bsp/bootcard.h>
 #include <bsp/uart.h>
 #include <bsp/pci.h>
 #include <bsp/gtreg.h>
@@ -45,19 +46,11 @@
 #include <bsp/vectors.h>
 #include <bsp/vpd.h>
 
-/* for RTEMS_VERSION :-( I dont like the preassembled string */
-#include <rtems/sptables.h>
-
-#ifdef __RTEMS_APPLICATION__
-#undef __RTEMS_APPLICATION__
-#endif
-
 #define SHOW_MORE_INIT_SETTINGS
 
 BSP_output_char_function_type     BSP_output_char = BSP_output_char_via_serial;
 BSP_polling_getchar_function_type BSP_poll_char = NULL;
 
-extern void bsp_cleanup(void);
 extern Triv121PgTbl BSP_pgtbl_setup(unsigned int *);
 extern void BSP_pgtbl_activate(Triv121PgTbl);
 extern void BSP_motload_pci_fixup(void);
@@ -131,20 +124,7 @@ char BSP_serialNumber[20] = {0};
 char BSP_enetAddr0[7] = {0};
 char BSP_enetAddr1[7] = {0};
 
-/*
- *  The original table from the application and our copy of it with
- *  some changes.
- */
-
-extern rtems_configuration_table Configuration;
-
 char *rtems_progname;
-
-/*
- *  Use the shared implementations of the following routines
- */
- 
-extern void bsp_pretasking_hook(void); 
 
 #define CMDLINE_BUF_SIZE	2048
 
@@ -154,8 +134,13 @@ char *BSP_commandline_string = cmdline_buf;
 /* this routine is called early and must be safe with a not properly
  * aligned stack
  */
-char *
-save_boot_params(void *r3, void *r4, void* r5, char *cmdline_start, char *cmdline_end)
+char *save_boot_params(
+  void *r3,
+  void *r4,
+  void *r5,
+  char *cmdline_start,
+  char *cmdline_end
+)
 {
 int             i=cmdline_end-cmdline_start;
 	if ( i >= CMDLINE_BUF_SIZE )
@@ -233,7 +218,7 @@ void bsp_start( void )
    * so there is no need to set it in r1 again... It is just for info
    * so that it can be printed without accessing R1.
    */
-  asm volatile("mr %0, 1":"=r"(stack));
+  __asm__ volatile("mr %0, 1":"=r"(stack));
 
   /* tag the bottom (T. Straumann 6/36/2001 <strauman@slac.stanford.edu>) */
 
@@ -250,15 +235,10 @@ void bsp_start( void )
   intrStackStart = (uint32_t)__rtems_end;
   intrStackSize  = rtems_configuration_get_interrupt_stack_size();
 
-
   /*
    * Initialize default raw exception handlers. See vectors/vectors_init.c
    */
-  ppc_exc_initialize(
-		  PPC_INTERRUPT_DISABLE_MASK_DEFAULT,
-		  intrStackStart,
-		  intrStackSize
-		  );
+  ppc_exc_initialize(intrStackStart, intrStackSize);
 
   printk("CPU: %s\n", get_ppc_cpu_type_name(current_ppc_cpu));
 
@@ -345,14 +325,18 @@ void bsp_start( void )
 
   /*
    * Set up our hooks
-   * Make sure libc_init is done before drivers initialized so that
-   * they can use atexit()
    */
 
-  bsp_clicks_per_usec            = BSP_bus_frequency/(BSP_time_base_divisor * 1000);
+  bsp_clicks_per_usec = BSP_bus_frequency/(BSP_time_base_divisor * 1000);
+  rtems_counter_initialize_converter(
+    BSP_bus_frequency / (BSP_time_base_divisor / 1000)
+  );
 
 #ifdef SHOW_MORE_INIT_SETTINGS
-  printk("Configuration.work_space_size = %x\n", Configuration.work_space_size); 
+  printk(
+    "Configuration.work_space_size = %x\n",
+    rtems_configuration_get_work_space_size()
+  );
 #endif
 
   /* Activate the page table mappings only after
@@ -389,7 +373,7 @@ void bsp_start( void )
   BSP_timers_initialize();
 
 #ifdef SHOW_MORE_INIT_SETTINGS
-  printk("MSR %x \n", _read_MSR());
+  printk("MSR 0x%lx \n", _read_MSR());
   printk("Exit from bspstart\n");
 #endif
 }

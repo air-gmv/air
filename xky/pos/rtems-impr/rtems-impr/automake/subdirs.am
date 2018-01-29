@@ -1,5 +1,3 @@
-## $Id: subdirs.am 179 2008-09-17 14:07:38Z hsilva $
-
 ## Borrowed from automake-1.4 and adapted to RTEMS 
 
 ## NOTE: This is a temporary work-around to keep 

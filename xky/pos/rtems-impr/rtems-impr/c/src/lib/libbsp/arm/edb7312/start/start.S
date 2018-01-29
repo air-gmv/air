@@ -1,18 +1,18 @@
 /*
  * Cirrus EP7312 Startup code
  *
+ * Copyright (c) 2010 embedded brains GmbH.
+ *
  * Copyright (c) 2002 by Jay Monkman <jtm@smoothsmoothie.com>
  *
  * Copyright (c) 2002 by Charlie Steader <charlies@poliac.com>
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *
- *  http://www.rtems.com/license/LICENSE.
- *
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
 */
+
+#include <bsp/linker-symbols.h>
 
 /* Some standard definitions...*/
 
@@ -28,9 +28,49 @@
 .equ I_Bit,           	     0x80
 .equ F_Bit,           	     0x40
 
-	.text
-	.globl	_start
+.section ".bsp_start_text", "ax"
+.arm
 
+/*******************************************************
+ standard exception vectors table
+ *** Must be located at address 0
+********************************************************/
+
+Vector_Init_Block:
+        ldr    pc, handler_addr_reset
+        ldr    pc, handler_addr_undef
+        ldr    pc, handler_addr_swi
+        ldr    pc, handler_addr_prefetch
+        ldr    pc, handler_addr_abort
+        nop
+        ldr    pc, handler_addr_irq
+        ldr    pc, handler_addr_fiq
+
+handler_addr_reset:
+        .word  _start
+
+handler_addr_undef:
+        .word  _ARMV4_Exception_undef_default
+
+handler_addr_swi:
+        .word  _ARMV4_Exception_swi_default
+
+handler_addr_prefetch:
+        .word  _ARMV4_Exception_pref_abort_default
+
+handler_addr_abort:
+        .word  _ARMV4_Exception_data_abort_default
+
+handler_addr_reserved:
+        .word  _ARMV4_Exception_reserved_default
+
+handler_addr_irq:
+        .word  _ARMV4_Exception_interrupt
+
+handler_addr_fiq:
+        .word  _ARMV4_Exception_fiq_default
+
+	.globl	_start
 _start:
 	/* store the sp */
 	mov	r12, sp
@@ -40,8 +80,8 @@ _start:
  */
 
 /* zero the bss */
-        LDR     r1, =_bss_end_       /* get end of ZI region */
-        LDR     r0, =_bss_start_     /* load base address of ZI region */
+        LDR     r1, =bsp_section_bss_end   /* get end of ZI region */
+        LDR     r0, =bsp_section_bss_begin /* load base address of ZI region */
 
 zi_init:
         MOV     r2, #0
@@ -49,107 +89,37 @@ zi_init:
         STRLOT   r2, [r0], #4
         BLO     zi_init
 
-/* Load basic ARM7 interrupt table */
-VectorInit:
-	MOV	R0, #0
-	ADR	R1, Vector_Init_Block
-	LDMIA	R1!, {R2, r3}	/* Copy the Vectors (8 words) */
-	STMIA	R0!, {r2, r3}
-	LDMIA	R1!, {R2, r3}	/* Copy the Vectors (8 words) */
-	STMIA	R0!, {r2, r3}
-	LDMIA	R1!, {R2, r3}	/* Copy the Vectors (8 words) */
-	STMIA	R0!, {r2, r3}
-	LDMIA	R1!, {R2, r3}	/* Copy the Vectors (8 words) */
-	STMIA	R0!, {r2, r3}
-
-	LDMIA	R1!, {R2, r3}	/* Copy the .long'ed addresses (8 words) */
-	STMIA	R0!, {r2, r3}
-	LDMIA	R1!, {R2, r3}	/* Copy the .long'ed addresses (8 words) */
-	STMIA	R0!, {r2, r3}
-	LDMIA	R1!, {R2, r3}	/* Copy the .long'ed addresses (8 words) */
-	STMIA	R0!, {r2, r3}
-	LDMIA	R1!, {R2, r3}	/* Copy the .long'ed addresses (8 words) */
-	STMIA	R0!, {r2, r3}
-
-	B	init2
-
-/*******************************************************
- standard exception vectors table
- *** Must be located at address 0
-********************************************************/
-
-Vector_Init_Block:
-	LDR	PC, Reset_Addr
-	LDR	PC, Undefined_Addr
-	LDR	PC, SWI_Addr
-	LDR	PC, Prefetch_Addr
-	LDR	PC, Abort_Addr
-	NOP
-	LDR	PC, IRQ_Addr
-	LDR	PC, FIQ_Addr
-
-	.globl Reset_Addr
-Reset_Addr:	.long   _start
-Undefined_Addr:	.long	Undefined_Handler
-SWI_Addr:	.long	SWI_Handler
-Prefetch_Addr:	.long	Prefetch_Handler
-Abort_Addr:	.long	Abort_Handler
-		.long	0
-IRQ_Addr:	.long	IRQ_Handler
-FIQ_Addr:	.long	FIQ_Handler
-
-/* The following handlers do not do anything useful */
-	.globl Undefined_Handler
-Undefined_Handler:
-        B       Undefined_Handler
-	.globl SWI_Handler
-SWI_Handler:
-        B       SWI_Handler
-	.globl Prefetch_Handler
-Prefetch_Handler:
-        B       Prefetch_Handler
-	.globl Abort_Handler
-Abort_Handler:
-        B       Abort_Handler
-	.globl IRQ_Handler
-IRQ_Handler:
-        B       IRQ_Handler
-	.globl FIQ_Handler
-FIQ_Handler:
-        B       FIQ_Handler
-
-init2 :
 /* --- Initialise stack pointer registers */
 
 /* Enter IRQ mode and set up the IRQ stack pointer */
     MOV     r0, #Mode_IRQ | I_Bit | F_Bit     /* No interrupts */
     MSR     cpsr, r0
-    ldr	    r1, =_irq_stack_size
-    LDR     sp, =_irq_stack
+    ldr	    r1, =bsp_stack_irq_size
+    LDR     sp, =bsp_stack_irq_begin
     add	    sp, sp, r1
     sub     sp, sp, #0x64
 
 /* Enter FIQ mode and set up the FIQ stack pointer */
     MOV     r0, #Mode_FIQ | I_Bit | F_Bit     /* No interrupts */
     MSR     cpsr, r0
-    ldr	    r1, =_fiq_stack_size
-    LDR     sp, =_fiq_stack
+    ldr	    r1, =bsp_stack_fiq_size
+    LDR     sp, =bsp_stack_fiq_begin
     add	    sp, sp, r1
     sub     sp, sp, #0x64
 
 /* Enter ABT mode and set up the ABT stack pointer */
     MOV     r0, #Mode_ABT | I_Bit | F_Bit     /* No interrupts */
     MSR     cpsr, r0
-    ldr	    r1, =_abt_stack_size
-    LDR     sp, =_abt_stack
+    ldr	    r1, =bsp_stack_abt_size
+    LDR     sp, =bsp_stack_abt_begin
     add	    sp, sp, r1
     sub     sp, sp, #0x64
 
 /* Set up the SVC stack pointer last and stay in SVC mode */
     MOV     r0, #Mode_SVC | I_Bit | F_Bit     /* No interrupts */
     MSR     cpsr, r0
-    ldr	    r1, =_svc_stack_size
-    LDR     sp, =_svc_stack
+    ldr	    r1, =bsp_stack_svc_size
+    LDR     sp, =bsp_stack_svc_begin
     add	    sp, sp, r1
     sub     sp, sp, #0x64
 

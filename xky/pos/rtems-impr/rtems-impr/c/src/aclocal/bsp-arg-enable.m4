@@ -1,4 +1,3 @@
-dnl $Id: bsp-arg-enable.m4 179 2008-09-17 14:07:38Z hsilva $
 dnl
 dnl RTEMS_BSP_ARG_ENABLE(FEATURE, HELP-STRING, ACTION-IF-TRUE [, ACTION-IF-FALSE])
 dnl 

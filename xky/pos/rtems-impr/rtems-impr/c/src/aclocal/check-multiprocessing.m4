@@ -1,7 +1,3 @@
-dnl
-dnl $Id: check-multiprocessing.m4 179 2008-09-17 14:07:38Z hsilva $
-dnl
-
 AC_DEFUN([RTEMS_CHECK_MULTIPROCESSING],
 [dnl
 AC_REQUIRE([RTEMS_ENABLE_MULTILIB])dnl

@@ -14,9 +14,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Jukka Pietarinen <jukka.pietarinen@mrf.fi>, 2008,
  *  Micro-Research Finland Oy
@@ -24,6 +22,8 @@
 
 #include <rtems.h>
 #include <bsp.h>
+#include <rtems/btimer.h>
+#include <rtems/bspIo.h>
 #include "../include/system_conf.h"
 #include "../../shared/clock/clock.h"
 
@@ -77,7 +77,7 @@ void benchmark_timer_initialize( void )
                              /* This value is in microseconds. */
 #define LEAST_VALID       4  /* Don't trust a clicks value lower than this */
 
-int benchmark_timer_read( void )
+benchmark_timer_t benchmark_timer_read( void )
 {
   uint32_t ticks;
   uint32_t total;

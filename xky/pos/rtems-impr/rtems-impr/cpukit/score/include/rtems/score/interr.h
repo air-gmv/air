@@ -1,190 +1,263 @@
 /**
- *  @file
- *  interr.h
+ *  @file  rtems/score/interr.h
  *
- *  @brief contains constants and prototypes related
+ *  @brief Constants and Prototypes Related to the Internal Error Handler
+ *
+ *  This include file contains constants and prototypes related
  *  to the Internal Error Handler.
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-2006.
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2009.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  602     | 17/11/2008  | mcoutinho    | IPR 65
- *  3509    | 19/06/2009  | mcoutinho    | IPR 528
- *  3706    | 09/07/2009  | jsousa       | IPR 153
- *  4406    | 21/09/2009  | mcoutinho    | IPR 605
- *  4443    | 21/09/2009  | mcoutinho    | IPR 768
- *  4944    | 23/10/2009  | mcoutinho    | IPR 819
- *  5099    | 28/10/2009  | mcoutinho    | IPR 553
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  5317    | 02/11/2009  | mcoutinho    | IPR 831
- *  6356    | 02/03/2010  | mcoutinho    | IPR 1935
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_CORE Super Core
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef _RTEMS_SCORE_INTERR_H
 #define _RTEMS_SCORE_INTERR_H
 
+#include <stdbool.h>
+#include <stdint.h>
+
+#include <rtems/system.h>
+
 /**
  *  @defgroup ScoreIntErr Internal Error Handler
  *
- *   @brief This handler encapsulates functionality which provides the foundation
+ *  @ingroup Score
+ *
+ *  This handler encapsulates functionality which provides the foundation
  *  Semaphore services used in all of the APIs supported by RTEMS.
  */
 /**@{*/
 
-#include <rtems/score/types.h>
-
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-   /**
-    *  @brief lists the possible sources from which an error
-    *  can be reported.
-    */
-   typedef enum
-   {
-      INTERNAL_ERROR_CORE ,
-      INTERNAL_ERROR_RTEMS_API ,
-      INTERNAL_ERROR_INTERRUPTION_NOT_HANDLED
-   } Internal_errors_Source;
+/**
+ *  @brief This type lists the possible sources from which an error
+ *  can be reported.
+ */
+typedef enum {
+  /**
+   * @brief Errors of the core system.
+   *
+   * @see Internal_errors_Core_list.
+   */
+  INTERNAL_ERROR_CORE = 0,
 
-   /**
-    *  @brief list of errors which are generated internally by the executive core.
-    */
-   typedef enum
-   {
-      INTERNAL_ERROR_NO_CONFIGURATION_TABLE = 0 ,
-      INTERNAL_ERROR_NO_CPU_TABLE = 1 ,
-      INTERNAL_ERROR_INVALID_WORKSPACE_ADDRESS = 2 ,
-      INTERNAL_ERROR_TOO_LITTLE_WORKSPACE = 3 ,
-      INTERNAL_ERROR_WORKSPACE_ALLOCATION = 4 ,
-      INTERNAL_ERROR_INTERRUPT_STACK_TOO_SMALL = 5 ,
-      INTERNAL_ERROR_THREAD_EXITTED = 6 ,
-      INTERNAL_ERROR_INCONSISTENT_MP_INFORMATION = 7 ,
-      INTERNAL_ERROR_INVALID_NODE = 8 ,
-      INTERNAL_ERROR_NO_MPCI = 9 ,
-      INTERNAL_ERROR_BAD_PACKET = 10 ,
-      INTERNAL_ERROR_OUT_OF_PACKETS = 11 ,
-      INTERNAL_ERROR_OUT_OF_GLOBAL_OBJECTS = 12 ,
-      INTERNAL_ERROR_OUT_OF_PROXIES = 13 ,
-      INTERNAL_ERROR_INVALID_GLOBAL_ID = 14 ,
-      INTERNAL_ERROR_BAD_STACK_HOOK = 15 ,
-      INTERNAL_ERROR_BAD_ATTRIBUTES = 16 ,
-      INTERNAL_ERROR_INVALID_MESSAGE_SUBMIT_TYPE = 17 ,
-      INTERNAL_ERROR_TOO_MANY_INITIAL_EXTENSIONS = 18 ,
-      INTERNAL_ERROR_INVALID_MICROSECONDS_PER_TICK = 19 ,
-      INTERNAL_ERROR_INVALID_TICKS_PER_TIMESLICE = 20 ,
-      INTERNAL_ERROR_TOO_MANY_DEVICE_DRIVERS = 21 ,
-      INTERNAL_ERROR_NO_DEVICE_DRIVER_TABLE = 22 ,
-      INTERNAL_ERROR_NO_USER_EXTENSION_TABLE = 23 ,
-      INTERNAL_ERROR_NO_API_CONFIGURATION_TABLE = 24 ,
-      INTERNAL_ERROR_INVALID_NUMBER_TASKS = 25 ,
-      INTERNAL_ERROR_INVALID_NUMBER_INITIALIZATION_TASKS = 26 ,
-      INTERNAL_ERROR_NO_USER_INITIALIZATION_TASKS_TABLE = 27 ,
-      INTERNAL_ERROR_NOT_ENOUGH_MEMORY = 28 ,
-      INTERNAL_ERROR_WRONG_ENVIRONMENT = 29 ,
-      INTERNAL_ERROR_INVALID_EVENT_SYNC_STATE = 30 ,
-      INTERNAL_ERROR_INVALID_PENDING_MESSAGE = 31 ,
-      INTERNAL_ERROR_INVALID_OBJECT_INDEX = 32 ,
-      INTERNAL_ERROR_INVALID_OBJECT_LOCATION = 33 ,
-      INTERNAL_ERROR_INVALID_LOCK_NESTING_BEHAVIOR = 34 ,
-      INTERNAL_ERROR_INVALID_CORE_MUTEX_ATTRIBUTE = 35 ,
-      INTERNAL_ERROR_INVALID_THREAD_QUEUE_STATE = 36 ,
-      INTERNAL_ERROR_INVALID_THREAD_QUEUE_DISCIPLINE = 37 ,
-      INTERNAL_ERROR_INVALID_THREAD_BUDGET_ALGORITHM = 38 ,
-      INTERNAL_ERROR_INVALID_WATCHDOG_DIRECTION = 39 ,
-      INTERNAL_ERROR_INVALID_WATCHDOG_STATE = 40 ,
-      INTERNAL_ERROR_INVALID_MUTEX_NEST_COUNT = 41 ,
-      INTERNAL_ERROR_INVALID_HEAP_ALIGNMENT = 42
-   } Internal_errors_Core_list;
+  /**
+   * @brief Errors of the RTEMS API.
+   */
+  INTERNAL_ERROR_RTEMS_API = 1,
 
-   /**
-    *  @brief holds the fatal error information.
-    */
-   typedef struct
-   {
-      /**
-       * @brief This is the source of the error.
-       */
-      Internal_errors_Source the_source;
-      /**
-       * @brief This indicates if the error is internal of external.
-       */
-      boolean is_internal;
-      /**
-       * @brief This is the error code.
-       */
-      uint32_t the_error;
-   } Internal_errors_Information;
+  /**
+   * @brief Errors of the POSIX API.
+   */
+  INTERNAL_ERROR_POSIX_API = 2,
 
-   /**
-    *  @brief store the error information when a fatal error occurs
-    */
-   extern Internal_errors_Information Internal_errors_What_happened;
+  /**
+   * @brief Fatal source for the block device cache.
+   *
+   * @see rtems_bdbuf_fatal_code.
+   */
+  RTEMS_FATAL_SOURCE_BDBUF = 3,
 
-   /**
-    *  @brief announce that an internal error occurred
-    *
-    *  This routine will invoke the fatal error handler supplied by the user,
-    *  followed by the the default one provided by the executive.  The default
-    *  error handler assumes no hardware is present to help inform the user
-    *  of the problem.  Halt stores the error code in a known register,
-    *  disables interrupts, and halts the CPU.  If the CPU does not have a
-    *  halt instruction, it will loop to itself.
-    *
-    *  @param[in] the_source what subsystem the error originated in
-    *  @param[in] is_internal if the error was internally generated
-    *  @param[in] the_error fatal error status code
-    *
-    *  @note The the_error is not necessarily a directive status code.
-    */
-   void _Internal_error_Occurred(
-                                 Internal_errors_Source the_source ,
-                                 boolean is_internal ,
-                                 uint32_t the_error
-                                 );
+  /**
+   * @brief Fatal source for application specific errors.
+   *
+   * The fatal code is application specific.
+   */
+  RTEMS_FATAL_SOURCE_APPLICATION = 4,
 
-   /**
-    *  @brief handles the application safe state
-    *
-    *  This routine is invoked when a error occurs.
-    *  Care must be taken when invoking RTEMS directives inside this function.
-    *  note that an RTEMS error could have occurred and RTEMS might be corrupted.
-    *  For example, the system could not have been properly initalized because not
-    *  enough memory was allocated.
-    *
-    *  @param[in] the_source what subsystem the error originated in
-    *  @param[in] is_internal if the error was internally generated
-    *  @param[in] the_error fatal error status code
-    *
-    *  @return  returns TRUE if the error was corrected and FALSE otherwise
-    *
-    *  @note The the_error is not necessarily a directive status code.
-    *  @note This function does not necessarily have to return. It can restart
-    *    the system, delete/restart the calling thread, enter a polling mode, etc
-    */
-   boolean app_safe_state_handler(
-                                  Internal_errors_Source the_source ,
-                                  boolean is_internal ,
-                                  uint32_t the_error
-                                  );
+  /**
+   * @brief Fatal source of exit().
+   *
+   * The fatal code is the exit() status code.
+   */
+  RTEMS_FATAL_SOURCE_EXIT = 5,
+
+  /**
+   * @brief Fatal source for BSP errors.
+   *
+   * The fatal codes are defined in <bsp/fatal.h>.  Examples are interrupt and
+   * exception initialization.
+   *
+   * @see bsp_fatal_code and bsp_fatal().
+   */
+  RTEMS_FATAL_SOURCE_BSP = 6,
+
+  /**
+   * @brief Fatal source of assert().
+   *
+   * The fatal code is the pointer value of the assert context.
+   *
+   * @see rtems_assert_context.
+   */
+  RTEMS_FATAL_SOURCE_ASSERT = 7,
+
+  /**
+   * @brief Fatal source of the stack checker.
+   *
+   * The fatal code is the object name of the executing task.
+   */
+  RTEMS_FATAL_SOURCE_STACK_CHECKER = 8,
+
+  /**
+   * @brief Fatal source of the exceptions.
+   *
+   * The fatal code is the pointer value of the exception frame pointer.
+   *
+   * @see rtems_exception_frame and rtems_exception_frame_print().
+   */
+  RTEMS_FATAL_SOURCE_EXCEPTION = 9,
+
+  /**
+   * @brief Fatal source of SMP domain.
+   *
+   * @see SMP_Fatal_code.
+   */
+  RTEMS_FATAL_SOURCE_SMP = 10,
+
+  /**
+   * @brief The last available fatal source.
+   *
+   * This enum value ensures that the enum type needs at least 32-bits for
+   * architectures with short enums.
+   */
+  INTERNAL_ERROR_INTERRUPTION_NOT_HANDLED = 0xffffffef,
+  
+  /**
+   * @brief The last available fatal source.
+   *
+   * This enum value ensures that the enum type needs at least 32-bits for
+   * architectures with short enums.
+   */
+  RTEMS_FATAL_SOURCE_LAST = 0xffffffff
+} Internal_errors_Source;
+
+/**
+ * @brief A list of errors which are generated internally by the executive
+ * core.
+ *
+ * Do not re-use numbers of obsolete error codes.  Uncomment no longer used
+ * error codes.
+ */
+typedef enum {
+  /* INTERNAL_ERROR_NO_CONFIGURATION_TABLE = 0, */
+  /* INTERNAL_ERROR_NO_CPU_TABLE = 1, */
+  INTERNAL_ERROR_TOO_LITTLE_WORKSPACE = 2,
+  INTERNAL_ERROR_WORKSPACE_ALLOCATION = 3,
+  INTERNAL_ERROR_INTERRUPT_STACK_TOO_SMALL = 4,
+  INTERNAL_ERROR_THREAD_EXITTED = 5,
+  INTERNAL_ERROR_INCONSISTENT_MP_INFORMATION = 6,
+  INTERNAL_ERROR_INVALID_NODE = 7,
+  INTERNAL_ERROR_NO_MPCI = 8,
+  INTERNAL_ERROR_BAD_PACKET = 9,
+  INTERNAL_ERROR_OUT_OF_PACKETS = 10,
+  INTERNAL_ERROR_OUT_OF_GLOBAL_OBJECTS = 11,
+  INTERNAL_ERROR_OUT_OF_PROXIES = 12,
+  INTERNAL_ERROR_INVALID_GLOBAL_ID = 13,
+  INTERNAL_ERROR_BAD_STACK_HOOK = 14,
+  /* INTERNAL_ERROR_BAD_ATTRIBUTES = 15, */
+  /* INTERNAL_ERROR_IMPLEMENTATION_KEY_CREATE_INCONSISTENCY = 16, */
+  /* INTERNAL_ERROR_IMPLEMENTATION_BLOCKING_OPERATION_CANCEL = 17, */
+  /* INTERNAL_ERROR_THREAD_QUEUE_ENQUEUE_FROM_BAD_STATE = 18, */
+  INTERNAL_ERROR_UNLIMITED_AND_MAXIMUM_IS_0 = 19,
+  /* INTERNAL_ERROR_SHUTDOWN_WHEN_NOT_UP = 20, */
+  INTERNAL_ERROR_GXX_KEY_ADD_FAILED = 21,
+  INTERNAL_ERROR_GXX_MUTEX_INIT_FAILED = 22,
+  INTERNAL_ERROR_NO_MEMORY_FOR_HEAP = 23,
+  INTERNAL_ERROR_CPU_ISR_INSTALL_VECTOR = 24,
+  INTERNAL_ERROR_RESOURCE_IN_USE = 25,
+  INTERNAL_ERROR_RTEMS_INIT_TASK_ENTRY_IS_NULL = 26,
+  INTERNAL_ERROR_POSIX_INIT_THREAD_ENTRY_IS_NULL = 27,
+  INTERNAL_ERROR_THREAD_QUEUE_DEADLOCK = 28,
+  INTERNAL_ERROR_THREAD_QUEUE_ENQUEUE_STICKY_FROM_BAD_STATE = 29,
+  INTERNAL_ERROR_BAD_THREAD_DISPATCH_DISABLE_LEVEL = 30,
+  INTERNAL_ERROR_BAD_THREAD_DISPATCH_ENVIRONMENT = 31,
+  INTERNAL_ERROR_RTEMS_INIT_TASK_CREATE_FAILED = 32,
+  INTERNAL_ERROR_POSIX_INIT_THREAD_CREATE_FAILED = 33,
+  INTERNAL_ERROR_LIBIO_USER_ENV_KEY_CREATE_FAILED = 34,
+  INTERNAL_ERROR_LIBIO_SEM_CREATE_FAILED = 35,
+  INTERNAL_ERROR_LIBIO_STDOUT_FD_OPEN_FAILED = 36,
+  INTERNAL_ERROR_LIBIO_STDERR_FD_OPEN_FAILED = 37,
+  INTERNAL_ERROR_ILLEGAL_USE_OF_FLOATING_POINT_UNIT = 38,
+  INTERNAL_ERROR_ARC4RANDOM_GETENTROPY_FAIL = 39
+} Internal_errors_Core_list;
+
+typedef CPU_Uint32ptr Internal_errors_t;
+
+/**
+ *  This type holds the fatal error information.
+ */
+typedef struct {
+  /** This is the source of the error. */
+  Internal_errors_Source  the_source;
+  /** This is the error code. */
+  Internal_errors_t       the_error;
+} Internal_errors_Information;
+
+/**
+ *  When a fatal error occurs, the error information is stored here.
+ */
+extern Internal_errors_Information _Internal_errors_What_happened;
+
+/**
+ * @brief Initiates system termination.
+ *
+ * This routine is invoked when the application or the executive itself
+ * determines that a fatal error has occurred or a final system state is
+ * reached (for example after exit()).
+ *
+ * The first action of this function is to call the fatal handler of the user
+ * extensions.  For the initial extensions the following conditions are
+ * required
+ * - a valid stack pointer and enough stack space,
+ * - a valid code memory, and
+ * - valid read-only data.
+ *
+ * For the initial extensions the read-write data (including BSS segment) is
+ * not required on single processor configurations.  On SMP configurations
+ * however the read-write data must be initialized since this function must
+ * determine the state of the other processors and request them to shut-down if
+ * necessary.
+ *
+ * Non-initial extensions require in addition valid read-write data.  The BSP
+ * may install an initial extension that performs a system reset.  In this case
+ * the non-initial extensions will be not called.
+ *
+ * Once all fatal handler executed the error information will be stored to
+ * _Internal_errors_What_happened and the system state is set to
+ * SYSTEM_STATE_TERMINATED.
+ *
+ * The final step is to call the CPU specific _CPU_Fatal_halt().
+ *
+ * @param[in] the_source The fatal source indicating the subsystem the fatal
+ * condition originated in.
+ * @param[in] the_error The fatal error code.  This value must be interpreted
+ * with respect to the source.
+ *
+ * @see rtems_fatal() and _Internal_error().
+ */
+void _Terminate(
+  Internal_errors_Source  the_source,
+  Internal_errors_t       the_error
+) RTEMS_NO_RETURN;
+
+/**
+ * @brief Terminates the system with an INTERNAL_ERROR_CORE fatal source and
+ * the specified core error code.
+ *
+ * @param[in] core_error The core error code.
+ *
+ * @see _Terminate().
+ */
+void _Internal_error( Internal_errors_Core_list core_error ) RTEMS_NO_RETURN;
 
 #ifdef __cplusplus
 }
@@ -194,7 +267,3 @@ extern "C"
 
 #endif
 /* end of include file */
-
-/**  
- *  @}
- */

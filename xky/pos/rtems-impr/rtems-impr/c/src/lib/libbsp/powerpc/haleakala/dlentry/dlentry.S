@@ -29,15 +29,10 @@
  *      i-cubed limited makes no representations about the suitability
  *      of this software for any purpose.
  *
- *  $Id$
- *
  *  derived from "helas403/dlentry.S":
  *
  *  Further changes to derive for the PPC405CR/GP/GPr/EX/EXr
  *  by Michael Hamel ADInstruments Ltd 2008
- *
- *
- *  Id: dlentry.S,v 1.2 2000/08/02 16:30:57 joel Exp
  */
 
 #include <rtems/asm.h>

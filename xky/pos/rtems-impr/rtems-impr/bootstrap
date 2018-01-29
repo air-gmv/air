@@ -1,23 +1,22 @@
-#! /bin/sh
+#!/bin/sh
 #
 # helps bootstrapping, when checked out from CVS
 # requires GNU autoconf and GNU automake
 #
-# $Id: bootstrap 318 2008-10-21 10:51:20Z mcoutinho $
-
 # this is not meant to be exported outside the source tree
-
+#
 # NOTE: Inspired by libtool's autogen script
-
+#
 # to be run from the toplevel directory of RTEMS'
 # source tree
 
 progname=`basename $0`
 top_srcdir=`dirname $0`
 
-verbose="";
+verbose=""
 quiet="false"
-mode="generate"
+mode="autoreconf"
+force=0
 
 usage()
 {
@@ -31,7 +30,7 @@ usage()
   echo "	-q .. quiet, don't display directories"
   echo "	-v .. verbose, pass -v to autotools"
   echo
-  exit 1;
+  exit 1
 }
 
 generate_bspdir_acinclude()
@@ -43,7 +42,7 @@ AC_DEFUN([RTEMS_CHECK_BSPDIR],
   case "\$1" in
 EOF
 
-for i in */bsp_specs; do
+for i in `ls */bsp_specs | LANG=C LC_COLLATE=C sort`; do
   d=`dirname $i`
 cat << EOF >> acinclude.m4~
   $d )
@@ -57,7 +56,7 @@ cat << EOF >> acinclude.m4~
 ])
 EOF
 if cmp -s acinclude.m4 acinclude.m4~ 2>/dev/null; then
-  echo "acinclude.m4 is unchanged";
+  echo "acinclude.m4 is unchanged"
 else
   cp acinclude.m4~ acinclude.m4
 fi
@@ -67,7 +66,7 @@ rm -f acinclude.m4~
 if test ! -f $top_srcdir/aclocal/version.m4; then
   echo "${progname}:"
   echo "	Installation problem: Can't find file aclocal/version.m4"
-  exit 1;
+  exit 1
 fi
 
 while test $# -gt 0; do
@@ -75,32 +74,38 @@ case $1 in
 -h|--he|--hel|--help)
   usage ;;
 -q|--qu|--qui|--quie|--quiet)
-  quiet="true";
+  quiet="true"
   shift;;
 -v|--ve|--ver|--verb|--verbo|--verbos|--verbose)
-  verbose="-v";
+  verbose="-v"
   shift;;
 -c|--cl|--cle|--clea|--clean)
-  mode="clean";
+  mode="clean"
+  shift;;
+-f|--fo|--for|--forc|--force)
+  force=`expr $force + 1`
   shift;;
 -p|--pr|--pre|--prei|--prein|--preins|--preinst)
-  mode="preinstall";
+  mode="preinstall"
   shift;;
 -r|--re|--rec|--reco|--recon|--reconf)
-  mode="autoreconf";
+  mode="autoreconf"
   shift;;
--*) echo "unknown option $1" ;
+-g|--ge|--gen|--gene|--gener|--genera|--generat|--generate)
+  mode="generate"
+  shift;;
+-*) echo "unknown option $1"
   usage ;;
-*) echo "invalid parameter $1" ;
+*) echo "invalid parameter $1"
   usage ;;
 esac
 done
 
 case $mode in
 preinstall)
-  confs=`find -name Makefile.am -exec grep -l 'include .*/preinstall\.am' {} \;`
+  confs=`find . -name Makefile.am -exec grep -l 'include .*/preinstall\.am' {} \;`
   for i in $confs; do
-    dir=$(dirname $i);
+    dir=$(dirname $i)
     test "$quite" = "true" || echo "Generating $dir/preinstall.am"
     ${top_srcdir}/ampolish3 "$dir/Makefile.am" > "$dir/preinstall.am"
   done
@@ -112,19 +117,19 @@ generate)
     echo "You must have autoconf installed to run $program"
     exit 1
   fi
-  
+
   AUTOHEADER=${AUTOHEADER-autoheader}
   if test -z "$AUTOHEADER"; then
     echo "You must have autoconf installed to run $program"
     exit 1
   fi
-  
+
   AUTOMAKE=${AUTOMAKE-automake}
   if test -z "$AUTOMAKE"; then
     echo "You must have automake installed to run $program"
     exit 1
   fi
-  
+
   ACLOCAL=${ACLOCAL-aclocal}
   if test -z "$ACLOCAL"; then
     echo "You must have automake installed to run $program"
@@ -140,23 +145,23 @@ generate)
 
   confs=`find . \( -name 'configure.in' -o -name 'configure.ac' \) -print`
   for i in $confs; do
-  dir=`dirname $i`;
-  configure=`basename $i`;
-  ( test "$quiet" = "true" || echo "$dir";
-    cd $dir;
+  dir=`dirname $i`
+  configure=`basename $i`
+  ( test "$quiet" = "true" || echo "$dir"
+    cd $dir
     test -n "`grep RTEMS_CHECK_BSPDIR ${configure}`" && \
-      generate_bspdir_acinclude;
+      generate_bspdir_acinclude
     pat="s,\$(RTEMS_TOPdir),${aclocal_dir},g"
     aclocal_args=`grep '^[ ]*ACLOCAL_AMFLAGS' Makefile.am | \
-      sed -e 's%.*ACLOCAL_AMFLAGS.*\=[ ]*%%g' -e $pat ` ;
+      sed -e 's%.*ACLOCAL_AMFLAGS.*\=[ ]*%%g' -e $pat `
     test "$verbose" = "-v" && echo "${ACLOCAL} $aclocal_args"
-    ${ACLOCAL} $aclocal_args;
+    ${ACLOCAL} $aclocal_args
     test -n "`grep CONFIG_HEADER ${configure}`" && ${AUTOHEADER} \
-      && test "$verbose" = "-v" && echo "${AUTOHEADER}";
+      && test "$verbose" = "-v" && echo "${AUTOHEADER}"
     test -n "`grep RTEMS_BSP_CONFIGURE ${configure}`" && ${AUTOHEADER} \
-      && test "$verbose" = "-v" && echo "${AUTOHEADER}";
-    test -f Makefile.am && ${AUTOMAKE} -a -c $verbose ;
-    ${AUTOCONF};
+      && test "$verbose" = "-v" && echo "${AUTOHEADER}"
+    test -f Makefile.am && ${AUTOMAKE} -a -c $verbose
+    ${AUTOCONF}
     test -f Makefile.am && test -n "`grep 'stamp-h\.in' Makefile.in`" \
       && echo timestamp > stamp-h.in
   )
@@ -172,13 +177,13 @@ autoreconf)
 
   confs=`find . -name 'configure.ac' -print`
   for i in $confs; do
-  dir=`dirname $i`;
-  configure=`basename $i`;
-  ( test "$quiet" = "true" || echo "$dir";
-    cd $dir;
+  dir=`dirname $i`
+  configure=`basename $i`
+  ( test "$quiet" = "true" || echo "$dir"
+    cd $dir
     test -n "`grep RTEMS_CHECK_BSPDIR ${configure}`" && \
-      generate_bspdir_acinclude;
-    ${AUTORECONF} -i --no-recursive $verbose;
+      generate_bspdir_acinclude
+    ${AUTORECONF} -i --no-recursive $verbose
     test -f Makefile.am && test -n "`grep 'stamp-h\.in' Makefile.in`" \
       && echo timestamp > stamp-h.in
   )
@@ -187,28 +192,58 @@ autoreconf)
 
 clean)
   test "$quiet" = "true" || echo "removing automake generated Makefile.in files"
-  files=`find . -name 'Makefile.am' -print | sed -e 's%\.am%\.in%g'` ;
-  for i in $files; do if test -f $i; then
-    rm -f $i
-    test "$verbose" = "-v" && echo "$i"    
-  fi; done
+  files=`find . -name 'Makefile.am' -print | sed -e 's%\.am%\.in%g'`
+  for i in $files; do
+    if test -f $i; then
+      rm -f $i
+      test "$verbose" = "-v" && echo "$i"
+    fi
+  done
 
   test "$quiet" = "true" || echo "removing configure files"
-  files=`find . -name 'configure' -print` ;
-  test "$verbose" = "-v" && test -n "$files" && echo "$files" ;
-  for i in $files; do if test -f $i; then
-    rm -f $i config.sub config.guess depcomp install-sh mdate-sh missing \
-	mkinstalldirs texinfo.tex compile
-    test "$verbose" = "-v" && echo "$i"    
-  fi; done
-  
+  files=`find . -name 'configure' -print`
+  for i in $files; do
+    if test -f $i; then
+      rm -f $i
+      test "$verbose" = "-v" && echo "$i"
+    fi
+  done
+
+  if test $force -gt 0; then
+    needles=""
+    if test $force -gt 1; then
+      # Manually maintained
+      needles="$needles config.sub"
+      needles="$needles config.guess"
+    fi
+    if test $force -gt 0; then
+      # Inherited from automake
+      needles="$needles compile"
+      needles="$needles depcomp"
+      needles="$needles install-sh"
+      needles="$needles missing"
+      needles="$needles mdate-sh"
+    fi
+    for j in $needles; do
+      files=`find . -name "$j" -print`
+      for i in $files; do
+        if test -f $i; then
+          rm -f $i
+          test "$verbose" = "-v" && echo "$i"
+        fi
+      done
+    done
+  fi
+
   test "$quiet" = "true" || echo "removing aclocal.m4 files"
-  files=`find . -name 'aclocal.m4' -print` ;
-  test "$verbose" = "-v" && test -n "$files" && echo "$files" ;
-  for i in $files; do if test -f $i; then
-    rm -f $i
-    test "$verbose" = "-v" && echo "$i"    
-  fi; done
+  files=`find . -name 'aclocal.m4' -print`
+  test "$verbose" = "-v" && test -n "$files" && echo "$files"
+  for i in $files; do
+    if test -f $i; then
+      rm -f $i
+      test "$verbose" = "-v" && echo "$i"
+    fi
+  done
 
   find . -name '*~' -print | xargs rm -f
   find . -name 'bspopts.h.in' -print | xargs rm -f

@@ -23,18 +23,12 @@
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-#ifndef _BSP_H
-#define _BSP_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef LIBBSP_POWERPC_PSIM_BSP_H
+#define LIBBSP_POWERPC_PSIM_BSP_H
 
 #include <bspopts.h>
 
@@ -44,11 +38,13 @@ extern "C" {
 
 #else
 #include <rtems.h>
-#include <rtems/console.h>
 #include <libcpu/io.h>
-#include <rtems/clockdrv.h>
-#include <rtems/iosupp.h>
 #include <bsp/vectors.h>
+#include <bsp/default-initial-extension.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* Constants */
 
@@ -65,22 +61,30 @@ extern uint32_t   BSP_mem_size;
 
 /* macros */
 #define Processor_Synchronize() \
-  asm(" eieio ")
+  __asm__ (" eieio ")
 
+/*
+ *  Network configuration
+ */
 struct rtems_bsdnet_ifconfig;
 
-int
-rtems_ifsim_attach(struct rtems_bsdnet_ifconfig *ifcfg, int attaching);
+int rtems_ifsim_attach(struct rtems_bsdnet_ifconfig *ifcfg, int attaching);
 
 #define RTEMS_BSP_NETWORK_DRIVER_NAME   "ifsim1"
 #define RTEMS_BSP_NETWORK_DRIVER_ATTACH rtems_ifsim_attach
 
-#endif /* ASM */
-
-#define BSP_HAS_NO_VME
+/*
+ *  Interfaces to required Clock Driver support methods
+ */
+int BSP_disconnect_clock_handler(void);
+int BSP_connect_clock_handler(void);
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* ASM */
+
+#define BSP_HAS_NO_VME
 
 #endif

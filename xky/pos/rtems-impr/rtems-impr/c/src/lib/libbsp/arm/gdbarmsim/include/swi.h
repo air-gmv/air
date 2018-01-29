@@ -1,8 +1,22 @@
+/**
+ * @file
+ *
+ * @ingroup arm_gdbarmsim
+ *
+ * @brief Software interrupt definitions.
+ */
+
+/**
+ * @defgroup gdbarmsim_swi SWI Definitions
+ *
+ * @ingroup arm_gdbarmsim
+ *
+ * @brief Software interrupt definitions.
+ */
+
 /*
  *  Copied from libgloss 1 Oct 2009.
  *  Minor modifications to work with RTEMS.
- *
- *  $Id$
  */
 
 /* SWI numbers for RDP (Demon) monitor.  */
@@ -80,7 +94,7 @@ static inline int
 do_AngelSWI (int reason, void * arg)
 {
   int value;
-  asm volatile ("mov r0, %1; mov r1, %2; " AngelSWIInsn " %a3; mov %0, r0"
+  __asm__ volatile ("mov r0, %1; mov r1, %2; " AngelSWIInsn " %a3; mov %0, r0"
        : "=r" (value) /* Outputs */
        : "r" (reason), "r" (arg), "i" (AngelSWI) /* Inputs */
        : "r0", "r1", "r2", "r3", "ip", "lr", "memory", "cc"

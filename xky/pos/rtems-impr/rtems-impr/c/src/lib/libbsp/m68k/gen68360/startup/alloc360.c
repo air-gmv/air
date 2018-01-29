@@ -6,8 +6,6 @@
  * University of Saskatchewan
  * Saskatoon, Saskatchewan, CANADA
  * eric@skatter.usask.ca
- *
- *  $Id$
  */
 
 #include <rtems.h>
@@ -49,7 +47,7 @@ M360AllocateBufferDescriptors (int count)
 	 * form, but this routine is probably being run as part of an
 	 * initialization sequence so the effect shouldn't be too severe.
 	 */
-	_ISR_Disable (level);
+	_ISR_Local_disable (level);
 	for (i = 0 ; i < sizeof(bdregions) / sizeof(bdregions[0]) ; i++) {
 		/*
 		 * Verify that the region exists.
@@ -76,7 +74,7 @@ M360AllocateBufferDescriptors (int count)
 			break;
 		}
 	}
-	_ISR_Enable (level);
+	_ISR_Local_enable (level);
 	if (bdp == NULL)
 		rtems_panic ("Can't allocate %d buffer descriptor(s).\n", count);
 	return bdp;

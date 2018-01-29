@@ -6,27 +6,27 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
+#include <inttypes.h>
 #include <string.h>
 
 #include <bsp.h>
 #include <rtems/bspIo.h>
 #include <libcpu/spr.h>
+#include <libcpu/powerpc-utility.h>
 
 void printBAT( int bat, uint32_t upper, uint32_t lower )
 {
   uint32_t lowest_addr;
   uint32_t size;
 
-  printk("BAT%d raw(upper=0x%08x, lower=0x%08x) ", bat, upper, lower );
+  printk("BAT%d raw(upper=0x%08" PRIx32 ", lower=0x%08" PRIx32 ") ", bat, upper, lower );
 
   lowest_addr = (upper & 0xFFFE0000);
   size = (((upper & 0x00001FFC) >> 2) + 1) * (128 * 1024);
-  printk(" range(0x%08x, 0x%08x) %s%s %s%s%s%s %s\n",
+  printk(" range(0x%08" PRIx32 ", 0x%08" PRIx32 ") %s%s %s%s%s%s %s\n",
     lowest_addr,
     lowest_addr + (size - 1),
     (upper & 0x01) ? "P" : "p",

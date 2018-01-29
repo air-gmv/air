@@ -12,10 +12,8 @@
  *  the STREAM API Specification Document link.
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  irq.h,v 1.2.4.2 2003/09/04 18:45:20 joel Exp
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef LIBBSP_POWERPC_IRQ_H
@@ -58,6 +56,9 @@
 #define BSP_DECREMENTER			(BSP_PROCESSOR_IRQ_LOWEST_OFFSET)
 
 #include <bsp/irq_supp.h>
+
+#define BSP_INTERRUPT_VECTOR_MIN BSP_LOWEST_OFFSET
+#define BSP_INTERRUPT_VECTOR_MAX BSP_MAX_OFFSET
 
 #ifdef __cplusplus
 extern "C" {

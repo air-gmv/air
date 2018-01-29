@@ -18,7 +18,7 @@ LOG_EVENT_PARTITIONS_HM                   = "Parsing Partitions Health-Monitor C
 LOG_EVENT_CONNECTION_TABLE                = "Parsing Module Connection Table"
 LOG_EVENT_SHARED_MEMORY                   = "Parsing Shared Memory Blocks"
 LOG_EVENT_PARTITION_CONFIG                = "Generating {0} configuration files"
-LOG_EVENT_APP_CONFIG                      = "Generating XKY application configuration files"
+LOG_EVENT_APP_CONFIG                      = "Generating AIR application configuration files"
 
 LOG_EVENT_IOP_LDEVICES                    = "Parsing Logical Devices"
 LOG_EVENT_IOP_REMOTE_PORTS                = "Parsing Remote Ports"

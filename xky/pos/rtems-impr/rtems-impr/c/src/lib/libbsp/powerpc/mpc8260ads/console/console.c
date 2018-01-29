@@ -1,6 +1,4 @@
 /*
- *  console.c
- *
  *  This file contains the MBX8xx termios serial I/O package.
  *  Only asynchronous I/O is supported.
  *
@@ -13,6 +11,16 @@
  *    SCC2      /dev/tty2      3
  *    SCC3      /dev/tty3      4
  *    SCC4      /dev/tty4      5
+ *
+ * The SCCs and SMCs on the eval board are assigned as follows
+ *
+ *   Channel     Device      Minor   Termios
+ *    SMC1      /dev/tty3      4       no
+ *    SMC2      /dev/tty4      5       no
+ *    SCC1      /dev/tty0      0       no
+ *    SCC2      /dev/console   1       yes
+ *    SCC3      /dev/tty1      2       no  	* USED FOR NETWORK I/F
+ *    SCC4      /dev/tty2      3       no	* USED FOR NETWORK I/F
  *
  *  All ports support termios. The use of termios is recommended for real-time
  *  applications. Termios provides buffering and input processing. When not
@@ -64,7 +72,9 @@
  *  the sub-devices using minor device numbers. It is not possible to have
  *  other protocols running on the other ports when this driver is used as
  *  currently written.
- *
+ */
+
+/*
  *  Based on code (alloc860.c in eth_comm port) by
  *  Jay Monkman (jmonkman@frasca.com),
  *  Copyright (C) 1998 by Frasca International, Inc.
@@ -75,30 +85,22 @@
  *
  *  Modifications by Andy Dachs <iwe@fsmal.net> for MPC8260
  *  support.
- *
- * The SCCs and SMCs on the eval board are assigned as follows
- *
- *   Channel     Device      Minor   Termios
- *    SMC1      /dev/tty3      4       no
- *    SMC2      /dev/tty4      5       no
- *    SCC1      /dev/tty0      0       no
- *    SCC2      /dev/console   1       yes
- *    SCC3      /dev/tty1      2       no  	* USED FOR NETWORK I/F
- *    SCC4      /dev/tty2      3       no	* USED FOR NETWORK I/F
- *
  */
 #include <stdarg.h>
 #include <stdio.h>
-#include <bsp.h>                /* Must be before libio.h */
+#include <termios.h>
+
+#include <rtems/console.h>
 #include <rtems/bspIo.h>
 #include <rtems/libio.h>
-#include <termios.h>
+#include <bsp.h>
 
 static void _BSP_output_char( char c );
 static rtems_status_code do_poll_read( rtems_device_major_number major, rtems_device_minor_number minor, void * arg);
 static rtems_status_code do_poll_write( rtems_device_major_number major, rtems_device_minor_number minor, void * arg);
 
-BSP_output_char_function_type BSP_output_char = _BSP_output_char;
+BSP_output_char_function_type     BSP_output_char = _BSP_output_char;
+BSP_polling_getchar_function_type BSP_poll_char = NULL;
 
 /*
  *  do_poll_read
@@ -191,8 +193,6 @@ static rtems_status_code do_poll_write(
 
 static void _BSP_output_char( char c )
 {
-  char cr = '\r';
-
   /*
    *  Can't rely on console_initialize having been called before this function
    *  is used, so it may fail unless output is done through EPPC-Bug.
@@ -200,9 +200,6 @@ static void _BSP_output_char( char c )
 #define PRINTK_WRITE m8xx_uart_pollWrite
 
   PRINTK_WRITE( PRINTK_MINOR, &c, 1 );
-  if( c == '\n' )
-    PRINTK_WRITE( PRINTK_MINOR, &cr, 1 );
-
 }
 
 /*
@@ -450,7 +447,6 @@ rtems_device_driver console_control(
 /*
  *  Support routine for console-generic
  */
-
 int mbx8xx_console_get_configuration(void)
 {
 #if UARTS_IO_MODE == 1

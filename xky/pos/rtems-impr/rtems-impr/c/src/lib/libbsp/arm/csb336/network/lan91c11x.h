@@ -1,3 +1,19 @@
+/**
+ * @file
+ *
+ * @ingroup arm_csb336
+ *
+ * @brief SMSC LAN91C11x ethernet devices definitions.
+ */
+
+/**
+ * @defgroup arm_csb336_lan91c11x SMSC LAN91C11x
+ *
+ * @ingroup arm_csb336
+ *
+ * @brief SMSC LAN91C11x ethernet devices definitions.
+ */
+
 /*
  *  Header file for SMSC LAN91C11x ethernet devices
  *
@@ -6,10 +22,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 #ifndef __LAN91C11X_H__
 #define __LAN91C11X_H__

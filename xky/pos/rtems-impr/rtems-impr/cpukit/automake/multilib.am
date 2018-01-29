@@ -1,5 +1,3 @@
-## $Id: multilib.am 179 2008-09-17 14:07:38Z hsilva $
-
 if MULTILIB
 MULTISRCTOP =
 MULTIDIRS =

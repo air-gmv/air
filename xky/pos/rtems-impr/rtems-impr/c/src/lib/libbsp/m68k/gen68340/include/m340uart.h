@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @ingroup m68k_gen68340
+ *
+ * @brief UART console driver definitions.
+ */
+
 /*
  *  Header file for console driver
  *  defines for accessing M68340/68349 UART registers
@@ -17,10 +25,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef __m340uart_H__

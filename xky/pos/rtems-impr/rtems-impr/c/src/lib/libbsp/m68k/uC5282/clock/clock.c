@@ -8,19 +8,13 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <rtems.h>
+#include <rtems/timecounter.h>
 #include <bsp.h>
 #include <mcf5282/mcf5282.h>
-
-/*
- * Use INTC0 base
- */
-#define CLOCK_VECTOR (64+58)
 
 /*
  * CPU load counters
@@ -33,36 +27,56 @@
 #define NSEC_PER_PITC   __SRAMBASE.nsec_per_pitc
 #define FILTER_SHIFT    6
 
-uint32_t bsp_clock_nanoseconds_since_last_tick(void)
+/*
+ * Use INTC0 base
+ */
+#define CLOCK_VECTOR (64+58)
+
+static rtems_timecounter_simple uC5282_tc;
+
+static uint32_t uC5282_tc_get(rtems_timecounter_simple *tc)
 {
-    int i = MCF5282_PIT3_PCNTR;
-    if (MCF5282_PIT3_PCSR & MCF5282_PIT_PCSR_PIF)
-        i = MCF5282_PIT3_PCNTR - PITC_PER_TICK;
-    return (PITC_PER_TICK - i) * NSEC_PER_PITC;
+  return MCF5282_PIT3_PCNTR;
 }
 
-#define Clock_driver_nanoseconds_since_last_tick bsp_clock_nanoseconds_since_last_tick
+static bool uC5282_tc_is_pending(rtems_timecounter_simple *tc)
+{
+  return (MCF5282_PIT3_PCSR & MCF5282_PIT_PCSR_PIF) != 0;
+}
 
-/*
- * Periodic interval timer interrupt handler
- */
-#define Clock_driver_support_at_tick()                                       \
-    do {                                                                     \
-        unsigned idle = IDLE_COUNTER;                                        \
-        IDLE_COUNTER = 0;                                                    \
-        if (idle > MAX_IDLE_COUNT)                                           \
-            MAX_IDLE_COUNT = idle;                                           \
-        FILTERED_IDLE = idle + FILTERED_IDLE - (FILTERED_IDLE>>FILTER_SHIFT);\
-        MCF5282_PIT3_PCSR |= MCF5282_PIT_PCSR_PIF;                           \
-    } while (0)
+static uint32_t uC5282_tc_get_timecount(struct timecounter *tc)
+{
+  return rtems_timecounter_simple_downcounter_get(
+    tc,
+    uC5282_tc_get,
+    uC5282_tc_is_pending
+  );
+}
+
+static void uC5282_tc_at_tick(rtems_timecounter_simple *tc)
+{
+  unsigned idle = IDLE_COUNTER;
+  IDLE_COUNTER = 0;
+  if (idle > MAX_IDLE_COUNT)
+    MAX_IDLE_COUNT = idle;
+  FILTERED_IDLE = idle + FILTERED_IDLE - (FILTERED_IDLE>>FILTER_SHIFT);
+  MCF5282_PIT3_PCSR |= MCF5282_PIT_PCSR_PIF;
+}
+
+static void uC5282_tc_tick(void)
+{
+  rtems_timecounter_simple_downcounter_tick(
+    &uC5282_tc,
+    uC5282_tc_get,
+    uC5282_tc_at_tick
+  );
+}
 
 /*
  * Attach clock interrupt handler
  */
-#define Clock_driver_support_install_isr( _new, _old )              \
-    do {                                                            \
-        _old = (rtems_isr_entry)set_vector(_new, CLOCK_VECTOR, 1);  \
-    } while(0)
+#define Clock_driver_support_install_isr( _new ) \
+    set_vector(_new, CLOCK_VECTOR, 1)
 
 /*
  * Turn off the clock
@@ -84,7 +98,7 @@ uint32_t bsp_clock_nanoseconds_since_last_tick(void)
  */
 #define Clock_driver_support_initialize_hardware()                       \
     do {                                                                 \
-		unsigned long long N;                                            \
+        unsigned long long N;                                            \
         int level;                                                       \
         int preScaleCode = 0;                                            \
 		N  = bsp_get_CPU_clock_speed();                                  \
@@ -117,22 +131,31 @@ uint32_t bsp_clock_nanoseconds_since_last_tick(void)
                             MCF5282_PIT_PCSR_PIE |                       \
                             MCF5282_PIT_PCSR_RLD |                       \
                             MCF5282_PIT_PCSR_EN;                         \
+         rtems_timecounter_simple_install( \
+           &uC5282_tc, \
+           bsp_get_CPU_clock_speed() >> (preScaleCode + 1), \
+           PITC_PER_TICK, \
+           uC5282_tc_get_timecount \
+         ); \
     } while (0)
 
 /*
  * Provide our own version of the idle task
  */
-Thread bsp_idle_thread(uint32_t ignored)
+void * bsp_idle_thread(uint32_t ignored)
 {
-    for(;;)
-        asm volatile ("addq.l #1,%0"::"m"(IDLE_COUNTER)); /* Atomic increment */
+  /* Atomic increment */
+  for(;;)
+    __asm__ volatile ("addq.l #1,%0"::"m"(IDLE_COUNTER));
 }
 
-int rtems_bsp_cpu_load_percentage(void)
+int bsp_cpu_load_percentage(void)
 {
     return MAX_IDLE_COUNT ?
            (100 - ((100 * (FILTERED_IDLE >> FILTER_SHIFT)) / MAX_IDLE_COUNT)) :
            0;
 }
+
+#define Clock_driver_timecounter_tick() uC5282_tc_tick()
 
 #include "../../../shared/clockdrv_shell.h"

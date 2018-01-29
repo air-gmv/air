@@ -14,15 +14,12 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 | this file contains the code to initialize the cpu               |
 \*===============================================================*/
 
-/*
- *  $Id$
- */
 
 /***********************************************************************/
 /*                                                                     */
@@ -79,6 +76,7 @@
 #include <mpc83xx/mpc83xx.h>
 
 #include <bsp.h>
+#include <bsp/u-boot.h>
 
 #define SET_DBAT( n, uv, lv) \
   do { \
@@ -130,12 +128,12 @@ static void clear_mmu_regs( void)
 
   /* Clear segment registers */
   for (i = 0;i < 16;i++) {
-    asm volatile( "mtsrin %0, %1\n" : : "r" (i * 0x1000), "r" (i << (31 - 3)));
+    __asm__ volatile( "mtsrin %0, %1\n" : : "r" (i * 0x1000), "r" (i << (31 - 3)));
   }
 
   /* Clear TLBs */
   for (i = 0;i < 32;i++) {
-    asm volatile( "tlbie %0\n" : : "r" (i << (31 - 19)));
+    __asm__ volatile( "tlbie %0\n" : : "r" (i << (31 - 19)));
   }
 }
 
@@ -143,14 +141,21 @@ void cpu_init( void)
 {
   BAT dbat, ibat;
   uint32_t msr;
+  uint32_t hid0;
 
   /* Clear MMU and segment registers */
   clear_mmu_regs();
 
   /* Clear caches */
-  PPC_CLEAR_SPECIAL_PURPOSE_REGISTER_BITS( HID0, HID0_ILOCK | HID0_DLOCK);
-  PPC_SET_SPECIAL_PURPOSE_REGISTER_BITS( HID0, HID0_ICFI | HID0_DCI);
-  PPC_CLEAR_SPECIAL_PURPOSE_REGISTER_BITS( HID0, HID0_ICFI | HID0_DCI);
+  hid0 = PPC_SPECIAL_PURPOSE_REGISTER(HID0);
+  if ((hid0 & (HID0_ICE | HID0_DCE)) == 0) {
+    hid0 &= ~(HID0_ILOCK | HID0_DLOCK | HID0_ICE | HID0_DCE);
+    PPC_SET_SPECIAL_PURPOSE_REGISTER(HID0, hid0);
+    hid0 |= HID0_ICFI | HID0_DCI;
+    PPC_SET_SPECIAL_PURPOSE_REGISTER(HID0, hid0);
+    hid0 &= ~(HID0_ICFI | HID0_DCI);
+    PPC_SET_SPECIAL_PURPOSE_REGISTER(HID0, hid0);
+  }
 
   /*
    * Set up IBAT registers in MMU
@@ -235,11 +240,19 @@ void cpu_init( void)
       (uint32_t) bsp_rom_start,
       (uint32_t) bsp_rom_size,
     #endif /* HAS_UBOOT */
-    true,
-    false,
-    false,
-    false,
-    BPP_RX
+    #ifdef MPC83XX_HAS_NAND_LP_FLASH_ON_CS0
+      false,
+      true,
+      false,
+      true,
+      BPP_RW
+    #else
+      true,
+      false,
+      false,
+      false,
+      BPP_RX
+    #endif
   );
   SET_DBAT( 1, dbat.batu, dbat.batl);
 
@@ -250,7 +263,11 @@ void cpu_init( void)
     #else /* HAS_UBOOT */
       (uint32_t) IMMRBAR,
     #endif /* HAS_UBOOT */
-    1024 * 1024,
+    #if MPC83XX_CHIP_TYPE / 10 == 830
+      2 * 1024 * 1024,
+    #else
+      1024 * 1024,
+    #endif
     false,
     true,
     false,
@@ -259,7 +276,7 @@ void cpu_init( void)
   );
   SET_DBAT( 2, dbat.batu, dbat.batl);
 
-#if defined(HSC_CM01)
+#if defined(MPC83XX_BOARD_HSC_CM01)
   calc_dbat_regvals(
     &dbat,
     FPGA_START,
@@ -273,7 +290,7 @@ void cpu_init( void)
   SET_DBAT(3,dbat.batu,dbat.batl);
 #endif
 
-#ifdef MPC8313ERDB
+#ifdef MPC83XX_BOARD_MPC8313ERDB
   /* Enhanced Local Bus Controller (eLBC) */
   calc_dbat_regvals(
     &dbat,
@@ -286,7 +303,7 @@ void cpu_init( void)
     BPP_RW
   );
   SET_DBAT( 3, dbat.batu, dbat.batl);
-#endif /* MPC8313ERDB */
+#endif /* MPC83XX_BOARD_MPC8313ERDB */
 
   /* Read MSR */
   msr = ppc_machine_state_register();

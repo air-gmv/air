@@ -12,20 +12,19 @@
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
- * http://www.rtems.com/license
+ * http://www.rtems.org/license
  *
  * @author Rohan Kangralkar, ECE, Northeastern University
  *         (kangralkar.r@husky.neu.edu)
  *
  * LastChange:
- * $Id$
- *
  */
 
 #include <rtems.h>
 #include <rtems/libio.h>
 #include <bsp.h>
 #include <rtems/bspIo.h>
+#include <rtems/console.h>
 
 #include <bsp/interrupt.h>
 #include <libcpu/uart.h>

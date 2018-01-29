@@ -1,0 +1,11 @@
+This file describes the directives and concepts tested by this test set.
+
+test set name: spinternalerror01
+
+directives:
+
+  - _Terminate()
+
+concepts:
+
+  - Ensure that _Terminate() works right after low-level start.

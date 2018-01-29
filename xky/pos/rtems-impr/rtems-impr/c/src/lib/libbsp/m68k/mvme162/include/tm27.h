@@ -1,11 +1,13 @@
 /*
- *  tm27.h
- *
+ * @file
+ * @ingroup m68k_mvme162
+ * @brief Implementations for interrupt mechanisms for Time Test 27
+ */
+
+/*
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef _RTEMS_TMTEST27

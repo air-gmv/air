@@ -1,3 +1,9 @@
+/**
+ * @file
+ * @ingroup lm32_shared lm32_uart
+ * @brief LatticeMico32 UART definitions
+ */
+
 /*
  *  This file contains definitions for LatticeMico32 UART
  *
@@ -6,12 +12,17 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Jukka Pietarinen <jukka.pietarinen@mrf.fi>, 2008,
  *  Micro-Research Finland Oy
+ */
+
+/**
+ * @defgroup lm32_uart LM32 UART
+ * @ingroup lm32_shared
+ * @brief LatticeMico32 UART definitions
+ * @{
  */
 
 #ifndef _BSPUART_H
@@ -87,3 +98,5 @@ void BSP_uart_init(int baud);
 #define LM32_UART_DIV      (0x001C)
 
 #endif /* _BSPUART_H */
+
+/** @} */

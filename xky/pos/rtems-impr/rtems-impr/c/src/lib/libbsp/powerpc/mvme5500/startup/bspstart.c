@@ -1,15 +1,14 @@
 /*
- *  This routine starts the application.  It includes application,
- *  board, and monitor specific initialization and configuration.
- *  The generic CPU dependent initialization has been performed
- *  before this routine is invoked.
- *
+ *  This routine does the bulk of the system initialization.
+ */
+
+/*
  *  COPYRIGHT (c) 1989-2007.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Modified to support the MCP750.
  *  Modifications Copyright (C) 1999 Eric Valette. valette@crf.canon.fr
@@ -20,8 +19,6 @@
  *  Modified to support the MVME5500 board.
  *  Also, the settings of L1, L2, and L3 caches is not necessary here.
  *  (C) by Brookhaven National Lab., S. Kate Feng <feng1@bnl.gov>, 2003-2009
- *
- *  $Id$
  */
 
 #include <string.h>
@@ -33,6 +30,7 @@
 
 #include <libcpu/spr.h>   /* registers.h is included here */
 #include <bsp.h>
+#include <bsp/bootcard.h>
 #include <bsp/uart.h>
 #include <bsp/pci.h>
 #include <libcpu/bat.h>
@@ -42,7 +40,7 @@
 #include <bsp/bspException.h>
 
 #include <rtems/bspIo.h>
-#include <rtems/sptables.h>
+#include <rtems/counter.h>
 
 /*
 #define SHOW_MORE_INIT_SETTINGS
@@ -52,11 +50,10 @@
 #define CONF_VPD
 */
 
-/* there is no public Workspace_Free() variant :-( */
-#include <rtems/score/wkspace.h>
-
 extern uint32_t probeMemoryEnd(void); /* from shared/startup/probeMemoryEnd.c */
-BSP_output_char_function_type BSP_output_char = BSP_output_char_via_serial;
+
+BSP_output_char_function_type     BSP_output_char = BSP_output_char_via_serial;
+BSP_polling_getchar_function_type BSP_poll_char = NULL;
 
 extern void _return_to_ppcbug(void);
 extern unsigned long __rtems_end[];
@@ -146,14 +143,14 @@ void _BSP_Fatal_error(unsigned int v)
  *
  * 0..RTEMS..__rtems_end | INIT_STACK | IRQ_STACK | ...... | workspace | TOP
  *
- * and later calls our pretasking_hook() which ends up initializing
+ * and later calls our bsp_predriver_hook() which ends up initializing
  * libc which in turn initializes the heap
  *
  * 0..RTEMS..__rtems_end | INIT_STACK | IRQ_STACK | heap | workspace | TOP
  *
  * The idea here is to first move the commandline to the future 'heap' area
- * from where it will be picked up by our pretasking_hook().
- * pretasking_hook() then moves it either to INIT_STACK or the workspace
+ * from where it will be picked up by our bsp_predriver_hook().
+ * bsp_predriver_hook() then moves it either to INIT_STACK or the workspace
  * area using proper allocation, initializes libc and finally moves
  * the data to the environment / malloced areas...
  */
@@ -182,15 +179,8 @@ save_boot_params(
   return cmdline_buf;
 }
 
-/*
- *  bsp_start
- *
- *  This routine does the bulk of the system initialization.
- */
-
 void bsp_start( void )
 {
-  rtems_status_code sc = RTEMS_SUCCESSFUL;
 #ifdef CONF_VPD
   int i;
 #endif
@@ -205,8 +195,6 @@ void bsp_start( void )
 #endif
   uintptr_t intrStackStart;
   uintptr_t intrStackSize;
-  ppc_cpu_id_t myCpu;
-  ppc_cpu_revision_t myCpuRevision;
   Triv121PgTbl  pt=0;
 
   /* Till Straumann: 4/2005
@@ -228,11 +216,11 @@ void bsp_start( void )
 
 
   /*
-   * Get CPU identification dynamically. Note that the get_ppc_cpu_type() function
-   * store the result in global variables so that it can be used latter...
+   * Get CPU identification dynamically. Note that the get_ppc_cpu_type()
+   * function store the result in global variables so that it can be used later.
    */
-  myCpu   = get_ppc_cpu_type();
-  myCpuRevision = get_ppc_cpu_revision();
+  get_ppc_cpu_type();
+  get_ppc_cpu_revision();
 
 #ifdef SHOW_LCR1_REGISTER
   l1cr = get_L1CR();
@@ -248,14 +236,7 @@ void bsp_start( void )
   /*
    * Initialize default raw exception handlers.
    */
-  sc = ppc_exc_initialize(
-    PPC_INTERRUPT_DISABLE_MASK_DEFAULT,
-    intrStackStart,
-    intrStackSize
-  );
-  if (sc != RTEMS_SUCCESSFUL) {
-    BSP_panic("cannot initialize exceptions");
-  }
+  ppc_exc_initialize(intrStackStart, intrStackSize);
 
   /*
    * Init MMU block address translation to enable hardware
@@ -294,6 +275,9 @@ void bsp_start( void )
   /* P94 : 7455 TB/DECR is clocked by the system bus clock frequency */
 
   bsp_clicks_per_usec    = BSP_bus_frequency/(BSP_time_base_divisor * 1000);
+  rtems_counter_initialize_converter(
+    BSP_bus_frequency / (BSP_time_base_divisor / 1000)
+  );
 
   /*
    * Initalize RTEMS IRQ system

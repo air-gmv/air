@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -33,18 +29,27 @@ libbsp_a_SOURCES =
 libbsp_a_LIBADD =
 
 # startup
-libbsp_a_SOURCES += ../../shared/bspclean.c ../../shared/bsplibc.c \
-    ../../shared/bsppost.c ../shared/startup/bspstart.c \
-    ../../shared/bspreset.c ../../shared/bsppretaskinghook.c \
-    ../../shared/bspgetworkarea.c ../../shared/bootcard.c \
-    ../../shared/sbrk.c ../../lm32/shared/startup/setvec.c \
-    ../../shared/gnatinstallhandler.c
+libbsp_a_SOURCES += ../../shared/bspclean.c
+libbsp_a_SOURCES += ../shared/startup/bspstart.c
+libbsp_a_SOURCES += ../../shared/bspgetworkarea.c
+libbsp_a_SOURCES += ../../shared/bootcard.c
+libbsp_a_SOURCES += ../../shared/getentropy-cpucounter.c
+libbsp_a_SOURCES += ../../shared/sbrk.c
+libbsp_a_SOURCES += ../../shared/setvec.c
+libbsp_a_SOURCES += ../../shared/gnatinstallhandler.c
+libbsp_a_SOURCES += ../shared/startup/bspreset.c
 # clock
 libbsp_a_SOURCES += ../../lm32/shared/clock/ckinit.c
 # console
-libbsp_a_SOURCES += ../../lm32/shared/console/console.c ../../lm32/shared/console/uart.c
+libbsp_a_SOURCES += ../../lm32/shared/console/console.c
+libbsp_a_SOURCES += ../../lm32/shared/console/uart.c
 # timer
 libbsp_a_SOURCES += ../../lm32/shared/timer/timer.c
+
+# Cache
+libbsp_a_SOURCES += ../../../libcpu/shared/src/cache_manager.c
+libbsp_a_SOURCES += ../../shared/include/cache_.h
+libbsp_a_CPPFLAGS = -I$(srcdir)/../../shared/include
 
 if HAS_NETWORKING
 noinst_PROGRAMS += network.rel

@@ -76,9 +76,9 @@ __KERNEL_RCSID(0, "$NetBSD: if_gfe.c,v 1.13.8.1 2005/04/29 11:28:56 kent Exp $")
 #include <sys/device.h>
 #endif
 #include <sys/errno.h>
-#include <sys/ioctl.h>
 #include <sys/mbuf.h>
 #include <sys/socket.h>
+#include <sys/sockio.h>
 
 #ifndef __rtems__
 #include <machine/bus.h>
@@ -1758,7 +1758,7 @@ gfe_tx_enqueue(struct gfe_softc *sc, enum gfe_txprio txprio)
 	 */
 	d = NEXT_TXD(l);
 
-	out_be32((unsigned int*)&d->ed_cmdsts,0);
+	out_be32((uint32_t*)&d->ed_cmdsts,0);
 
 	GE_TXDPRESYNC(sc, txq, d - txq->txq_descs);
 

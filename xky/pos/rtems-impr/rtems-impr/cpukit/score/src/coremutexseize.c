@@ -1,85 +1,54 @@
 /**
  *  @file
- *  coremutexseize.c
  *
- *  @brief seize a core mutex
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
+ *  @brief Seize Mutex with Blocking
+ *  @ingroup ScoreMutex
+ */
+
+/*
  *  COPYRIGHT (c) 1989-2006.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  6325    | 01/03/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_CORE Super Core
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup ScoreMutex Mutex Handler
- *  @{
- */
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#include <rtems/system.h>
-#include <rtems/score/isr.h>
-#include <rtems/score/coremutex.h>
-#include <rtems/score/states.h>
+#include <rtems/score/coremuteximpl.h>
+#include <rtems/score/statesimpl.h>
 #include <rtems/score/thread.h>
-#include <rtems/score/threadq.h>
+#include <rtems/score/watchdog.h>
 
-
-void _CORE_mutex_Seize_interrupt_blocking(
-                                          CORE_mutex_Control *the_mutex ,
-                                          Watchdog_Interval timeout
-                                          )
+Status_Control _CORE_mutex_Seize_slow(
+  CORE_mutex_Control            *the_mutex,
+  const Thread_queue_Operations *operations,
+  Thread_Control                *executing,
+  bool                           wait,
+  Thread_queue_Context          *queue_context
+)
 {
-    /* executing thread */
-   Thread_Control *executing;
-
-   
-   /* get the executing thread */
-   executing = _Thread_Executing;
-
-   /* check if the mutex is inheritance */
-   if(_CORE_mutex_Is_inherit_priority(&the_mutex->Attributes))
-   {
-      /* check if the mutex holder priority should change */
-      if(the_mutex->holder->current_priority > executing->current_priority)
-      {
-         /* change the mutex holder priority */
-         _Thread_Change_priority(the_mutex->holder ,
-                                 executing->current_priority ,
-                                 FALSE);
-      }
-   }
-
-   /* increment the number of threads waiting on this mutex */
-   the_mutex->blocked_count++;
-
-   /* enqueue the calling thread on the mutex thread queue */
-   _Thread_queue_Enqueue(&the_mutex->Wait_queue , timeout);
-
-   /* enable dispatch */
-   _Thread_Enable_dispatch();
+  if ( wait ) {
+    _Thread_queue_Context_set_thread_state(
+      queue_context,
+      STATES_WAITING_FOR_MUTEX
+    );
+    _Thread_queue_Context_set_deadlock_callout(
+      queue_context,
+      _Thread_queue_Deadlock_status
+    );
+    _Thread_queue_Enqueue(
+      &the_mutex->Wait_queue.Queue,
+      operations,
+      executing,
+      queue_context
+    );
+    return _Thread_Wait_get_status( executing );
+  } else {
+    _CORE_mutex_Release( the_mutex, queue_context );
+    return STATUS_UNAVAILABLE;
+  }
 }
-
-
-/**  
- *  @}
- */
-
-/**
- *  @}
- */

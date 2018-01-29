@@ -1,7 +1,13 @@
+/**
+ * @file
+ *
+ * @ingroup i386_pc386
+ *
+ * @brief DP8390 Ethernet controller definitions.
+ */
+
 /*
  *  Information about the DP8390 Ethernet controller.
- *
- *  $Id$
  */
 
 #ifndef __BSP_WD80x3_h

@@ -1,20 +1,18 @@
 ## Process this file with autoconf to produce a configure script.
-## 
-## $Id: configure.ac 5063 2009-10-27 17:12:31Z mcoutinho $
+##
 
-AC_PREREQ(2.60)
-AC_INIT([rtems-c],[_RTEMS_VERSION],[http://rtemscentre.edisoft.pt/bugzilla/])
-AC_CONFIG_SRCDIR([TOOL_TARGETS])
+AC_PREREQ([2.69])
+AC_INIT([rtems-c],[_RTEMS_VERSION],[https://devel.rtems.org/newticket])
+AC_CONFIG_SRCDIR([src])
 RTEMS_TOP(..)
 
 RTEMS_CANONICAL_TARGET_CPU
 
-AM_INIT_AUTOMAKE([no-define foreign 1.10])
+AM_INIT_AUTOMAKE([no-define foreign 1.12.2])
 AM_MAINTAINER_MODE
 
 ## These options are used within this file.
 RTEMS_ENABLE_RTEMSBSP
-RTEMS_ENABLE_COVERAGE
 
 # Set up rtems_bsp
 AS_IF([test x"$enable_rtemsbsp" = x"no"],[
@@ -38,14 +36,8 @@ for _rtems_bsp in : $rtems_bsp; do test "x$_rtems_bsp" = x: && continue
     # retrieve bsp_family
     RTEMS_BSP_ALIAS([$_rtems_bsp],[rtems_bsp_family])
 
-    # Is there code where there should be for this BSP?
-    case $rtems_bsp_family in
-    bare ) rtems_libbspdir="$srcdir/$RTEMS_TOPdir/c/src/lib/libbsp/bare" ;;
-    * )    rtems_libbspdir="$srcdir/$RTEMS_TOPdir/c/src/lib/libbsp/$RTEMS_CPU/$rtems_bsp_family";;
-    esac
-
-    # Is there a configure script for the BSP?    
-    AS_IF([test -r "$rtems_libbspdir/configure"],
+    # Is there a configure script for the BSP?
+    AS_IF([test -r "$srcdir/$RTEMS_TOPdir/c/src/lib/libbsp/$RTEMS_CPU/$rtems_bsp_family/configure"],
       [RTEMS_BSP_LIST="$RTEMS_BSP_LIST $_rtems_bsp"])
   ])
 done

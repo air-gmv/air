@@ -5,9 +5,30 @@
    assumes memory starts set to zero. */
 #undef BSP_DIRTY_MEMORY
 
+/* Set if COM1..COM4 support is enabled. */
+#undef BSP_ENABLE_COM1_COM4
+
+/* Set if IDE support is enabled. */
+#undef BSP_ENABLE_IDE
+
+/* Set if the VGA and keyboard console support is enabled. */
+#undef BSP_ENABLE_VGA
+
+/* Defined by default. Enables use of the GDB stub for debugging via a serial
+   port. */
+#undef BSP_GDB_STUB
+
+/* Always defined when on a pc386 to enable the pc386 support for determining
+   the CPU core number in an SMP configuration. */
+#undef BSP_HAS_SMP
+
 /* If defined, print a message and wait until pressed before resetting board
    when application exits. */
 #undef BSP_PRESS_KEY_FOR_RESET
+
+/* If defined, prints the exception context when an unexpected exception
+   occurs. */
+#undef BSP_PRINT_EXCEPTION_CONTEXT
 
 /* If defined, reset the board when the application exits. */
 #undef BSP_RESET_BOARD_AT_EXIT
@@ -50,6 +71,10 @@
 /* if using 16 bit mode assembler support */
 #undef NEW_GAS
 
+/* Defines how many descriptors in GDT may be allocated for application or
+   driver usage. */
+#undef NUM_APP_DRV_GDT_DESCRIPTORS
+
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
@@ -68,7 +93,21 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
+/* If defined, enables use of the Cirrus GD5446 controller rather than the
+   controller utilizing Vesa Bios Extensions - real mode interface. NOTE: This
+   has only been tested on Qemu. */
+#undef USE_CIRRUS_GD5446
+
 /* Determines, whether the console will be associated with the standard VGA
    display or with the COM1 serial port. Currently only the VGA display and
    COM1 support printk. */
 #undef USE_COM1_AS_CONSOLE
+
+/* Defined by default. Enables use of the Vesa Bios Extensions - real mode
+   interface, which enables graphical mode and introduce it upon bootup. */
+#undef USE_VBE_RM
+
+/* If defined, enables use of the very basic VGA driver for framebuffer
+   support rather than the controller utilizing Vesa Bios Extensions - real
+   mode interface. */
+#undef USE_VGA

@@ -1,98 +1,86 @@
 /**
  *  @file
- *  isr.c
  *
- *  @brief initialize the ISR Handler
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-1999.
+ *  @brief Initialize the ISR handler
+ *  @ingroup ScoreISR
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2012.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  4434    | 21/09/2009  | mcoutinho    | IPR 751
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  6325    | 01/03/2010  | mcoutinho    | IPR 1931
- *  6356    | 02/03/2010  | mcoutinho    | IPR 1935
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_CORE Super Core
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup ScoreISR ISR Handler
- *  @{
- */
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#include <rtems/system.h>
 #include <rtems/score/isr.h>
-#include <rtems/score/stack.h>
+#include <rtems/score/address.h>
 #include <rtems/score/interr.h>
+#include <rtems/score/percpu.h>
+#include <rtems/score/stackimpl.h>
 #include <rtems/score/wkspace.h>
+#include <rtems/config.h>
 
+#if (CPU_SIMPLE_VECTORED_INTERRUPTS == TRUE)
+  ISR_Handler_entry _ISR_Vector_table[ CPU_INTERRUPT_NUMBER_OF_VECTORS ];
+#elif defined(CPU_INTERRUPT_NUMBER_OF_VECTORS)
+  #error "CPU_INTERRUPT_NUMBER_OF_VECTORS is defined for non-simple vectored interrupts"
+#elif defined(CPU_INTERRUPT_MAXIMUM_VECTOR_NUMBER)
+  #error "CPU_INTERRUPT_MAXIMUM_VECTOR_NUMBER is defined for non-simple vectored interrupts"
+#endif
 
-volatile uint32_t _ISR_Nest_level;
-
-
-ISR_Handler_entry *_ISR_Vector_table;
-
-
-void _ISR_Handler_initialization(void)
+void _ISR_Handler_initialization( void )
 {
-    /* initialize the interrupt nesting level to 0 (not inside an interrupt) */
-    _ISR_Nest_level = 0;
+  _ISR_Nest_level = 0;
 
-    /* initialize the ISR Vector Table for RTEMS internal usage 
-     * @todo: this shouldnt have to be dynamically allocated */
-    _ISR_Vector_table = _Workspace_Allocate_or_fatal_error(sizeof (ISR_Handler_entry ) *
-                                                           ISR_NUMBER_OF_VECTORS);
-
-    /* initialize the CPU vectors */
-    _CPU_Initialize_vectors();
+#if (CPU_SIMPLE_VECTORED_INTERRUPTS == TRUE)
+  _CPU_Initialize_vectors();
+#endif
 
 #if ( CPU_ALLOCATE_INTERRUPT_STACK == TRUE )
+  {
+    size_t stack_size = rtems_configuration_get_interrupt_stack_size();
+    uint32_t cpu_max = rtems_configuration_get_maximum_processors();
+    uint32_t cpu_index;
 
-    /* if the interrupt stack size is too little */
-    if(_CPU_Table.interrupt_stack_size < STACK_MINIMUM_SIZE)
-    {
-        /* raise internal error */
-        _Internal_error_Occurred(INTERNAL_ERROR_CORE ,
-                                 TRUE ,
-                                 INTERNAL_ERROR_INTERRUPT_STACK_TOO_SMALL);
+    if ( !_Stack_Is_enough( stack_size ) )
+      _Internal_error( INTERNAL_ERROR_INTERRUPT_STACK_TOO_SMALL );
+
+    for ( cpu_index = 0 ; cpu_index < cpu_max; ++cpu_index ) {
+      Per_CPU_Control *cpu = _Per_CPU_Get_by_index( cpu_index );
+      void *low = _Workspace_Allocate_or_fatal_error( stack_size );
+      void *high = _Addresses_Add_offset( low, stack_size );
+
+#if (CPU_STACK_ALIGNMENT != 0)
+      high = _Addresses_Align_down( high, CPU_STACK_ALIGNMENT );
+#endif
+
+      cpu->interrupt_stack_low = low;
+      cpu->interrupt_stack_high = high;
+
+      /*
+       * Interrupt stack might have to be aligned and/or setup in a specific
+       * way.  Do not use the local low or high variables here since
+       * _CPU_Interrupt_stack_setup() is a nasty macro that might want to play
+       * with the real memory locations.
+       */
+#if defined(_CPU_Interrupt_stack_setup)
+      _CPU_Interrupt_stack_setup(
+        cpu->interrupt_stack_low,
+        cpu->interrupt_stack_high
+      );
+#endif
     }
-
-    /* otherwise, allocate space for the interrupt stack */
-    _CPU_Interrupt_stack_low = _Workspace_Allocate_or_fatal_error(_CPU_Table.interrupt_stack_size);
-
-    /* determine the high address of the interrupt stack */
-    _CPU_Interrupt_stack_high = _Addresses_Add_offset(_CPU_Interrupt_stack_low ,
-                                                      _CPU_Table.interrupt_stack_size);
+  }
 
 #endif
 
-    /* if CPU has dedicated hardware interrupt stack */
 #if ( CPU_HAS_HARDWARE_INTERRUPT_STACK == TRUE )
-
-    /* then install interrupt stack */
-    _CPU_Install_interrupt_stack();
+  _CPU_Install_interrupt_stack();
 #endif
-
 }
-
-/**  
- *  @}
- */
-
-/**
- *  @}
- */

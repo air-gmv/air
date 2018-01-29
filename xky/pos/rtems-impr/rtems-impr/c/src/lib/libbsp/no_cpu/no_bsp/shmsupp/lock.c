@@ -11,9 +11,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <rtems.h>
@@ -53,16 +51,18 @@ void Shm_Lock(
 
     Shm_isrstat = isr_level;
     while ( lock_value ) {
-      asm volatile( ""
+      __asm__ volatile( ""
                          : "=r" (lockptr), "=r" (lock_value)
                          : "0" (lockptr),  "1" (lock_value)
                   );
       /*
        *  If not available, then may want to delay to reduce load on lock.
+       *
+       *  NOTE: BSP must initialize the counter facility. Delay value is BSP
+       *        dependent.
        */
-
       if ( lock_value )
-        rtems_bsp_delay( 10 );   /* approximately 10 microseconds */
+        rtems_counter_delay_nanoseconds( 100 );
    }
 }
 

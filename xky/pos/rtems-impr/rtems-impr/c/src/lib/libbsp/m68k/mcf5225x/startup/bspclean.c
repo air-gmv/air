@@ -1,6 +1,4 @@
 /*
- *  SBC5206 bsp_cleanup
- *
  *  This routine returns control from RTEMS to the monitor.
  *
  *  Author:
@@ -12,21 +10,18 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- * 
- *  http://www.rtems.com/license/LICENSE.
- * 
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-#include <rtems.h>
 #include <bsp.h>
+#include <bsp/bootcard.h>
 #include <rtems/bspIo.h>
 
-void  __attribute__((weak)) bsp_cleanup(void)
+void bsp_fatal_extension(
+  rtems_fatal_source source,
+  bool always_set_to_false,
+  rtems_fatal_code error
+)
 {
   printk("\nRTEMS exited!\n");
-  for (;;) {
-    asm volatile (" nop ");
-    asm volatile (" nop ");
-  }
 }

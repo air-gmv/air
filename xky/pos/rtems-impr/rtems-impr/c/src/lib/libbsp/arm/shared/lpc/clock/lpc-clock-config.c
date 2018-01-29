@@ -7,26 +7,42 @@
  */
 
 /*
- * Copyright (c) 2009
- * embedded brains GmbH
- * Obere Lagerstr. 30
- * D-82178 Puchheim
- * Germany
- * <rtems@embedded-brains.de>
+ * Copyright (c) 2009-2015 embedded brains GmbH.  All rights reserved.
+ *
+ *  embedded brains GmbH
+ *  Dornierstr. 4
+ *  82178 Puchheim
+ *  Germany
+ *  <rtems@embedded-brains.de>
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
- * http://www.rtems.com/license/LICENSE.
+ * http://www.rtems.org/license/LICENSE.
  */
+
+#include <rtems.h>
+#include <rtems/timecounter.h>
 
 #include <bsp/lpc-clock-config.h>
 #include <bsp/lpc-timer.h>
 
-/* This is defined in ../../../shared/clockdrv_shell.h */
-rtems_isr Clock_isr(rtems_vector_number vector);
+#ifdef ARM_MULTILIB_ARCH_V4
 
-static volatile lpc_timer *const lpc_clock = 
+/* This is defined in ../../../shared/clockdrv_shell.h */
+void Clock_isr(rtems_irq_hdl_param arg);
+
+static volatile lpc_timer *const lpc_clock =
   (volatile lpc_timer *) LPC_CLOCK_TIMER_BASE;
+
+static volatile lpc_timer *const lpc_timecounter =
+  (volatile lpc_timer *) LPC_CLOCK_TIMECOUNTER_BASE;
+
+static struct timecounter lpc_clock_tc;
+
+static uint32_t lpc_clock_tc_get_timecount(struct timecounter *tc)
+{
+  return lpc_timecounter->tc;
+}
 
 static void lpc_clock_at_tick(void)
 {
@@ -80,6 +96,13 @@ static void lpc_clock_initialize(void)
 
   /* Enable timer */
   lpc_clock->tcr = LPC_TIMER_TCR_EN;
+
+  /* Install timecounter */
+  lpc_clock_tc.tc_get_timecount = lpc_clock_tc_get_timecount;
+  lpc_clock_tc.tc_counter_mask = 0xffffffff;
+  lpc_clock_tc.tc_frequency = LPC_CLOCK_REFERENCE;
+  lpc_clock_tc.tc_quality = RTEMS_TIMECOUNTER_QUALITY_CLOCK_DRIVER;
+  rtems_timecounter_install(&lpc_clock_tc);
 }
 
 static void lpc_clock_cleanup(void)
@@ -100,26 +123,14 @@ static void lpc_clock_cleanup(void)
   }
 }
 
-static uint32_t lpc_clock_nanoseconds_since_last_tick(void)
-{
-  uint64_t clock = LPC_CLOCK_REFERENCE;
-  uint64_t clicks = lpc_clock->tc;
-  uint64_t ns = (clicks * 1000000000) / clock;
-
-  return (uint32_t) ns;
-}
-
 #define Clock_driver_support_at_tick() lpc_clock_at_tick()
 #define Clock_driver_support_initialize_hardware() lpc_clock_initialize()
-#define Clock_driver_support_install_isr(isr, old_isr) \
-  do {						       \
-    lpc_clock_handler_install();		       \
-    old_isr = NULL;				       \
-  } while (0)
+#define Clock_driver_support_install_isr(isr) \
+  lpc_clock_handler_install()
 
 #define Clock_driver_support_shutdown_hardware() lpc_clock_cleanup()
-#define Clock_driver_nanoseconds_since_last_tick \
-  lpc_clock_nanoseconds_since_last_tick
 
 /* Include shared source clock driver code */
 #include "../../../../shared/clockdrv_shell.h"
+
+#endif /* ARM_MULTILIB_ARCH_V4 */

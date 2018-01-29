@@ -1,5 +1,3 @@
-dnl $Id: enable-rtemsbsp.m4 179 2008-09-17 14:07:38Z hsilva $
-
 dnl Override the set of BSPs to be built.
 dnl used by the toplevel configure script
 dnl RTEMS_ENABLE_RTEMSBSP(rtems_bsp_list)

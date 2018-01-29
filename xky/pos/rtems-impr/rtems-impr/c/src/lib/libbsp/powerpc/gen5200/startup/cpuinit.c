@@ -14,7 +14,7 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 | this file contains the code to initialize the cpu               |
@@ -112,16 +112,21 @@ static void calc_dbat_regvals(
   bat_ptr->batl.pp   = flg_bpp;
 }
 
-#if defined (BRS5L)
-void cpu_init_bsp(void)
+static inline void enable_bat_4_to_7(void)
+{
+  PPC_SET_SPECIAL_PURPOSE_REGISTER_BITS(HID2, BSP_BBIT32(13));
+}
+
+static void cpu_init_bsp(void)
 {
   BAT dbat;
 
+#if defined(MPC5200_BOARD_BRS5L) || defined(MPC5200_BOARD_BRS6L)
   calc_dbat_regvals(
     &dbat,
     (uint32_t) bsp_ram_start,
     (uint32_t) bsp_ram_size,
-    true,
+    false,
     false,
     false,
     false,
@@ -133,7 +138,7 @@ void cpu_init_bsp(void)
     &dbat,
     (uint32_t) bsp_rom_start,
     (uint32_t) bsp_rom_size,
-    true,
+    false,
     false,
     false,
     false,
@@ -152,24 +157,16 @@ void cpu_init_bsp(void)
     BPP_RW
   );
   SET_DBAT(2,dbat.batu,dbat.batl);
-
-  calc_dbat_regvals(
-    &dbat,
-    (uint32_t) bsp_dpram_start,
-    128 * 1024,
-    false,
-    true,
-    false,
-    true,
-    BPP_RW
-  );
-  SET_DBAT(3,dbat.batu,dbat.batl);
-}
 #elif defined (HAS_UBOOT)
-void cpu_init_bsp(void)
-{
-  BAT dbat;
   uint32_t start = 0;
+
+  /*
+   * Accesses (also speculative accesses) outside of the RAM area are a
+   * disaster especially in combination with the BestComm.  For safety reasons
+   * we make the available RAM a little bit smaller to have an unused area at
+   * the end.
+   */
+  bsp_uboot_board_info.bi_memsize -= 4 * 1024;
 
   /*
    * Program BAT0 for RAM
@@ -178,7 +175,7 @@ void cpu_init_bsp(void)
     &dbat,
     bsp_uboot_board_info.bi_memstart,
     bsp_uboot_board_info.bi_memsize,
-    true,
+    false,
     false,
     false,
     false,
@@ -203,7 +200,7 @@ void cpu_init_bsp(void)
     &dbat,
     start,
     bsp_uboot_board_info.bi_flashsize,
-    true,
+    false,
     false,
     false,
     false,
@@ -242,17 +239,90 @@ void cpu_init_bsp(void)
     );
     SET_DBAT(3,dbat.batu,dbat.batl);
   }
-}
 #else
 #warning "Using BAT register values set by environment"
 #endif
+
+#if defined(MPC5200_BOARD_DP2)
+  enable_bat_4_to_7();
+
+  /* FPGA */
+  calc_dbat_regvals(
+    &dbat,
+    0xf0020000,
+    128 * 1024,
+    false,
+    true,
+    false,
+    true,
+    BPP_RW
+  );
+  SET_DBAT(4, dbat.batu, dbat.batl);
+#elif defined(MPC5200_BOARD_PM520_ZE30)
+  enable_bat_4_to_7();
+
+  /* External CC770 CAN controller available in version 2 */
+  calc_dbat_regvals(
+    &dbat,
+    0xf2000000,
+    128 * 1024,
+    false,
+    true,
+    false,
+    true,
+    BPP_RW
+  );
+  SET_DBAT(4, dbat.batu, dbat.batl);
+#elif defined(MPC5200_BOARD_BRS5L)
+  calc_dbat_regvals(
+    &dbat,
+    (uint32_t) bsp_dpram_start,
+    128 * 1024,
+    false,
+    true,
+    false,
+    true,
+    BPP_RW
+  );
+  SET_DBAT(3,dbat.batu,dbat.batl);
+#elif defined(MPC5200_BOARD_BRS6L)
+  enable_bat_4_to_7();
+
+  /* FPGA */
+  calc_dbat_regvals(
+    &dbat,
+    MPC5200_BRS6L_FPGA_BEGIN,
+    MPC5200_BRS6L_FPGA_SIZE,
+    false,
+    true,
+    false,
+    true,
+    BPP_RW
+  );
+  SET_DBAT(3,dbat.batu,dbat.batl);
+
+  /* MRAM */
+  calc_dbat_regvals(
+    &dbat,
+    MPC5200_BRS6L_MRAM_BEGIN,
+    MPC5200_BRS6L_MRAM_SIZE,
+    true,
+    false,
+    false,
+    false,
+    BPP_RW
+  );
+  SET_DBAT(4,dbat.batu,dbat.batl);
+#endif
+}
 
 void cpu_init(void)
 {
   uint32_t msr;
 
-  /* Enable instruction cache */
-  PPC_SET_SPECIAL_PURPOSE_REGISTER_BITS( HID0, HID0_ICE);
+  #if BSP_INSTRUCTION_CACHE_ENABLED
+    rtems_cache_enable_instruction();
+  #endif
 
   /* Set up DBAT registers in MMU */
   cpu_init_bsp();
@@ -272,10 +342,7 @@ void cpu_init(void)
   /* Update MSR */
   ppc_set_machine_state_register( msr);
 
-  /*
-   * Enable data cache.
-   *
-   * NOTE: TRACE32 now supports data cache for MGT5x00.
-   */
-  PPC_SET_SPECIAL_PURPOSE_REGISTER_BITS( HID0, HID0_DCE);
+  #if BSP_DATA_CACHE_ENABLED
+    rtems_cache_enable_data();
+  #endif
 }

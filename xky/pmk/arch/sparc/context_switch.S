@@ -20,7 +20,7 @@
 
 #include <asm.h>
 #include <bsp.h>
-#include <xky.h>
+#include <air.h>
 #include <sparc.h>
 #include <partition.h>
 
@@ -57,7 +57,7 @@ SYM(sparc_core_context_save):
 
     /* check the permissions to use the FPU */
     ld      [%o1 + PARTITION_PERMISSIONS], %o3
-    btst    XKY_PERMISSION_FPU_CONTROL, %o3
+    btst    AIR_PERMISSION_FPU_CONTROL, %o3
     bz      1f
 
     /* enable EF */
@@ -147,7 +147,7 @@ pmk_partition_context_save_window_flushing:     ! label for debugging
     nop
 
     /* check if the address is in kernel zone */
-    set     SYM(xky_kernel_memory_end), %g3
+    set     SYM(air_kernel_memory_end), %g3
     cmp     %sp, %g3
     bleu    pmk_partition_context_save_window_flush_loop
     nop
@@ -227,7 +227,7 @@ SYM(sparc_core_context_restore):
     /* MMU context switch */
     mov     0x200, %o4
     ld      [%o1 + PARTITION_IDX], %o3
-    sta     %o3, [%o4]#ASI_AIUS_L
+    sta     %o3, [%o4]0x19             ! 0x19 is ASI of the MMU register
 
     /* flush cache */
     flush
@@ -243,7 +243,7 @@ SYM(sparc_core_context_restore):
 
     /* check the permissions to use the FPU */
     ld      [%o1 + PARTITION_PERMISSIONS], %o3
-    btst    XKY_PERMISSION_FPU_CONTROL, %o3
+    btst    AIR_PERMISSION_FPU_CONTROL, %o3
     bz      1f
 
     /* enable EF */

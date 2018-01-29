@@ -23,10 +23,10 @@
  */
 typedef struct {
 
-    volatile xky_u32_t data;
-    volatile xky_u32_t status;
-    volatile xky_u32_t ctrl;
-    volatile xky_u32_t scaler;
+    volatile air_u32_t data;
+    volatile air_u32_t status;
+    volatile air_u32_t ctrl;
+    volatile air_u32_t scaler;
 
 } uart_regmap_t;
 
@@ -81,5 +81,5 @@ void console_outbyte(char ch) {
     while ((uart_regs->status & UART_STATUS_THE) == 0);
 
     /* send byte to the UART0 */
-    uart_regs->data = (xky_u32_t)ch;
+    uart_regs->data = (air_u32_t)ch;
 }

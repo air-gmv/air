@@ -1,14 +1,16 @@
-/*
+/**
+ *  @file
+ *  
  *  Au1x00 ethernet driver
- *
+ */
+
+/*
  *  Copyright (c) 2005 by Cogent Computer Systems
  *  Written by Jay Monkman <jtm@lopingdog.com>
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <rtems.h>
@@ -16,6 +18,7 @@
 #include <bsp.h>
 #include <rtems/bspIo.h>
 #include <libcpu/au1x00.h>
+#include <bsp/irq.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -332,9 +335,21 @@ void au1x00_emac_init(void *arg)
 
         /* install the interrupt handler */
         if (sc->unitnumber == 0) {
-            set_vector(au1x00_emac_isr, AU1X00_IRQ_MAC0, 1);
+            rtems_interrupt_handler_install(
+              AU1X00_IRQ_MAC0,
+              "NIC0",
+              0,
+              (rtems_interrupt_handler)au1x00_emac_isr,
+              NULL
+            );
         } else {
-            set_vector(au1x00_emac_isr, AU1X00_IRQ_MAC1, 1);
+            rtems_interrupt_handler_install(
+              AU1X00_IRQ_MAC1,
+              "NIC1",
+              0,
+              (rtems_interrupt_handler)au1x00_emac_isr,
+              NULL
+            );
         }
         AU1X00_IC_MASKCLR(sc->int_ctrlr) = sc->int_mask;
         au_sync();
@@ -492,7 +507,7 @@ void au1x00_emac_start(struct ifnet *ifp)
 {
     au1x00_emac_softc_t *sc = ifp->if_softc;
 
-    rtems_event_send(sc->tx_daemon_tid, START_TX_EVENT);
+    rtems_bsdnet_event_send(sc->tx_daemon_tid, START_TX_EVENT);
     ifp->if_flags |= IFF_OACTIVE;
 }
 
@@ -857,7 +872,7 @@ rtems_isr au1x00_emac_isr (rtems_vector_number v)
         }
     }
     if (rx_flag != 0) {
-        rtems_event_send(sc->rx_daemon_tid, START_RX_EVENT);
+        rtems_bsdnet_event_send(sc->rx_daemon_tid, START_RX_EVENT);
     }
 
     /* transmit interrupt */
@@ -886,7 +901,7 @@ rtems_isr au1x00_emac_isr (rtems_vector_number v)
         }
     }
     if (tx_flag != 0) {
-        rtems_event_send(sc->tx_daemon_tid, START_TX_EVENT);
+        rtems_bsdnet_event_send(sc->tx_daemon_tid, START_TX_EVENT);
     }
 }
 

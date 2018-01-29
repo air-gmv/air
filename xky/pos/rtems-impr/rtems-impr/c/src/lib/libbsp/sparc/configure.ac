@@ -1,14 +1,13 @@
 ## Process this file with autoconf to produce a configure script.
-## 
-## $Id: configure.ac 179 2008-09-17 14:07:38Z hsilva $
 
-AC_PREREQ(2.60)
-AC_INIT([rtems-c-src-lib-libbsp-sparc],[_RTEMS_VERSION],[http://www.rtems.org/bugzilla])
+AC_PREREQ([2.69])
+AC_INIT([rtems-c-src-lib-libbsp-sparc],
+[_RTEMS_VERSION],[https://devel.rtems.org/newticket])
 AC_CONFIG_SRCDIR([shared])
 RTEMS_TOP(../../../../..)
 
 RTEMS_CANONICAL_TARGET_CPU
-AM_INIT_AUTOMAKE([no-define foreign 1.10])
+AM_INIT_AUTOMAKE([no-define foreign 1.12.2])
 AM_MAINTAINER_MODE
 
 RTEMS_ENV_RTEMSBSP

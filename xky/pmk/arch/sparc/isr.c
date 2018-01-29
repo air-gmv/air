@@ -11,10 +11,10 @@
  */
 typedef struct {
 
-    xky_u32_t inst_1;        /**< trap instruction 1             */
-    xky_u32_t inst_2;        /**< trap instruction 2             */
-    xky_u32_t inst_3;        /**< trap instruction 3             */
-    xky_u32_t inst_4;        /**< trap instruction 4             */
+    air_u32_t inst_1;        /**< trap instruction 1             */
+    air_u32_t inst_2;        /**< trap instruction 2             */
+    air_u32_t inst_3;        /**< trap instruction 3             */
+    air_u32_t inst_4;        /**< trap instruction 4             */
 
 } sparc_trap_table_entry;
 
@@ -42,10 +42,10 @@ extern void sparc_isr_handler_entry();
 /**
  * @brief ISR Handler vector
  */
-extern xky_u32_t sparc_isr_vector[256];
+extern air_u32_t sparc_isr_vector[256];
 
 
-void *sparc_install_raw_trap_handler(xky_u32_t n, void *handler) {
+void *sparc_install_raw_trap_handler(air_u32_t n, void *handler) {
 
     void *old_handler = NULL;
 
@@ -60,25 +60,25 @@ void *sparc_install_raw_trap_handler(xky_u32_t n, void *handler) {
     /* setup the trap entry code  */
     *slot = slot_template;
     slot->inst_4 |= n;
-    slot->inst_3 |= ((xky_uptr_t)handler & 0x000003FF);
-    slot->inst_2 |= ((xky_uptr_t)handler & 0xFFFFFC00) >> 10;
+    slot->inst_3 |= ((air_uptr_t)handler & 0x000003FF);
+    slot->inst_2 |= ((air_uptr_t)handler & 0xFFFFFC00) >> 10;
 
     /* flush cache */
     __asm__ __volatile__("flush");
     return old_handler;
 }
 
-void *sparc_register_vector_trap_handler(xky_u32_t n, void *handler) {
+void *sparc_register_vector_trap_handler(air_u32_t n, void *handler) {
 
     void *old_handler = (void *)sparc_isr_vector[n];
-    sparc_isr_vector[n] = (xky_u32_t)handler;
+    sparc_isr_vector[n] = (air_u32_t)handler;
     return old_handler;
 }
 
-void *sparc_install_vector_trap_handler(xky_u32_t n, void *handler) {
+void *sparc_install_vector_trap_handler(air_u32_t n, void *handler) {
 
     sparc_install_raw_trap_handler(n, sparc_isr_handler_entry);
     void *old_handler = (void *)sparc_isr_vector[n];
-    sparc_isr_vector[n] = (xky_u32_t)handler;
+    sparc_isr_vector[n] = (air_u32_t)handler;
     return old_handler;
 }

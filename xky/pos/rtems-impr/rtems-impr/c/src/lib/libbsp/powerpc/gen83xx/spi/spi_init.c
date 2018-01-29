@@ -11,31 +11,29 @@
 | The license and distribution terms for this file may be         |
 | found in the file LICENSE in this distribution or at            |
 |                                                                 |
-| http://www.rtems.com/license/LICENSE.                           |
+| http://www.rtems.org/license/LICENSE.                           |
 |                                                                 |
 +-----------------------------------------------------------------+
 | this file contains the low level MPC83xx SPI driver parameters  |
 | and board-specific functions                                    |
 \*===============================================================*/
+
+
 #include <mpc83xx/mpc83xx_spidrv.h>
 #include <bsp/irq.h>
 #include <bsp.h>
 
-#if defined( MPC8313ERDB)
+#if defined(MPC83XX_BOARD_MPC8313ERDB)
 
 #include <libchip/spi-sd-card.h>
 
-#elif defined( MPC8349EAMDS)
+#elif defined(MPC83XX_BOARD_MPC8349EAMDS)
 
 #include <libchip/spi-flash-m25p40.h>
 
-#elif defined( HSC_CM01)
+#elif defined(MPC83XX_BOARD_HSC_CM01)
 
 #include <libchip/spi-fram-fm25l256.h>
-
-#else
-
-#warning No SPI configuration available
 
 #endif
 
@@ -64,7 +62,7 @@ static rtems_status_code bsp_spi_sel_addr
 \*=========================================================================*/
 {
 
-#if defined( MPC8313ERDB)
+#if defined( MPC83XX_BOARD_MPC8313ERDB)
 
   /* Check address */
   if (addr > 0) {
@@ -74,7 +72,7 @@ static rtems_status_code bsp_spi_sel_addr
   /* SCS (active low) */
   mpc83xx.gpio [0].gpdat &= ~0x20000000;
 
-#elif defined( MPC8349EAMDS)
+#elif defined( MPC83XX_BOARD_MPC8349EAMDS)
 
   /*
    * check device address for valid range
@@ -89,7 +87,7 @@ static rtems_status_code bsp_spi_sel_addr
    */
   mpc83xx.gpio[0].gpdat &= ~(1 << (31- 0));
 
-#elif defined( HSC_CM01)
+#elif defined( MPC83XX_BOARD_HSC_CM01)
 
   /*
    * check device address for valid range
@@ -138,12 +136,12 @@ static rtems_status_code bsp_spi_send_start_dummy
 \*=========================================================================*/
 {
 
-#if defined( MPC8313ERDB)
+#if defined( MPC83XX_BOARD_MPC8313ERDB)
 
   /* SCS (inactive high) */
   mpc83xx.gpio [0].gpdat |= 0x20000000;
 
-#elif defined( MPC8349EAMDS)
+#elif defined( MPC83XX_BOARD_MPC8349EAMDS)
 
   /*
    * GPIO1[0] is nSEL_SPI for M25P40
@@ -151,7 +149,7 @@ static rtems_status_code bsp_spi_send_start_dummy
    */
   mpc83xx.gpio[0].gpdat |=  (1 << (31- 0));
 
-#elif defined( HSC_CM01)
+#elif defined( MPC83XX_BOARD_HSC_CM01)
 
   /*
    * GPIO1[27] is high-active strobe
@@ -186,12 +184,12 @@ static rtems_status_code bsp_spi_send_stop
   printk("bsp_spi_send_stop called... ");
 #endif
 
-#if defined( MPC8313ERDB)
+#if defined( MPC83XX_BOARD_MPC8313ERDB)
 
   /* SCS (inactive high) */
   mpc83xx.gpio [0].gpdat |= 0x20000000;
 
-#elif defined( MPC8349EAMDS)
+#elif defined( MPC83XX_BOARD_MPC8349EAMDS)
 
   /*
    * deselect given device
@@ -200,7 +198,7 @@ static rtems_status_code bsp_spi_send_stop
    */
   mpc83xx.gpio[0].gpdat |=  (1 << (31- 0));
 
-#elif defined( HSC_CM01)
+#elif defined( MPC83XX_BOARD_HSC_CM01)
 
   /*
    * deselect device
@@ -243,38 +241,33 @@ static mpc83xx_spi_desc_t bsp_spi_bus_desc = {
   }
 };
 
-#ifdef MPC8313ERDB
+#ifdef MPC83XX_BOARD_MPC8313ERDB
 
 #include <libchip/spi-sd-card.h>
 
-sd_card_driver_entry sd_card_driver_table [1] = { {
-#if 0
-                .driver = {
-                        .ops = &sd_card_driver_ops,
-                        .size = sizeof( sd_card_driver_entry)
-                },
-                .table_index = 0,
-                .minor = 0,
-#endif
-                .device_name = "sd-card-a",
-#if 0
-                .disk_device_name = "/dev/sd-card-a",
-#endif
-                .transfer_mode = SD_CARD_TRANSFER_MODE_DEFAULT,
-                .command = SD_CARD_COMMAND_DEFAULT,
-                /* .response = whatever, */
-                .response_index = SD_CARD_COMMAND_SIZE,
-                .n_ac_max = SD_CARD_N_AC_MAX_DEFAULT,
-                .block_number = 0,
-                .block_size = 0,
-                .block_size_shift = 0,
-                .busy = 1,
-                .verbose = 1,
-                .schedule_if_busy = 0
-        }
+#define SD_CARD_NUMBER 1
+
+size_t sd_card_driver_table_size = SD_CARD_NUMBER;
+
+sd_card_driver_entry sd_card_driver_table [SD_CARD_NUMBER] = {
+  {
+    .device_name = "/dev/sd-card-a",
+    .bus = 0,
+    .transfer_mode = SD_CARD_TRANSFER_MODE_DEFAULT,
+    .command = SD_CARD_COMMAND_DEFAULT,
+    /* .response = whatever, */
+    .response_index = SD_CARD_COMMAND_SIZE,
+    .n_ac_max = SD_CARD_N_AC_MAX_DEFAULT,
+    .block_number = 0,
+    .block_size = 0,
+    .block_size_shift = 0,
+    .busy = true,
+    .verbose = true,
+    .schedule_if_busy = false
+  }
 };
 
-#endif /* MPC8313ERDB */
+#endif /* MPC83XX_BOARD_MPC8313ERDB */
 
 
 /*=========================================================================*\
@@ -299,8 +292,11 @@ rtems_status_code bsp_register_spi
 |    0 or error code                                                        |
 \*=========================================================================*/
 {
-  int ret_code;
+  #if defined(MPC83XX_BOARD_MPC8313ERDB)
+    rtems_status_code sc = RTEMS_SUCCESSFUL;
+  #endif
   unsigned spi_busno;
+  int      ret_code;
 
   /*
    * init I2C library (if not already done)
@@ -311,7 +307,7 @@ rtems_status_code bsp_register_spi
    * init port pins used to address/select SPI devices
    */
 
-#if defined( MPC8313ERDB)
+#if defined(MPC83XX_BOARD_MPC8313ERDB)
 
   /*
    * Configured as master (direct connection to SD card)
@@ -335,7 +331,7 @@ rtems_status_code bsp_register_spi
   /* Open Drain */
   /* mpc83xx.gpio [0].gpdr  |= 0x0000000f; */
 
-#elif defined( MPC8349EAMDS)
+#elif defined(MPC83XX_BOARD_MPC8349EAMDS)
 
   /*
    * GPIO1[0] is nSEL_SPI for M25P40
@@ -345,7 +341,7 @@ rtems_status_code bsp_register_spi
   mpc83xx.gpio[0].gpdir |=  (1 << (31- 0));
   mpc83xx.gpio[0].gpdr  &= ~(1 << (31- 0));
 
-#elif defined( HSC_CM01)
+#elif defined(MPC83XX_BOARD_HSC_CM01)
 
   /*
    * GPIO1[24] is SPI_A0
@@ -358,6 +354,12 @@ rtems_status_code bsp_register_spi
   mpc83xx.gpio[0].gpdir |=  (0xf << (31-27));
   mpc83xx.gpio[0].gpdr  &= ~(0xf << (31-27));
 
+#else
+
+  /*
+   * There is no SPI configuration information for this variant.
+   */
+  (void) spi_busno; /* avoid set but not used warning */
 #endif
 
   /*
@@ -375,17 +377,16 @@ rtems_status_code bsp_register_spi
   }
   spi_busno = (unsigned) ret_code;
 
-#if defined( MPC8313ERDB)
+#if defined(MPC83XX_BOARD_MPC8313ERDB)
 
   /* Register SD Card driver */
-  ret_code = rtems_libi2c_register_drv(
-    sd_card_driver_table [0].device_name,
-    (rtems_libi2c_drv_t *) &sd_card_driver_table [0],
-    spi_busno,
-    0
-  );
+  sd_card_driver_table [0].bus = spi_busno;
+  sc = sd_card_register();
+  if (sc != RTEMS_SUCCESSFUL) {
+    return sc;
+  }
 
-#elif defined( MPC8349EAMDS)
+#elif defined(MPC83XX_BOARD_MPC8349EAMDS)
 
   /*
    * register M25P40 Flash
@@ -393,7 +394,7 @@ rtems_status_code bsp_register_spi
   ret_code = rtems_libi2c_register_drv(RTEMS_BSP_SPI_FLASH_DEVICE_NAME,
 				       spi_flash_m25p40_rw_driver_descriptor,
 				       spi_busno,0x00);
-#elif defined(HSC_CM01)
+#elif defined(MPC83XX_BOARD_HSC_CM01)
 
   /*
    * register FM25L256 FRAM

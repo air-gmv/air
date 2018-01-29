@@ -27,12 +27,12 @@
  * @brief Spin lock hash function selector
  */
 #define ATOMIC_HASH(a) \
-        (&__atomic_hash[(((xky_uptr_t)a) >> 8) & (ATOMIC_HASH_SIZE - 1)])
+        (&__atomic_hash[(((air_uptr_t)a) >> 8) & (ATOMIC_HASH_SIZE - 1)])
 
 /**
  * @brief Array of spin locks to be used by the atomic operations
  */
-xky_u32_t __atomic_hash[ATOMIC_HASH_SIZE] = { 0 };
+air_u32_t __atomic_hash[ATOMIC_HASH_SIZE] = { 0 };
 
 /**
  * @brief SPARC atomic addition
@@ -40,10 +40,10 @@ xky_u32_t __atomic_hash[ATOMIC_HASH_SIZE] = { 0 };
  * @param v atomic value pointer
  * @return modified atomic value
  */
-xky_i32_t sparc_atomic_add(xky_i32_t i, atomic_t *v) {
+air_i32_t sparc_atomic_add(air_i32_t i, atomic_t *v) {
 
-    xky_i32_t ret;
-    xky_u32_t isr_level;
+    air_i32_t ret;
+    air_u32_t isr_level;
 
     /* enter critical area (disable local preemption and lock) */
     isr_level = sparc_lock_irqsave(ATOMIC_HASH(v));
@@ -62,10 +62,10 @@ xky_i32_t sparc_atomic_add(xky_i32_t i, atomic_t *v) {
  * @param v atomic value pointer
  * @return previous atomic value
  */
-xky_i32_t sparc_atomic_swap(xky_i32_t i, atomic_t *v) {
+air_i32_t sparc_atomic_swap(air_i32_t i, atomic_t *v) {
 
-    xky_i32_t ret;
-    xky_u32_t isr_level;
+    air_i32_t ret;
+    air_u32_t isr_level;
 
     /* enter critical area (disable local preemption and lock) */
     isr_level = sparc_lock_irqsave(ATOMIC_HASH(v));
@@ -84,10 +84,10 @@ xky_i32_t sparc_atomic_swap(xky_i32_t i, atomic_t *v) {
  * @param v atomic value pointer
  * @return modified atomic value
  */
-xky_i32_t sparc_atomic_and(xky_i32_t i, atomic_t *v) {
+air_i32_t sparc_atomic_and(air_i32_t i, atomic_t *v) {
 
-    xky_i32_t ret;
-    xky_u32_t isr_level;
+    air_i32_t ret;
+    air_u32_t isr_level;
 
     /* enter critical area (disable local preemption and lock) */
     isr_level = sparc_lock_irqsave(ATOMIC_HASH(v));
@@ -106,10 +106,10 @@ xky_i32_t sparc_atomic_and(xky_i32_t i, atomic_t *v) {
  * @param v atomic value pointer
  * @return modified atomic value
  */
-xky_i32_t sparc_atomic_or(xky_i32_t i, atomic_t *v) {
+air_i32_t sparc_atomic_or(air_i32_t i, atomic_t *v) {
 
-    xky_i32_t ret;
-    xky_u32_t isr_level;
+    air_i32_t ret;
+    air_u32_t isr_level;
 
     /* enter critical area (disable local preemption and lock) */
     isr_level = sparc_lock_irqsave(ATOMIC_HASH(v));
@@ -128,10 +128,10 @@ xky_i32_t sparc_atomic_or(xky_i32_t i, atomic_t *v) {
  * @param v atomic value pointer
  * @return modified atomic value
  */
-xky_i32_t sparc_atomic_xor(xky_i32_t i, atomic_t *v) {
+air_i32_t sparc_atomic_xor(air_i32_t i, atomic_t *v) {
 
-    xky_i32_t ret;
-    xky_u32_t isr_level;
+    air_i32_t ret;
+    air_u32_t isr_level;
 
     /* enter critical area (disable local preemption and lock) */
     isr_level = sparc_lock_irqsave(ATOMIC_HASH(v));

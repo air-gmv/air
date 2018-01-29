@@ -1,74 +1,49 @@
 /**
  *  @file
- *  ratemon.c
  *
- *  @brief initialize the Rate Monotonic Manager
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-1999.
+ *  @brief Rate Monotonic Manager Initialization
+ *  @ingroup ClassicRateMon
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2008.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  6356    | 02/03/2010  | mcoutinho    | IPR 1935
- *  7091    | 09/04/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup RTEMS_API RTEMS API
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup RTEMS_API_RATEMON Rate Monotonic Manager
- *  @{
- */
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <rtems/system.h>
+#include <rtems/config.h>
+#include <rtems/sysinit.h>
 #include <rtems/rtems/status.h>
 #include <rtems/rtems/support.h>
-#include <rtems/score/isr.h>
-#include <rtems/score/object.h>
-#include <rtems/rtems/ratemon.h>
-#include <rtems/score/thread.h>
-
+#include <rtems/rtems/ratemonimpl.h>
 
 Objects_Information _Rate_monotonic_Information;
 
-
-void _Rate_monotonic_Manager_initialization(
-                                            uint32_t maximum_periods
-                                            )
+static void _Rate_monotonic_Manager_initialization(void)
 {
-    /* initialize the information for the rate monotonic manager */
-    _Objects_Initialize_information(&_Rate_monotonic_Information , /* object information table */
-                                    OBJECTS_CLASSIC_API , /* object API */
-                                    OBJECTS_RTEMS_PERIODS , /* object class */
-                                    maximum_periods , /* maximum objects of this class */
-                                    sizeof ( Rate_monotonic_Control ) , /* size of this object's control block */
-                                    FALSE , /* TRUE if the name is a string */
-                                    RTEMS_MAXIMUM_NAME_LENGTH /* maximum length of an object name */
-#if defined(RTEMS_MULTIPROCESSING)
-        ,
-                                    FALSE , /* TRUE if this is a global object class */
-                                    NULL /* Proxy extraction support callout */
-#endif
-        );
+  _Objects_Initialize_information(
+    &_Rate_monotonic_Information,    /* object information table */
+    OBJECTS_CLASSIC_API,             /* object API */
+    OBJECTS_RTEMS_PERIODS,           /* object class */
+    Configuration_RTEMS_API.maximum_periods,
+                                     /* maximum objects of this class */
+    sizeof( Rate_monotonic_Control ),/* size of this object's control block */
+    false,                           /* true if the name is a string */
+    RTEMS_MAXIMUM_NAME_LENGTH,       /* maximum length of an object name */
+    NULL                             /* Proxy extraction support callout */
+  );
 }
 
-/**  
- *  @}
- */
-
-/**
- *  @}
- */
+RTEMS_SYSINIT_ITEM(
+  _Rate_monotonic_Manager_initialization,
+  RTEMS_SYSINIT_CLASSIC_RATE_MONOTONIC,
+  RTEMS_SYSINIT_ORDER_MIDDLE
+);

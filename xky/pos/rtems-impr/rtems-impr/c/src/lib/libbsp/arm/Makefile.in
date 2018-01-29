@@ -13,6 +13,8 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
+
+
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -59,7 +61,6 @@ am__make_running_with_option = \
   test $$has_opt = yes
 am__make_dryrun = (target_option=n; $(am__make_running_with_option))
 am__make_keepgoing = (target_option=k; $(am__make_running_with_option))
-pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkglibexecdir = $(libexecdir)/@PACKAGE@
@@ -77,16 +78,17 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-DIST_COMMON = $(top_srcdir)/../../../automake/subdirs.am \
+DIST_COMMON = $(srcdir)/preinstall.am \
+	$(top_srcdir)/../../../automake/subdirs.am \
 	$(top_srcdir)/../../../automake/local.am $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am $(top_srcdir)/configure \
-	$(am__configure_deps) ../../../../../COPYING ChangeLog \
-	../../../../../ChangeLog ../../../../../INSTALL \
-	../../../../../README ../../../../../compile \
-	../../../../../config.guess ../../../../../config.sub \
-	../../../../../depcomp ../../../../../install-sh \
-	../../../../../mdate-sh ../../../../../missing \
-	../../../../../texinfo.tex \
+	$(am__configure_deps) $(dist_project_lib_DATA) \
+	$(include_bsp_HEADERS) ../../../../../COPYING \
+	../../../../../INSTALL ../../../../../README \
+	../../../../../compile ../../../../../config.guess \
+	../../../../../config.sub ../../../../../depcomp \
+	../../../../../install-sh ../../../../../mdate-sh \
+	../../../../../missing \
 	$(top_srcdir)/../../../../../config.guess \
 	$(top_srcdir)/../../../../../config.sub \
 	$(top_srcdir)/../../../../../install-sh \
@@ -122,27 +124,42 @@ am__v_at_0 = @
 am__v_at_1 = 
 SOURCES =
 DIST_SOURCES =
-RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
-	ctags-recursive dvi-recursive html-recursive info-recursive \
-	install-data-recursive install-dvi-recursive \
-	install-exec-recursive install-html-recursive \
-	install-info-recursive install-pdf-recursive \
-	install-ps-recursive install-recursive installcheck-recursive \
-	installdirs-recursive pdf-recursive ps-recursive \
-	tags-recursive uninstall-recursive
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
-  distclean-recursive maintainer-clean-recursive
-am__recursive_targets = \
-  $(RECURSIVE_TARGETS) \
-  $(RECURSIVE_CLEAN_TARGETS) \
-  $(am__extra_recursive_targets)
-AM_RECURSIVE_TARGETS = $(am__recursive_targets:-recursive=) TAGS CTAGS \
-	cscope distdir dist dist-all distcheck
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__uninstall_files_from_dir = { \
+  test -z "$$files" \
+    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+         $(am__cd) "$$dir" && rm -f $$files; }; \
+  }
+am__installdirs = "$(DESTDIR)$(project_libdir)" \
+	"$(DESTDIR)$(include_bspdir)"
+DATA = $(dist_project_lib_DATA)
+HEADERS = $(include_bsp_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -163,7 +180,7 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
-DIST_SUBDIRS = $(SUBDIRS)
+AM_RECURSIVE_TARGETS = cscope
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -174,31 +191,6 @@ am__remove_distdir = \
       || { sleep 5 && rm -rf "$(distdir)"; }; \
   else :; fi
 am__post_remove_distdir = $(am__remove_distdir)
-am__relativize = \
-  dir0=`pwd`; \
-  sed_first='s,^\([^/]*\)/.*$$,\1,'; \
-  sed_rest='s,^[^/]*/*,,'; \
-  sed_last='s,^.*/\([^/]*\)$$,\1,'; \
-  sed_butlast='s,/*[^/]*$$,,'; \
-  while test -n "$$dir1"; do \
-    first=`echo "$$dir1" | sed -e "$$sed_first"`; \
-    if test "$$first" != "."; then \
-      if test "$$first" = ".."; then \
-        dir2=`echo "$$dir0" | sed -e "$$sed_last"`/"$$dir2"; \
-        dir0=`echo "$$dir0" | sed -e "$$sed_butlast"`; \
-      else \
-        first2=`echo "$$dir2" | sed -e "$$sed_first"`; \
-        if test "$$first2" = "$$first"; then \
-          dir2=`echo "$$dir2" | sed -e "$$sed_rest"`; \
-        else \
-          dir2="../$$dir2"; \
-        fi; \
-        dir0="$$dir0"/"$$first"; \
-      fi; \
-    fi; \
-    dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
-  done; \
-  reldir="$$dir2"
 DIST_ARCHIVES = $(distdir).tar.gz
 GZIP_ENV = --best
 DIST_TARGETS = dist-gzip
@@ -206,6 +198,7 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
+pkgdatadir = @pkgdatadir@
 ACLOCAL = @ACLOCAL@
 AMPOLISH3 = @AMPOLISH3@
 AMTAR = @AMTAR@
@@ -306,20 +299,38 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I ../../../aclocal
-SUBDIRS = @RTEMS_BSP_FAMILY@
+_SUBDIRS = @RTEMS_BSP_FAMILY@
+include_bspdir = $(includedir)/bsp
+include_bsp_HEADERS = shared/include/linker-symbols.h
+dist_project_lib_DATA = shared/startup/linkcmds.base \
+	shared/startup/linkcmds.armv4 shared/startup/linkcmds.armv7m
 
 # comm
-
-# abort
-EXTRA_DIST = shared/comm/uart.h shared/comm/uart.c \
-	shared/abort/simple_abort.c
+EXTRA_DIST = shared/comm/uart.h shared/comm/uart.c
+PREINSTALL_DIRS = $(PROJECT_LIB)/$(dirstamp) \
+	$(PROJECT_INCLUDE)/bsp/$(dirstamp)
+DISTCLEANFILES = $(PREINSTALL_DIRS)
+PREINSTALL_FILES = $(PROJECT_INCLUDE)/bsp/linker-symbols.h \
+	$(PROJECT_LIB)/linkcmds.base $(PROJECT_LIB)/linkcmds.armv4 \
+	$(PROJECT_LIB)/linkcmds.armv7m
+CLEANFILES = $(PREINSTALL_FILES)
+SUBDIRS_dot = $(filter     .,$(_SUBDIRS))
+SUBDIRS_no_dot = $(filter-out .,$(_SUBDIRS))
+SUBDIRS_no_dot_no_wrapup = $(filter-out wrapup,$(SUBDIRS_no_dot))
+SUBDIRS_no_dot_no_testsuites = $(filter-out testsuites,$(SUBDIRS_no_dot))
+SUBDIRS_no_dot_no_wrapup_no_testsuites = $(filter-out testsuites,$(SUBDIRS_no_dot_no_wrapup))
+SUBDIRS_wrapup = $(filter     wrapup,$(SUBDIRS_no_dot))
+SUBDIRS_testsuites = $(filter     testsuites,$(SUBDIRS_no_dot))
+SUBDIR_TARGET = $(subst /,-,$1)
+PREINSTALL_TARGET = preinstall-$(call SUBDIR_TARGET,$(1))
+preintstall_targets = $(if "$(SUBDIRS_dot)" ".",preinstall-dot) $(foreach D,$(SUBDIRS_no_dot),$(call PREINSTALL_TARGET,$(D)))
 PROJECT_TOOLS = $(PROJECT_RELEASE)/build-tools
-all: all-recursive
+all: all-am
 
 .SUFFIXES:
 am--refresh: Makefile
 	@:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/../../../automake/subdirs.am $(top_srcdir)/../../../automake/local.am $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/preinstall.am $(top_srcdir)/../../../automake/subdirs.am $(top_srcdir)/../../../automake/local.am $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -342,7 +353,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe);; \
 	esac;
-$(top_srcdir)/../../../automake/subdirs.am $(top_srcdir)/../../../automake/local.am:
+$(srcdir)/preinstall.am $(top_srcdir)/../../../automake/subdirs.am $(top_srcdir)/../../../automake/local.am:
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	$(SHELL) ./config.status --recheck
@@ -352,62 +363,57 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 $(am__aclocal_m4_deps):
-
-# This directory's subdirectories are mostly independent; you can cd
-# into them and run 'make' without going through this Makefile.
-# To change the values of 'make' variables: instead of editing Makefiles,
-# (1) if the variable is set in 'config.status', edit 'config.status'
-#     (which will cause the Makefiles to be regenerated when you run 'make');
-# (2) otherwise, pass the desired values on the 'make' command line.
-$(am__recursive_targets):
-	@fail=; \
-	if $(am__make_keepgoing); then \
-	  failcom='fail=yes'; \
-	else \
-	  failcom='exit 1'; \
+install-dist_project_libDATA: $(dist_project_lib_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(dist_project_lib_DATA)'; test -n "$(project_libdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(project_libdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(project_libdir)" || exit 1; \
 	fi; \
-	dot_seen=no; \
-	target=`echo $@ | sed s/-recursive//`; \
-	case "$@" in \
-	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
-	  *) list='$(SUBDIRS)' ;; \
-	esac; \
-	for subdir in $$list; do \
-	  echo "Making $$target in $$subdir"; \
-	  if test "$$subdir" = "."; then \
-	    dot_seen=yes; \
-	    local_target="$$target-am"; \
-	  else \
-	    local_target="$$target"; \
-	  fi; \
-	  ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
-	  || eval $$failcom; \
-	done; \
-	if test "$$dot_seen" = "no"; then \
-	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
-	fi; test -z "$$fail"
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(project_libdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(project_libdir)" || exit $$?; \
+	done
+
+uninstall-dist_project_libDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_project_lib_DATA)'; test -n "$(project_libdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(project_libdir)'; $(am__uninstall_files_from_dir)
+install-include_bspHEADERS: $(include_bsp_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(include_bsp_HEADERS)'; test -n "$(include_bspdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(include_bspdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(include_bspdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(include_bspdir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(include_bspdir)" || exit $$?; \
+	done
+
+uninstall-include_bspHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(include_bsp_HEADERS)'; test -n "$(include_bspdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(include_bspdir)'; $(am__uninstall_files_from_dir)
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
-tags: tags-recursive
+tags: tags-am
 TAGS: tags
 
 tags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
 	set x; \
 	here=`pwd`; \
-	if ($(ETAGS) --etags-include --version) >/dev/null 2>&1; then \
-	  include_option=--etags-include; \
-	  empty_fix=.; \
-	else \
-	  include_option=--include; \
-	  empty_fix=; \
-	fi; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    test ! -f $$subdir/TAGS || \
-	      set "$$@" "$$include_option=$$here/$$subdir/TAGS"; \
-	  fi; \
-	done; \
 	$(am__define_uniq_tagged_files); \
 	shift; \
 	if test -z "$(ETAGS_ARGS)$$*$$unique"; then :; else \
@@ -420,7 +426,7 @@ tags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
 	      $$unique; \
 	  fi; \
 	fi
-ctags: ctags-recursive
+ctags: ctags-am
 
 CTAGS: ctags
 ctags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
@@ -439,7 +445,7 @@ cscope: cscope.files
 clean-cscope:
 	-rm -f cscope.files
 cscope.files: clean-cscope cscopelist
-cscopelist: cscopelist-recursive
+cscopelist: cscopelist-am
 
 cscopelist-am: $(am__tagged_files)
 	list='$(am__tagged_files)'; \
@@ -489,31 +495,6 @@ distdir: $(DISTFILES)
 	    test -f "$(distdir)/$$file" \
 	    || cp -p $$d/$$file "$(distdir)/$$file" \
 	    || exit 1; \
-	  fi; \
-	done
-	@list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    $(am__make_dryrun) \
-	      || test -d "$(distdir)/$$subdir" \
-	      || $(MKDIR_P) "$(distdir)/$$subdir" \
-	      || exit 1; \
-	    dir1=$$subdir; dir2="$(distdir)/$$subdir"; \
-	    $(am__relativize); \
-	    new_distdir=$$reldir; \
-	    dir1=$$subdir; dir2="$(top_distdir)"; \
-	    $(am__relativize); \
-	    new_top_distdir=$$reldir; \
-	    echo " (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir="$$new_top_distdir" distdir="$$new_distdir" \\"; \
-	    echo "     am__remove_distdir=: am__skip_length_check=: am__skip_mode_fix=: distdir)"; \
-	    ($(am__cd) $$subdir && \
-	      $(MAKE) $(AM_MAKEFLAGS) \
-	        top_distdir="$$new_top_distdir" \
-	        distdir="$$new_distdir" \
-		am__remove_distdir=: \
-		am__skip_length_check=: \
-		am__skip_mode_fix=: \
-	        distdir) \
-	      || exit 1; \
 	  fi; \
 	done
 	-test -n "$(am__skip_mode_fix)" \
@@ -648,19 +629,21 @@ distcleancheck: distclean
 	       $(distcleancheck_listfiles) ; \
 	       exit 1; } >&2
 check-am: all-am
-check: check-recursive
-all-am: Makefile
-installdirs: installdirs-recursive
-installdirs-am:
-install: install-recursive
-install-exec: install-exec-recursive
-install-data: install-data-recursive
-uninstall: uninstall-recursive
+check: check-am
+all-am: Makefile $(DATA) $(HEADERS) all-local
+installdirs:
+	for dir in "$(DESTDIR)$(project_libdir)" "$(DESTDIR)$(include_bspdir)"; do \
+	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+	done
+install: install-am
+install-exec: install-exec-am
+install-data: install-data-am
+uninstall: uninstall-am
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-installcheck: installcheck-recursive
+installcheck: installcheck-am
 install-strip:
 	if test -z '$(STRIP)'; then \
 	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
@@ -674,123 +657,195 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean: clean-recursive
+clean: clean-am
 
 clean-am: clean-generic mostlyclean-am
 
-distclean: distclean-recursive
+distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -f Makefile
 distclean-am: clean-am distclean-generic distclean-tags
 
-dvi: dvi-recursive
+dvi: dvi-am
 
 dvi-am:
 
-html: html-recursive
+html: html-am
 
 html-am:
 
-info: info-recursive
+info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-dist_project_libDATA \
+	install-include_bspHEADERS
 
-install-dvi: install-dvi-recursive
+install-dvi: install-dvi-am
 
 install-dvi-am:
 
 install-exec-am:
 
-install-html: install-html-recursive
+install-html: install-html-am
 
 install-html-am:
 
-install-info: install-info-recursive
+install-info: install-info-am
 
 install-info-am:
 
 install-man:
 
-install-pdf: install-pdf-recursive
+install-pdf: install-pdf-am
 
 install-pdf-am:
 
-install-ps: install-ps-recursive
+install-ps: install-ps-am
 
 install-ps-am:
 
 installcheck-am:
 
-maintainer-clean: maintainer-clean-recursive
+maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
-mostlyclean: mostlyclean-recursive
+mostlyclean: mostlyclean-am
 
 mostlyclean-am: mostlyclean-generic
 
-pdf: pdf-recursive
+pdf: pdf-am
 
 pdf-am:
 
-ps: ps-recursive
+ps: ps-am
 
 ps-am:
 
-uninstall-am:
+uninstall-am: uninstall-dist_project_libDATA \
+	uninstall-include_bspHEADERS
 
-.MAKE: $(am__recursive_targets) install-am install-strip
+.MAKE: install-am install-strip
 
-.PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
-	am--refresh check check-am clean clean-cscope clean-generic \
-	cscope cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
-	dist-gzip dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
-	distcheck distclean distclean-generic distclean-tags \
-	distcleancheck distdir distuninstallcheck dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
-	pdf-am ps ps-am tags tags-am uninstall uninstall-am
+.PHONY: CTAGS GTAGS TAGS all all-am all-local am--refresh check \
+	check-am clean clean-cscope clean-generic cscope cscopelist-am \
+	ctags ctags-am dist dist-all dist-bzip2 dist-gzip dist-lzip \
+	dist-shar dist-tarZ dist-xz dist-zip distcheck distclean \
+	distclean-generic distclean-tags distcleancheck distdir \
+	distuninstallcheck dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am \
+	install-dist_project_libDATA install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-include_bspHEADERS install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags \
+	tags-am uninstall uninstall-am uninstall-dist_project_libDATA \
+	uninstall-include_bspHEADERS
 
 
-preinstall-recursive:
-	@set fnord $(MAKEFLAGS); amf=$$2; \
-	dot_seen=no; \
-	target=`echo $@ | sed s/-recursive//`; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  echo "Making $$target in $$subdir"; \
-	  if test "$$subdir" = "."; then \
-	    dot_seen=yes; \
-	    local_target="$$target-am"; \
-	  else \
-	    local_target="$$target"; \
-	  fi; \
-	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
-	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
-	done; \
-	if test "$$dot_seen" = "no"; then \
-	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
-	fi; test -z "$$fail"
+@AMPOLISH3_TRUE@$(srcdir)/preinstall.am: Makefile.am
+@AMPOLISH3_TRUE@	$(AMPOLISH3) $(srcdir)/Makefile.am > $(srcdir)/preinstall.am
 
-preinstall: preinstall-recursive
-.PHONY: preinstall-recursive
+all-am: $(PREINSTALL_FILES)
 
+$(PROJECT_LIB)/$(dirstamp):
+	@$(MKDIR_P) $(PROJECT_LIB)
+	@: > $(PROJECT_LIB)/$(dirstamp)
+
+$(PROJECT_INCLUDE)/bsp/$(dirstamp):
+	@$(MKDIR_P) $(PROJECT_INCLUDE)/bsp
+	@: > $(PROJECT_INCLUDE)/bsp/$(dirstamp)
+
+$(PROJECT_INCLUDE)/bsp/linker-symbols.h: shared/include/linker-symbols.h $(PROJECT_INCLUDE)/bsp/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_INCLUDE)/bsp/linker-symbols.h
+
+$(PROJECT_LIB)/linkcmds.base: shared/startup/linkcmds.base $(PROJECT_LIB)/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_LIB)/linkcmds.base
+
+$(PROJECT_LIB)/linkcmds.armv4: shared/startup/linkcmds.armv4 $(PROJECT_LIB)/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_LIB)/linkcmds.armv4
+
+$(PROJECT_LIB)/linkcmds.armv7m: shared/startup/linkcmds.armv7m $(PROJECT_LIB)/$(dirstamp)
+	$(INSTALL_DATA) $< $(PROJECT_LIB)/linkcmds.armv7m
+
+define PREINSTALL_DIR
+.PHONY: $1
+$1:
+	@+set fnord $(MAKEFLAGS); amf=$$$$2; \
+	subdir=$(2); \
+	subdir_label=`echo $(1) | sed -e 's/preinstall-//'`; \
+	target=`echo $$@ | sed -e 's/-recursive//' -e "s/-$$$${subdir_label}//"`$(3); \
+	echo "Making $$$$target in $$$$subdir"; \
+	(cd $$$$subdir && $(MAKE) $(AM_MAKEFLAGS) $$$$target) \
+	 || case "$$$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac;
+endef
+
+$(if "$(SUBDIRS_dot)" ".",$(eval $(call PREINSTALL_DIR,preinstall-dot,.,-am)))
+
+$(foreach D,$(SUBDIRS_no_dot),$(eval $(call PREINSTALL_DIR,$(call PREINSTALL_TARGET,$(D)),$(D))))
+
+preinstall: $(preintstall_targets)
+.PHONY: preinstall
+
+define CPUKITDIR
+.PHONY: $1
+$1: $(preintstall_targets)
+	@+set fnord $(MAKEFLAGS); amf=$$$$2; \
+	subdir=$(2); \
+	target=`echo $(MAKECMDGOALS) | sed s/-recursive//`; \
+	if test "$$$$target" = "all-local-am"; then \
+	  target="all-am"; \
+	fi; \
+	if test "$$$$target" = "all-local"; then \
+	  target="all"; \
+	fi; \
+	echo "Making $$$$target in $$$$subdir"; \
+	if test "$$$$subdir" != "."; then \
+	  cd $$$$subdir; \
+	  $(MAKE) $(AM_MAKEFLAGS) $$$$target; \
+	fi;
+endef
+
+#
+# This GNU make syntax is being used to stop automake thinking the code is for
+# it.
+#
+$(if "$(SUBDIRS_dot)" ".",$(eval $(call CPUKITDIR,dot,.)))
+
+$(foreach D,$(SUBDIRS_no_dot),$(eval $(call CPUKITDIR,$(D),$(D))))
+
+#
+# If there is a wrapup make it depend on all other directories except the
+# testsuite so it is not entered until everything but the testsuite has
+# finished.
+#
+$(if "$(SUBDIRS_wrapup)" "wrapup",wrapup: dot $(SUBDIRS_no_dot_no_wrapup_no_testsuites))
+
+#
+# If there is a testsuite make it depend on all other directories so it is not
+# entered until everything else has finished.
+#
+$(if "$(SUBDIRS_testsuites)" "testsuites",testsuites: dot $(SUBDIRS_no_dot_no_testsuites))
+
+#
+# The general build all rule for automake.
+#
+all-local: preinstall $(if "$(SUBDIRS_dot)" ".",dot) $(SUBDIRS_no_dot)
 preinstall-am: $(PREINSTALL_FILES)
 preinstall: preinstall-am
 .PHONY: preinstall preinstall-am

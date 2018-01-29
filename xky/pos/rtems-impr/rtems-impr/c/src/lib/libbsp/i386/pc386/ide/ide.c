@@ -15,7 +15,7 @@
 |                                                                 |
 |  The license and distribution terms for this file may be        |
 |  found in the file LICENSE in this distribution or at           |
-|  http://www.rtems.com/license/LICENSE.                     |
+|  http://www.rtems.org/license/LICENSE.                     |
 |                                                                 |
 +-----------------------------------------------------------------+
 |   date                      history                        ID   |
@@ -23,7 +23,10 @@
 | 01.14.03  creation                                         doe  |
 \*===============================================================*/
 
+#include <inttypes.h>
+
 #include <rtems.h>
+
 #include <bsp.h>
 #include <libchip/ide_ctrl.h>
 #include <libchip/ide_ctrl_cfg.h>
@@ -63,8 +66,8 @@ static void pc386_ide_prestart_sleep (void)
  */
 static void pc386_ide_tasking_sleep (void)
 {
-  rtems_task_wake_after (TOD_MICROSECONDS_TO_TICKS (10000) ?
-                         TOD_MICROSECONDS_TO_TICKS (10000) : 1);
+  rtems_task_wake_after (RTEMS_MICROSECONDS_TO_TICKS (10000) ?
+                         RTEMS_MICROSECONDS_TO_TICKS (10000) : 1);
 }
 
 typedef void (*pc386_ide_sleeper)(void);
@@ -157,7 +160,7 @@ static bool pc386_ide_status_data_ready (uint32_t          port,
 /*=========================================================================*\
 | Function:                                                                 |
 \*-------------------------------------------------------------------------*/
-bool pc386_ide_probe
+static bool pc386_ide_probe
 (
 /*-------------------------------------------------------------------------*\
 | Purpose:                                                                  |
@@ -180,7 +183,7 @@ bool pc386_ide_probe
 /*=========================================================================*\
 | Function:                                                                 |
 \*-------------------------------------------------------------------------*/
-void pc386_ide_initialize
+static void pc386_ide_initialize
 (
 /*-------------------------------------------------------------------------*\
   | Purpose:                                                                  |
@@ -199,7 +202,7 @@ void pc386_ide_initialize
   uint8_t  dev = 0;
 
   if (pc386_ide_show)
-    printk("IDE%d: port base: %04x\n", minor, port);
+    printk("IDE%d: port base: %04" PRIu32 "\n", minor, port);
 
   outport_byte(port+IDE_REGISTER_DEVICE_HEAD,
                (dev << IDE_REGISTER_DEVICE_HEAD_DEV_POS) | 0xE0);
@@ -229,6 +232,8 @@ void pc386_ide_initialize
     char        model_number[41];
     char*       p = &model_number[0];
     bool        data_ready;
+
+    (void) cur_multiple_sectors; /* avoid set but not used warning */
 
     memset(model_number, 0, sizeof(model_number));
 
@@ -301,7 +306,7 @@ void pc386_ide_initialize
       uint16_t word;
 
       if (pc386_ide_show && ((byte % 16) == 0))
-        printk("\n %04x : ", byte);
+        printk("\n %04" PRIx32 " : ", byte);
 
       inport_word(port+IDE_REGISTER_DATA, word);
 
@@ -344,7 +349,7 @@ void pc386_ide_initialize
     }
 
     if (pc386_ide_show)
-      printk("\nbytes read = %d\n", byte);
+      printk("\nbytes read = %" PRIu32 "\n", byte);
 
     if (p != &model_number[0])
     {
@@ -386,7 +391,7 @@ void pc386_ide_initialize
         p--;
       }
 
-      printk("IDE%d:%s:%s, %u.%u%c (%u/%u/%u), max blk size:%d\n",
+      printk("IDE%d:%s:%s, %" PRIu32 ".%" PRIu32 "%c (%" PRIu32 "/%" PRIu32 "/%" PRIu32 "), max blk size:%d\n",
              minor, label, model_number, left, right, units,
              heads, cylinders, sectors, max_multiple_sectors * 512);
     }
@@ -433,7 +438,7 @@ void pc386_ide_initialize
 /*=========================================================================*\
 | Function:                                                                 |
 \*-------------------------------------------------------------------------*/
-void pc386_ide_read_reg
+static void pc386_ide_read_reg
 (
 /*-------------------------------------------------------------------------*\
 | Purpose:                                                                  |
@@ -470,7 +475,7 @@ void pc386_ide_read_reg
 /*=========================================================================*\
 | Function:                                                                 |
 \*-------------------------------------------------------------------------*/
-void pc386_ide_write_reg
+static void pc386_ide_write_reg
 (
 /*-------------------------------------------------------------------------*\
 | Purpose:                                                                  |
@@ -503,7 +508,7 @@ void pc386_ide_write_reg
 /*=========================================================================*\
 | Function:                                                                 |
 \*-------------------------------------------------------------------------*/
-void pc386_ide_read_block
+static void pc386_ide_read_block
 (
 /*-------------------------------------------------------------------------*\
 | Purpose:                                                                  |
@@ -539,7 +544,8 @@ void pc386_ide_read_block
     if (!pc386_ide_status_data_ready (port, pc386_ide_timeout,
                                       &status_val, pc386_ide_tasking_sleep))
     {
-      printk ("pc386_ide_read_block: block=%u cbuf=%u status=%02x, cnt=%d bs=%d\n",
+      printk ("pc386_ide_read_block: block=%" PRIu32 \
+              " cbuf=%" PRIu32 " status=%02x, cnt=%" PRIu32 " bs=%" PRIu32 "\n",
               bufs[*cbuf].block, *cbuf, status_val, cnt, block_size);
       /* FIXME: add an error here. */
       return;
@@ -582,7 +588,7 @@ void pc386_ide_read_block
 /*=========================================================================*\
 | Function:                                                                 |
 \*-------------------------------------------------------------------------*/
-void pc386_ide_write_block
+static void pc386_ide_write_block
 (
 /*-------------------------------------------------------------------------*\
 | Purpose:                                                                  |
@@ -618,7 +624,7 @@ void pc386_ide_write_block
     if (!pc386_ide_status_data_ready (port, pc386_ide_timeout,
                                       &status_val, pc386_ide_tasking_sleep))
     {
-      printk ("pc386_ide_write_block: block=%u status=%02x, cnt=%d bs=%d\n",
+      printk ("pc386_ide_write_block: block=%" PRIu32 " status=%02x, cnt=%" PRIu32 " bs=%" PRIu32 "\n",
               bufs[*cbuf].block, status_val, cnt, block_size);
       /* FIXME: add an error here. */
       return;
@@ -660,7 +666,7 @@ void pc386_ide_write_block
 /*=========================================================================*\
 | Function:                                                                 |
 \*-------------------------------------------------------------------------*/
-int pc386_ide_control
+static int pc386_ide_control
 (
 /*-------------------------------------------------------------------------*\
 | Purpose:                                                                  |
@@ -683,7 +689,7 @@ int pc386_ide_control
 /*=========================================================================*\
 | Function:                                                                 |
 \*-------------------------------------------------------------------------*/
-rtems_status_code pc386_ide_config_io_speed
+static rtems_status_code pc386_ide_config_io_speed
 (
 /*-------------------------------------------------------------------------*\
 | Purpose:                                                                  |

@@ -1,139 +1,93 @@
 /**
  *  @file
- *  ratemontimeout.c
  *
- *  @brief rate monotonic period has timeout
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-2007.
+ *  @brief Rate Monotonic Timeout
+ *  @ingroup ClassicRateMon
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2009.
  *  On-Line Applications Research Corporation (OAR).
+ *
+ *  COPYRIGHT (c) 2016-2017 Kuan-Hsun Chen.
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  579     | 17/11/2008  | mcoutinho    | IPR 64
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  5317    | 02/11/2009  | mcoutinho    | IPR 831
- *  7098    | 09/04/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup RTEMS_API RTEMS API
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup RTEMS_API_RATEMON Rate Monotonic Manager
- *  @{
- */
-
-#include <rtems/system.h>
-#include <rtems/rtems/status.h>
-#include <rtems/rtems/support.h>
-#include <rtems/score/isr.h>
-#include <rtems/score/object.h>
-#include <rtems/rtems/ratemon.h>
-#include <rtems/score/thread.h>
-
-
-void _Rate_monotonic_Timeout(
-                             Objects_Id id ,
-                             void *ignored
-                             )
-{
-    /* rate monotonic object that timeout */
-    Rate_monotonic_Control *the_period;
-
-    /* rate monotonic object that timeout location */
-    Objects_Locations location;
-
-    /* task that possibly awake from the rate monotonic object timeout */
-    Thread_Control *the_thread;
-
-    /* When we get here, the Timer is already off the chain so we do not
-     * have to worry about that -- hence no _Watchdog_Remove() */
-
-    /* get the period */
-    the_period = _Rate_monotonic_Get(id , &location);
-
-    /* check the rate monotonic object location */
-    switch(location)
-    {
-#if defined(RTEMS_MULTIPROCESSING)
-
-            /* rate monotonic object is remote */
-        case OBJECTS_REMOTE:
-            /* impossible */
+#if HAVE_CONFIG_H
+#include "config.h"
 #endif
 
-            /* rate monotonic object id is invalid */
-        case OBJECTS_ERROR:
+#include <rtems/rtems/ratemonimpl.h>
 
-            /* leave */
-            break;
+static void _Rate_monotonic_Renew_deadline(
+  Rate_monotonic_Control *the_period,
+  ISR_lock_Context       *lock_context
+)
+{
+  uint64_t deadline;
 
-            /* rate monotonic object is local (nominal case) */
-        case OBJECTS_LOCAL:
+  /* stay at 0xffffffff if postponed_jobs is going to overflow */
+  if ( the_period->postponed_jobs != UINT32_MAX ) {
+    ++the_period->postponed_jobs;
+  }
 
-            /* get the owner task of the period */
-            the_thread = the_period->owner;
+  the_period->state = RATE_MONOTONIC_EXPIRED;
 
-            /* check if the thread was waiting for the period */
-            if(_States_Is_waiting_for_period(the_thread->current_state) &&
-               the_thread->Wait.id == the_period->Object.id)
-            {
-                /* thread was waiting */
+  deadline = _Watchdog_Per_CPU_insert_ticks(
+    &the_period->Timer,
+    _Per_CPU_Get(),
+    the_period->next_length
+  );
+  the_period->latest_deadline = deadline;
 
-                /* unblock the thread */
-                _Thread_Unblock(the_thread);
-
-                /* and reset the watchdog (insert it again for the next period) */
-                _Watchdog_Insert_ticks(&the_period->Timer , the_period->next_length);
-            }
-                /* else, check of the period state was that the period owner was blocking */
-            else if(the_period->state == RATE_MONOTONIC_OWNER_IS_BLOCKING)
-            {
-                /* if the owner was blocking then set the appropriate state */
-                the_period->state = RATE_MONOTONIC_EXPIRED_WHILE_BLOCKING;
-
-                /* and reset the watchdog (insert it again for the next period) */
-                _Watchdog_Insert_ticks(&the_period->Timer , the_period->next_length);
-            }
-            else
-            {
-                /* the period has expired and the owner wasnt blocking */
-                the_period->state = RATE_MONOTONIC_EXPIRED;
-
-                /* so dont reset the watchdog */
-            }
-
-            /* unnest dispatch (disabled by _Rate_monotonic_Get) */
-            _Thread_Unnest_dispatch();
-
-            /* and leave */
-            break;
-
-            /* default clause, invalid object location */
-        default:
-
-            /* raise internal error */
-            _Internal_error_Occurred(INTERNAL_ERROR_CORE ,
-                                     TRUE ,
-                                     INTERNAL_ERROR_INVALID_OBJECT_LOCATION);
-    }
+  _Rate_monotonic_Release( the_period, lock_context );
 }
 
-/**  
- *  @}
- */
+void _Rate_monotonic_Timeout( Watchdog_Control *the_watchdog )
+{
+  Rate_monotonic_Control *the_period;
+  Thread_Control         *owner;
+  ISR_lock_Context        lock_context;
+  Thread_Wait_flags       wait_flags;
 
-/**
- *  @}
- */
+  the_period = RTEMS_CONTAINER_OF( the_watchdog, Rate_monotonic_Control, Timer );
+  owner = the_period->owner;
+
+  _ISR_lock_ISR_disable( &lock_context );
+  _Rate_monotonic_Acquire_critical( the_period, &lock_context );
+  wait_flags = _Thread_Wait_flags_get( owner );
+
+  if (
+    ( wait_flags & THREAD_WAIT_CLASS_PERIOD ) != 0
+      && owner->Wait.return_argument == the_period
+  ) {
+    bool unblock;
+    bool success;
+
+    owner->Wait.return_argument = NULL;
+
+    success = _Thread_Wait_flags_try_change_release(
+      owner,
+      RATE_MONOTONIC_INTEND_TO_BLOCK,
+      RATE_MONOTONIC_READY_AGAIN
+    );
+    if ( success ) {
+      unblock = false;
+    } else {
+      _Assert( _Thread_Wait_flags_get( owner ) == RATE_MONOTONIC_BLOCKED );
+      _Thread_Wait_flags_set( owner, RATE_MONOTONIC_READY_AGAIN );
+      unblock = true;
+    }
+
+    _Rate_monotonic_Restart( the_period, owner, &lock_context );
+
+    if ( unblock ) {
+      _Thread_Unblock( owner );
+    }
+  } else {
+    _Rate_monotonic_Renew_deadline( the_period, &lock_context );
+  }
+}

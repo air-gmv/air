@@ -1,22 +1,23 @@
 /**
  * @file
  *
- * @ingroup lpc32xx
+ * @ingroup arm_lpc32xx
  *
  * @brief RTC configuration.
  */
 
 /*
- * Copyright (c) 2009
- * embedded brains GmbH
- * Obere Lagerstr. 30
- * D-82178 Puchheim
- * Germany
- * <rtems@embedded-brains.de>
+ * Copyright (c) 2009-2011 embedded brains GmbH.  All rights reserved.
+ *
+ *  embedded brains GmbH
+ *  Obere Lagerstr. 30
+ *  82178 Puchheim
+ *  Germany
+ *  <rtems@embedded-brains.de>
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
- * http://www.rtems.com/license/LICENSE.
+ * http://www.rtems.org/license/LICENSE.
  */
 
 #include <libchip/rtc.h>
@@ -38,41 +39,27 @@
 #define LPC32XX_RTC_CTRL_MATCH_1_INTR (1U << 1)
 #define LPC32XX_RTC_CTRL_MATCH_0_INTR (1U << 0)
 
-typedef struct {
-  uint32_t ucount;
-  uint32_t dcount;
-  uint32_t match0;
-  uint32_t match1;
-  uint32_t ctrl;
-  uint32_t intstat;
-  uint32_t key;
-  uint32_t sram [32];
-} lpc32xx_rtc_registers;
-
-static volatile lpc32xx_rtc_registers *const lpc32xx_rtc =
-  (volatile lpc32xx_rtc_registers *) LPC32XX_BASE_RTC;
-
 static void lpc32xx_rtc_set(uint32_t val)
 {
-  unsigned i = LPC32XX_ARM_CLK / LPC32XX_OSCILLATOR_RTC;
+  unsigned i = lpc32xx_arm_clk() / LPC32XX_OSCILLATOR_RTC;
 
-  lpc32xx_rtc->ctrl |= LPC32XX_RTC_CTRL_STOP;
-  lpc32xx_rtc->ucount = val;
-  lpc32xx_rtc->dcount = LPC32XX_RTC_COUNTER_DELTA - val;
-  lpc32xx_rtc->ctrl &= ~LPC32XX_RTC_CTRL_STOP;
+  lpc32xx.rtc.ctrl |= LPC32XX_RTC_CTRL_STOP;
+  lpc32xx.rtc.ucount = val;
+  lpc32xx.rtc.dcount = LPC32XX_RTC_COUNTER_DELTA - val;
+  lpc32xx.rtc.ctrl &= ~LPC32XX_RTC_CTRL_STOP;
 
   /* It needs some time before we can read the values back */
   while (i != 0) {
-    asm volatile ("nop");
+    __asm__ volatile ("nop");
     --i;
   }
 }
 
 static void lpc32xx_rtc_reset(void)
 {
-  lpc32xx_rtc->ctrl = LPC32XX_RTC_CTRL_RESET;
-  lpc32xx_rtc->ctrl = 0;
-  lpc32xx_rtc->key = LPC32XX_RTC_KEY;
+  lpc32xx.rtc.ctrl = LPC32XX_RTC_CTRL_RESET;
+  lpc32xx.rtc.ctrl = 0;
+  lpc32xx.rtc.key = LPC32XX_RTC_KEY;
   lpc32xx_rtc_set(0);
 }
 
@@ -83,15 +70,15 @@ static void lpc32xx_rtc_initialize(int minor)
   uint32_t down_first = 0;
   uint32_t down_second = 0;
 
-  if (lpc32xx_rtc->key != LPC32XX_RTC_KEY) {
+  if (lpc32xx.rtc.key != LPC32XX_RTC_KEY) {
     lpc32xx_rtc_reset();
   }
 
   do {
-    up_first = lpc32xx_rtc->ucount;
-    down_first = lpc32xx_rtc->dcount;
-    up_second = lpc32xx_rtc->ucount;
-    down_second = lpc32xx_rtc->dcount;
+    up_first = lpc32xx.rtc.ucount;
+    down_first = lpc32xx.rtc.dcount;
+    up_second = lpc32xx.rtc.ucount;
+    down_second = lpc32xx.rtc.dcount;
   } while (up_first != up_second || down_first != down_second);
 
   if (up_first + down_first != LPC32XX_RTC_COUNTER_DELTA) {
@@ -102,7 +89,7 @@ static void lpc32xx_rtc_initialize(int minor)
 static int lpc32xx_rtc_get_time(int minor, rtems_time_of_day *tod)
 {
   struct timeval now = {
-    .tv_sec = lpc32xx_rtc->ucount,
+    .tv_sec = lpc32xx.rtc.ucount,
     .tv_usec = 0
   };
   struct tm time;
@@ -138,9 +125,7 @@ const rtc_fns lpc32xx_rtc_ops = {
   .deviceSetTime = lpc32xx_rtc_set_time
 };
 
-unsigned long RTC_Count = LPC32XX_RTC_COUNT;
-
-rtems_device_minor_number RTC_Minor = 0;
+size_t RTC_Count = LPC32XX_RTC_COUNT;
 
 rtc_tbl	RTC_Table [LPC32XX_RTC_COUNT] = {
   {

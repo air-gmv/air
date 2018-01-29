@@ -1,130 +1,119 @@
 /**
- *  @file
- *  sysstate.h
+ * @file
  *
- *  @brief contains information regarding the system state.
+ * @ingroup ScoreSysState
  *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-2006.
+ * @brief System State Handler API
+ */
+
+/*
+ *  COPYRIGHT (c) 1989-2011.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  3610    | 02/07/2009  | mcoutinho    | IPR 64
- *  3610    | 02/07/2009  | mcoutinho    | IPR 153
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  6356    | 02/03/2010  | mcoutinho    | IPR 1935
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_CORE Super Core
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef _RTEMS_SCORE_SYSSTATE_H
 #define _RTEMS_SCORE_SYSSTATE_H
 
-/**
- *  @defgroup ScoreSysState System State Handler
- *
- *  @brief This handler encapsulates functionality related to the management of the
- *  internal system state of RTEMS.
- */
-/**@{*/
-
-#include <rtems/system.h>
-#include <rtems/score/types.h>
+#include <rtems/score/basedefs.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-   /**
-    *  @brief possible system states.
-    */
-   typedef enum
-   {
-      /**
-       * @brief This indicates that the system state is between the start
-       *  of rtems_initialize_executive_early and the end of the first
-       *  phase of initialization.
-       */
-      SYSTEM_STATE_BEFORE_INITIALIZATION ,
-      /**
-       * @brief This indicates that the system state is between end of the first
-       *  phase of initializatin but before  multitasking is started.
-       */
-      SYSTEM_STATE_BEFORE_MULTITASKING ,
-      /**
-       * @brief This indicates that the system state is attempting to initiate
-       *  multitasking.
-       */
-      SYSTEM_STATE_BEGIN_MULTITASKING ,
-      /**
-       * @brief This indicates that the system is up and operating normally.
-       */
-      SYSTEM_STATE_UP ,
-      /**
-       * @brief This indicates that an error was found and the system is now controled by the application
-       */
-      SYSTEM_STATE_APP_SAFE ,
-      /**
-       * @brief This indicates that the system is in the midst of a shutdown.
-       */
-      SYSTEM_STATE_SHUTDOWN ,
-      /**
-       * @brief This indicates that a fatal error has occurred.
-       */
-      SYSTEM_STATE_FAILED
-   } System_state_Codes;
+/**
+ * @defgroup ScoreSysState System State Handler
+ *
+ * @ingroup Score
+ *
+ * @brief Management of the internal system state of RTEMS.
+ */
+/**@{**/
 
-   /**
-    * @brief This defines the first system state.
-    */
+/**
+ * @brief System states.
+ */
+typedef enum {
+  /**
+   * @brief The system is before the end of the first phase of initialization.
+   */
+  SYSTEM_STATE_BEFORE_INITIALIZATION,
+
+  /**
+   * @brief The system is between end of the first phase of initialization but
+   * before  multitasking is started.
+   */
+  SYSTEM_STATE_BEFORE_MULTITASKING,
+
+  /**
+   * @brief The system is up and operating normally.
+   */
+  SYSTEM_STATE_UP,
+
+  /**
+   * @brief The system reached its terminal state.
+   */
+  SYSTEM_STATE_TERMINATED
+} System_state_Codes;
+
 #define SYSTEM_STATE_CODES_FIRST SYSTEM_STATE_BEFORE_INITIALIZATION
 
-   /**
-    * @brief This defines the highest value system state.
-    */
-#define SYSTEM_STATE_CODES_LAST  SYSTEM_STATE_FAILED
+#define SYSTEM_STATE_CODES_LAST SYSTEM_STATE_TERMINATED
 
-   /**
-    *  @brief indicates whether or not this is
-    *  an multiprocessing system.
-    */
-#ifdef RTEMS_MULTIPROCESSING
-   extern boolean _System_state_Is_multiprocessing;
+#if defined(RTEMS_MULTIPROCESSING)
+extern bool _System_state_Is_multiprocessing;
 #endif
 
-   /**
-    *  @brief current system state
-    */
-   extern System_state_Codes _System_state_Current;
+extern System_state_Codes _System_state_Current;
 
-   /*
-    *  Make it possible for the application to get the system state information.
-    */
+RTEMS_INLINE_ROUTINE void _System_state_Set (
+  System_state_Codes state
+)
+{
+  _System_state_Current = state;
+}
 
-#include <rtems/score/sysstate.inl>
+RTEMS_INLINE_ROUTINE System_state_Codes _System_state_Get ( void )
+{
+  return _System_state_Current;
+}
+
+RTEMS_INLINE_ROUTINE bool _System_state_Is_before_initialization (
+  System_state_Codes state
+)
+{
+  return (state == SYSTEM_STATE_BEFORE_INITIALIZATION);
+}
+
+RTEMS_INLINE_ROUTINE bool _System_state_Is_before_multitasking (
+  System_state_Codes state
+)
+{
+  return (state == SYSTEM_STATE_BEFORE_MULTITASKING);
+}
+
+RTEMS_INLINE_ROUTINE bool _System_state_Is_up (
+  System_state_Codes state
+)
+{
+  return (state == SYSTEM_STATE_UP);
+}
+
+RTEMS_INLINE_ROUTINE bool _System_state_Is_terminated (
+  System_state_Codes state
+)
+{
+  return (state == SYSTEM_STATE_TERMINATED);
+}
+
+/** @} */
 
 #ifdef __cplusplus
 }
 #endif
 
-/**@}*/
-
 #endif
 /* end of include file */
-
-/**
- *  @}
- */

@@ -7,28 +7,24 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  MVME147 port for TNI - Telecom Bretagne
  *  by Dominique LE CAMPION (Dominique.LECAMPION@enst-bretagne.fr)
  *  May 1996
- *
- *  $Id$
  */
 
-#ifndef _BSP_H
-#define _BSP_H
+#ifndef LIBBSP_M68K_MVME147S_BSP_H
+#define LIBBSP_M68K_MVME147S_BSP_H
+
+#include <bspopts.h>
+#include <bsp/default-initial-extension.h>
+
+#include <rtems.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <bspopts.h>
-
-#include <rtems.h>
-#include <rtems/clockdrv.h>
-#include <rtems/console.h>
-#include <rtems/iosupp.h>
 
 /* Constants */
 
@@ -175,7 +171,7 @@ struct vme_gcsr_map {
 #define EXTERN extern
 #endif
 
-extern m68k_isr_entry M68Kvec[];   /* vector table address */
+extern rtems_isr_entry M68Kvec[];   /* vector table address */
 
 /*
  * NOTE: Use the standard Clock driver entry
@@ -183,7 +179,7 @@ extern m68k_isr_entry M68Kvec[];   /* vector table address */
 
 /* functions */
 
-m68k_isr_entry set_vector(
+rtems_isr_entry set_vector(
   rtems_isr_entry     handler,
   rtems_vector_number vector,
   int                 type

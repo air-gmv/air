@@ -1,96 +1,52 @@
 /**
- *  @file
- *  threadstart.c
+ * @file
  *
- *  @brief start a thread
+ * @brief Initializes Thread and Executes it
  *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
+ * @ingroup ScoreThread
+ */
+
+/*
  *  COPYRIGHT (c) 1989-1999.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  6325    | 01/03/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_CORE Super Core
- *  @{
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup ScoreThread Thread Handler
- *  @{
- */
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#include <rtems/system.h>
-#include <rtems/score/apiext.h>
-#include <rtems/score/context.h>
-#include <rtems/score/interr.h>
-#include <rtems/score/isr.h>
-#include <rtems/score/object.h>
-#include <rtems/score/priority.h>
-#include <rtems/score/states.h>
-#include <rtems/score/sysstate.h>
-#include <rtems/score/thread.h>
-#include <rtems/score/threadq.h>
-#include <rtems/score/userext.h>
-#include <rtems/score/wkspace.h>
+#include <rtems/score/threadimpl.h>
+#include <rtems/score/isrlevel.h>
+#include <rtems/score/userextimpl.h>
 
-
-boolean _Thread_Start(
-                      Thread_Control *the_thread ,
-                      Thread_Start_types the_prototype ,
-                      void *entry_point ,
-                      void *pointer_argument ,
-                      uint32_t numeric_argument
-                      )
+bool _Thread_Start(
+  Thread_Control                 *the_thread,
+  const Thread_Entry_information *entry,
+  ISR_lock_Context               *lock_context
+)
 {
-    /* check if the thread state is dormant (never been started) */
-    if(_States_Is_dormant(the_thread->current_state))
-    {
-        /* set the thread entry point */
-        the_thread->Start.entry_point = (Thread_Entry) entry_point;
+  Per_CPU_Control *cpu_self;
 
-        /* set the thread prototype */
-        the_thread->Start.prototype = the_prototype;
+  _Thread_State_acquire_critical( the_thread, lock_context );
 
-        /* set the thread pointer argument */
-        the_thread->Start.pointer_argument = pointer_argument;
+  if ( !_States_Is_dormant( the_thread->current_state ) ) {
+    _Thread_State_release( the_thread, lock_context );
+    return false;
+  }
 
-        /* set the thread numeric argument */
-        the_thread->Start.numeric_argument = numeric_argument;
+  the_thread->Start.Entry = *entry;
+  _Thread_Load_environment( the_thread );
+  _Thread_Clear_state_locked( the_thread, STATES_ALL_SET );
 
-        /* load the thread environment */
-        _Thread_Load_environment(the_thread);
+  cpu_self = _Thread_Dispatch_disable_critical( lock_context );
+  _Thread_State_release( the_thread, lock_context );
 
-        /* change the thread state to ready */
-        _Thread_Ready(the_thread);
+  _User_extensions_Thread_start( the_thread );
 
-        /* call user thread start extensions */
-        _User_extensions_Thread_start(the_thread);
-
-        /* thread has been started */
-        return TRUE;
-    }
-
-    /* if the thread has already been started return FALSE */
-    return FALSE;
+  _Thread_Dispatch_enable( cpu_self );
+  return true;
 }
-
-/**  
- *  @}
- */
-
-/**
- *  @}
- */

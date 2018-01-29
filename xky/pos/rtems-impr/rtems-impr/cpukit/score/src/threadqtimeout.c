@@ -1,109 +1,154 @@
-/**
- *  @file
- *  threadqtimeout.c
+/*
+ * Copyright (c) 2016, 2017 embedded brains GmbH
  *
- *  @brief announce that a timeout occurs to a specified object
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
- *
- *  COPYRIGHT (c) 1989-1999.
- *  On-Line Applications Research Corporation (OAR).
- *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  623     | 17/11/2008  | mcoutinho    | IPR 64
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  5317    | 02/11/2009  | mcoutinho    | IPR 831
- *  6325    | 01/03/2010  | mcoutinho    | IPR 1931
- *  8184    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SUPER_CORE Super Core
- *  @{
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * http://www.rtems.org/license/LICENSE.
  */
 
-/**
- *  @addtogroup ScoreThreadQ Thread Queue Handler
- *  @{
- */
-
-#include <rtems/system.h>
-#include <rtems/score/chain.h>
-#include <rtems/score/isr.h>
-#include <rtems/score/object.h>
-#include <rtems/score/states.h>
-#include <rtems/score/thread.h>
-#include <rtems/score/threadq.h>
-#include <rtems/score/tqdata.h>
-#include <rtems/score/threadq.inl>
-
-
-void _Thread_queue_Timeout(
-                           Objects_Id id ,
-                           void *ignored
-                           )
-{
-    /* thread to timeout */
-    Thread_Control *the_thread;
-
-    /* thread location */
-    Objects_Locations location;
-
-
-    /* get the thread */
-    the_thread = _Thread_Get(id , &location);
-
-    /* check the thread location */
-    switch(location)
-    {
-
-            /* thread id is invalid */
-        case OBJECTS_ERROR:
-            /* impossible */
-
-#if defined(RTEMS_MULTIPROCESSING)
-
-            /* thread is remote */
-        case OBJECTS_REMOTE:
-            /* impossible */
-
+#if HAVE_CONFIG_H
+#include "config.h"
 #endif
-            /* just leave */
-            break;
 
-            /* thread is local (nominal case) */
-        case OBJECTS_LOCAL:
+#include <rtems/score/threadqimpl.h>
+#include <rtems/score/threadimpl.h>
+#include <rtems/score/watchdogimpl.h>
 
-            /* process the thread queue timeout */
-            _Thread_queue_Process_timeout(the_thread);
+void _Thread_queue_Add_timeout_ticks(
+  Thread_queue_Queue   *queue,
+  Thread_Control       *the_thread,
+  Per_CPU_Control      *cpu_self,
+  Thread_queue_Context *queue_context
+)
+{
+  Watchdog_Interval ticks;
 
-            /* unnest thread dispatch */
-            _Thread_Unnest_dispatch();
+  ticks = queue_context->Timeout.ticks;
 
-            /* and leave */
-            break;
-
-            /* invalid object location */
-        default:
-
-            /* raise internal error */
-            _Internal_error_Occurred(INTERNAL_ERROR_CORE ,
-                                     TRUE ,
-                                     INTERNAL_ERROR_INVALID_OBJECT_LOCATION);
-    }
+  if ( ticks != WATCHDOG_NO_TIMEOUT ) {
+    _Thread_Add_timeout_ticks(
+      the_thread,
+      cpu_self,
+      queue_context->Timeout.ticks
+    );
+  }
 }
 
-/**  
- *  @}
- */
+static bool _Thread_queue_Lazy_insert_monotonic_timespec(
+  Thread_Control        *the_thread,
+  Per_CPU_Control       *cpu_self,
+  const struct timespec *abstime
+)
+{
+  uint64_t         expire;
+  ISR_lock_Context lock_context;
+  bool             insert;
 
-/**
- *  @}
- */
+  if ( abstime->tv_sec < 0 ) {
+    expire = 0;
+  } else if ( _Watchdog_Is_far_future_monotonic_timespec( abstime ) ) {
+    expire = WATCHDOG_MAXIMUM_TICKS;
+  } else {
+    expire = _Watchdog_Monotonic_from_timespec( abstime );
+  }
+
+  _ISR_lock_ISR_disable_and_acquire(
+    &the_thread->Timer.Lock,
+    &lock_context
+  );
+
+  the_thread->Timer.header =
+    &cpu_self->Watchdog.Header[ PER_CPU_WATCHDOG_MONOTONIC ];
+  the_thread->Timer.Watchdog.routine = _Thread_Timeout;
+  insert = _Watchdog_Per_CPU_lazy_insert_monotonic(
+    &the_thread->Timer.Watchdog,
+    cpu_self,
+    expire
+  );
+
+  _ISR_lock_Release_and_ISR_enable(
+    &the_thread->Timer.Lock,
+    &lock_context
+  );
+  return insert;
+}
+
+void _Thread_queue_Add_timeout_monotonic_timespec(
+  Thread_queue_Queue   *queue,
+  Thread_Control       *the_thread,
+  Per_CPU_Control      *cpu_self,
+  Thread_queue_Context *queue_context
+)
+{
+  const struct timespec *abstime;
+
+  abstime = queue_context->Timeout.arg;
+
+  if ( _Watchdog_Is_valid_timespec( abstime ) ) {
+    if (
+      !_Thread_queue_Lazy_insert_monotonic_timespec(
+        the_thread,
+        cpu_self,
+        abstime
+      )
+    ) {
+      _Thread_Continue( the_thread, STATUS_TIMEOUT );
+    }
+  } else {
+    _Thread_Continue( the_thread, STATUS_INVALID_NUMBER );
+  }
+}
+
+void _Thread_queue_Add_timeout_realtime_timespec(
+  Thread_queue_Queue   *queue,
+  Thread_Control       *the_thread,
+  Per_CPU_Control      *cpu_self,
+  Thread_queue_Context *queue_context
+)
+{
+  const struct timespec *abstime;
+
+  abstime = queue_context->Timeout.arg;
+
+  if ( _Watchdog_Is_valid_timespec( abstime ) ) {
+    uint64_t        expire;
+    struct timespec now;
+
+    if ( abstime->tv_sec < 0 ) {
+      expire = 0;
+    } else if ( _Watchdog_Is_far_future_realtime_timespec( abstime ) ) {
+      expire = WATCHDOG_MAXIMUM_TICKS;
+    } else {
+      expire = _Watchdog_Realtime_from_timespec( abstime );
+    }
+
+    _Timecounter_Getnanotime( &now );
+
+    if ( expire > _Watchdog_Realtime_from_timespec( &now ) ) {
+      ISR_lock_Context lock_context;
+
+      _ISR_lock_ISR_disable_and_acquire(
+        &the_thread->Timer.Lock,
+        &lock_context
+      );
+
+      the_thread->Timer.header =
+        &cpu_self->Watchdog.Header[ PER_CPU_WATCHDOG_REALTIME ];
+      the_thread->Timer.Watchdog.routine = _Thread_Timeout;
+      _Watchdog_Per_CPU_insert_realtime(
+        &the_thread->Timer.Watchdog,
+        cpu_self,
+        expire
+      );
+
+      _ISR_lock_Release_and_ISR_enable(
+        &the_thread->Timer.Lock,
+        &lock_context
+      );
+    } else {
+      _Thread_Continue( the_thread, STATUS_TIMEOUT );
+    }
+  } else {
+    _Thread_Continue( the_thread, STATUS_INVALID_NUMBER );
+  }
+}

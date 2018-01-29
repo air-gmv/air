@@ -2,9 +2,6 @@
 #  Timing Test Suite Results for the SPARC Instruction Simulator BSP
 #
 #  NOTE:  The ERC32 is derived from the Cypress 601/602 chip set.
-#
-#  $Id: times 179 2008-09-17 14:07:38Z hsilva $
-#
 
 Board:                SPARC Instruction Simulator v1.8
 CPU:                  include coprocessor if applicable
@@ -57,8 +54,6 @@ Column B:             unused
    rtems_task_mode: no reschedule                                        5
    rtems_task_mode: reschedule -- returns to caller                      8
    rtems_task_mode: reschedule -- preempts caller                       39
-   rtems_task_set_note                                                  13
-   rtems_task_get_note                                                  13
    rtems_clock_set                                                      33
    rtems_clock_get                                                       3
 

@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -30,11 +26,12 @@ dist_project_lib_DATA += startup/linkcmds
 
 noinst_LIBRARIES += libbsp.a
 
-libbsp_a_SOURCES = ../../shared/bsplibc.c ../../shared/bsppost.c \
-  ../../shared/bsppredriverhook.c startup/bspstart.c \
-  ../../shared/bspclean.c ../../shared/sbrk.c ../../shared/setvec.c \
-  ../../shared/bootcard.c ../../shared/gnatinstallhandler.c \
-  ../../shared/bspgetworkarea.c
+libbsp_a_SOURCES = \
+	startup/bspstart.c \
+	../../shared/bspclean.c ../../shared/sbrk.c ../../shared/setvec.c \
+	../../shared/bootcard.c ../../shared/gnatinstallhandler.c \
+	../../shared/getentropy-cpucounter.c \
+	../../shared/bspgetworkarea.c
 
 libbsp_a_SOURCES += console/console.c
 

@@ -17,7 +17,7 @@
 /**
  * @brief Partition
  */
-xky_partition_status_t partition;
+air_partition_status_t partition;
 /**
  * @brief Test control area
  */
@@ -32,25 +32,25 @@ partition_buffer_t *partition_buffer;
  * @param shm_name name of the shared memory for the test report
  * @return number of times that the partition have been reseted
  */
-xky_u32_t test_partition_init(xky_name_ptr_t shm_name) {
+air_u32_t test_partition_init(air_name_ptr_t shm_name) {
 
     /* clear local pointers */
     test_control = NULL;
     partition_buffer = NULL;
-    xky_sharedmemory_t sharedmemory;
+    air_sharedmemory_t sharedmemory;
 
     /* get partition configuration */
-    xky_syscall_get_partition_status(-1, &partition);
+    air_syscall_get_partition_status(-1, &partition);
 
     /* get shared memory area */
-    if (xky_syscall_get_sharedmemory(shm_name, &sharedmemory) == XKY_NO_ERROR) {
+    if (air_syscall_get_sharedmemory(shm_name, &sharedmemory) == AIR_NO_ERROR) {
 
         test_control = (test_control_t *)sharedmemory.address;
 
     } else {
 
         /* shutdown partition */
-        xky_syscall_set_partition_mode(-1, XKY_MODE_IDLE);
+        air_syscall_set_partition_mode(-1, AIR_MODE_IDLE);
     }
 
     /* busy wait until the until the test controller initializes */
@@ -71,7 +71,7 @@ xky_u32_t test_partition_init(xky_name_ptr_t shm_name) {
  *
  * @note This function blocks until the global test step allows it to run
  */
-xky_u32_t test_step_announce(xky_u32_t id, announce_flags flags) {
+air_u32_t test_step_announce(air_u32_t id, announce_flags flags) {
 
     /* wait for the current step */
     while (id > test_control->step_id);

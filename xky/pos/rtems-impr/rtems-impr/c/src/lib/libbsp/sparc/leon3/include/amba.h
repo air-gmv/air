@@ -1,31 +1,21 @@
 /**
- *  @file
- *  amba.h
- *
- *  @brief AMBA Plag & Play Bus Driver Macros
+ * @file
+ * @defgroup amba AMBA Driver Handler
+ * @ingroup sparc_leon3
+ * @brief AMBA Plag & Play Bus Driver Macros
+ */
+
+/*
+ *  AMBA Plag & Play Bus Driver Macros
  *
  *  Macros used for AMBA Plug & Play bus scanning
- *
- *  Project: RTEMS - Real-Time Executive for Multiprocessor Systems. Partial Modifications by RTEMS Improvement Project (Edisoft S.A.)
  *
  *  COPYRIGHT (c) 2004.
  *  Gaisler Research
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  Version | Date        | Name         | Change history
- *  179     | 17/09/2008  | hsilva       | original version
- *  5273    | 01/11/2009  | mcoutinho    | IPR 843
- *  8183    | 15/06/2010  | mcoutinho    | IPR 451
- *  $Rev: 9872 $ | $Date: 2011-03-18 17:01:41 +0000 (Fri, 18 Mar 2011) $| $Author: aconstantino $ | SPR 2819
- *
- **/
-
-/**
- *  @addtogroup SPARC_LEON3_BSP SPARC LEON3 BSP
- *  @{
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef __AMBA_H__
@@ -40,26 +30,19 @@
 #define LEON3_AHB_MASTERS 64
 #define LEON3_AHB_SLAVES 64
 #define LEON3_APB_SLAVES 16
-#define LEON3_APBUARTS 8
 
 #include <ambapp.h>
+#include <grlib.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-   /**
-    * @brief structure containing address to devices found on the Amba Plug&Play bus
-    */
-   extern amba_confarea_type amba_conf;
+/* The AMBA Plug&Play info of the bus that the LEON3 sits on */
+extern struct ambapp_bus ambapp_plb;
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* __AMBA_H__ */
-
-/**
- *  @}
- */

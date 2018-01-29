@@ -1,6 +1,6 @@
 <%
     import os
-    import xky
+    import air
     import utils
     import utils.file as fileutils
     import utils.templates as makoutils
@@ -13,7 +13,7 @@ ${template.FileHeader('{0} : {1}'.format(pos_config.name, partition))}
 EXEC=${partition.executable}
 TARGET_BUILD=${build_dir}
 
-# XKY Makefile Include file
+# AIR Makefile Include file
 ${template.MakefileInc(True)}\
 
 CSRCS=$(shell find ./ ../common -type f -name '*.c')
@@ -31,7 +31,7 @@ TARGET_CPPFLAGS+=${'\\'}
 -B./${'\\'}
 -I../common/${'\\'}
 -B../common/${'\\'}
--B$(XKY_POS)/${pos_config.name}/${'\\'}
+-B$(AIR_POS)/${pos_config.name}/${'\\'}
 ${template.LibraryIncludes(partition.libraries)}\
 
 # All
@@ -41,14 +41,14 @@ ${template.Rule('all', True, ['$(EXEC)', '$(OBJECT_FILES)', '$(CHDRS)'])}
 ${template.Rule('$(EXEC)', False, ['$(OBJECT_FILES)', '$(CHDRS)'])}
 ${'\t'}$(TARGET_LD)${'\\'}
 ${'\t\t'}-nostdlib -nodefaultlibs -nostartfiles${'\\'}
-${'\t\t'}-T${os.path.join('$(XKY_POS)', pos_config.name, 'include', 'linkcmds.ld')}${'\\'}
+${'\t\t'}-T${os.path.join('$(AIR_POS)', pos_config.name, 'include', 'linkcmds.ld')}${'\\'}
 ${'\t\t'}-Wl,--start-group${'\\'}
 ${'\t\t'}-Wl,--build-id=none${'\\'}
-${'\t\t'}-L$(XKY_PMK)/${'\\'}
-${'\t\t'}${os.path.join('$(XKY_POS)', pos_config.name, '{0}.a'.format(pos_config.name))}${'\\'}
+${'\t\t'}-L$(AIR_PMK)/${'\\'}
+${'\t\t'}${os.path.join('$(AIR_POS)', pos_config.name, '{0}.a'.format(pos_config.name))}${'\\'}
 ${'\t\t'}-lgcc -lc -lm${'\\'}
 % for i, libname in enumerate(partition.libraries):
-${'\t\t'}${os.path.join('$(XKY_LIBS)', libname.lower(), '{0}.a'.format(libname.lower()))}${'\\'}
+${'\t\t'}${os.path.join('$(AIR_LIBS)', libname.lower(), '{0}.a'.format(libname.lower()))}${'\\'}
 % endfor
 ${'\t\t'}$(OBJECT_FILES)${'\\'}
 ${'\t\t'}-Wl,--end-group${'\\'}

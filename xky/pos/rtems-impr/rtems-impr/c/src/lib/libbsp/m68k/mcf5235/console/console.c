@@ -6,14 +6,14 @@
 
 #include <stdio.h>
 #include <fcntl.h>
+#include <termios.h>
+#include <malloc.h>
+
 #include <rtems/libio.h>
 #include <rtems/termiostypes.h>
-#include <termios.h>
-#include <bsp.h>
-#include <malloc.h>
-#include <rtems/mw_uid.h>
-
 #include <rtems/bspIo.h>
+#include <rtems/console.h>
+#include <bsp.h>
 
 #define UART_INTC0_IRQ_VECTOR(x) (64+13+(x))
 
@@ -30,8 +30,6 @@ _BSP_null_char( char c )
 {
 	int level;
 
-    if (c == '\n')
-        _BSP_null_char('\r');
 	rtems_interrupt_disable(level);
     while ( (MCF5235_UART_USR(CONSOLE_PORT) & MCF5235_UART_USR_TXRDY) == 0 )
         continue;
@@ -40,7 +38,8 @@ _BSP_null_char( char c )
         continue;
 	rtems_interrupt_enable(level);
 }
-BSP_output_char_function_type BSP_output_char = _BSP_null_char;
+BSP_output_char_function_type     BSP_output_char = _BSP_null_char;
+BSP_polling_getchar_function_type BSP_poll_char = NULL;
 
 #define MAX_UART_INFO     3
 #define RX_BUFFER_SIZE    512
@@ -93,11 +92,12 @@ IntUartSet(int minor, int baud, int databits, int parity, int stopbits, int hwfl
 	info->stopbits = stopbits;
 	info->hwflow   = hwflow;
 
-    clock_speed = get_CPU_clock_speed();
-    /* determine the baud divisor value */
-    divisor = ((clock_speed/2) / ( 32 * baud ));
-    if ( divisor < 2 )
-        divisor = 2;
+	clock_speed = get_CPU_clock_speed();
+	/* determine the baud divisor value */
+	divisor = ((clock_speed/2) / ( 32 * baud ));
+	if ( divisor < 2 ) {
+		divisor = 2;
+	}
 
 	/* check to see if doing hardware flow control */
 	if ( hwflow )
@@ -173,7 +173,7 @@ IntUartSetAttributes(int minor, const struct termios *t)
 	if ( t != (const struct termios *)0 )
 	{
 		/* determine baud rate index */
-		baud = rtems_termios_baud_to_number(t->c_cflag & CBAUD);
+    baud = rtems_termios_baud_to_number(t->c_ospeed);
 
 		/* determine data bits */
 		switch ( t->c_cflag & CSIZE )
@@ -393,18 +393,15 @@ IntUartInitialize(void)
 static ssize_t
 IntUartInterruptWrite (int minor, const char *buf, size_t len)
 {
-	int level;
+	if (len > 0) {
+		/* write out character */
+		MCF5235_UART_UTB(minor) = *buf;
 
-	rtems_interrupt_disable(level);
+		/* enable tx interrupt */
+		IntUartInfo[minor].uimr |= MCF5235_UART_UIMR_TXRDY;
+		MCF5235_UART_UIMR(minor) = IntUartInfo[minor].uimr;
+	}
 
-	/* write out character */
-	MCF5235_UART_UTB(minor) = *buf;
-
-	/* enable tx interrupt */
-	IntUartInfo[minor].uimr |= MCF5235_UART_UIMR_TXRDY;
-	MCF5235_UART_UIMR(minor) = IntUartInfo[minor].uimr;
-
-	rtems_interrupt_enable(level);
 	return( 0 );
 }
 
@@ -683,8 +680,10 @@ rtems_device_driver console_open(
     struct termios term;
     if (tcgetattr (STDIN_FILENO, &term) >= 0)
     {
-      term.c_cflag &= ~(CBAUD | CSIZE);
-      term.c_cflag |= CS8 | B19200;
+      term.c_cflag &= ~(CSIZE);
+      term.c_cflag |= CS8;
+      term.c_ispeed = B19200;
+      term.c_ospeed = B19200;
       tcsetattr (STDIN_FILENO, TCSANOW, &term);
     }
   }
@@ -743,24 +742,4 @@ rtems_device_driver console_control(
 	void  * arg)
 {
     return( rtems_termios_ioctl (arg) );
-}
-int DEBUG_OUTCHAR(int c)
-{
-    if(c == '\n')
-        DEBUG_OUTCHAR('\r');
-    _BSP_null_char(c);
-    return c;
-}
-void DEBUG_OUTSTR(const char *msg)
-{
-    while (*msg)
-        DEBUG_OUTCHAR(*msg++);
-}
-void DEBUG_OUTNUM(int i)
-{
-    int n;
-    static const char map[] = "0123456789ABCDEF";
-    DEBUG_OUTCHAR(' ');
-    for (n = 28 ; n >= 0 ; n -= 4)
-        DEBUG_OUTCHAR(map[(i >> n) & 0xF]);
 }

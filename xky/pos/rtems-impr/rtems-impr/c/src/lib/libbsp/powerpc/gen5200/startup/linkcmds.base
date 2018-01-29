@@ -26,6 +26,10 @@ RamBase = bsp_ram_start;
 RamSize = bsp_ram_size;
 HeapSize = DEFINED(HeapSize) ? HeapSize : 0x0;
 
+MEMORY {
+	UNEXPECTED_SECTIONS : ORIGIN = 0xffffffff, LENGTH = 0
+}
+
 SECTIONS {
 	/*
 	 * BSP: MPC5200 registers
@@ -83,6 +87,7 @@ SECTIONS {
 		 * BSP: Moved into .text from .*
 		 */
 		*(.rodata .rodata.* .gnu.linkonce.r.*)
+		KEEP (*(SORT(.rtemsroset.*)))
 		*(.rodata1)
 		*(.interp)
 		*(.note.gnu.build-id)
@@ -116,6 +121,23 @@ SECTIONS {
 		PROVIDE (_etext = .);
 		PROVIDE (etext = .);
 	} > RAM
+
+	.tdata : {
+		_TLS_Data_begin = .;
+		*(.tdata .tdata.* .gnu.linkonce.td.*)
+		_TLS_Data_end = .;
+	} > RAM
+	.tbss : {
+		_TLS_BSS_begin = .;
+		*(.tbss .tbss.* .gnu.linkonce.tb.*) *(.tcommon)
+		_TLS_BSS_end = .;
+	} > RAM
+	_TLS_Data_size = _TLS_Data_end - _TLS_Data_begin;
+	_TLS_Data_begin = _TLS_Data_size != 0 ? _TLS_Data_begin : _TLS_BSS_begin;
+	_TLS_Data_end = _TLS_Data_size != 0 ? _TLS_Data_end : _TLS_BSS_begin;
+	_TLS_BSS_size = _TLS_BSS_end - _TLS_BSS_begin;
+	_TLS_Size = _TLS_BSS_end - _TLS_Data_begin;
+	_TLS_Alignment = MAX (ALIGNOF (.tdata), ALIGNOF (.tbss));
 
 	.sdata2 : {
 		PROVIDE (_SDA2_BASE_ = 32768);
@@ -202,6 +224,7 @@ SECTIONS {
 		PROVIDE_HIDDEN (__fini_array_end = .);
 
 		*(.data .data.* .gnu.linkonce.d.*)
+		KEEP (*(SORT(.rtemsrwset.*)))
 		KEEP (*(.gnu.linkonce.d.*personality*))
 		SORT(CONSTRUCTORS)
 
@@ -313,6 +336,8 @@ SECTIONS {
 	/* DWARF 3 */
 	.debug_pubtypes 0 : { *(.debug_pubtypes) }
 	.debug_ranges   0 : { *(.debug_ranges) }
+	/* DWARF extension */
+	.debug_macro    0 : { *(.debug_macro) }
 	.gnu.attributes 0 : { KEEP (*(.gnu.attributes)) }
 
 	/DISCARD/ : {
@@ -320,9 +345,12 @@ SECTIONS {
 	}
 
 	/*
-	 * BSP: Catch all unknown sections
+	 * This is a RTEMS specific section to catch all unexpected input
+	 * sections.  In case you get an error like
+	 *   "section `.unexpected_sections' will not fit in region
+	 *   `UNEXPECTED_SECTIONS'"
+	 * you have to figure out the offending input section and add it to the
+	 * appropriate output section definition above.
 	 */
-	.nirvana : {
-		*(*)
-	} > NIRVANA
+	.unexpected_sections : { *(*) } > UNEXPECTED_SECTIONS
 }

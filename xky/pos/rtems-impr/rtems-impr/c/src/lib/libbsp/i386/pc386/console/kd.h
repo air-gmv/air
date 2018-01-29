@@ -1,6 +1,12 @@
-/*
- * $Id$
+/**
+ * @file
  *
+ * @ingroup i386_pc386
+ *
+ * @brief KD definitions.
+ */
+
+/*
  *  by: Rosimildo da Silva:  rdasilva@connecttel.com
  *
  *

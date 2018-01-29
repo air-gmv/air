@@ -1,5 +1,3 @@
-# $Id: ppc.m4 179 2008-09-17 14:07:38Z hsilva $
-#
 # Some hacks for handling powerpc-exception subdirectories
 #
 # Note: Consider this file a temporary band-aid until a better, more general

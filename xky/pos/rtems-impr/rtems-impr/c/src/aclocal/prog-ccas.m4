@@ -1,5 +1,3 @@
-## $Id: prog-ccas.m4 179 2008-09-17 14:07:38Z hsilva $
-
 AC_DEFUN([RTEMS_PROG_CCAS],
 [
 AC_REQUIRE([RTEMS_PROG_CC])

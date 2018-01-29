@@ -1,0 +1,2 @@
+#define MPORTSIZE 256
+#define MNUMPORTS 128

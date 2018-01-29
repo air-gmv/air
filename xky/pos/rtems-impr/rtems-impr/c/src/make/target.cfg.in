@@ -1,6 +1,3 @@
-#
-# $Id: target.cfg.in 5659 2009-11-24 17:23:00Z jsousa $
-#
 # Target specific settings. 
 #
 
@@ -9,6 +6,7 @@ CPPFLAGS = @CPPFLAGS@
 LDFLAGS =
 LIBS = @LIBS@
 
+RTEMS_API = @RTEMS_API@
 CC = @CC@
 AS = @AS@
 AR = @AR@
@@ -32,6 +30,8 @@ export OBJCOPY
 export CXX
 
 RTEMS_HAS_MULTIPROCESSING = @RTEMS_HAS_MULTIPROCESSING@
+RTEMS_HAS_POSIX_API = @RTEMS_HAS_POSIX_API@
+RTEMS_HAS_ITRON_API = no
 RTEMS_HAS_NETWORKING = @RTEMS_HAS_NETWORKING@
 RTEMS_HAS_RDBG = no
 RTEMS_HAS_CPLUSPLUS = @RTEMS_HAS_CPLUSPLUS@
@@ -42,17 +42,3 @@ XCFLAGS=$(CFLAGS_FOR_TARGET)
 export RTEMS_BSP
 export RTEMS_CUSTOM
 export PROJECT_ROOT
-
-# List (possibly empty) of required managers
-# We require:
-#    region  -- used by lib/libcsupport for malloc()
-#    ext     -- used by libc for libc reentrancy hooks
-
-MANAGERS_REQUIRED=
-
-# Create a RTEMS executable based on MANAGERS which was set in
-#  app's Makefile
-
-MANAGERS_NOT_WANTED=$(filter-out $(MANAGERS) \
-	$(MANAGERS_REQUIRED), $(MANAGER_LIST))
-

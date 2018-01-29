@@ -1,15 +1,14 @@
-/*  ckinit.c
- *
+/*
  *  Clock device driver for Lattice Mico32 (lm32).
- *
+ */
+
+/*
  *  COPYRIGHT (c) 1989-2009.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Jukka Pietarinen <jukka.pietarinen@mrf.fi>, 2008,
  *  Micro-Research Finland Oy
@@ -20,8 +19,8 @@
 #include "clock.h"
 #include "bspopts.h"
 
-#if ON_SIMULATOR
-#define CLOCK_DRIVER_USE_FAST_IDLE
+#if LM32_ON_SIMULATOR
+#define CLOCK_DRIVER_USE_FAST_IDLE 1
 #endif
 
 static inline int clockread(unsigned int reg)
@@ -38,7 +37,6 @@ static inline void clockwrite(unsigned int reg, int value)
  *  The interrupt vector number associated with the clock tick device
  *  driver.
  */
-
 #define CLOCK_VECTOR    ( TIMER0_IRQ )
 #define CLOCK_IRQMASK   ( 1 << CLOCK_VECTOR )
 
@@ -49,12 +47,10 @@ static inline void clockwrite(unsigned int reg, int value)
     lm32_interrupt_ack(CLOCK_IRQMASK); \
   } while (0)
 
-#define Clock_driver_support_install_isr(_new, _old ) \
-  do { \
-    _old = (rtems_isr_entry) set_vector( _new, CLOCK_VECTOR, 1 ); \
-  } while (0)
+#define Clock_driver_support_install_isr(_new ) \
+  set_vector( _new, CLOCK_VECTOR, 1 )
 
-void Clock_driver_support_initialize_hardware(void)
+static void Clock_driver_support_initialize_hardware(void)
 {
   /* Set clock period */
   clockwrite(LM32_CLOCK_PERIOD,
@@ -69,13 +65,14 @@ void Clock_driver_support_initialize_hardware(void)
   lm32_interrupt_unmask(CLOCK_IRQMASK);
 }
 
-void Clock_driver_support_shutdown_hardware(void)
-{
-  /* Disable clock interrupts and stop */
+#define Clock_driver_support_shutdown_hardware() \
+  do { \
+    /* Disable clock interrupts and stop */ \
+    lm32_interrupt_unmask(CLOCK_IRQMASK); \
+    clockwrite(LM32_CLOCK_CR, LM32_CLOCK_CR_STOP); \
+  } while (0)
 
-  lm32_interrupt_unmask(CLOCK_IRQMASK);
-  clockwrite(LM32_CLOCK_CR, LM32_CLOCK_CR_STOP);
-}
+#define CLOCK_DRIVER_USE_DUMMY_TIMECOUNTER
 
 #include "../../../shared/clockdrv_shell.h"
 

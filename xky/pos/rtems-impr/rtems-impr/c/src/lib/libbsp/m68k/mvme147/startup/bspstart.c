@@ -1,37 +1,29 @@
 /*
- *  This routine starts the application.  It includes application,
- *  board, and monitor specific initialization and configuration.
- *  The generic CPU dependent initialization has been performed
- *  before this routine is invoked.
- *
+ *  This routine does the bulk of the system initialization.
+ */
+
+/*
  *  COPYRIGHT (c) 1989-1999.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  MVME147 port for TNI - Telecom Bretagne
  *  by Dominique LE CAMPION (Dominique.LECAMPION@enst-bretagne.fr)
  *  May 1996
- *
- *  $Id$
  */
 
 #include <bsp.h>
-
-/*
- *  bsp_start
- *
- *  This routine does the bulk of the system initialization.
- */
+#include <bsp/bootcard.h>
 
 void bsp_start( void )
 {
-  m68k_isr_entry       *monitors_vector_table;
+  rtems_isr_entry       *monitors_vector_table;
   int                   index;
 
-  monitors_vector_table = (m68k_isr_entry *)0;   /* 135Bug Vectors are at 0 */
+  monitors_vector_table = (rtems_isr_entry *)0;   /* 135Bug Vectors are at 0 */
   m68k_set_vbr( monitors_vector_table );
 
   for ( index=2 ; index<=255 ; index++ )
@@ -46,8 +38,7 @@ void bsp_start( void )
 
   pcc->int_base_vector = PCC_BASE_VECTOR; /* Set the PCC int vectors base */
 
-  (*(uint8_t*)0xfffe2001) = 0x08;
-      /* make VME access round-robin */
+  (*(uint8_t*)0xfffe2001) = 0x08;         /* make VME access round-robin */
 
   rtems_cache_enable_instruction();
   rtems_cache_enable_data();

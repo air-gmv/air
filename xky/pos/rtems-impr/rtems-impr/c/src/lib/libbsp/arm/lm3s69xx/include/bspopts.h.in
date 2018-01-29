@@ -1,0 +1,77 @@
+/* include/bspopts.h.in.  Generated from configure.ac by autoheader.  */
+
+/* If defined, then the BSP Framework will put a non-zero pattern into the
+   RTEMS Workspace and C program heap. This should assist in finding code that
+   assumes memory starts set to zero. */
+#undef BSP_DIRTY_MEMORY
+
+/* If defined, print a message and wait until pressed before resetting board
+   when application exits. */
+#undef BSP_PRESS_KEY_FOR_RESET
+
+/* If defined, prints the exception context when an unexpected exception
+   occurs. */
+#undef BSP_PRINT_EXCEPTION_CONTEXT
+
+/* If defined, reset the board when the application exits. */
+#undef BSP_RESET_BOARD_AT_EXIT
+
+/* enable UART 0 */
+#undef LM3S69XX_ENABLE_UART_0
+
+/* enable UART 1 */
+#undef LM3S69XX_ENABLE_UART_1
+
+/* enable UART 2 */
+#undef LM3S69XX_ENABLE_UART_2
+
+/* defined if MCU supports UDMA */
+#undef LM3S69XX_HAS_UDMA
+
+/* board has LM3S3749 MCU */
+#undef LM3S69XX_MCU_LM3S3749
+
+/* board has LM3S6965 MCU */
+#undef LM3S69XX_MCU_LM3S6965
+
+/* board has LM4F120xxx MCU */
+#undef LM3S69XX_MCU_LM4F120
+
+/* number of GPIO blocks supported by MCU */
+#undef LM3S69XX_NUM_GPIO_BLOCKS
+
+/* number of SSI blocks supported by MCU */
+#undef LM3S69XX_NUM_SSI_BLOCKS
+
+/* SSI clock in Hz */
+#undef LM3S69XX_SSI_CLOCK
+
+/* system clock in Hz */
+#undef LM3S69XX_SYSTEM_CLOCK
+
+/* baud for UARTs */
+#undef LM3S69XX_UART_BAUD
+
+/* use AHB apperture to access GPIO registers */
+#undef LM3S69XX_USE_AHB_FOR_GPIO
+
+/* crystal configuration for RCC register */
+#undef LM3S69XX_XTAL_CONFIG
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION

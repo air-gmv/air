@@ -1,29 +1,38 @@
-/*
- *  bsp.h  -- contain BSP API definition.
+/**
+ *  @file
  *
+ *  @ingroup mvme3100_bsp
+ *
+ *  @brief This file contains BSP API definition.
+ */
+
+/*
  *  Copyright (C) 1999 Eric Valette. valette@crf.canon.fr
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Adapted for the mvme3100 BSP by T. Straumann, 2007.
- *
- * $Id$
  */
-#ifndef _BSP_H
-#define _BSP_H
+#ifndef LIBBSP_POWERPC_MVME3100_BSP_H
+#define LIBBSP_POWERPC_MVME3100_BSP_H
+
+#ifndef ASM
 
 #include <bspopts.h>
+#include <bsp/default-initial-extension.h>
 
 #include <rtems.h>
-#include <rtems/console.h>
 #include <libcpu/io.h>
-#include <rtems/clockdrv.h>
 #include <bsp/vectors.h>
 
-/*
- *  confdefs.h overrides for this BSP:
+/**
+ *  @defgroup mvme3100_bsp confdefs.h overrides
+ *
+ *  @ingroup powerpc_mvme3100
+ *
+ *  @brief confdefs.h overrides for this BSP:
  */
 
 #define BSP_INTERRUPT_STACK_SIZE          (16 * 1024)
@@ -99,7 +108,7 @@
 #define BSP_UART_IOBASE_COM2 (BSP_8540_CCSR_BASE+0x4600)
 #define PCI_CONFIG_ADDR      (BSP_8540_CCSR_BASE+0x8000)
 #define PCI_CONFIG_DATA      (BSP_8540_CCSR_BASE+0x8004)
-#define PCI_CONFIG_WR_ADDR( addr, val ) out_be32((unsigned int*)(addr), (val))
+#define PCI_CONFIG_WR_ADDR( addr, val ) out_be32((uint32_t*)(addr), (val))
 
 #define BSP_CONSOLE_PORT	BSP_UART_COM1
 #define BSP_UART_BAUD_BASE	(-9600) /* use existing divisor to determine clock rate */
@@ -166,8 +175,8 @@ extern "C" {
  *   /dev/i2c0.ds1375-raw   (read-write; transfer bytes to/from the ds1375)
  *
  */
-int
-BSP_i2c_initialize();
+int BSP_i2c_initialize(void);
+#define BSP_PREDRIVER_I2C_INIT
 
 /* System Control Register */
 #define BSP_MVME3100_SYS_CR				((volatile uint8_t *)0xe2000001)
@@ -203,8 +212,7 @@ BSP_i2c_initialize();
  *          any changes this call may be used
  *          to read the current status w/o modifying it.
  */
-uint8_t
-BSP_setSysReg(volatile uint8_t *r, uint8_t mask);
+uint8_t BSP_setSysReg(volatile uint8_t *r, uint8_t mask);
 
 /* Atomically clear bits in a sys-register; The bits set in 'mask'
  * are cleared in the register; others are left unmodified.
@@ -216,22 +224,19 @@ BSP_setSysReg(volatile uint8_t *r, uint8_t mask);
  *          to read the current status w/o modifying it.
  */
 
-uint8_t
-BSP_clrSysReg(volatile uint8_t *r, uint8_t mask);
+uint8_t BSP_clrSysReg(volatile uint8_t *r, uint8_t mask);
 
 /* Convenience wrappers around BSP_setSysReg()/BSP_clrSysReg() */
 
 /* Set write-protection for all EEPROM devices
  * RETURNS: old status
  */
-uint8_t
-BSP_eeprom_write_protect();
+uint8_t BSP_eeprom_write_protect(void);
 
 /* Disengage write-protection for all EEPROM devices
  * RETURNS: old status
  */
-uint8_t
-BSP_eeprom_write_enable();
+uint8_t BSP_eeprom_write_enable(void);
 
 /* Set LEDs that have their bit set in the mask
  *
@@ -241,8 +246,7 @@ BSP_eeprom_write_enable();
  *          any changes this call may be used
  *          to read the current status w/o modifying it.
  */
-uint8_t
-BSP_setLEDs(uint8_t mask);
+uint8_t BSP_setLEDs(uint8_t mask);
 
 /* Clear LEDs that have their bit set in the mask
  *
@@ -250,8 +254,7 @@ BSP_setLEDs(uint8_t mask);
  *
  * NOTE:  : see above (BSP_setLEDs)
  */
-uint8_t
-BSP_clrLEDs(uint8_t mask);
+uint8_t BSP_clrLEDs(uint8_t mask);
 
 #if 0
 #define outport_byte(port,value) outb(value,port)
@@ -304,7 +307,7 @@ extern int BSP_connect_clock_handler (void);
  *            on PCI config space access to empty slots.
  */
 extern unsigned long _BSP_clear_hostbridge_errors(int enableMCP, int quiet);
-extern void BSP_motload_pci_fixup();
+extern void BSP_motload_pci_fixup(void);
 
 struct rtems_bsdnet_ifconfig;
 
@@ -314,8 +317,28 @@ rtems_tsec_attach(struct rtems_bsdnet_ifconfig *ifcfg, int attaching);
 #define RTEMS_BSP_NETWORK_DRIVER_NAME   "tse1"
 #define RTEMS_BSP_NETWORK_DRIVER_ATTACH rtems_tsec_attach
 
+/*
+ * Prototypes for methods called only from .S for dependency tracking
+ */
+char *save_boot_params(
+  void *r3,
+  void *r4,
+  void *r5,
+  char *cmdline_start,
+  char *cmdline_end
+);
+void zero_bss(void);
+
+/*
+ * Prototypes for methods in the BSP that cross file boundaries
+ */
+extern void BSP_vme_config(void);
+extern void BSP_pciConfigDump_early( void );
+
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* !ASM */
 
 #endif

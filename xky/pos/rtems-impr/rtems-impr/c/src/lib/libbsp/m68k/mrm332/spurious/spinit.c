@@ -1,22 +1,18 @@
-/*  Spurious_driver
- *
+/*
  *  This routine installs spurious interrupt handlers for the mrm.
- *
- *  Input parameters:  NONE
- *
- *  Output parameters:  NONE
- *
+ */
+
+/*
  *  COPYRIGHT (c) 1989, 1990, 1991, 1992, 1993.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #include <bsp.h>
+#include <bsp/fatal.h>
 #include <stdio.h>
 
 const char * const _Spurious_Error_[] = {"Reset","Bus Error","Address Error",
@@ -29,7 +25,7 @@ const char * const _Spurious_Error_[] = {"Reset","Bus Error","Address Error",
    "AVec7","Trap Instruction","Debug","Reboot","Reserved Coprocessor",
    "Reserved Unassigned","User Defined"};
 
-rtems_isr Spurious_Isr(
+static rtems_isr Spurious_Isr(
   rtems_vector_number vector
 )
 {
@@ -73,12 +69,7 @@ rtems_isr Spurious_Isr(
   RAW_PUTI(sp);
   RAW_PUTS("\n\r");
 #endif
-  bsp_cleanup();
-
-  /* BDM SIGEMT */
-  asm("  .word  0x4afa");
-
-  for(;;);
+  bsp_fatal( MRM332_FATAL_SPURIOUS_INTERRUPT );
 }
 
 void Spurious_Initialize(void)

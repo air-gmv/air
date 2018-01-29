@@ -1,7 +1,7 @@
 /**
  * @file
  * @author pfnf
- * @brief XKY LEON 3 & 4 Board Support package
+ * @brief AIR LEON 3 & 4 Board Support package
  */
 
 #ifndef __BSP_H__
@@ -35,9 +35,9 @@ void bsp_clock_start(void);
 /**
  * @brief BSP Get current core index
  */
-static inline xky_u32_t bsp_get_core_id(void) {
+static inline air_u32_t bsp_get_core_id(void) {
 
-    xky_u32_t id;
+    air_u32_t id;
     __asm__ __volatile__("rd     %%asr17,%0\n\t" : "=r" (id) : );
     return ((id >> 28) & 0xFF);
 }

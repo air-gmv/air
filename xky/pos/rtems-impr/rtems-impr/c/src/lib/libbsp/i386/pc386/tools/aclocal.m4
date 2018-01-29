@@ -1183,7 +1183,6 @@ AC_SUBST([am__tar])
 AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
-m4_include([../../../../../aclocal/canonical-target-name.m4])
 m4_include([../../../../../aclocal/env-rtemsbsp.m4])
 m4_include([../../../../../aclocal/project-root.m4])
 m4_include([../../../../../aclocal/rtems-ampolish.m4])

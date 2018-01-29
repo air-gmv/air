@@ -1,0 +1,10 @@
+*** BEGIN OF TEST SPCONTEXT 1 ***
+Test configuration N N N... done
+Test configuration N N F... done
+Test configuration N F N... done
+Test configuration N F F... done
+Test configuration F N N... done
+Test configuration F N F... done
+Test configuration F F N... done
+Test configuration F F F... done
+*** END OF TEST SPCONTEXT 1 ***

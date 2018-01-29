@@ -1,3 +1,11 @@
+/**
+ *  @file
+ *
+ *  @ingroup m68k_mvme
+ *
+ *  @brief MVME16x IO definitions
+ */
+
 /*  mvme16x_hw.h
  *
  *  This include file contains all MVME16x board IO definitions
@@ -9,9 +17,7 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id#
+ *  http://www.rtems.org/license/LICENSE.
  */
 
 #ifndef __MVME16xHW_h
@@ -23,8 +29,12 @@
 extern "C" {
 #endif
 
-/*
- * Network driver configuration
+/**
+ *  @defgroup m68k_mvme MVME16X IO Support
+ *
+ *  @ingroup m68k_shared
+ *
+ *  @brief IO Support Package
  */
 
 struct rtems_bsdnet_ifconfig;
@@ -246,13 +256,15 @@ typedef volatile struct nvram_config_ {
 /*
  *  Flag to indicate if J1-4 is on (and parameters should be
  *  sought in User Area NVRAM)
+ *
+ *  NOTE:  If NVRAM has bad settings, the you want to disable this
+ *         on the MVME167.
  */
-
 #if defined(mvme167)
-#define NVRAM_CONFIGURE \
-  ( !( ( (unsigned char)(lcsr->vector_base & 0xFF) ) & 0x10 ) )
+  #define NVRAM_CONFIGURE \
+    ( !( ( (unsigned char)(lcsr->vector_base & 0xFF) ) & 0x10 ) )
 #else
-#define NVRAM_CONFIGURE 0
+  #define NVRAM_CONFIGURE 0
 #endif
 
 #ifdef __cplusplus

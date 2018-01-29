@@ -39,6 +39,7 @@ def applyMAKOTemplate(template_file, output_file, template_args, logger, lookup_
     try:
         file_ctx = template.render(**template_args)
     except:
+        logger.logger.exception("Exception, See details below")
         logger.error('Error processing \'{0}\' template', template_file)
         if terminalutils.promptActions('View debug trace?', [ '&Yes', '&No'], 0) == 0:
             print(mako_exceptions.text_error_template().render())
@@ -51,6 +52,7 @@ def applyMAKOTemplate(template_file, output_file, template_args, logger, lookup_
         fd.write(file_ctx)
         fd.close()
     except:
+        logger.logger.exception("Exception, See details below")
         logger.error('Error creating \'{0}\' from template', output_file)
         return
 

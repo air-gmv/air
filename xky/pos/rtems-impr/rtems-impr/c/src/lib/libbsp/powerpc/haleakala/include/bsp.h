@@ -36,20 +36,14 @@
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *
- *
- *  $Id$
  *
  */
 
-#ifndef _BSP_H
-#define _BSP_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef LIBBSP_POWERPC_HALEAKALA_BSP_H
+#define LIBBSP_POWERPC_HALEAKALA_BSP_H
 
 #include <bspopts.h>
 
@@ -62,13 +56,14 @@ extern "C" {
 #else
 
   #include <rtems.h>
-  #include <rtems/console.h>
-  #include <rtems/clockdrv.h>
   #include <libcpu/io.h>
-  #include <rtems/console.h>
-  #include <rtems/iosupp.h>
   #include <bsp/irq.h>
   #include <bsp/vectors.h>
+  #include <bsp/default-initial-extension.h>
+
+  #ifdef __cplusplus
+  extern "C" {
+  #endif
 
   /* Network Defines */
   #define RTEMS_BSP_NETWORK_DRIVER_NAME     "eth0"
@@ -84,18 +79,9 @@ extern "C" {
 
   #define BSP_UART_BAUD_BASE    (11059200 / 16)    /* Kilauea ext clock, max speed */
 
-  /* functions */
-
-  rtems_isr_entry set_vector(                    /* returns old vector */
-    rtems_isr_entry     handler,                  /* isr routine        */
-    rtems_vector_number vector,                   /* vector number      */
-    int                 type                      /* RTEMS or RAW intr  */
-  );
-
+  #ifdef __cplusplus
+  }
+  #endif
 #endif /* ASM */
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* BSP_H */

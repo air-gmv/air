@@ -17,9 +17,9 @@
 #include <segregation.h>
 #include <sharedmemory.h>
 
-xky_status_code_e pmk_syscall_get_sharedmemory(
+air_status_code_e pmk_syscall_get_sharedmemory(
         pmk_core_ctrl_t *core,
-        xky_name_ptr_t name, xky_sharedmemory_t *sharedmemory) {
+        air_name_ptr_t name, air_sharedmemory_t *sharedmemory) {
 
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
@@ -29,13 +29,13 @@ xky_status_code_e pmk_syscall_get_sharedmemory(
     cpu_enable_preemption(flags);
 
     /* copy shared memory name to PMK space */
-    xky_name_t l_name;
+    air_name_t l_name;
     if (pmk_segregation_copy_from_user(
-            context, l_name, name, sizeof(xky_name_t)) != 0) {
+            context, l_name, name, sizeof(air_name_t)) != 0) {
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
-        return XKY_INVALID_POINTER;
+        return AIR_INVALID_POINTER;
     }
 
     /* check if shared memory area exists  */
@@ -44,7 +44,7 @@ xky_status_code_e pmk_syscall_get_sharedmemory(
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
-        return XKY_INVALID_CONFIG;
+        return AIR_INVALID_CONFIG;
     }
 
     /* check if the partition have access to shared memory area */
@@ -54,25 +54,25 @@ xky_status_code_e pmk_syscall_get_sharedmemory(
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
-        return XKY_INVALID_CONFIG;
+        return AIR_INVALID_CONFIG;
     }
 
     /* create structure to send to the partition */
-    xky_sharedmemory_t xky_shm;
-    xky_shm.id = shm->id;
-    xky_shm.size = shm->size;
-    xky_shm.address = (void *)shm->addr;
-    xky_shm.permissions = shm_partition->permissions;
+    air_sharedmemory_t air_shm;
+    air_shm.id = shm->id;
+    air_shm.size = shm->size;
+    air_shm.address = (void *)shm->addr;
+    air_shm.permissions = shm_partition->permissions;
 
     /* copy structure to partition space */
-    if (pmk_segregation_put_user(context, xky_shm, sharedmemory) != 0) {
+    if (pmk_segregation_put_user(context, air_shm, sharedmemory) != 0) {
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
-        return XKY_INVALID_POINTER;
+        return AIR_INVALID_POINTER;
     }
 
     /* disable preemption and return */
     cpu_disable_preemption(flags);
-    return XKY_NO_ERROR;
+    return AIR_NO_ERROR;
 }

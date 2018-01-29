@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -17,6 +13,7 @@ include_HEADERS += include/sed1356.h
 endif
 
 include_bsp_HEADERS =
+libbsp_a_CPPFLAGS =
 
 if ENABLE_UMON
 include_umondir = $(includedir)/umon
@@ -54,27 +51,31 @@ EXTRA_DIST += README.kit637_v6
 noinst_LIBRARIES += libbsp.a
 
 # startup
-libbsp_a_SOURCES = ../../shared/bsplibc.c ../../shared/bsppost.c \
+libbsp_a_SOURCES = \
     ../../shared/bsppredriverhook.c ../../shared/bspgetworkarea.c \
-    ../../shared/bsppretaskinghook.c startup/bspstart.c \
+    startup/bspstart.c \
     ../../shared/bspclean.c startup/bspreset.c \
     startup/memmap.c ../../shared/bootcard.c ../../shared/sbrk.c \
+    ../../shared/getentropy-cpucounter.c \
     ../../shared/gnatinstallhandler.c
+libbsp_a_SOURCES += ../../shared/cpucounterread.c
+libbsp_a_SOURCES += ../../shared/cpucounterdiff.c
 # console
-libbsp_a_SOURCES += ../../shared/console.c console/uarts.c
+libbsp_a_SOURCES += ../../shared/console.c console/uarts.c \
+    ../../shared/console_select.c  ../../shared/console_control.c \
+    ../../shared/console_read.c ../../shared/console_write.c 
 # IRQ
 include_bsp_HEADERS += ../../shared/include/irq-generic.h \
 	../../shared/include/irq-info.h
-libbsp_a_SOURCES += ../../shared/src/irq-generic.c \
-	../../shared/src/irq-legacy.c \
-	../../shared/src/irq-info.c \
-	../../shared/src/irq-shell.c \
-	../../shared/src/irq-server.c
+libbsp_a_SOURCES += ../../shared/src/irq-default-handler.c
+libbsp_a_SOURCES += ../../shared/src/irq-generic.c
+libbsp_a_SOURCES += ../../shared/src/irq-info.c
+libbsp_a_SOURCES += ../../shared/src/irq-legacy.c
+libbsp_a_SOURCES += ../../shared/src/irq-server.c
+libbsp_a_SOURCES += ../../shared/src/irq-shell.c
 if ENABLE_LCD
 libbsp_a_SOURCES += console/sed1356.c console/fbcons.c
 endif
-# abort
-libbsp_a_SOURCES += ../shared/abort/abort.c
 # umon
 if ENABLE_UMON
 libbsp_a_SOURCES += ../../shared/umon/umonrtemsglue.c  \
@@ -84,6 +85,12 @@ endif
 if ENABLE_UMON_CONSOLE
 libbsp_a_SOURCES += ../../shared/umon/umoncons.c
 endif
+
+# Cache
+libbsp_a_SOURCES += ../../../libcpu/shared/src/cache_manager.c
+libbsp_a_SOURCES += ../shared/include/arm-cache-l1.h
+libbsp_a_SOURCES += ../shared/armv467ar-basic-cache/cache_.h
+libbsp_a_CPPFLAGS += -I$(srcdir)/../shared/armv467ar-basic-cache
 
 if HAS_NETWORKING
 network_CPPFLAGS = -D__INSIDE_RTEMS_BSD_TCPIP_STACK__

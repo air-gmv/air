@@ -2,12 +2,10 @@
  *
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Middleware support for PPC405 by M.Hamel ADInstruments Ltd 2008
- *
- *  $Id$
  */
 
 #include <rtems.h>

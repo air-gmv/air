@@ -1,8 +1,4 @@
-dnl
-dnl $Id: gcc-specs.m4 179 2008-09-17 14:07:38Z hsilva $
-dnl
 dnl Check whether the target compiler accepts -specs
-dnl
 
 AC_DEFUN([RTEMS_GCC_SPECS],
 [AC_REQUIRE([RTEMS_PROG_CC])

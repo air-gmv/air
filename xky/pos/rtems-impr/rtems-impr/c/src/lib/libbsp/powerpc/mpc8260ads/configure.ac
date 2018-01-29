@@ -1,29 +1,23 @@
 ## Process this file with autoconf to produce a configure script.
-##
-## $Id$
 
-AC_PREREQ([2.68])
-AC_INIT([rtems-c-src-lib-libbsp-powerpc-mpc8260ads],[_RTEMS_VERSION],[http://www.rtems.org/bugzilla])
+AC_PREREQ([2.69])
+AC_INIT([rtems-c-src-lib-libbsp-powerpc-mpc8260ads],[_RTEMS_VERSION],[https://devel.rtems.org/newticket])
 AC_CONFIG_SRCDIR([bsp_specs])
 RTEMS_TOP(../../../../../..)
 
 RTEMS_CANONICAL_TARGET_CPU
-AM_INIT_AUTOMAKE([no-define nostdinc foreign 1.11.1])
+AM_INIT_AUTOMAKE([no-define nostdinc foreign 1.12.2])
 RTEMS_BSP_CONFIGURE
 
 RTEMS_PROG_CC_FOR_TARGET
 RTEMS_CANONICALIZE_TOOLS
 RTEMS_PROG_CCAS
 
-RTEMS_BSPOPTS_SET([DATA_CACHE_ENABLE],[*],[0])
-RTEMS_BSPOPTS_HELP([DATA_CACHE_ENABLE],
-[If defined, the data cache will be enabled after address translation
- is turned on.])
+RTEMS_BSPOPTS_SET_DATA_CACHE_ENABLED([*],[])
+RTEMS_BSPOPTS_HELP_DATA_CACHE_ENABLED
 
-RTEMS_BSPOPTS_SET([INSTRUCTION_CACHE_ENABLE],[*],[0])
-RTEMS_BSPOPTS_HELP([INSTRUCTION_CACHE_ENABLE],
-[If defined, the instruction cache will be enabled after address translation
- is turned on.])
+RTEMS_BSPOPTS_SET_INSTRUCTION_CACHE_ENABLED([*],[])
+RTEMS_BSPOPTS_HELP_INSTRUCTION_CACHE_ENABLED
 
 RTEMS_BSPOPTS_SET([UARTS_USE_TERMIOS],[*],[0])
 RTEMS_BSPOPTS_HELP([UARTS_USE_TERMIOS],

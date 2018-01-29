@@ -1,0 +1,6 @@
+*** BEGIN OF TEST PSXUALARM ***
+Init's ID is 0x0b010001
+Init: ualarm in 500000 us
+Init: Unblock SIGALRM
+Init: clear ualarm with 0, 0
+*** END OF TEST PSXUALARM ***

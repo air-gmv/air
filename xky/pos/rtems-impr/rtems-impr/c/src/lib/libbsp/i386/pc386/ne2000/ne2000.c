@@ -3,10 +3,8 @@
  *  October, 1998.
  *
  *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id$
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Both the ne2000 and the wd80x3 are based on the National Semiconductor
  *  8390 chip, so there is a fair amount of overlap between the two
@@ -344,14 +342,14 @@ ne_check_status (struct ne_softc *sc, int from_irq_handler)
       --sc->inuse;
       sc->transmitting = 0;
       if (sc->inuse > 0 || (sc->arpcom.ac_if.if_flags & IFF_OACTIVE) != 0)
-        rtems_event_send (sc->tx_daemon_tid, START_TRANSMIT_EVENT);
+        rtems_bsdnet_event_send (sc->tx_daemon_tid, START_TRANSMIT_EVENT);
     }
 
     /* Check for received packet.  */
     if ((status & (MSK_PRX | MSK_RXE)) != 0)
     {
       ++sc->stats.rx_acks;
-      rtems_event_send (sc->rx_daemon_tid, INTERRUPT_EVENT);
+      rtems_bsdnet_event_send (sc->rx_daemon_tid, INTERRUPT_EVENT);
     }
 
     /* Check for counter change.  */
@@ -428,14 +426,6 @@ ne_interrupt_off (const rtems_irq_connect_data *irq)
   sc = ne_device_for_irno (irq->name);
   if (sc != NULL)
     outport_byte (sc->port + IMR, 0);
-}
-
-/* Return whether NE2000 interrupts are on.  */
-
-static int
-ne_interrupt_is_on (const rtems_irq_connect_data *irq)
-{
-  return BSP_irq_enabled_at_i8259s (irq->name);
 }
 
 /* Initialize the NE2000 hardware.  */
@@ -528,7 +518,7 @@ ne_init_irq_handler(int irno)
   irq.handle = (rtems_irq_hdl) irno;
   irq.on = ne_interrupt_on;
   irq.off = ne_interrupt_off;
-  irq.isOn = ne_interrupt_is_on;
+  irq.isOn = NULL;
 
   if (!BSP_install_rtems_irq_handler (&irq))
     rtems_panic ("Can't attach NE interrupt handler for irq %d\n", irno);
@@ -566,7 +556,7 @@ ne_rx_daemon (void *arg)
     {
       unsigned char startpage, currpage;
       unsigned short len;
-      unsigned char next, stat, cnt1, cnt2;
+      unsigned char next, cnt1, cnt2;
       struct mbuf *m;
       unsigned char *p;
       int startaddr;
@@ -652,8 +642,6 @@ ne_rx_daemon (void *arg)
         ne_reset(sc);
         goto Next;
       }
-
-      stat = hdr.rsr;
 
       /* The first four bytes of the length are the buffer header.  */
       len -= sizeof(struct ne_ring);
@@ -951,7 +939,7 @@ ne_start (struct ifnet *ifp)
   printk("S");
 #endif
   /* Tell the transmit daemon to wake up and send a packet.  */
-  rtems_event_send (sc->tx_daemon_tid, START_TRANSMIT_EVENT);
+  rtems_bsdnet_event_send (sc->tx_daemon_tid, START_TRANSMIT_EVENT);
   ifp->if_flags |= IFF_OACTIVE;
 }
 

@@ -1,7 +1,3 @@
-##
-## $Id$
-##
-
 ACLOCAL_AMFLAGS = -I ../../../../aclocal
 
 include $(top_srcdir)/../../../../automake/compile.am
@@ -16,6 +12,7 @@ include_HEADERS += ../../shared/include/tm27.h
 
 nodist_include_HEADERS = include/bspopts.h
 nodist_include_bsp_HEADERS = ../../shared/include/bootcard.h
+nodist_include_bsp_HEADERS += ../../shared/include/console-polled.h
 DISTCLEANFILES = include/bspopts.h
 noinst_PROGRAMS =
 
@@ -31,10 +28,11 @@ project_lib_DATA += rtems_crti.$(OBJEXT)
 dist_project_lib_DATA += startup/linkcmds
 
 # startup
-startup_SOURCES = ../../shared/bspclean.c ../../shared/bsplibc.c \
-    ../../shared/bsppredriverhook.c ../../shared/bsppretaskinghook.c \
-    ../../shared/bspgetworkarea.c ../../shared/bsppost.c \
+startup_SOURCES = ../../shared/bspclean.c \
+    ../../shared/bsppredriverhook.c \
+    ../../shared/bspgetworkarea.c \
     ../../shared/bootcard.c ../../shared/sbrk.c \
+    ../../shared/getentropy-cpucounter.c \
     ../../shared/gnatinstallhandler.c \
     startup/cmain.c startup/bspstart.c startup/bsppanic.c
 # pclock
@@ -45,11 +43,16 @@ console_SOURCES = ../../shared/console-polled.c console/console-io.c
 
 # irq
 include_bsp_HEADERS = irq/irq.h \
-    ../../shared/include/irq-generic.h
-
-irq_SOURCES = irq/irq_init.c \
-	../../shared/src/irq-generic.c \
-	../../shared/src/irq-legacy.c
+    ../../shared/include/irq-generic.h \
+    ../../shared/include/irq-info.h
+irq_SOURCES =
+irq_SOURCES += ../../shared/src/irq-default-handler.c
+irq_SOURCES += ../../shared/src/irq-generic.c
+irq_SOURCES += ../../shared/src/irq-info.c
+irq_SOURCES += ../../shared/src/irq-legacy.c
+irq_SOURCES += ../../shared/src/irq-server.c
+irq_SOURCES += ../../shared/src/irq-shell.c
+irq_SOURCES += irq/irq_init.c
 
 noinst_LIBRARIES += libbsp.a
 libbsp_a_SOURCES = $(startup_SOURCES) $(clock_SOURCES) $(console_SOURCES) \
@@ -62,9 +65,6 @@ libbsp_a_LIBADD = ../../../libcpu/@RTEMS_CPU@/shared/cpuIdent.rel \
     ../../../libcpu/@RTEMS_CPU@/@exceptions@/exc_bspsupport.rel \
     ../../../libcpu/@RTEMS_CPU@/mpc6xx/mmu.rel \
     ../../../libcpu/@RTEMS_CPU@/mpc6xx/timer.rel
-
-
-EXTRA_DIST = times
 
 include $(srcdir)/preinstall.am
 include $(top_srcdir)/../../../../automake/local.am

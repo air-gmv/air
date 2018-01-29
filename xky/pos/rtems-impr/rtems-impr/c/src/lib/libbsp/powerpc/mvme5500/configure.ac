@@ -1,14 +1,12 @@
 ## Process this file with autoconf to produce a configure script.
-##
-## configure.ac,v 1.9.2.2 2003/03/06 10:42:42 ralf Exp
 
-AC_PREREQ([2.68])
-AC_INIT([rtems-c-src-lib-libbsp-powerpc-mvme5500],[_RTEMS_VERSION],[rtems-bugs@OARcorp.com])
+AC_PREREQ([2.69])
+AC_INIT([rtems-c-src-lib-libbsp-powerpc-mvme5500],[_RTEMS_VERSION],[https://devel.rtems.org/newticket])
 AC_CONFIG_SRCDIR([bsp_specs])
 RTEMS_TOP(../../../../../..)
 
 RTEMS_CANONICAL_TARGET_CPU
-AM_INIT_AUTOMAKE([no-define nostdinc foreign 1.11.1])
+AM_INIT_AUTOMAKE([no-define nostdinc foreign 1.12.2])
 RTEMS_BSP_CONFIGURE
 
 RTEMS_PROG_CC_FOR_TARGET
@@ -22,14 +20,11 @@ AM_CONDITIONAL(HAS_NETWORKING,test "$HAS_NETWORKING" = "yes")
 AS=$CC
 AM_PROG_AS
 
-RTEMS_BSPOPTS_SET([PPC_USE_DATA_CACHE],[*],[1])
-RTEMS_BSPOPTS_HELP([PPC_USE_DATA_CACHE],
-[If defined, then the PowerPC specific code in RTEMS will use
- data cache instructions to optimize the context switch code.
- This code can conflict with debuggers or emulators.  It is known
- to break the Corelis PowerPC emulator with at least some combinations
- of PowerPC 603e revisions and emulator versions.
- The BSP actually contains the call that enables this.])
+RTEMS_BSPOPTS_SET_DATA_CACHE_ENABLED([*],[1])
+RTEMS_BSPOPTS_HELP_DATA_CACHE_ENABLED
+
+RTEMS_BSPOPTS_SET_INSTRUCTION_CACHE_ENABLED([*],[1])
+RTEMS_BSPOPTS_HELP_INSTRUCTION_CACHE_ENABLED
 
 RTEMS_BSPOPTS_SET([CONFIGURE_MALLOC_BSP_SUPPORTS_SBRK], [*], [1])
 RTEMS_BSPOPTS_HELP([CONFIGURE_MALLOC_BSP_SUPPORTS_SBRK],

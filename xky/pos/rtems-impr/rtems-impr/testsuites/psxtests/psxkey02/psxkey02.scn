@@ -1,0 +1,6 @@
+*** BEGIN OF TEST PSXKEY 2 ***
+Init - pthread_key_create - OK
+Init - pthread_key_create - EAGAIN
+Init - pthread_key_delete - OK
+Init - verify workspace has same memory
+*** END OF TEST PSXKEY 2 ***

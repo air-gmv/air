@@ -1,15 +1,14 @@
 /*
- *  This routine starts the application.  It includes application,
- *  board, and monitor specific initialization and configuration.
- *  The generic CPU dependent initialization has been performed
- *  before this routine is invoked.
- *
+ *  This routine does the bulk of the system initialization.
+ */
+
+/*
  *  COPYRIGHT (c) 1989-1999.
  *  On-Line Applications Research Corporation (OAR).
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  http://www.rtems.org/license/LICENSE.
  *
  *  Modifications of respective RTEMS file: COPYRIGHT (c) 1994.
  *  EISCAT Scientific Association. M.Savitski
@@ -17,11 +16,10 @@
  *  This material is a part of the MVME162 Board Support Package
  *  for the RTEMS executive. Its licensing policies are those of the
  *  RTEMS above.
- *
- *  $Id$
  */
 
 #include <bsp.h>
+#include <bsp/bootcard.h>
 #include <page_table.h>
 
 /*
@@ -31,20 +29,10 @@
  */
 void bsp_start( void )
 {
-  m68k_isr_entry       *monitors_vector_table;
+  rtems_isr_entry       *monitors_vector_table;
   int                   index;
 
-  /*
-   *  162Bug Vectors are at 0xFFE00000
-   *  162Bug Vectors on LX are at 0x00000000
-   */
-
-#if defined(mvme162lx)
-  monitors_vector_table = (m68k_isr_entry *)0x00000000;
-#else
-  monitors_vector_table = (m68k_isr_entry *)0xFFE00000;
-#endif
-
+  monitors_vector_table = (rtems_isr_entry *)MOT_162BUG_VEC_ADDRESS;
   m68k_set_vbr( monitors_vector_table );
 
   for ( index=2 ; index<=255 ; index++ )
