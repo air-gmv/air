@@ -2,7 +2,6 @@
 #  @author pfnf 
 # modified by lumm and gmvs
 #  @brief Functions to parse gaisler devices
-from sqlalchemy.sql.expression import false
 
 __author__ = 'pfnf'
 __modified__ = 'lumm'
