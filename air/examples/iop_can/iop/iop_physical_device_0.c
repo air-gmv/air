@@ -152,7 +152,7 @@ iop_physical_device_t physical_device_0 =\
     .reads_per_period   = reads_per_period,
 
     .reader_task        = can_reader,
-    .writer_task        = can_write,
+    .writer_task        = can_writer,
     .header_prebuild    = can_prebuild_header,
     .header_compare     = can_compare_header,
     .header_copy        = can_copy_header,
