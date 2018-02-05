@@ -40,7 +40,7 @@ static air_sampling_port_configuration_t sampling_ports[] = {
 /**
  * @brief IOP remote ports
  */
-iop_port_t remote_ports[2] = {
+iop_port_t remote_ports[3] = {
     {
         .type               = AIR_SAMPLING_PORT,
         .name               = "dsampling",
@@ -49,7 +49,7 @@ iop_port_t remote_ports[2] = {
     },
     {
         .type               = AIR_QUEUING_PORT,
-        .name               = "squeuing",
+        .name               = "squeueing",
         .configuration      = &queuing_ports[0],
         .device             = NULL
     },
