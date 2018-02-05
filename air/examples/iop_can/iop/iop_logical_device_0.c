@@ -11,40 +11,38 @@ extern iop_physical_device_t physical_device_0;
  */
 static iop_header_t route_header[1] = \
 {
-    {
-        .eth_header = {
-            .dst_ip      = { 192,168,0,3},
-            .dst_mac     = { 0x00,0x50,0xbf,0x50,0x07,0x0d},
-            .dst_port    = HTONS(13000),
-            .src_port    = HTONS(13000)
-        }
-    }
+	{
+		.can_header = {
+			.extended 	= 0,
+			.rtr 		= 0,
+			.sshot 		= 0,
+			.id  		= 2
+		}
+	}
 };
 
 /**
  * @brief Routes Scheduling
  */
 static uint32_t route_schedule_0[1] = \
-    { 1 };
-
-
+		{ 1 };
 
 /**
  * @brief Routes Configuration
  */
 static iop_logical_route_t logical_routes[1] = \
 {
-    {
-        .schedule   = route_schedule_0,
-        .header     = &route_header[0],
-        .device     = &physical_device_0
-    }
+	{
+		.schedule = route_schedule_0,
+		.header = &route_header[0],
+		.device = &physical_device_0
+	}
 };
 
 /**
  * @brief Logical Device configuration
  */
-iop_logical_device_t logical_device_0 = \
+iop_logical_device_t logical_device_0= \
 {
     .routes = {
         .length     = 1,
