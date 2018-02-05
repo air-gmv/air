@@ -86,7 +86,6 @@ void eth_writer(iop_physical_device_t *pdev){
  *  
  */
 
-
 void eth_reader(iop_physical_device_t *pdev){
     /* get task physical device */
 //    iop_physical_device_t *pdev = (iop_physical_device_t *)arg;

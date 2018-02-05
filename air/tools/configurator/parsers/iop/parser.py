@@ -213,7 +213,7 @@ class IOParser(object):
 
         self.logger.information(1, pdevice.setup.details())
 
-        self.logger.event('BEFORE parsing physical routing')
+        self.logger.event(0, 'BEFORE parsing physical routing')
 
         if ( pdevice.type == RTR ):
             pdevice.idx = len(self.physical_devices)
@@ -225,14 +225,14 @@ class IOParser(object):
         xml_routes = xml.parse_tag(ROUTE_PHYSICAL, 1, maxint, self.logger)
         for xml_route in xml_routes:
             rc &= self.parse_device_routes(xml_route, pdevice)
-            self.logger.event(rc)
+            self.logger.event(0, rc)
 
-        self.logger.event('AFTER parsing physical routing and BEFORE logical')
+        self.logger.event(0, 'AFTER parsing physical routing and BEFORE logical')
         # Parse Logical Routing
         xml_routes = xml.parse_tag(ROUTE_LOGICAL, 1, maxint, self.logger)
         for xml_route in xml_routes:
             rc &= self.parse_device_routes(xml_route, pdevice)
-            self.logger.event(rc)
+            self.logger.event(0, rc)
 
         self.logger.event(0, "PHYDEV?", rc)
 
@@ -324,11 +324,19 @@ class IOParser(object):
             xml_header = xml.parse_tag(ETHHEADER, 1, 1, self.logger)
             if self.logger.check_errors(): return None
             return self.parse_eth_header(xml_header)
-
+        
+        # device of spacewire type
         elif pdevice.type == SPW:
             xml_header = xml.parse_tag(SPWHEADER, 1, 1, self.logger)
             if self.logger.check_errors(): return None
             return self.parse_spw_header(xml_header)
+        
+        # device of canbus type
+        elif pdevice.type == CAN:
+            xml_header = xml.parse_tag(CANHEADER, 1, 1, self.logger)
+            if self.logger.check_errors(): return None
+            return self.parse_can_header(xml_header)
+            
 
         # invalid header
         return None
@@ -366,7 +374,25 @@ class IOParser(object):
         # sanity check
         if self.logger.check_errors(): return False
         return header
+    
+    ## Parse CANBUS Header
+    # @param self object pointer
+    # @param xml SpaceWire Header xml node
+    def parse_can_header(self, xml):
+        
+        # clear previous errors and warning
+        self.logger.clear_errors(3)
+        
+        # parse attributes
+        header = CanHeader()
+        header.extended = xml.parse_attr(CANHEADER_EXTENDED, VALID_BOOLEAN_TYPE, True, self.logger)
+        header.rtr = xml.parse_attr(CANHEADER_RTR, VALID_BOOLEAN_TYPE, True, self.logger)
+        header.can_id = xml.parse_attr(CANHEADER_ID, VALID_ID, True, self.logger)
 
+        # sanity check
+        if self.logger.check_errors(): return False
+        return header
+    
     def parse_schedule(self, xml):
 
         # clear previous errors and warnings
