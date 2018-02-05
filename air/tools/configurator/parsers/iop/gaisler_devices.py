@@ -1,8 +1,11 @@
 ## @package parsers.iop.gaisler_devices
-#  @author pfnf and lumm
+#  @author pfnf 
+# modified by lumm and gmvs
 #  @brief Functions to parse gaisler devices
 
-__author__ = 'pfnf and lumm'
+__author__ = 'pfnf'
+__modified__ = 'lumm'
+__modified__ ='gmvs'
 
 from definitions import *
 from utils.parser import str2int
@@ -39,11 +42,23 @@ SPWRTR_IID              = 'Idd'
 SPWRTR_IDIV             = 'Idiv'
 SPWRTR_PRESCALER        = 'Prescaler'
 
+CANBUS_ID               = 'CanID'
+CANBUS_SPEED            = 'Speed'
+CANBUS_INTERNAL_QUEUE   = 'InternalQueue'
+CANBUS_TXD              = 'TXD'
+CANBUS_RXD              = 'RXD'
+CANBUS_READS            = 'Reads'
+CANBUS_SINGLE_MODE      = 'SingleMode'
+CANBUS_CODE             = 'Code'
+CANBUS_MASK             = 'Mask'
+
+
 VALID_EN                    = [ parserutils.str2int, lambda x : 0 <= x <= 1 ]
-VALID_XD	                = [ parserutils.str2int, lambda x : 0 <= x <= 128 ]
+VALID_XD	                = [ parserutils.str2int, lambda x : 0 <= x <= 2048 ]
 VALID_READS	                = [ parserutils.str2int, lambda x : 0 <= x <= 2048 ]
 VALID_TIMER                 = [ parserutils.str2int, lambda x : -1 <= x <= 50 ]
 VALID_MASK                  = [ parserutils.str2int, lambda x : 0 <= x <= 255 ]
+VALID_BOOL                  = [ parserutils.str2bool, lambda x: type(x) is bool ]
 VALID_NODE_ADDRESS          = [ parserutils.str2int, lambda x : -1 <= x <= 31 ]
 VALID_RXMAX                 = [ parserutils.str2int, lambda x : 4 <= x <= 1520 ]
 
@@ -132,6 +147,35 @@ class SPWRTRSchSetup(object):
 
     def details(self):
         return 'SPWRTR Schedule Setup (Reads - {0})'.format(self.reads)
+    
+    
+# CANBUS physical device
+class OCCANPhySetup(object):
+    
+    def __init__(self):
+        self.can_id = 0
+        self.speed = 0
+        self.txd = 0
+        self.rxd = 0
+        self.internal_queue = 0
+        self.single_mode = False
+        self.code = ''
+        self.mask = ''
+        
+    def details(self):
+        return 'CAN Physical Device Setup (CanID: {0} Speed: {1} TXD: {2} RXD: {3} InternalQueue: {4} SingleMode: {5} Code: {6} Mask: {7})'\
+        .format(self.can_id, self.speed, self.txd, self.rxd, self.internal_queue, self.single_mode, ':'.join(self.code), ':'.join(self.mask))
+        
+# CANBUS Schedule device setup
+class OCCANSchSetup(object):
+    
+    def __init__(self):
+        self.device = None
+        self.reads  = ''            # number of reads per period
+        
+    def details(self):
+        return 'CANBUS Schedule Setup (Reads - {0}'.format(self.reads)
+
 
 ## Greth physical device setup
 # @param iop_parser IOP parser object
@@ -269,3 +313,50 @@ def sch_spwrtr(iop_parser, xml, pdevice):
     # parse complete
     setup.device = pdevice
     return setup
+
+
+## CANBUS physical device setup
+# @param iop_parser IOP parser object
+# @param xml XML setup node
+# @param pdevice current physical device
+def phy_occan(iop_parser, xml, pdevice):
+    
+    # clear previous errors and warnings
+    iop_parser.logger.clear_errors(0)
+    
+    # parse setup
+    setup                   = OCCANPhySetup()
+    setup.speed             = xml.parse_attr(CANBUS_SPEED, VALID_READS, True, iop_parser.logger)
+    setup.txd_count         = xml.parse_attr(CANBUS_TXD, VALID_XD, True, iop_parser.logger)
+    setup.rxd_count         = xml.parse_attr(CANBUS_RXD, VALID_XD, True, iop_parser.logger)
+    setup.internal_queue    = xml.parse_attr(CANBUS_INTERNAL_QUEUE, VALID_READS, True, iop_parser.logger)
+    setup.single_mode       = xml.parse_attr(CANBUS_SINGLE_MODE, VALID_BOOLEAN_TYPE, True, iop_parser.logger)
+    setup.code              = xml.parse_attr(CANBUS_CODE, VALID_MASK_CODE, True, iop_parser.logger)
+    setup.mask              = xml.parse_attr(CANBUS_MASK, VALID_MASK_CODE, True, iop_parser.logger)
+    
+    # sanity check
+    if iop_parser.logger.check_errors(): return False
+    pdevice.setup = setup
+    print(pdevice)
+    return True
+
+## CANBUS schedule device setup
+# @param iop_parser IOP parser object
+# @param xml XML setup node
+# @param pdevice current physical device
+def sch_occan(iop_parser, xml, pdevice):
+    
+    # clear previous errors and warnings
+    iop_parser.logger.clear_errors(0)
+    
+    # parse setup
+    setup       = OCCANSchSetup()
+    setup.reads = xml.parse_attr(CANBUS_READS, VALID_READS, True, iop_parser.logger)
+
+    # sanity check
+    if iop_parser.logger.check_errors(): return None
+
+    # parse complete
+    setup.device = pdevice
+    return setup
+    
