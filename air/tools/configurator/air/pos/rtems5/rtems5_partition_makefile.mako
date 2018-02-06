@@ -22,7 +22,7 @@ PGM=$(EXEC)
 #     Timer manager = timer
 #     Extension Manager = ext
 #     IO Manager = io
-MANAGERS=sem rtmon msg timer
+MANAGERS=sem rtmon msg timer io
 
 # C source code and headers filenames used in the example
 CSRCS=$(shell find ./ -type f -name '*.c')
