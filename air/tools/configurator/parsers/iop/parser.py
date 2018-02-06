@@ -213,7 +213,7 @@ class IOParser(object):
 
         self.logger.information(1, pdevice.setup.details())
 
-        self.logger.event('BEFORE parsing physical routing')
+        self.logger.event(0, 'BEFORE parsing physical routing')
 
         if ( pdevice.type == RTR ):
             pdevice.idx = len(self.physical_devices)
@@ -225,14 +225,14 @@ class IOParser(object):
         xml_routes = xml.parse_tag(ROUTE_PHYSICAL, 1, maxint, self.logger)
         for xml_route in xml_routes:
             rc &= self.parse_device_routes(xml_route, pdevice)
-            self.logger.event(rc)
+            self.logger.event(0, rc)
 
-        self.logger.event('AFTER parsing physical routing and BEFORE logical')
+        self.logger.event(0, 'AFTER parsing physical routing and BEFORE logical')
         # Parse Logical Routing
         xml_routes = xml.parse_tag(ROUTE_LOGICAL, 1, maxint, self.logger)
         for xml_route in xml_routes:
             rc &= self.parse_device_routes(xml_route, pdevice)
-            self.logger.event(rc)
+            self.logger.event(0, rc)
 
         self.logger.event(0, "PHYDEV?", rc)
 
