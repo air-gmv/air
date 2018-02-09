@@ -102,6 +102,8 @@ void pmk_hm_isr_handler_module_level(pmk_core_ctrl_t *core,
 
     /* setup the undefined action */
     pmk_hm_action_id action_id = PMK_ACTION_UNDEFINED;
+    
+    printk ("HM Module level error \n");
 
     /* lookup for the action in Module Health-Monitor table */
     pmk_hm_action_id *actions =
@@ -135,7 +137,8 @@ void pmk_hm_isr_handler_module_level(pmk_core_ctrl_t *core,
  * @param core_ctrl current core control structure
  * @param partition partition configuration structure pointer
  * @param state_id current core state id
- * @param error_id current error id
+ * @param error_
+ * id current error id
  */
 void pmk_hm_isr_handler_partition_level(
         pmk_core_ctrl_t *core,
@@ -145,6 +148,9 @@ void pmk_hm_isr_handler_partition_level(
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
     pmk_partition_t *partition = core->partition;
+    printk ("HM Partition level error \n");
+    printk ("HM Partition state id %d \n", state_id);
+    printk ("HM Partition error id %d \n", error_id);
 
     /* allow partition to be preempted */
     cpu_enable_preemption(flags);
@@ -166,6 +172,7 @@ void pmk_hm_isr_handler_partition_level(
 
             /* disable preemption */
             cpu_disable_preemption(flags);
+            printk ("HM Taking Action Idle\n\n");
 
             /* halt partition */
             pmk_partition_halt(partition);
@@ -174,9 +181,12 @@ void pmk_hm_isr_handler_partition_level(
 
         /* cold restart the partition */
         case PMK_ACTION_COLD_START:
+            
+            printk ("HM Taking Action Warm Start\n\n");            
 
             /* disable preemption */
             cpu_disable_preemption(flags);
+            
 
             /* cold restart partition */
             pmk_partition_restart(partition);
@@ -187,6 +197,8 @@ void pmk_hm_isr_handler_partition_level(
         /* warm restart the partition */
         case PMK_ACTION_WARM_START:
 
+            printk ("HM Taking Action Warm Start\n\n");
+            
             /* disable preemption */
             cpu_disable_preemption(flags);
 
@@ -200,6 +212,9 @@ void pmk_hm_isr_handler_partition_level(
         default:
 
             /* disable preemption */
+           printk ("HM Taking Action Ignore\n\n");
+
+            
             cpu_disable_preemption(flags);
 
             /* add HM event */
@@ -220,7 +235,7 @@ void pmk_hm_isr_handler(air_error_e error_id) {
     /* get current state and handling level */
     air_state_e state = core_context_get_system_state(core_ctrl->context);
     pmk_hm_level_id level = air_shared_area.hm_system_table[state][error_id];
-
+    
     /* perform the HM action according to the handling level */
     switch (level) {
 
