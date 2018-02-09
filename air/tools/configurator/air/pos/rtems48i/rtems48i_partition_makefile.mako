@@ -50,7 +50,7 @@ RTEMS_EXTERNAL_LIBRARY_PATH=${'\\'}
 $(AIR_POS)/${os.path.join(pos_config.name, 'edilib', 'library')}${'\\' if len(partition.libraries) > 0 else ''}
 
 # These includes should not be modified by the user.  
-include $(RTEMS_MAKEFILE_PATH)/Makefile2.inc 
+include $(RTEMS_MAKEFILE_PATH)/Makefile.inc 
 include $(RTEMS_CUSTOM) 
 include $(PROJECT_ROOT)/make/leaf.cfg
 
