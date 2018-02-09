@@ -75,14 +75,6 @@ typedef struct {
 
 } iop_wrapper_t;
 
-
-
-
-
-
-
-
-
 /**
  * @brief List of elements
  */
