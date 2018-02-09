@@ -328,9 +328,11 @@ void pre_dispatcher(){
 	iop_debug("\n :: IOP - pre-dispatcher running!\n");
 
 	/* Get execution window reference time */
-    /* this  commented call is for RTEMS 4.8, it is not deprecated */
-	/* rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &last_task_ticks); */
-    last_task_ticks = rtems_clock_get_ticks_since_boot();
+    /* this  call is for RTEMS 4.8, it is not deprecated */
+	 rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &last_task_ticks);
+    
+     /* If we switch to RTEMS 5 use  this one */
+     //last_task_ticks = rtems_clock_get_ticks_since_boot();
     
 	//iop_debug("  :: IOP - pre-dispatcher read this time %d\n", last_task_ticks);
 
