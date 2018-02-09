@@ -26,6 +26,10 @@ ${EthHeader(route.header)}${',' if i < len(pdevice.routes) - 1 else ''}
 	% for i, route in enumerate(pdevice.routes):
 ${SpwHeader(route.header)}${',' if i < len(pdevice.routes) - 1 else ''}
 	% endfor
+%elif pdevice.type =='CAN':
+	% for i, route in enumerate(pdevice.routes):
+${CanHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
+	% endfor
 % endif
 };
 
@@ -118,6 +122,16 @@ extern iop_port_t remote_ports[${len(iop_configuration.ports)}];
             .hdr         = { ${','.join(header.address)} }
         }
     }\
+</%def>
+
+<%def name="CanHeader(header)">\
+	{
+		.can_header = {
+			.extended = ${int(header.extended)},
+			.rtr 	  = ${int(header.rtr)},
+			.id		  = ${header.can_id}
+		}
+	}\
 </%def>
 
 <%def name="IopBuffersStorage(size)">\

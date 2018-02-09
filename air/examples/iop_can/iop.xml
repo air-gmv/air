@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<IOPartition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="iop.xsd" version="1.0" date="2017-11-20" name="iop_example" request_number="64" time_to_live="5">
+	
+	<RemotePorts>
+		<Port Name="iop_receiver" LogicalDeviceId="1"/>
+		<Port Name="iop_sender" />
+	</RemotePorts>	
+	
+	<LogicalDevices>
+		<Device Id="1" Name="PARSERVER" Extended="1" RTR="0" />
+	</LogicalDevices>
+		
+	<PhysicalDevices>
+		<Device Id="1" Device="CAN0" CanID ="2" Speed="250" TXD="32" RXD="32" InternalQueue="8" SingleMode="true" Code="f:f:f:f" Mask="f:f:f:f">
+			<PhysicalRoute Id="1" PortId="iop_sender">
+				<CanHeader Extended="true" RTR="true" CanID="1"/>
+			</PhysicalRoute>		
+			<LogicalRoute Id="2" LogicalDeviceId="1">
+				<CanHeader Extended="false" RTR="false" CanID="1"/> 
+			</LogicalRoute>
+		</Device>
+	</PhysicalDevices>
+
+	<ModuleSchedules>
+		<Schedule ScheduleIdentifier="1">
+		    <DevicesConfiguration>
+			    <Device DeviceId="1" Device="CAN0" Reads="5"/>
+			</DevicesConfiguration>
+			<RoutesConfiguration>
+				<Route RouteId="1" Active="true"/>
+				<Route RouteId="2" Active="true"/>
+			</RoutesConfiguration>
+		</Schedule>
+	</ModuleSchedules>
+</IOPartition>
