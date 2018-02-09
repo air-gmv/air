@@ -16,6 +16,7 @@
 #include <sparc.h>
 #include <multicore.h>
 #include <health_monitor.h>
+#include <printk.h>
 
 /**
  * @brief SPARC Error mapping structure
@@ -300,6 +301,7 @@ void sparc_hm_handler(
     air_error_e error_id = error_map[isf->tpc];
 
     /* call the PMK health monitor */
+    printk ("HM error detected id - %d\n", error_id);
     pmk_hm_isr_handler(error_id);
 
     /* jump the current instruction */
