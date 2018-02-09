@@ -3,11 +3,13 @@ SPW = 'SPW'
 MIL = 'MIL'
 ETH = 'ETH'
 RTR = 'SPWRTR'
+CAN = 'CAN'
 
 SUPPORTED_DEVICES 	=   {	SPW : ['GRSPW'],
                         	MIL : ['GR1553B', 'BRM1553'],
                         	ETH : ['GRETH'],
-                            RTR : ['SPWRTR']   }
+                            RTR : ['SPWRTR'],
+                            CAN : ['OCCAN']   }
 
 IOP_PORT_TYPE		= { 'SamplingPort' : 'IOP_SAMPLING_PORT',
 						'QueuingPort'  : 'IOP_QUEUING_PORT'   }
@@ -64,6 +66,12 @@ ETHHEADER_PORT					= 'Port'
 SPWHEADER                       = 'SpwHeader'
 SPWHEADER_ADDRESS               = 'Address'
 
+#CANBUS Header
+CANHEADER                       = 'CanHeader'
+CANHEADER_EXTENDED              = 'Extended'
+CANHEADER_RTR                   = 'RTR'
+CANHEADER_ID                    = 'CanID'
+
 
 import utils.parser as parserutils
 
@@ -78,12 +86,16 @@ VALID_FLOAT_TYPE		= [ parserutils.str2float, lambda x : x >= 0 ]
 VALID_DECIMAL_TYPE		= [ parserutils.str2int, lambda x : x >= 0 ]
 VALID_BOOLEAN_TYPE		= [ parserutils.str2bool, lambda x : isinstance(x, bool) ]
 VALID_DIRECTION_TYPE 	= [ str, lambda x : x in [ REMOTE_PORT_SRC, REMOTE_PORT_DST] ]
+VALID_ID                = [ parserutils.str2int, lambda x: x > 0]
+VALID_MASK_CODE         = [ lambda x: str(x).strip().split(':'), lambda x: len(x) == 4]
+
 
 
 LOGICAL_DEVICE_STR      = 'Logical Device (Id: {0}, Name: {1})'
 PHYSICAL_DEVICE_STR     = 'Physical Device (Id: {0}, Device: {1})'
 ETH_HEADER_STR          = 'Ethernet Header (Mac: {0}, Ip: {1}, Port: {2})'
 SPW_HEADER_STR          = 'SpaceWire Header (Address: {0})'
+CAN_HEADER_STR          = 'Canbus Header (extended: {0}, Rtr: {1}, CanId: {2})'
 REMOTE_PORT_STR         = 'Remote Port (Name: {0})'
 ROUTE_STR               = 'Route (Id: {0})'
 ROUTE_PHYSICAL_STR      = 'Physical Route (Id: {0})'
@@ -255,5 +267,29 @@ class SpwHeader(object):
     def __repr__(self):
         return self.__str__()
 
+    def details(self):
+        return self.__str__()
+    
+## CANBUS Header
+class CanHeader(object):
+    def __init__(self):
+        self.extended = False
+        self.rtr = 0
+        self.can_id = 0
+        
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and \
+            self.can_id == other.can_id
+            
+    def __ne__(self, other):
+        return not self.__eq__(other)
+    
+    def __str__(self):
+        return CAN_HEADER_STR.format(self.extended, \
+                self.rtr, self.can_id)
+    
+    def __repr__(self):
+        return self.__str__()
+    
     def details(self):
         return self.__str__()
