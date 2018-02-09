@@ -11,8 +11,7 @@
  */
 
 #define CONFIGURE_INIT
-#include <stdio.h>
-#include <stdlib.h>
+
 #include <air.h>
 #include <pprintf.h>
 
