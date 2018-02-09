@@ -27,7 +27,7 @@
 ${template.FileHeader("POS RTEMS-IMPR - RTEMS-IMPR personality")}\
 
 # Makefile Include file
-${template.MakefileInc()}
+${template.MakefileInc2()}
 
 CURRENT_PATH=$(shell pwd)
 
