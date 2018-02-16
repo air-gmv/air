@@ -13,7 +13,7 @@
 #define CONFIGURE_INIT
 
 #include <air.h>
-#include <pprintf.h>
+//#include <pprintf.h>
 
 int andp=7;
 
@@ -24,7 +24,7 @@ while(1)
 {
 
   andp=andp+1;
-  pprintf( "\n\n*** RTEMS HELLO WORLD TEST **********\n" );
+  printf( "\n\n*** RTEMS HELLO WORLD TEST **********\n" );
   rtems_task_wake_after(10);
 
 }
