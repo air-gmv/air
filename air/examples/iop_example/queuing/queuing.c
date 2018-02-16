@@ -32,7 +32,7 @@ void test(PARTITION_ID_TYPE self_id) {
 	char msg[1024]="empty\0";
 	RETURN_CODE_TYPE rc;
 	MESSAGE_SIZE_TYPE len;
-
+    pprintf ("Ready to receive\n", self_id, msg);
 	while(1) {
 
 		RECEIVE_QUEUING_MESSAGE(qpid, INFINITE_TIME_VALUE, msg, &len, &rc );
