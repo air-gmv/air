@@ -30,7 +30,7 @@ for entry in */
 do
     echo "### check [ $entry ] ###"
 
-    if [ $entry = "iop_example/" -o $entry = "math/" -o $entry = "multi/" -o $entry = "router_example/" -o $entry = "testsuites/" -o $entry= "iop_can"]; then
+    if [ $entry = "iop_example/" -o $entry = "math/" -o $entry = "multi/" -o $entry = "router_example/" -o $entry = "testsuites/" -o $entry = "iop_can/" ]; then
         echo "### avoid [ $entry ] ###"
         continue
     fi
