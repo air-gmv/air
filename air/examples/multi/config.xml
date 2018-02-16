@@ -160,7 +160,7 @@
       <Cache>CODE; DATA</Cache>
       <Memory Size="0x500000" />
       <Permissions>
-       CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+       FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
       </Permissions>
     </PartitionConfiguration>         
   </Partition>
@@ -174,7 +174,7 @@
       <Cache>CODE; DATA</Cache>
       <Memory Size="0x500000" />
       <Permissions>
-       CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+       FPU_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
       </Permissions>
     </PartitionConfiguration>         
   </Partition>
