@@ -216,9 +216,6 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
         t2 =            core->next_switch_ticks;
         treta = scheduler_ctrl.mtf_ticks;;
         
-    if (scheduler_ctrl.mtf_ticks % 100 == 0)    
-            printk(" X- %d\n",  treta);
-
         pmk_tod_update();
         bsp_interrupt_broadcast(BSP_IPC_PCS);
     }
@@ -255,8 +252,7 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
         RVS_Ipoint((core->idx  << 6) | (3 << 4) | (0 << 1) | 0);
 #endif
 
-            printk("VXmtf: %d, next: %d\n", 
-           treta, t2);
+        //printk("schedule mtf: %d, next: %d\n",  treta, t2);
 
         /* flag the switch */
         core->partition_switch = 1;
