@@ -3,6 +3,7 @@
 *.map
 *.num
 *.o
+*.out
 *.ralf
 *.txt
 
