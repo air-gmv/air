@@ -58,6 +58,8 @@
                                            RTEMS_NO_ASR | \
                                            RTEMS_INTERRUPT_LEVEL(0))
 
+#define CONFIGURE_INIT_TASK_ATTRIBUTES RTEMS_FLOATING_POINT
+
 #define RTEMS_PCI_CONFIG_LIB
 #define CONFIGURE_PCI_LIB PCI_LIB_AUTO
 

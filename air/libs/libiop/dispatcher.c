@@ -328,12 +328,13 @@ void pre_dispatcher(){
 	iop_debug("\n :: IOP - pre-dispatcher running!\n");
 
 	/* Get execution window reference time */
-    /* this  call is for RTEMS 4.8, it is not deprecated */
-	 rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &last_task_ticks);
-    
-     /* If we switch to RTEMS 5 use  this one */
-     //last_task_ticks = rtems_clock_get_ticks_since_boot();
-    
+#define RTEMS48i
+#ifdef RTEMS48i
+    rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &last_task_ticks);
+#else /* RTEMS5 */
+    last_task_ticks = rtems_clock_get_ticks_since_boot();
+#endif
+
 	//iop_debug("  :: IOP - pre-dispatcher read this time %d\n", last_task_ticks);
 
 	/* check for schedule changes */
@@ -393,9 +394,15 @@ void pos_dispatcher(){
 
 	iop_debug("\n :: IOP - pos-dispatcher doing nothing!\n");
 
+#ifdef notdef /* LLLG XXX */
 //	rtems_interval time;
-//	/*rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time); // use this for rtems 4.8 */
-//  time = rtems_clock_get_ticks_since_boot(); // use this for rtems 5
+#define RTEMS48i
+#ifdef RTEMS48i
+    rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
+#else /* RTEMS5 */
+    time = rtems_clock_get_ticks_since_boot();
+#endif
+
 //	char preamble[] = " pos-dispatcher time: ";
 //	append_to_message(&msg_relay, preamble, 26); //52
 //	append_time_to_message(&msg_relay, time, 22+26);//22+52
@@ -433,4 +440,5 @@ void pos_dispatcher(){
 		}
 	}
 	*/
+#endif /* notdef LLLG XXX */
 }
