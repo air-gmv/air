@@ -33,7 +33,7 @@ typedef char* air_name_ptr_t;
 /**
  * @brief Clock tick types
  */
-typedef air_i64_t air_clocktick_t;
+typedef air_u64_t air_clocktick_t;
 
 /**
  * @brief AIR Message type
@@ -556,7 +556,7 @@ air_status_code_e air_syscall_get_sharedmemory(
  * Health-Monitoring services allows the partition to attempt recovering actions
  * or to report errors during its execution. The recovery actions are defined at
  * the configuration time.
- *
+  *
  * @{
  */
 

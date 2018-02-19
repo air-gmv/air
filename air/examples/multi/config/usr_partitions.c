@@ -59,6 +59,7 @@ pmk_partition_t usr_partition_table[USR_PARTITIONS] = \
         .id          = 1,
         .name        = "p0",
         .permissions = \
+            AIR_PERMISSION_FPU_CONTROL |
             AIR_PERMISSION_CACHE_CONTROL |
             AIR_PERMISSION_GLOBAL_TIME |
             AIR_PERMISSION_SET_TOD |
@@ -78,7 +79,7 @@ pmk_partition_t usr_partition_table[USR_PARTITIONS] = \
         .id          = 2,
         .name        = "p1",
         .permissions = \
-            AIR_PERMISSION_CACHE_CONTROL |
+            AIR_PERMISSION_FPU_CONTROL |
             AIR_PERMISSION_GLOBAL_TIME |
             AIR_PERMISSION_SET_TOD |
             AIR_PERMISSION_SET_PARTITION_MODE,
