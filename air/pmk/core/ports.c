@@ -82,7 +82,6 @@ void pmk_channels_init(void) {
 
 void pmk_partition_ports_init(pmk_partition_t *partition) {
 
-	printk("  :: pmk_partition_port_init is here!\n");
 #ifdef PMK_DEBUG
     printk(" :: The pmk_partition_ports_init is taking place.\n Number of ports for this parition: %d \n",
     		partition->ports.length);
