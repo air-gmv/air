@@ -12,12 +12,13 @@
 	
 	<PhysicalDevices>
         <!-- Ip and port of board, beware it cannot be 46 that is EDCL -->        
-		<Device Id="0" Device="ETH0" Ip="192.168.0.17" MAC="00:50:C2:75:a0:60" TXD="32" RXD="32">
+		<Device Id="0" Device="ETH0" Ip="192.168.0.17" MAC="00:50:C2:75:a3:30" TXD="32" RXD="32">
 			<PhysicalRoute Id="2" PortId="squeuing">
+<!-- IP and port for destination PC, sets ONLY port number to used by sender.py -->
 				<EthHeader Ip="192.168.0.3" MAC="00:60:67:90:3a:f6" Port="14000" />
 			</PhysicalRoute>
 			<LogicalRoute Id="1" LogicalDeviceId="1">
-                <!-- IP and port for destination PC -->
+<!-- IP and port for destination PC, used by receiver.py -->
 				<EthHeader Ip="192.168.0.3" MAC="00:60:67:90:3a:f6" Port="13000"/>
 			</LogicalRoute>
 	    </Device>		
