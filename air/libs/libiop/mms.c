@@ -36,8 +36,10 @@ void iop_task_sleep(uint32_t first_task) {
 
 	/* compute ticks until next period */
     /* this  commented call is for RTEMS 4.8, it is not deprecated */
-    /* rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &current_task_ticks); */
-    current_task_ticks = rtems_clock_get_ticks_since_boot();
+    rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &current_task_ticks);
+    
+    /* USe the following for RTEMS 5 in the future
+    current_task_ticks = rtems_clock_get_ticks_since_boot(); */
     
 	rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &current_task_ticks);
     
@@ -51,8 +53,10 @@ void iop_task_sleep(uint32_t first_task) {
 	/* get period 'start' ticks */
 	if (1 == first_task) {
         /* this  commented call is for RTEMS 4.8, it is not deprecated */
-        /* rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &last_task_ticks); */
-        last_task_ticks = rtems_clock_get_ticks_since_boot();      
+        rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &last_task_ticks);
+        /* USe the following for RTEMS 5 in the future
+        current_task_ticks = rtems_clock_get_ticks_since_boot(); */
+
 	}
 }
 
