@@ -26,5 +26,4 @@
 
 #define CONFIGURE_INIT
 
-
 #include <rtems/confdefs.h>
