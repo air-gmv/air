@@ -10,22 +10,19 @@
  *  $Id: init.c,v 1.13 2003/09/04 18:53:41 joel Exp $
  */
 
-#define CONFIGURE_INIT
+#include <stdio.h>
 
-#include <air.h>
-//#include <pprintf.h>
-
-int andp=7;
+int andp=0;
 
 
 void entry_point(void) {
 
 while(1)
 {
-
   andp=andp+1;
-  printf( "\n\n*** RTEMS HELLO WORLD TEST **********\n" );
-  rtems_task_wake_after(10);
+  printf( "*** RTEMS HELLO WORLD TEST **********\n" );
+  rtems_task_wake_after(5);
+
 
 }
 //  exit( 0 );

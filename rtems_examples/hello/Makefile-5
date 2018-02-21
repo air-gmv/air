@@ -1,6 +1,6 @@
 RTEMS_API = 5
 RTEMS_CPU = sparc
-RTEMS_BSP = gr740
+RTEMS_BSP = leon3
 
 prefix = /opt/rtems/$(RTEMS_API)
 exec_prefix = $(prefix)/$(RTEMS_CPU)-rtems$(RTEMS_API)
@@ -11,7 +11,6 @@ PROJECT_ROOT = $(RTEMS_ROOT)/$(RTEMS_CPU)-rtems$(RTEMS_API)/$(RTEMS_BSP)
 PROJECT_INCLUDE = $(PROJECT_ROOT)/lib/include
 PROJECT_LIB = $(PROJECT_ROOT)/lib
 BUILDDIR = b-$(RTEMS_BSP)
-SUPPORT_INCLUDE = ../../support/include
 
 include $(RTEMS_ROOT)/make/custom/$(RTEMS_BSP).cfg
 
@@ -19,11 +18,11 @@ DEPFLAGS = -MT $@ -MD -MP -MF $(basename $@).d
 SYSFLAGS = -B $(PROJECT_LIB) -specs bsp_specs -qrtems
 WARNFLAGS = -Wall
 # -gstrict-dwarf -gdwarf-2 dropped due to some gdb incompatibilities
-OPTFLAGS = -O2 -g -ffunction-sections -fdata-sections 
+OPTFLAGS = -O2 -g -ffunction-sections -fdata-sections
 EXEEXT = .exe
 DOWNEXT = .ralf
 
-CPPFLAGS = -I$(PROJECT_INCLUDE)/bsp -I$(SUPPORT_INCLUDE) #-I.. -DHAVE_CONFIG_H
+CPPFLAGS = -I$(PROJECT_INCLUDE)/bsp
 CFLAGS = $(DEPFLAGS) $(SYSFLAGS) $(WARNFLAGS) $(CPU_CFLAGS) $(OPTFLAGS)
 CXXFLAGS = $(DEPFLAGS) $(SYSFLAGS) $(WARNFLAGS) $(CPU_CFLAGS) $(OPTFLAGS)
 ASFLAGS = $(CPU_CFLAGS)
@@ -52,8 +51,7 @@ export PATH := $(RTEMS_ROOT)/bin:$(PATH)
 
 export AR = $(RTEMS_CPU)-rtems$(RTEMS_API)-ar
 export AS = $(RTEMS_CPU)-rtems$(RTEMS_API)-as
-export CC = $(RTEMS_CPU)-rtems$(RTEMS_API)-gcc --pipe 
-#export CC = $(RTEMS_CPU)-rtems$(RTEMS_API)-gcc 
+export CC = $(RTEMS_CPU)-rtems$(RTEMS_API)-gcc --pipe
 export CXX = $(RTEMS_CPU)-rtems$(RTEMS_API)-g++
 export LD = $(RTEMS_CPU)-rtems$(RTEMS_API)-ld
 export NM = $(RTEMS_CPU)-rtems$(RTEMS_API)-nm

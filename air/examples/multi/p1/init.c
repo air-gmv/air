@@ -41,11 +41,13 @@ static void hm_isr_handler(void) {
 rtems_task Init(rtems_task_argument ignored) {
 
     /* register HM ISR handler */
+    /* HM is now Disabled
     rtems_isr_entry isr_ignored;
     rtems_interrupt_catch(
             (rtems_isr_entry)hm_isr_handler,
             AIR_IRQ_HM_EVENT,
             &isr_ignored);
+    */
 
     /* initialize IMASPEX */
     imaspex_init();
@@ -59,3 +61,5 @@ rtems_task Init(rtems_task_argument ignored) {
 }
 
 #include <rtems_config.h>
+
+
