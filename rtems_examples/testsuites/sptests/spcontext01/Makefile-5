@@ -1,6 +1,6 @@
 RTEMS_API = 5
 RTEMS_CPU = sparc
-RTEMS_BSP = leon3
+RTEMS_BSP = gr740
 
 prefix = /opt/rtems/$(RTEMS_API)
 exec_prefix = $(prefix)/$(RTEMS_CPU)-rtems$(RTEMS_API)
