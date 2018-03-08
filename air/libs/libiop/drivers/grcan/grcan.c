@@ -89,17 +89,17 @@
 #define GRCAN_SAMPLING_POINT 80
 #endif
 
-/* Uncomment for debug output */
 /****************** DEBUG Definitions ********************/
 #define DBG_TX 2
 #define DBG_RX 4
 #define DBG_STATE 8
 
 #define DEBUG_FLAGS (DBG_STATE | DBG_RX | DBG_TX )
-/*
-#define DEBUG
-#define DEBUGFUNCS
-*/
+/*gmvs*/
+#ifdef IOP_NEEDS_DEBUG
+  #define DEBUG
+  #define DEBUGFUNCS
+#endif
 #include <debug_defs.h>
 
 /*********************************************************/
@@ -124,8 +124,8 @@ struct grcan_config {
 };
 
 struct grcan_priv {
-	struct drvmgr_dev *dev;	/* Driver manager device */
-	char devName[32];	/* Device Name */
+	//~ struct drvmgr_dev *dev;	/* Driver manager device */
+	//~ char devName[32];	/* Device Name */
   unsigned int baseaddr, ram_base;
   struct grcan_regs *regs;
   int irq;
@@ -279,7 +279,7 @@ int grcan_init2(struct drvmgr_dev *dev)
 	DBG("GRCAN[%d] on bus %s\n", dev->minor_drv, dev->parent->dev->name);
 	if (GRCAN_COUNT_MAX <= grcan_count)
 		return DRVMGR_ENORES;
-	priv = dev->priv = malloc(sizeof(struct grcan_priv));
+	priv = dev->priv = malloc(sizeof(struct grcan_priv)); // TODO remove
 	if ( !priv )
 		return DRVMGR_NOMEM;
 	memset(priv, 0, sizeof(*priv));
@@ -1139,7 +1139,7 @@ static int grcan_alloc_buffers(struct grcan_priv *pDev, int rx, int tx)
  } else {
    if (adr == 0) {
 	pDev->_tx = malloc(pDev->txbuf_size +
-	                   BUFFER_ALIGNMENT_NEEDS);
+	                   BUFFER_ALIGNMENT_NEEDS); // TODO remove
     if ( !pDev->_tx )
       return -1;
  } else {
@@ -1187,7 +1187,7 @@ static int grcan_alloc_buffers(struct grcan_priv *pDev, int rx, int tx)
 		} else {
 			if (adr == 0) {
 				pDev->_rx = malloc(pDev->rxbuf_size +
-				                   BUFFER_ALIGNMENT_NEEDS);
+				                   BUFFER_ALIGNMENT_NEEDS); //TODO remove
     if ( !pDev->_rx )
       return -1;
 			} else {
