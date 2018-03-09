@@ -7,6 +7,12 @@
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at
  *  http://www.rtems.org/license/LICENSE.
+ * 
+ * Modified by: gmvs@gmv.com
+ * 
+ * The original driver has been modified to be included in the Hypervisor
+ * AIR, developed by gmv. It is assumed to be used for the GR740 board.
+ * 
  */
 
 #include <bsp.h>
@@ -20,6 +26,8 @@
 
 #include <grcan.h>
 #include <ambapp.h>
+
+#include <can_support.h>
 
 #if (((__RTEMS_MAJOR__ << 16) | (__RTEMS_MINOR__ << 8) | __RTEMS_REVISION__) >= 0x040b63)
 
@@ -89,6 +97,9 @@
 #define GRCAN_SAMPLING_POINT 80
 #endif
 
+
+/* This assumes that the driver is used on the GR740 board */
+#define CAN_CLOCK_SPEED 250000000
 /****************** DEBUG Definitions ********************/
 #define DBG_TX 2
 #define DBG_RX 4
@@ -223,9 +234,76 @@ static unsigned int __inline__ _grcan_read_nocache(unsigned int address)
 #endif
 
 #define NELEM(a) ((int) (sizeof (a) / sizeof (a[0])))
-/*gmvs*/
-static int grcan_count = 0;
-static struct grcan_priv *priv_tab[GRCAN_COUNT_MAX];
+
+//~ static struct grcan_priv *priv_tab[GRCAN_COUNT_MAX];
+
+int grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
+
+	struct grcan_priv *priv = iop_dev->dev;
+	DBG("GRCAN[%d] on bus %s\n", dev->minor_drv, dev->parent->dev->name);
+	// File system name should be configured in the iop_can_physical components
+	
+	if( grcan_device_init(priv) ){
+		// Couldn't initialize the device
+		return RTEMS_IO_ERROR;
+	}
+	return RTEMS_SUCCESSFUL;
+//~ int grcan_init2(struct drvmgr_dev *dev)
+//~ {
+	//~ struct grcan_priv *priv;
+
+	//~ DBG("GRCAN[%d] on bus %s\n", dev->minor_drv, dev->parent->dev->name);
+	//~ if (GRCAN_COUNT_MAX <= grcan_count)
+		//~ return DRVMGR_ENORES;
+	//~ priv = dev->priv = malloc(sizeof(struct grcan_priv));
+	//~ if ( !priv )
+		//~ return DRVMGR_NOMEM;
+	//~ memset(priv, 0, sizeof(*priv));
+	//~ priv->dev = dev;
+
+	/* This core will not find other cores, so we wait for init2() */
+
+	//~ return DRVMGR_OK;
+//~ }
+
+//~ int grcan_init3(struct drvmgr_dev *dev)
+//~ {
+	//~ struct grcan_priv *priv;
+	//~ char prefix[32];
+
+	//~ priv = dev->priv;
+
+	/*
+	 * Now we take care of device initialization.
+	 */
+
+	//~ if ( grcan_device_init(priv) ) {
+		//~ return DRVMGR_FAIL;
+	//~ }
+
+	//~ priv_tab[grcan_count] = priv;
+	//~ grcan_count++;
+
+	//~ /* Get Filesystem name prefix */
+	//~ prefix[0] = '\0';
+	//~ if ( drvmgr_get_dev_prefix(dev, prefix) ) {
+		//~ /* Failed to get prefix, make sure of a unique FS name
+		 //~ * by using the driver minor.
+		 //~ */
+		//~ sprintf(priv->devName, "grcan%d", dev->minor_drv);
+	//~ } else {
+		//~ /* Got special prefix, this means we have a bus prefix
+		 //~ * And we should use our "bus minor"
+		 //~ */
+		//~ sprintf(priv->devName, "%sgrcan%d", prefix, dev->minor_bus);
+	//~ }
+
+	//~ return DRVMGR_OK;
+//~ }
+
+
+
+}
 
 /******************* Driver manager interface ***********************/
 
@@ -266,64 +344,64 @@ struct amba_drv_info grcan_drv_info =
 	&grcan_ids[0]
 };
 
-void grcan_register_drv (void)
-{
-	DBG("Registering GRCAN driver\n");
-	drvmgr_drv_register(&grcan_drv_info.general);
-}
+//~ void grcan_register_drv (void)
+//~ {
+	//~ DBG("Registering GRCAN driver\n");
+	//~ drvmgr_drv_register(&grcan_drv_info.general);
+//~ }
 
-int grcan_init2(struct drvmgr_dev *dev)
-{
-	struct grcan_priv *priv;
+//~ int grcan_init2(struct drvmgr_dev *dev)
+//~ {
+	//~ struct grcan_priv *priv;
 
-	DBG("GRCAN[%d] on bus %s\n", dev->minor_drv, dev->parent->dev->name);
-	if (GRCAN_COUNT_MAX <= grcan_count)
-		return DRVMGR_ENORES;
-	priv = dev->priv = malloc(sizeof(struct grcan_priv)); // TODO remove
-	if ( !priv )
-		return DRVMGR_NOMEM;
-	memset(priv, 0, sizeof(*priv));
-	priv->dev = dev;
+	//~ DBG("GRCAN[%d] on bus %s\n", dev->minor_drv, dev->parent->dev->name);
+	//~ if (GRCAN_COUNT_MAX <= grcan_count)
+		//~ return DRVMGR_ENORES;
+	//~ priv = dev->priv = malloc(sizeof(struct grcan_priv));
+	//~ if ( !priv )
+		//~ return DRVMGR_NOMEM;
+	//~ memset(priv, 0, sizeof(*priv));
+	//~ priv->dev = dev;
 
-	/* This core will not find other cores, so we wait for init2() */
+	//~ /* This core will not find other cores, so we wait for init2() */
 
-	return DRVMGR_OK;
-}
+	//~ return DRVMGR_OK;
+//~ }
 
-int grcan_init3(struct drvmgr_dev *dev)
-{
-	struct grcan_priv *priv;
-	char prefix[32];
+//~ int grcan_init3(struct drvmgr_dev *dev)
+//~ {
+	//~ struct grcan_priv *priv;
+	//~ char prefix[32];
 
-	priv = dev->priv;
+	//~ priv = dev->priv;
 
-	/*
-	 * Now we take care of device initialization.
-	 */
+	//~ /*
+	 //~ * Now we take care of device initialization.
+	 //~ */
 
-	if ( grcan_device_init(priv) ) {
-		return DRVMGR_FAIL;
-	}
+	//~ if ( grcan_device_init(priv) ) {
+		//~ return DRVMGR_FAIL;
+	//~ }
 
-	priv_tab[grcan_count] = priv;
-	grcan_count++;
+	//~ priv_tab[grcan_count] = priv;
+	//~ grcan_count++;
 
-	/* Get Filesystem name prefix */
-	prefix[0] = '\0';
-	if ( drvmgr_get_dev_prefix(dev, prefix) ) {
-		/* Failed to get prefix, make sure of a unique FS name
-		 * by using the driver minor.
-		 */
-		sprintf(priv->devName, "grcan%d", dev->minor_drv);
-	} else {
-		/* Got special prefix, this means we have a bus prefix
-		 * And we should use our "bus minor"
-		 */
-		sprintf(priv->devName, "%sgrcan%d", prefix, dev->minor_bus);
-	}
+	//~ /* Get Filesystem name prefix */
+	//~ prefix[0] = '\0';
+	//~ if ( drvmgr_get_dev_prefix(dev, prefix) ) {
+		//~ /* Failed to get prefix, make sure of a unique FS name
+		 //~ * by using the driver minor.
+		 //~ */
+		//~ sprintf(priv->devName, "grcan%d", dev->minor_drv);
+	//~ } else {
+		//~ /* Got special prefix, this means we have a bus prefix
+		 //~ * And we should use our "bus minor"
+		 //~ */
+		//~ sprintf(priv->devName, "%sgrcan%d", prefix, dev->minor_bus);
+	//~ }
 
-	return DRVMGR_OK;
-}
+	//~ return DRVMGR_OK;
+//~ }
 
 int grcan_device_init(struct grcan_priv *pDev)
 {
@@ -341,10 +419,11 @@ int grcan_device_init(struct grcan_priv *pDev)
 	pDev->minor = pDev->dev->minor_drv;
 
 	/* Get frequency in Hz */
-	if ( drvmgr_freq_get(pDev->dev, DEV_APB_SLV, &pDev->corefreq_hz) ) {
-		return -1;
-	}
-
+	//~ if ( drvmgr_freq_get(pDev->dev, DEV_APB_SLV, &pDev->corefreq_hz) ) {
+		//~ return -1;
+	//~ }
+	/* Hard coded for lack of a beter way */
+	pDev->corefreq_hz = CAN_CLOCK_SPEED;
 	DBG("GRCAN frequency: %d Hz\n", pDev->corefreq_hz);
 
 	/* Reset Hardware before attaching IRQ handler */
@@ -1115,124 +1194,124 @@ static int grcan_tx_flush(struct grcan_priv *pDev)
   return 0;
 }
 
-static int grcan_alloc_buffers(struct grcan_priv *pDev, int rx, int tx)
-{
-	unsigned int adr;
-  FUNCDBG();
+//~ static int grcan_alloc_buffers(struct grcan_priv *pDev, int rx, int tx)
+//~ {
+	//~ unsigned int adr;
+  //~ FUNCDBG();
   
-  if ( tx ) {
-/*gmvs*/
-		adr = (unsigned int)pDev->txbuf_adr;
-		if (adr & 0x1) {
-			/* User defined "remote" address. Translate it into
-			 * a CPU accessible address
-			 */
-			pDev->_tx_hw = (void *)(adr & ~0x1);
-			drvmgr_translate_check(
-				pDev->dev,
-				DMAMEM_TO_CPU,
-				(void *)pDev->_tx_hw,
-				(void **)&pDev->_tx,
-				pDev->txbuf_size);
-/*gmvs*/
-    pDev->tx = (struct grcan_msg *)pDev->_tx;
- } else {
-   if (adr == 0) {
-	pDev->_tx = malloc(pDev->txbuf_size +
-	                   BUFFER_ALIGNMENT_NEEDS); // TODO remove
-    if ( !pDev->_tx )
-      return -1;
- } else {
-	/* User defined "cou-local" address. Translate
-	 * it into a CPU accessible address
-	 */
-	pDev->_tx = (void *)adr;
- }
-    /* Align TX buffer */
-    pDev->tx = (struct grcan_msg *)
-           (((unsigned int)pDev->_tx +
-	   (BUFFER_ALIGNMENT_NEEDS-1)) &
-               ~(BUFFER_ALIGNMENT_NEEDS-1));
-/*gmvs*/
+  //~ if ( tx ) {
+//~ /*gmvs*/
+		//~ adr = (unsigned int)pDev->txbuf_adr;
+		//~ if (adr & 0x1) {
+			//~ /* User defined "remote" address. Translate it into
+			 //~ * a CPU accessible address
+			 //~ */
+			//~ pDev->_tx_hw = (void *)(adr & ~0x1);
+			//~ drvmgr_translate_check(
+				//~ pDev->dev,
+				//~ DMAMEM_TO_CPU,
+				//~ (void *)pDev->_tx_hw,
+				//~ (void **)&pDev->_tx,
+				//~ pDev->txbuf_size);
+//~ /*gmvs*/
+    //~ pDev->tx = (struct grcan_msg *)pDev->_tx;
+ //~ } else {
+   //~ if (adr == 0) {
+	//~ pDev->_tx = malloc(pDev->txbuf_size +
+	                   //~ BUFFER_ALIGNMENT_NEEDS);
+    //~ if ( !pDev->_tx )
+      //~ return -1;
+ //~ } else {
+	//~ /* User defined "cou-local" address. Translate
+	 //~ * it into a CPU accessible address
+	 //~ */
+	//~ pDev->_tx = (void *)adr;
+ //~ }
+    //~ /* Align TX buffer */
+    //~ pDev->tx = (struct grcan_msg *)
+           //~ (((unsigned int)pDev->_tx +
+	   //~ (BUFFER_ALIGNMENT_NEEDS-1)) &
+               //~ ~(BUFFER_ALIGNMENT_NEEDS-1));
+//~ /*gmvs*/
 
-			/* Translate address into an hardware accessible
-			 * address
-			 */
-			drvmgr_translate_check(
-				pDev->dev,
-				CPUMEM_TO_DMA,
-				(void *)pDev->tx,
-				(void **)&pDev->_tx_hw,
-				pDev->txbuf_size);
-		}
-/*gmvs*/
-  }
+			//~ /* Translate address into an hardware accessible
+			 //~ * address
+			 //~ */
+			//~ drvmgr_translate_check(
+				//~ pDev->dev,
+				//~ CPUMEM_TO_DMA,
+				//~ (void *)pDev->tx,
+				//~ (void **)&pDev->_tx_hw,
+				//~ pDev->txbuf_size);
+		//~ }
+//~ /*gmvs*/
+  //~ }
   
-  if ( rx ) {
-/*gmvs*/
-		adr = (unsigned int)pDev->rxbuf_adr;
-		if (adr & 0x1) {
-			/* User defined "remote" address. Translate it into
-			 * a CPU accessible address
-			 */
-			pDev->_rx_hw = (void *)(adr & ~0x1);
-			drvmgr_translate_check(
-				pDev->dev,
-				DMAMEM_TO_CPU,
-				(void *)pDev->_rx_hw,
-				(void **)&pDev->_rx,
-				pDev->rxbuf_size);
-/*gmvs*/
-    pDev->rx = (struct grcan_msg *)pDev->_rx;
-		} else {
-			if (adr == 0) {
-				pDev->_rx = malloc(pDev->rxbuf_size +
-				                   BUFFER_ALIGNMENT_NEEDS); //TODO remove
-    if ( !pDev->_rx )
-      return -1;
-			} else {
-				/* User defined "cou-local" address. Translate
-				 * it into a CPU accessible address
-				 */
-				pDev->_rx = (void *)adr;
-			}
-			/* Align RX buffer */
-    pDev->rx = (struct grcan_msg *) 
-           (((unsigned int)pDev->_rx +
-	   (BUFFER_ALIGNMENT_NEEDS-1)) &
-           ~(BUFFER_ALIGNMENT_NEEDS-1));
-/*gmvs*/
-		/* Translate address into an hardware accessible
-		 * address
-		 */
-		drvmgr_translate_check(
-			pDev->dev,
-			CPUMEM_TO_DMA,
-			(void *)pDev->rx,
-			(void **)&pDev->_rx_hw,
-			pDev->rxbuf_size);
-	}
-/*gmvs*/
-  }
-  return 0;
-}
+  //~ if ( rx ) {
+//~ /*gmvs*/
+		//~ adr = (unsigned int)pDev->rxbuf_adr;
+		//~ if (adr & 0x1) {
+			//~ /* User defined "remote" address. Translate it into
+			 //~ * a CPU accessible address
+			 //~ */
+			//~ pDev->_rx_hw = (void *)(adr & ~0x1);
+			//~ drvmgr_translate_check(
+				//~ pDev->dev,
+				//~ DMAMEM_TO_CPU,
+				//~ (void *)pDev->_rx_hw,
+				//~ (void **)&pDev->_rx,
+				//~ pDev->rxbuf_size);
+//~ /*gmvs*/
+    //~ pDev->rx = (struct grcan_msg *)pDev->_rx;
+		//~ } else {
+			//~ if (adr == 0) {
+				//~ pDev->_rx = malloc(pDev->rxbuf_size +
+				                   //~ BUFFER_ALIGNMENT_NEEDS);
+    //~ if ( !pDev->_rx )
+      //~ return -1;
+			//~ } else {
+				//~ /* User defined "cou-local" address. Translate
+				 //~ * it into a CPU accessible address
+				 //~ */
+				//~ pDev->_rx = (void *)adr;
+			//~ }
+			//~ /* Align RX buffer */
+    //~ pDev->rx = (struct grcan_msg *) 
+           //~ (((unsigned int)pDev->_rx +
+	   //~ (BUFFER_ALIGNMENT_NEEDS-1)) &
+           //~ ~(BUFFER_ALIGNMENT_NEEDS-1));
+//~ /*gmvs*/
+		//~ /* Translate address into an hardware accessible
+		 //~ * address
+		 //~ */
+		//~ drvmgr_translate_check(
+			//~ pDev->dev,
+			//~ CPUMEM_TO_DMA,
+			//~ (void *)pDev->rx,
+			//~ (void **)&pDev->_rx_hw,
+			//~ pDev->rxbuf_size);
+	//~ }
+//~ /*gmvs*/
+  //~ }
+  //~ return 0;
+//~ }
 
-static void grcan_free_buffers(struct grcan_priv *pDev, int rx, int tx)
-{
-  FUNCDBG();
+//~ static void grcan_free_buffers(struct grcan_priv *pDev, int rx, int tx)
+//~ {
+  //~ FUNCDBG();
   
-  if ( tx && pDev->_tx ){
-    free(pDev->_tx);
-    pDev->_tx = NULL;
-    pDev->tx = NULL;
-  }
+  //~ if ( tx && pDev->_tx ){
+    //~ free(pDev->_tx);
+    //~ pDev->_tx = NULL;
+    //~ pDev->tx = NULL;
+  //~ }
 
-  if ( rx && pDev->_rx ){
-    free(pDev->_rx);
-    pDev->_rx = NULL;
-    pDev->rx = NULL;
-  }
-}
+  //~ if ( rx && pDev->_rx ){
+    //~ free(pDev->_rx);
+    //~ pDev->_rx = NULL;
+    //~ pDev->rx = NULL;
+  //~ }
+//~ }
 
 int grcan_dev_count(void)
 {
@@ -1258,19 +1337,21 @@ void *grcan_open_by_name(char *name, int *dev_no)
 	return NULL;
 }
 
-void *grcan_open(int dev_no)
+void *grcan_open(iop_device_driver_t *iop_dev)
 {
 	struct grcan_priv *pDev;
 	void *ret;
-	union drvmgr_key_value *value;
+	//~ union drvmgr_key_value *value;
+	
+	pDev = (struct grcan_priv) iop_dev;
   
   FUNCDBG();
 
-	if (grcan_count == 0 || (grcan_count <= dev_no)) {
-		return NULL;
-  }
+	//~ if (grcan_count == 0 || (grcan_count <= dev_no)) {
+		//~ return NULL;
+  //~ }
   
-	pDev = priv_tab[dev_no];
+	//~ pDev = priv_tab[dev_no];
 
   /* Wait until we get semaphore */
 	if (rtems_semaphore_obtain(pDev->dev_sem, RTEMS_WAIT, RTEMS_NO_TIMEOUT)
@@ -1305,23 +1386,24 @@ void *grcan_open(int dev_no)
   pDev->rxbuf_adr = 0;
   pDev->txbuf_size = TX_BUF_SIZE;
   pDev->rxbuf_size = RX_BUF_SIZE;
-/*gmvs*/
+/*gmvs This has to be configured in the iop_physical_device_x.c
+ * For now we use the default values.*/
 	/* Override default buffer sizes if available from bus resource */
-	value = drvmgr_dev_key_get(pDev->dev, "txBufSize", DRVMGR_KT_INT);
-	if ( value )
-		pDev->txbuf_size = value->i;
+	//~ value = drvmgr_dev_key_get(pDev->dev, "txBufSize", DRVMGR_KT_INT);
+	//~ if ( value )
+		//~ pDev->txbuf_size = value->i;
 
-	value = drvmgr_dev_key_get(pDev->dev, "rxBufSize", DRVMGR_KT_INT);
-	if ( value )
-		pDev->rxbuf_size = value->i;
+	//~ value = drvmgr_dev_key_get(pDev->dev, "rxBufSize", DRVMGR_KT_INT);
+	//~ if ( value )
+		//~ pDev->rxbuf_size = value->i;
 
-	value = drvmgr_dev_key_get(pDev->dev, "txBufAdr", DRVMGR_KT_POINTER);
-	if ( value )
-		pDev->txbuf_adr = value->ptr;
+	//~ value = drvmgr_dev_key_get(pDev->dev, "txBufAdr", DRVMGR_KT_POINTER);
+	//~ if ( value )
+		//~ pDev->txbuf_adr = value->ptr;
 
-	value = drvmgr_dev_key_get(pDev->dev, "rxBufAdr", DRVMGR_KT_POINTER);
-	if ( value )
-		pDev->rxbuf_adr = value->ptr;
+	//~ value = drvmgr_dev_key_get(pDev->dev, "rxBufAdr", DRVMGR_KT_POINTER);
+	//~ if ( value )
+		//~ pDev->rxbuf_adr = value->ptr;
 /*gmvs*/
 
   DBG("Defaulting to rxbufsize: %d, txbufsize: %d\n",RX_BUF_SIZE,TX_BUF_SIZE);
@@ -1337,12 +1419,16 @@ void *grcan_open(int dev_no)
   /* Calculate default timing register values */
   grcan_calc_timing(GRCAN_DEFAULT_BAUD,pDev->corefreq_hz,GRCAN_SAMPLING_POINT,&pDev->config.timing);
   
-  if ( grcan_alloc_buffers(pDev,1,1) ) {
-		ret = NULL;
-    goto out;
-  }
   
-  /* Clear statistics */
+  /* Just check if the buffers are properly allocated from the physical
+   *  devices declaration */
+  //~ if ( grcan_alloc_buffers(pDev,1,1) ) {
+		//~ ret = NULL;
+    //~ goto out;
+  //~ }
+  
+  /* Clear statistics TODO it is probably a good ideia to clean the memory
+   * just in case. */
   memset(&pDev->stats,0,sizeof(struct grcan_stats));
   
 	ret = pDev;
@@ -1361,7 +1447,7 @@ int grcan_close(void *d)
   
   grcan_hw_reset(pDev->regs);
   
-  grcan_free_buffers(pDev,1,1);
+  //~ grcan_free_buffers(pDev,1,1);
   
   /* Mark Device as closed */
   pDev->open = 0;
@@ -1565,8 +1651,10 @@ int grcan_start(void *d)
 	DBGC(DBG_STATE, "STOPPED|BUSOFF|AHBERR->STARTED\n");
     
 	/* Register interrupt routine and enable IRQ at IRQ ctrl */
-	drvmgr_interrupt_register(pDev->dev, 0, pDev->devName,
-					grcan_interrupt, pDev);
+	/* TODO This function was removed but must be inserted again
+	 * somehow */
+//	drvmgr_interrupt_register(pDev->dev, 0, pDev->devName,
+//					grcan_interrupt, pDev);
       
 	return 0;
 }
