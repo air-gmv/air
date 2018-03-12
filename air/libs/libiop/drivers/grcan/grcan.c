@@ -16,17 +16,17 @@
  */
 
 #include <bsp.h>
-#include <rtems/libio.h>
-#include <stdlib.h>
-#include <stdio.h>
+//#include <rtems/libio.h>
+//#include <stdlib.h>
+//#include <stdio.h>
 #include <string.h>
 #include <assert.h>
-#include <ctype.h>
-#include <rtems/bspIo.h>
+//#include <ctype.h>
+//#include <rtems/bspIo.h>
 
 #include <grcan.h>
 #include <ambapp.h>
-
+#include <ambaext.h>
 #include <can_support.h>
 
 #if (((__RTEMS_MAJOR__ << 16) | (__RTEMS_MINOR__ << 8) | __RTEMS_REVISION__) >= 0x040b63)
@@ -134,7 +134,7 @@ struct grcan_config {
 	int silent;
 };
 
-struct grcan_priv {
+typedef struct grcan_priv_ {
 	//~ struct drvmgr_dev *dev;	/* Driver manager device */
 	//~ char devName[32];	/* Device Name */
   unsigned int baseaddr, ram_base;
@@ -168,18 +168,18 @@ struct grcan_priv {
   
   rtems_id rx_sem, tx_sem, txempty_sem, dev_sem;
 	SPIN_DECLARE(devlock);
-};
+} grcan_priv;
 
 static void __inline__ grcan_hw_reset(struct grcan_regs *regs);
 
 static int grcan_hw_read_try(
-  struct grcan_priv *pDev,
+  grcan_priv *pDev,
   struct grcan_regs *regs,
   CANMsg *buffer,
   int max);
 
 static int grcan_hw_write_try(
-  struct grcan_priv *pDev,
+  grcan_priv *pDev,
   struct grcan_regs *regs,
   CANMsg *buffer,
   int count);
@@ -234,12 +234,13 @@ static unsigned int __inline__ _grcan_read_nocache(unsigned int address)
 #endif
 
 #define NELEM(a) ((int) (sizeof (a) / sizeof (a[0])))
+static int grcan_count = 0;
 
-//~ static struct grcan_priv *priv_tab[GRCAN_COUNT_MAX];
+//~ static grcan_priv *priv_tab[GRCAN_COUNT_MAX];
 
 int grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
 
-	struct grcan_priv *priv = iop_dev->dev;
+	grcan_priv *priv = (grcan_priv*) iop_dev->driver;
 	DBG("GRCAN[%d] on bus %s\n", dev->minor_drv, dev->parent->dev->name);
 	// File system name should be configured in the iop_can_physical components
 	
@@ -250,12 +251,12 @@ int grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
 	return RTEMS_SUCCESSFUL;
 //~ int grcan_init2(struct drvmgr_dev *dev)
 //~ {
-	//~ struct grcan_priv *priv;
+	//~ grcan_priv *priv;
 
 	//~ DBG("GRCAN[%d] on bus %s\n", dev->minor_drv, dev->parent->dev->name);
 	//~ if (GRCAN_COUNT_MAX <= grcan_count)
 		//~ return DRVMGR_ENORES;
-	//~ priv = dev->priv = malloc(sizeof(struct grcan_priv));
+	//~ priv = dev->priv = malloc(sizeof(grcan_priv));
 	//~ if ( !priv )
 		//~ return DRVMGR_NOMEM;
 	//~ memset(priv, 0, sizeof(*priv));
@@ -268,7 +269,7 @@ int grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
 
 //~ int grcan_init3(struct drvmgr_dev *dev)
 //~ {
-	//~ struct grcan_priv *priv;
+	//~ grcan_priv *priv;
 	//~ char prefix[32];
 
 	//~ priv = dev->priv;
@@ -308,41 +309,41 @@ int grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
 /******************* Driver manager interface ***********************/
 
 /* Driver prototypes */
-int grcan_device_init(struct grcan_priv *pDev);
+int grcan_device_init(iop_device_driver_t *pDev);
 
-int grcan_init2(struct drvmgr_dev *dev);
-int grcan_init3(struct drvmgr_dev *dev);
+//int grcan_init2(struct drvmgr_dev *dev);
+//int grcan_init3(struct drvmgr_dev *dev);
 
-struct drvmgr_drv_ops grcan_ops = 
-{
-	.init = {NULL, grcan_init2, grcan_init3, NULL},
-	.remove = NULL,
-	.info = NULL
-};
+//struct drvmgr_drv_ops grcan_ops =
+//{
+//	.init = {NULL, grcan_init2, grcan_init3, NULL},
+//	.remove = NULL,
+//	.info = NULL
+//};
 
-struct amba_dev_id grcan_ids[] = 
+struct amba_dev_id grcan_ids[] =
 {
 	{VENDOR_GAISLER, GAISLER_GRCAN},
 	{VENDOR_GAISLER, GAISLER_GRHCAN},
 	{0, 0}		/* Mark end of table */
 };
 
-struct amba_drv_info grcan_drv_info =
-{
-	{
-		DRVMGR_OBJ_DRV,			/* Driver */
-		NULL,				/* Next driver */
-		NULL,				/* Device list */
-		DRIVER_AMBAPP_GAISLER_GRCAN_ID,	/* Driver ID */
-		"GRCAN_DRV",			/* Driver Name */
-		DRVMGR_BUS_TYPE_AMBAPP,		/* Bus Type */
-		&grcan_ops,
-		NULL,				/* Funcs */
-		0,				/* No devices yet */
-		0,
-	},
-	&grcan_ids[0]
-};
+//struct amba_drv_info grcan_drv_info =
+//{
+//	{
+//		DRVMGR_OBJ_DRV,			/* Driver */
+//		NULL,				/* Next driver */
+//		NULL,				/* Device list */
+//		DRIVER_AMBAPP_GAISLER_GRCAN_ID,	/* Driver ID */
+//		"GRCAN_DRV",			/* Driver Name */
+//		DRVMGR_BUS_TYPE_AMBAPP,		/* Bus Type */
+//		&grcan_ops,
+//		NULL,				/* Funcs */
+//		0,				/* No devices yet */
+//		0,
+//	},
+//	&grcan_ids[0]
+//};
 
 //~ void grcan_register_drv (void)
 //~ {
@@ -352,12 +353,12 @@ struct amba_drv_info grcan_drv_info =
 
 //~ int grcan_init2(struct drvmgr_dev *dev)
 //~ {
-	//~ struct grcan_priv *priv;
+	//~ grcan_priv *priv;
 
 	//~ DBG("GRCAN[%d] on bus %s\n", dev->minor_drv, dev->parent->dev->name);
 	//~ if (GRCAN_COUNT_MAX <= grcan_count)
 		//~ return DRVMGR_ENORES;
-	//~ priv = dev->priv = malloc(sizeof(struct grcan_priv));
+	//~ priv = dev->priv = malloc(sizeof(grcan_priv));
 	//~ if ( !priv )
 		//~ return DRVMGR_NOMEM;
 	//~ memset(priv, 0, sizeof(*priv));
@@ -370,7 +371,7 @@ struct amba_drv_info grcan_drv_info =
 
 //~ int grcan_init3(struct drvmgr_dev *dev)
 //~ {
-	//~ struct grcan_priv *priv;
+	//~ grcan_priv *priv;
 	//~ char prefix[32];
 
 	//~ priv = dev->priv;
@@ -403,20 +404,36 @@ struct amba_drv_info grcan_drv_info =
 	//~ return DRVMGR_OK;
 //~ }
 
-int grcan_device_init(struct grcan_priv *pDev)
+int grcan_device_init(iop_device_driver_t *iop_dev)
 {
-	struct amba_dev_info *ambadev;
+	iop_can_device_t *device_t = (iop_can_device_t *) iop_dev;
+	grcan_priv *pDev = device_t->dev.driver;
+
+//	struct amba_dev_info *ambadev;
 	struct ambapp_core *pnpinfo;
+	amba_confarea_type *amba_bus; /* This was global in occan*/
+	amba_apb_device ambadev;
 
 	/* Get device information from AMBA PnP information */
-	ambadev = (struct amba_dev_info *)pDev->dev->businfo;
-	if ( ambadev == NULL ) {
+	/* GMVS find the bus on which the device is */
+
+	if(amba_find_next_apbslv(amba_bus,
+			grcan_ids[0].vendor,
+			grcan_ids[0].device,
+			&ambadev,
+			device_t->can_core))
+	{
+		iprintf("GRCAN amba device error\n", __func__);
 		return -1;
 	}
-	pnpinfo = &ambadev->info;
-	pDev->irq = pnpinfo->irq;
-	pDev->regs = (struct grcan_regs *)pnpinfo->apb_slv->start;
-	pDev->minor = pDev->dev->minor_drv;
+
+//	pnpinfo = &ambadev->info;
+//	pDev->irq = pnpinfo->irq;
+	pDev->irq = ambadev.irq;
+//	pDev->regs = (struct grcan_regs *)pnpinfo->apb_slv->start;
+	pDev->regs = (struct grcan_regs *)ambadev.start;
+//	pDev->minor = pDev->dev->minor_drv;
+	pDev->minor = device_t->can_core;
 
 	/* Get frequency in Hz */
 	//~ if ( drvmgr_freq_get(pDev->dev, DEV_APB_SLV, &pDev->corefreq_hz) ) {
@@ -428,6 +445,10 @@ int grcan_device_init(struct grcan_priv *pDev)
 
 	/* Reset Hardware before attaching IRQ handler */
 	grcan_hw_reset(pDev->regs);
+	iop_debug("GRCAN: System frequency set at: %dHz\n", pDev->corefreq_hz);
+
+	/* TODO compute grcan_timing from clock frequency and configured baudrate
+	 * from iop config */
 
 	/* RX Semaphore created with count = 0 */
 	if ( rtems_semaphore_create(rtems_build_name('G', 'C', 'R', '0' + pDev->minor),
@@ -477,13 +498,16 @@ static void __inline__ grcan_hw_reset(struct grcan_regs *regs)
 	regs->ctrl = GRCAN_CTRL_RESET;
 }
 
-static rtems_device_driver grcan_hw_start(struct grcan_priv *pDev)
+static rtems_device_driver grcan_hw_start(grcan_priv *pDev)
 {
 	/*
 	 * tmp is set but never used. GCC gives a warning for this
 	 * and we need to tell GCC not to complain.
 	 */
-	unsigned int tmp RTEMS_UNUSED;
+//	unsigned int tmp RTEMS_UNUSED;
+//	unsigned int tmp RTEMS_SUCCESSFUL;
+	unsigned int tmp;
+
 
 	SPIN_IRQFLAGS(oldLevel);
   
@@ -548,7 +572,7 @@ static rtems_device_driver grcan_hw_start(struct grcan_priv *pDev)
   return RTEMS_SUCCESSFUL;
 }
 
-static void grcan_hw_stop(struct grcan_priv *pDev)
+static void grcan_hw_stop(grcan_priv *pDev)
 {
   FUNCDBG();
      
@@ -563,7 +587,7 @@ static void grcan_hw_stop(struct grcan_priv *pDev)
   pDev->regs->tx0ctrl = 0;
 }
   
-static void grcan_sw_stop(struct grcan_priv *pDev)
+static void grcan_sw_stop(grcan_priv *pDev)
 {
 	/*
 	 * Release semaphores to wake all threads waiting for an IRQ.
@@ -800,7 +824,7 @@ static int grcan_calc_timing(
 }
 
 static int grcan_hw_read_try(
-  struct grcan_priv *pDev,
+  grcan_priv *pDev,
   struct grcan_regs *regs,
   CANMsg *buffer, 
   int max
@@ -900,7 +924,7 @@ static int grcan_hw_read_try(
 }
 
 static int grcan_hw_write_try(
-  struct grcan_priv *pDev,
+  grcan_priv *pDev,
   struct grcan_regs *regs,
   CANMsg *buffer,
   int count
@@ -975,7 +999,7 @@ static int grcan_hw_write_try(
   return ret;
 }
 
-static int grcan_wait_rxdata(struct grcan_priv *pDev, int min)
+static int grcan_wait_rxdata(grcan_priv *pDev, int min)
 {
   unsigned int wp, rp, size, irq;
   unsigned int irq_trunk, dataavail;
@@ -1058,7 +1082,7 @@ static int grcan_wait_rxdata(struct grcan_priv *pDev, int min)
  * min must be at least WRAP_AROUND_TX_MSGS less than max buffer capacity
  * (pDev->txbuf_size/GRCAN_MSG_SIZE) for this algo to work.
  */
-static int grcan_wait_txspace(struct grcan_priv *pDev, int min)
+static int grcan_wait_txspace(grcan_priv *pDev, int min)
 {
 	int wait, state;
   unsigned int irq, rp, wp, size, space_left;
@@ -1135,7 +1159,7 @@ static int grcan_wait_txspace(struct grcan_priv *pDev, int min)
   return 0;
 }
 
-static int grcan_tx_flush(struct grcan_priv *pDev)
+static int grcan_tx_flush(grcan_priv *pDev)
 {
 	int wait, state;
   unsigned int rp, wp;
@@ -1194,7 +1218,7 @@ static int grcan_tx_flush(struct grcan_priv *pDev)
   return 0;
 }
 
-//~ static int grcan_alloc_buffers(struct grcan_priv *pDev, int rx, int tx)
+//~ static int grcan_alloc_buffers(grcan_priv *pDev, int rx, int tx)
 //~ {
 	//~ unsigned int adr;
   //~ FUNCDBG();
@@ -1296,7 +1320,7 @@ static int grcan_tx_flush(struct grcan_priv *pDev)
   //~ return 0;
 //~ }
 
-//~ static void grcan_free_buffers(struct grcan_priv *pDev, int rx, int tx)
+//~ static void grcan_free_buffers(grcan_priv *pDev, int rx, int tx)
 //~ {
   //~ FUNCDBG();
   
@@ -1318,76 +1342,79 @@ int grcan_dev_count(void)
 	return grcan_count;
 }
 
-void *grcan_open_by_name(char *name, int *dev_no)
-{
-	int i;
-	for (i = 0; i < grcan_count; i++){
-  struct grcan_priv *pDev;
-
-		pDev = priv_tab[i];
-		if (NULL == pDev) {
-			continue;
-		}
-		if (strncmp(pDev->devName, name, NELEM(pDev->devName)) == 0) {
-			if (dev_no)
-				*dev_no = i;
-			return grcan_open(i);
-		}
-	}
-	return NULL;
-}
+/* TODO review this function, it may no be needed in air */
+//void *grcan_open_by_name(char *name, int *dev_no)
+//{
+//	int i;
+//	for (i = 0; i < grcan_count; i++){
+//  grcan_priv *pDev;
+//
+////		pDev = priv_tab[i];
+//		if (NULL == pDev) {
+//			continue;
+//		}
+//		if (strncmp(pDev->devName, name, NELEM(pDev->devName)) == 0) {
+//			if (dev_no)
+//				*dev_no = i;
+//			return grcan_open(i);
+//		}
+//	}
+//	return NULL;
+//}
 
 void *grcan_open(iop_device_driver_t *iop_dev)
 {
-	struct grcan_priv *pDev;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
+	grcan_priv *pDev = device->dev.driver;
+
+
+	iop_debug("GRCAN: Opening CAN core %d\n", device->can_core);
 	void *ret;
 	//~ union drvmgr_key_value *value;
-	
-	pDev = (struct grcan_priv) iop_dev;
-  
-  FUNCDBG();
+
+	FUNCDBG();
 
 	//~ if (grcan_count == 0 || (grcan_count <= dev_no)) {
 		//~ return NULL;
-  //~ }
-  
+	//~ }
+
 	//~ pDev = priv_tab[dev_no];
 
-  /* Wait until we get semaphore */
+	/* Wait until we get semaphore */
 	if (rtems_semaphore_obtain(pDev->dev_sem, RTEMS_WAIT, RTEMS_NO_TIMEOUT)
-	    != RTEMS_SUCCESSFUL) {
-    return NULL;
-  }
-  
-  /* is device busy/taken? */
-  if  ( pDev->open ) {
-    ret = NULL;
-    goto out;
-  }
+		!= RTEMS_SUCCESSFUL) {
+	return NULL;
+	}
+
+	/* is device busy/taken? */
+	if  ( pDev->open ) {
+	ret = NULL;
+	goto out;
+	}
 
 	SPIN_INIT(&pDev->devlock, pDev->devName);
 
-  /* Mark device taken */
-  pDev->open = 1;
+	/* Mark device taken */
+	pDev->open = 1;
 
-  pDev->txblock = pDev->rxblock = 1;
-  pDev->txcomplete = pDev->rxcomplete = 0;
-  pDev->started = STATE_STOPPED;
-  pDev->config_changed = 1;
-  pDev->config.silent = 0;
-  pDev->config.abort = 0;
-  pDev->config.selection.selection = 0;
-  pDev->config.selection.enable0 = 0;
-  pDev->config.selection.enable1 = 1;
-  pDev->flushing = 0;
-  pDev->rx = pDev->_rx = NULL;
-  pDev->tx = pDev->_tx = NULL;
-  pDev->txbuf_adr = 0;
-  pDev->rxbuf_adr = 0;
-  pDev->txbuf_size = TX_BUF_SIZE;
-  pDev->rxbuf_size = RX_BUF_SIZE;
-/*gmvs This has to be configured in the iop_physical_device_x.c
- * For now we use the default values.*/
+	pDev->txblock = pDev->rxblock = 1;
+	pDev->txcomplete = pDev->rxcomplete = 0;
+	pDev->started = STATE_STOPPED;
+	pDev->config_changed = 1;
+	pDev->config.silent = 0;
+	pDev->config.abort = 0;
+	pDev->config.selection.selection = 0;
+	pDev->config.selection.enable0 = 0;
+	pDev->config.selection.enable1 = 1;
+	pDev->flushing = 0;
+	pDev->rx = pDev->_rx = NULL;
+	pDev->tx = pDev->_tx = NULL;
+	pDev->txbuf_adr = 0;
+	pDev->rxbuf_adr = 0;
+	pDev->txbuf_size = TX_BUF_SIZE;
+	pDev->rxbuf_size = RX_BUF_SIZE;
+	/*gmvs This has to be configured in the iop_physical_device_x.c
+	* For now we use the default values.*/
 	/* Override default buffer sizes if available from bus resource */
 	//~ value = drvmgr_dev_key_get(pDev->dev, "txBufSize", DRVMGR_KT_INT);
 	//~ if ( value )
@@ -1404,241 +1431,246 @@ void *grcan_open(iop_device_driver_t *iop_dev)
 	//~ value = drvmgr_dev_key_get(pDev->dev, "rxBufAdr", DRVMGR_KT_POINTER);
 	//~ if ( value )
 		//~ pDev->rxbuf_adr = value->ptr;
-/*gmvs*/
+	/*gmvs*/
 
-  DBG("Defaulting to rxbufsize: %d, txbufsize: %d\n",RX_BUF_SIZE,TX_BUF_SIZE);
-  
-  /* Default to accept all messages */
-  pDev->afilter.mask = 0x00000000;
-  pDev->afilter.code = 0x00000000;
-    
-  /* Default to disable sync messages (only trigger when id is set to all ones) */
-  pDev->sfilter.mask = 0xffffffff;
-  pDev->sfilter.code = 0x00000000;
-    
-  /* Calculate default timing register values */
-  grcan_calc_timing(GRCAN_DEFAULT_BAUD,pDev->corefreq_hz,GRCAN_SAMPLING_POINT,&pDev->config.timing);
-  
-  
-  /* Just check if the buffers are properly allocated from the physical
-   *  devices declaration */
-  //~ if ( grcan_alloc_buffers(pDev,1,1) ) {
+	DBG("Defaulting to rxbufsize: %d, txbufsize: %d\n",RX_BUF_SIZE,TX_BUF_SIZE);
+
+	/* Default to accept all messages */
+	pDev->afilter.mask = 0x00000000;
+	pDev->afilter.code = 0x00000000;
+
+	/* Default to disable sync messages (only trigger when id is set to all ones) */
+	pDev->sfilter.mask = 0xffffffff;
+	pDev->sfilter.code = 0x00000000;
+
+	/* Calculate default timing register values */
+	grcan_calc_timing(GRCAN_DEFAULT_BAUD,pDev->corefreq_hz,GRCAN_SAMPLING_POINT,&pDev->config.timing);
+
+
+	/* Just check if the buffers are properly allocated from the physical
+	*  devices declaration */
+	//~ if ( grcan_alloc_buffers(pDev,1,1) ) {
 		//~ ret = NULL;
-    //~ goto out;
-  //~ }
-  
-  /* Clear statistics TODO it is probably a good ideia to clean the memory
-   * just in case. */
-  memset(&pDev->stats,0,sizeof(struct grcan_stats));
-  
+	//~ goto out;
+	//~ }
+
+	/* Clear statistics TODO it is probably a good ideia to clean the memory
+	* just in case. */
+	memset(&pDev->stats,0,sizeof(struct grcan_stats));
+
 	ret = pDev;
-out:
-  rtems_semaphore_release(pDev->dev_sem);
-  return ret;
+	out:
+	rtems_semaphore_release(pDev->dev_sem);
+	return ret;
 }
 
-int grcan_close(void *d)
+int grcan_close(iop_device_driver_t * iop_dev)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
   
-  FUNCDBG();
-  
-	grcan_stop(d);
-  
-  grcan_hw_reset(pDev->regs);
-  
-  //~ grcan_free_buffers(pDev,1,1);
-  
-  /* Mark Device as closed */
-  pDev->open = 0;
+	FUNCDBG();
+
+	grcan_stop(iop_dev);
+
+	grcan_hw_reset(pDev->regs);
+
+	//~ grcan_free_buffers(pDev,1,1);
+
+	/* Mark Device as closed */
+	pDev->open = 0;
 
 	return 0;
 }
 
-int grcan_read(void *d, CANMsg *msg, size_t ucount)
+int grcan_read(iop_device_driver_t *iop_dev, CANMsg *msg, size_t ucount)
 {
-	struct grcan_priv *pDev = d;
-  CANMsg *dest;
-  unsigned int count, left;
-	int nread;
-  int req_cnt;
 
-  FUNCDBG();
-  
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
+	CANMsg *dest;
+	unsigned int count, left;
+	int nread;
+	int req_cnt;
+
+	FUNCDBG();
+
 	dest = msg;
 	req_cnt = ucount;
 
-  if ( (!dest) || (req_cnt<1) )
+	if ( (!dest) || (req_cnt<1) )
 		return GRCAN_RET_INVARG;
-  
+
 	if (pDev->started != STATE_STARTED) {
 		return GRCAN_RET_NOTSTARTED;
 	}
 
 	DBGC(DBG_RX, "grcan_read [%p]: buf: %p len: %u\n", d, msg, (unsigned int) ucount);
-  
+
 	nread = grcan_hw_read_try(pDev,pDev->regs,dest,req_cnt);
 	if (nread < 0) {
 		return nread;
 	}
 	count = nread;
-  if ( !( pDev->rxblock && pDev->rxcomplete && (count!=req_cnt) ) ){
-    if ( count > 0 ) {
-      /* Successfully received messages (at least one) */
+	if ( !( pDev->rxblock && pDev->rxcomplete && (count!=req_cnt) ) ){
+	if ( count > 0 ) {
+	  /* Successfully received messages (at least one) */
 			return count;
-    }
-  
-    /* nothing read, shall we block? */
-    if ( !pDev->rxblock ) {
-      /* non-blocking mode */
+	}
+
+	/* nothing read, shall we block? */
+	if ( !pDev->rxblock ) {
+	  /* non-blocking mode */
 			return GRCAN_RET_TIMEOUT;
-    }
-  }
+	}
+	}
 
-  while(count == 0 || (pDev->rxcomplete && (count!=req_cnt)) ){
-    if ( !pDev->rxcomplete ){
-      left = 1; /* return as soon as there is one message available */
-    }else{
-      left = req_cnt - count;     /* return as soon as all data are available */
+	while(count == 0 || (pDev->rxcomplete && (count!=req_cnt)) ){
+	if ( !pDev->rxcomplete ){
+	  left = 1; /* return as soon as there is one message available */
+	}else{
+	  left = req_cnt - count;     /* return as soon as all data are available */
 
-      /* never wait for more than the half the maximum size of the receive buffer 
+	  /* never wait for more than the half the maximum size of the receive buffer
 			 * Why? We need some time to copy buffer before to catch up with hw,
 			 * otherwise we would have to copy everything when the data has been
 			 * received.
-       */
-      if ( left > ((pDev->rxbuf_size/GRCAN_MSG_SIZE)/2) ){
-        left = (pDev->rxbuf_size/GRCAN_MSG_SIZE)/2;
-      }
-    }
+	   */
+	  if ( left > ((pDev->rxbuf_size/GRCAN_MSG_SIZE)/2) ){
+		left = (pDev->rxbuf_size/GRCAN_MSG_SIZE)/2;
+	  }
+	}
 
 		nread = grcan_wait_rxdata(pDev, left);
 		if (nread) {
-      /* The wait has been aborted, probably due to 
-       * the device driver has been closed by another
-       * thread or a bus-off. Return error code.
-       */
+	  /* The wait has been aborted, probably due to
+	   * the device driver has been closed by another
+	   * thread or a bus-off. Return error code.
+	   */
 			return nread;
-    }
-    
-    /* Try read bytes from circular buffer */
-    nread = grcan_hw_read_try(
-      pDev,
-      pDev->regs,
-      dest+count,
-      req_cnt-count);
+	}
+
+	/* Try read bytes from circular buffer */
+	nread = grcan_hw_read_try(
+	  pDev,
+	  pDev->regs,
+	  dest+count,
+	  req_cnt-count);
 
 	if (nread < 0) {
 		/* The read was aborted by bus-off. */
 		return nread;
 	}
 	count += nread;
-  }
-  /* no need to unmask IRQ as IRQ Handler do that for us. */
+	}
+	/* no need to unmask IRQ as IRQ Handler do that for us. */
 	return count;
 }
  
-int grcan_write(void *d, CANMsg *msg, size_t ucount)
+int grcan_write(iop_device_driver_t *iop_dev, CANMsg *msg, size_t ucount)
 {
-  struct grcan_priv *pDev = d;
-  CANMsg *source;
-  unsigned int count, left;
-  int nwritten;
-  int req_cnt;
-  
-  DBGC(DBG_TX,"\n");
-  
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
+	CANMsg *source;
+	unsigned int count, left;
+	int nwritten;
+	int req_cnt;
+
+	DBGC(DBG_TX,"\n");
+
 	if ((pDev->started != STATE_STARTED) || pDev->config.silent || pDev->flushing)
 		return GRCAN_RET_NOTSTARTED;
-  
+
 	req_cnt = ucount;
 	source = (CANMsg *) msg;
-  
-  /* check proper length and buffer pointer */
-  if (( req_cnt < 1) || (source == NULL) ){
-    return GRCAN_RET_INVARG;
-  }
-   
+
+	/* check proper length and buffer pointer */
+	if (( req_cnt < 1) || (source == NULL) ){
+	return GRCAN_RET_INVARG;
+	}
+
 	nwritten = grcan_hw_write_try(pDev,pDev->regs,source,req_cnt);
 	if (nwritten < 0) {
 		return nwritten;
 	}
 	count = nwritten;
-  if ( !(pDev->txblock && pDev->txcomplete && (count!=req_cnt)) ) {
-    if ( count > 0 ) {
-      /* Successfully transmitted chars (at least one char) */
+	if ( !(pDev->txblock && pDev->txcomplete && (count!=req_cnt)) ) {
+	if ( count > 0 ) {
+	  /* Successfully transmitted chars (at least one char) */
 			return count;
-    }
-  
-    /* nothing written, shall we block? */
-    if ( !pDev->txblock ) {
-      /* non-blocking mode */
-      return GRCAN_RET_TIMEOUT;
-    }
-  }
-  
-  /* if in txcomplete mode we need to transmit all chars */
-  while((count == 0) || (pDev->txcomplete && (count!=req_cnt)) ){
+	}
+
+	/* nothing written, shall we block? */
+	if ( !pDev->txblock ) {
+	  /* non-blocking mode */
+	  return GRCAN_RET_TIMEOUT;
+	}
+	}
+
+	/* if in txcomplete mode we need to transmit all chars */
+	while((count == 0) || (pDev->txcomplete && (count!=req_cnt)) ){
 		/*** block until room to fit all or as much of transmit buffer as possible
 		 * IRQ comes. Set up a valid IRQ point so that an IRQ is received 
-     * when we can put a chunk of data into transmit fifo
-     */
-    if ( !pDev->txcomplete ){
-      left = 1; /* wait for anything to fit buffer */
-    }else{
-      left = req_cnt - count; /* wait for all data to fit in buffer */
-    
+	 * when we can put a chunk of data into transmit fifo
+	 */
+	if ( !pDev->txcomplete ){
+	  left = 1; /* wait for anything to fit buffer */
+	}else{
+	  left = req_cnt - count; /* wait for all data to fit in buffer */
+
 			/* never wait for more than the half the maximum size of the transmit
 			 * buffer 
-       * Why? We need some time to fill buffer before hw catches up.
-       */
-      if ( left > ((pDev->txbuf_size/GRCAN_MSG_SIZE)/2) ){
-        left = (pDev->txbuf_size/GRCAN_MSG_SIZE)/2;
-      }
-    }
-    
-    nwritten = grcan_wait_txspace(pDev,left);
-    /* Wait until more room in transmit buffer */
-    if ( nwritten ) {
-      /* The wait has been aborted, probably due to 
-       * the device driver has been closed by another
-       * thread. To avoid deadlock we return directly
-       * with error status.
-       */
+	   * Why? We need some time to fill buffer before hw catches up.
+	   */
+	  if ( left > ((pDev->txbuf_size/GRCAN_MSG_SIZE)/2) ){
+		left = (pDev->txbuf_size/GRCAN_MSG_SIZE)/2;
+	  }
+	}
+
+	nwritten = grcan_wait_txspace(pDev,left);
+	/* Wait until more room in transmit buffer */
+	if ( nwritten ) {
+	  /* The wait has been aborted, probably due to
+	   * the device driver has been closed by another
+	   * thread. To avoid deadlock we return directly
+	   * with error status.
+	   */
 	return nwritten;
-    }
-    
-    /* Try read bytes from circular buffer */
-    nwritten = grcan_hw_write_try(
-      pDev,
-      pDev->regs,
-      source+count,
-      req_cnt-count);
+	}
+
+	/* Try read bytes from circular buffer */
+	nwritten = grcan_hw_write_try(
+	  pDev,
+	  pDev->regs,
+	  source+count,
+	  req_cnt-count);
 
 	if (nwritten < 0) {
 		/* Write was aborted by bus-off. */
 		return nwritten;
 	}
 	count += nwritten;
-  }
-  /* no need to unmask IRQ as IRQ Handler do that for us. */
-  
+	}
+	/* no need to unmask IRQ as IRQ Handler do that for us. */
+
 	return count;
 }
 
-int grcan_start(void *d)
+int grcan_start(iop_device_driver_t *iop_dev)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = device->dev.driver;
   
-  FUNCDBG();
-  
-	if (grcan_get_state(d) == STATE_STARTED) {
+	FUNCDBG();
+
+	if (grcan_get_state(iop_dev) == STATE_STARTED) {
 		return -1;
 	}
 
 	if ( (grcan_hw_start(pDev)) != RTEMS_SUCCESSFUL ){
 		return -2;
 	}
-      
+
 	/* Clear semaphore state. This is to avoid effects from previous
 	 * bus-off/stop where semahpores where flushed() but the count remained.
 	 */
@@ -1646,46 +1678,60 @@ int grcan_start(void *d)
 	rtems_semaphore_obtain(pDev->tx_sem, RTEMS_NO_WAIT, 0);
 	rtems_semaphore_obtain(pDev->txempty_sem, RTEMS_NO_WAIT, 0);
 
-      /* Read and write are now open... */
+	  /* Read and write are now open... */
 	pDev->started = STATE_STARTED;
 	DBGC(DBG_STATE, "STOPPED|BUSOFF|AHBERR->STARTED\n");
-    
+
 	/* Register interrupt routine and enable IRQ at IRQ ctrl */
 	/* TODO This function was removed but must be inserted again
 	 * somehow */
-//	drvmgr_interrupt_register(pDev->dev, 0, pDev->devName,
-//					grcan_interrupt, pDev);
-      
+	//	drvmgr_interrupt_register(pDev->dev, 0, pDev->devName,
+	//					grcan_interrupt, pDev);
+
 	return 0;
 }
     
-int grcan_stop(void *d)
+int grcan_stop(iop_device_driver_t *iop_dev)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = device->dev.driver;
 	SPIN_IRQFLAGS(oldLevel);
 	int do_sw_stop;
+
+	FUNCBG();
     
-    case GRCAN_IOC_FLUSH:
-      if ( !pDev->started || pDev->flushing || pDev->config.silent )
-        return RTEMS_RESOURCE_IN_USE;
-      
-      pDev->flushing = 1;
-      tmp = grcan_tx_flush(pDev);
-      pDev->flushing = 0;
-      if ( tmp ) {
-        /* The wait has been aborted, probably due to 
-         * the device driver has been closed by another
-         * thread.
-         */
+	if (pDev->started == STATE_STOPPED)
 		return -1;
-      }
-    
+
+	SPIN_LOCK_IRQ(&pDev->devlock, oldLevel);
+	if (pDev->started == STATE_STARTED) {
+		grcan_hw_stop(pDev);
+		do_sw_stop = 1;
+		DBGC(DBG_STATE, "STARTED->STOPPED\n");
+	} else {
+		/*
+		 * started == STATE_[STOPPED|BUSOFF|AHBERR] so grcan_hw_stop()
+		 * might already been called from ISR.
+		 */
+		DBGC(DBG_STATE, "[STOPPED|BUSOFF|AHBERR]->STOPPED\n");
+		do_sw_stop = 0;
+	}
+	pDev->started = STATE_STOPPED;
+	SPIN_UNLOCK_IRQ(&pDev->devlock, oldLevel);
+
+	if (do_sw_stop)
+		grcan_sw_stop(pDev);
+
+	/* Disable interrupts */
+//	drvmgr_interrupt_unregister(pDev->dev, 0, grcan_interrupt, pDev);
+
 	return 0;
 }
 			
-int grcan_set_silent(void* d, int silent)
+int grcan_set_silent(iop_device_driver_t *iop_dev, int silent)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 
 	FUNCDBG();
 
@@ -1698,9 +1744,10 @@ int grcan_set_silent(void* d, int silent)
 	return 0;
 }
 
-int grcan_set_abort(void* d, int abort)
+int grcan_set_abort(iop_device_driver_t *iop_dev, int abort)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 
 	FUNCDBG();
 
@@ -1715,9 +1762,10 @@ int grcan_set_abort(void* d, int abort)
 	return 0;
 }
 
-int grcan_set_selection(void *d, const struct grcan_selection *selection)
+int grcan_set_selection(iop_device_driver_t *iop_dev, const struct grcan_selection *selection)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t * device = (iop_can_device_t *) iop_dev;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 
 	FUNCDBG();
 
@@ -1733,9 +1781,10 @@ int grcan_set_selection(void *d, const struct grcan_selection *selection)
 	return 0;
 }
       
-int grcan_set_rxblock(void *d, int block)
+int grcan_set_rxblock(iop_device_driver_t *iop_dev, int block)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
     
 	FUNCDBG();
 
@@ -1744,9 +1793,10 @@ int grcan_set_rxblock(void *d, int block)
 	return 0;
 }
 
-int grcan_set_txblock(void *d, int block)
+int grcan_set_txblock(iop_device_driver_t *iop_dev, int block)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 
 	FUNCDBG();
 
@@ -1755,9 +1805,10 @@ int grcan_set_txblock(void *d, int block)
 	return 0;
 }
 
-int grcan_set_txcomplete(void *d, int complete)
+int grcan_set_txcomplete(iop_device_driver_t *iop_dev, int complete)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 
 	FUNCDBG();
 
@@ -1766,9 +1817,10 @@ int grcan_set_txcomplete(void *d, int complete)
 	return 0;
 }
 
-int grcan_set_rxcomplete(void *d, int complete)
+int grcan_set_rxcomplete(iop_device_driver_t *iop_dev, int complete)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 
 	FUNCDBG();
 
@@ -1777,9 +1829,10 @@ int grcan_set_rxcomplete(void *d, int complete)
 	return 0;
 }
 
-int grcan_get_stats(void *d, struct grcan_stats *stats)
+int grcan_get_stats(iop_device_driver_t *iop_dev, struct grcan_stats *stats)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 	SPIN_IRQFLAGS(oldLevel);
 
 	FUNCDBG();
@@ -1794,9 +1847,10 @@ int grcan_get_stats(void *d, struct grcan_stats *stats)
 	return 0;
 }
 
-int grcan_clr_stats(void *d)
+int grcan_clr_stats(iop_device_driver_t *iop_dev)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 	SPIN_IRQFLAGS(oldLevel);
 
 	FUNCDBG();
@@ -1808,9 +1862,10 @@ int grcan_clr_stats(void *d)
 	return 0;
 }
 
-int grcan_set_speed(void *d, unsigned int speed)
+int grcan_set_speed(iop_device_driver_t *iop_dev, unsigned int speed)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 	struct grcan_timing timing;
 	int ret;
 
@@ -1832,9 +1887,10 @@ int grcan_set_speed(void *d, unsigned int speed)
 	return 0;
 }
 
-int grcan_set_btrs(void *d, const struct grcan_timing *timing)
+int grcan_set_btrs(iop_device_driver_t *iop_dev, const struct grcan_timing *timing)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 
 	FUNCDBG();
 
@@ -1853,9 +1909,10 @@ int grcan_set_btrs(void *d, const struct grcan_timing *timing)
 	return 0;
 }
 
-int grcan_set_afilter(void *d, const struct grcan_filter *filter)
+int grcan_set_afilter(iop_device_driver_t *iop_dev, const struct grcan_filter *filter)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 
 	FUNCDBG();
 
@@ -1873,9 +1930,10 @@ int grcan_set_afilter(void *d, const struct grcan_filter *filter)
 	return 0;
 }
 
-int grcan_set_sfilter(void *d, const struct grcan_filter *filter)
+int grcan_set_sfilter(iop_device_driver_t *iop_dev, const struct grcan_filter *filter)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 	SPIN_IRQFLAGS(oldLevel);
 
 	FUNCDBG();
@@ -1904,9 +1962,10 @@ int grcan_set_sfilter(void *d, const struct grcan_filter *filter)
 	return 0;
 }
 
-int grcan_get_status(void* d, unsigned int *data)
+int grcan_get_status(iop_device_driver_t *iop_dev, unsigned int *data)
 {
-	struct grcan_priv *pDev = d;
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 
 	FUNCDBG();
 
@@ -1932,7 +1991,7 @@ int grcan_get_status(void* d, unsigned int *data)
 /* Handle the IRQ */
 static void grcan_interrupt(void *arg)
 {
-	struct grcan_priv *pDev = arg;
+	grcan_priv *pDev = arg;
   unsigned int status = READ_REG(&pDev->regs->pimsr);
   unsigned int canstat = READ_REG(&pDev->regs->stat);
 	unsigned int imr_clear;
