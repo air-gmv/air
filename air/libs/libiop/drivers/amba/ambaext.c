@@ -230,7 +230,7 @@ int amba_get_number_apbslv_devices (amba_confarea_type * amba_conf, int vendor,
 
 
 /**
- * 	@brief Finds the nth ahb device
+ * 	@brief Finds the nth apb device
  *  @param [in] ambaconf: Amba bus plug and play memory structure
  *  @param [in] vendor: VendorID
  *  @param [in]	device: DeviceID
