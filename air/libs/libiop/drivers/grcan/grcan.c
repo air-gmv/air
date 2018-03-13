@@ -60,7 +60,7 @@
 
 #define WRAP_AROUND_TX_MSGS 1
 #define WRAP_AROUND_RX_MSGS 2
-#define GRCAN_MSG_SIZE sizeof(struct grcan_msg)
+#define GRCAN_MSG_SIZE sizeof(grcan_msg)
 #define BLOCK_SIZE (16*4)
 
 /* grcan needs to have it buffers aligned to 1k boundaries */
@@ -122,10 +122,10 @@ int state2err[4] = {
 	/* STATE_AHBERR  */ GRCAN_RET_AHBERR
 };
 
-struct grcan_msg {
+typedef struct grcan_msg_ {
     unsigned int head[2];
     unsigned char data[8];
-};
+}grcan_msg;
 
 struct grcan_config {
 	struct grcan_timing timing;
@@ -135,39 +135,42 @@ struct grcan_config {
 };
 
 typedef struct grcan_priv_ {
-	//~ struct drvmgr_dev *dev;	/* Driver manager device */
+	//~ struct drvmgr_dev *dev;	/* Driver manager devi_busce */
 	//~ char devName[32];	/* Device Name */
-  unsigned int baseaddr, ram_base;
-  struct grcan_regs *regs;
-  int irq;
-  int minor;
-  int open;
-  int started;
-  unsigned int channel;
-  int flushing;
-  unsigned int corefreq_hz;
-  
-  /* Circular DMA buffers */
+	unsigned int baseaddr, ram_base;
+	struct grcan_regs *regs;
+	int irq;
+	int minor;
+	int open;
+	int started;
+	unsigned int channel;
+	int flushing;
+	unsigned int corefreq_hz;
+
+	/* Circular DMA buffers */
 	void *_rx, *_rx_hw;
 	void *_tx, *_tx_hw;
 	void *txbuf_adr;
 	void *rxbuf_adr;
-  struct grcan_msg *rx;
-  struct grcan_msg *tx;
-  unsigned int rxbuf_size;    /* requested RX buf size in bytes */
-  unsigned int txbuf_size;    /* requested TX buf size in bytes */
+	grcan_msg *rx;
+	grcan_msg *tx;
+	unsigned int rxbuf_size;    /* requested RX buf size in bytes */
+	unsigned int txbuf_size;    /* requested TX buf size in bytes */
 
-  int txblock, rxblock;
-  int txcomplete, rxcomplete;
-  
-  struct grcan_filter sfilter;
-  struct grcan_filter afilter;
-  int config_changed; /* 0=no changes, 1=changes ==> a Core reset is needed */
-  struct grcan_config config;
-  struct grcan_stats stats;
-  
-  rtems_id rx_sem, tx_sem, txempty_sem, dev_sem;
+	int txblock, rxblock;
+	int txcomplete, rxcomplete;
+
+	struct grcan_filter sfilter;
+	struct grcan_filter afilter;
+	int config_changed; /* 0=no changes, 1=changes ==> a Core reset is needed */
+	struct grcan_config config;
+	struct grcan_stats stats;
+
+	rtems_id rx_sem, tx_sem, txempty_sem, dev_sem;
 	SPIN_DECLARE(devlock);
+
+	iop_buffer_t *iop_buffers;
+	uint8_t *iop_buffers_storage;
 } grcan_priv;
 
 static void __inline__ grcan_hw_reset(struct grcan_regs *regs);
@@ -238,16 +241,68 @@ static int grcan_count = 0;
 
 //~ static grcan_priv *priv_tab[GRCAN_COUNT_MAX];
 
+/******************* Driver manager interface ***********************/
+
+/* Driver prototypes */
+int grcan_device_init(iop_device_driver_t *pDev);
+
+//int grcan_init2(struct drvmgr_dev *dev);
+//int grcan_init3(struct drvmgr_dev *dev);
+
+//struct drvmgr_drv_ops grcan_ops =
+//{
+//	.init = {NULL, grcan_init2, grcan_init3, NULL},
+//	.remove = NULL,
+//	.info = NULL
+//};
+
+struct amba_dev_id grcan_ids[] =
+{
+	{VENDOR_GAISLER, GAISLER_GRCAN},
+	{VENDOR_GAISLER, GAISLER_GRHCAN},
+	{0, 0}		/* Mark end of table */
+};
+
 int grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
 
-	grcan_priv *priv = (grcan_priv*) iop_dev->driver;
-	DBG("GRCAN[%d] on bus %s\n", dev->minor_drv, dev->parent->dev->name);
+	iop_can_device_t *device = (iop_can_device_t *) (iop_dev->driver);
+	grcan_priv *pDev = (grcan_priv*) (device->dev.driver);
+
+	DBG("GRCAN[%d] on bus %s\n", pDev->minor_drv, pDev->parent->dev->name);
 	// File system name should be configured in the iop_can_physical components
+	iop_debug("GRCAN: Initializing grcan%d\n", device->can_core);
 	
-	if( grcan_device_init(priv) ){
+	if( grcan_device_init(pDev) ){
 		// Couldn't initialize the device
 		return RTEMS_IO_ERROR;
 	}
+
+	/* Set /* Set up CAN driver:
+	 	 *  ¤ Calculate frcan_timing
+		 *  ¤ baud rate
+		 *  ¤ Channel
+		 *  ¤ Clear statistics
+		 *  ¤ TX blocking, and wait for all data to be sent.
+		 *  ¤ RX non-blocking depending on ONE_TAboa
+		 *  SK mode
+		 */
+
+	/* Set baud */
+	if(grcan_set_speed(iop_dev, device->baud_rate)){
+		iop_debug("GRCAN%d: Failed to set btrs.\n");
+	}
+
+	if(grcan_set_selection(iop_dev, device->can_core)){
+		iop_debug("GRCAN%d: Failed to select channel.\n", device->can_core);
+	}
+	if(grcan_clr_stats(iop_dev)){
+		iop_debug("GRCAN%d: Failed to clear statistics.\n", device->can_core);
+	}
+
+	if(grcan_strat(iop_dev)){
+		iop_debug("GRCAN%d: Failed to start", device->can_core);
+	}
+
 	return RTEMS_SUCCESSFUL;
 //~ int grcan_init2(struct drvmgr_dev *dev)
 //~ {
@@ -305,28 +360,6 @@ int grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
 
 
 }
-
-/******************* Driver manager interface ***********************/
-
-/* Driver prototypes */
-int grcan_device_init(iop_device_driver_t *pDev);
-
-//int grcan_init2(struct drvmgr_dev *dev);
-//int grcan_init3(struct drvmgr_dev *dev);
-
-//struct drvmgr_drv_ops grcan_ops =
-//{
-//	.init = {NULL, grcan_init2, grcan_init3, NULL},
-//	.remove = NULL,
-//	.info = NULL
-//};
-
-struct amba_dev_id grcan_ids[] =
-{
-	{VENDOR_GAISLER, GAISLER_GRCAN},
-	{VENDOR_GAISLER, GAISLER_GRHCAN},
-	{0, 0}		/* Mark end of table */
-};
 
 //struct amba_drv_info grcan_drv_info =
 //{
@@ -417,7 +450,7 @@ int grcan_device_init(iop_device_driver_t *iop_dev)
 	/* Get device information from AMBA PnP information */
 	/* GMVS find the bus on which the device is */
 
-	if(amba_find_next_apbslv(amba_bus,
+	if(amba_find_next_apbslv(&amba_bus,
 			grcan_ids[0].vendor,
 			grcan_ids[0].device,
 			&ambadev,
@@ -832,7 +865,7 @@ static int grcan_hw_read_try(
 {
   int i,j;
   CANMsg *dest;
-  struct grcan_msg *source,tmp;
+  grcan_msg *source,tmp;
   unsigned int wp,rp,size,rxmax,addr;
   int trunk_msg_cnt;
   
@@ -867,7 +900,7 @@ static int grcan_hw_read_try(
     i=trunk_msg_cnt;
     
     addr = (unsigned int)pDev->rx;
-    source = (struct grcan_msg *)(addr + rp);
+    source = (grcan_msg *)(addr + rp);
     dest = buffer;
     rxmax = addr + (size-GRCAN_MSG_SIZE);
     
@@ -900,7 +933,7 @@ static int grcan_hw_read_try(
       /* wrap around if neccessary */
 			source =
 			    ((unsigned int)source >= rxmax) ?
-			    (struct grcan_msg *)addr : source + 1;
+			    (grcan_msg *)addr : source + 1;
       dest++; /* straight user buffer */
       i--;
     }
@@ -932,56 +965,56 @@ static int grcan_hw_write_try(
 {
 	unsigned int rp, wp, size, txmax, addr;
 	int ret;
-  struct grcan_msg *dest;
-  CANMsg *source;
-  int space_left;
-  unsigned int tmp;
-  int i;
-  
-  DBGC(DBG_TX,"\n");
-  /*FUNCDBG();*/
-  
-  rp = READ_REG(&regs->tx0rd);
-  wp = READ_REG(&regs->tx0wr);
-  size = READ_REG(&regs->tx0size);
-  
-  space_left = grcan_hw_txspace(rp,wp,size);
-  
-  /* is circular fifo full? */
-  if ( space_left < 1 )
-    return 0;
-  
-  /* Truncate size */
-  if ( space_left > count )
-    space_left = count;
-  ret = space_left;
-  
-  addr = (unsigned int)pDev->tx;
-  
-  dest = (struct grcan_msg *)(addr + wp);
-  source = (CANMsg *)buffer;
-  txmax = addr + (size-GRCAN_MSG_SIZE);
-  
-  while ( space_left>0 ) {
-    /* Convert and write CAN message to DMA buffer */
-    if ( source->extended ){
-      tmp = (1<<31) | (source->id & 0x3fffffff);
-    }else{
-      tmp = (source->id&0xfff)<<18;
-    }
-    if ( source->rtr )
-      tmp|=(1<<30);
-    dest->head[0] = tmp;
-    dest->head[1] = source->len<<28;
-    for ( i=0; i<source->len; i++)
-      dest->data[i] = source->data[i];
-    source++; /* straight user buffer */
+	grcan_msg *dest;
+	CANMsg *source;
+	int space_left;
+	unsigned int tmp;
+	int i;
+
+	DBGC(DBG_TX,"\n");
+	/*FUNCDBG();*/
+
+	rp = READ_REG(&regs->tx0rd);
+	wp = READ_REG(&regs->tx0wr);
+	size = READ_REG(&regs->tx0size);
+
+	space_left = grcan_hw_txspace(rp,wp,size);
+
+	/* is circular fifo full? */
+	if ( space_left < 1 )
+	return 0;
+
+	/* Truncate size */
+	if ( space_left > count )
+	space_left = count;
+	ret = space_left;
+
+	addr = (unsigned int)pDev->tx;
+
+	dest = (grcan_msg *)(addr + wp);
+	source = (CANMsg *)buffer;
+	txmax = addr + (size-GRCAN_MSG_SIZE);
+
+	while ( space_left>0 ) {
+	/* Convert and write CAN message to DMA buffer */
+	if ( source->extended ){
+	  tmp = (1<<31) | (source->id & 0x3fffffff);
+	}else{
+	  tmp = (source->id&0xfff)<<18;
+	}
+	if ( source->rtr )
+	  tmp|=(1<<30);
+	dest->head[0] = tmp;
+	dest->head[1] = source->len<<28;
+	for ( i=0; i<source->len; i++)
+	  dest->data[i] = source->data[i];
+	source++; /* straight user buffer */
 		dest =
-		    ((unsigned int)dest >= txmax) ?
-		    (struct grcan_msg *)addr : dest + 1;
-    space_left--;
-  }
-  
+			((unsigned int)dest >= txmax) ?
+			(grcan_msg *)addr : dest + 1;
+	space_left--;
+	}
+
 	{
 		/* A bus off interrupt may have occured after checking pDev->started */
 		SPIN_IRQFLAGS(oldLevel);
@@ -993,10 +1026,10 @@ static int grcan_hw_write_try(
 		} else {
 			DBGC(DBG_STATE, "cancelled due to a BUS OFF error\n");
 			ret = state2err[pDev->started];
-  }
+	}
 		SPIN_UNLOCK_IRQ(&pDev->devlock, oldLevel);
 	}
-  return ret;
+	return ret;
 }
 
 static int grcan_wait_rxdata(grcan_priv *pDev, int min)
@@ -1435,14 +1468,19 @@ void *grcan_open(iop_device_driver_t *iop_dev)
 
 	DBG("Defaulting to rxbufsize: %d, txbufsize: %d\n",RX_BUF_SIZE,TX_BUF_SIZE);
 
+	/*
+	 * Filters set in the iop_physical device
+	 * */
 	/* Default to accept all messages */
-	pDev->afilter.mask = 0x00000000;
-	pDev->afilter.code = 0x00000000;
+//	pDev->afilter.mask = 0x00000000;
+//	pDev->afilter.code = 0x00000000;
 
 	/* Default to disable sync messages (only trigger when id is set to all ones) */
-	pDev->sfilter.mask = 0xffffffff;
-	pDev->sfilter.code = 0x00000000;
+//	pDev->sfilter.mask = 0xffffffff;
+//	pDev->sfilter.code = 0x00000000;
 
+	grcan_set_afilter(iop_dev, &(pDev->afilter));
+	grcan_set_sfilter(iop_dev, &(pDev->sfilter));
 	/* Calculate default timing register values */
 	grcan_calc_timing(GRCAN_DEFAULT_BAUD,pDev->corefreq_hz,GRCAN_SAMPLING_POINT,&pDev->config.timing);
 
@@ -1903,8 +1941,12 @@ int grcan_set_btrs(iop_device_driver_t *iop_dev, const struct grcan_timing *timi
 	if ( !timing )
 		return -2;
       
-	pDev->config.timing = *timing;
-      pDev->config_changed = 1;
+	pDev->config.timing.bpr = timing->bpr;
+	pDev->config.timing.ps1 = timing->ps1;
+	pDev->config.timing.ps2 = timing->ps2;
+	pDev->config.timing.rsj = timing->rsj;
+	pDev->config.timing.scaler = timing->scaler;
+    pDev->config_changed = 1;
     
 	return 0;
 }
@@ -1916,17 +1958,17 @@ int grcan_set_afilter(iop_device_driver_t *iop_dev, const struct grcan_filter *f
 
 	FUNCDBG();
 
-      if ( !filter ){
-        /* Disable filtering - let all messages pass */
-        pDev->afilter.mask = 0x0;
-        pDev->afilter.code = 0x0;
-      }else{
-        /* Save filter */
-        pDev->afilter = *filter;
-      }
-      /* Set hardware acceptance filter */      
-      grcan_hw_accept(pDev->regs,&pDev->afilter);
-    
+	if ( !filter ){
+	/* Disable filtering - let all messages pass */
+	pDev->afilter.mask = 0x0;
+	pDev->afilter.code = 0x0;
+	}else{
+	/* Save filter */
+	pDev->afilter = *filter;
+	}
+	/* Set hardware acceptance filter */
+	grcan_hw_accept(pDev->regs,&pDev->afilter);
+
 	return 0;
 }
 
