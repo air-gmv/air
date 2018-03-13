@@ -18,6 +18,7 @@ typedef struct {
 
 //	char *dev_name;
 	int can_core; // Identify which CAN core corresponds to (either CAN0 or CAN1)
+	int baud_rate;
 //	uint16_t self_id; // This device's ID
 //	uint16_t rx_count;
 //	uint16_t tx_count;
