@@ -202,6 +202,14 @@ enum grcan_state {
 extern int grcan_dev_count(void);
 
 /*
+ * Initialize GRCAN
+ * */
+extern int grcan_initialize(
+		iop_device_driver_t *iop_dev,
+		void *arg);
+
+
+/*
  * Open a GRCAN device
  *
  * dev_no:	Device number to open
