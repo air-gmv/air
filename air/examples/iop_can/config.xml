@@ -8,13 +8,13 @@
       Direction="SOURCE" MaxMessageSize="8" RefreshRateSeconds="1.0"/>
     <Sampling_Port Name="iop_receiver"
       Direction="DESTINATION" MaxMessageSize="8" RefreshRateSeconds="1.0"/>
-    <PartitionConfiguration Personality="RTEMS" IOP="iop.xml" Cores="1">
+    <PartitionConfiguration Personality="RTEMS48i" IOP="iop.xml" Cores="1">
         <Libs>LIBAIR; LIBIOP; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x400000" />
         <Permissions>
-          CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
+          FPU_CONTROL; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
         </Permissions>
     </PartitionConfiguration>     
   </Partition>
@@ -26,13 +26,13 @@
       Direction="DESTINATION" MaxMessageSize="8" RefreshRateSeconds="1.0"/>
     <Sampling_Port Name="partition_sender" 
       Direction="SOURCE" MaxMessageSize="8" RefreshRateSeconds="1.0"/>
-    <PartitionConfiguration Personality="RTEMS" Cores="1">
+    <PartitionConfiguration Personality="RTEMS48i" Cores="1">
         <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x400000" />
         <Permissions>
-            CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+            FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
         </Permissions>
     </PartitionConfiguration>
   </Partition>
