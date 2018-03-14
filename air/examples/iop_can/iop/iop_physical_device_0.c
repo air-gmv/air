@@ -30,7 +30,7 @@ static uint8_t iop_buffers_storage[64 * IOP_BUFFER_SIZE];
 
 /**
  * @brief Allocation of for the internal message queue
- * to be used by the occan driver
+ * to be used by the grcan driver
  */
 
 static grcan_msg rx_msg_fifo[32];
@@ -115,15 +115,15 @@ static iop_can_device_t device_configuration = \
     .dev        = {
 
         .driver         = (void *)&grcan_driver,
-        .init           = occan_initialize,
-        .open           = occan_open,
-        .read           = occan_read,
-        .write          = occan_write,
-        .close          = occan_close,
+        .init           = grcan_initialize,
+        .open           = grcan_open,
+        .read           = grcan_read,
+        .write          = grcan_write,
+        .close          = grcan_close,
     },
     .can_core = 0,
 	.baud_rate = 250, // 250k
-//    .dev_name ="/dev/occan0",
+//    .dev_name ="/dev/grcan0",
 //	.count = 0,
 //	.flags = 0,
 //	.bytes_moved = 0,
