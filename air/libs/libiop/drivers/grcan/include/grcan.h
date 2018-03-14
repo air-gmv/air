@@ -197,14 +197,103 @@ enum grcan_state {
 #define GRCAN_STAT_TXERRCNT  0xff0000
 
 /*
+ * From the C file*/
+#if (((__RTEMS_MAJOR__ << 16) | (__RTEMS_MINOR__ << 8) | __RTEMS_REVISION__) >= 0x040b63)
+
+/* Spin locks mapped via rtems_interrupt_lock_* API: */
+#define SPIN_DECLARE(lock) RTEMS_INTERRUPT_LOCK_MEMBER(lock)
+#define SPIN_INIT(lock, name) rtems_interrupt_lock_initialize(lock, name)
+#define SPIN_LOCK(lock, level) rtems_interrupt_lock_acquire_isr(lock, &level)
+#define SPIN_LOCK_IRQ(lock, level) rtems_interrupt_lock_acquire(lock, &level)
+#define SPIN_UNLOCK(lock, level) rtems_interrupt_lock_release_isr(lock, &level)
+#define SPIN_UNLOCK_IRQ(lock, level) rtems_interrupt_lock_release(lock, &level)
+#define SPIN_IRQFLAGS(k) rtems_interrupt_lock_context k
+#define SPIN_ISR_IRQFLAGS(k) SPIN_IRQFLAGS(k)
+
+#else
+
+/* maintain compatibility with older versions of RTEMS: */
+#define SPIN_DECLARE(name)
+#define SPIN_INIT(lock, name)
+#define SPIN_LOCK(lock, level)
+#define SPIN_LOCK_IRQ(lock, level) rtems_interrupt_disable(level)
+#define SPIN_UNLOCK(lock, level)
+#define SPIN_UNLOCK_IRQ(lock, level) rtems_interrupt_enable(level)
+#define SPIN_IRQFLAGS(k) rtems_interrupt_level k
+#define SPIN_ISR_IRQFLAGS(k)
+
+#endif
+
+
+int state2err[4] = {
+	/* STATE_STOPPED */ GRCAN_RET_NOTSTARTED,
+	/* STATE_STARTED */ GRCAN_RET_OK,
+	/* STATE_BUSOFF  */ GRCAN_RET_BUSOFF,
+	/* STATE_AHBERR  */ GRCAN_RET_AHBERR
+};
+
+typedef struct grcan_msg_ {
+    unsigned int head[2];
+    unsigned char data[8];
+}grcan_msg;
+
+struct grcan_config {
+	struct grcan_timing timing;
+	struct grcan_selection selection;
+	int abort;
+	int silent;
+};
+
+typedef struct grcan_priv_ {
+	//~ struct drvmgr_dev *dev;	/* Driver manager devi_busce */
+	//~ char devName[32];	/* Device Name */
+	unsigned int baseaddr, ram_base;
+	struct grcan_regs *regs;
+	int irq;
+	int minor;
+	int open;
+	int started;
+	unsigned int channel;
+	int flushing;
+	unsigned int corefreq_hz;
+
+	/* Circular DMA buffers */
+	void *_rx, *_rx_hw;
+	void *_tx, *_tx_hw;
+	void *txbuf_adr;
+	void *rxbuf_adr;
+	grcan_msg *rx;
+	grcan_msg *tx;
+	unsigned int rxbuf_size;    /* requested RX buf size in bytes */
+	unsigned int txbuf_size;    /* requested TX buf size in bytes */
+
+	int txblock, rxblock;
+	int txcomplete, rxcomplete;
+
+	struct grcan_filter sfilter;
+	struct grcan_filter afilter;
+	int config_changed; /* 0=no changes, 1=changes ==> a Core reset is needed */
+	struct grcan_config config;
+	struct grcan_stats stats;
+
+	rtems_id rx_sem, tx_sem, txempty_sem, dev_sem;
+	SPIN_DECLARE(devlock);
+
+	iop_buffer_t *iop_buffers;
+	uint8_t *iop_buffers_storage;
+} grcan_priv;
+
+
+
+/*
  * Return number of GRCAN devices available to driver
  */
-extern int grcan_dev_count(void);
+int grcan_dev_count(void);
 
 /*
  * Initialize GRCAN
  * */
-extern int grcan_initialize(
+iop_device_operation grcan_initialize(
 		iop_device_driver_t *iop_dev,
 		void *arg);
 
@@ -216,7 +305,7 @@ extern int grcan_initialize(
  * return:	Device handle to use with all other grcan_ API functions. The
  *		function returns NULL if device can not be opened.
  */
-extern void *grcan_open(iop_device_driver_t *iop_dev);
+iop_device_operation grcan_open(iop_device_driver_t *iop_dev);
 
 /*
  * Open a GRCAN device by name. Finds device index then calls
@@ -227,14 +316,14 @@ extern void *grcan_open(iop_device_driver_t *iop_dev);
  * return:	Device handle to use with all other grcan_ API functions. The
  *		function returns NULL if device can not be opened or not found.
  */
-extern void *grcan_open_by_name(char *name, int *dev_no);
+//void *grcan_open_by_name(char *name, int *dev_no);
 
 /*
  * Close a GRCAN device
  *
  * return: This function always returns 0 (success)
  */
-extern int grcan_close(iop_device_driver_t *iop_dev);
+iop_device_operation grcan_close(iop_device_driver_t *iop_dev);
 
 /*
  * Receive CAN messages
@@ -255,7 +344,7 @@ extern int grcan_close(iop_device_driver_t *iop_dev);
  *                              Device has left started mode.
  *   GRCAN_RET_AHBERR:          Similar to BUSOFF, but was caused by AHB Error.
  */
-extern int grcan_read(
+iop_device_operation grcan_read(
 	iop_device_driver_t *iop_dev,
 	CANMsg *msg,
 	size_t count
@@ -280,7 +369,7 @@ extern int grcan_read(
  *                              Device has left started mode
  *   GRCAN_RET_AHBERR:          Similar to BUSOFF, but was caused by AHB Error.
  */
-extern int grcan_write(
+iop_device_operation grcan_write(
 	iop_device_driver_t *iop_dev,
 	CANMsg *msg,
 	size_t count
@@ -299,7 +388,7 @@ extern int grcan_write(
  *   STATE_BUSOFF               Bus-off has been detected
  *   STATE_AHBERR               AHB error has been detected
  */
-extern int grcan_get_state(iop_device_driver_t *iop_dev);
+int grcan_get_state(iop_device_driver_t *iop_dev);
 
 /* The remaining functions return 0 on success and non-zero on failure. */
 
@@ -307,25 +396,25 @@ extern int grcan_get_state(iop_device_driver_t *iop_dev);
  * mode
  */
 /* Bring the link up after open or bus-off */
-extern int grcan_start(iop_device_driver_t *iop_dev);
+int grcan_start(iop_device_driver_t *iop_dev);
 /* stop to change baud rate/config or closing down */
-extern int grcan_stop(iop_device_driver_t *iop_dev);
+int grcan_stop(iop_device_driver_t *iop_dev);
 /* Wait until all TX messages have been sent */
-extern int grcan_flush(iop_device_driver_t *iop_dev);
+int grcan_flush(iop_device_driver_t *iop_dev);
 
 /* Functions that require connection
  * to be stopped
  */
 /* enable silent mode read only state */
-extern int grcan_set_silent(iop_device_driver_t *iop_dev, int silent);
+int grcan_set_silent(iop_device_driver_t *iop_dev, int silent);
 /* enable/disable stopping link on AHB Error */
-extern int grcan_set_abort(iop_device_driver_t *iop_dev, int abort);
+int grcan_set_abort(iop_device_driver_t *iop_dev, int abort);
 /* Set Enable0,Enable1,Selection */
-extern int grcan_set_selection(iop_device_driver_t *iop_dev, const struct grcan_selection *selection);
+int grcan_set_selection(iop_device_driver_t *iop_dev, const struct grcan_selection *selection);
 /* Set baudrate by using driver's baud rate timing calculation routines */
-extern int grcan_set_speed(iop_device_driver_t *iop_dev, unsigned int hz);
+int grcan_set_speed(iop_device_driver_t *iop_dev, unsigned int hz);
 /* Set baudrate by specifying the timing registers manually */
-extern int grcan_set_btrs(iop_device_driver_t *iop_dev, const struct grcan_timing *timing);
+//int grcan_set_btrs(iop_device_driver_t *iop_dev, const struct grcan_timing *timing);
 
 /* Functions can be called whenever */
 /* Enable/disable Blocking on reception (until at least one message has been received) */
@@ -337,15 +426,15 @@ int grcan_set_txcomplete(iop_device_driver_t *iop_dev, int complete);
 /* Enable/disable Blocking until all requested has been received */
 int grcan_set_rxcomplete(iop_device_driver_t *iop_dev, int complete);
 /* Get statistics */
-extern int grcan_get_stats(iop_device_driver_t *iop_dev, struct grcan_stats *stats);
+int grcan_get_stats(iop_device_driver_t *iop_dev, struct grcan_stats *stats);
 /* Clear statistics */
-extern int grcan_clr_stats(iop_device_driver_t *iop_dev);
+int grcan_clr_stats(iop_device_driver_t *iop_dev);
 /* Set Acceptance filters, provide pointer to "struct grcan_filter" or NULL to disable filtering (let all messages pass) */
-extern int grcan_set_afilter(iop_device_driver_t *iop_dev, const struct grcan_filter *filter);
+int grcan_set_afilter(iop_device_driver_t *iop_dev, const struct grcan_filter *filter);
 /* Set Sync Messages RX/TX filters, NULL disables the IRQ completely */
-extern int grcan_set_sfilter(iop_device_driver_t *iop_dev, const struct grcan_filter *filter);
+ int grcan_set_sfilter(iop_device_driver_t *iop_dev, const struct grcan_filter *filter);
 /* Get status register of GRCAN core */
-extern int grcan_get_status(iop_device_driver_t *iop_dev, unsigned int *status);
+int grcan_get_status(iop_device_driver_t *iop_dev, unsigned int *status);
 
 void grcan_register_drv(void);
 
