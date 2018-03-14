@@ -29,32 +29,6 @@
 #include <ambaext.h>
 #include <can_support.h>
 
-#if (((__RTEMS_MAJOR__ << 16) | (__RTEMS_MINOR__ << 8) | __RTEMS_REVISION__) >= 0x040b63)
-
-/* Spin locks mapped via rtems_interrupt_lock_* API: */
-#define SPIN_DECLARE(lock) RTEMS_INTERRUPT_LOCK_MEMBER(lock)
-#define SPIN_INIT(lock, name) rtems_interrupt_lock_initialize(lock, name)
-#define SPIN_LOCK(lock, level) rtems_interrupt_lock_acquire_isr(lock, &level)
-#define SPIN_LOCK_IRQ(lock, level) rtems_interrupt_lock_acquire(lock, &level)
-#define SPIN_UNLOCK(lock, level) rtems_interrupt_lock_release_isr(lock, &level)
-#define SPIN_UNLOCK_IRQ(lock, level) rtems_interrupt_lock_release(lock, &level)
-#define SPIN_IRQFLAGS(k) rtems_interrupt_lock_context k
-#define SPIN_ISR_IRQFLAGS(k) SPIN_IRQFLAGS(k)
-
-#else
-
-/* maintain compatibility with older versions of RTEMS: */
-#define SPIN_DECLARE(name)
-#define SPIN_INIT(lock, name)
-#define SPIN_LOCK(lock, level)
-#define SPIN_LOCK_IRQ(lock, level) rtems_interrupt_disable(level)
-#define SPIN_UNLOCK(lock, level)
-#define SPIN_UNLOCK_IRQ(lock, level) rtems_interrupt_enable(level)
-#define SPIN_IRQFLAGS(k) rtems_interrupt_level k
-#define SPIN_ISR_IRQFLAGS(k)
-
-#endif
-
 /* Maximum number of GRCAN devices supported by driver */
 #define GRCAN_COUNT_MAX 8
 
@@ -115,63 +89,14 @@
 
 /*********************************************************/
 
-int state2err[4] = {
-	/* STATE_STOPPED */ GRCAN_RET_NOTSTARTED,
-	/* STATE_STARTED */ GRCAN_RET_OK,
-	/* STATE_BUSOFF  */ GRCAN_RET_BUSOFF,
-	/* STATE_AHBERR  */ GRCAN_RET_AHBERR
-};
+int grcan_get_state(iop_device_driver_t *iop_dev){
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 
-typedef struct grcan_msg_ {
-    unsigned int head[2];
-    unsigned char data[8];
-}grcan_msg;
+	FUNCDBG();
 
-struct grcan_config {
-	struct grcan_timing timing;
-	struct grcan_selection selection;
-	int abort;
-	int silent;
-};
-
-typedef struct grcan_priv_ {
-	//~ struct drvmgr_dev *dev;	/* Driver manager devi_busce */
-	//~ char devName[32];	/* Device Name */
-	unsigned int baseaddr, ram_base;
-	struct grcan_regs *regs;
-	int irq;
-	int minor;
-	int open;
-	int started;
-	unsigned int channel;
-	int flushing;
-	unsigned int corefreq_hz;
-
-	/* Circular DMA buffers */
-	void *_rx, *_rx_hw;
-	void *_tx, *_tx_hw;
-	void *txbuf_adr;
-	void *rxbuf_adr;
-	grcan_msg *rx;
-	grcan_msg *tx;
-	unsigned int rxbuf_size;    /* requested RX buf size in bytes */
-	unsigned int txbuf_size;    /* requested TX buf size in bytes */
-
-	int txblock, rxblock;
-	int txcomplete, rxcomplete;
-
-	struct grcan_filter sfilter;
-	struct grcan_filter afilter;
-	int config_changed; /* 0=no changes, 1=changes ==> a Core reset is needed */
-	struct grcan_config config;
-	struct grcan_stats stats;
-
-	rtems_id rx_sem, tx_sem, txempty_sem, dev_sem;
-	SPIN_DECLARE(devlock);
-
-	iop_buffer_t *iop_buffers;
-	uint8_t *iop_buffers_storage;
-} grcan_priv;
+	return pDev->started;
+}
 
 static void __inline__ grcan_hw_reset(struct grcan_regs *regs);
 
@@ -241,6 +166,22 @@ static int grcan_count = 0;
 
 //~ static grcan_priv *priv_tab[GRCAN_COUNT_MAX];
 
+int grcan_get_status(iop_device_driver_t *iop_dev, unsigned int *data)
+{
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
+
+	FUNCDBG();
+
+      if ( !data )
+		return -1;
+
+      /* Read out the statsu register from the GRCAN core */
+      data[0] = READ_REG(&pDev->regs->stat);
+
+	return 0;
+}
+
 /******************* Driver manager interface ***********************/
 
 /* Driver prototypes */
@@ -262,104 +203,6 @@ struct amba_dev_id grcan_ids[] =
 	{VENDOR_GAISLER, GAISLER_GRHCAN},
 	{0, 0}		/* Mark end of table */
 };
-
-int grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
-
-	iop_can_device_t *device = (iop_can_device_t *) (iop_dev->driver);
-	grcan_priv *pDev = (grcan_priv*) (device->dev.driver);
-
-	DBG("GRCAN[%d] on bus %s\n", pDev->minor_drv, pDev->parent->dev->name);
-	// File system name should be configured in the iop_can_physical components
-	iop_debug("GRCAN: Initializing grcan%d\n", device->can_core);
-	
-	if( grcan_device_init(pDev) ){
-		// Couldn't initialize the device
-		return RTEMS_IO_ERROR;
-	}
-
-	/* Set /* Set up CAN driver:
-	 	 *  ¤ Calculate frcan_timing
-		 *  ¤ baud rate
-		 *  ¤ Channel
-		 *  ¤ Clear statistics
-		 *  ¤ TX blocking, and wait for all data to be sent.
-		 *  ¤ RX non-blocking depending on ONE_TAboa
-		 *  SK mode
-		 */
-
-	/* Set baud */
-	if(grcan_set_speed(iop_dev, device->baud_rate)){
-		iop_debug("GRCAN%d: Failed to set btrs.\n");
-	}
-
-	if(grcan_set_selection(iop_dev, device->can_core)){
-		iop_debug("GRCAN%d: Failed to select channel.\n", device->can_core);
-	}
-	if(grcan_clr_stats(iop_dev)){
-		iop_debug("GRCAN%d: Failed to clear statistics.\n", device->can_core);
-	}
-
-	if(grcan_strat(iop_dev)){
-		iop_debug("GRCAN%d: Failed to start", device->can_core);
-	}
-
-	return RTEMS_SUCCESSFUL;
-//~ int grcan_init2(struct drvmgr_dev *dev)
-//~ {
-	//~ grcan_priv *priv;
-
-	//~ DBG("GRCAN[%d] on bus %s\n", dev->minor_drv, dev->parent->dev->name);
-	//~ if (GRCAN_COUNT_MAX <= grcan_count)
-		//~ return DRVMGR_ENORES;
-	//~ priv = dev->priv = malloc(sizeof(grcan_priv));
-	//~ if ( !priv )
-		//~ return DRVMGR_NOMEM;
-	//~ memset(priv, 0, sizeof(*priv));
-	//~ priv->dev = dev;
-
-	/* This core will not find other cores, so we wait for init2() */
-
-	//~ return DRVMGR_OK;
-//~ }
-
-//~ int grcan_init3(struct drvmgr_dev *dev)
-//~ {
-	//~ grcan_priv *priv;
-	//~ char prefix[32];
-
-	//~ priv = dev->priv;
-
-	/*
-	 * Now we take care of device initialization.
-	 */
-
-	//~ if ( grcan_device_init(priv) ) {
-		//~ return DRVMGR_FAIL;
-	//~ }
-
-	//~ priv_tab[grcan_count] = priv;
-	//~ grcan_count++;
-
-	//~ /* Get Filesystem name prefix */
-	//~ prefix[0] = '\0';
-	//~ if ( drvmgr_get_dev_prefix(dev, prefix) ) {
-		//~ /* Failed to get prefix, make sure of a unique FS name
-		 //~ * by using the driver minor.
-		 //~ */
-		//~ sprintf(priv->devName, "grcan%d", dev->minor_drv);
-	//~ } else {
-		//~ /* Got special prefix, this means we have a bus prefix
-		 //~ * And we should use our "bus minor"
-		 //~ */
-		//~ sprintf(priv->devName, "%sgrcan%d", prefix, dev->minor_bus);
-	//~ }
-
-	//~ return DRVMGR_OK;
-//~ }
-
-
-
-}
 
 //struct amba_drv_info grcan_drv_info =
 //{
@@ -604,6 +447,103 @@ static rtems_device_driver grcan_hw_start(grcan_priv *pDev)
    */
   return RTEMS_SUCCESSFUL;
 }
+iop_device_operation grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
+
+	iop_can_device_t *device = (iop_can_device_t *) (iop_dev->driver);
+	grcan_priv *pDev = (grcan_priv*) (device->dev.driver);
+
+	DBG("GRCAN[%d] on bus %s\n", pDev->minor_drv, pDev->parent->dev->name);
+	// File system name should be configured in the iop_can_physical components
+	iop_debug("GRCAN: Initializing grcan%d\n", device->can_core);
+
+	if( grcan_device_init(pDev) ){
+		// Couldn't initialize the device
+		return RTEMS_IO_ERROR;
+	}
+
+	/* Set /* Set up CAN driver:
+	 	 *  ¤ Calculate frcan_timing
+		 *  ¤ baud rate
+		 *  ¤ Channel
+		 *  ¤ Clear statistics
+		 *  ¤ TX blocking, and wait for all data to be sent.
+		 *  ¤ RX non-blocking depending on ONE_TAboa
+		 *  SK mode
+		 */
+
+	/* Set baud */
+	if(grcan_set_speed(iop_dev, device->baud_rate)){
+		iop_debug("GRCAN%d: Failed to set btrs.\n");
+	}
+
+	if(grcan_set_selection(iop_dev, device->can_core)){
+		iop_debug("GRCAN%d: Failed to select channel.\n", device->can_core);
+	}
+	if(grcan_clr_stats(iop_dev)){
+		iop_debug("GRCAN%d: Failed to clear statistics.\n", device->can_core);
+	}
+
+	if(grcan_start(iop_dev)){
+		iop_debug("GRCAN%d: Failed to start", device->can_core);
+	}
+
+	return RTEMS_SUCCESSFUL;
+//~ int grcan_init2(struct drvmgr_dev *dev)
+//~ {
+	//~ grcan_priv *priv;
+
+	//~ DBG("GRCAN[%d] on bus %s\n", dev->minor_drv, dev->parent->dev->name);
+	//~ if (GRCAN_COUNT_MAX <= grcan_count)
+		//~ return DRVMGR_ENORES;
+	//~ priv = dev->priv = malloc(sizeof(grcan_priv));
+	//~ if ( !priv )
+		//~ return DRVMGR_NOMEM;
+	//~ memset(priv, 0, sizeof(*priv));
+	//~ priv->dev = dev;
+
+	/* This core will not find other cores, so we wait for init2() */
+
+	//~ return DRVMGR_OK;
+//~ }
+
+//~ int grcan_init3(struct drvmgr_dev *dev)
+//~ {
+	//~ grcan_priv *priv;
+	//~ char prefix[32];
+
+	//~ priv = dev->priv;
+
+	/*
+	 * Now we take care of device initialization.
+	 */
+
+	//~ if ( grcan_device_init(priv) ) {
+		//~ return DRVMGR_FAIL;
+	//~ }
+
+	//~ priv_tab[grcan_count] = priv;
+	//~ grcan_count++;
+
+	//~ /* Get Filesystem name prefix */
+	//~ prefix[0] = '\0';
+	//~ if ( drvmgr_get_dev_prefix(dev, prefix) ) {
+		//~ /* Failed to get prefix, make sure of a unique FS name
+		 //~ * by using the driver minor.
+		 //~ */
+		//~ sprintf(priv->devName, "grcan%d", dev->minor_drv);
+	//~ } else {
+		//~ /* Got special prefix, this means we have a bus prefix
+		 //~ * And we should use our "bus minor"
+		 //~ */
+		//~ sprintf(priv->devName, "%sgrcan%d", prefix, dev->minor_bus);
+	//~ }
+
+	//~ return DRVMGR_OK;
+//~ }
+
+
+
+}
 
 static void grcan_hw_stop(grcan_priv *pDev)
 {
@@ -749,6 +689,41 @@ static unsigned int grcan_hw_txspace(
 #define MIN_TSEG2 2
 #define MAX_TSEG1 14
 #define MAX_TSEG2 8
+
+int grcan_start(iop_device_driver_t *iop_dev)
+{
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = device->dev.driver;
+
+	FUNCDBG();
+
+	if (grcan_get_state(iop_dev) == STATE_STARTED) {
+		return -1;
+	}
+
+	if ( (grcan_hw_start(pDev)) != RTEMS_SUCCESSFUL ){
+		return -2;
+	}
+
+	/* Clear semaphore state. This is to avoid effects from previous
+	 * bus-off/stop where semahpores where flushed() but the count remained.
+	 */
+	rtems_semaphore_obtain(pDev->rx_sem, RTEMS_NO_WAIT, 0);
+	rtems_semaphore_obtain(pDev->tx_sem, RTEMS_NO_WAIT, 0);
+	rtems_semaphore_obtain(pDev->txempty_sem, RTEMS_NO_WAIT, 0);
+
+	  /* Read and write are now open... */
+	pDev->started = STATE_STARTED;
+	DBGC(DBG_STATE, "STOPPED|BUSOFF|AHBERR->STARTED\n");
+
+	/* Register interrupt routine and enable IRQ at IRQ ctrl */
+	/* TODO This function was removed but must be inserted again
+	 * somehow */
+	//	drvmgr_interrupt_register(pDev->dev, 0, pDev->devName,
+	//					grcan_interrupt, pDev);
+
+	return 0;
+}
 
 static int grcan_calc_timing(
   unsigned int baud,          /* The requested BAUD to calculate timing for */
@@ -1395,7 +1370,7 @@ int grcan_dev_count(void)
 //	return NULL;
 //}
 
-void *grcan_open(iop_device_driver_t *iop_dev)
+iop_device_operation grcan_open(iop_device_driver_t *iop_dev)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = device->dev.driver;
@@ -1502,7 +1477,7 @@ void *grcan_open(iop_device_driver_t *iop_dev)
 	return ret;
 }
 
-int grcan_close(iop_device_driver_t * iop_dev)
+iop_device_operation grcan_close(iop_device_driver_t * iop_dev)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1518,10 +1493,10 @@ int grcan_close(iop_device_driver_t * iop_dev)
 	/* Mark Device as closed */
 	pDev->open = 0;
 
-	return 0;
+	return RTEMS_SUCCESSFUL;
 }
 
-int grcan_read(iop_device_driver_t *iop_dev, CANMsg *msg, size_t ucount)
+iop_device_operation grcan_read(iop_device_driver_t *iop_dev, CANMsg *msg, size_t ucount)
 {
 
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
@@ -1605,7 +1580,7 @@ int grcan_read(iop_device_driver_t *iop_dev, CANMsg *msg, size_t ucount)
 	return count;
 }
  
-int grcan_write(iop_device_driver_t *iop_dev, CANMsg *msg, size_t ucount)
+iop_device_operation grcan_write(iop_device_driver_t *iop_dev, CANMsg *msg, size_t ucount)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1693,41 +1668,6 @@ int grcan_write(iop_device_driver_t *iop_dev, CANMsg *msg, size_t ucount)
 
 	return count;
 }
-
-int grcan_start(iop_device_driver_t *iop_dev)
-{
-	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
-	grcan_priv *pDev = device->dev.driver;
-  
-	FUNCDBG();
-
-	if (grcan_get_state(iop_dev) == STATE_STARTED) {
-		return -1;
-	}
-
-	if ( (grcan_hw_start(pDev)) != RTEMS_SUCCESSFUL ){
-		return -2;
-	}
-
-	/* Clear semaphore state. This is to avoid effects from previous
-	 * bus-off/stop where semahpores where flushed() but the count remained.
-	 */
-	rtems_semaphore_obtain(pDev->rx_sem, RTEMS_NO_WAIT, 0);
-	rtems_semaphore_obtain(pDev->tx_sem, RTEMS_NO_WAIT, 0);
-	rtems_semaphore_obtain(pDev->txempty_sem, RTEMS_NO_WAIT, 0);
-
-	  /* Read and write are now open... */
-	pDev->started = STATE_STARTED;
-	DBGC(DBG_STATE, "STOPPED|BUSOFF|AHBERR->STARTED\n");
-
-	/* Register interrupt routine and enable IRQ at IRQ ctrl */
-	/* TODO This function was removed but must be inserted again
-	 * somehow */
-	//	drvmgr_interrupt_register(pDev->dev, 0, pDev->devName,
-	//					grcan_interrupt, pDev);
-
-	return 0;
-}
     
 int grcan_stop(iop_device_driver_t *iop_dev)
 {
@@ -1736,7 +1676,7 @@ int grcan_stop(iop_device_driver_t *iop_dev)
 	SPIN_IRQFLAGS(oldLevel);
 	int do_sw_stop;
 
-	FUNCBG();
+	FUNCDBG();
     
 	if (pDev->started == STATE_STOPPED)
 		return -1;
@@ -1797,6 +1737,21 @@ int grcan_set_abort(iop_device_driver_t *iop_dev, int abort)
        * ==> no pDev->config_changed = 1;
        */
     
+	return 0;
+}
+
+int grcan_clr_stats(iop_device_driver_t *iop_dev)
+{
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
+	SPIN_IRQFLAGS(oldLevel);
+
+	FUNCDBG();
+
+	SPIN_LOCK_IRQ(&pDev->devlock, oldLevel);
+      memset(&pDev->stats,0,sizeof(struct grcan_stats));
+	SPIN_UNLOCK_IRQ(&pDev->devlock, oldLevel);
+
 	return 0;
 }
 
@@ -1882,21 +1837,6 @@ int grcan_get_stats(iop_device_driver_t *iop_dev, struct grcan_stats *stats)
       *stats = pDev->stats;
 	SPIN_UNLOCK_IRQ(&pDev->devlock, oldLevel);
     
-	return 0;
-}
-
-int grcan_clr_stats(iop_device_driver_t *iop_dev)
-{
-	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
-	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
-	SPIN_IRQFLAGS(oldLevel);
-
-	FUNCDBG();
-
-	SPIN_LOCK_IRQ(&pDev->devlock, oldLevel);
-      memset(&pDev->stats,0,sizeof(struct grcan_stats));
-	SPIN_UNLOCK_IRQ(&pDev->devlock, oldLevel);
-
 	return 0;
 }
 
@@ -2001,22 +1941,6 @@ int grcan_set_sfilter(iop_device_driver_t *iop_dev, const struct grcan_filter *f
       /* Set Sync RX/TX filter */
       grcan_hw_sync(pDev->regs,&pDev->sfilter);
 
-	return 0;
-}
-
-int grcan_get_status(iop_device_driver_t *iop_dev, unsigned int *data)
-{
-	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
-	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
-
-	FUNCDBG();
-
-      if ( !data )
-		return -1;
-
-      /* Read out the statsu register from the GRCAN core */
-      data[0] = READ_REG(&pDev->regs->stat);
-  
 	return 0;
 }
 
