@@ -19,13 +19,13 @@
 //#include <rtems/libio.h>
 //#include <stdlib.h>
 //#include <stdio.h>
-#include <string.h>
-#include <assert.h>
+//#include <string.h>
+//#include <assert.h>
 //#include <ctype.h>
 //#include <rtems/bspIo.h>
 
 #include <grcan.h>
-#include <ambapp.h>
+//#include <ambapp.h>
 #include <ambaext.h>
 #include <can_support.h>
 
@@ -85,9 +85,16 @@
   #define DEBUG
   #define DEBUGFUNCS
 #endif
-#include <debug_defs.h>
 
+#include <debug_defs.h>
 /*********************************************************/
+
+int state2err[4] = {
+	/* STATE_STOPPED */ GRCAN_RET_NOTSTARTED,
+	/* STATE_STARTED */ GRCAN_RET_OK,
+	/* STATE_BUSOFF  */ GRCAN_RET_BUSOFF,
+	/* STATE_AHBERR  */ GRCAN_RET_AHBERR
+};
 
 int grcan_get_state(iop_device_driver_t *iop_dev){
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
@@ -293,13 +300,14 @@ int grcan_device_init(iop_device_driver_t *iop_dev)
 	/* Get device information from AMBA PnP information */
 	/* GMVS find the bus on which the device is */
 
+	DBG("grcan: grcan_device_init\n");
 	if(amba_find_next_apbslv(&amba_bus,
 			grcan_ids[0].vendor,
 			grcan_ids[0].device,
 			&ambadev,
 			device_t->can_core))
 	{
-		iprintf("GRCAN amba device error\n", __func__);
+//		iprintf("GRCAN amba device error\n", __func__);
 		return -1;
 	}
 
@@ -1992,8 +2000,8 @@ static void grcan_interrupt(void *arg)
 			pDev->stats.busoff_cnt++;
 		} else {
 			/* RX or Tx AHB Error interrupt */
-			printk("AHBERROR: status: 0x%x, canstat: 0x%x\n",
-				status, canstat);
+//			printk("AHBERROR: status: 0x%x, canstat: 0x%x\n",
+//				status, canstat);
 			pDev->started = STATE_AHBERR;
 			pDev->stats.ahberr_cnt++;
 		}
