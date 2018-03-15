@@ -224,14 +224,6 @@ enum grcan_state {
 
 #endif
 
-
-int state2err[4] = {
-	/* STATE_STOPPED */ GRCAN_RET_NOTSTARTED,
-	/* STATE_STARTED */ GRCAN_RET_OK,
-	/* STATE_BUSOFF  */ GRCAN_RET_BUSOFF,
-	/* STATE_AHBERR  */ GRCAN_RET_AHBERR
-};
-
 typedef struct grcan_msg_ {
     unsigned int head[2];
     unsigned char data[8];

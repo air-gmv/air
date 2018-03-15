@@ -61,14 +61,14 @@ static grcan_priv grcan_driver = \
 	/* Default to accept all messages */
 	.afilter ={
 			.mask = 0x00000000,
-			.code = 0x00000000
+			.code = 0x00000000,
 	},
 
 	/* Default to disable sync messages (only trigger when
 	 * id is set to all ones) */
 	.sfilter = { // Accept everything
 			.mask = 0xffffffff,
-			.code = 0x00000000
+			.code = 0x00000000,
 	},
 
 	.iop_buffers            = iop_buffers,
