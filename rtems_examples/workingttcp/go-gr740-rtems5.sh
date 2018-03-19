@@ -1,5 +1,5 @@
 rm -rf b-gr740/
-export RTEMS_MAKEFILE_PATH=/opt/rtems/5/sparc-rtems5/gr712rc
+export RTEMS_MAKEFILE_PATH=/opt/rtems/5/sparc-rtems5/gr740
 export RTEMS_BSP=gr740
 make -f Makefile-5
 #cp o-optimize/ethgmv.exe /home/assert/Desktop/C_DRIVE/vmshare/
