@@ -22,11 +22,11 @@ static uint8_t iop_buffers_storage[64 * IOP_BUFFER_SIZE];
 /**
  * @brief TX descriptor to IOP buffer mapping
  */
-//static iop_buffer_t *tx_iop_buffer[32];
+static iop_buffer_t *tx_iop_buffer[32];
 /**
  * @brief RX descriptor to IOP buffer mapping
  */
-//static iop_buffer_t *rx_iop_buffer[32];
+static iop_buffer_t *rx_iop_buffer[32];
 
 /**
  * @brief Allocation of for the internal message queue
@@ -120,6 +120,11 @@ static iop_can_device_t device_configuration = \
         .read           = grcan_read,
         .write          = grcan_write,
         .close          = grcan_close,
+//		.init = NULL,
+//		.open = NULL,
+//		.read = NULL,
+//		.write = NULL,
+//		.close = NULL
     },
     .can_core = 0,
 	.baud_rate = 250, // 250k
@@ -138,16 +143,24 @@ static uint32_t reads_per_period[] = \
 /**
  * @brief Routes Headers
  */
-static iop_header_t route_header[1] = \
+static iop_header_t route_header[2] = \
 {
 	{
 		/* Send message to
-		 * node with ID 2 */
+		 * node with ID 11 */
 		.can_header = {
-			.extended = 0,
-			.rtr = 0,
-			.sshot = 0,
-			.id = 2,
+			.extended 	= 0,
+			.rtr 		= 0,
+			.sshot 		= 0,
+			.id 		= 11,
+		},
+	},
+	{
+		.can_header = {
+			.extended 	= 0,
+			.rtr 		= 0,
+			.sshot 		= 0,
+			.id 		= 5,
 		},
 	}
 };
@@ -161,13 +174,18 @@ static uint32_t route_schedule_0[1] = \
 /**
  * @brief Routes Configuration
  */
-static iop_physical_route_t physical_routes[1] =\
+static iop_physical_route_t physical_routes[2] =\
 {
     {
         .schedule   = route_schedule_0,
         .header     = &route_header[0],
         .port       = &remote_ports[2]
     },
+	{
+		.schedule 	= route_schedule_0,
+		.header 	= &route_header[0],
+		.port		= &remote_ports[2]
+	}
 };
 
 /**
