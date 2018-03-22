@@ -54,11 +54,11 @@ iop_configuration_t usr_configuration = {
         .elements           = physical_device_list
      },
     .logical_devices        = {
-        .length             = 2,
+        .length             = 1,
         .elements           = logical_device_list
      },
     .remote_ports           = {
-        .length             = 3,
+        .length             = 2,
         .elements           = remote_ports
     }
 };

@@ -297,7 +297,8 @@ iop_device_operation grcan_initialize(
  * return:	Device handle to use with all other grcan_ API functions. The
  *		function returns NULL if device can not be opened.
  */
-iop_device_operation grcan_open(iop_device_driver_t *iop_dev);
+iop_device_operation grcan_open(iop_device_driver_t *iop_dev,
+		void *arg);
 
 /*
  * Open a GRCAN device by name. Finds device index then calls
@@ -394,6 +395,10 @@ int grcan_stop(iop_device_driver_t *iop_dev);
 /* Wait until all TX messages have been sent */
 int grcan_flush(iop_device_driver_t *iop_dev);
 
+/*
+ * gmvs */
+int grcan_device_init(iop_device_driver_t *iop_dev);
+
 /* Functions that require connection
  * to be stopped
  */
@@ -428,7 +433,7 @@ int grcan_set_afilter(iop_device_driver_t *iop_dev, const struct grcan_filter *f
 /* Get status register of GRCAN core */
 int grcan_get_status(iop_device_driver_t *iop_dev, unsigned int *status);
 
-void grcan_register_drv(void);
+//void grcan_register_drv(void);
 
 #ifdef __cplusplus
 }

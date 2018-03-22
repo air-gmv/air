@@ -20,9 +20,9 @@ extern "C" {
   #define DEBUG_FLAGS 0
  #endif
 
- #define DBG(fmt, args...)    do { printk(" : %03d @ %18s()]:" fmt , __LINE__,__FUNCTION__,## args); } while(0)
- #define DBG2(fmt)            do { printk(" : %03d @ %18s()]:" fmt , __LINE__,__FUNCTION__); } while(0)
- #define DBGC(c,fmt, args...) do { if (DEBUG_FLAGS & c) { printk(" : %03d @ %18s()]:" fmt , __LINE__,__FUNCTION__,## args);  }} while(0)
+ #define DBG(fmt, args...)    do { iop_debug(" : %03d @ %18s()]:" fmt , __LINE__,__FUNCTION__,## args); } while(0)
+ #define DBG2(fmt)            do { iop_debug(" : %03d @ %18s()]:" fmt , __LINE__,__FUNCTION__); } while(0)
+ #define DBGC(c,fmt, args...) do { if (DEBUG_FLAGS & c) { iop_debug(" : %03d @ %18s()]:" fmt , __LINE__,__FUNCTION__,## args);  }} while(0)
 
 #else
 
@@ -33,7 +33,7 @@ extern "C" {
 #endif
 
 #ifdef DEBUGFUNCS
-  #define FUNCDBG()         do { printk("%s\n\r",__FUNCTION__); } while(0)
+  #define FUNCDBG()         do { iop_debug("%s\n\r",__FUNCTION__); } while(0)
 #else
   #define FUNCDBG()
 #endif
