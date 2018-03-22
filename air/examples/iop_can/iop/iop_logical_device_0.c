@@ -9,7 +9,7 @@ extern iop_physical_device_t physical_device_0;
 /**
  * @brief Routes Headers
  */
-static iop_header_t route_header[1] = \
+static iop_header_t route_header[] = \
 {
 	{
 		.can_header = {
