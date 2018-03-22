@@ -58,6 +58,10 @@
                                            RTEMS_NO_ASR | \
                                            RTEMS_INTERRUPT_LEVEL(0))
 
+
+#define CONFIGURE_INIT_TASK_ATTRIBUTES RTEMS_FLOATING_POINT
+
+
 #define RTEMS_PCI_CONFIG_LIB
 #define CONFIGURE_PCI_LIB PCI_LIB_AUTO
 
@@ -188,7 +192,7 @@ void test_network(void)
     int sockbufsize = 5000;
 
 printk("START test_network()\n");
-    udp_port= 55055; // UDP
+    udp_port= 13000; // UDP
 
     s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     setsockopt(s, SOL_SOCKET, SO_RCVBUF, &sockbufsize, sizeof sockbufsize);
