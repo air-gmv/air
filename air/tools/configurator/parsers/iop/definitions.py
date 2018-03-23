@@ -9,7 +9,7 @@ SUPPORTED_DEVICES 	=   {	SPW : ['GRSPW'],
                         	MIL : ['GR1553B', 'BRM1553'],
                         	ETH : ['GRETH'],
                             RTR : ['SPWRTR'],
-                            CAN : ['OCCAN']   }
+                            CAN : ['GRCAN']   }
 
 IOP_PORT_TYPE		= { 'SamplingPort' : 'IOP_SAMPLING_PORT',
 						'QueuingPort'  : 'IOP_QUEUING_PORT'   }
@@ -69,6 +69,7 @@ SPWHEADER_ADDRESS               = 'Address'
 #CANBUS Header
 CANHEADER                       = 'CanHeader'
 CANHEADER_EXTENDED              = 'Extended'
+CANHEADER_SSHOT					= 'Sshot'
 CANHEADER_RTR                   = 'RTR'
 CANHEADER_ID                    = 'CanID'
 
@@ -274,6 +275,7 @@ class SpwHeader(object):
 class CanHeader(object):
     def __init__(self):
         self.extended = False
+        self.sshot = 0
         self.rtr = 0
         self.can_id = 0
         
@@ -286,7 +288,7 @@ class CanHeader(object):
     
     def __str__(self):
         return CAN_HEADER_STR.format(self.extended, \
-                self.rtr, self.can_id)
+                self.sshot, self.rtr, self.can_id)
     
     def __repr__(self):
         return self.__str__()

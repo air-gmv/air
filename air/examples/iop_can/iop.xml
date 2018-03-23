@@ -11,12 +11,12 @@
 	</LogicalDevices>
 		
 	<PhysicalDevices>
-		<Device Id="1" Device="CAN0" CanID ="2" Speed="250" TXD="32" RXD="32" InternalQueue="8" SingleMode="true" Code="f:f:f:f" Mask="f:f:f:f">
+		<Device Id="1" Device="CAN0" Baud="250" TXD="32" RXD="32" Code="0x00000000" Mask="0x00000000">
 			<PhysicalRoute Id="1" PortId="iop_sender">
-				<CanHeader Extended="true" RTR="true" CanID="1"/>
+				<CanHeader Extended="true" Sshot="false" RTR="true" CanID="11"/>
 			</PhysicalRoute>		
 			<LogicalRoute Id="2" LogicalDeviceId="1">
-				<CanHeader Extended="false" RTR="false" CanID="1"/> 
+				<CanHeader Extended="false" Sshot="false" RTR="false" CanID="5"/> 
 			</LogicalRoute>
 		</Device>
 	</PhysicalDevices>
