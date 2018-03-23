@@ -42,4 +42,25 @@
 #define PSR_UND 0x1b
 #define PSR_SYS 0x1f
 
+
+/* @brief If the bit 0 of the bx reg is 0 it will remain in ARM, if 1 it will
+ * change to Thumb. The .thumb directory is for the assembler to compile the
+ * following instructions as Thumb. Same for .arm.
+ */
+.macro ARM_TO_THUMB r
+#if defined(__thumb__)
+    add     \r, pc, #1
+    bx      \r
+.thumb
+#endif
+.endm
+
+.macro THUMB_TO_ARM
+#if defined(__thumb__)
+.align 2
+    bx      pc
+.arm
+#endif
+.endm
+
 #endif /* ARM_ARM_H */
