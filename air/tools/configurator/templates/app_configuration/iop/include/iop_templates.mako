@@ -128,6 +128,7 @@ extern iop_port_t remote_ports[${len(iop_configuration.ports)}];
 	{
 		.can_header = {
 			.extended = ${int(header.extended)},
+			.sshot	  = ${int(header.sshot)},
 			.rtr 	  = ${int(header.rtr)},
 			.id		  = ${header.can_id}
 		}
