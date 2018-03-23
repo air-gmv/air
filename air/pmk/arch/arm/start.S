@@ -19,6 +19,7 @@
 
 #include <asm.h>
 
+    .arm
     /**< Start entry */
 ENTRY(_start)
 
