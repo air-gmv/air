@@ -1308,89 +1308,14 @@ iop_device_operation grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
 		return RTEMS_IO_ERROR;
 	}
 
-	/* Set /* Set up CAN driver:
-	 	 *  ¤ Calculate frcan_timing
-		 *  ¤ baud rate
-		 *  ¤ Channel
-		 *  ¤ Clear statistics
-		 *  ¤ TX blocking, and wait for all data to be sent.
-		 *  ¤ RX non-blocking depending on ONE_TAboa
-		 *  SK mode
-		 */
-
-	/* Set baud */
-	if(grcan_set_speed(iop_dev, device->baud_rate)){
-		iop_debug("GRCAN%d: Failed to set btrs.\n", device->can_core);
-	}
-
-	if(grcan_set_selection(iop_dev, device->can_core)){
-		iop_debug("GRCAN%d: Failed to select channel.\n", device->can_core);
-	}
-	if(grcan_clr_stats(iop_dev)){
-		iop_debug("GRCAN%d: Failed to clear statistics.\n", device->can_core);
-	}
-
-	if(grcan_start(iop_dev)){
-		iop_debug("GRCAN%d: Failed to start", device->can_core);
-	}
-
 	return RTEMS_SUCCESSFUL;
-//~ int grcan_init2(struct drvmgr_dev *dev)
-//~ {
-	//~ grcan_priv *priv;
-
-	//~ DBG("GRCAN[%d] on bus %s\n", dev->minor_drv, dev->parent->dev->name);
-	//~ if (GRCAN_COUNT_MAX <= grcan_count)
-		//~ return DRVMGR_ENORES;
-	//~ priv = dev->priv = malloc(sizeof(grcan_priv));
-	//~ if ( !priv )
-		//~ return DRVMGR_NOMEM;
-	//~ memset(priv, 0, sizeof(*priv));
-	//~ priv->dev = dev;
-
-	/* This core will not find other cores, so we wait for init2() */
-
-	//~ return DRVMGR_OK;
-//~ }
-
-//~ int grcan_init3(struct drvmgr_dev *dev)
-//~ {
-	//~ grcan_priv *priv;
-	//~ char prefix[32];
-
-	//~ priv = dev->priv;
-
-	/*
-	 * Now we take care of device initialization.
-	 */
-
-	//~ if ( grcan_device_init(priv) ) {
-		//~ return DRVMGR_FAIL;
-	//~ }
-
-	//~ priv_tab[grcan_count] = priv;
-	//~ grcan_count++;
-
-	//~ /* Get Filesystem name prefix */
-	//~ prefix[0] = '\0';
-	//~ if ( drvmgr_get_dev_prefix(dev, prefix) ) {
-		//~ /* Failed to get prefix, make sure of a unique FS name
-		 //~ * by using the driver minor.
-		 //~ */
-		//~ sprintf(priv->devName, "grcan%d", dev->minor_drv);
-	//~ } else {
-		//~ /* Got special prefix, this means we have a bus prefix
-		 //~ * And we should use our "bus minor"
-		 //~ */
-		//~ sprintf(priv->devName, "%sgrcan%d", prefix, dev->minor_bus);
-	//~ }
-
-	//~ return DRVMGR_OK;
-//~ }
-
 }
 
-iop_device_operation grcan_open(iop_device_driver_t *iop_dev, void *arg)
+/*
+ * Internal driver open routine. This corresponds more or less to the
+ * original grcan_open on grcan driver from gaisler.
+ * */
+iop_device_operation grcan_open_internal(iop_device_driver_t *iop_dev, void *arg)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = device->dev.driver;
@@ -1499,6 +1424,64 @@ iop_device_operation grcan_open(iop_device_driver_t *iop_dev, void *arg)
 	out:
 	rtems_semaphore_release(pDev->dev_sem);
 	return ret;
+}
+
+
+/*
+ * Open routine for AIR
+ * */
+iop_device_operation grcan_open(iop_device_driver_t *iop_dev, void *arg){
+
+	FUNCDBG();
+
+	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
+	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
+	int ret;
+
+	if(grcan_open_internal(iop_dev, NULL) == NULL){
+		DBG("Failed to open GRCAN device %d\n", device->can_core);
+		return RTEMS_IO_ERROR;
+	}
+
+	/* Start GRCAN driver */
+
+	/* Select CAN channel */
+
+	/* Set /* Set up CAN driver:
+		 *  ¤ Calculate frcan_timing
+		 *  ¤ baud rate
+		 *  ¤ Channel
+		 *  ¤ Clear statistics
+		 *  ¤ TX blocking, and wait for all data to be sent.
+		 *  ¤ RX non-blocking depending on ONE_TAboa
+		 *  SK mode
+		 */
+
+	/* Set baud */
+	if(grcan_set_speed(iop_dev, device->baud_rate)){
+		iop_debug("GRCAN%d: Failed to set speed.\n", device->can_core);
+		return RTEMS_IO_ERROR;
+	}
+	/* TODO Check what this does */
+	iop_debug("GRCAN%d: btrs set.\n", device->can_core);
+	if(grcan_set_selection(iop_dev, device->can_core)){
+		iop_debug("GRCAN%d: Failed to select channel.\n", device->can_core);
+		return RTEMS_IO_ERROR;
+	}
+	iop_debug("GRCAN%d: Channel selected.\n", device->can_core);
+	if(grcan_clr_stats(iop_dev)){
+		iop_debug("GRCAN%d: Failed to clear statistics.\n", device->can_core);
+		return RTEMS_IO_ERROR;
+	}
+	/* Start communication */
+	iop_debug("GRCAN%d: Stats cleared.\n", device->can_core);
+	if(grcan_start(iop_dev)){
+		iop_debug("GRCAN%d: Failed to start", device->can_core);
+		return RTEMS_IO_ERROR;
+	}
+	iop_debug("GRCAN%d: Device started", device->can_core);
+
+	return RTEMS_SUCCESSFUL;
 }
 
 iop_device_operation grcan_close(iop_device_driver_t * iop_dev)
