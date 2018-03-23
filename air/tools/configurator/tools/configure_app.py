@@ -2,7 +2,9 @@
 #  @author pfnf
 #  @brief Tool to configuration a AIR OS instalation
 
-__author__ = 'pfnf,dtms'
+__author__ 	= 'pfnf'
+__modified__= 'dtms'
+__modified__= 'gmvs'
 
 import os
 import air

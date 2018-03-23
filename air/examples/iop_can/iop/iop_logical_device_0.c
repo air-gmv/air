@@ -14,9 +14,9 @@ static iop_header_t route_header[1] = \
 	{
 		.can_header = {
 			.extended 	= 0,
+			.sshot	  = 0,
 			.rtr 		= 0,
-			.sshot 		= 0,
-			.id  		= 2
+			.id		  = 5
 		}
 	}
 };
@@ -26,6 +26,8 @@ static iop_header_t route_header[1] = \
  */
 static uint32_t route_schedule_0[1] = \
 		{ 1 };
+
+
 
 /**
  * @brief Routes Configuration
