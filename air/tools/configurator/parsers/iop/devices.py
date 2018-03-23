@@ -13,5 +13,5 @@ iop_supported_devices = {
     'CPSW'      : [ ETH,    ti.phy_cpsw,            ti.sch_cpsw,            'iop_cpsw.mako'  ],
     'GRSPW'     : [ SPW,    gaisler.phy_grspw,      gaisler.sch_grspw,      'iop_grspw.mako'],
     'SPWRTR'    : [ RTR,    gaisler.phy_spwrtr,     gaisler.sch_spwrtr,     'iop_spw_router.mako'],
-    'OCCAN'     : [ CAN,    gaisler.phy_occan,      gaisler.sch_occan,      'iop_occan.mako'],
+    'GRCAN'     : [ CAN,    gaisler.phy_grcan,      gaisler.sch_grcan,      'iop_grcan.mako'],
 }
