@@ -198,31 +198,31 @@ enum grcan_state {
 
 /*
  * From the C file*/
-#if (((__RTEMS_MAJOR__ << 16) | (__RTEMS_MINOR__ << 8) | __RTEMS_REVISION__) >= 0x040b63)
+//#if (((__RTEMS_MAJOR__ << 16) | (__RTEMS_MINOR__ << 8) | __RTEMS_REVISION__) >= 0x040b63)
 
 /* Spin locks mapped via rtems_interrupt_lock_* API: */
-#define SPIN_DECLARE(lock) RTEMS_INTERRUPT_LOCK_MEMBER(lock)
-#define SPIN_INIT(lock, name) rtems_interrupt_lock_initialize(lock, name)
-#define SPIN_LOCK(lock, level) rtems_interrupt_lock_acquire_isr(lock, &level)
-#define SPIN_LOCK_IRQ(lock, level) rtems_interrupt_lock_acquire(lock, &level)
-#define SPIN_UNLOCK(lock, level) rtems_interrupt_lock_release_isr(lock, &level)
-#define SPIN_UNLOCK_IRQ(lock, level) rtems_interrupt_lock_release(lock, &level)
-#define SPIN_IRQFLAGS(k) rtems_interrupt_lock_context k
-#define SPIN_ISR_IRQFLAGS(k) SPIN_IRQFLAGS(k)
+//#define SPIN_DECLARE(lock) RTEMS_INTERRUPT_LOCK_MEMBER(lock)
+//#define SPIN_INIT(lock, name) rtems_interrupt_lock_initialize(lock, name)
+//#define SPIN_LOCK(lock, level) rtems_interrupt_lock_acquire_isr(lock, &level)
+//#define SPIN_LOCK_IRQ(lock, level) rtems_interrupt_lock_acquire(lock, &level)
+//#define SPIN_UNLOCK(lock, level) rtems_interrupt_lock_release_isr(lock, &level)
+//#define SPIN_UNLOCK_IRQ(lock, level) rtems_interrupt_lock_release(lock, &level)
+//#define SPIN_IRQFLAGS(k) rtems_interrupt_lock_context k
+//#define SPIN_ISR_IRQFLAGS(k) SPIN_IRQFLAGS(k)
 
-#else
+//#else
 
 /* maintain compatibility with older versions of RTEMS: */
-#define SPIN_DECLARE(name)
-#define SPIN_INIT(lock, name)
-#define SPIN_LOCK(lock, level)
-#define SPIN_LOCK_IRQ(lock, level) rtems_interrupt_disable(level)
-#define SPIN_UNLOCK(lock, level)
-#define SPIN_UNLOCK_IRQ(lock, level) rtems_interrupt_enable(level)
-#define SPIN_IRQFLAGS(k) rtems_interrupt_level k
-#define SPIN_ISR_IRQFLAGS(k)
+//#define SPIN_DECLARE(name)
+//#define SPIN_INIT(lock, name)
+//#define SPIN_LOCK(lock, level)
+//#define SPIN_LOCK_IRQ(lock, level) rtems_interrupt_disable(level)
+//#define SPIN_UNLOCK(lock, level)
+//#define SPIN_UNLOCK_IRQ(lock, level) rtems_interrupt_enable(level)
+//#define SPIN_IRQFLAGS(k) rtems_interrupt_level k
+//#define SPIN_ISR_IRQFLAGS(k)
 
-#endif
+//#endif
 
 typedef struct grcan_msg_ {
     unsigned int head[2];
@@ -269,7 +269,7 @@ typedef struct grcan_priv_ {
 	struct grcan_stats stats;
 
 	rtems_id rx_sem, tx_sem, txempty_sem, dev_sem;
-	SPIN_DECLARE(devlock);
+//	SPIN_DECLARE(devlock);
 
 	iop_buffer_t *iop_buffers;
 	uint8_t *iop_buffers_storage;
@@ -389,7 +389,7 @@ int grcan_get_state(iop_device_driver_t *iop_dev);
  * mode
  */
 /* Bring the link up after open or bus-off */
-int grcan_start(iop_device_driver_t *iop_dev);
+//int grcan_start(iop_device_driver_t *iop_dev);
 /* stop to change baud rate/config or closing down */
 int grcan_stop(iop_device_driver_t *iop_dev);
 /* Wait until all TX messages have been sent */
