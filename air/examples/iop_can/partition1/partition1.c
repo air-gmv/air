@@ -30,7 +30,7 @@ void grcan_send_msg(PARTITION_ID_TYPE self_id){
 	char sample3[] = "TEST0";
 
 	int tps = 1000000 / air_syscall_get_us_per_tick();
-	int sleep = 10*tps;
+	int sleep = 2*tps;
 	pprintf("TPS %i\n", tps);
 
 	pprintf("Partition%d: Sleep for %ds so IOP gets ready...\n", self_id, sleep/1000);
@@ -40,21 +40,21 @@ void grcan_send_msg(PARTITION_ID_TYPE self_id){
 	rtems_interval time;
 
 	while(1){
-		pprintf("Sending message <<%s>> through CAN\n", sample1);
+		pprintf("Sending message «%s» through CAN\n", sample1);
 		WRITE_SAMPLING_MESSAGE(SEND_PORT, (MESSAGE_ADDR_TYPE) sample1, 3, &rc);
 
-		pprintf("Sending message <<%s>> through CAN\n", sample2);
+		pprintf("Sending message «%s» through CAN\n", sample2);
 		WRITE_SAMPLING_MESSAGE(SEND_PORT, (MESSAGE_ADDR_TYPE) sample2, 4, &rc);
 
-		pprintf("Sending message <<%s>> through CAN\n", sample3);
+		pprintf("Sending message «%s» through CAN\n", sample3);
 		WRITE_SAMPLING_MESSAGE(SEND_PORT, (MESSAGE_ADDR_TYPE) sample3, 5, &rc);
 		i++;
 		if(i == 10){
 			i = 0;
 		}
-		sample3[4] = 0x30 + 1;
+		sample3[4] = 0x30 + i;
 
-		rtems_task_wake_after(0.5 * tps);
+		rtems_task_wake_after(1* tps);
 	}
 }
 

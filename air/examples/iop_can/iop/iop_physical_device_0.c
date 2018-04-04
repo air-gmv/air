@@ -76,6 +76,13 @@ static grcan_priv grcan_driver = \
 	.txblock = 0,
 	.rxblock = 0,
 	
+	.tx_sem = 0x0,
+	.rx_sem = 0x0,
+	.txempty_sem = 0x0,
+	.dev_sem = 0x0,
+
+
+
 	.tx = tx_msg_fifo,
 	.rx = rx_msg_fifo,
 };
