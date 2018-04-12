@@ -19,7 +19,7 @@
  * testing GRCAN on a system with two GRCAN cores.
  *
  * Gaisler Research 2007,
- * Daniel Hellström
+ * Daniel Hellstrm
  *
  */
 /*
@@ -67,10 +67,10 @@ rtems_task Init(rtems_task_argument argument);	/* forward declaration needed */
   #define CONFIGURE_DRIVER_AMBAPP_GAISLER_APBUART
  #endif /* CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER */
 #endif /* defined(RTEMS_DRVMGR_STARTUP) && defined(LEON3) */
-//~ #define CONFIGURE_DRIVER_AMBAPP_GAISLER_PCIF	/* PCI is for GR-RASTA-IO GRCAN */
-//~ #define CONFIGURE_DRIVER_AMBAPP_GAISLER_GRPCI	/* PCI is for GR-RASTA-IO GRCAN */
-//~ #define CONFIGURE_DRIVER_AMBAPP_GAISLER_GRPCI2	/* PCI is for GR-RASTA-IO GRCAN */
-//~ #define CONFIGURE_DRIVER_PCI_GR_RASTA_IO	/* GR-RASTA-IO PCI TARGET has a GRCAN core */
+#define CONFIGURE_DRIVER_AMBAPP_GAISLER_PCIF	/* PCI is for GR-RASTA-IO GRCAN */
+#define CONFIGURE_DRIVER_AMBAPP_GAISLER_GRPCI	/* PCI is for GR-RASTA-IO GRCAN */
+#define CONFIGURE_DRIVER_AMBAPP_GAISLER_GRPCI2	/* PCI is for GR-RASTA-IO GRCAN */
+//#define CONFIGURE_DRIVER_PCI_GR_RASTA_IO	/* GR-RASTA-IO PCI TARGET has a GRCAN core */
 
 #ifdef LEON2
  /* PCI support for AT697 */
@@ -141,7 +141,9 @@ rtems_task Init(rtems_task_argument argument);	/* forward declaration needed */
  */
 
 /* Define this to get more statistics printed to console */
-#undef PRINT_MORE_STATS
+//#undef PRINT_MORE_STATS
+#define PRINT_MORE_STATS
+
 
 /* CAN Channel select */
 enum {
@@ -307,12 +309,46 @@ int verify_msg(CANMsg * msg, int index);
    initialisation */
 
 static const struct grcan_timing CAN_TIMING = {
-	/* Set baud rate: 250k @ 250MHz */
+//#if 0
+	/* Set baud rate: 250k @ 30MHz */
+//	.scaler = 3,
+//	.ps1 = 8,
+//	.ps2 = 5,
+//	.rsj = 1,
+//	.bpr = 1,
+//#elif 1
+	/* Set baud rate: 250k @ 40MHz */
+//	.scaler = 7,
+//	.ps1 = 0xf,
+//	.ps2 = 0x3,
+//	.rsj = 0x1,
+//	.bpr = 0,
+	
+//#elif 3
+	/*GMVS Set baud rate 250k @ 250MHz */
+	//.scaler = 0x27,
+	//.ps1 = 0xf,
+	//.ps2 = 0x8,
+	//.rsj = 0x1,
+	//.bpr = 0x0,
 	.scaler = 0x27,
 	.ps1 = 0xf,
 	.ps2 = 0x8,
 	.rsj = 0x1,
-	.bpr = 0x0,
+	.bpr = 0x0
+
+
+//#else
+	/* Set baud rate: 250k @ 250MHz */
+//	.scaler = 0x27
+//	.ps1 = 0xf,
+//	.ps2 = 0x8
+//	.rsj = 0x1,
+//	.bpr = 0x0
+	
+
+
+//#endif
 };
 
 static const struct grcan_selection CAN_CHAN_SEL[CAN_CHAN_SEL_NUM] = {
@@ -501,12 +537,20 @@ static int can_init_dev(int devno, int chan_sel, void **dev_new)
 	}
 
 	/* Set up CAN driver:
-	 *  ¤ baud rate
-	 *  ¤ Channel
-	 *  ¤ TX blocking, and wait for all data to be sent.
-	 *  ¤ RX non-blocking depending on ONE_TASK mode
+	 *   baud rate
+	 *   Channel
+	 *   TX blocking, and wait for all data to be sent.
+	 *   RX non-blocking depending on ONE_TASK mode
 	 */
 	/* Set baud */
+	printf("***Setting up CAN Driver***\n");
+	printf("Scaler: 0x%x\nPS1: 0x%x\nPS2: 0x%x\nRSJ: 0x%x\nBPR: 0x%x\n",
+		CAN_TIMING.scaler,
+		CAN_TIMING.ps1,
+		CAN_TIMING.ps2,
+		CAN_TIMING.rsj,
+		CAN_TIMING.bpr
+	);
 	ret = grcan_set_btrs(dev, &CAN_TIMING);
 	if (ret) {
 		printf("grcan_set_btrs() failed: %d\n", ret);
@@ -532,7 +576,7 @@ static int can_init_dev(int devno, int chan_sel, void **dev_new)
 
 #ifdef ONE_TASK
 	/* in one task mode, we want TX to block instead */
-	ret = grcan_set_rxblock(dev, 0);
+	ret = grcan_set_rxblock(dev,1);
 #else
 	/* in two task mode, we want TX _and_ RX to block */
 	ret = grcan_set_rxblock(dev, 1);
@@ -1094,4 +1138,3 @@ void can_print_stats(void)
 	printf("CAN TXPKTS:  %7d  (TX-RX: %7d)\n", txpkts, txpkts-rxpkts);
 	rtems_task_wake_after(4);
 }
-
