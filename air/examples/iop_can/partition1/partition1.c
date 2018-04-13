@@ -3,6 +3,16 @@
  *
  *  Created on: Mar 15, 2018
  *      Author: gmvs
+ *
+ * NOTE: When running this example on GR740, the following have to be configured:
+ * - CAN pin multiplexing
+ * - Enable GRCAN clock
+ *
+ * This can be done in GRMON2 using the following commands before running the
+ * example:
+ *   grmon2> wmem 0xffa0b000 0x000ffc3c
+ *   grmon2> grcg enable 5
+ *
  */
 
 #include <rtems.h>
@@ -40,14 +50,14 @@ void grcan_send_msg(PARTITION_ID_TYPE self_id){
 	rtems_interval time;
 
 	while(1){
-		pprintf("Sending message «%s» through CAN\n", sample1);
+		pprintf("Sending message ..%s.. through CAN\n", sample1);
 		WRITE_SAMPLING_MESSAGE(SEND_PORT, (MESSAGE_ADDR_TYPE) sample1, 3, &rc);
 
-		pprintf("Sending message «%s» through CAN\n", sample2);
-		WRITE_SAMPLING_MESSAGE(SEND_PORT, (MESSAGE_ADDR_TYPE) sample2, 4, &rc);
-
-		pprintf("Sending message «%s» through CAN\n", sample3);
-		WRITE_SAMPLING_MESSAGE(SEND_PORT, (MESSAGE_ADDR_TYPE) sample3, 5, &rc);
+//		pprintf("Sending message ..%s.. through CAN\n", sample2);
+//		WRITE_SAMPLING_MESSAGE(SEND_PORT, (MESSAGE_ADDR_TYPE) sample2, 4, &rc);
+//
+//		pprintf("Sending message ..%s.. through CAN\n", sample3);
+//		WRITE_SAMPLING_MESSAGE(SEND_PORT, (MESSAGE_ADDR_TYPE) sample3, 5, &rc);
 		i++;
 		if(i == 10){
 			i = 0;
