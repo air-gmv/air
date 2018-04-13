@@ -166,9 +166,9 @@ enum grcan_state {
 #define GRCAN_RXCTRL_ONGOING 1
 
 /* Relative offset of IRQ sources to AMBA Plug&Play */
-#define GRCAN_IRQ_IRQ 0
-#define GRCAN_IRQ_TXSYNC 1
-#define GRCAN_IRQ_RXSYNC 2
+//#define GRCAN_IRQ_IRQ 0
+//#define GRCAN_IRQ_TXSYNC 1
+//#define GRCAN_IRQ_RXSYNC 2
 
 #define GRCAN_ERR_IRQ        0x1
 #define GRCAN_OFF_IRQ        0x2
@@ -250,8 +250,8 @@ typedef struct grcan_priv_ {
 	unsigned int corefreq_hz;
 
 	/* Circular DMA buffers */
-	void *_rx, *_rx_hw;
-	void *_tx, *_tx_hw;
+	void *_rx, *rx_hw;
+	void *_tx, *tx_hw;
 	void *txbuf_adr;
 	void *rxbuf_adr;
 	grcan_msg *rx;
@@ -271,8 +271,12 @@ typedef struct grcan_priv_ {
 	rtems_id rx_sem, tx_sem, txempty_sem, dev_sem;
 //	SPIN_DECLARE(devlock);
 
+	/* AIR Memory */
 	iop_buffer_t *iop_buffers;
 	uint8_t *iop_buffers_storage;
+	iop_buffer_t **tx_iop_buffer; /* mapping of TX descriptor and IOP buffers */
+	iop_buffer_t **rx_iop_buffer; /* mapping of RX descriptor and IOP buffers */
+
 } grcan_priv;
 
 
@@ -339,8 +343,9 @@ iop_device_operation grcan_close(iop_device_driver_t *iop_dev);
  */
 iop_device_operation grcan_read(
 	iop_device_driver_t *iop_dev,
-	CANMsg *msg,
-	size_t count
+	void *arg
+//	CANMsg *msg,
+//	size_t count
 );
 
 /*
@@ -364,8 +369,9 @@ iop_device_operation grcan_read(
  */
 iop_device_operation grcan_write(
 	iop_device_driver_t *iop_dev,
-	CANMsg *msg,
-	size_t count
+	void *arg
+//	CANMsg *msg,
+//	size_t count
 );
 
 /*
