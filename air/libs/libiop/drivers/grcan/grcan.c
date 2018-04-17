@@ -590,6 +590,7 @@ static int grcan_hw_read_try(
   
   wp = READ_REG(&regs->rx0wr);
   rp = READ_REG(&regs->rx0rd);
+  DBG("wp\trp\n %d\t%d\n", wp, rp);
   
   /*
    * Due to hardware wrap around simplification write pointer will 
@@ -606,6 +607,7 @@ static int grcan_hw_read_try(
     
     /* Get number of bytes available in RX buffer */
     trunk_msg_cnt = grcan_hw_rxavail(rp,wp,size);
+    DBG("%d bytes to be read\n", trunk_msg_cnt);
     
     /* truncate size if user space buffer hasn't room for 
      * all received chars.
@@ -622,6 +624,7 @@ static int grcan_hw_read_try(
     rxmax = addr + (size-GRCAN_MSG_SIZE);
     
     /* Read as many can messages as possible */
+    DBG("Trying to read a message\n");
     while(i>0){
 		/* Read CAN message from DMA buffer */
 		tmp.head[0] = READ_DMA_WORD(&source->head[0]);
@@ -1303,60 +1306,83 @@ iop_device_operation grcan_read(iop_device_driver_t *iop_dev, void *arg)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
-	CANMsg *dest;
+	CANMsg dest;
 	unsigned int count, left;
 	int nread;
 	int req_cnt;
+	int i;
+	can_header_t header;
 
 	/* get IOP buffer */
 	iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
 	iop_buffer_t *iop_buffer = wrapper->buffer;
 
-
 	FUNCDBG();
 
 	/* Pointer to where the messages is going */
 //	dest = msg;
-	dest = (CANMsg *)iop_buffer->v_addr;
+//	dest = (CANMsg *)iop_buffer->v_addr;
 	req_cnt = 1; /* Process one message at the time */
 
-	iop_debug("grcan: grcan_read on device grcan%d\n", device->can_core);
-	if ( (!dest) || (req_cnt<1) )
+	DBG("grcan_read on device grcan%d\n", device->can_core);
+	if ( (!iop_buffer) || (req_cnt<1) ){
 		DBG("Invalid argument\n");
 		return GRCAN_RET_INVARG;
+	}
 
 	if (pDev->started != STATE_STARTED) {
 		DBG("Trying to read a device not started\n");
 		return GRCAN_RET_NOTSTARTED;
 	}
-//	DBGC(DBG_RX, "grcan_read [%p]: buf: %p len: %u\n", d, msg, (unsigned int) ucount);
 	DBG("Attempting to read %d message(s)\n", req_cnt);
-	nread = grcan_hw_read_try(pDev,pDev->regs,dest,req_cnt);
+	nread = grcan_hw_read_try(pDev,pDev->regs,&dest,req_cnt);
 	if (nread < 0) {
 		return nread;
 	}
-	DBG("%d message(s) read\n", nread);
-	/* Complete the iop_buffer */
-	iop_buffer->header_off = 0;
-	iop_buffer->payload_size = dest->len;
-	if(dest->extended){
-		iop_buffer->payload_off = iop_buffer->header_size = 29;
 
-	}else{
-		iop_buffer->payload_off = iop_buffer->header_size = 11;
+	DBG("%d message(s) read\n", nread);
+	if(nread > 0){
+		iop_debug("ID: %d Extendend: %d RTR: %d\n",
+				dest.id,
+				dest.extended,
+				dest.rtr);
+		for( i = 0; i< dest.len; i++){
+			iop_debug("%c", dest.data[i]);
+		}
 	}
+	iop_debug("\n");
+
+	/* Complete the iop_buffer */
+	iop_buffer->payload_off = iop_buffer->header_size = sizeof(can_header_t);
+	iop_buffer->header_off = iop_buffer->header_size - sizeof(can_header_t);
+	iop_buffer->payload_size = dest.len;
+	header.id = (int) dest.id;
+	header.extended = (int) dest.extended;
+	header.rtr = (int) dest.rtr;
+	header.sshot = 0;
+	iop_debug("ID: %d Extendend: %d RTR: %d\n",
+		header.id,
+		header.extended,
+		header.rtr);
+	memcpy(iop_buffer->v_addr + iop_buffer->header_off,
+			&header,
+			iop_buffer->header_size);
+	memcpy(iop_buffer->v_addr + iop_buffer->payload_off,
+			dest.data,
+			iop_buffer->payload_size);
 
 	count = nread;
 	if ( !( pDev->rxblock && pDev->rxcomplete && (count!=req_cnt) ) ){
 		if ( count > 0 ) {
-		  /* Successfully received messages (at least one) */
-				return count;
+			/* Successfully received messages (at least one) */
+			iop_debug("%d messages read\n", count);
+			return RTEMS_SUCCESSFUL;
 		}
 
 		/* nothing read, shall we block? */
 		if ( !pDev->rxblock ) {
-		  /* non-blocking mode */
-				return GRCAN_RET_TIMEOUT;
+			/* non-blocking mode */
+			return GRCAN_RET_TIMEOUT;
 		}
 	}
 
@@ -1399,7 +1425,8 @@ iop_device_operation grcan_read(iop_device_driver_t *iop_dev, void *arg)
 //		count += nread;
 //	}
 	/* no need to unmask IRQ as IRQ Handler do that for us. */
-	return count;
+//	return count;
+	return RTEMS_SUCCESSFUL;
 }
  
 iop_device_operation grcan_write(iop_device_driver_t *iop_dev, void *arg)
