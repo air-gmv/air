@@ -10,6 +10,8 @@
 #include <iop.h>
 #include <can_support.h>
 #include <iop_error.h>
+#include <iop_mms.h>
+#include <iop_support.h>
 
 void can_writer(iop_physical_device_t *pdev)
 {
@@ -54,8 +56,8 @@ void can_reader(iop_physical_device_t *pdev)
 	iop_debug("  :: can-read running!\n");
 
 	uint32_t i;
-//	uint32_t reads = pdev->reads_per_period[air_schedule.current_schedule_index];
-	uint32_t reads= 5; // number of reads per period
+	uint32_t reads = pdev->reads_per_period[air_schedule.current_schedule_index];
+//	uint32_t reads= 1; // number of reads per period
 	for(i = 0; i < reads; i++){
 		iop_wrapper_t *wrapper = obtain_free_wrapper();
 

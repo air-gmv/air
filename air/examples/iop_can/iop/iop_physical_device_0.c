@@ -8,9 +8,12 @@
  * ============================================================================
  */
  
- #include <iop.h>
- #include <grcan.h>
- #include <can_support.h>
+#include <iop.h>
+#include <grcan.h>
+#include <can_support.h>
+#include <iop_mms.h>
+#include <iop_error.h>
+
  
  /**
  * @brief IOP remote ports
@@ -106,15 +109,15 @@ static iop_can_device_t device_configuration = \
 	},
 	.can_core 	= 0,
 	.baud_rate 	= 250,
-	.rx_count = 3072,
-	.tx_count = 1024
+	.rx_count = 32,
+	.tx_count = 32
 };
 
 /**
  * @brief Device Scheduling
  */
 static uint32_t reads_per_period[] = \
-    { 5 };
+    { 1 };
 
 /**
  * @brief Routes Headers
@@ -123,7 +126,7 @@ static iop_header_t route_header[1] = \
 {
 	{
 		.can_header = {
-			.extended = 1,
+			.extended = 0,
 			.sshot	  = 0,
 			.rtr 	  = 1,
 			.id		  = 11

@@ -58,11 +58,10 @@ typedef struct  {
 }  __attribute__((packed)) eth_header_t;
 
 typedef struct {
-	char extended;		/* CANBUS extended id option */
-	char rtr;	 		/* Remote Transmission request */
-	char sshot;			/* Single shot option*/
-//	unsigned char len;	/* payload length from 1-8 bytes */
-	unsigned int id;	/* Remote device identifier */
+	uint8_t extended;		/* CANBUS extended id option */
+	uint8_t rtr;	 		/* Remote Transmission request */
+	uint8_t sshot;			/* Single shot option*/
+	uint8_t id;	/* Remote device identifier */
 } __attribute__((packed)) can_header_t;
 
 /**
