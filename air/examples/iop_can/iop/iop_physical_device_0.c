@@ -8,12 +8,11 @@
  * ============================================================================
  */
  
-#include <iop.h>
-#include <grcan.h>
-#include <can_support.h>
-#include <iop_mms.h>
-#include <iop_error.h>
-
+ #include <iop.h>
+ #include <grcan.h>
+ #include <can_support.h>
+ #include <iop_mms.h>
+ #include <iop_error.h>
  
  /**
  * @brief IOP remote ports
@@ -27,15 +26,6 @@ static iop_buffer_t iop_buffers[64];
 static uint8_t iop_buffers_storage[64 * IOP_BUFFER_SIZE];
  
 /**
- * @brief TX descriptor to IOP buffer mapping
- */
-static iop_buffer_t *tx_iop_buffer[32];
-/**
- * @brief RX descriptor to IOP buffer mapping
- */
-static iop_buffer_t *rx_iop_buffer[32];
-
-/**
  * @brief RX and TX descriptor table
  * @warning this should be 2048, but we need 3072 to ensure the 0x400 alignment
  */
@@ -46,18 +36,9 @@ static uint8_t descriptor_table[3072];
  * message queue
  */
  
-//static grcan_msg rx_msg_fifo[32];
- 
-//static grcan_msg tx_msg_fifo[32];
-
 unsigned int rx_msg_fifo[3072+1024];
-unsigned int tx_msg_fifo[3072+1024];
 
-/**
- * @brief RX and TX descriptor table
- * @warning this should be 2048, but we need 3072 to ensure the 0x400 alignment
- */
-//static uint8_t descriptor_table[3072];
+unsigned int tx_msg_fifo[3072+1024];
 
 /** @brief GRCAN control structure*/
 static grcan_priv grcan_driver = \
@@ -77,8 +58,10 @@ static grcan_priv grcan_driver = \
 	.iop_buffers			= iop_buffers,
 	.iop_buffers_storage	= iop_buffers_storage,
 	
-	.txbuf_adr = 0x0,
-	.rxbuf_adr = 0x0,
+	.iop_buffers = iop_buffers,	
+	
+	.txbuf_adr = 0,
+	.rxbuf_adr = 0,
 	
 	.txcomplete = 0,
 	.rxcomplete = 0,
@@ -86,11 +69,11 @@ static grcan_priv grcan_driver = \
 	.txblock = 0,
 	.rxblock = 0,
 	
-	.tx_sem = 0x0,
-	.rx_sem = 0x0,
-	.txempty_sem = 0x0,
-	.dev_sem = 0x0,
-
+	.tx_sem = 0,
+	.rx_sem = 0,
+	.txempty_sem = 0,
+	.dev_sem = 0,
+	
 	._tx = tx_msg_fifo,
 	._rx = rx_msg_fifo,
 };
@@ -109,8 +92,6 @@ static iop_can_device_t device_configuration = \
 	},
 	.can_core 	= 0,
 	.baud_rate 	= 250,
-	.rx_count = 32,
-	.tx_count = 32
 };
 
 /**
@@ -128,8 +109,8 @@ static iop_header_t route_header[1] = \
 		.can_header = {
 			.extended = 0,
 			.sshot	  = 0,
-			.rtr 	  = 1,
-			.id		  = 11
+			.rtr 	  = 0,
+			.id		  = 34
 		}
 	}
 };
@@ -166,7 +147,7 @@ iop_physical_device_t physical_device_0 =\
 
     .reader_task        = can_reader,
     .writer_task        = can_writer,
-    .header_prebuild    = can_prebuild_header,
+    .header_prebuild    = NULL,
     .header_compare     = can_compare_header,
     .header_copy        = can_copy_header,
 };
