@@ -40,7 +40,7 @@ void grcan_send_msg(PARTITION_ID_TYPE self_id){
 	char sample3[] = "TEST0";
 
 	int tps = 1000000 / air_syscall_get_us_per_tick();
-	int sleep = 2*tps;
+	int sleep = 1*tps;
 	pprintf("TPS %i\n", tps);
 
 	pprintf("Partition%d: Sleep for %ds so IOP gets ready...\n", self_id, sleep/1000);
