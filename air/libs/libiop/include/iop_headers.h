@@ -61,7 +61,7 @@ typedef struct {
 	uint8_t extended;		/* CANBUS extended id option */
 	uint8_t rtr;	 		/* Remote Transmission request */
 	uint8_t sshot;			/* Single shot option*/
-	uint8_t id;	/* Remote device identifier */
+	uint32_t id;	/* Remote device identifier */
 } __attribute__((packed)) can_header_t;
 
 /**

@@ -21,13 +21,6 @@ typedef struct {
 	uint16_t tx_count;
 } iop_can_device_t;
 
-//typedef struct {
-//	uint8_t extended;
-//	uint8_t rtr;
-//	uint8_t sshot;
-//	uint8_t id;
-//} __attribute__ ((packet)) iop_can_header_t;
-
 /* TODO the next three functions are stubs */
 void can_copy_header(
 		iop_physical_device_t *iop_dev,

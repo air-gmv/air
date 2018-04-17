@@ -35,11 +35,13 @@ uint16_t can_compare_header(
 		iop_wrapper_t *wrapper,
 		iop_header_t *header){
 
-	can_header_t *can_header = (can_header_t *) header;
-	int id = *(int *) (wrapper->buffer->v_addr +
-			wrapper->buffer->header_off +
-			3*sizeof(int));
-	if (id == can_header->id){
+	iop_buffer_t *buf = wrapper->buffer;
+	can_header_t *can_header1 = (can_header_t *) header;
+//	can_header_t *can_header2 = (can_header_t *) buf->v_addr + buf->header_off;
+	can_header_t can_header2;
+	memcpy(&can_header2, get_header(buf), buf->header_size);
+	iop_debug("Comparing headers - H1:%d H2:%d\n", can_header1->id , can_header2.id);
+	if (can_header1->id == can_header2.id){
 		return 1;
 	}
 	return 0;

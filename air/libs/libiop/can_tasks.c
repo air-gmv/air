@@ -57,7 +57,6 @@ void can_reader(iop_physical_device_t *pdev)
 
 	uint32_t i;
 	uint32_t reads = pdev->reads_per_period[air_schedule.current_schedule_index];
-//	uint32_t reads= 1; // number of reads per period
 	for(i = 0; i < reads; i++){
 		iop_wrapper_t *wrapper = obtain_free_wrapper();
 
@@ -70,6 +69,7 @@ void can_reader(iop_physical_device_t *pdev)
 				wrapper) == RTEMS_SUCCESSFUL){
 			/* We received something lets make it
 			 * available to higher level */
+			iop_debug("can_reader: message received");
 			iop_chain_append(&pdev->rcvqueue, &wrapper->node);
 			wrapper = NULL;
 		}
