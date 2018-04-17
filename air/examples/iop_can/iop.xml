@@ -13,7 +13,7 @@
 	<PhysicalDevices>
 		<Device Id="1" Device="CAN0" Baud="250" TXD="32" RXD="32" Code="0x00000000" Mask="0x00000000">
 			<PhysicalRoute Id="1" PortId="iop_sender">
-				<CanHeader Extended="true" Sshot="false" RTR="true" CanID="34"/>
+				<CanHeader Extended="true" Sshot="false" RTR="false" CanID="34"/>
 			</PhysicalRoute>		
 			<LogicalRoute Id="2" LogicalDeviceId="1">
 				<CanHeader Extended="false" Sshot="false" RTR="false" CanID="5"/> 
