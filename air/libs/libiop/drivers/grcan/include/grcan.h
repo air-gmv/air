@@ -15,6 +15,11 @@
  *  http://www.rtems.org/license/LICENSE.
  */
 
+/*
+ * Modified by gmvs @ GMV 2018
+ * gmvs@gmv.com
+ */
+
 #include <ambapp.h>
 
 #include <air.h>
@@ -196,34 +201,6 @@ enum grcan_state {
 #define GRCAN_STAT_RXERRCNT  0xff00
 #define GRCAN_STAT_TXERRCNT  0xff0000
 
-/*
- * From the C file*/
-//#if (((__RTEMS_MAJOR__ << 16) | (__RTEMS_MINOR__ << 8) | __RTEMS_REVISION__) >= 0x040b63)
-
-/* Spin locks mapped via rtems_interrupt_lock_* API: */
-//#define SPIN_DECLARE(lock) RTEMS_INTERRUPT_LOCK_MEMBER(lock)
-//#define SPIN_INIT(lock, name) rtems_interrupt_lock_initialize(lock, name)
-//#define SPIN_LOCK(lock, level) rtems_interrupt_lock_acquire_isr(lock, &level)
-//#define SPIN_LOCK_IRQ(lock, level) rtems_interrupt_lock_acquire(lock, &level)
-//#define SPIN_UNLOCK(lock, level) rtems_interrupt_lock_release_isr(lock, &level)
-//#define SPIN_UNLOCK_IRQ(lock, level) rtems_interrupt_lock_release(lock, &level)
-//#define SPIN_IRQFLAGS(k) rtems_interrupt_lock_context k
-//#define SPIN_ISR_IRQFLAGS(k) SPIN_IRQFLAGS(k)
-
-//#else
-
-/* maintain compatibility with older versions of RTEMS: */
-//#define SPIN_DECLARE(name)
-//#define SPIN_INIT(lock, name)
-//#define SPIN_LOCK(lock, level)
-//#define SPIN_LOCK_IRQ(lock, level) rtems_interrupt_disable(level)
-//#define SPIN_UNLOCK(lock, level)
-//#define SPIN_UNLOCK_IRQ(lock, level) rtems_interrupt_enable(level)
-//#define SPIN_IRQFLAGS(k) rtems_interrupt_level k
-//#define SPIN_ISR_IRQFLAGS(k)
-
-//#endif
-
 typedef struct grcan_msg_ {
     unsigned int head[2];
     unsigned char data[8];
@@ -269,7 +246,6 @@ typedef struct grcan_priv_ {
 	struct grcan_stats stats;
 
 	rtems_id rx_sem, tx_sem, txempty_sem, dev_sem;
-//	SPIN_DECLARE(devlock);
 
 	/* AIR Memory */
 	iop_buffer_t *iop_buffers;
@@ -344,8 +320,6 @@ iop_device_operation grcan_close(iop_device_driver_t *iop_dev);
 iop_device_operation grcan_read(
 	iop_device_driver_t *iop_dev,
 	void *arg
-//	CANMsg *msg,
-//	size_t count
 );
 
 /*
@@ -370,8 +344,6 @@ iop_device_operation grcan_read(
 iop_device_operation grcan_write(
 	iop_device_driver_t *iop_dev,
 	void *arg
-//	CANMsg *msg,
-//	size_t count
 );
 
 /*
