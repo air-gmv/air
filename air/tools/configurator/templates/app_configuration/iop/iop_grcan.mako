@@ -22,6 +22,8 @@
  #include <iop.h>
  #include <grcan.h>
  #include <can_support.h>
+ #include <iop_mms.h>
+ #include <iop_error.h>
  
  ${iop_template.RemotePortList(iop_configuration)}\
  
@@ -37,19 +39,23 @@ static iop_buffer_t *tx_iop_buffer[${device.setup.txd_count}];
 static iop_buffer_t *rx_iop_buffer[${device.setup.rxd_count}];
 
 /**
- * @brief Allocation of the grcan driver internal
- * message queue
- */
- 
-static grcan_msg rx_msg_fifo[32];
- 
-static grcan_msg tx_msg_fifo[32]; 
-
-/**
  * @brief RX and TX descriptor table
  * @warning this should be 2048, but we need 3072 to ensure the 0x400 alignment
  */
-//static uint8_t descriptor_table[3072];
+static uint8_t descriptor_table[3072];
+
+/**
+ * @brief Allocation of the grcan driver internal
+ * message queue
+ */
+/**
+ *@brief Allocation of the receiver memory
+ */
+unsigned int rx_msg_fifo[3072+1024];
+/**
+ *@brief Allocation of the transmiter memory
+ */
+unsigned int tx_msg_fifo[3072+1024];
 
 /** @brief GRCAN control structure*/
 static grcan_priv grcan_driver = ${'\\'}
@@ -71,8 +77,8 @@ static grcan_priv grcan_driver = ${'\\'}
 	
 	.iop_buffers = iop_buffers,	
 	
-	.txbuf_adr = 0x0,
-	.rxbuf_adr = 0x0,
+	.txbuf_adr = 0,
+	.rxbuf_adr = 0,
 	
 	.txcomplete = 0,
 	.rxcomplete = 0,
@@ -80,8 +86,13 @@ static grcan_priv grcan_driver = ${'\\'}
 	.txblock = 0,
 	.rxblock = 0,
 	
-	.tx = tx_msg_fifo,
-	.rx = rx_msg_fifo,
+	.tx_sem = 0,
+	.rx_sem = 0,
+	.txempty_sem = 0,
+	.dev_sem = 0,
+	
+	._tx = tx_msg_fifo,
+	._rx = rx_msg_fifo,
 };
 
 /**  @brief GRCAN control strucutre */

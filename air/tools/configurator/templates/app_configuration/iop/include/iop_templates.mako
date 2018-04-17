@@ -74,7 +74,8 @@ iop_physical_device_t physical_device_${pdevice.idx} =${'\\'}
 
     .reader_task        = ${funcs['reader_task']},
     .writer_task        = ${funcs['writer_task']},
-    .header_prebuild    = ${funcs['header_prebuild']},
+//    .header_prebuild    = ${funcs['header_prebuild']},
+	.header_prebuild	= NULL,
     .header_compare     = ${funcs['header_compare']},
     .header_copy        = ${funcs['header_copy']},
 };
