@@ -51,11 +51,11 @@ static uint8_t descriptor_table[3072];
 /**
  *@brief Allocation of the receiver memory
  */
-unsigned int rx_msg_fifo[3072+1024];
+unsigned int rx_msg_fifo[${device.setup.txd_count*96+1024}];
 /**
  *@brief Allocation of the transmiter memory
  */
-unsigned int tx_msg_fifo[3072+1024];
+unsigned int tx_msg_fifo[${device.setup.txd_count*96+1024}];
 
 /** @brief GRCAN control structure*/
 static grcan_priv grcan_driver = ${'\\'}
@@ -90,6 +90,17 @@ static grcan_priv grcan_driver = ${'\\'}
 	.rx_sem = 0,
 	.txempty_sem = 0,
 	.dev_sem = 0,
+	
+	.txbuf_size = ${device.setup.txd_count*96+1024},
+	.rxbuf_size = ${device.setup.txd_count*96+1024},
+	
+	.config = {
+		.selection = {
+			.selection 	= ${device.setup.selection},
+			.enable0 	= ${device.setup.enable0},
+			.enable1 	= ${device.setup.enable1},
+		},
+	},
 	
 	._tx = tx_msg_fifo,
 	._rx = rx_msg_fifo,

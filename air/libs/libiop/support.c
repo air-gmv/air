@@ -164,7 +164,7 @@ void update_timers() {
  * @brief Enable device with clock gating
  * @param clk_amba_bus AMBA bus where the clock gating is located
  * @param core_to_enable Which device to enable.
- *        Available devices are: ETH0, ETH1, SPWR, PCI and 1553
+ *        Available devices are: ETH0, ETH1, SPWR, PCI, 1553 and CAN
  */
 void clock_gating_enable(amba_confarea_type* clk_amba_bus, clock_gating_device core_to_enable)
 {

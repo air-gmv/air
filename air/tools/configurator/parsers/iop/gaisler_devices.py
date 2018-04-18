@@ -49,6 +49,9 @@ CANBUS_RXD              = 'RXD'
 CANBUS_READS            = 'Reads'
 CANBUS_CODE             = 'Code'
 CANBUS_MASK             = 'Mask'
+CANBUS_SELECTION		= 'Selection'
+CANBUS_ENABLE0			= 'Enable0'
+CANBUS_ENABLE1			= 'Enable1'
 
 
 
@@ -159,10 +162,13 @@ class GRCANPhySetup(object):
         self.rxd = 0
         self.code = ''
         self.mask = ''
+        self.selection = 0
+        self.enable0 = 0
+        self.enable1 = 1
         
     def details(self):
-        return 'CAN Physical Device Setup (Baud: {0} TXD: {1} RXD: {2} Code: {3} Mask: {4})'\
-        .format( self.baud, self.txd, self.rxd, self.code, self.mask)
+        return 'CAN Physical Device Setup (Baud: {0} TXD: {1} RXD: {2} Code: {3} Mask: {4} Selection: {5} Enable0: {6} Enable1: {7})'\
+        .format( self.baud, self.txd, self.rxd, self.code, self.mask, self.selection, self.enable0, self.enable1)
         
 # CANBUS Schedule device setup
 class GRCANSchSetup(object):
@@ -329,6 +335,9 @@ def phy_grcan(iop_parser, xml, pdevice):
     setup.rxd_count         = xml.parse_attr(CANBUS_RXD, VALID_XD, True, iop_parser.logger)
     setup.code              = xml.parse_attr(CANBUS_CODE, VALID_MASK_CODE, True, iop_parser.logger)
     setup.mask              = xml.parse_attr(CANBUS_MASK, VALID_MASK_CODE, True, iop_parser.logger)
+    setup.selection			= xml.parse_attr(CANBUS_SELECTION, VALID_EN, True, iop_parser.logger)
+    setup.enable0			= xml.parse_attr(CANBUS_ENABLE0, VALID_EN, True, iop_parser.logger)
+    setup.enable1			= xml.parse_attr(CANBUS_ENABLE1, VALID_EN, True, iop_parser.logger)
     
     # sanity check
     if iop_parser.logger.check_errors(): return False
