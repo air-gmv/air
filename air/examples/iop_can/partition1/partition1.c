@@ -4,14 +4,9 @@
  *  Created on: Mar 15, 2018
  *      Author: gmvs
  *
- * NOTE: When running this example on GR740, the following have to be configured:
+ * WARNING: When running this example on GR740, the following have to be configured:
  * - CAN pin multiplexing
- * - Enable GRCAN clock
  *
- * This can be done in GRMON2 using the following commands before running the
- * example:
- *   grmon2> wmem 0xffa0b000 0x000ffc3c
- *   grmon2> grcg enable 5
  *
  */
 
