@@ -1029,7 +1029,7 @@ iop_device_operation grcan_open(iop_device_driver_t *iop_dev, void *arg){
 		print_grtiming(pDev->corefreq_hz,device->baud_rate, &(pDev->config.timing));
 	}
 
-	if(grcan_set_selection(iop_dev, &(pDev->config->selection))){
+	if(grcan_set_selection(iop_dev, &(pDev->config.selection))){
 		iop_debug("GRCAN%d: Failed to select channel.\n", device->can_core);
 		return RTEMS_IO_ERROR;
 	}
