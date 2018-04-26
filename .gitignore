@@ -1,4 +1,5 @@
 # C compiled files
+*~
 *.exe
 *.map
 *.num
