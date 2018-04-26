@@ -74,7 +74,8 @@ iop_physical_device_t physical_device_${pdevice.idx} =${'\\'}
 
     .reader_task        = ${funcs['reader_task']},
     .writer_task        = ${funcs['writer_task']},
-    .header_prebuild    = ${funcs['header_prebuild']},
+//    .header_prebuild    = ${funcs['header_prebuild']},
+	.header_prebuild	= NULL,
     .header_compare     = ${funcs['header_compare']},
     .header_copy        = ${funcs['header_copy']},
 };
@@ -128,6 +129,7 @@ extern iop_port_t remote_ports[${len(iop_configuration.ports)}];
 	{
 		.can_header = {
 			.extended = ${int(header.extended)},
+			.sshot	  = ${int(header.sshot)},
 			.rtr 	  = ${int(header.rtr)},
 			.id		  = ${header.can_id}
 		}

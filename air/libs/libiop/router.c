@@ -133,16 +133,15 @@ void route_request(iop_logical_device_t *ldev, iop_wrapper_t *wrapper){
 			int j = 0;
 			iop_debug("%dWRAPPER->BUFFER: ", j);
 			for (j = 0; j <  wrapper->buffer->header_size + wrapper->buffer->payload_size; j++) {
-				iop_debug("%x ", *((uint8_t *)wrapper->buffer->v_addr+j));
+				iop_debug("%c ", *((uint8_t *)wrapper->buffer->v_addr+j));
 				if (j == wrapper->buffer->header_size - 1)
 					iop_debug(" | size: %d\n", j+1);
 			} iop_debug("\nsize: %d\n", j);
 
 			iop_debug("%dROUTER HEADER: ", j);
-			spw_header_t *spw_header = (spw_header_t *)route->header;
-			for(j = 0; j < sizeof(iop_header_t); j++) {
-				iop_debug("%x ", (*spw_header).hdr[j]);
-			} iop_debug("\nsize: %d\n", j);
+			can_header_t *can_header = (can_header_t *)route->header;
+			iop_debug("ID: %d Ext: %d RTR: %d ", can_header->id, can_header->extended ,can_header->rtr);
+			iop_debug("\nsize: %d\n", wrapper->buffer->header_size);
 #endif
             /* setup route header */
             route->device->header_copy(route->device, wrapper, route->header);

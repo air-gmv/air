@@ -398,8 +398,8 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 	/* get memory for the internal structure */
 	// spw_dev = get_spw_dev();
 	
-	spw_cores = amba_get_number_apbslv_devices(amba_bus,VENDOR_GAISLER,GAISLER_SPACEWIRE);
-	spw_cores2 = amba_get_number_apbslv_devices(amba_bus,VENDOR_GAISLER,GAISLER_GRSPW2);
+	spw_cores = amba_get_number_apbslv_devices(amba_bus,VENDOR_GAISLER,GAISLER_SPW);
+	spw_cores2 = amba_get_number_apbslv_devices(amba_bus,VENDOR_GAISLER,GAISLER_SPW2);
 	spw_cores2_dma = amba_get_number_apbslv_devices(amba_bus,VENDOR_GAISLER,GAISLER_SPW2_DMA);
 	
 	/* zero out all memory */
@@ -412,11 +412,11 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 	/*get default configuration*/
 	defconf = user_config;
 	
-	if (amba_find_next_apbslv(amba_bus,VENDOR_GAISLER,GAISLER_SPACEWIRE,&dev,cores_init)) {
+	if (amba_find_next_apbslv(amba_bus,VENDOR_GAISLER,GAISLER_SPW,&dev,cores_init)) {
 			
 		/*store core version in device's structure*/
 		pDev->core_ver = 1;
-	} else if (amba_find_next_apbslv(amba_bus,VENDOR_GAISLER,GAISLER_GRSPW2,&dev,cores_init)) {
+	} else if (amba_find_next_apbslv(amba_bus,VENDOR_GAISLER,GAISLER_SPW2,&dev,cores_init)) {
 		
 		/*store core version in device's structure*/
 		pDev->core_ver = 2;
