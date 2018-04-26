@@ -888,7 +888,7 @@ rtems_device_driver brm_initialize(rtems_device_major_number major, rtems_device
 		brm = &brms[minor];
 		
 		/* Get AMBA AHB device info from Plug&Play */
-		if(amba_find_next_ahbslv(amba_bus,VENDOR_GAISLER,GAISLER_BRM,&ambadev,minor) == 0){
+		if(amba_find_next_ahbslv(amba_bus,VENDOR_GAISLER, GAISLER_B1553BRM,&ambadev,minor) == 0){
 			
 			/* Device not found */
 			return RTEMS_NOT_DEFINED;
