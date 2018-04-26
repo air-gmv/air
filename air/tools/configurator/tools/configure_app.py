@@ -2,7 +2,9 @@
 #  @author pfnf
 #  @brief Tool to configuration a AIR OS instalation
 
-__author__ = 'pfnf,$(AIR_RUNNER_USER)'
+__author__ 	= 'pfnf'
+__modified__= '$(AIR_RUNNER_USER)'
+__modified__= 'gmvs'
 
 import os
 import air
