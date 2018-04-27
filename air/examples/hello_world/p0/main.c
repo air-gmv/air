@@ -13,19 +13,25 @@
 #define CONFIGURE_INIT
 
 #include <air.h>
-//#include <pprintf.h>
+#ifdef RTEMS48I
+	#include <pprintf.h>
+#endif
 
 int andp=7;
 
 
 void entry_point(void) {
 
-while(1)
-{
+	while(1)
+	{
 
-  andp=andp+1;
-  printf( "\n\n*** RTEMS HELLO WORLD TEST **********\n" );
-  rtems_task_wake_after(10);
+	  andp=andp+1;
+	#ifdef RTEMS48I
+	  pprintf( "\n\n*** RTEMS HELLO WORLD TEST **********\n" );
+	#else
+	  printf( "\n\n*** RTEMS HELLO WORLD TEST **********\n" );
+	#endif
+	  rtems_task_wake_after(10);
 
 }
 //  exit( 0 );
