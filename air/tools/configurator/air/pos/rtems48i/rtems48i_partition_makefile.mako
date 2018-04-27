@@ -60,7 +60,11 @@ CPPFLAGS+=${'\\'}
 -B./${'\\'}
 -I../common/${'\\'}
 -B../common/${'\\'}
+% if pos_config.name is 'rtems48i':
+-DRTEMS48I${'\\'}
+% endif
 ${template.LibraryIncludes(partition.libraries)}\
+
 
 OBJS = $(COBJS) $(ASOBJS)
  
