@@ -1,6 +1,4 @@
-RTEMS_API = 5
 RTEMS_CPU = sparc
-RTEMS_BSP = leon3
 
 prefix = /opt/rtems/$(RTEMS_API)
 exec_prefix = $(prefix)/$(RTEMS_CPU)-rtems$(RTEMS_API)
@@ -14,10 +12,11 @@ BUILDDIR = b-$(RTEMS_BSP)
 
 include $(RTEMS_ROOT)/make/custom/$(RTEMS_BSP).cfg
 
-DEPFLAGS = -MT $@ -MD -MP -MF $(basename $@).d
+DEPFLAGS = -MT $@ -MD -MP -MF $(basename $@).d 
 SYSFLAGS = -B $(PROJECT_LIB) -specs bsp_specs -qrtems
 WARNFLAGS = -Wall
 # -gstrict-dwarf -gdwarf-2 dropped due to some gdb incompatibilities
+#OPTFLAGS = --coverage -g -ffunction-sections -fdata-sections 
 OPTFLAGS = -O2 -g -ffunction-sections -fdata-sections
 EXEEXT = .exe
 DOWNEXT = .ralf
@@ -26,7 +25,7 @@ CPPFLAGS = -I$(PROJECT_INCLUDE)/bsp
 CFLAGS = $(DEPFLAGS) $(SYSFLAGS) $(WARNFLAGS) $(CPU_CFLAGS) $(OPTFLAGS)
 CXXFLAGS = $(DEPFLAGS) $(SYSFLAGS) $(WARNFLAGS) $(CPU_CFLAGS) $(OPTFLAGS)
 ASFLAGS = $(CPU_CFLAGS)
-LDFLAGS = -Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar
+LDFLAGS = -Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar 
 
 LINKFLAGS = $(SYSFLAGS) $(CPU_CFLAGS) $(LDFLAGS) $(OPTFLAGS)
 CCLINK = $(CC) $(LINKFLAGS) -Wl,-Map,$(basename $@).map
@@ -60,8 +59,8 @@ export RANLIB = $(RTEMS_CPU)-rtems$(RTEMS_API)-ranlib
 export SIZE = $(RTEMS_CPU)-rtems$(RTEMS_API)-size
 export STRIP = $(RTEMS_CPU)-rtems$(RTEMS_API)-strip
 
-APP = $(BUILDDIR)/init
-APP_PIECES = init
+APP = $(BUILDDIR)/hello
+APP_PIECES = init 
 APP_OBJS = $(APP_PIECES:%=$(BUILDDIR)/%.o)
 APP_DEPS = $(APP_PIECES:%=$(BUILDDIR)/%.d)
 

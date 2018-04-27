@@ -1,6 +1,6 @@
-RTEMS_API = 5
+#RTEMS_API = 5
 RTEMS_CPU = sparc
-RTEMS_BSP = gr740
+#RTEMS_BSP = gr740 # to be set in the respective go-BSP-rtems5.sh file ...
 
 prefix = /opt/rtems/$(RTEMS_API)
 exec_prefix = $(prefix)/$(RTEMS_CPU)-rtems$(RTEMS_API)
