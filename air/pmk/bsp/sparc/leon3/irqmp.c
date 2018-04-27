@@ -264,3 +264,11 @@ void irqmp_boot_core(air_u32_t core_id, void *entry_point) {
     irqasmp.regs[0]->boot |= ((1 << core_id) & 0xF);
     return;
 }
+
+/*
+ * Sets the multi processor status
+ * Used to start secondary processor_state_register
+ */ 
+void irqmp_interrupt_set_mprocessor_status (air_u32_t core_id) {
+    irqasmp.regs[0]->mpstat = 1U << core_id;
+}
