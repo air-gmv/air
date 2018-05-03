@@ -12,19 +12,20 @@
 
 #include <stdio.h>
 
-int andp=0;
+int andp = 0;
 
+extern void entry_point(void);
 
-void entry_point(void) {
-
-while(1)
+void
+entry_point(void)
 {
-  andp=andp+1;
-  printf( "*** RTEMS HELLO WORLD TEST **********\n" );
-  rtems_task_wake_after(5);
 
-
-}
-//  exit( 0 );
+    while (1)
+    {
+        andp = andp + 1;
+        printf("*** RTEMS HELLO WORLD TEST **********\n");
+        rtems_task_wake_after(5);
+    }
+    //  exit( 0 );
 
 }
