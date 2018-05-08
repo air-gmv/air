@@ -11,7 +11,6 @@
  */
 
 #define CONFIGURE_INIT
-
 #include <air.h>
 #ifdef RTEMS48I
 	#include <pprintf.h>
@@ -27,11 +26,11 @@ void entry_point(void) {
 
 	  andp=andp+1;
 	#ifdef RTEMS48I
-	  pprintf( "\n\n*** RTEMS HELLO WORLD TEST **********\n" );
+	  pprintf( "\n\n*** AARTEMS HELLO WORLD TEST **********\n" );
 	#else
-	  printf( "\n\n*** RTEMS HELLO WORLD TEST **********\n" );
+	  printf( "\n\n*** BBRTEMS HELLO WORLD TEST **********\n" );
 	#endif
-	  rtems_task_wake_after(10);
+//	  rtems_task_wake_after(10);
 
 }
 //  exit( 0 );
