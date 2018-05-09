@@ -116,13 +116,18 @@ void gr1553bc_close(grb_priv *priv);
 void gr1553bc_stop(grb_priv *priv, int options);
 void gr1553bc_device_uninit(grb_priv *priv);
 
-void gr1553bc_init_list(unsigned int minor);
-void gr1553bc_start_list_processing(unsigned int minor);
-void gr1553bc_pause_list(unsigned int minor);
-void gr1553bc_continue_list(unsigned int minor);
+void gr1553bc_init_list();
+void gr1553bc_pause_list();
+void gr1553bc_continue_list();
 
-rtems_status_code grbc_merge_data_with_command(unsigned int minor, uint8_t *data, milstd_header_t *hdr, unsigned int size);
-rtems_status_code grbc_process_completed_commands(unsigned int minor, libio_rw_args_t *rw_args);
+void gr1553bc_start_async();
+void gr1553bc_start_sync();
 
+rtems_status_code gr1553bc_erase_async_data();
+
+rtems_status_code grbc_merge_data_with_command(uint8_t *data, milstd_header_t *hdr, uint32_t size);
+rtems_status_code grbc_process_completed_commands(libio_rw_args_t *rw_args);
+
+unsigned long get_virtual_addr(unsigned long p_addr);
 
 #endif

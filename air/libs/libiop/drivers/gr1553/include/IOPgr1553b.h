@@ -52,7 +52,6 @@ extern "C" {
 #include <iop.h>
 #include <IOPmilstd_config.h>
 
-
 /**
  * @brief The GR1553B register mapping
  */
@@ -155,8 +154,9 @@ typedef struct {
 	unsigned int cl_size;				/**< user command list size */
 	struct gr1553bc_bd_tr *sync; 		/**< current bc command list */
 	struct gr1553bc_bd_tr *last_read; 	/**< current bc command list */
-	struct gr1553bc_bd_tr *assync; 		/**< current bc command list */
+	struct gr1553bc_bd_tr *async; 		/**< current bc asynchronous command list */
 	milstd_data_buf *buf_mem_start;		/**< pointer to device's buffer memory */
+	milstd_data_buf *async_buf_mem_start; /**< pointer to device's asynchronous buffer memory */
 	iop_chain_control shortcut[32];			/**< Used as a shortcut to map write requests to their respective command */
 	
 	/* rt specific */
@@ -445,6 +445,10 @@ rtems_device_driver grb_initialize(rtems_device_major_number major,
 rtems_device_driver grb_open(rtems_device_major_number major,
 						     rtems_device_minor_number minor,
 						     void *arg);
+
+rtems_task grbc_read();
+
+rtems_task grbc_write();
 
 #ifdef __cplusplus
 }

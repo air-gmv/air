@@ -14,16 +14,17 @@
 #include <rtems.h>
 #include <amba.h>
 #include <ambapp.h>
-#include <ambaext.h>
 #include <stdint.h>
 
 #include <iop_error.h>
+#include <iop_support.h>
 
 #include <IOPgr1553b.h>
 #include <IOPgr1553bc.h>
 #include <IOPgr1553rt.h>
 #include <IOPgr1553b_config.h>
 
+#include <pprintf.h>
 /* Pointer to amba configuration */
 static amba_confarea_type *amba_bus;
 
@@ -35,6 +36,8 @@ rtems_device_driver grb_initialize(rtems_device_major_number major,
 								   rtems_device_minor_number minor,
 								   void *arg)
 {	
+	if (is_init == 0)
+	{
 	/* Current device */
 	grb_priv *bDev;
 
@@ -66,6 +69,9 @@ rtems_device_driver grb_initialize(rtems_device_major_number major,
 	/* zero out device structure  */
 	memset(bdevs, 0, number_grb_devices * sizeof(grb_priv));
 	
+        /* Make sure the GR1553 core is enabled */
+        clock_gating_enable(amba_bus, GATE_1553);
+
 	for(i = 0; i < number_grb_devices; i++){
 		
 		bDev = &bdevs[i];
@@ -142,6 +148,7 @@ rtems_device_driver grb_initialize(rtems_device_major_number major,
 	}
 	
 	is_init = 1;
+	}
 	
 	return RTEMS_SUCCESSFUL;
 }
