@@ -72,4 +72,8 @@ bc_command_t *iop_milstd_get_command_list();
 
 int iop_milstd_get_command_list_size();
 
+int iop_milstd_get_async_command_list_size();
+
+int iop_milstd_get_data_buffers_size();
+
 #endif
