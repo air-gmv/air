@@ -38,7 +38,7 @@ rtems_task grbc_read(iop_physical_device_t *pdev){
     iop_wrapper_t *reply_wrapper;
 
     /* maximum number of packets that can be read on a single period*/
-    int max = pdev->reads_per_period[xky_schedule.current_schedule_index];
+    int max = pdev->reads_per_period[air_schedule.current_schedule_index];
 
     /* Zero out driver interface structure */
     memset(&rw_args, 0, sizeof(libio_rw_args_t));
