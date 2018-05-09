@@ -35,14 +35,11 @@
 #include <stdint.h>
 
 
-
 #include <iop_error.h>
 #include <IOPgr1553b.h>
 #include <IOPgr1553bc.h>
 #include <IOPgr1553b_config.h>
 #include <IOPmilstd_config.h>
-
-#include <pprintf.h>
 
 /** returns the first address found after p that is aligned with c  */
 #define MEM_ALIGN(p,c) ((((unsigned int)(p))+(c)) & ~((c)-1))
@@ -54,11 +51,20 @@ static write_cmd_shortcut_t shortcut_mem[128];
 static int shortcut_offset = 0;
 
 
+typedef struct  {
+    uint32_t v_addr;
+    uint32_t p_addr;
+} gr1553hwaddr;
+
+/* List of matching physical/virtual addresses used in the GR1553BC */
+/* Need one for the async and sync register and one for each in COMMAND_LIST_SIZE */
+static gr1553hwaddr gr1553hwlist[COMMAND_LIST_SIZE + 2];
+
 /* Reset software and BC hardware into a known "unused/init" state */
 void gr1553bc_device_init(grb_priv *priv)
 {	
 	/* obtain device private structures (used by other functions )*/
-	bdevs = iop_grb_get_priv_mem();
+	bdevs = priv;
 
 	/* RESET HARDWARE REGISTERS */
 	/* Stop BC if not already stopped */
@@ -80,6 +86,12 @@ void gr1553bc_device_init(grb_priv *priv)
 
 	/* Clear IRQ log pointer */
 	GR1553BC_WRITE_REG(&priv->regs->bc_irqptr,0);
+
+	/* Initialize the bus controller list */
+    gr1553bc_init_list();
+
+    /* start the list */
+    gr1553bc_start_sync();
 }
 
 
@@ -140,13 +152,13 @@ void gr1553bc_device_uninit(grb_priv *priv)
 }
 
 /* Pause GR1553 BC transfers */
-void gr1553bc_pause_list(unsigned int minor)
+void gr1553bc_pause_list()
 {
 	uint32_t ctrl;
 	grb_priv *priv;
 	
 	/* current minor device internal data structure */
-	priv = &bdevs[minor];
+	priv = bdevs;
 	
 	/* Suspend list processing */
 	ctrl = GR1553BC_KEY | GR1553B_BC_ACT_SCSUS;
@@ -157,13 +169,13 @@ void gr1553bc_pause_list(unsigned int minor)
 }
 
 /* Restart GR1553 BC transfers, after being paused */
-void gr1553bc_continue_list(unsigned int minor)
+void gr1553bc_continue_list()
 {
 	uint32_t ctrl;
 	grb_priv *priv;
 	
 	/* current minor device internal data structure */
-	priv = &bdevs[minor];
+	priv = bdevs;
 	
 	/* restart list processing  */
 	ctrl = GR1553BC_KEY | GR1553B_BC_ACT_SCSRT;
@@ -188,7 +200,7 @@ void *find_shortcut(iop_chain_control *rtaddress_chain, milstd_header_t *hdr, un
 		/* iterate over every available shortcut */
 		while(shortcut != (write_cmd_shortcut_t *)iop_chain_tail(rtaddress_chain)){
 			
-			if((shortcut->subaddr == hdr->desc) && 
+			if((shortcut->subaddr == hdr->address) &&
 			   (shortcut->wcmc == (size/2))){
 			 
 				rc = shortcut->cmd_ptr;
@@ -404,7 +416,7 @@ static int update_command(struct gr1553bc_bd_tr *desc, libio_rw_args_t *rw_args)
 				if((wcmc == 16) || (wcmc == 18) || (wcmc == 19)){
 					
 					/* copy received data to user buffer */
-					memcpy(rw_args->data, (void *)desc->dptr, 2);
+					memcpy(rw_args->data, (void *)get_virtual_addr(desc->dptr), 2);
 					
 					/* header length */
 					rw_args->hdr_len = 1;
@@ -438,10 +450,10 @@ static int update_command(struct gr1553bc_bd_tr *desc, libio_rw_args_t *rw_args)
 				}
 				
 				/* copy received data to user buffer */
-				memcpy(rw_args->data, (void *)desc->dptr, wcmc*2);
+				memcpy(rw_args->data, (void *)get_virtual_addr(desc->dptr), wcmc*2);
 				
 				/* header length */
-				rw_args->hdr_len = 1;
+				rw_args->hdr_len = sizeof(milstd_header_t);
 				
 				/* data length */
 				rw_args->data_len = wcmc*2;
@@ -453,10 +465,10 @@ static int update_command(struct gr1553bc_bd_tr *desc, libio_rw_args_t *rw_args)
 				hdr = (milstd_header_t *)rw_args->hdr;
 				
 				/* RT address 1 */
-				hdr->desc = subaddress1;
+				hdr->desc = ((desc->settings[1] >> 11) & 0x1f);
 				
 				/* Sub address 1 */
-				hdr->address = ((desc->settings[1] >> 11) & 0x1f);
+				hdr->address = subaddress1;
 				
 				/* data was successfuly read*/
 				rc = 1;
@@ -476,11 +488,10 @@ static int update_command(struct gr1553bc_bd_tr *desc, libio_rw_args_t *rw_args)
 /**
  * @brief Iterates through a BC command list, extracts any data a does maintenance operations
  *
- * @param [in] minor minor device number whose list is to be processed
  * @param [in,out] rw_args Input/Output buffer and respective sizes
  *
  * @return status of the operation:
- *  	- RTEMS_SUCESSFULL: Data was sucessfully read.
+ *  	- RTEMS_SUCCESSFUL: Data was successfully read.
  * 		- RTEMS_TIMEOUT: End of list.
  *
  * This function will obtain the list that is currently being processed by
@@ -491,7 +502,7 @@ static int update_command(struct gr1553bc_bd_tr *desc, libio_rw_args_t *rw_args)
  * reached its end. The function starts processing the list in a previously read 
  * position. It then follows the branching structure of the list. 
  */
-rtems_status_code grbc_process_completed_commands(unsigned int minor, libio_rw_args_t *rw_args)
+rtems_status_code grbc_process_completed_commands(libio_rw_args_t *rw_args)
 {
 	/* return code */
 	rtems_status_code status;
@@ -506,7 +517,7 @@ rtems_status_code grbc_process_completed_commands(unsigned int minor, libio_rw_a
 	struct gr1553bc_bd_tr *current;
 	
 	/* current minor device internal data structure */
-	bDev = &bdevs[minor];
+	bDev = bdevs;
 	
 	status = RTEMS_SUCCESSFUL;
 	
@@ -545,7 +556,7 @@ rtems_status_code grbc_process_completed_commands(unsigned int minor, libio_rw_a
 		} else { /*< branch */
 		
 			/*follow branch and update last_read */
-			bDev->last_read = (struct gr1553bc_bd_tr *)current->settings[1];
+			bDev->last_read = (struct gr1553bc_bd_tr *) get_virtual_addr(current->settings[1]);
 			
 		}
 		
@@ -555,15 +566,14 @@ rtems_status_code grbc_process_completed_commands(unsigned int minor, libio_rw_a
 }
 
 /** 
- * @brief Appends incomming data to a milstd command belonging to a bc command list.
+ * @brief Appends incoming data to a milstd command belonging to a bc command list.
  *
- * @param [in] minor bc minor device number whose data belongs to.
  * @param [in] data input data buffer
  * @param [in] hdr Mil-std header comprising a RT address and a subaddress
  * @param [in] size data buffer length in bytes
  *
  * @return rtems_status_code; status of the operation:
- *  	- RTEMS_SUCESSFULL: Data was sucessfully written to the list
+ *  	- RTEMS_SUCCESSFUL: Data was successfully written to the list
  * 		- RTEMS_NOT_DEFINED: this data is not linked to any command in the list
  *
  * This function inserts incoming user data in the bc command list. For that
@@ -573,20 +583,19 @@ rtems_status_code grbc_process_completed_commands(unsigned int minor, libio_rw_a
  * This header is composed by one RT address and one subaddress.
  *
  */
-rtems_status_code grbc_merge_data_with_command(unsigned int minor, uint8_t *data,
-										  milstd_header_t *hdr, unsigned int size)
+rtems_status_code grbc_merge_data_with_command(uint8_t *data, milstd_header_t *hdr, uint32_t size)
 {
 	
 	/* return code */
 	rtems_status_code status;
 	
 	/* Current device */
-	grb_priv *bDev = &bdevs[minor];
+	grb_priv *bDev = bdevs;
 	
 	/* Current descriptor */
 	struct gr1553bc_bd_tr *desc;
 	
-	iop_chain_control *aux = &bDev->shortcut[(hdr->address & 0x1f)];
+	iop_chain_control *aux = &bDev->shortcut[(hdr->desc & 0x1f)];
 	
 	/* find if this data request can be matched to any descriptor */
 	desc = (struct gr1553bc_bd_tr *)find_shortcut(aux, hdr, size);
@@ -600,10 +609,10 @@ rtems_status_code grbc_merge_data_with_command(unsigned int minor, uint8_t *data
 	} else{
 	
 		/* lets copy the data */
-		memcpy((void *)desc->dptr, (void *)data, size);
+		memcpy((void *)get_virtual_addr(desc->dptr), (void *)data, size);
 		
 		/* and enable the descriptor. Clear dummy bit */
-		desc->settings[1] &= ~(1<<31);
+		desc->settings[1] &= ~GR1553BC_TR_DUMMY_1;
 		
 		/* set not acessed bit in status word*/
 		desc->status |= (1<<31);
@@ -613,6 +622,107 @@ rtems_status_code grbc_merge_data_with_command(unsigned int minor, uint8_t *data
 	}
 	
 	return status;
+}
+
+/**
+ * @brief Erase the commands belonging to a bc async command list.
+ *
+ * @return rtems_status_code; status of the operation:
+ *      - RTEMS_SUCCESSFUL: Data was successfully erased
+ *      - RTEMS_IO_ERROR: the BC did not finish executing all the previous async list
+ *
+ * This function removes the previous asynchronous command list and the asynchronous buffer.
+ *
+ */
+rtems_status_code gr1553bc_erase_async_data()
+{
+    /* Check if the asynchronous list is still running */
+    if((GR1553BC_READ_REG(&bdevs->regs->bc_ctrl) & GR1553B_BC_ACT_ASSRT) != 0){
+        /* This is not necessarily a failure as this does not prevent appending new data
+         * but may require special handling */
+        iop_raise_error(TIME_ERROR);
+        return RTEMS_IO_ERROR;
+    }
+
+    iop_debug("Erasing 1553 asynchronous list\n");
+
+    /* Erase the asynchronous blocks */
+    memset(bdevs->async, 0, iop_milstd_get_async_command_list_size() * 4 * 4);
+    memset(bdevs->async_buf_mem_start, 0, iop_milstd_get_data_buffers_size() * 16);
+
+    return RTEMS_SUCCESSFUL;
+}
+/**
+ * @brief Appends incoming data to a milstd command belonging to a bc async command list.
+ *
+ * @param [in] data input data buffer
+ * @param [in] hdr Mil-std header comprising a RT address and a subaddress
+ * @param [in] size data buffer length in bytes
+ *
+ * @return rtems_status_code; status of the operation:
+ *      - RTEMS_SUCCESSFUL: Data was successfully written to the list
+ *      - RTEMS_INVALID_SIZE: Size has to be maximum 32 words (one transaction)
+ *      - RTEMS_TOO_MANY: Too many commands in the list
+ *
+ * This function inserts incoming user data in the bc async command list. When inserting the
+ * first data, the previous data needs to be erased through gr1553bc_erase_async_data. This
+ * function will add the data in the available buffer until reaching the end of the buffer.
+ * The maximum number of time this function can be called before calling
+ * gr1553bc_erase_async_data is defined by ASYNCHRONOUS_COMMAND_LIST_SIZE.
+ *
+ */
+rtems_status_code gr1553bc_add_async_data(uint8_t *data, milstd_header_t *hdr, uint32_t size)
+{
+    int i;
+    int wcmc;
+    void *buffer;
+
+    /* Verify that the data fits in one slot */
+    if(size > 64){
+        iop_raise_error(WRITE_ERROR_Q);
+        return RTEMS_INVALID_SIZE;
+    }
+
+    /* In case the size is odd, the single byte should still be sent
+     * 0 means 32 words */
+    wcmc = ((size + 1) / 2) % 32;
+
+    /* Find the next available slot in the asynchronous command list */
+    for(i = 0; i < iop_milstd_get_async_command_list_size(); i++){
+        /* An empty list should have a null pointer*/
+        if(bdevs->async[i].dptr == 0){
+            break;
+        }
+    }
+
+    /* If the end of the list is reached then there is no available slot */
+    if(i == iop_milstd_get_async_command_list_size()){
+        iop_raise_error(QUEUE_OVERFLOW);
+        return RTEMS_TOO_MANY;
+    }
+
+    iop_debug("Adding %i words to RT %i and SA %i\n",wcmc,hdr->desc,hdr->address);
+    /* Current bc descriptor */
+    struct gr1553bc_bd_tr *desc;
+
+    /* Map the memory to a transfer descriptor */
+    desc = &bdevs->async[i];
+
+    /* Slot time set to 0 */
+    desc->settings[0] = 0;
+
+    /* Bus A selected, transmitting to RT 'desc' and subaddress 'address' with 'wcmc' words */
+    desc->settings[1] = ((hdr->desc & 0x1F) << 11) + ((hdr->address & 0x1F) << 5) + wcmc;
+
+    /* Get the buffer's location */
+    buffer = (uintptr_t)&bdevs->async_buf_mem_start[i][0];
+
+    /* add dptr */
+    desc->dptr = (uint32_t) xky_syscall_get_physical_addr(buffer);
+
+    /* lets copy the data */
+    memcpy(buffer, (void *)data, size);
+
 }
 
 static void translate_command(grb_priv *priv, unsigned int offset, unsigned int *data_offset)
@@ -644,7 +754,9 @@ static void translate_command(grb_priv *priv, unsigned int offset, unsigned int 
 		word0 = GR1553BC_UNCOND_JMP;
 		
 		/* Calculate branch address */
-		word1 = (uint32_t) (&priv->sync[0] + (user_list->branch_offset));
+		gr1553hwlist[offset].v_addr = &priv->sync[0] + (user_list->branch_offset);
+		gr1553hwlist[offset].p_addr = (uint32_t) xky_syscall_get_physical_addr((uintptr_t)gr1553hwlist[offset].v_addr);
+		word1 = gr1553hwlist[offset].p_addr;
 		
 		/* No data pointer */
 		dptr = (uint32_t) NULL;
@@ -659,6 +771,9 @@ static void translate_command(grb_priv *priv, unsigned int offset, unsigned int 
 		
 		/* No data pointer */
 		dptr = (uint32_t) NULL;
+		
+		gr1553hwlist[offset].v_addr = 0;
+		gr1553hwlist[offset].p_addr = 0;
 		
 	} else { /*< Transfer */
 	
@@ -685,7 +800,7 @@ static void translate_command(grb_priv *priv, unsigned int offset, unsigned int 
 		
 			/* 
 			 * a shortcut maps between rtaddress, subaddress, wc and the 
-			 * current command. This shorctut mapping is used when new outgoing
+			 * current command. This shortcut mapping is used when new outgoing
 			 * data arrives  
 			 */
 			create_write_cmd_shortcut(&priv->shortcut[(user_list->rtaddr[0] & 0x1f)],
@@ -693,7 +808,9 @@ static void translate_command(grb_priv *priv, unsigned int offset, unsigned int 
 		}
 		
 		/* Calculate data buffer position */
-		dptr = (uint32_t) &priv->buf_mem_start[(*data_offset)][0];
+		gr1553hwlist[offset].v_addr = &priv->buf_mem_start[(*data_offset)][0];
+		gr1553hwlist[offset].p_addr = (uint32_t) xky_syscall_get_physical_addr((uintptr_t)gr1553hwlist[offset].v_addr);
+		dptr = gr1553hwlist[offset].p_addr;
 		
 		/* increment data offset*/
 		(*data_offset)++;
@@ -711,9 +828,8 @@ static void translate_command(grb_priv *priv, unsigned int offset, unsigned int 
 	
 }
 
-void gr1553bc_init_list(unsigned int minor)
+void gr1553bc_init_list()
 {
-	
 	/* Current device */
 	grb_priv *bDev;
 	
@@ -732,7 +848,7 @@ void gr1553bc_init_list(unsigned int minor)
 	unsigned int data_offset = 0;
 	
 	/* Get device's internal structure */
-	bDev = &bdevs[minor];
+	bDev = bdevs;
 	
 	/* get user defined command list */
 	cl = iop_milstd_get_command_list();
@@ -759,6 +875,12 @@ void gr1553bc_init_list(unsigned int minor)
 	/* memory after the command list is used to store data buffers */
 	bDev->buf_mem_start = (milstd_data_buf *)(((uint32_t *)bDev->sync) + (cl_size*4));
 	
+	/* memory after the data buffers used to store the asynchronous command list */
+	bDev->async = ((uint32_t *)(bDev->buf_mem_start) + (iop_milstd_get_data_buffers_size()*16));
+
+	/* memory after the async command list is used to store async data buffers */
+	bDev->async_buf_mem_start = (milstd_data_buf *)(((uint32_t *)bDev->async) + (iop_milstd_get_async_command_list_size()*4));
+	
 	/* iterate over all user defined bc commands */
 	for(i = 0; i < cl_size; i++){
 	
@@ -770,12 +892,13 @@ void gr1553bc_init_list(unsigned int minor)
 
 /**
  * @brief Starts the core to process the synchronous list
- * @param priv Device's internal structure.
  *
  */
-void gr1553bc_start_sync(grb_priv *priv)
+void gr1553bc_start_sync()
 {
 	uint32_t ctrl;
+	
+	grb_priv *priv = bdevs;
 	
 	/* BC control register is protected by a key */
 	ctrl = GR1553BC_KEY;
@@ -787,7 +910,9 @@ void gr1553bc_start_sync(grb_priv *priv)
 		ctrl |= GR1553B_BC_ACT_SCSRT;
 		
 		/* write transfer list pointer register */
-		GR1553BC_WRITE_REG(&priv->regs->bc_bd, (uint32_t)priv->sync);
+		gr1553hwlist[iop_milstd_get_command_list_size()].v_addr = priv->sync;
+		gr1553hwlist[iop_milstd_get_command_list_size()].p_addr = (uint32_t)xky_syscall_get_physical_addr((uintptr_t)priv->sync);
+		GR1553BC_WRITE_REG(&priv->regs->bc_bd, gr1553hwlist[iop_milstd_get_command_list_size()].p_addr);
 	}
 
 	/* If not enabled before, we enable it now. */
@@ -807,22 +932,62 @@ void gr1553bc_start_sync(grb_priv *priv)
 }
 
 /**
- * @brief Starts the core to process the synchronous list
- * @param minor minor device number of the BC device to be started.
+ * @brief Starts the core to process the asynchronous list
  *
  */
-void gr1553bc_start_list_processing(unsigned int minor)
+void gr1553bc_start_async()
 {
+    uint32_t ctrl;
 	/* Current device */
-	grb_priv *bDev;
+    grb_priv *priv = bdevs;
 	
 	/* Get device's internal structure */
-	bDev = &bdevs[minor];
+    ctrl = GR1553BC_KEY;
 	
 	/* Start this list */
-	gr1553bc_start_sync(bDev);
+    if(priv->async != NULL){
 
+        /* Activate synchronous list processing */
+        ctrl |= GR1553B_BC_ACT_ASSRT;
+
+        /* write transfer list pointer register */
+        gr1553hwlist[iop_milstd_get_command_list_size() + 1].v_addr = priv->async;
+        gr1553hwlist[iop_milstd_get_command_list_size() + 1].p_addr = (uint32_t)xky_syscall_get_physical_addr((uintptr_t)priv->async);
+        GR1553BC_WRITE_REG(&priv->regs->bc_abd, gr1553hwlist[iop_milstd_get_command_list_size() + 1].p_addr);
 }
 
 
+    GR1553BC_WRITE_REG(&priv->regs->bc_ctrl, ctrl);
+
+    /* Disable IRQ */
+    if(priv->started == 0){
+
+        /* device has started */
+        priv->started = 1;
+
+        /* we don't want interrupts!*/
+        GR1553BC_WRITE_REG(&priv->regs->imask, 0);
+    }
+
+    return;
+}
+
+/**
+ * @brief Returns the virtual address of a physical address
+ *        which was already converted from a virtual address
+ */
+unsigned long get_virtual_addr(unsigned long p_addr)
+{
+    /* Iterator */
+    int i;
+
+    /* Go through all the addresses that were converted previously */
+    for(i = 0; i < (iop_milstd_get_command_list_size() + 2); i++){
+        /* Check if the physical address is matching and return the virtual address */
+        if(gr1553hwlist[i].p_addr == p_addr){
+            return gr1553hwlist[i].v_addr;
+        }
+    }
+    return 0;
+}
 

@@ -19,6 +19,8 @@
 #define GR1553BC_MODE_BC 0
 #define GR1553BC_MODE_RT 1
 #define GR1553BC_MODE_BM 2
+#define COMMAND_LIST_SIZE 11
+#define ASYNCHRONOUS_COMMAND_LIST_SIZE 6
 
 grb_user_config_t *iop_grb_get_user_config(unsigned int minor);
 
