@@ -52,7 +52,7 @@ ${'\t\t'}--target=$(RTEMS5_TARGET) ${'\\'}
 ${'\t\t'}--enable-rtems-inlines ${'\\'}
 ${'\t\t'}--disable-itron ${'\\'}
 ${'\t\t'}--disable-multiprocessing ${'\\'}
-${'\t\t'}--disable-posix ${'\\'}
+${'\t\t'}--enable-posix ${'\\'}
 ${'\t\t'}--disable-networking ${'\\'}
 ${'\t\t'}--disable-cxx ${'\\'}
 ${'\t\t'}--disable-tests ${'\\'}
