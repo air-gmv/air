@@ -50,7 +50,7 @@
   </Module_Schedule>
 
   <Module_Schedule InitialModuleSchedule="false" MajorFrameSeconds="1.5000" ScheduleIdentifier="2" ScheduleName="schedB">
-    <Partition_Schedule PartitionIdentifier="10" PartitionName="master" PeriodDurationSeconds="0.5000" PeriodSeconds="1.5000" SetModuleSchedule="true">
+    <Partition_Schedule PartitionIdentifier="10" PeriodDurationSeconds="0.5000" PeriodSeconds="1.5000" SetModuleSchedule="true">
       <Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="0.5000" WindowIdentifier="210" WindowStartSeconds="0.0000"/>
     </Partition_Schedule>
     <Partition_Schedule PartitionIdentifier="2" PartitionName="p2" PeriodDurationSeconds="0.5000" PeriodSeconds="1.5000">
