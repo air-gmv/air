@@ -33,10 +33,12 @@ class a653parser(object):
     # @return Partition object if found, None otherwise
     def get_partition(self, pid, name):
 
-        if name:
+        if name is not None:
+            print ("#############name is not none -->", name)
             matches = [ p for p in self.partitions if p.id == pid and p.name == name]
         else:
-            matches = [ p for p in self.partitions if p.id == pid and not p.name]
+            print ("name is none!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            matches = [ p for p in self.partitions if p.id == pid]
 
         return None if not matches else matches[0]
 
