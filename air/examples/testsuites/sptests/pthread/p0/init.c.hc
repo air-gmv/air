@@ -1,11 +1,6 @@
 
 /*
- *  COPYRIGHT (c) 1989-2013.
- *  On-Line Applications Research Corporation (OAR).
- *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.org/license/LICENSE.
+ *  COPYRIGHT (c) GMV
  */
 
 #ifdef HAVE_CONFIG_H
@@ -13,77 +8,59 @@
 #endif
 
 #include <tmacros.h>
-#include <timesys.h>
-#include "test_support.h"
 
 #include <pthread.h>
-
-const char rtems_test_name[] = "PSXTMTHREAD 01";
 
 /* forward declarations to avoid warnings */
 void *POSIX_Init(void *argument);
 void *TestThread(void *argument);
+void *TestThread2(void *argument);
 
-pthread_t ThreadId;
+pthread_t ThreadId ,ThreadId2;
 
 void *TestThread(
   void *argument
 )
 {
+  printf ("Pthread1 1 1 1 1 running!\n");
+  return NULL;
+}
+
+void *TestThread2(
+  void *argument
+)
+{
+  printf ("Pthread2 2 2 2 2 running!\n");
   return NULL;
 }
 
 
-static void benchmark_pthread_create(
-  int    iteration,
-  void  *argument
-)
-{
-  int status;
-
-  status = pthread_create( &ThreadId, NULL, TestThread, NULL );
-  rtems_test_assert( !status );
-}
 
 void *POSIX_Init(
   void *argument
 )
 {
-  TEST_BEGIN();
+  int status = 0;
+   printf ("Pthread test2!\n");
+   status = pthread_create( &ThreadId, NULL, TestThread, NULL );
+//  status = pthread_create( &ThreadId2, NULL, TestThread2, NULL );
 
-  rtems_time_test_measure_operation(
-    "pthread_create: no preempt",
-    benchmark_pthread_create,
-    NULL,
-    1,
-    0
-  );
-
-  
-  TEST_END();
-
-  rtems_test_exit(0);
 }
 
 /* configuration information */
-
-
-#define CONFIGURE_MAXIMUM_POSIX_THREADS     OPERATION_COUNT + 2
+#define CONFIGURE_MAXIMUM_POSIX_THREADS     10
 #define CONFIGURE_POSIX_INIT_THREAD_TABLE
 
-#define CONFIGURE_MICROSECONDS_PER_TICK 1000
+#define CONFIGURE_APPLICATION_NEEDS_SIMPLE_CONSOLE_DRIVER
+//#define CONFIGURE_APPLICATION_NEEDS_TIMER_DRIVER
+
+
+
 
 #define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
-#define CONFIGURE_APPLICATION_NEEDS_SIMPLE_CONSOLE_DRIVER
-
-#define CONFIGURE_MAXIMUM_TASKS 4
+//#define CONFIGURE_MAXIMUM_TASKS 4
 #define CONFIGURE_MAXIMUM_TIMERS 1
 
-#define CONFIGURE_INITIAL_EXTENSIONS \
-  { .thread_switch = switch_extension }, \
-  RTEMS_TEST_INITIAL_EXTENSION
-
-#define CONFIGURE_RTEMS_INIT_TASKS_TABLE
 
 #define CONFIGURE_INIT
 

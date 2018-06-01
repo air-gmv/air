@@ -79,19 +79,24 @@ def safeRemoveDirectory(dir_path, logger = None):
 def safeFileCopy(src, dst, errors = None):
 
     src = os.path.normpath(src)
+    # define filename is user decides to do hardcoded
+    hc = os.path.normpath(dst + ".hc")
     dst = os.path.normpath(dst)
 
     # Copy the file interactively
     safeMakedirs(os.path.dirname(dst))
     if not FILE_UTILS_FORCE and os.path.exists(dst) and genFileS256Hash(src) != genFileS256Hash(dst):
         while True:
-
-            FILE_COPY_EXISTS = "   File '{0}' already exists and they are different:"
-            FILE_COPY_OPTS = ["&Replace old file", "&Keep old file", "&Merge both files", "View files &diff"]
-            result = terminalutils.promptActions(
-                FILE_COPY_EXISTS.format(os.path.relpath(dst, utils.WORKING_DIRECTORY)),
-                FILE_COPY_OPTS,
-                FILE_UTILS_COPY_DEFAULT)
+            # if already exist and hardcoded define then ignore
+            if os.path.exists(hc):
+                result = 1
+            else:
+                FILE_COPY_EXISTS = "   File '{0}' already exists and they are different:"
+                FILE_COPY_OPTS = ["&Replace old file", "&Keep old file", "&Merge both files", "View files &diff"]
+                result = terminalutils.promptActions(
+                    FILE_COPY_EXISTS.format(os.path.relpath(dst, utils.WORKING_DIRECTORY)),
+                    FILE_COPY_OPTS,
+                    FILE_UTILS_COPY_DEFAULT)
 
             # Replace file
             if result == 0:
