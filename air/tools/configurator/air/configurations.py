@@ -402,7 +402,7 @@ class Configuration(object):
             # patch pos by doing git stash pop
     #            subprocess.call(['git','stash', 'pop'], cwd="pos", stdout=FNULL, stderr=subprocess.STDOUT)
 
-        
+
 
     ##
     # @brief Gets the Partition complete library list

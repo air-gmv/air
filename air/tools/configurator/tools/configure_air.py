@@ -115,7 +115,7 @@ def Run(args, logger):
         for pos_name in personalities:
 
             pos = os_configuration.get_pos_config(pos_name)
-            
+
             #Git checkout of pos
             #os_configuration.git_pos_checkout_and_patch(pos_name, logger)
 
