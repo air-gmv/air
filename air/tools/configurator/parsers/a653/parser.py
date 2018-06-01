@@ -103,7 +103,7 @@ class a653parser(object):
         if rc:
             partition.index = len(self.partitions)
             partition.directory = '{0}'.format(partition.name.lower())
-            partition.executable = 'p{0}.exe'.format(partition.index)
+            partition.executable = 'p*.exe'.format(partition.index)
             self.partitions.append(partition)
 
         return rc
