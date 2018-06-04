@@ -2,22 +2,6 @@
 <ARINC_653_Module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ModuleName="iop_1553">
 
   <!-- Partition 1 -->
-  <!--Partition PartitionIdentifier="1" PartitionName="gnc"
-    Criticality="LEVEL_A" EntryPoint="entry_func" SystemPartition="false">
-    <Sampling_Port Name="SEND_ACTCMD_DMS" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="0.02"/>
-    <Sampling_Port Name="RECV_SENSRO_DMS" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="0.02"/>
-    <PartitionConfiguration Personality="RTEMS" Cores="1">
-        <Libs>LIBXKY; IMASPEX; LIBPRINTF</Libs>
-        <Devices></Devices>
-        <Cache>CODE; DATA</Cache>
-        <Memory Size="0x200000" />
-        <Permissions>
-         FPU_CONTROL; CACHE_CONTROL;
-        </Permissions>
-    </PartitionConfiguration>
-  </Partition-->
-  
-  <!-- Partition 1 -->
   <Partition PartitionIdentifier="1" PartitionName="partition1"
     Criticality="LEVEL_A" EntryPoint="entry_func"  SystemPartition="false">
     <Sampling_Port Name="RECV_APP_RT1" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
@@ -174,5 +158,5 @@
   </Connection_Table>
   
   <!-- Module configuration -->
-  <XKY_Configuration TicksPerSecond="1000" RequiredCores="2"/>
+  <AIR_Configuration TicksPerSecond="1000" RequiredCores="1"/>
 </ARINC_653_Module>
