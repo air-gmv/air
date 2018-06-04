@@ -126,7 +126,7 @@ rtems_task grbc_read(iop_physical_device_t *pdev){
 rtems_task grbc_write(iop_physical_device_t *pdev){
 
     /* return code of several operations */
-    rtems_status_code status = RTEMS_SUCCESSFUL;
+    rtems_status_code status;
 
     /* Flag to initialise the pointer */
     int init = 0;

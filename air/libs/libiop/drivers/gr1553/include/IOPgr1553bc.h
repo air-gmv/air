@@ -123,6 +123,7 @@ void gr1553bc_continue_list();
 void gr1553bc_start_async();
 void gr1553bc_start_sync();
 
+rtems_status_code gr1553bc_add_async_data(uint8_t *data, milstd_header_t *hdr, uint32_t size);
 rtems_status_code gr1553bc_erase_async_data();
 
 rtems_status_code grbc_merge_data_with_command(uint8_t *data, milstd_header_t *hdr, uint32_t size);

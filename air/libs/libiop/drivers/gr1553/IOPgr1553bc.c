@@ -715,14 +715,15 @@ rtems_status_code gr1553bc_add_async_data(uint8_t *data, milstd_header_t *hdr, u
     desc->settings[1] = ((hdr->desc & 0x1F) << 11) + ((hdr->address & 0x1F) << 5) + wcmc;
 
     /* Get the buffer's location */
-    buffer = (uintptr_t)&bdevs->async_buf_mem_start[i][0];
+    buffer = &bdevs->async_buf_mem_start[i][0];
 
     /* add dptr */
-    desc->dptr = (uint32_t) xky_syscall_get_physical_addr(buffer);
+    desc->dptr = (uint32_t) air_syscall_get_physical_addr((uintptr_t)buffer);
 
     /* lets copy the data */
     memcpy(buffer, (void *)data, size);
 
+    return RTEMS_SUCCESSFUL;
 }
 
 static void translate_command(grb_priv *priv, unsigned int offset, unsigned int *data_offset)
@@ -754,8 +755,8 @@ static void translate_command(grb_priv *priv, unsigned int offset, unsigned int 
 		word0 = GR1553BC_UNCOND_JMP;
 		
 		/* Calculate branch address */
-		gr1553hwlist[offset].v_addr = &priv->sync[0] + (user_list->branch_offset);
-		gr1553hwlist[offset].p_addr = (uint32_t) xky_syscall_get_physical_addr((uintptr_t)gr1553hwlist[offset].v_addr);
+		gr1553hwlist[offset].v_addr = (uint32_t) (&priv->sync[0] + (user_list->branch_offset));
+		gr1553hwlist[offset].p_addr = (uint32_t) air_syscall_get_physical_addr((uintptr_t)gr1553hwlist[offset].v_addr);
 		word1 = gr1553hwlist[offset].p_addr;
 		
 		/* No data pointer */
@@ -808,8 +809,8 @@ static void translate_command(grb_priv *priv, unsigned int offset, unsigned int 
 		}
 		
 		/* Calculate data buffer position */
-		gr1553hwlist[offset].v_addr = &priv->buf_mem_start[(*data_offset)][0];
-		gr1553hwlist[offset].p_addr = (uint32_t) xky_syscall_get_physical_addr((uintptr_t)gr1553hwlist[offset].v_addr);
+		gr1553hwlist[offset].v_addr = (uint32_t) (&priv->buf_mem_start[(*data_offset)][0]);
+		gr1553hwlist[offset].p_addr = (uint32_t) air_syscall_get_physical_addr((uintptr_t)gr1553hwlist[offset].v_addr);
 		dptr = gr1553hwlist[offset].p_addr;
 		
 		/* increment data offset*/
@@ -876,7 +877,7 @@ void gr1553bc_init_list()
 	bDev->buf_mem_start = (milstd_data_buf *)(((uint32_t *)bDev->sync) + (cl_size*4));
 	
 	/* memory after the data buffers used to store the asynchronous command list */
-	bDev->async = ((uint32_t *)(bDev->buf_mem_start) + (iop_milstd_get_data_buffers_size()*16));
+	bDev->async = ((struct gr1553bc_bd_tr *)(bDev->buf_mem_start) + (iop_milstd_get_data_buffers_size()*16));
 
 	/* memory after the async command list is used to store async data buffers */
 	bDev->async_buf_mem_start = (milstd_data_buf *)(((uint32_t *)bDev->async) + (iop_milstd_get_async_command_list_size()*4));
@@ -910,8 +911,8 @@ void gr1553bc_start_sync()
 		ctrl |= GR1553B_BC_ACT_SCSRT;
 		
 		/* write transfer list pointer register */
-		gr1553hwlist[iop_milstd_get_command_list_size()].v_addr = priv->sync;
-		gr1553hwlist[iop_milstd_get_command_list_size()].p_addr = (uint32_t)xky_syscall_get_physical_addr((uintptr_t)priv->sync);
+		gr1553hwlist[iop_milstd_get_command_list_size()].v_addr = (uint32_t) priv->sync;
+		gr1553hwlist[iop_milstd_get_command_list_size()].p_addr = (uint32_t)air_syscall_get_physical_addr((uintptr_t)priv->sync);
 		GR1553BC_WRITE_REG(&priv->regs->bc_bd, gr1553hwlist[iop_milstd_get_command_list_size()].p_addr);
 	}
 
@@ -951,8 +952,8 @@ void gr1553bc_start_async()
         ctrl |= GR1553B_BC_ACT_ASSRT;
 
         /* write transfer list pointer register */
-        gr1553hwlist[iop_milstd_get_command_list_size() + 1].v_addr = priv->async;
-        gr1553hwlist[iop_milstd_get_command_list_size() + 1].p_addr = (uint32_t)xky_syscall_get_physical_addr((uintptr_t)priv->async);
+        gr1553hwlist[iop_milstd_get_command_list_size() + 1].v_addr = (uint32_t) priv->async;
+        gr1553hwlist[iop_milstd_get_command_list_size() + 1].p_addr = (uint32_t)air_syscall_get_physical_addr((uintptr_t)priv->async);
         GR1553BC_WRITE_REG(&priv->regs->bc_abd, gr1553hwlist[iop_milstd_get_command_list_size() + 1].p_addr);
 }
 
