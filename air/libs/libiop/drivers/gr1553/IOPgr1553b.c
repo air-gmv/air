@@ -14,6 +14,7 @@
 #include <rtems.h>
 #include <amba.h>
 #include <ambapp.h>
+#include <ambaext.h>
 #include <stdint.h>
 
 #include <iop_error.h>
