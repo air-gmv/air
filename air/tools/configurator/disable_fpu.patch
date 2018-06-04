@@ -1,3 +1,29 @@
+diff --git a/air/pos/rtems5/rtems5/bsps/sparc/leon2/config/leon2.cfg b/air/pos/rtems5/rtems5/bsps/sparc/leon2/config/leon2.cfg
+index a5e76e7a..653ae260 100644
+--- a/air/pos/rtems5/rtems5/bsps/sparc/leon2/config/leon2.cfg
++++ b/air/pos/rtems5/rtems5/bsps/sparc/leon2/config/leon2.cfg
+@@ -8,7 +8,7 @@ RTEMS_CPU=sparc
+ 
+ #  This contains the compiler options necessary to select the CPU model
+ #  and (hopefully) optimize for it.
+-CPU_CFLAGS = -mcpu=leon
++CPU_CFLAGS = -mcpu=leon -msoft-float
+ 
+ # optimize flag: typically -O2
+ CFLAGS_OPTIMIZE_V = -O2 -g
+diff --git a/air/pos/rtems5/rtems5/bsps/sparc/leon3/config/leon3.cfg b/air/pos/rtems5/rtems5/bsps/sparc/leon3/config/leon3.cfg
+index d931d6c5..e3eca059 100644
+--- a/air/pos/rtems5/rtems5/bsps/sparc/leon3/config/leon3.cfg
++++ b/air/pos/rtems5/rtems5/bsps/sparc/leon3/config/leon3.cfg
+@@ -8,7 +8,7 @@ RTEMS_CPU=sparc
+ 
+ #  This contains the compiler options necessary to select the CPU model
+ #  and (hopefully) optimize for it.
+-CPU_CFLAGS = -mcpu=leon3
++CPU_CFLAGS = -mcpu=leon3 -msoft-float
+ 
+ # optimize flag: typically -O2
+ CFLAGS_OPTIMIZE_V = -O2 -g
 diff --git a/air/pos/rtems48i/rtems48i/make/compilers/gcc-target-default.cfg b/air/pos/rtems48i/rtems48i/make/compilers/gcc-target-default.cfg
 index a5ef8f0..66c1e65 100755
 --- a/air/pos/rtems48i/rtems48i/make/compilers/gcc-target-default.cfg
