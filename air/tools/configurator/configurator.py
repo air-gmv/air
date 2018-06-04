@@ -30,7 +30,7 @@ __app__			= os.path.basename(__file__)
 #Uncomment this for full debugging of an error and check configurator.log results
 # set level for logging.DEBUG for full info
 #logging.basicConfig(filename='configurator.log', format='%(levelname)s:%(filename)s:%(funcName)s:%(lineno)d:%(message)s', filemode='w', level=logging.INFO)
-logging.basicConfig(format='%(levelname)s:%(filename)s:%(funcName)s:%(lineno)d:%(message)s', filemode='w', level=logging.DEBUG)
+logging.basicConfig(format='%(levelname)s:%(filename)s:%(funcName)s:%(lineno)d:%(message)s', filemode='w', level=logging.INFO)
 # we can set more attributes to log see https://docs.python.org/2/library/logging.html#logrecord-attributes
 logging.info('Configure log activated')
 
