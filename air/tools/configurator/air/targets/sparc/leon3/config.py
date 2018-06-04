@@ -47,7 +47,7 @@ kernel_compiler_no_fpu = dict(
 	CFLAGS="",
 	CPPFLAGS="-mcpu=leon3 -mflat -g -fno-builtin -nodefaultlibs -O2 -Wall",
 	CXXFLAGS="",
-	LDFLAGS="",
+    LDFLAGS="-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar",
 	ARFLAGS="ruv"
 )
 
@@ -127,7 +127,7 @@ libair_headers = [h for h in kernel_headers
                   if h.endswith('air.h') or h.endswith('air_arch.h') or h.endswith('air_bsp.h')]
 
 # available permissions
-permissions = [PERMISSION_SUPERVISOR, PERMISSION_CACHE, PERMISSION_SET_TOD,
+permissions = [PERMISSION_SUPERVISOR, PERMISSION_FPU, PERMISSION_CACHE, PERMISSION_SET_TOD,
                PERMISSION_SET_PARTITION, PERMISSION_GLOBAL_TIME, PERMISSION_MODULE]
 
 # memory map
@@ -137,7 +137,7 @@ mmap = MMAP(kernel_space=[0x40000000, 0x01000000],
             default_unit=1 << 18)
 
 # specific defines
-defines = ['PMK_FPU_SUPPORT=0']
+defines = ['PMK_FPU_SUPPORT=1']
 
 # Architecture dependent configuration
 arch_configure = air_sparc.get_sparc_configuration
