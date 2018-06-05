@@ -12,27 +12,46 @@
 
 #define CONFIGURE_INIT
 #include <air.h>
+
 #ifdef RTEMS48I
 	#include <pprintf.h>
+#else
+#include <time.h>
+#include <sys/time.h>
+#include <rtems/score/timespec.h>
 #endif
 
 int andp=7;
 
+static char *my_ctime( time_t t )
+{
+  static char b[32];
+  ctime_r(&t, b);
+  b[ strlen(b) - 1] = '\0';
+  return b;
+}
 
-void entry_point(void) {
 
+void entry_point(void) 
+{
 	while(1)
 	{
+        
 
-	  andp=andp+1;
-	#ifdef RTEMS48I
-	  pprintf( "\n\n*** RTEMS48I HELLO WORLD TEST **********\n" );
-	#else
-	  printf( "\n\n*** RTEMS5 HELLO WORLD TEST **********\n" );
-	#endif
-	  rtems_task_wake_after(10);
+        #ifdef RTEMS48I
+            pprintf( "\n\n*** RTEMS48I HELLO WORLD TEST **********\n" );
+        #else
+            struct timespec start;
+            clock_gettime( CLOCK_REALTIME, &start );
 
+            printf( "\n\n*** RTEMS5 HELLO WORLD TEST **********\n" );
+            printf( "Time is : %s:%ld\n", my_ctime(start.tv_sec), start.tv_nsec);
+            
+        #endif
+
+        rtems_task_wake_after(10);
+
+    }
 }
-//  exit( 0 );
 
-}
+
