@@ -56,6 +56,7 @@ ${'\t\t'}--enable-posix ${'\\'}
 ${'\t\t'}--disable-networking ${'\\'}
 ${'\t\t'}--disable-cxx ${'\\'}
 ${'\t\t'}--disable-tests ${'\\'}
+${'\t\t'}--enable-smp ${'\\'}
 ${'\t\t'}--enable-rtemsbsp=$(RTEMS5_BSP) ${'\\'}
 ${'\t\t'}--prefix=$(RTEMS_INSTALL_DIR) && cd ..; ${'\\'}
 ${'\t'}fi
