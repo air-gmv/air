@@ -1,6 +1,13 @@
 <%
     import air
     import utils.templates as makoutils
+    import parsers.a653.definitions as a653_definitions
+
+    ## convert ticks per second to microsec per tick
+    ##int(1E6/ ticks_per_second)
+    def tps_to_mpt():
+        return int(1E6/ app_configuration.ticks_per_second)
+
 %>\
 ${makoutils.cfileHeader("rtems_config.h", "RTEMS configuration")}
 
@@ -11,7 +18,7 @@ ${makoutils.cfileHeader("rtems_config.h", "RTEMS configuration")}
  */
 #define CONFIGURE_INIT_TASK_ATTRIBUTES                  RTEMS_FLOATING_POINT
 
-#define CONFIGURE_MICROSECONDS_PER_TICK 1000
+#define CONFIGURE_MICROSECONDS_PER_TICK ${tps_to_mpt()}
 
 #define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
 #define CONFIGURE_APPLICATION_NEEDS_SIMPLE_CONSOLE_DRIVER
