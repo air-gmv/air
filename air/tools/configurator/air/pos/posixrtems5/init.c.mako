@@ -51,6 +51,7 @@ static void hm_isr_handler(void) {
 void *POSIX_Init(
   void *argument
 )
+{
     /* register HM ISR handler */
     /* HM is now Disabled
     rtems_isr_entry isr_ignored;
@@ -70,9 +71,6 @@ void *POSIX_Init(
         ${partition.entry_point}();
     }
 
-    rtems_task_delete(RTEMS_SELF);
 }
 
 #include <rtems_config.h>
-
-
