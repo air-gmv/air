@@ -7,13 +7,13 @@
     base_dir = os.path.join(
         os.path.relpath(air.INSTALL_DIRECTORY, output_dir),
         os.path.relpath(output_dir, air.ROOT_DIRECTORY))
-    
+
     # rtems build dir
     build_dir = os.path.join(
         os.path.relpath(air.INSTALL_DIRECTORY, output_dir),
         os.path.relpath(output_dir, air.ROOT_DIRECTORY),
         'rtems5-build')
-    
+
     # rtems install dir
     install_dir = os.path.join(
         air.INSTALL_DIRECTORY,
