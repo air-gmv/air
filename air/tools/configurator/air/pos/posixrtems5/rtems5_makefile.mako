@@ -1,75 +1,15 @@
-<%
-    import os
-    import air
-    import utils.templates as makoutils
-
-    # base build dir
-    base_dir = os.path.join(
-        os.path.relpath(air.INSTALL_DIRECTORY, output_dir),
-        os.path.relpath(output_dir, air.ROOT_DIRECTORY))
-    
-    # rtems build dir
-    build_dir = os.path.join(
-        os.path.relpath(air.INSTALL_DIRECTORY, output_dir),
-        os.path.relpath(output_dir, air.ROOT_DIRECTORY),
-        'rtems5-build')
-    
-    # rtems install dir
-    install_dir = os.path.join(
-        air.INSTALL_DIRECTORY,
-        os.path.relpath(output_dir, air.ROOT_DIRECTORY),
-        'rtems5-install')
-
-    # get libair headers
-    libair_headers = os_configuration.get_libair_headers()
-%>\
-<%namespace name="template" file="/makefile.mako"/>\
-${template.FileHeader("POS RTEMS-5.0 ")}\
-
-# Makefile Include file
-${template.MakefileInc()}
-
-CURRENT_PATH=$(shell pwd)
-
-# reguired AIR headers
-AIR_HEADERS=${'\\'}
--DAIR_HYPERVISOR${'\\'}
-${template.get_headers_directories(libair_headers)}\
-
-# RTEMS build and install directories
-RTEMS_BUILD_DIR=${build_dir}
-RTEMS_INSTALL_DIR=${install_dir}
+# Entry for a posix RTOS
+# do nothing because is done in RTEM5
+# folder is set if we want to add additional posix functionality
 
 # All
-${template.Rule('all', True, ['rtems5'])}
-
-# RTEMS 5
-${template.Rule('rtems5', True, None)}
-${'\t'}if [ ! -d "$(RTEMS_BUILD_DIR)" ]; then ${'\\'}
-${'\t'}$(MKDIR) $(RTEMS_BUILD_DIR) && ${'\\'}
-${'\t'}cd $(RTEMS_BUILD_DIR); $(CURRENT_PATH)/rtems5/configure ${'\\'}
-${'\t\t'}--target=$(RTEMS5_TARGET) ${'\\'}
-${'\t\t'}--enable-rtems-inlines ${'\\'}
-${'\t\t'}--disable-itron ${'\\'}
-${'\t\t'}--disable-multiprocessing ${'\\'}
-${'\t\t'}--enable-posix ${'\\'}
-${'\t\t'}--disable-networking ${'\\'}
-${'\t\t'}--disable-cxx ${'\\'}
-${'\t\t'}--disable-tests ${'\\'}
-${'\t\t'}--enable-rtemsbsp=$(RTEMS5_BSP) ${'\\'}
-${'\t\t'}--prefix=$(RTEMS_INSTALL_DIR) && cd ..; ${'\\'}
-${'\t'}fi
-${'\t'}make -C $(RTEMS_BUILD_DIR) CPPFLAGS='$(AIR_HEADERS)' && ${'\\'}
-${'\t'}make -C $(RTEMS_BUILD_DIR) install
-
+.PHONY : all
+all: 
 
 # Clean
-${template.Rule('clean', True, None)}
-${template.Remove(base_dir)}
+.PHONY : clean
+clean:
 
 # Distclean
-${template.Rule('distclean', True, None)}
-${template.Remove(base_dir)}
-${template.Remove(output_file)}
-
-
+.PHONY : distclean
+distclean:
