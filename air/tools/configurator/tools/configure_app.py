@@ -104,7 +104,7 @@ def Run(args, os_configuration, logger):
             output_file = os.path.join(temp_directory, partition.directory, output_files[j])
             makoutils.applyMAKOTemplate(
                 input_files[j], os.path.join(temp_directory, partition.directory, output_file),
-                dict(os_configuration=os_configuration, partition=partition, pos_config=pos_config),
+                dict(os_configuration=os_configuration, partition=partition, pos_config=pos_config, app_configuration=app_configuration),
                 logger, template_includes)
 
         # makoutils.applyMAKOTemplate(os.path.join(air.APP_TEMPLATES_DIRECTORY, air.POS_DIR_NAME, 'ports_init.mako'),
@@ -247,5 +247,3 @@ def convertMemoryPermissions(permissions_str):
 def clearConfiguration(logger):
     fileutils.runCleaningRecord(os.path.join(air.WORKING_DIRECTORY, '.config'), logger)
     exit(0)
-
-        
