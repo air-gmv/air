@@ -26,6 +26,7 @@
 #define TPS 100 /*ticks per second specified in the XML*/
 
 SAMPLING_PORT_ID_TYPE SEND_PORT;
+QUEUING_PORT_ID_TYPE qpid;
 
 /*---------------------------------------------------------	
  *		function: test										*
@@ -44,6 +45,19 @@ void test(PARTITION_ID_TYPE self_id) {
 		WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )message, 16, &rc );
 		if (NO_ERROR != rc) {
 			pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
+		}
+		
+				/*identify the string with an integer index*/
+		i++;
+		if (i == 10) {
+			i=0;
+		}
+		message[15] = 0x30 + i;
+		
+    pprintf ("Partition %d sending queuing: %s..\n", self_id, message);
+    SEND_QUEUING_MESSAGE(qpid, (MESSAGE_ADDR_TYPE )message, 16, INFINITE_TIME_VALUE, &rc );
+		if (rc != NO_ERROR) {
+		    pprintf ("SEND_QUEUING_MESSAGE error %d\n", rc);
 		}
 		
 		/*identify the string with an integer index*/
@@ -90,6 +104,12 @@ int entry_func() {
 	if (NO_ERROR != rc) {
 		pprintf("CREATE_SAMPLING_PORT error %d\n", rc);
 	}
+	
+	/* Creating Queueing port */
+  CREATE_QUEUING_PORT("QSAMPLE", 1024, 32, SOURCE, FIFO, &qpid, &rc );
+	if(NO_ERROR != rc){
+		pprintf("CREATE_QUEUING_PORT error %d\n", rc);
+	} 
 	
 	
 	if (RTEMS_SUCCESSFUL == rtems_task_create (name, 15, 4096, mode, mode_mask, &id)) {
