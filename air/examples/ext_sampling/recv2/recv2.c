@@ -25,6 +25,7 @@
 
 
 SAMPLING_PORT_ID_TYPE RECV_PORT2;
+QUEUING_PORT_ID_TYPE qpid;
 
 /*---------------------------------------------------------	
  *		function: test										*
@@ -33,6 +34,7 @@ SAMPLING_PORT_ID_TYPE RECV_PORT2;
  *			READ_UPDATED_SAMPLING_MESSAGE, else				*
  *			read with READ_SAMPLING_MESSAGE and				*
  *			check its validity								*
+ *			RECEIVE_QUEUING_MESSAGE								*
 ------------------------------------------------------------*/
 
 /*-----------------------------------------------------------
@@ -54,6 +56,7 @@ void test(PARTITION_ID_TYPE self_id) {
 	UPDATED_TYPE UPDATED;
 	VALIDITY_TYPE VALIDITY;
 	SAMPLING_PORT_CURRENT_STATUS_TYPE STATUS;
+ 	MESSAGE_SIZE_TYPE len;
 	
 	while(1) {
 		
@@ -102,7 +105,14 @@ void test(PARTITION_ID_TYPE self_id) {
 			break;
 		}
 
-		
+		RECEIVE_QUEUING_MESSAGE(qpid, INFINITE_TIME_VALUE, message, &len, &rc );
+		if (rc == NO_ERROR) {
+		    pprintf ("Received Partition Queue message %d: %s\n", self_id, message);
+		}
+		else
+    {
+        pprintf("Error in Receiving Queue Message - %d\n", rc);
+    }
 		rtems_task_wake_after(0.6*TPS); 
 	}
 }
@@ -138,7 +148,10 @@ int entry_func() {
 		pprintf("CREATE_SAMPLING_PORT error %d\n", rc);
 	}
 	
-	
+		CREATE_QUEUING_PORT("QSAMPLE", 1024, 32, DESTINATION, FIFO, &qpid, &rc );
+	if(NO_ERROR != rc){
+		pprintf("CREATE_QUEUING_PORT error %d\n", rc);
+	} 
 	
 	if (RTEMS_SUCCESSFUL == rtems_task_create (name, 15, 4096, mode, mode_mask, &id)) {
 		rtems_task_start (id, test, self_id);
