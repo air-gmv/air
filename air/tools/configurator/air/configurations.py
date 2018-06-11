@@ -580,11 +580,10 @@ def load_configuration(logger):
         return None
 
     # try to load the configuration
-    
     try:
         fd = open(__OS_CONFIG_FILE__, 'r')
         arch, bsp, fpu_enabled = pickle.load(fd)
-        os_configuration = Configuration(arch, bsp, fpu_enabled)        
+        os_configuration = Configuration(arch, bsp, fpu_enabled) 
         fd.close()
         return os_configuration
     except: 
