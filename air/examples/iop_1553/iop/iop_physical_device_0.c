@@ -27,7 +27,7 @@ static iop_device_driver_t device_configuration = \
  * @brief Device Scheduling
  */
 static uint32_t reads_per_period[] = \
-    { 4 };
+    { 1 };
 
 /**
  * @brief Routes Headers
