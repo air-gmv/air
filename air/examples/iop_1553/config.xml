@@ -14,7 +14,7 @@
     <Sampling_Port Name="SEND_APP_RT4" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
     <Sampling_Port Name="TOREMOVEAPP" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
     <Sampling_Port Name="TOREMOVEAPPSEND" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
-    <PartitionConfiguration Personality="RTEMS5" Cores="1">
+    <PartitionConfiguration Personality="RTEMS48i" Cores="1">
         <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
@@ -51,20 +51,20 @@
 
   <!-- Schedule 1 -->
   <Module_Schedule ScheduleIdentifier="1" ScheduleName="schedule"
-    InitialModuleSchedule="true" MajorFrameSeconds="2.0">
+    InitialModuleSchedule="true" MajorFrameSeconds="1.0">
 
     <Partition_Schedule PartitionIdentifier="1" PartitionName="partition1" 
-      PeriodDurationSeconds="1" PeriodSeconds="2.0">
+      PeriodDurationSeconds="0.5" PeriodSeconds="1.0">
       <Window_Schedule WindowIdentifier="1" PartitionPeriodStart="true" 
-        WindowDurationSeconds="1" WindowStartSeconds="1"/>
+        WindowDurationSeconds="0.5" WindowStartSeconds="0.5"/>
       <WindowConfiguration WindowIdentifier="1" Cores="0" />
     </Partition_Schedule>
 	
     <Partition_Schedule PartitionIdentifier="2" PartitionName="iop" 
-      PeriodDurationSeconds="1" PeriodSeconds="2.0">
+      PeriodDurationSeconds="1.0" PeriodSeconds="1.0">
       <Window_Schedule WindowIdentifier="2" PartitionPeriodStart="true" 
-        WindowDurationSeconds="1" WindowStartSeconds="0.0"/>
-      <WindowConfiguration WindowIdentifier="2" Cores="0" />
+        WindowDurationSeconds="1.0" WindowStartSeconds="0.0"/>
+      <WindowConfiguration WindowIdentifier="2" Cores="1" />
     </Partition_Schedule>
   </Module_Schedule>
 
@@ -158,5 +158,5 @@
   </Connection_Table>
   
   <!-- Module configuration -->
-  <AIR_Configuration TicksPerSecond="1000" RequiredCores="1"/>
+  <AIR_Configuration TicksPerSecond="1000" RequiredCores="2"/>
 </ARINC_653_Module>

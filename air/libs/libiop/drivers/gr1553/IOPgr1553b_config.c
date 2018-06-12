@@ -94,7 +94,34 @@ static bc_command_t command_list[COMMAND_LIST_SIZE] =
         .subaddr[0] = 0,
         .subaddr[1] = 0,
         .branch_offset = 0,
-        .time_slot = 100000 - (4 * TIME)
+        .time_slot = 262140 - (4 * TIME)
+    },
+        {
+        .ccw = DUMMY_BIT,
+        .rtaddr[0] = 0,
+        .rtaddr[1] = 0,
+        .subaddr[0] = 0,
+        .subaddr[1] = 0,
+        .branch_offset = 0,
+        .time_slot = 262140
+    },
+        {
+        .ccw = DUMMY_BIT,
+        .rtaddr[0] = 0,
+        .rtaddr[1] = 0,
+        .subaddr[0] = 0,
+        .subaddr[1] = 0,
+        .branch_offset = 0,
+        .time_slot = 262140
+    },
+        {
+        .ccw = DUMMY_BIT,
+        .rtaddr[0] = 0,
+        .rtaddr[1] = 0,
+        .subaddr[0] = 0,
+        .subaddr[1] = 0,
+        .branch_offset = 0,
+        .time_slot = 213512
     },
     // End of list, loop back to the beginning of the list
     {
