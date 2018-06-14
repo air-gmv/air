@@ -41,6 +41,7 @@ SYM(sparc_virt_syscall):
 
     /* get current core control */
     rd      %asr17, %l4
+    srl     %l4, 28, %l4
     and     %l4, 0xff, %l4
     umul    %l4, CORE_CTRL_SIZE, %l4                    ! core control offset
 
@@ -822,11 +823,11 @@ syscall_sparc_get_inst_cache_config_register:
     sethi   %hi(0x60000F), %l6
     or      %l6, %lo(0x60000F), %l6
 
-    mov     0x8, %l4                            ! use l4 to hold addr
-    lda     [%l4]2, %i0                         ! get cache register value
+    mov     0x8, %l7                            ! use l7 to hold addr
+    lda     [%l7]2, %i0                         ! get cache register value
     ba      syscall_sparc_return                ! finish trap
     and     %i0, %l6, %i0                       ! delay slot
-  
+
 /**
  * * @brief SPARC get data cache configuration register
  */
@@ -836,7 +837,7 @@ syscall_sparc_get_data_cache_config_register:
     sethi   %hi(0x60000F), %l6
     or      %l6, %lo(0x60000F), %l6
 
-    mov     0xc, %l4                            ! use l4 to hold addr
-    lda     [%g0]2, %i0                         ! get cache register value
+    mov     0xc, %l7                            ! use l7 to hold addr
+    lda     [%l7]2, %i0                         ! get cache register value
     ba      syscall_sparc_return                ! finish trap
     and     %i0, %l6, %i0                       ! delay slot
