@@ -158,7 +158,7 @@ SYM(air_sparc_set_irq_force_register):
     GLOBAL(air_sparc_get_inst_cache_config_register)
 SYM(air_sparc_get_inst_cache_config_register):
 
-    set     AIR_SYSCALL_SPARC_GET_INST_CACHE_CONFIG_REGISTER, %o5
+    set     AIR_SYSCALL_SPARC_GET_INST_CACHE_CFG_REGISTER, %o5
     ta      AIR_SYSCALL_SPARC_TRAP
     retl
     nop
@@ -166,7 +166,7 @@ SYM(air_sparc_get_inst_cache_config_register):
     GLOBAL(air_sparc_get_data_cache_config_register)
 SYM(air_sparc_get_data_cache_config_register):
 
-    set     AIR_SYSCALL_SPARC_GET_DATA_CACHE_CONFIG_REGISTER, %o5
+    set     AIR_SYSCALL_SPARC_GET_DATA_CACHE_CFG_REGISTER, %o5
     ta      AIR_SYSCALL_SPARC_TRAP
     retl
     nop
