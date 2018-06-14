@@ -41,7 +41,6 @@ SYM(sparc_virt_syscall):
 
     /* get current core control */
     rd      %asr17, %l4
-    srl     %l4, 28, %l4
     and     %l4, 0xff, %l4
     umul    %l4, CORE_CTRL_SIZE, %l4                    ! core control offset
 
@@ -77,6 +76,8 @@ syscall_sparc_branch_table:
     ba,a    syscall_sparc_get_irq_mask_register
     ba,a    syscall_sparc_set_irq_mask_register
     ba,a    syscall_sparc_set_irq_force_register
+    ba,a    syscall_sparc_get_inst_cache_config_register
+    ba,a    syscall_sparc_get_data_cache_config_register
 
 /**
  * @brief SPARC disable interrupts
@@ -811,3 +812,31 @@ syscall_sparc_return_invalid_config:
     nop; nop; nop                                    ! WRPSR delay slots
     jmp     %l1                                      ! set PC
     rett    %l2                                      ! set nPC and exit trap
+
+/**
+ * @brief SPARC get instruction cache configuration register
+ */
+syscall_sparc_get_inst_cache_config_register:
+
+    /* usable bits of the cache mask (leno3) */
+    sethi   %hi(0x60000F), %l6
+    or      %l6, %lo(0x60000F), %l6
+
+    mov     0x8, %l4                            ! use l4 to hold addr
+    lda     [%l4]2, %i0                         ! get cache register value
+    ba      syscall_sparc_return                ! finish trap
+    and     %i0, %l6, %i0                       ! delay slot
+  
+/**
+ * * @brief SPARC get data cache configuration register
+ */
+syscall_sparc_get_data_cache_config_register:
+
+    /* usable bits of the cache mask (leno3) */
+    sethi   %hi(0x60000F), %l6
+    or      %l6, %lo(0x60000F), %l6
+
+    mov     0xc, %l4                            ! use l4 to hold addr
+    lda     [%g0]2, %i0                         ! get cache register value
+    ba      syscall_sparc_return                ! finish trap
+    and     %i0, %l6, %i0                       ! delay slot
