@@ -2,13 +2,13 @@
 <ARINC_653_Module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ModuleName="bare">
 
   <!-- Partition 0  -->  
-  <Partition PartitionIdentifier="1" PartitionName="part0" 
-    Criticality="LEVEL_A" EntryPoint="entry_point" SystemPartition="false">
-    <PartitionConfiguration Personality="RTEMS5" Cores="1">
+  <Partition PartitionIdentifier="1" PartitionName="p0" 
+    Criticality="LEVEL_A" EntryPoint="main" SystemPartition="false">
+    <PartitionConfiguration Personality="POSIXRTEMS5" Cores="1">
         <Libs>LIBAIR; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
-        <Memory Size="0x100000" />
+        <Memory Size="0x400000" />
         <Permissions>
           FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
         </Permissions>
@@ -19,10 +19,10 @@
   <!-- Schedule 1 -->
   <Module_Schedule ScheduleIdentifier="1" ScheduleName="test_sched"
     InitialModuleSchedule="true" MajorFrameSeconds="1.0">
-    <Partition_Schedule PartitionIdentifier="1" PartitionName="part0" 
-      PeriodDurationSeconds="0.3" PeriodSeconds="1.0">
+    <Partition_Schedule PartitionIdentifier="1" PartitionName="p0" 
+      PeriodDurationSeconds="1.0" PeriodSeconds="1.0">
       <Window_Schedule WindowIdentifier="1" PartitionPeriodStart="true" 
-        WindowDurationSeconds="0.3"  WindowStartSeconds="0.0"/>
+        WindowDurationSeconds="1.0"  WindowStartSeconds="0.0"/>
     </Partition_Schedule>
   </Module_Schedule>
 
