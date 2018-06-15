@@ -36,7 +36,6 @@ kernel_compiler = dict(
 	ARFLAGS="ruv"
 )
 
-
 # Kernel Compiler with NO FPU
 kernel_compiler_no_fpu = dict(
 	CC="sparc-rtems5-gcc --pipe",
@@ -45,9 +44,9 @@ kernel_compiler_no_fpu = dict(
 	AR="sparc-rtems5-ar",
 	RANLIB="sparc-rtems5-ranlib",
 	CFLAGS="",
-	CPPFLAGS="-mcpu=leon3 -mflat -g -fno-builtin -nodefaultlibs -O2 -Wall",
+	CPPFLAGS="-mcpu=leon3 -msoft-float -mflat -g -fno-builtin -nodefaultlibs -O2 -Wall -DAIR_HYPERVISOR",
 	CXXFLAGS="",
-	LDFLAGS="",
+    LDFLAGS="-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar",
 	ARFLAGS="ruv"
 )
 
@@ -127,7 +126,7 @@ libair_headers = [h for h in kernel_headers
                   if h.endswith('air.h') or h.endswith('air_arch.h') or h.endswith('air_bsp.h')]
 
 # available permissions
-permissions = [PERMISSION_SUPERVISOR, PERMISSION_CACHE, PERMISSION_SET_TOD,
+permissions = [PERMISSION_SUPERVISOR, PERMISSION_FPU, PERMISSION_CACHE,PERMISSION_SET_TOD,
                PERMISSION_SET_PARTITION, PERMISSION_GLOBAL_TIME, PERMISSION_MODULE]
 
 # memory map
@@ -137,16 +136,16 @@ mmap = MMAP(kernel_space=[0x40000000, 0x01000000],
             default_unit=1 << 18)
 
 # specific defines
-defines = ['PMK_FPU_SUPPORT=0']
+defines = ['PMK_FPU_SUPPORT=1']
 
 # Architecture dependent configuration
 arch_configure = air_sparc.get_sparc_configuration
 
 # IOP devices and definitions
 iop = IOP(defines=[],
-          devices=['greth0', 'occan0', 'occan1'],
-          drivers=['amba', 'greth', 'occan'],
-          alias=dict(eth0='greth0', can0='occan0', can1='occan1'),
+          devices=['greth0'],
+          drivers=['amba', 'greth'],
+          alias=dict(eth0='greth0'),
           arch=iop_arch)
 
 # AIR application arch config

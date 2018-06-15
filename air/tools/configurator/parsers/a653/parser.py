@@ -33,10 +33,10 @@ class a653parser(object):
     # @return Partition object if found, None otherwise
     def get_partition(self, pid, name):
 
-        if name:
+        if name is not None:
             matches = [ p for p in self.partitions if p.id == pid and p.name == name]
         else:
-            matches = [ p for p in self.partitions if p.id == pid and not p.name]
+            matches = [ p for p in self.partitions if p.id == pid]
 
         return None if not matches else matches[0]
 
@@ -101,7 +101,7 @@ class a653parser(object):
         if rc:
             partition.index = len(self.partitions)
             partition.directory = '{0}'.format(partition.name.lower())
-            partition.executable = 'p{0}.exe'.format(partition.index)
+            partition.executable = '{0}.exe'.format(partition.name.lower())
             self.partitions.append(partition)
 
         return rc

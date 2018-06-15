@@ -162,7 +162,7 @@
       <Permissions>
        FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
       </Permissions>
-    </PartitionConfiguration>         
+    </PartitionConfiguration>
   </Partition>
 
   <!-- partition receiver 1 -->
@@ -176,7 +176,7 @@
       <Permissions>
        FPU_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
       </Permissions>
-    </PartitionConfiguration>         
+    </PartitionConfiguration>
   </Partition>
   
 	<Module_Schedule  ScheduleIdentifier="1" ScheduleName="test_sched" InitialModuleSchedule="true" MajorFrameSeconds="2.000">
@@ -318,10 +318,9 @@
       <Error_ID_Action Action="IDLE" Description="APEX Error" ErrorIdentifier="20"/>
     </System_State_Entry>
   </Partition_HM_Table>
-	 
-	 
+
   <AIR_Configuration TicksPerSecond="1000" RequiredCores="2"/>
-  
+
 </ARINC_653_Module>
 
 

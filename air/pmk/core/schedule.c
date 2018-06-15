@@ -205,17 +205,13 @@ void pmk_apply_next_schedule(pmk_core_ctrl_t *core) {
 void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
 
     air_u32_t vcore_id;
-    int treta, t2;
     pmk_partition_t *partition;
     pmk_core_schedule_t *core_schedule = core->schedule;
 
     /* update core (per core) */
-    if (0 == core->idx) {        
+    if (0 == core->idx) {
         ++scheduler_ctrl.mtf_ticks;
         ++scheduler_ctrl.total_ticks;
-        t2 =            core->next_switch_ticks;
-        treta = scheduler_ctrl.mtf_ticks;;
-        
         pmk_tod_update();
         bsp_interrupt_broadcast(BSP_IPC_PCS);
     }
@@ -235,15 +231,10 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
 
     /* update partition elapsed ticks */
     if (core->partition != NULL && core_context_id(core->context) == 0) {
-            
-            
         core->partition->events |= AIR_EVENT_CLOCKTICK;
         ++core->partition->elapsed_ticks;
     }
 
-        t2 =            core->next_switch_ticks;
-        treta = ++scheduler_ctrl.mtf_ticks;;
-    
     /* partition context switch is required*/
     if (scheduler_ctrl.mtf_ticks >= core->next_switch_ticks) {
 

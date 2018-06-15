@@ -8,16 +8,26 @@
  * ==========================================================================*/
 
 #include <air.h>
-//#include <pprintf.h>
+#ifdef RTEMS48I
+	#include <pprintf.h>
+#endif
 
 int receiver() {
 	
 	for (;;)
 	{
-	  printf("In partition P1 loop t20\n");
-	  rtems_task_wake_after(20);
-  	  printf("P1 : Waking up\n");
+      #ifdef RTEMS48I
+        pprintf("In partition P1 loop t20\n");
+      #else
+        printf("In partition P1 loop t20\n");
+      #endif
+	    rtems_task_wake_after(20);
+      #ifdef RTEMS48I
+        pprintf("P1 : Waking up\n");
+      #else
+  	    printf("P1 : Waking up\n");
+      #endif
 	}
-
+	
 	return AIR_SUCCESSFUL;
 }
