@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ARINC_653_Module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ModuleName="iop_example">
+
+  <!-- Partition 1  -->
+  <Partition PartitionIdentifier="1" PartitionName="send"
+    Criticality="LEVEL_A" EntryPoint="entry_func" SystemPartition="false">
+    <Sampling_Port Name="SEND_SAMP"
+      Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.5"/>
+    <Queuing_Port Name="QSAMPLE" 
+      Direction="SOURCE" MaxMessageSize="1024" MaxNbMessages="32" />
+    <PartitionConfiguration Personality="RTEMS48I" Cores="1">
+        <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
+        <Devices></Devices>
+        <Cache>CODE; DATA</Cache>
+        <Memory Size="0x400000" />
+        <Permissions>
+          CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+        </Permissions>
+    </PartitionConfiguration>
+  </Partition>
+
+  <!-- Partition 2 -->
+  <Partition PartitionIdentifier="2" PartitionName="recv"
+    Criticality="LEVEL_A" EntryPoint="entry_func" SystemPartition="false">
+    <Sampling_Port Name="RECV_SAMP" 
+      Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.5"/>
+    <PartitionConfiguration Personality="RTEMS48I" Cores="1">
+        <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
+        <Devices></Devices>
+        <Cache>CODE; DATA</Cache>
+        <Memory Size="0x400000" />
+        <Permissions>
+            CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+        </Permissions>
+    </PartitionConfiguration>
+  </Partition>
+
+  <!-- Partition 2 -->
+  <Partition PartitionIdentifier="3" PartitionName="recv2"
+    Criticality="LEVEL_A" EntryPoint="entry_func" SystemPartition="false">
+    <Sampling_Port Name="RECV_SAMP2" 
+      Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.5"/>
+    <Queuing_Port  Name="QSAMPLE"
+      Direction="DESTINATION" MaxMessageSize="1024" MaxNbMessages="32" />
+    <PartitionConfiguration Personality="RTEMS48I" Cores="1">
+        <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
+        <Devices></Devices>
+        <Cache>CODE; DATA</Cache>
+        <Memory Size="0x400000" />
+        <Permissions>
+            CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+        </Permissions>
+    </PartitionConfiguration>
+  </Partition>
+
+  <Module_Schedule InitialModuleSchedule="true" MajorFrameSeconds="1.5000" ScheduleIdentifier="10" ScheduleName="sched">
+    <Partition_Schedule PartitionIdentifier="1" PartitionName="send" PeriodDurationSeconds="0.5000" PeriodSeconds="1.5000">
+      <Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="0.5000" WindowIdentifier="1" WindowStartSeconds="0.0000"/>
+    </Partition_Schedule>
+    <Partition_Schedule PartitionIdentifier="2" PartitionName="recv" PeriodDurationSeconds="0.5000" PeriodSeconds="1.5000">
+      <Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="0.5000" WindowIdentifier="2" WindowStartSeconds="0.5000"/>
+    </Partition_Schedule>
+    <Partition_Schedule PartitionIdentifier="3" PartitionName="recv2" PeriodDurationSeconds="0.5000" PeriodSeconds="1.5000">
+      <Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="0.5000" WindowIdentifier="3" WindowStartSeconds="1.0000"/>
+    </Partition_Schedule>
+  </Module_Schedule>
+
+  <Connection_Table>
+    <Channel ChannelIdentifier="1" ChannelName="SAMPLING">
+      <Source>
+        <Standard_Partition PartitionIdentifier="1" PartitionName="send" PortName="SEND_SAMP"/>
+      </Source>
+      <Destination>
+        <Standard_Partition PartitionIdentifier="3" PartitionName="recv2" PortName="RECV_SAMP2"/>
+      </Destination>
+      <Destination>
+        <Standard_Partition PartitionIdentifier="2" PartitionName="recv" PortName="RECV_SAMP"/>
+      </Destination>
+    </Channel>
+    <Channel ChannelIdentifier="2" ChannelName="queuing">
+      <Source>
+        <Standard_Partition PartitionIdentifier="1" PartitionName="send"
+          PortName="QSAMPLE"/>
+      </Source>
+      <Destination>
+        <Standard_Partition PartitionIdentifier="3" PartitionName="recv2"
+          PortName="QSAMPLE"/>
+      </Destination>
+    </Channel>
+  </Connection_Table>
+
+  
+  
+  <!-- Module configuration -->
+  <AIR_Configuration TicksPerSecond="200" RequiredCores="1"/>
+</ARINC_653_Module>

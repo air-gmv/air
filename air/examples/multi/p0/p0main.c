@@ -8,15 +8,25 @@
  * ==========================================================================*/
 
 #include <air.h>
-//#include <pprintf.h>
+#ifdef RTEMS48I
+	#include <pprintf.h>
+#endif
 
 int producer() {
 	
 	for (;;)
 	{
-      printf("In partition PO loop t20\n");
-	  rtems_task_wake_after(20);
-  	  printf("P0 : Waking up\n");
+      #ifdef RTEMS48I
+        pprintf("In partition PO loop t20\n");
+      #else
+        printf("In partition PO loop t20\n");
+      #endif
+	    rtems_task_wake_after(20);
+      #ifdef RTEMS48I
+        pprintf("P0 : Waking up\n");
+      #else
+  	    printf("P0 : Waking up\n");
+      #endif
 	}
 	
 	return AIR_SUCCESSFUL;

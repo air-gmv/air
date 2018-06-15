@@ -133,8 +133,7 @@ class Configuration(object):
         self.bsp = bsp.lower()
         self.fpu_enabled = fpu_enabled;
         self.debug_mode = False
-        #logging.info ('Initializing Configuration class architecture: %s, bsp: %s', self.arch, self.bsp)        
-        
+        #logging.info ('Initializing Configuration class architecture: %s, bsp: %s', self.arch, self.bsp)
 
         # get supported pos
         self.supported_pos = {}
@@ -162,7 +161,7 @@ class Configuration(object):
                         supported = True
                     except Exception:
                         logging.warning ('the library: %s is not installed because %s is missing', lib.name, pos_name)  
-                        pass              
+                        pass
             else:
                 for pos_name in self.supported_pos:
                     pos = self.supported_pos[pos_name]
@@ -222,21 +221,19 @@ class Configuration(object):
                     except IndexError:
                         return False
         except IOError:
-            return False                   
+            return False
 
     ##
     # @brief Gets the target compiler
-    def get_target_compiler(self):		  
+    def get_target_compiler(self):
         msoft_float = self.grep ("Makefile.inc", "msoft")
         if self.fpu_enabled:
-            #if msoft_float:
-                # not required for RTEMS 5 TBC
-                #os.system("patch --force -p2 -R -s < tools/configurator/disable_fpu.patch")
+            if msoft_float:
+                os.system("patch --force -p2 -R -s < tools/configurator/disable_fpu.patch")
             return supported_architectures[self.arch][self.bsp].kernel_compiler
         else:
-            #if not msoft_float:
-               # not required for RTEMS 5  TBC
-               #os.system("patch --force -p2 -s < tools/configurator/disable_fpu.patch")
+            if not msoft_float:
+               os.system("patch --force -p2 -s < tools/configurator/disable_fpu.patch")
             return supported_architectures[self.arch][self.bsp].kernel_compiler_no_fpu
 			
     ##
@@ -402,7 +399,7 @@ class Configuration(object):
             # patch pos by doing git stash pop
     #            subprocess.call(['git','stash', 'pop'], cwd="pos", stdout=FNULL, stderr=subprocess.STDOUT)
 
-        
+
 
     ##
     # @brief Gets the Partition complete library list
