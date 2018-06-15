@@ -6,7 +6,7 @@ RTR = 'SPWRTR'
 CAN = 'CAN'
 
 SUPPORTED_DEVICES 	=   {	SPW : ['GRSPW'],
-                        	MIL : ['GR1553B', 'BRM1553'],
+                        	MIL : ['GRMIL', 'BRM1553'],
                         	ETH : ['GRETH'],
                             RTR : ['SPWRTR'],
                             CAN : ['GRCAN']   }
@@ -73,6 +73,10 @@ CANHEADER_SSHOT					= 'Sshot'
 CANHEADER_RTR                   = 'RTR'
 CANHEADER_ID                    = 'CanID'
 
+#MIL Header
+MILHEADER                       = 'MILHeader'
+MILHEADER_ADDR                  = 'Addr'
+MILHEADER_SUBADDR               = 'Subaddr'
 
 import utils.parser as parserutils
 
@@ -89,6 +93,8 @@ VALID_BOOLEAN_TYPE		= [ parserutils.str2bool, lambda x : isinstance(x, bool) ]
 VALID_DIRECTION_TYPE 	= [ str, lambda x : x in [ REMOTE_PORT_SRC, REMOTE_PORT_DST] ]
 VALID_ID                = [ parserutils.str2int, lambda x: x > 0]
 VALID_MASK_CODE         = [ lambda x: str(x).strip().split(':'), lambda x: len(x) == 4]
+VALID_MILADDR_TYPE      = [ parserutils.str2int, lambda x : 0 <= x <= 32 ]
+VALID_MILSUBADDR_TYPE   = [ parserutils.str2int, lambda x : 0 <= x <= 32 ]
 
 
 
@@ -97,6 +103,7 @@ PHYSICAL_DEVICE_STR     = 'Physical Device (Id: {0}, Device: {1})'
 ETH_HEADER_STR          = 'Ethernet Header (Mac: {0}, Ip: {1}, Port: {2})'
 SPW_HEADER_STR          = 'SpaceWire Header (Address: {0})'
 CAN_HEADER_STR          = 'Canbus Header (extended: {0}, Rtr: {1}, CanId: {2})'
+MIL_HEADER_STR          = 'MIL-STD-1553 Header (ADDR: {0}, SUBADDR: {1})'
 REMOTE_PORT_STR         = 'Remote Port (Name: {0})'
 ROUTE_STR               = 'Route (Id: {0})'
 ROUTE_PHYSICAL_STR      = 'Physical Route (Id: {0})'
@@ -293,5 +300,29 @@ class CanHeader(object):
     def __repr__(self):
         return self.__str__()
     
+    def details(self):
+        return self.__str__()
+
+
+## MIL-STD-1553 Header
+class MILHeader(object):
+    def __init__(self):
+        self.desc = 0
+        self.address = 0
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and \
+            self.desc == other.desc and self.address == other.address
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __str__(self):
+        return MIL_HEADER_STR.format(self.desc, \
+                self.address)
+
+    def __repr__(self):
+        return self.__str__()
+
     def details(self):
         return self.__str__()
