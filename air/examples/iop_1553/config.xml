@@ -12,8 +12,6 @@
     <Sampling_Port Name="SEND_APP_RT2" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
     <Sampling_Port Name="SEND_APP_RT3" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
     <Sampling_Port Name="SEND_APP_RT4" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
-    <Sampling_Port Name="TOREMOVEAPP" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
-    <Sampling_Port Name="TOREMOVEAPPSEND" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
     <PartitionConfiguration Personality="RTEMS48i" Cores="1">
         <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
         <Devices></Devices>
@@ -36,8 +34,6 @@
     <Sampling_Port Name="RECV_IO_RT2" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
     <Sampling_Port Name="RECV_IO_RT3" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
     <Sampling_Port Name="RECV_IO_RT4" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
-    <Sampling_Port Name="TOREMOVEPORT" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
-    <Sampling_Port Name="TOREMOVEPORTRCV" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
     <PartitionConfiguration Personality="RTEMS48i" IOP="iop.xml" Cores="1">
         <Libs>LIBAIR; LIBIOP; LIBPRINTF</Libs>
         <Devices></Devices>
@@ -139,22 +135,6 @@
       </Destination>
     </Channel>
 
-   <Channel ChannelIdentifier="9" ChannelName="TOREMOVECHANNEL">
-      <Source>
-        <Standard_Partition PartitionIdentifier="2" PartitionName="iop" PortName="TOREMOVEPORT"/>
-      </Source>
-      <Destination>
-        <Standard_Partition PartitionIdentifier="1" PartitionName="partition1" PortName="TOREMOVEAPP"/>
-      </Destination>
-    </Channel>
-   <Channel ChannelIdentifier="10" ChannelName="TOREMOVECHANNEL2">
-      <Source>
-        <Standard_Partition PartitionIdentifier="1" PartitionName="partition1" PortName="TOREMOVEAPPSEND"/>
-      </Source>
-      <Destination>
-        <Standard_Partition PartitionIdentifier="2" PartitionName="iop" PortName="TOREMOVEPORTRCV"/>
-      </Destination>
-    </Channel>
   </Connection_Table>
   
   <!-- Module configuration -->

@@ -26,9 +26,13 @@ ${EthHeader(route.header)}${',' if i < len(pdevice.routes) - 1 else ''}
 	% for i, route in enumerate(pdevice.routes):
 ${SpwHeader(route.header)}${',' if i < len(pdevice.routes) - 1 else ''}
 	% endfor
-%elif pdevice.type =='CAN':
+% elif pdevice.type =='CAN':
 	% for i, route in enumerate(pdevice.routes):
 ${CanHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
+	% endfor
+% elif pdevice.type =='MIL':
+	% for i, route in enumerate(pdevice.routes):
+${MILHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
 	% endfor
 % endif
 };
@@ -132,6 +136,15 @@ extern iop_port_t remote_ports[${len(iop_configuration.ports)}];
 			.sshot	  = ${int(header.sshot)},
 			.rtr 	  = ${int(header.rtr)},
 			.id		  = ${header.can_id}
+		}
+	}\
+</%def>
+
+<%def name="MILHeader(header)">\
+	{
+		.milstd_hdr = {
+			.desc    = ${int(header.desc)},
+			.address = ${int(header.address)},
 		}
 	}\
 </%def>

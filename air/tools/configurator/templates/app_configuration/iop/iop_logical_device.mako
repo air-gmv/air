@@ -12,11 +12,13 @@ static iop_header_t route_header[${len(device.routes)}] = ${'\\'}
 % for i, route in enumerate(device.routes):
 	% if route.device.type == 'ETH':
 ${iop_template.EthHeader(route.header)}${',' if i < len(device.routes) - 1 else ''}
-	%elif route.device.type == 'SPW':
+	% elif route.device.type == 'SPW':
 ${iop_template.SpwHeader(route.header)}${',' if i < len(device.routes) - 1 else ''}
-	%elif route.device.type == 'CAN':
+	% elif route.device.type == 'CAN':
 ${iop_template.CanHeader(route.header)}${',' if i < len(device.routes) - 1 else ''}
-	%endif
+	% elif route.device.type == 'MIL':
+${iop_template.MILHeader(route.header)}${',' if i < len(device.routes) - 1 else ''}
+	% endif
 % endfor
 };
 
