@@ -2,7 +2,6 @@
 <IOPartition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="iop.xsd" version="1.0" date="2018-05-23" name="iop_1553" request_number="64" time_to_live="5">
 	
 	<RemotePorts>
-		<!-- The following DMS-IOP ports have to be mapped with the MILBUS -->
 		<Port Name="SEND_IO_RT1" />
 		<Port Name="SEND_IO_RT2" />
 		<Port Name="SEND_IO_RT3" />
@@ -11,8 +10,6 @@
 		<Port Name="RECV_IO_RT2" LogicalDeviceId="1"/>
 		<Port Name="RECV_IO_RT3" LogicalDeviceId="2"/>
 		<Port Name="RECV_IO_RT4" LogicalDeviceId="3"/>
-        <Port Name="TOREMOVEPORT"/>
-		<Port Name="TOREMOVEPORTRCV" LogicalDeviceId="4"/>
 	</RemotePorts>	
 	
 	<LogicalDevices>
@@ -20,39 +17,52 @@
 		<Device Id="1" Name="MILBUSRT2" />
 		<Device Id="2" Name="MILBUSRT3" />
 		<Device Id="3" Name="MILBUSRT4" />
-		<Device Id="4" Name="SPACELINK" />
 	</LogicalDevices>	
 	
 	<PhysicalDevices>
-		<Device Id="1" Device="ETH0" Ip="192.168.0.17" MAC="26:38:24:b6:00:bc" TXD="32" RXD="32">
-			<PhysicalRoute Id="6" PortId="TOREMOVEPORT">
-				<EthHeader Ip="192.168.0.2" MAC="0c:c4:7a:43:4d:e5" Port="14000" />
+		<Device Id="0" Device="MILBUS" Bus="2" Mode="BC" >
+			<PhysicalRoute Id="1" PortId="SEND_IO_RT1">
+				<MILHeader Addr="1" Subaddr="2" />
 			</PhysicalRoute>
-			<LogicalRoute Id="5" LogicalDeviceId="4">
-				<EthHeader Ip="192.168.0.2" MAC="0c:c4:7a:43:4d:e5" Port="13000"/>
+            <PhysicalRoute Id="2" PortId="SEND_IO_RT2">
+				<MILHeader Addr="2" Subaddr="2" />
+			</PhysicalRoute>
+            <PhysicalRoute Id="3" PortId="SEND_IO_RT3">
+				<MILHeader Addr="3" Subaddr="2" />
+			</PhysicalRoute>
+            <PhysicalRoute Id="4" PortId="SEND_IO_RT4">
+				<MILHeader Addr="4" Subaddr="2" />
+			</PhysicalRoute>
+			<LogicalRoute Id="5" LogicalDeviceId="0">
+				<MILHeader Addr="1" Subaddr="2" />
+			</LogicalRoute>
+			<LogicalRoute Id="6" LogicalDeviceId="1">
+				<MILHeader Addr="2" Subaddr="2" />
+			</LogicalRoute>
+			<LogicalRoute Id="7" LogicalDeviceId="2">
+				<MILHeader Addr="3" Subaddr="2" />
+            </LogicalRoute>
+			<LogicalRoute Id="8" LogicalDeviceId="3">
+				<MILHeader Addr="4" Subaddr="2" />
 			</LogicalRoute>
 		</Device>
-		<!--Device Id="1" Device="SPWRTR" Flags="0x1f" Config="0b001110" Idd="1" Idiv="9" Prescaler="1"/>
-		<Device Id="2" Device="GRSPW1" Addr="9" Mask="0xff" Dest="0" Clk="1"
-				RXmax="1520" PRO="0" RMAP="0" RMAPbuf="32" ProtID="0" TXDsize="-1"
-				TXHsize="-1" RXsize="-1" TXD="64" RXD="128" Retry="1" Wait="0" Timeout="-1">
-			<PhysicalRoute Id="3" PortId="SEND_SPW_DATA">
-				<SpwHeader Address="9"/>
-			</PhysicalRoute>
-			<LogicalRoute Id="4" LogicalDeviceId="1">
-				<SpwHeader Address="0x01"/>
-			</LogicalRoute>
-	    </Device-->		
 	</PhysicalDevices>
 	
 
 	<ModuleSchedules>
 		<Schedule ScheduleIdentifier="1">
 		    <DevicesConfiguration>
-			    <Device DeviceId="1" Device="ETH0" Reads="5"/>
+			    <Device DeviceId="0" Device="MILBUS" Reads="1"/>
 			</DevicesConfiguration>
 			<RoutesConfiguration>
-				<Route RouteId="5" Active="true"/>
+				<Route RouteId="1" Active="true"/>
+                <Route RouteId="2" Active="True"/>
+                <Route RouteId="3" Active="true"/>
+                <Route RouteId="4" Active="True"/>
+                <Route RouteId="5" Active="true"/>
+                <Route RouteId="6" Active="True"/>
+                <Route RouteId="7" Active="true"/>
+                <Route RouteId="8" Active="True"/>
 			</RoutesConfiguration>
 		</Schedule>
 	</ModuleSchedules>

@@ -336,7 +336,12 @@ class IOParser(object):
             xml_header = xml.parse_tag(CANHEADER, 1, 1, self.logger)
             if self.logger.check_errors(): return None
             return self.parse_can_header(xml_header)
-            
+
+        # device of mil-std-1553 type
+        elif pdevice.type == MIL:
+            xml_header = xml.parse_tag(MILHEADER, 1, 1, self.logger)
+            if self.logger.check_errors(): return None
+            return self.parse_mil_header(xml_header)
 
         # invalid header
         return None
@@ -392,7 +397,25 @@ class IOParser(object):
         # sanity check
         if self.logger.check_errors(): return False
         return header
-    
+
+    ## Parse std-mil-1553 Header
+    # @param self object pointer
+    # @param xml mil Header xml node
+    def parse_mil_header(self, xml):
+
+        # clear previous errors and warning
+        self.logger.clear_errors(3)
+
+        # parse attributes
+        header = MILHeader()
+        header.desc = xml.parse_attr(MILHEADER_ADDR, VALID_MILADDR_TYPE, True, self.logger)
+        header.address = xml.parse_attr(MILHEADER_SUBADDR, VALID_MILSUBADDR_TYPE, True, self.logger)
+
+        # sanity check
+        if self.logger.check_errors(): return False
+        return header
+
+
     def parse_schedule(self, xml):
 
         # clear previous errors and warnings
