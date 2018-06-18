@@ -1,6 +1,6 @@
-RTEMS_API = 5
+#RTEMS_API = 5
 RTEMS_CPU = sparc
-RTEMS_BSP = leon3
+#RTEMS_BSP = gr740 # to be set in the respective go-BSP-rtems5.sh file ...
 
 prefix = /opt/rtems/$(RTEMS_API)
 exec_prefix = $(prefix)/$(RTEMS_CPU)-rtems$(RTEMS_API)
@@ -26,7 +26,7 @@ CPPFLAGS = -I$(PROJECT_INCLUDE)/bsp
 CFLAGS = $(DEPFLAGS) $(SYSFLAGS) $(WARNFLAGS) $(CPU_CFLAGS) $(OPTFLAGS)
 CXXFLAGS = $(DEPFLAGS) $(SYSFLAGS) $(WARNFLAGS) $(CPU_CFLAGS) $(OPTFLAGS)
 ASFLAGS = $(CPU_CFLAGS)
-LDFLAGS = -Wl,--gc-sections
+LDFLAGS = -Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar
 
 LINKFLAGS = $(SYSFLAGS) $(CPU_CFLAGS) $(LDFLAGS) $(OPTFLAGS)
 CCLINK = $(CC) $(LINKFLAGS) -Wl,-Map,$(basename $@).map
