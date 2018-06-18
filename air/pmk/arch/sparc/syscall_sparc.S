@@ -446,8 +446,8 @@ syscall_sparc_rett:
 syscall_sparc_get_cache_register:
 
     /* usable bits of the cache mask (leno3) */
-    sethi   %hi(0x60000F), %l6
-    or      %l6, %lo(0x60000F), %l6
+    sethi   %hi(0xE0000F), %l6
+    or      %l6, %lo(0xE0000F), %l6
 
     lda     [%g0]2, %i0                         ! get cache register value
     ba      syscall_sparc_return                ! finish trap
@@ -465,8 +465,8 @@ syscall_sparc_set_cache_register:
     bz      syscall_sparc_return_invalid_config              ! no? then error
     nop                                                      ! delay slot
 
-    /* usable bits of the cache mask (leno3) */
-    set     0x60000F, %l4
+    /* usable bits of the cache mask (leon3 and leon4) */
+    set     0xE0000F, %l4
 
     /* mask user register */
     and     %i0, %l4, %i0
