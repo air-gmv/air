@@ -23,7 +23,7 @@
 #include <IOPgr1553b.h>
 #include <IOPgr1553bc.h>
 #include <IOPgr1553rt.h>
-#include <IOPgr1553b_config.h>
+#include <IOPdriverconfig_interface.h>
 
 #include <pprintf.h>
 /* Pointer to amba configuration */

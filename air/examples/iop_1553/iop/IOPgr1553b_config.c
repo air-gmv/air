@@ -10,8 +10,19 @@
  */
 
 #include <stdint.h>
-#include <IOPgr1553b_config.h>
 #include <IOPmilstd_config.h>
+#include <IOPgr1553b.h>
+#include <IOPdriverconfig_interface.h>
+
+
+
+#define GR1553BC_MODE_BC 0
+#define GR1553BC_MODE_RT 1
+#define GR1553BC_MODE_BM 2
+
+
+#define COMMAND_LIST_SIZE 9
+#define ASYNCHRONOUS_COMMAND_LIST_SIZE 4
 
 #define GR1553B_DEVICES 1
 #define DATA_BUFFERS 10
@@ -31,6 +42,11 @@ static uint32_t gr1553rtmem[RT_MEMORY_SIZE];
 
 static grb_priv bdevs[GR1553B_DEVICES];
 
+/* List of matching physical/virtual addresses used in the GR1553BC */
+/* Need one for the async and sync register and one for each in Command List */
+static gr1553hwaddr gr1553hwlist[COMMAND_LIST_SIZE + 2];
+
+
 static grb_user_config_t userconf[GR1553B_DEVICES] = 
 {
     {
@@ -45,7 +61,7 @@ static grb_user_config_t userconf[GR1553B_DEVICES] =
     }
 };
 
-static bc_command_t command_list[COMMAND_LIST_SIZE] = 
+bc_command_t command_list[COMMAND_LIST_SIZE] = 
 {
     // RT 1, SA 2, 12 words
     {	
@@ -140,7 +156,7 @@ bc_command_t *iop_milstd_get_command_list(){
 }
 
 int iop_milstd_get_command_list_size(){
-    return COMMAND_LIST_SIZE;
+    return sizeof(command_list)/sizeof(bc_command_t);
 }
 
 int iop_milstd_get_async_command_list_size(){
@@ -149,6 +165,10 @@ int iop_milstd_get_async_command_list_size(){
 
 int iop_milstd_get_data_buffers_size(){
     return DATA_BUFFERS;
+}
+
+gr1553hwaddr *iop_get_gr1553hwlist(){
+    return &gr1553hwlist[0];
 }
 
 grb_user_config_t *iop_grb_get_user_config(unsigned int minor){
