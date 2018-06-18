@@ -83,7 +83,6 @@ typedef struct {
 	void *cmd_ptr;					/**< pointer to command */
 } write_cmd_shortcut_t;
 
-
 #define GR1553B_MODE_BC 0x0		/**< Bus Controler Mode*/
 #define GR1553B_MODE_RT 0x1		/**< Remote terminal Mode*/
 #define GR1553B_MODE_BM 0x2		/**< Bus Monitor Mode*/
