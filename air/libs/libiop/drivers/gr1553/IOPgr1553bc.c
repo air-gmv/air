@@ -6,7 +6,7 @@
  *  GMV-SKYSOFT
  *
  *  @author Cl�udio Silva
- *	
+ *
  */
  
 /*  GR1553B BC driver
@@ -38,8 +38,8 @@
 #include <iop_error.h>
 #include <IOPgr1553b.h>
 #include <IOPgr1553bc.h>
-#include <IOPgr1553b_config.h>
 #include <IOPmilstd_config.h>
+#include <IOPdriverconfig_interface.h>
 
 /** returns the first address found after p that is aligned with c  */
 #define MEM_ALIGN(p,c) ((((unsigned int)(p))+(c)) & ~((c)-1))
@@ -50,19 +50,9 @@ static grb_priv *bdevs;
 static write_cmd_shortcut_t shortcut_mem[128];
 static int shortcut_offset = 0;
 
-
-typedef struct  {
-    uint32_t v_addr;
-    uint32_t p_addr;
-} gr1553hwaddr;
-
-/* List of matching physical/virtual addresses used in the GR1553BC */
-/* Need one for the async and sync register and one for each in COMMAND_LIST_SIZE */
-static gr1553hwaddr gr1553hwlist[COMMAND_LIST_SIZE + 2];
-
 /* Reset software and BC hardware into a known "unused/init" state */
 void gr1553bc_device_init(grb_priv *priv)
-{	
+{
 	/* obtain device private structures (used by other functions )*/
 	bdevs = priv;
 
@@ -88,10 +78,10 @@ void gr1553bc_device_init(grb_priv *priv)
 	GR1553BC_WRITE_REG(&priv->regs->bc_irqptr,0);
 
 	/* Initialize the bus controller list */
-    gr1553bc_init_list();
+	gr1553bc_init_list();
 
-    /* start the list */
-    gr1553bc_start_sync();
+	/* start the list */
+	gr1553bc_start_sync();
 }
 
 
@@ -99,7 +89,7 @@ void gr1553bc_close(grb_priv *priv)
 {
 	/* Stop Hardware */
 	gr1553bc_stop(priv, 0x3);
-	
+
 	/* Reset the device */
 	gr1553bc_device_uninit(priv);
 
@@ -108,29 +98,29 @@ void gr1553bc_close(grb_priv *priv)
 
 /* Stop BC lists */
 void gr1553bc_stop(grb_priv *priv, int options)
-{	
+{
 	/* Control register contents */
 	uint32_t ctrl;
-	
+
 	/* Write BC key */
 	ctrl = GR1553BC_KEY;
-	
+
 	/* Verify which lists we have to stop processing */
 	if(options & 0x1){
-		
+
 		/* Stop synchronous list */
 		ctrl |= GR1553B_BC_ACT_SCSTP;
 	}
-	
+
 	if(options & 0x2){
-	
+
 		/* Stop assynchronous list */
 		ctrl |= GR1553B_BC_ACT_ASSTP;
 	}
-	
+
 	/* Write new ctrl register to stop the list processing */
 	GR1553BC_WRITE_REG(&priv->regs->bc_ctrl, ctrl);
-	
+
 	/* indicate that the device is stoped */
 	priv->open = 0;
 
@@ -156,13 +146,13 @@ void gr1553bc_pause_list()
 {
 	uint32_t ctrl;
 	grb_priv *priv;
-	
+
 	/* current minor device internal data structure */
 	priv = bdevs;
-	
+
 	/* Suspend list processing */
 	ctrl = GR1553BC_KEY | GR1553B_BC_ACT_SCSUS;
-	
+
 	/* write action register */
 	GR1553BC_WRITE_REG(&priv->regs->bc_ctrl, ctrl);
 
@@ -173,13 +163,13 @@ void gr1553bc_continue_list()
 {
 	uint32_t ctrl;
 	grb_priv *priv;
-	
+
 	/* current minor device internal data structure */
 	priv = bdevs;
-	
+
 	/* restart list processing  */
 	ctrl = GR1553BC_KEY | GR1553B_BC_ACT_SCSRT;
-	
+
 	/* write action register */
 	GR1553BC_WRITE_REG(&priv->regs->bc_ctrl, ctrl);
 
@@ -482,7 +472,7 @@ static int update_command(struct gr1553bc_bd_tr *desc, libio_rw_args_t *rw_args)
 		
 	}
 	
-	return rc;	
+	return rc;
 }
 
 /**
@@ -742,6 +732,9 @@ static void translate_command(grb_priv *priv, unsigned int offset, unsigned int 
 	/* Current bc descriptor */
 	struct gr1553bc_bd_tr *desc;
 	
+	/* Get list of matching physical/virtual addresses*/
+	gr1553hwaddr *gr1553hwlist = iop_get_gr1553hwlist();
+
 	/* user command list*/
 	user_list = &priv->cl[offset];
 	
@@ -900,7 +893,10 @@ void gr1553bc_start_sync()
 	uint32_t ctrl;
 	
 	grb_priv *priv = bdevs;
-	
+
+	/* Get list of matching physical/virtual addresses*/
+	gr1553hwaddr *gr1553hwlist = iop_get_gr1553hwlist();
+
 	/* BC control register is protected by a key */
 	ctrl = GR1553BC_KEY;
 	
@@ -921,10 +917,10 @@ void gr1553bc_start_sync()
 
 	/* Enable IRQ */
 	if(priv->started == 0){
-		
+
 		/* device has started */
 		priv->started = 1;
-		
+
 		/* we don't want interrupts!*/
 		GR1553BC_WRITE_REG(&priv->regs->imask, 0);
 	}
@@ -938,39 +934,41 @@ void gr1553bc_start_sync()
  */
 void gr1553bc_start_async()
 {
-    uint32_t ctrl;
+	uint32_t ctrl;
 	/* Current device */
-    grb_priv *priv = bdevs;
-	
+	grb_priv *priv = bdevs;
+
+	/* Get list of matching physical/virtual addresses*/
+	gr1553hwaddr *gr1553hwlist = iop_get_gr1553hwlist();
+
 	/* Get device's internal structure */
-    ctrl = GR1553BC_KEY;
-	
+	ctrl = GR1553BC_KEY;
+
 	/* Start this list */
-    if(priv->async != NULL){
+	if(priv->async != NULL){
 
-        /* Activate synchronous list processing */
-        ctrl |= GR1553B_BC_ACT_ASSRT;
+        	/* Activate synchronous list processing */
+        	ctrl |= GR1553B_BC_ACT_ASSRT;
 
-        /* write transfer list pointer register */
-        gr1553hwlist[iop_milstd_get_command_list_size() + 1].v_addr = (uint32_t) priv->async;
-        gr1553hwlist[iop_milstd_get_command_list_size() + 1].p_addr = (uint32_t)air_syscall_get_physical_addr((uintptr_t)priv->async);
-        GR1553BC_WRITE_REG(&priv->regs->bc_abd, gr1553hwlist[iop_milstd_get_command_list_size() + 1].p_addr);
-}
+		/* write transfer list pointer register */
+		gr1553hwlist[iop_milstd_get_command_list_size() + 1].v_addr = (uint32_t) priv->async;
+ 		gr1553hwlist[iop_milstd_get_command_list_size() + 1].p_addr = (uint32_t)air_syscall_get_physical_addr((uintptr_t)priv->async);
+		GR1553BC_WRITE_REG(&priv->regs->bc_abd, gr1553hwlist[iop_milstd_get_command_list_size() + 1].p_addr);
+	}
 
+	GR1553BC_WRITE_REG(&priv->regs->bc_ctrl, ctrl);
 
-    GR1553BC_WRITE_REG(&priv->regs->bc_ctrl, ctrl);
+	/* Disable IRQ */
+	if(priv->started == 0){
 
-    /* Disable IRQ */
-    if(priv->started == 0){
+		/* device has started */
+		priv->started = 1;
 
-        /* device has started */
-        priv->started = 1;
+		/* we don't want interrupts!*/
+		GR1553BC_WRITE_REG(&priv->regs->imask, 0);
+	}
 
-        /* we don't want interrupts!*/
-        GR1553BC_WRITE_REG(&priv->regs->imask, 0);
-    }
-
-    return;
+	return;
 }
 
 /**
@@ -979,16 +977,18 @@ void gr1553bc_start_async()
  */
 unsigned long get_virtual_addr(unsigned long p_addr)
 {
-    /* Iterator */
-    int i;
+	/* Iterator */
+	int i;
 
-    /* Go through all the addresses that were converted previously */
-    for(i = 0; i < (iop_milstd_get_command_list_size() + 2); i++){
-        /* Check if the physical address is matching and return the virtual address */
-        if(gr1553hwlist[i].p_addr == p_addr){
-            return gr1553hwlist[i].v_addr;
-        }
-    }
-    return 0;
+	/* Get list of matching physical/virtual addresses*/
+	gr1553hwaddr *gr1553hwlist = iop_get_gr1553hwlist();
+
+	/* Go through all the addresses that were converted previously */
+	for(i = 0; i < (iop_milstd_get_command_list_size() + 2); i++){
+		/* Check if the physical address is matching and return the virtual address */
+		if(gr1553hwlist[i].p_addr == p_addr){
+			return gr1553hwlist[i].v_addr;
+		}
+	}
+	return 0;
 }
-
