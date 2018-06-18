@@ -68,12 +68,4 @@ typedef struct {
 #define CCW_RT_TO_BC_B 0x00003400
 #define CCW_DUMMY 	   0x00080000
 
-bc_command_t *iop_milstd_get_command_list();
-
-int iop_milstd_get_command_list_size();
-
-int iop_milstd_get_async_command_list_size();
-
-int iop_milstd_get_data_buffers_size();
-
 #endif

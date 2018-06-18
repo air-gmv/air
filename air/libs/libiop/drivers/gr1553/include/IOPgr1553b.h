@@ -170,6 +170,14 @@ typedef struct {
 
 } grb_priv;
 
+/**
+ * @brief Store matching physical/virtual addresses used in the GR1553BC
+ */
+typedef struct  {
+	uint32_t v_addr;
+	uint32_t p_addr;
+} gr1553hwaddr;
+
 /* Available Modes */
 #define FEAT_BC 0x1
 #define FEAT_RT 0x2

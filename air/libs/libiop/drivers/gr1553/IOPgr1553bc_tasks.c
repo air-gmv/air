@@ -134,10 +134,10 @@ rtems_task grbc_write(iop_physical_device_t *pdev){
     /* Go through all available */
     while(!iop_chain_is_empty(&pdev->sendqueue)){
 
-        iop_debug("GRBC writing\n");
+        iop_debug("grbc_write\n");
         if (init == 0)
         {
-            iop_debug("GRBC erasing\n");
+            iop_debug("grbc_write erasing\n");
             init = 1;
             // Clean existing commands
             gr1553bc_erase_async_data();
@@ -151,10 +151,15 @@ rtems_task grbc_write(iop_physical_device_t *pdev){
         /* Extract header */
         iop_header_t* hdr = (iop_header_t*)get_buffer(req_wrapper->buffer);
 
-        iop_debug("BC RT%i SA%i\n",((milstd_header_t*)hdr)->desc, ((milstd_header_t*)hdr)->address);
-
         /* in a bc write operation we must append incoming data to the correct BC command on the bc list */
         status = gr1553bc_add_async_data(get_payload(req_wrapper->buffer), &hdr->milstd_hdr, get_payload_size(req_wrapper->buffer));
+
+        if (status == RTEMS_INVALID_SIZE){
+                iop_debug("grbc_write Invalid Size\n");
+        } else
+            if(status == RTEMS_TOO_MANY){
+                iop_debug("grbc_write No Avail Slot\n");
+            }
 
         /* release Wrapper*/
         release_wrapper(req_wrapper);
@@ -162,7 +167,7 @@ rtems_task grbc_write(iop_physical_device_t *pdev){
 
     if (init == 1)
     {
-        iop_debug("GRBC starting\n");
+        iop_debug("grbc_write starting\n");
         // Start asynchronous commanding
         gr1553bc_start_async();
     }
