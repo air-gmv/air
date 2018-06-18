@@ -96,7 +96,7 @@ void system_init2(void)
 {
 #ifndef RTEMS_DRVMGR_STARTUP
 	/* Register GRLIB root bus */
+printk(">>system_init2(alpha)\n");
 	ambapp_grlib_root_register(&grlib_bus_config);
-	
 #endif
 }
