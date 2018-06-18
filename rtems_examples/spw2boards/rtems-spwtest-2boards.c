@@ -10,8 +10,7 @@
  */
 #define TASK_TX
 #define CONFIGURE_INIT
-#include <bsp.h> /* for device driver prototypes */
-rtems_task Init( rtems_task_argument argument);	/* forward declaration needed */
+
 
 /* configuration information */
 #define CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
@@ -27,8 +26,18 @@ rtems_task Init( rtems_task_argument argument);	/* forward declaration needed */
 
 #define RTEMS_PCI_CONFIG_LIB
 #define CONFIGURE_PCI_LIB PCI_LIB_AUTO
+///////////// NEW DEFS
+   #define CONFIGURE_MAXIMUM_DRIVERS                     16
+   #define CONFIGURE_MAXIMUM_DEVICES                     16
+   #define CONFIGURE_MAXIMUM_TIMERS                      40
+   
+   #include <rtems.h>
+   #include <bsp.h> /* for device driver prototypes */
+rtems_task Init( rtems_task_argument argument);	/* forward declaration needed */
 
+#include <rtems/config.h>
 #include <rtems/confdefs.h>
+#include <drvmgr/drvmgr.h>
 
 /* Configure Driver manager */
 //  #define CONFIGURE_DRIVER_AMBAPP_GAISLER_GPTIMER
@@ -50,7 +59,7 @@ rtems_task Init( rtems_task_argument argument);	/* forward declaration needed */
 
 #include <drvmgr/drvmgr_confdefs.h>
 
-#include <rtems.h>
+
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -64,7 +73,7 @@ rtems_task Init( rtems_task_argument argument);	/* forward declaration needed */
 /* Include driver configurations and system initialization */
 #include "config.c"
 
-#include <bsp/grspw.h>
+#include <grspw.h>
 
 /* Select GRSPW core to be used in sample application. 
  *  - /dev/grspw0              (First ON-CHIP core)
