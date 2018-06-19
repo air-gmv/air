@@ -33,7 +33,7 @@ static grb_priv *bdevs;
 static int number_grb_devices;
 static int is_init = 0;
 
-rtems_device_driver grb_initialize(rtems_device_major_number major,
+rtems_device_driver gr1553b_initialize(rtems_device_major_number major,
 								   rtems_device_minor_number minor,
 								   void *arg)
 {	
@@ -154,7 +154,7 @@ rtems_device_driver grb_initialize(rtems_device_major_number major,
 	return RTEMS_SUCCESSFUL;
 }
 
-rtems_device_driver grb_open(rtems_device_major_number major,
+rtems_device_driver gr1553b_open(rtems_device_major_number major,
 						     rtems_device_minor_number minor,
 						     void *arg)
 {
@@ -182,6 +182,51 @@ rtems_device_driver grb_open(rtems_device_major_number major,
 		
 			/* init Remote Terminal */
 			gr1553rt_device_init(bDev);
+			break;
+		
+		/* Bus Monitor */
+		case GR1553B_MODE_BM:
+			break;
+		
+		/* Should not happen*/
+		default:
+			status = RTEMS_NOT_DEFINED;
+			break;
+	}
+	
+	return status;
+
+}
+
+
+rtems_device_driver gr1553b_close(rtems_device_major_number major,
+						     rtems_device_minor_number minor,
+						     void *arg)
+{
+	/* return code */
+	rtems_status_code status = RTEMS_SUCCESSFUL;
+	
+	/* Current device */
+	grb_priv *bDev;
+	
+	/* Get device's internal structure */
+	bDev = &bdevs[minor];
+	
+	/* Initialize the device according to the selected operative mode */
+	switch (bDev->user_config->operating_mode) {
+		
+		/* Bus Controller */
+		case GR1553B_MODE_BC:
+		
+			/* close Bus Controller */
+			gr1553bc_close(bDev);
+			break;
+		
+		/* Remote Terminal */
+		case GR1553B_MODE_RT:
+		
+			/* TODO close Remote Terminal */
+		//	gr1553rt_device_close(bDev);
 			break;
 		
 		/* Bus Monitor */

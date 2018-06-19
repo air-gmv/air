@@ -1,5 +1,5 @@
 /** 
- * 	@file IOPgr1553bc_tasks.c
+ * 	@file IOPgr1553_tasks.c
  * 
  *  COPYRIGHT (c) 2011\n
  *  GMV-SKYSOFT\n
@@ -13,6 +13,8 @@
 #include <iop_error.h>
 #include <iop_support.h>
 #include <IOPgr1553bc.h>
+#include <IOPgr1553rt.h>
+#include <gr1553_support.h>
 #include <IOPmilstd_config.h>
 #include <iop_mms.h>
 
@@ -20,7 +22,7 @@
  *  @brief Task reading new 1553 data from the BC
  *
  */
-rtems_task grbc_read(iop_physical_device_t *pdev){
+rtems_task gr1553bc_read_task(iop_physical_device_t *pdev){
 
     /* return code of several operations */
     rtems_status_code status = RTEMS_SUCCESSFUL;
@@ -123,7 +125,7 @@ rtems_task grbc_read(iop_physical_device_t *pdev){
  *
  */
 
-rtems_task grbc_write(iop_physical_device_t *pdev){
+rtems_task gr1553bc_write_task(iop_physical_device_t *pdev){
 
     /* return code of several operations */
     rtems_status_code status;
@@ -172,3 +174,24 @@ rtems_task grbc_write(iop_physical_device_t *pdev){
         gr1553bc_start_async();
     }
 }
+
+
+/**
+ *  @brief TODO
+ *
+ */
+rtems_task gr1553rt_read_task(iop_physical_device_t *pdev){
+    
+    
+    
+};
+
+
+/**
+ *  @brief TODO
+ *
+ */
+rtems_task gr1553rt_write_task(iop_physical_device_t *pdev){
+    
+    
+};
