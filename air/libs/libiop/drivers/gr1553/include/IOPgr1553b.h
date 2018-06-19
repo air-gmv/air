@@ -446,17 +446,17 @@ typedef struct  {
 
 /* General */
 
-rtems_device_driver grb_initialize(rtems_device_major_number major,
+rtems_device_driver gr1553b_initialize(rtems_device_major_number major,
 								   rtems_device_minor_number minor,
 								   void *arg);
 								   
-rtems_device_driver grb_open(rtems_device_major_number major,
+rtems_device_driver gr1553b_open(rtems_device_major_number major,
 						     rtems_device_minor_number minor,
 						     void *arg);
 
-rtems_task grbc_read();
-
-rtems_task grbc_write();
+rtems_device_driver gr1553b_close(rtems_device_major_number major,
+						     rtems_device_minor_number minor,
+						     void *arg);
 
 #ifdef __cplusplus
 }
