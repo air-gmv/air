@@ -1,8 +1,8 @@
 <%	
 	# device functions
 	device_functions = dict(
-		reader_task='grbc_read',
-		writer_task='grbc_write',
+		reader_task='gr1553bc_read_task',
+		writer_task='gr1553bc_write_task',
 		
 		header_prebuild= 'gr1553_compare_header',
 		header_compare='gr1553_compare_header',
@@ -30,11 +30,11 @@ static iop_device_driver_t device_configuration = ${'\\'}
 {
     /* device configuration */
         .driver         = NULL,
-        .init           = grb_initialize,
-        .open           = grb_open,
+        .init           = gr1553b_initialize,
+        .open           = gr1553b_open,
         .read           = NULL,
         .write          = NULL,
-        .close          = gr1553bc_close,
+        .close          = gr1553b_close,
 };
 
 ${iop_template.PhysicalDevice(iop_configuration, device, device_functions)}\
