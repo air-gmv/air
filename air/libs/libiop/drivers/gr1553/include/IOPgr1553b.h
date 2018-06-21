@@ -52,6 +52,12 @@ extern "C" {
 #include <iop.h>
 #include <IOPmilstd_config.h>
 
+/*grb_user_config_t operating modes*/
+#define GR1553B_MODE_BC 0x0		/**< Bus Controler Mode*/
+#define GR1553B_MODE_RT 0x1		/**< Remote terminal Mode*/
+#define GR1553B_MODE_BM 0x2		/**< Bus Monitor Mode*/
+
+
 /**
  * @brief The GR1553B register mapping
  */
