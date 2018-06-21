@@ -15,12 +15,6 @@
 #include <IOPdriverconfig_interface.h>
 
 
-
-#define GR1553BC_MODE_BC 0
-#define GR1553BC_MODE_RT 1
-#define GR1553BC_MODE_BM 2
-
-
 #define COMMAND_LIST_SIZE 9
 #define ASYNCHRONOUS_COMMAND_LIST_SIZE 4
 
@@ -50,7 +44,7 @@ static gr1553hwaddr gr1553hwlist[COMMAND_LIST_SIZE + 2];
 static grb_user_config_t userconf[GR1553B_DEVICES] = 
 {
     {
-        .operating_mode = GR1553BC_MODE_BC,
+        .operating_mode = GR1553B_MODE_BC,
         .msg_timeout = 0,
         .retry_mode = 1,
         .rtaddress = 10,
