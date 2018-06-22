@@ -201,7 +201,7 @@ uint8_t get_iop_data()
                 {
                     memcpy(&aux[j], readFrom, sizeof(uint16_t));
                     readFrom = readFrom + sizeof (uint16_t);
-                    pprintf("%d ", aux[j]);
+                    pprintf("%04x ", aux[j]);
                 }
 
                 pprintf("\n\n");

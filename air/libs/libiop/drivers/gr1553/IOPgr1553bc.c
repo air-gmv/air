@@ -265,7 +265,7 @@ static inline uint32_t create_descriptor_word0(int exttrig, int exclusive,
 	
 	/* external trigger, exclusive time slot, retry mode, number of retries */
 	word = (((exttrig & 0x1) << 30) | ((exclusive & 0x1) << 29) |
-		   ((retrymode & 0x1) << 23) | ((nretry & 0x7) << 20));
+		   ((retrymode & 0x3) << 23) | ((nretry & 0x7) << 20));
 	
 	/* does this transfer use extra timeout values? */
 	if(gap > 0){
@@ -698,8 +698,8 @@ rtems_status_code gr1553bc_add_async_data(uint8_t *data, milstd_header_t *hdr, u
     /* Map the memory to a transfer descriptor */
     desc = &bdevs->async[i];
 
-    /* Slot time set to 0 */
-    desc->settings[0] = 0;
+    /* Retry alternating both buses. Slot time is set to 0 */
+    desc->settings[0] = ((0x1) << 23);
 
     /* Bus A selected, transmitting to RT 'desc' and subaddress 'address' with 'wcmc' words */
     desc->settings[1] = ((hdr->desc & 0x1F) << 11) + ((hdr->address & 0x1F) << 5) + wcmc;
