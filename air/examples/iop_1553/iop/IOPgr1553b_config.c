@@ -19,7 +19,7 @@
 #define ASYNCHRONOUS_COMMAND_LIST_SIZE 4
 
 #define GR1553B_DEVICES 1
-#define DATA_BUFFERS 10
+#define DATA_BUFFERS 4
 #define TIME 100  /* in microseconds */
 
 /* The memory is structured as follows:
