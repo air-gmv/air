@@ -53,7 +53,6 @@ CANBUS_SELECTION		= 'Selection'
 CANBUS_ENABLE0			= 'Enable0'
 CANBUS_ENABLE1			= 'Enable1'
 
-MIL_BUS                 = 'Bus'
 MIL_MODE                = 'Mode'
 MIL_READS               = 'Reads'
 
@@ -67,7 +66,7 @@ VALID_MASK_CODE	   	= [ parserutils.str2int, lambda x : 0 <= x <= 4294967295]
 VALID_BOOL                  = [ parserutils.str2bool, lambda x: type(x) is bool ]
 VALID_NODE_ADDRESS          = [ parserutils.str2int, lambda x : -1 <= x <= 31 ]
 VALID_RXMAX                 = [ parserutils.str2int, lambda x : 4 <= x <= 1520 ]
-VALID_BUS                 = [ parserutils.str2int, lambda x : 1 <= x <= 2 ]
+VALID_MODE                  = [ str, lambda x : x in [ 'BC', 'RT'] ]
 
 # GRETH physical device setup
 class GRETHPhySetup(object):
@@ -186,16 +185,14 @@ class GRCANSchSetup(object):
 
 # MIL-STD-1553 physical device
 class MILPhySetup(object):
-    
+
     def __init__(self):
-        self.mil_bus = 0
-        self.mode = 0
-#        self.txd = 0
-#        self.rxd = 0
+        self.mode = ''
+        self.lroutes = 0
+        self.millist = []
 
     def details(self):
-        return 'MIL-STD-1553 Physical Device Setup (Bus: {0} mode: {1})'\
-        .format( self.mil_bus, self.mode)
+        return 'MIL-STD-1553 Physical Device Setup (Mode: {0})'.format( self.mode)
 
 # MIL-STD-1553 Schedule device setup
 class MILSchSetup(object):
@@ -205,7 +202,7 @@ class MILSchSetup(object):
         self.reads  = ''            # number of reads per period
 
     def details(self):
-        return 'MIL-STD-1553 Schedule Setup (Reads - {0}'.format(self.reads)
+        return 'MIL-STD-1553 Schedule Setup (Reads - {0})'.format(self.reads)
 
 
 ## Greth physical device setup
@@ -404,10 +401,7 @@ def phy_gr1553b(iop_parser, xml, pdevice):
 
     # parse setup
     setup                   = MILPhySetup()
-    setup.mil_bus	        = xml.parse_attr(MIL_BUS, VALID_BUS, True, iop_parser.logger)
-    #setup.mode              = xml.parse_attr(MIL_MODE, VALID_XD, True, iop_parser.logger)
-    #setup.rxd         = xml.parse_attr(CANBUS_RXD, VALID_XD, True, iop_parser.logger)
-    #setup.txd         = xml.parse_attr(CANBUS_RXD, VALID_XD, True, iop_parser.logger)
+    setup.mode              = xml.parse_attr(MIL_MODE, VALID_MODE, True, iop_parser.logger)
 
     # sanity check
     if iop_parser.logger.check_errors(): return False
