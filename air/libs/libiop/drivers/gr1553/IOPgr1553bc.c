@@ -42,7 +42,7 @@
 #include <IOPdriverconfig_interface.h>
 
 /** returns the first address found after p that is aligned with c  */
-#define MEM_ALIGN(p,c) ((((unsigned int)(p))+(c)) & ~((c)-1))
+#define MEM_ALIGN(p,c) ((((unsigned int)(p))+((c)-1)) & ~((c)-1))
 
 static grb_priv *bdevs;
 
@@ -855,7 +855,7 @@ void gr1553bc_init_list()
 	bDev->cl_size = cl_size;
 	
 	/* obtain device's internal memory */
-	mem = iop_get_grb_bc_mem();
+	mem = iop_get_grb_mem();
 	
 	/* Align memory to a 16 bytes boundary */
 	bDev->mem_start = (void *) MEM_ALIGN(mem, GR1553BC_BD_ALIGN);
