@@ -230,11 +230,22 @@ class IOParser(object):
         self.logger.event(0, 'AFTER parsing physical routing and BEFORE logical')
         # Parse Logical Routing
         xml_routes = xml.parse_tag(ROUTE_LOGICAL, 1, maxint, self.logger)
-        for xml_route in xml_routes:
+        for nblroutes, xml_route in enumerate(xml_routes):
             rc &= self.parse_device_routes(xml_route, pdevice)
             self.logger.event(0, rc)
 
         self.logger.event(0, "PHYDEV?", rc)
+
+        # Retrieve MIL-STD-1553 list
+        if ( pdevice.type == MIL and pdevice.setup.mode == "BC" ):
+            #MIL driver also allocates memory for async writing commands (nb of lroutes)
+            pdevice.setup.lroutes = nblroutes+1
+            xml_millist = xml.parse_tag(MILLIST, 0, maxint, self.logger)
+            for xml_list in xml_millist:
+                rc &= self.parse_mil_list(xml_list, pdevice)
+            self.logger.event(0, rc)
+            if rc:
+                self.logger.event(0, 'done parse MIL-STD-1553 device list')
 
         if rc:
             pdevice.idx = len(self.physical_devices)
@@ -242,6 +253,61 @@ class IOParser(object):
 
         self.logger.event(0, "     done PARSING physical device")
         return rc
+
+    ## Parse mil list
+    # @param self object pointer
+    def parse_mil_list(self, xml, pdevice):
+
+        # clear previous errors and warnings
+        self.logger.clear_errors(2)
+
+        list       = MILList()
+        list.id    = xml.parse_attr(MIL_ID, VALID_IDENTIFIER_TYPE, True, self.logger)
+        list.majorframe = xml.parse_attr(MILLISTMJFRAME, VALID_MILMJFRAME_TYPE, True, self.logger)
+
+        # sanity check
+        if self.logger.check_errors(): return False
+
+        # check if list already exists
+        # if any(list == other for other in self.millist):
+        #    self.logger.error(LOG_REDEFINITION, xml.sourceline, list)
+        #    return False
+
+        self.logger.information(2, list.details())
+
+        # Parse List Slots
+        xml_slots = xml.parse_tag(MILSLOT, 1, maxint, self.logger)
+        for xml_slot in xml_slots:
+            list.slot.append(self.parse_mil_slot(xml_slot))
+
+        # parse completed
+        pdevice.setup.millist.append(list)
+
+        return True
+
+    ## Parse mil slot
+    # @param self object pointer
+    # @param xml Ethernet Header xml node
+    def parse_mil_slot(self, xml):
+
+        # clear previous errors and warnings
+        self.logger.clear_errors(3)
+
+        # parse attributes
+        cmd = MILSlot()
+        cmd.id   = xml.parse_attr(MIL_ID, VALID_IDENTIFIER_TYPE, True, self.logger)
+        cmd.bus  = xml.parse_attr(MILSLOTBUS, VALID_MILBUS_TYPE, True, self.logger)
+        cmd.type = xml.parse_attr(MILSLOTTYPE, VALID_MILTYPE, True, self.logger)
+        cmd.addr = xml.parse_attr(MIL_ADDR, VALID_MILADDR_TYPE, True, self.logger)
+        cmd.subaddr = xml.parse_attr(MIL_SUBADDR, VALID_MILSUBADDR_TYPE, True, self.logger)
+        cmd.wcmode  = xml.parse_attr(MILSLOTWCMODE, VALID_MILWCMODE_TYPE, True, self.logger)
+        cmd.time = xml.parse_attr(MILSLOTTIME, VALID_MILTIME_TYPE, True, self.logger)
+
+        self.logger.information(3, cmd.details())
+
+        # sanity check
+        if self.logger.check_errors(): return False
+        return cmd
 
     ## Parse routes
     # @param self object pointer
@@ -408,8 +474,8 @@ class IOParser(object):
 
         # parse attributes
         header = MILHeader()
-        header.desc = xml.parse_attr(MILHEADER_ADDR, VALID_MILADDR_TYPE, True, self.logger)
-        header.address = xml.parse_attr(MILHEADER_SUBADDR, VALID_MILSUBADDR_TYPE, True, self.logger)
+        header.desc = xml.parse_attr(MIL_ADDR, VALID_MILADDR_TYPE, True, self.logger)
+        header.address = xml.parse_attr(MIL_SUBADDR, VALID_MILSUBADDR_TYPE, True, self.logger)
 
         # sanity check
         if self.logger.check_errors(): return False
@@ -460,7 +526,6 @@ class IOParser(object):
             xml_routes = xml.parse_tag(SCHEDULING_ROUTE, 0, sys.maxint, self.logger)
             for xml_node in xml_routes:
                 rc &= self.parse_schedule_routes(xml_node, route_schedule)
-
             # sanity check
             if not rc:
 
@@ -490,7 +555,6 @@ class IOParser(object):
         rid    = xml.parse_attr(SCHEDULING_ROUTE_ID, VALID_IDENTIFIER_TYPE, True, self.logger)
         active = xml.parse_attr(SCHEDULING_ROUTE_ACTIVE, VALID_BOOLEAN_TYPE, False, self.logger, True)
         if self.logger.check_errors(): return False
-
         # check if route exits
         routes = [ r for r in self.routes if r.id == rid ]
         if len(routes) != 1:
