@@ -126,12 +126,6 @@ int iop_milstd_get_command_list_size();
 #include <IOPgr1553b.h>
 
 /**
- * @brief Get pointer of RT mode allocated memory
- * @return Pointer to beginning of RT allocated memory
- */
-void *iop_get_grb_rt_mem();
-
-/**
  * @brief Get pointer to beginning of internal memory device
  * @return Pointer to internal memory device
  */
@@ -150,10 +144,10 @@ grb_user_config_t *iop_grb_get_user_config(unsigned int minor);
 int iop_get_number_grb_cores(void);
 
 /**
- * @brief Get pointer of BC mode allocated memory
- * @return Pointer to beginning of BC allocated memory
+ * @brief Get pointer of allocated memory
+ * @return Pointer to beginning of allocated memory
  */
-void *iop_get_grb_bc_mem(void);
+void *iop_get_grb_mem(void);
 
 /**
  * @brief Get pointer of allocated physical/virtual addresses data stored for GR1553BC
