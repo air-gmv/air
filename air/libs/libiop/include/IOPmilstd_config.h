@@ -62,10 +62,13 @@ typedef struct {
 #define NRET_BITMASK 0x00000F00
 #define MC_BITMASK 0x0000001F
 
-#define CCW_BC_TO_RT_A 0x00000400
-#define CCW_BC_TO_RT_B 0x00002400
-#define CCW_RT_TO_BC_A 0x00001400
-#define CCW_RT_TO_BC_B 0x00003400
-#define CCW_DUMMY 	   0x00080000
+#define CCW_BC_RT_A 0x00000400
+#define CCW_BC_RT_B 0x00002400
+#define CCW_RT_BC_A 0x00001400
+#define CCW_RT_BC_B 0x00003400
+#define CCW_DUMMY DUMMY_BIT
+#define CCW_LOOP TB_BIT
+#define CCW_END END_BIT
+
 
 #endif

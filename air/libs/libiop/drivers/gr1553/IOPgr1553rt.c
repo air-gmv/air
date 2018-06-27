@@ -161,7 +161,7 @@ void gr1553rt_device_init(grb_priv *priv){
 	bdevs = iop_grb_get_priv_mem();
 
 	/* obtain cores memory */
-	priv->mem_start = (uint32_t *)iop_get_grb_rt_mem();
+	priv->mem_start = (uint32_t *)iop_get_grb_mem();
 	
 	/* align memory to 128kb boundary */
 	priv->sa_table = (struct gr1553rt_sa *)(((uint32_t)priv->mem_start + 0x1ff) & (~0x1ff));
