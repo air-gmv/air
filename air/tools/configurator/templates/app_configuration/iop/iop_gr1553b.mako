@@ -13,7 +13,7 @@
         slots_time = 0
         for i, command in enumerate(device.setup.millist[0].slot):
             slots_time += device.setup.millist[0].slot[i].time
-        if device.setup.millist[0].majorframe > slots_time:
+        if (device.setup.millist[0].majorframe > slots_time):
             #We need to add dummy commands. How many with max timing of 262140us?
             dummy_slots = ((device.setup.millist[0].majorframe) - slots_time) / 262140 
             dummy_time = ((device.setup.millist[0].majorframe) - slots_time) - 262140 * dummy_slots
@@ -25,7 +25,9 @@
             init_nb_cmd = len(device.setup.millist[0].slot) + 1
 
         init_nb_cmd_async = device.setup.lroutes
-        init_data_buf = len(device.setup.millist[0].slot)
+        init_data_buf = init_nb_cmd-1
+        if (device.setup.lroutes > init_nb_cmd):
+            init_data_buf = device.setup.lroutes;
     else:
         init_nb_cmd = 0;
         init_nb_cmd_async = 0;
@@ -68,6 +70,7 @@ static iop_device_driver_t device_configuration = ${'\\'}
 
 ${iop_template.PhysicalDevice(iop_configuration, device, device_functions)}\
 
+
 ${MILFuncs(device)}\
 <% return %>
 
@@ -79,16 +82,23 @@ ${MILFuncs(device)}\
 #define ASYNCHRONOUS_COMMAND_LIST_SIZE ${init_nb_cmd_async}
 #define DATA_BUFFERS ${init_data_buf}
 
-/* The memory is structured as follows:
- * COMMAND_LIST | DATA_BUFFERS | ASYNCHRONOUS_COMMAND_LIST | DATA_BUFFERS */
+/**
+ * The memory is structured as follows:
+ * COMMAND_LIST | DATA_BUFFERS | ASYNCHRONOUS_COMMAND_LIST | DATA_BUFFERS
+ */
 #define BC_MEMORY_SIZE ((COMMAND_LIST_SIZE*4) + 2*(DATA_BUFFERS*16) + (ASYNCHRONOUS_COMMAND_LIST_SIZE*4))
 
-/* SA_TABLE_SIZE*2 + WORDS_PER_DESC(20)*DESC_PER_SUBADRESSES(12)*ENABLED_SUBADDRESSES(32)*2(RX and TX) */
+/**
+ * SA_TABLE_SIZE*2 + WORDS_PER_DESC(20)*DESC_PER_SUBADRESSES(12)*ENABLED_SUBADDRESSES(32)*2(RX and TX)
+ */
 #define RT_MEMORY_SIZE (256+(16+3+1)*32*12*2)
 </%def>
 
 
 <%def name="MILAlloc(pdevice)">\
+/**
+ * @brief Device Internal Struture
+ */
 static grb_priv bdevs[GR1553B_DEVICES];
 
 /**
@@ -100,15 +110,19 @@ ${MILConfigStruct(pdevice)}
 };
 
 % if pdevice.setup.mode == 'BC':
-/* this memory will be 16 bytes aligned (+4) !*/
+/**
+ * @brief Device Internal Memory. This memory will be 16 bytes aligned (+4)
+ */
 static uint32_t gr1553bmem[BC_MEMORY_SIZE+4];
 
-/* List of matching physical/virtual addresses used in the GR1553BC */
-/* Need one for the async and sync register and one for each in Command List */
+/**
+ * @brief List of matching physical/virtual addresses used in the GR1553BC 
+ * Need one for the async and sync register and one for each in Command List
+ */
 static gr1553hwaddr gr1553hwlist[COMMAND_LIST_SIZE + 2];
 
 /**
- * @brief BC Command List
+ * @brief BC Transfer List
  */
 static bc_command_t command_list[COMMAND_LIST_SIZE] = ${'\\'}
 {
@@ -126,8 +140,14 @@ ${MILBCListStruct_management('DUMMY', dummy_time)}${','}
 ${MILBCListStruct_management('LOOP', 0)}
 };
 % else:
+/**
+ * @brief Device Internal Memory
+ */
 static uint32_t gr1553bmem[RT_MEMORY_SIZE];
 
+/**
+ * @brief BC related
+ */
 static gr1553hwaddr *gr1553hwlist = NULL;
 static bc_command_t *command_list = NULL;
 % endif
@@ -137,12 +157,15 @@ static bc_command_t *command_list = NULL;
 
 
 <%def name="MILFuncs(pdevice)">\
+/**
+ * @brief Driver Interface Functions
+ */
 bc_command_t *iop_milstd_get_command_list(){
     return &command_list[0];
 }
 
 int iop_milstd_get_command_list_size(){
-    return sizeof(command_list)/sizeof(bc_command_t);
+    return COMMAND_LIST_SIZE;
 }
 
 int iop_milstd_get_async_command_list_size(){

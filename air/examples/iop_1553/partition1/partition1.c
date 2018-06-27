@@ -43,12 +43,6 @@ typedef enum
     TX_COUNT
 }eSemplingTxId;
 
-/* size in bytes of expected received data */
-int rxDataSize[RX_COUNT] = {24,24,64,64};
-
-/* size in bytes of data to send */
-int txDataSize[TX_COUNT] = {2,2,4,4};
-
 typedef struct
 {
     SAMPLING_PORT_ID_TYPE   portId;
@@ -110,6 +104,8 @@ MESSAGE_SIZE_TYPE read_sampling_port(eSamplingRxId port, MESSAGE_ADDR_TYPE recei
  */
 void send_iop_data()
 {
+    /* size in bytes of data to send */
+    const int txDataSize[TX_COUNT] = {2,2,4,4};
     RETURN_CODE_TYPE rc;
     /* create data array of maximum size */
     uint8_t msg[MAX_MESSAGE_SIZE];
@@ -172,7 +168,8 @@ void reset_milbus_received()
  */
 uint8_t get_iop_data()
 {
-
+    /* size in bytes of expected received data */
+    const int rxDataSize[RX_COUNT] = {24,24,64,64};
     uint8_t rcvdData = 0;
     /* received data length */
     MESSAGE_SIZE_TYPE len = 0;
