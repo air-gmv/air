@@ -46,7 +46,7 @@ MILLISTMJFRAME                  = 'MajorFrame'
 MILSLOT                         = 'Slot'
 MILSLOTBUS                      = 'Bus'
 MILSLOTTYPE                     = 'Type'
-MILSLOTWCMODE                   = 'WCMode'
+MILSLOTWCMODE                   = 'WCMC'
 MILSLOTTIME                     = 'Time'
 
 # Top Level Nodes

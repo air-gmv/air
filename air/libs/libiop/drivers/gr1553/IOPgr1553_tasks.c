@@ -124,11 +124,10 @@ rtems_task gr1553bc_read_task(iop_physical_device_t *pdev){
  *  @brief Task writing new 1553 data to the BC
  *
  */
-
 rtems_task gr1553bc_write_task(iop_physical_device_t *pdev){
 
     /* return code of several operations */
-    rtems_status_code status;
+    rtems_status_code status = RTEMS_NOT_IMPLEMENTED;
 
     /* Flag to initialise the pointer */
     int init = 0;
@@ -136,14 +135,6 @@ rtems_task gr1553bc_write_task(iop_physical_device_t *pdev){
     /* Go through all available */
     while(!iop_chain_is_empty(&pdev->sendqueue)){
 
-        iop_debug("grbc_write\n");
-        if (init == 0)
-        {
-            iop_debug("grbc_write erasing\n");
-            init = 1;
-            // Clean existing commands
-            gr1553bc_erase_async_data();
-        }
         /* pointer to the request wrapper being currently handled */
         iop_wrapper_t *req_wrapper;
 
@@ -154,20 +145,33 @@ rtems_task gr1553bc_write_task(iop_physical_device_t *pdev){
         iop_header_t* hdr = (iop_header_t*)get_buffer(req_wrapper->buffer);
 
         /* in a bc write operation we must append incoming data to the correct BC command on the bc list */
-        status = gr1553bc_add_async_data(get_payload(req_wrapper->buffer), &hdr->milstd_hdr, get_payload_size(req_wrapper->buffer));
+        status = grbc_merge_data_with_command(get_payload(req_wrapper->buffer), &hdr->milstd_hdr, get_payload_size(req_wrapper->buffer));
 
-        if (status == RTEMS_INVALID_SIZE){
-                iop_debug("grbc_write Invalid Size\n");
-        } else
-            if(status == RTEMS_TOO_MANY){
-                iop_debug("grbc_write No Avail Slot\n");
+        /*There's no BC-RT command on the list with the provided config(rt+sub+wcmc). Send async*/
+        if (status == RTEMS_NOT_DEFINED)
+        {
+            iop_debug("write async\n");
+            if (!init)
+            {
+                iop_debug("grbc_write erasing\n");
+                init = 1;
+                // Clean existing commands
+                gr1553bc_erase_async_data();
             }
 
+            status = gr1553bc_add_async_data(get_payload(req_wrapper->buffer), &hdr->milstd_hdr, get_payload_size(req_wrapper->buffer));
+
+            if (status == RTEMS_INVALID_SIZE)
+                iop_debug("grbc_write Invalid Size\n");
+            else
+                if(status == RTEMS_TOO_MANY)
+                    iop_debug("grbc_write No Avail Slot\n");
+        }
         /* release Wrapper*/
         release_wrapper(req_wrapper);
     }
 
-    if (init == 1)
+    if (init)
     {
         iop_debug("grbc_write starting\n");
         // Start asynchronous commanding
