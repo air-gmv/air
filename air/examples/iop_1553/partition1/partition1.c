@@ -198,10 +198,12 @@ uint8_t get_iop_data()
                 {
                     memcpy(&aux[j], readFrom, sizeof(uint16_t));
                     readFrom = readFrom + sizeof (uint16_t);
-                    pprintf("%04x ", aux[j]);
+                    /*limit data printing */
+                    if (j<16 && i%2)
+                        pprintf("%04x ", aux[j]);
                 }
 
-                pprintf("\n\n");
+                pprintf("\n");
 
                 rcvdData++;
             }
