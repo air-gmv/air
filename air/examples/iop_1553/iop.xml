@@ -22,10 +22,14 @@
 	<PhysicalDevices>
 		<Device Id="0" Device="MILBUS" Mode="BC">
             <MILList Id="0" MajorFrame="1000000">
-                <Slot Id="0" Bus="B" Type="RT_BC" Addr="1" SubAddr="2" WCMode="12" Time="100"/>
-                <Slot Id="1" Bus="B" Type="RT_BC" Addr="2" SubAddr="2" WCMode="12" Time="100"/>
-                <Slot Id="2" Bus="B" Type="RT_BC" Addr="3" SubAddr="2" WCMode="32" Time="100"/>
-                <Slot Id="3" Bus="B" Type="RT_BC" Addr="4" SubAddr="2" WCMode="32" Time="100"/>
+                <Slot Id="0" Bus="B" Type="RT_BC" Addr="1" SubAddr="2" WCMC="12" Time="100"/>
+                <Slot Id="1" Bus="B" Type="RT_BC" Addr="2" SubAddr="2" WCMC="12" Time="100"/>
+                <Slot Id="2" Bus="B" Type="RT_BC" Addr="3" SubAddr="2" WCMC="32" Time="100"/>
+                <Slot Id="3" Bus="B" Type="RT_BC" Addr="4" SubAddr="2" WCMC="32" Time="100"/>
+                <Slot Id="4" Bus="B" Type="BC_RT" Addr="1" SubAddr="2" WCMC="1" Time="100"/>
+                <Slot Id="5" Bus="B" Type="BC_RT" Addr="2" SubAddr="2" WCMC="1" Time="100"/>
+                <Slot Id="6" Bus="B" Type="BC_RT" Addr="3" SubAddr="2" WCMC="2" Time="100"/>
+                <Slot Id="7" Bus="B" Type="BC_RT" Addr="4" SubAddr="2" WCMC="2" Time="100"/>
             </MILList>
 			<PhysicalRoute Id="1" PortId="SEND_IO_RT1">
 				<MILHeader Addr="1" SubAddr="2" />

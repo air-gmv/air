@@ -326,7 +326,7 @@ static inline rtems_status_code bc_verify_command_status(uint32_t sw)
 	rtems_status_code status = RTEMS_SUCCESSFUL;
 	
 	/* verify transfer status */
-	if((sw & 0x3) != 0){
+	if((sw & 0x7) != 0){
 		
 		status = RTEMS_INTERNAL_ERROR;
 		
@@ -388,9 +388,7 @@ static int update_command(struct gr1553bc_bd_tr *desc, libio_rw_args_t *rw_args)
 			
 			/* we shall wait for new data from the user. dummy this command */
 			dummy_command(&desc->settings[1]);
-		
 		}
-		
 		/* this descriptor is updated. mark it as not accessed */
 		clear_acessed_bit(&(desc->status));
 		
@@ -797,8 +795,10 @@ static void translate_command(grb_priv *priv, unsigned int offset, unsigned int 
 			 * current command. This shortcut mapping is used when new outgoing
 			 * data arrives  
 			 */
-			create_write_cmd_shortcut(&priv->shortcut[(user_list->rtaddr[0] & 0x1f)],
-									                user_list, (void *) desc);
+           		 if(!(user_list->ccw & DUMMY_BIT))
+				create_write_cmd_shortcut(&priv->shortcut[(user_list->rtaddr[0] & 0x1f)],
+									user_list, (void *) desc);
+
 		}
 		
 		/* Calculate data buffer position */
@@ -868,9 +868,9 @@ void gr1553bc_init_list()
 	
 	/* memory after the command list is used to store data buffers */
 	bDev->buf_mem_start = (milstd_data_buf *)(((uint32_t *)bDev->sync) + (cl_size*4));
-	
+
 	/* memory after the data buffers used to store the asynchronous command list */
-	bDev->async = ((struct gr1553bc_bd_tr *)(bDev->buf_mem_start) + (iop_milstd_get_data_buffers_size()*16));
+	bDev->async = (struct gr1553bc_bd_tr *)(((uint32_t *)bDev->buf_mem_start) + (iop_milstd_get_data_buffers_size()*16));
 
 	/* memory after the async command list is used to store async data buffers */
 	bDev->async_buf_mem_start = (milstd_data_buf *)(((uint32_t *)bDev->async) + (iop_milstd_get_async_command_list_size()*4));
