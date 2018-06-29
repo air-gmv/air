@@ -25,8 +25,8 @@
             init_nb_cmd = len(device.setup.millist[0].slot) + 1
 
         init_nb_cmd_async = device.setup.lroutes
-        init_data_buf = init_nb_cmd-1
-        if (device.setup.lroutes > init_nb_cmd):
+        init_data_buf = len(device.setup.millist[0].slot)
+        if (device.setup.lroutes > len(device.setup.millist[0].slot)):
             init_data_buf = device.setup.lroutes;
     else:
         init_nb_cmd = 0;
