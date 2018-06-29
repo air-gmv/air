@@ -240,7 +240,7 @@ class IOParser(object):
         if ( pdevice.type == MIL and pdevice.setup.mode == "BC" ):
             #MIL driver also allocates memory for async writing commands (nb of lroutes)
             pdevice.setup.lroutes = nblroutes+1
-            xml_millist = xml.parse_tag(MILLIST, 0, maxint, self.logger)
+            xml_millist = xml.parse_tag(MILLIST, 1, maxint, self.logger)
             for xml_list in xml_millist:
                 rc &= self.parse_mil_list(xml_list, pdevice)
             self.logger.event(0, rc)
