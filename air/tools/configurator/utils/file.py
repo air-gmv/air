@@ -19,6 +19,7 @@ FILE_UTILS_DIFFTOOL  	= 'diff'
 FILE_UTILS_EDITOR    	= 'vim'
 FILE_UTILS_FORCE	 	= False
 FILE_UTILS_COPY_DEFAULT = 2
+keep_files = False
 
 ## Finds files with an certain extension and header within a directory
 #  @param pwd directory to search
@@ -88,7 +89,8 @@ def safeFileCopy(src, dst, errors = None):
     if not FILE_UTILS_FORCE and os.path.exists(dst) and genFileS256Hash(src) != genFileS256Hash(dst):
         while True:
             # if already exist and hardcoded define then ignore
-            if os.path.exists(hc):
+            # Also ignore if --keep-files-silent
+            if os.path.exists(hc) or keep_files:
                 result = 1
             else:
                 FILE_COPY_EXISTS = "   File '{0}' already exists and they are different:"
