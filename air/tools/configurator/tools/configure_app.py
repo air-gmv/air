@@ -27,6 +27,9 @@ def InputArgs(arg_parser, logger):
                         default=None,
                         help='Input XML configuration')
     arg_parser.add_argument('-dm', '--debug_mode', dest='debug_mode', action='store_const', const=True, default=False)
+    arg_parser.add_argument('-kfs', '--keep-files-silent', dest='keep_files_silent', action='store_const', const=True, default=False)
+
+
 
 ## @brief Show installation information
 def ShowInstallInfo(logger):
@@ -46,6 +49,9 @@ def Run(args, os_configuration, logger):
 
     # show info
     if args.info: ShowInstallInfo(logger)
+
+    # show info
+    if args.keep_files_silent: fileutils.keep_files = True
 
     #check hardcoded files to replace generated
     fileutils.setHardcodedFiles()

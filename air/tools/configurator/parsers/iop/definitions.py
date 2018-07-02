@@ -6,7 +6,7 @@ RTR = 'SPWRTR'
 CAN = 'CAN'
 
 SUPPORTED_DEVICES 	=   {	SPW : ['GRSPW'],
-                        	MIL : ['GR1553B', 'BRM1553'],
+                        	MIL : ['GRMIL', 'BRM1553'],
                         	ETH : ['GRETH'],
                             RTR : ['SPWRTR'],
                             CAN : ['GRCAN']   }
@@ -37,6 +37,17 @@ ROUTE_ID                        = 'Id'
 
 ROUTE_PHYSICAL_PORT             = 'PortId'
 ROUTE_LOGICAL_DEVICE            = 'LogicalDeviceId'
+
+#MIL LIST
+MILLIST                         = 'MILList'
+MIL_ID                          = 'Id'
+MILLISTMJFRAME                  = 'MajorFrame'
+#MIL SLOT
+MILSLOT                         = 'Slot'
+MILSLOTBUS                      = 'Bus'
+MILSLOTTYPE                     = 'Type'
+MILSLOTWCMODE                   = 'WCMC'
+MILSLOTTIME                     = 'Time'
 
 # Top Level Nodes
 IOPARTITION						= 'IOPartition'
@@ -73,6 +84,11 @@ CANHEADER_SSHOT					= 'Sshot'
 CANHEADER_RTR                   = 'RTR'
 CANHEADER_ID                    = 'CanID'
 
+#MIL Header
+MILHEADER                       = 'MILHeader'
+MIL_ADDR                        = 'Addr'
+MIL_SUBADDR                     = 'SubAddr'
+
 
 import utils.parser as parserutils
 
@@ -89,6 +105,13 @@ VALID_BOOLEAN_TYPE		= [ parserutils.str2bool, lambda x : isinstance(x, bool) ]
 VALID_DIRECTION_TYPE 	= [ str, lambda x : x in [ REMOTE_PORT_SRC, REMOTE_PORT_DST] ]
 VALID_ID                = [ parserutils.str2int, lambda x: x > 0]
 VALID_MASK_CODE         = [ lambda x: str(x).strip().split(':'), lambda x: len(x) == 4]
+VALID_MILMJFRAME_TYPE   = [ parserutils.str2int, lambda x : 0 <= x <= 10000000 ]
+VALID_MILADDR_TYPE      = [ parserutils.str2int, lambda x : 0 <= x <= 32 ]
+VALID_MILSUBADDR_TYPE   = [ parserutils.str2int, lambda x : 0 <= x <= 32 ]
+VALID_MILBUS_TYPE       = [ str, lambda x : x in [ 'A', 'B'] ]
+VALID_MILTYPE           = [ str, lambda x : x in [ 'BC_RT', 'RT_BC', 'RT_RT'] ]
+VALID_MILWCMODE_TYPE    = [ parserutils.str2int, lambda x : 0 <= x <= 1000000 ]
+VALID_MILTIME_TYPE      = [ parserutils.str2int, lambda x : 0 <= x <= 1000000 ]
 
 
 
@@ -97,6 +120,9 @@ PHYSICAL_DEVICE_STR     = 'Physical Device (Id: {0}, Device: {1})'
 ETH_HEADER_STR          = 'Ethernet Header (Mac: {0}, Ip: {1}, Port: {2})'
 SPW_HEADER_STR          = 'SpaceWire Header (Address: {0})'
 CAN_HEADER_STR          = 'Canbus Header (extended: {0}, Rtr: {1}, CanId: {2})'
+MIL_HEADER_STR          = 'MIL-STD-1553 Header (ADDR: {0}, SUBADDR: {1})'
+MIL_LIST_STR            = 'MIL LIST (Id: {0})'
+MIL_SLOT_STR            = 'MIL SLOT (Id: {0} ADDR: {1}, SUBADDR: {2})'
 REMOTE_PORT_STR         = 'Remote Port (Name: {0})'
 ROUTE_STR               = 'Route (Id: {0})'
 ROUTE_PHYSICAL_STR      = 'Physical Route (Id: {0})'
@@ -225,6 +251,56 @@ class RouteSchedule(object):
     def details(self):
         return self.__str__()
 
+## MIL List
+class MILList(object):
+
+    def __init__(self):
+        self.id     = -1
+        self.majorframe = 0
+        self.slot       = []
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __str__(self):
+        return MIL_LIST_STR.format(self.id)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def details(self):
+        return self.__str__()
+
+## MIL Slot
+class MILSlot(object):
+
+    def __init__(self):
+        self.id     = -1
+        self.bus   = 'A'
+        self.type  = ''
+        self.addr  = 0
+        self.subaddr  = 0
+        self.wcmode   = 0
+        self.time  = 0
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __str__(self):
+        return MIL_SLOT_STR.format(self.id, self.addr, self.subaddr)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def details(self):
+        return self.__str__()
+
 ## Ethernet Header
 class EthHeader(object):
 
@@ -293,5 +369,29 @@ class CanHeader(object):
     def __repr__(self):
         return self.__str__()
     
+    def details(self):
+        return self.__str__()
+
+
+## MIL-STD-1553 Header
+class MILHeader(object):
+    def __init__(self):
+        self.desc = 0
+        self.address = 0
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and \
+            self.desc == other.desc and self.address == other.address
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __str__(self):
+        return MIL_HEADER_STR.format(self.desc, \
+                self.address)
+
+    def __repr__(self):
+        return self.__str__()
+
     def details(self):
         return self.__str__()

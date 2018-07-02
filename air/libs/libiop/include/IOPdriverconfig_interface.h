@@ -108,14 +108,78 @@ void * get_milstd_memend();
  */
 milstd_config_t * get_milstd_config();
 
+/**
+ * @brief get pointer to command list
+ * @return pointer to user command list
+ */
+bc_command_t *iop_milstd_get_command_list();
+
+/**
+ * @brief get the number of commands in the list
+ * @return number of commands in list
+ */
+int iop_milstd_get_command_list_size();
+
 #endif
 
 #ifdef __GR1553B_H__
 #include <IOPgr1553b.h>
 
-void *iop_get_grb_rt_mem();
-
+/**
+ * @brief Get pointer to beginning of internal memory device
+ * @return Pointer to internal memory device
+ */
 grb_priv *iop_grb_get_priv_mem(void);
+
+/**
+ * @brief Get user configurations
+ * @return Pointer to user configurations structure
+ */
+grb_user_config_t *iop_grb_get_user_config(unsigned int minor);
+
+/**
+ * @brief Get number of devices
+ * @return Number of devices
+ */
+int iop_get_number_grb_cores(void);
+
+/**
+ * @brief Get pointer of allocated memory
+ * @return Pointer to beginning of allocated memory
+ */
+void *iop_get_grb_mem(void);
+
+/**
+ * @brief Get pointer of allocated physical/virtual addresses data stored for GR1553BC
+ * @return Pointer to allocated memory of physical/virtual addresses storage
+ */
+gr1553hwaddr *iop_get_gr1553hwlist();
+
+/**
+ * @brief get pointer to command list
+ * @return Pointer to beginning of user command list
+ */
+bc_command_t *iop_milstd_get_command_list();
+
+/**
+ * @brief Get the number of commands in user list
+ * @return Number of commands in list
+ */
+int iop_milstd_get_command_list_size();
+
+/**
+ * @brief Get the number of commands in secondary transfer list
+ * @return Number of commands in asynchronous list
+ */
+int iop_milstd_get_async_command_list_size();
+
+/**
+ * @brief get size data buffers
+ * @return size of data buffers
+ */
+int iop_milstd_get_data_buffers_size();
+
+
 
 #endif
 
