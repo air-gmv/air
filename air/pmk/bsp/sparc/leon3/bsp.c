@@ -57,7 +57,7 @@ int bsp_core_init(void) {
      * mpstat - multiprocessor status */
     else
     {
-        irqmp_interrupt_set_mprocessor_status(core_id);
+       // irqmp_interrupt_set_mprocessor_status(core_id);
     }
 
     return rc;
