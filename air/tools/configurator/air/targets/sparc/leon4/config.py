@@ -142,9 +142,9 @@ arch_configure = air_sparc.get_sparc_configuration
 
 # IOP devices and definitions
 iop = IOP(defines=[],
-          devices=['greth0', 'greth1', 'gr1553b0', 'grspw0', 'grspw1', 'grspw2', 'grspw3', 'grspw4', 'spwrtr0', 'cpsw0', 'mil0', 'grcan0', 'grcan1'],
+          devices=['greth0', 'greth1', 'grmil0', 'grspw0', 'grspw1', 'grspw2', 'grspw3', 'grspw4', 'spwrtr0', 'cpsw0', 'mil0', 'grcan0', 'grcan1'],
           drivers=['amba', 'greth', 'gr1553', 'cpsw', 'mil1553', 'grspw', 'grcan'],
-          alias=dict(eth0='greth0',eth1='greth1', spw0='grspw0', spw1='grspw1', spw2='grspw2', spw3='grspw3', spw4='grspw4', cpsw='cpsw0', spwrtr='spwrtr0', mil='mil0', can0 = 'grcan0', can1 = 'grcan1'),
+          alias=dict(eth0='greth0',eth1='greth1', spw0='grspw0', spw1='grspw1', spw2='grspw2', spw3='grspw3', spw4='grspw4', cpsw='cpsw0', spwrtr='spwrtr0', milbus='grmil0', can0 = 'grcan0', can1 = 'grcan1'),
           arch=iop_arch)
 
 # AIR application arch config

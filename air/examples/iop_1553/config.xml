@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ARINC_653_Module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ModuleName="iop_1553">
+
+  <!-- Partition 1 -->
+  <Partition PartitionIdentifier="1" PartitionName="partition1"
+    Criticality="LEVEL_A" EntryPoint="entry_func"  SystemPartition="false">
+    <Sampling_Port Name="RECV_APP_RT1" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <Sampling_Port Name="RECV_APP_RT2" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <Sampling_Port Name="RECV_APP_RT3" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <Sampling_Port Name="RECV_APP_RT4" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <Sampling_Port Name="SEND_APP_RT1" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <Sampling_Port Name="SEND_APP_RT2" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <Sampling_Port Name="SEND_APP_RT3" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <Sampling_Port Name="SEND_APP_RT4" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <PartitionConfiguration Personality="RTEMS48i" Cores="1">
+        <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
+        <Devices></Devices>
+        <Cache>CODE; DATA</Cache>
+        <Memory Size="0x400000" />
+        <Permissions>
+          FPU_CONTROL; CACHE_CONTROL; SET_PARTITION_MODE;
+        </Permissions>
+    </PartitionConfiguration>
+  </Partition>
+
+  <!-- Partition 2 -->
+  <Partition PartitionIdentifier="2" PartitionName="iop" 
+    Criticality="LEVEL_A" EntryPoint="empty" SystemPartition="false">
+    <Sampling_Port Name="SEND_IO_RT1" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <Sampling_Port Name="SEND_IO_RT2" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <Sampling_Port Name="SEND_IO_RT3" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <Sampling_Port Name="SEND_IO_RT4" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <Sampling_Port Name="RECV_IO_RT1" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <Sampling_Port Name="RECV_IO_RT2" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <Sampling_Port Name="RECV_IO_RT3" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <Sampling_Port Name="RECV_IO_RT4" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <PartitionConfiguration Personality="RTEMS48i" IOP="iop.xml" Cores="1">
+        <Libs>LIBAIR; LIBIOP; LIBPRINTF</Libs>
+        <Devices></Devices>
+        <Cache>CODE; DATA</Cache>
+        <Memory Size="0x400000" />
+        <Permissions>
+          FPU_CONTROL; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
+        </Permissions>
+    </PartitionConfiguration>
+  </Partition>
+
+  <!-- Schedule 1 -->
+  <Module_Schedule ScheduleIdentifier="1" ScheduleName="schedule"
+    InitialModuleSchedule="true" MajorFrameSeconds="1.0">
+
+    <Partition_Schedule PartitionIdentifier="1" PartitionName="partition1" 
+      PeriodDurationSeconds="0.5" PeriodSeconds="1.0">
+      <Window_Schedule WindowIdentifier="1" PartitionPeriodStart="true" 
+        WindowDurationSeconds="0.5" WindowStartSeconds="0.5"/>
+      <WindowConfiguration WindowIdentifier="1" Cores="0" />
+    </Partition_Schedule>
+	
+    <Partition_Schedule PartitionIdentifier="2" PartitionName="iop" 
+      PeriodDurationSeconds="1.0" PeriodSeconds="1.0">
+      <Window_Schedule WindowIdentifier="2" PartitionPeriodStart="true" 
+        WindowDurationSeconds="1.0" WindowStartSeconds="0.0"/>
+      <WindowConfiguration WindowIdentifier="2" Cores="1" />
+    </Partition_Schedule>
+  </Module_Schedule>
+
+  <!-- Connection table  -->
+  <Connection_Table>
+
+    <!-- partition1-IOP 1553 Sampling Connections -->
+
+    <Channel ChannelIdentifier="1" ChannelName="IOP_P1_RT1">
+      <Source>
+        <Standard_Partition PartitionIdentifier="2" PartitionName="iop" PortName="SEND_IO_RT1"/>
+      </Source>
+      <Destination>
+        <Standard_Partition PartitionIdentifier="1" PartitionName="partition1" PortName="RECV_APP_RT1"/>
+      </Destination>
+    </Channel>
+    <Channel ChannelIdentifier="2" ChannelName="IOP_P1_RT2">
+      <Source>
+        <Standard_Partition PartitionIdentifier="2" PartitionName="iop" PortName="SEND_IO_RT2"/>
+      </Source>
+      <Destination>
+        <Standard_Partition PartitionIdentifier="1" PartitionName="partition1" PortName="RECV_APP_RT2"/>
+      </Destination>
+    </Channel>
+    <Channel ChannelIdentifier="3" ChannelName="IOP_P1_RT3">
+      <Source>
+        <Standard_Partition PartitionIdentifier="2" PartitionName="iop" PortName="SEND_IO_RT3"/>
+      </Source>
+      <Destination>
+        <Standard_Partition PartitionIdentifier="1" PartitionName="partition1" PortName="RECV_APP_RT3"/>
+      </Destination>
+    </Channel>
+    <Channel ChannelIdentifier="4" ChannelName="IOP_P1_RT4">
+      <Source>
+        <Standard_Partition PartitionIdentifier="2" PartitionName="iop" PortName="SEND_IO_RT4"/>
+      </Source>
+      <Destination>
+        <Standard_Partition PartitionIdentifier="1" PartitionName="partition1" PortName="RECV_APP_RT4"/>
+      </Destination>
+    </Channel>
+
+    <Channel ChannelIdentifier="5" ChannelName="P1_IOP_RT1">
+      <Source>
+        <Standard_Partition PartitionIdentifier="1" PartitionName="partition1" PortName="SEND_APP_RT1"/>
+      </Source>
+      <Destination>
+        <Standard_Partition PartitionIdentifier="2" PartitionName="iop" PortName="RECV_IO_RT1"/>
+      </Destination>
+    </Channel>
+    <Channel ChannelIdentifier="6" ChannelName="P1_IOP_RT2">
+      <Source>
+        <Standard_Partition PartitionIdentifier="1" PartitionName="partition1" PortName="SEND_APP_RT2"/>
+      </Source>
+      <Destination>
+        <Standard_Partition PartitionIdentifier="2" PartitionName="iop" PortName="RECV_IO_RT2"/>
+      </Destination>
+    </Channel>
+    <Channel ChannelIdentifier="7" ChannelName="P1_IOP_RT3">
+      <Source>
+        <Standard_Partition PartitionIdentifier="1" PartitionName="partition1" PortName="SEND_APP_RT3"/>
+      </Source>
+      <Destination>
+        <Standard_Partition PartitionIdentifier="2" PartitionName="iop" PortName="RECV_IO_RT3"/>
+      </Destination>
+    </Channel>
+   <Channel ChannelIdentifier="8" ChannelName="P1_IOP_RT4">
+      <Source>
+        <Standard_Partition PartitionIdentifier="1" PartitionName="partition1" PortName="SEND_APP_RT4"/>
+      </Source>
+      <Destination>
+        <Standard_Partition PartitionIdentifier="2" PartitionName="iop" PortName="RECV_IO_RT4"/>
+      </Destination>
+    </Channel>
+
+  </Connection_Table>
+  
+  <!-- Module configuration -->
+  <AIR_Configuration TicksPerSecond="1000" RequiredCores="2"/>
+</ARINC_653_Module>

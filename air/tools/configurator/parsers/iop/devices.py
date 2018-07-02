@@ -14,4 +14,5 @@ iop_supported_devices = {
     'GRSPW'     : [ SPW,    gaisler.phy_grspw,      gaisler.sch_grspw,      'iop_grspw.mako'],
     'SPWRTR'    : [ RTR,    gaisler.phy_spwrtr,     gaisler.sch_spwrtr,     'iop_spw_router.mako'],
     'GRCAN'     : [ CAN,    gaisler.phy_grcan,      gaisler.sch_grcan,      'iop_grcan.mako'],
+    'GRMIL'     : [ MIL,    gaisler.phy_gr1553b,    gaisler.sch_gr1553b,    'iop_gr1553b.mako'],
 }

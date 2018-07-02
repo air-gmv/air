@@ -52,6 +52,11 @@ extern "C" {
 #include <iop.h>
 #include <IOPmilstd_config.h>
 
+/*grb_user_config_t operating modes*/
+#define GR1553B_MODE_BC 0x0		/**< Bus Controler Mode*/
+#define GR1553B_MODE_RT 0x1		/**< Remote terminal Mode*/
+#define GR1553B_MODE_BM 0x2		/**< Bus Monitor Mode*/
+
 
 /**
  * @brief The GR1553B register mapping
@@ -155,8 +160,9 @@ typedef struct {
 	unsigned int cl_size;				/**< user command list size */
 	struct gr1553bc_bd_tr *sync; 		/**< current bc command list */
 	struct gr1553bc_bd_tr *last_read; 	/**< current bc command list */
-	struct gr1553bc_bd_tr *assync; 		/**< current bc command list */
+	struct gr1553bc_bd_tr *async; 		/**< current bc asynchronous command list */
 	milstd_data_buf *buf_mem_start;		/**< pointer to device's buffer memory */
+	milstd_data_buf *async_buf_mem_start; /**< pointer to device's asynchronous buffer memory */
 	iop_chain_control shortcut[32];			/**< Used as a shortcut to map write requests to their respective command */
 	
 	/* rt specific */
@@ -169,6 +175,14 @@ typedef struct {
 	struct gr1553b_regs *regs;			/**< Core register mapping */
 
 } grb_priv;
+
+/**
+ * @brief Store matching physical/virtual addresses used in the GR1553BC
+ */
+typedef struct  {
+	uint32_t v_addr;
+	uint32_t p_addr;
+} gr1553hwaddr;
 
 /* Available Modes */
 #define FEAT_BC 0x1
@@ -438,11 +452,15 @@ typedef struct {
 
 /* General */
 
-rtems_device_driver grb_initialize(rtems_device_major_number major,
+rtems_device_driver gr1553b_initialize(rtems_device_major_number major,
 								   rtems_device_minor_number minor,
 								   void *arg);
 								   
-rtems_device_driver grb_open(rtems_device_major_number major,
+rtems_device_driver gr1553b_open(rtems_device_major_number major,
+						     rtems_device_minor_number minor,
+						     void *arg);
+
+rtems_device_driver gr1553b_close(rtems_device_major_number major,
 						     rtems_device_minor_number minor,
 						     void *arg);
 
