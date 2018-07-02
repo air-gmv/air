@@ -21,26 +21,26 @@
 	
 	<PhysicalDevices>
 		<Device Id="0" Device="MILBUS" Mode="BC">
-            <MILList Id="0" MajorFrame="1000000">
-                <Slot Id="0" Bus="B" Type="RT_BC" Addr="1" SubAddr="2" WCMC="12" Time="300"/>
-                <Slot Id="1" Bus="B" Type="RT_BC" Addr="2" SubAddr="2" WCMC="12" Time="300"/>
-                <Slot Id="2" Bus="B" Type="RT_BC" Addr="3" SubAddr="2" WCMC="32" Time="700"/>
-                <Slot Id="3" Bus="B" Type="RT_BC" Addr="4" SubAddr="2" WCMC="32" Time="700"/>
-                <Slot Id="4" Bus="B" Type="BC_RT" Addr="1" SubAddr="2" WCMC="1" Time="100"/>
-                <Slot Id="5" Bus="B" Type="BC_RT" Addr="2" SubAddr="2" WCMC="1" Time="100"/>
-                <Slot Id="6" Bus="B" Type="BC_RT" Addr="3" SubAddr="2" WCMC="2" Time="100"/>
-                <Slot Id="7" Bus="B" Type="BC_RT" Addr="4" SubAddr="2" WCMC="2" Time="100"/>
-            </MILList>
+			<MILList Id="0" MajorFrame="1000000">
+				<Slot Id="0" Bus="B" Type="RT_BC" Addr="1" SubAddr="2" WCMC="12" Time="300"/>
+				<Slot Id="1" Bus="B" Type="RT_BC" Addr="2" SubAddr="2" WCMC="12" Time="300"/>
+				<Slot Id="2" Bus="B" Type="RT_BC" Addr="3" SubAddr="2" WCMC="32" Time="700"/>
+				<Slot Id="3" Bus="B" Type="RT_BC" Addr="4" SubAddr="2" WCMC="32" Time="700"/>
+				<Slot Id="4" Bus="B" Type="BC_RT" Addr="1" SubAddr="2" WCMC="1" Time="100"/>
+				<Slot Id="5" Bus="B" Type="BC_RT" Addr="2" SubAddr="2" WCMC="1" Time="100"/>
+				<Slot Id="6" Bus="B" Type="BC_RT" Addr="3" SubAddr="2" WCMC="2" Time="100"/>
+				<Slot Id="7" Bus="B" Type="BC_RT" Addr="4" SubAddr="2" WCMC="2" Time="100"/>
+			</MILList>
 			<PhysicalRoute Id="1" PortId="SEND_IO_RT1">
 				<MILHeader Addr="1" SubAddr="2" />
 			</PhysicalRoute>
-            <PhysicalRoute Id="2" PortId="SEND_IO_RT2">
+			<PhysicalRoute Id="2" PortId="SEND_IO_RT2">
 				<MILHeader Addr="2" SubAddr="2" />
 			</PhysicalRoute>
-            <PhysicalRoute Id="3" PortId="SEND_IO_RT3">
+			<PhysicalRoute Id="3" PortId="SEND_IO_RT3">
 				<MILHeader Addr="3" SubAddr="2" />
 			</PhysicalRoute>
-            <PhysicalRoute Id="4" PortId="SEND_IO_RT4">
+			<PhysicalRoute Id="4" PortId="SEND_IO_RT4">
 				<MILHeader Addr="4" SubAddr="2" />
 			</PhysicalRoute>
 			<LogicalRoute Id="5" LogicalDeviceId="0">
@@ -51,7 +51,7 @@
 			</LogicalRoute>
 			<LogicalRoute Id="7" LogicalDeviceId="2">
 				<MILHeader Addr="3" SubAddr="2" />
-            </LogicalRoute>
+			</LogicalRoute>
 			<LogicalRoute Id="8" LogicalDeviceId="3">
 				<MILHeader Addr="4" SubAddr="2" />
 			</LogicalRoute>
@@ -61,18 +61,18 @@
 
 	<ModuleSchedules>
 		<Schedule ScheduleIdentifier="1">
-		    <DevicesConfiguration>
-			    <Device DeviceId="0" Device="MILBUS" Reads="1"/>
+			<DevicesConfiguration>
+				<Device DeviceId="0" Device="MILBUS" Reads="1"/>
 			</DevicesConfiguration>
 			<RoutesConfiguration>
 				<Route RouteId="1" Active="true"/>
-                <Route RouteId="2" Active="True"/>
-                <Route RouteId="3" Active="true"/>
-                <Route RouteId="4" Active="True"/>
-                <Route RouteId="5" Active="true"/>
-                <Route RouteId="6" Active="True"/>
-                <Route RouteId="7" Active="true"/>
-                <Route RouteId="8" Active="True"/>
+				<Route RouteId="2" Active="True"/>
+				<Route RouteId="3" Active="true"/>
+				<Route RouteId="4" Active="True"/>
+				<Route RouteId="5" Active="true"/>
+				<Route RouteId="6" Active="True"/>
+				<Route RouteId="7" Active="true"/>
+				<Route RouteId="8" Active="True"/>
 			</RoutesConfiguration>
 		</Schedule>
 	</ModuleSchedules>
