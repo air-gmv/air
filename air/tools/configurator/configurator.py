@@ -22,7 +22,7 @@ from utils.logger import Logger
 from localization.common import *
 from argparse import  ArgumentParser,  RawTextHelpFormatter
 
-__version__ 	= '4.0'
+__version__ 	= '4.1'
 __copyright__ 	= 'Copyright (C) GMVIS Skysoft S.A., 2018'
 __author__ 		= '$(AIR_RUNNER_USER), llgg, gmvs, lumm, pfnf'
 __app__			= os.path.basename(__file__)

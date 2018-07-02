@@ -18,12 +18,14 @@
 #include <stdint.h>
 
 #include <iop_error.h>
+#include <iop_support.h>
 
 #include <IOPgr1553b.h>
 #include <IOPgr1553bc.h>
 #include <IOPgr1553rt.h>
-#include <IOPgr1553b_config.h>
+#include <IOPdriverconfig_interface.h>
 
+#include <pprintf.h>
 /* Pointer to amba configuration */
 static amba_confarea_type *amba_bus;
 
@@ -31,10 +33,12 @@ static grb_priv *bdevs;
 static int number_grb_devices;
 static int is_init = 0;
 
-rtems_device_driver grb_initialize(rtems_device_major_number major,
+rtems_device_driver gr1553b_initialize(rtems_device_major_number major,
 								   rtems_device_minor_number minor,
 								   void *arg)
 {	
+	if (is_init == 0)
+	{
 	/* Current device */
 	grb_priv *bDev;
 
@@ -66,6 +70,9 @@ rtems_device_driver grb_initialize(rtems_device_major_number major,
 	/* zero out device structure  */
 	memset(bdevs, 0, number_grb_devices * sizeof(grb_priv));
 	
+        /* Make sure the GR1553 core is enabled */
+        clock_gating_enable(amba_bus, GATE_1553);
+
 	for(i = 0; i < number_grb_devices; i++){
 		
 		bDev = &bdevs[i];
@@ -142,11 +149,12 @@ rtems_device_driver grb_initialize(rtems_device_major_number major,
 	}
 	
 	is_init = 1;
+	}
 	
 	return RTEMS_SUCCESSFUL;
 }
 
-rtems_device_driver grb_open(rtems_device_major_number major,
+rtems_device_driver gr1553b_open(rtems_device_major_number major,
 						     rtems_device_minor_number minor,
 						     void *arg)
 {
@@ -174,6 +182,51 @@ rtems_device_driver grb_open(rtems_device_major_number major,
 		
 			/* init Remote Terminal */
 			gr1553rt_device_init(bDev);
+			break;
+		
+		/* Bus Monitor */
+		case GR1553B_MODE_BM:
+			break;
+		
+		/* Should not happen*/
+		default:
+			status = RTEMS_NOT_DEFINED;
+			break;
+	}
+	
+	return status;
+
+}
+
+
+rtems_device_driver gr1553b_close(rtems_device_major_number major,
+						     rtems_device_minor_number minor,
+						     void *arg)
+{
+	/* return code */
+	rtems_status_code status = RTEMS_SUCCESSFUL;
+	
+	/* Current device */
+	grb_priv *bDev;
+	
+	/* Get device's internal structure */
+	bDev = &bdevs[minor];
+	
+	/* Initialize the device according to the selected operative mode */
+	switch (bDev->user_config->operating_mode) {
+		
+		/* Bus Controller */
+		case GR1553B_MODE_BC:
+		
+			/* close Bus Controller */
+			gr1553bc_close(bDev);
+			break;
+		
+		/* Remote Terminal */
+		case GR1553B_MODE_RT:
+		
+			/* TODO close Remote Terminal */
+		//	gr1553rt_device_close(bDev);
 			break;
 		
 		/* Bus Monitor */
