@@ -211,6 +211,7 @@ uint8_t get_iop_data()
                 if (len != 0)
                 {
                     pprintf("P1 RX_APP_RT%d returned %d bytes, expected %d!\n", i+1, len, rxDataSize[i]);
+                    RxSamplingPort[i].received = false;
                 }
                 else
                 {
