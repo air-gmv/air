@@ -301,7 +301,7 @@ class IOParser(object):
         cmd.addr = xml.parse_attr(MIL_ADDR, VALID_MILADDR_TYPE, True, self.logger)
         cmd.subaddr = xml.parse_attr(MIL_SUBADDR, VALID_MILSUBADDR_TYPE, True, self.logger)
         if (cmd.type == 'RT_RT'):
-            cmd.addrtx = xml.parse_attr(MILSLOADDRTX, VALID_MILADDR_TYPE, True, self.logger)
+            cmd.addrtx = xml.parse_attr(MILSLOADDRTX, VALID_MILADDRTX_TYPE, True, self.logger)
             cmd.subaddrtx = xml.parse_attr(MILSLOSUBADDRTX, VALID_MILSUBADDRTX_TYPE, True, self.logger)
         cmd.wcmode  = xml.parse_attr(MILSLOTWCMODE, VALID_MILWCMODE_TYPE, True, self.logger)
         cmd.time = xml.parse_attr(MILSLOTTIME, VALID_MILTIME_TYPE, True, self.logger)
