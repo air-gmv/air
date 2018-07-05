@@ -23,6 +23,7 @@
 
 int andp=7;
 
+#ifndef RTEMS48I
 static char *my_ctime( time_t t )
 {
   static char b[32];
@@ -30,7 +31,7 @@ static char *my_ctime( time_t t )
   b[ strlen(b) - 1] = '\0';
   return b;
 }
-
+#endif
 
 void entry_point(void) 
 {
