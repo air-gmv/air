@@ -11,7 +11,7 @@ import sys
 
 ## @brief Line parser
 parse_line = re.compile(
-    '\s*->\s*(?P<define>[^ ]*)\s*(?P<value>[\$$#]*[-0-9]*)\s*(?P<comment>[a-zA-Z\(\)\_,\. 0-9]*)\s*$')
+    '\s*->\s*(?P<define>[^ ]*)\s*\#?(?P<value>[\$$#]*[-0-9]*)\s*(?P<comment>[a-zA-Z\(\)\_,\. 0-9]*)\s*$')
 
 ## @brief Comment parser
 parse_comment = re.compile('\s*->#(?P<comment>.*)\s*$')
