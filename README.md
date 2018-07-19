@@ -32,6 +32,10 @@ $ ../source-builder/sb-set-builder --prefix=/opt/rtems/5 5/rtems-sparc
 
 Add the air_repo/air to the PATH env variable.
 
+AIR configure requires python-mako, if not installed execute (in case of Debian)
+- sudo apt-get install python-mako
+
+
 Go to the folder air_repo/air”
 Run “configure” and set the following options (for SPARC LEON4 with FPU enable)
 
