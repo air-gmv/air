@@ -232,9 +232,9 @@ int iop_get_number_grb_cores(void){
 	{
         .ccw = CCW_${cmd.type}_${cmd.bus} | ${int(cmd.wcmode)},
         .rtaddr[0] = ${int(cmd.addr)},
-        .rtaddr[1] = 0,
+        .rtaddr[1] = ${int(cmd.addrtx)},
         .subaddr[0] = ${int(cmd.subaddr)},
-        .subaddr[1] = 0,
+        .subaddr[1] = ${int(cmd.subaddrtx)},
         .branch_offset = 0,
         .time_slot = ${int(cmd.time)}
 	}\
