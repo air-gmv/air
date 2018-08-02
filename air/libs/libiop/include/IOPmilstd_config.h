@@ -66,6 +66,8 @@ typedef struct {
 #define CCW_BC_RT_B 0x00002400
 #define CCW_RT_BC_A 0x00001400
 #define CCW_RT_BC_B 0x00003400
+#define CCW_RT_RT_A 0x00000400
+#define CCW_RT_RT_B 0x00002400
 #define CCW_DUMMY DUMMY_BIT
 #define CCW_LOOP TB_BIT
 #define CCW_END END_BIT
