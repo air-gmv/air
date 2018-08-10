@@ -1,0 +1,154 @@
+---------------------------------------------------
+-- AADL2.2
+-- TASTE type concurrencyview
+-- 
+-- generated code: do not edit
+---------------------------------------------------
+
+PROPERTY SET AI IS
+  Root_System : AADLSTRING
+    APPLIES TO(SYSTEM IMPLEMENTATION);
+  Disabled_Processing_Tools : LIST OF AADLSTRING
+    APPLIES TO(SYSTEM IMPLEMENTATION);
+END AI;
+
+
+PACKAGE concurrencyview::CV
+PUBLIC
+WITH AI;
+WITH DataView;
+WITH Arinc653;
+WITH ocarina_processors_leon;
+WITH deploymentview::DV::Node1;
+
+PROCESSOR Node1_proc1_cv
+EXTENDS ocarina_processors_leon::leon3
+END Node1_proc1_cv;
+
+PROCESSOR IMPLEMENTATION Node1_proc1_cv.final
+EXTENDS ocarina_processors_leon::leon3.AIR
+SUBCOMPONENTS
+  part1_VP : VIRTUAL PROCESSOR deploymentview::DV::Node1::part1_VP.others;
+  part2_VP : VIRTUAL PROCESSOR deploymentview::DV::Node1::part2_VP.others;
+PROPERTIES
+  SCHEDULING_PROTOCOL => (POSIX_1003_Highest_Priority_First_Protocol) APPLIES TO part1_VP;
+  SCHEDULING_PROTOCOL => (POSIX_1003_Highest_Priority_First_Protocol) APPLIES TO part2_VP;
+  ARINC653::DAL => LEVEL_A APPLIES TO part1_VP;
+  ARINC653::DAL => LEVEL_A APPLIES TO part2_VP;
+END Node1_proc1_cv.final;
+
+PROCESS part1
+EXTENDS deploymentview::DV::Node1::part1
+FEATURES
+  INPORT_vt_hello_s_s : IN EVENT DATA PORT DataView::TASTE_Boolean_Buffer.impl;
+END part1;
+
+PROCESS IMPLEMENTATION part1.final
+SUBCOMPONENTS
+  vt_hello_s : THREAD vt_hello_s_vt_hello_s.others;
+  hello_pi_s : SUBPROGRAM hello_pi_s.final;
+CONNECTIONS
+  PORT INPORT_vt_hello_s_s -> vt_hello_s.INPORT_artificial_s;
+END part1.final;
+
+PROCESS part2
+EXTENDS deploymentview::DV::Node1::part2
+FEATURES
+  OUTPORT_vt_read_h_s : OUT EVENT DATA PORT DataView::TASTE_Boolean_Buffer.impl;
+END part2;
+
+PROCESS IMPLEMENTATION part2.final
+SUBCOMPONENTS
+  vt_read_h : THREAD vt_read_h_vt_read_h.others;
+  read_pi_h : SUBPROGRAM read_pi_h.final;
+CONNECTIONS
+  PORT vt_read_h.OUTPORT_s_vt -> OUTPORT_vt_read_h_s;
+END part2.final;
+
+SYSTEM deploymentview
+END deploymentview;
+
+SYSTEM IMPLEMENTATION deploymentview.final
+SUBCOMPONENTS
+  part1 : PROCESS part1.final;
+  part2 : PROCESS part2.final;
+  Node1_proc1_cv : PROCESSOR Node1_proc1_cv.final;
+  Node1_main_memory : MEMORY deploymentview::DV::Node1::main_memory.others;
+CONNECTIONS
+  part1_s_vt_read_h_conn_cv : PORT part2.OUTPORT_vt_read_h_s -> part1.INPORT_vt_hello_s_s;
+PROPERTIES
+  AI::ROOT_SYSTEM => "generated";
+  ACTUAL_PROCESSOR_BINDING => (REFERENCE(Node1_proc1_cv.part1_VP)) APPLIES TO part1;
+  ACTUAL_PROCESSOR_BINDING => (REFERENCE(Node1_proc1_cv.part2_VP)) APPLIES TO part2;
+  ACTUAL_MEMORY_BINDING => (Reference(Node1_main_memory.part1_Segment)) APPLIES TO part1;
+  ACTUAL_MEMORY_BINDING => (Reference(Node1_main_memory.part2_Segment)) APPLIES TO part2;
+  ARINC653::MODULE_MAJOR_FRAME => 3000ms APPLIES TO Node1_proc1_cv;
+  ARINC653::MODULE_SCHEDULE => (
+    [PARTITION=>Reference(Node1_proc1_cv.part1_VP);Duration=>1600ms;PERIODIC_PROCESSING_START=>FALSE;],
+    [PARTITION=>Reference(Node1_proc1_cv.part2_VP);Duration=>1400ms;PERIODIC_PROCESSING_START=>FALSE;]
+  ) APPLIES TO Node1_proc1_cv;
+END deploymentview.final;
+
+THREAD vt_hello_s_vt_hello_s
+FEATURES
+  INPORT_artificial_s : IN EVENT DATA PORT DataView::TASTE_Boolean_Buffer.impl {
+    QUEUE_SIZE => 5;
+  };
+END vt_hello_s_vt_hello_s;
+
+THREAD IMPLEMENTATION vt_hello_s_vt_hello_s.others
+CALLS
+  MyCalls : { 
+    MyCall : SUBPROGRAM hello_pi_s;
+  };
+PROPERTIES
+  DISPATCH_PROTOCOL => Sporadic;
+  PERIOD => 10ms;
+  DEADLINE => 5ms;
+  COMPUTE_EXECUTION_TIME => 0ms..2ms;
+END vt_hello_s_vt_hello_s.others;
+
+THREAD vt_read_h_vt_read_h
+FEATURES
+  OUTPORT_s_vt : OUT EVENT DATA PORT DataView::TASTE_Boolean_Buffer.impl;
+END vt_read_h_vt_read_h;
+
+THREAD IMPLEMENTATION vt_read_h_vt_read_h.others
+CALLS
+  MyCalls : { 
+    MyCall : SUBPROGRAM read_pi_h;
+  };
+PROPERTIES
+  DISPATCH_PROTOCOL => Periodic;
+  PERIOD => 100ms;
+  DEADLINE => 10ms;
+  COMPUTE_EXECUTION_TIME => 0ms..3ms;
+END vt_read_h_vt_read_h.others;
+
+SUBPROGRAM hello_pi_s
+PROPERTIES
+  COMPUTE_EXECUTION_TIME => 2ms..2ms;
+  SOURCE_LANGUAGE => (C);
+  SOURCE_NAME => "hello_pi_s";
+  SOURCE_TEXT => ("hello/hello.c");
+END hello_pi_s;
+
+SUBPROGRAM IMPLEMENTATION hello_pi_s.final
+END hello_pi_s.final;
+
+SUBPROGRAM read_pi_h
+PROPERTIES
+  COMPUTE_EXECUTION_TIME => 3ms..3ms;
+  SOURCE_LANGUAGE => (C);
+  SOURCE_NAME => "read_pi_h";
+  SOURCE_TEXT => ("read/read.c");
+END read_pi_h;
+
+SUBPROGRAM IMPLEMENTATION read_pi_h.final
+END read_pi_h.final;
+
+END concurrencyview::CV;
+
+
+
+
