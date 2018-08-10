@@ -127,11 +127,12 @@ class Configuration(object):
     # @param self object pointer
     # @param arch target architecture
     # @param bsp target board support package
-    def __init__(self, arch, bsp, fpu_enabled):
+    def __init__(self, arch, bsp, fpu_enabled, cache_init):
 
         self.arch = arch.lower()
         self.bsp = bsp.lower()
-        self.fpu_enabled = fpu_enabled;
+        self.fpu_enabled = fpu_enabled
+        self.cache_init = cache_init
         self.debug_mode = False
         #logging.info ('Initializing Configuration class architecture: %s, bsp: %s', self.arch, self.bsp)
 
@@ -563,7 +564,7 @@ def save_configuration(os_configuration, logger):
 
     try:
         fd = open(__OS_CONFIG_FILE__, 'w+')
-        pickle.dump((os_configuration.arch, os_configuration.bsp, os_configuration.fpu_enabled), fd)
+        pickle.dump((os_configuration.arch, os_configuration.bsp, os_configuration.fpu_enabled, os_configuration.cache_init), fd)
         fd.close()
 
     except Exception, why:
@@ -582,7 +583,7 @@ def load_configuration(logger):
     # try to load the configuration
     try:
         fd = open(__OS_CONFIG_FILE__, 'r')
-        arch, bsp, fpu_enabled = pickle.load(fd)
+        arch, bsp, fpu_enabled, cache_init = pickle.load(fd)
         os_configuration = Configuration(arch, bsp, fpu_enabled) 
         fd.close()
         return os_configuration

@@ -54,12 +54,12 @@ def Run(args, logger):
 
     # parse input args or prompt the user for configuration
     if args.target is None:
-        arch, bsp, fpu_enabled = prompt_configuration(logger)
+        arch, bsp, fpu_enabled, cache_init = prompt_configuration(logger)
     else:
-        arch, bsp, fpu_enabled = input_configuration(args.target, logger)
+        arch, bsp, fpu_enabled, cache_init = input_configuration(args.target, logger)
 
     # create the OS configuration object
-    os_configuration = air_configuration.Configuration(arch, bsp, fpu_enabled)
+    os_configuration = air_configuration.Configuration(arch, bsp, fpu_enabled, cache_init)
 
     logger.event(0, 'Configuring AIR OS:')
     logger.information(1, 'Target: {0} - {1}\n'.format(arch.upper(), bsp))
@@ -189,7 +189,15 @@ def prompt_configuration(logger):
     else:
         fpu_enabled = False
 
-    return arch, bsp, fpu_enabled
+    # get debug monitor tool
+    opts = ['GRMON', 'DMON']
+    i = terminalutils.promptActions('Select debug monitor:', opts)
+    if i == 0:
+        cache_init = 1
+    else:
+        cache_init = 0
+
+    return arch, bsp, fpu_enabled, cache_init
 
 
 def input_configuration(target, logger):
