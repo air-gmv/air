@@ -49,3 +49,6 @@ tags
 #TASTE
 .cache
 binary.c
+*.zip
+*.old
+oldI*
