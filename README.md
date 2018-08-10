@@ -1,4 +1,4 @@
-# Wellcome to AIR
+# Welcome to AIR
 
 AIR has a user manual at https://gmvdrive.gmv.com/index.php/s/eScXCAybbecmT9b
 
@@ -43,7 +43,7 @@ Then write “make clean” then next do a “make all”.
 
 A) To build an example ready to run on a target board
 
-The go to any example inside air/example.
+Then go to any example inside air/example.
  
 Run “configure” on the example and it will generate the makefiles taking as input the XML configuration file.
  
