@@ -4,10 +4,7 @@
 *.map
 *.num
 *.o
-<<<<<<< HEAD
-=======
 *.out
->>>>>>> e54e4f4315bb23a228591bfb7840963ad884ec65
 *.ralf
 *.txt
 
@@ -48,3 +45,7 @@ tags
 
 # Eclipse
 .project
+
+# taste examples
+*.cache*
+*binary.c*
