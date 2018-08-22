@@ -1,0 +1,152 @@
+---------------------------------------------------
+-- AADL2.1
+-- TASTE type deploymentview
+-- 
+-- generated code: do not edit
+---------------------------------------------------
+
+PACKAGE deploymentview::DV::Node1
+PUBLIC
+
+WITH Taste;
+WITH Deployment;
+WITH TASTE_DV_Properties;
+WITH deploymentview::DV;
+WITH Memory_Properties;
+WITH ARINC653;
+PROCESS part1
+END part1;
+
+PROCESS IMPLEMENTATION part1.others
+END part1.others;
+
+VIRTUAL PROCESSOR part1_VP
+PROPERTIES
+  Deployment::Execution_Platform => AIR;
+  ARINC653::Partition_Identifier => 0;
+END part1_VP;
+
+VIRTUAL PROCESSOR IMPLEMENTATION part1_VP.others
+END part1_VP.others;
+
+PROCESS part2
+END part2;
+
+PROCESS IMPLEMENTATION part2.others
+END part2.others;
+
+VIRTUAL PROCESSOR part2_VP
+PROPERTIES
+  Deployment::Execution_Platform => AIR;
+  ARINC653::Partition_Identifier => 1;
+END part2_VP;
+
+VIRTUAL PROCESSOR IMPLEMENTATION part2_VP.others
+END part2_VP.others;
+
+MEMORY main_memory
+END main_memory;
+
+MEMORY IMPLEMENTATION main_memory.others
+SUBCOMPONENTS
+  part1_Segment : MEMORY deploymentview::DV::partition_memory.others {
+    Base_Address => 16#200000#;
+    Memory_Size => 16#200000#Bytes;
+    Byte_Count => 16#200000#;
+  };
+  part2_Segment : MEMORY deploymentview::DV::partition_memory.others {
+    Base_Address => 16#500000#;
+    Memory_Size => 16#200000#Bytes;
+    Byte_Count => 16#200000#;
+  };
+END main_memory.others;
+
+END deploymentview::DV::Node1;
+
+PACKAGE deploymentview::DV
+PUBLIC
+
+WITH interfaceview::IV::hello;
+WITH interfaceview::IV::read;
+WITH ocarina_processors_leon;
+WITH ARINC653;
+WITH deploymentview::DV::Node1;
+WITH Taste;
+WITH Deployment;
+WITH interfaceview::IV;
+WITH TASTE_DV_Properties;
+MEMORY partition_memory
+END partition_memory;
+
+MEMORY IMPLEMENTATION partition_memory.others
+END partition_memory.others;
+
+SYSTEM Node1
+END Node1;
+
+SYSTEM IMPLEMENTATION Node1.others
+SUBCOMPONENTS
+  IV_hello : SYSTEM interfaceview::IV::hello::hello.others {
+    Taste::FunctionName => "hello";
+  };
+  part1 : PROCESS deploymentview::DV::Node1::part1.others {
+    Taste::coordinates => "110727 64773 138242 76218";
+    Deployment::Port_Number => 0;
+  };
+  part1_VP : VIRTUAL PROCESSOR deploymentview::DV::Node1::part1_VP.others {
+    Scheduling_Protocol => (Posix_1003_Highest_Priority_First_Protocol);
+    ARINC653::DAL => LEVEL_A;
+  };
+  IV_read : SYSTEM interfaceview::IV::read::read.others {
+    Taste::FunctionName => "read";
+  };
+  part2 : PROCESS deploymentview::DV::Node1::part2.others {
+    Taste::coordinates => "110548 78423 139209 88029";
+    Deployment::Port_Number => 0;
+  };
+  part2_VP : VIRTUAL PROCESSOR deploymentview::DV::Node1::part2_VP.others {
+    Scheduling_Protocol => (Posix_1003_Highest_Priority_First_Protocol);
+    ARINC653::DAL => LEVEL_A;
+  };
+  proc1 : PROCESSOR ocarina_processors_leon::leon3.AIR {
+    Taste::coordinates => "107288 59305 141681 88817";
+  };
+  main_memory : MEMORY deploymentview::DV::Node1::main_memory.others;
+PROPERTIES
+  Taste::APLC_Binding => (reference (part1)) APPLIES TO IV_hello;
+  Actual_Processor_Binding => (reference (proc1)) APPLIES TO part1_VP;
+  Actual_Processor_Binding => (reference (part1_VP)) APPLIES TO part1;
+  Actual_Memory_Binding => (reference (main_memory.part1_Segment)) APPLIES TO part1;
+  Taste::APLC_Binding => (reference (part2)) APPLIES TO IV_read;
+  Actual_Processor_Binding => (reference (proc1)) APPLIES TO part2_VP;
+  Actual_Processor_Binding => (reference (part2_VP)) APPLIES TO part2;
+  Actual_Memory_Binding => (reference (main_memory.part2_Segment)) APPLIES TO part2;
+  ARINC653::Module_Major_Frame => 3000ms APPLIES TO proc1;
+  ARINC653::Module_Schedule => (
+	[ Partition => reference(part1_VP);
+	  Duration => 1600ms;
+	  Periodic_Processing_Start => False; ],
+	[ Partition => reference(part2_VP);
+	  Duration => 1400ms;
+	  Periodic_Processing_Start => False; ]
+) APPLIES TO proc1;
+END Node1.others;
+
+SYSTEM deploymentview
+END deploymentview;
+
+SYSTEM IMPLEMENTATION deploymentview.others
+SUBCOMPONENTS
+  Node1 : SYSTEM Node1.others {
+    Taste::coordinates => "102989 51494 145980 90549";
+  };
+  interfaceview : SYSTEM interfaceview::IV::interfaceview.others;
+END deploymentview.others;
+
+PROPERTIES
+  Taste::coordinates => "0 0 297000 210000";
+  Taste::version => "2.0";
+  Taste::interfaceView => "InterfaceView.aadl";
+  Taste::HWLibraries => ("../../../../tool-inst/share/ocarina/AADLv2/ocarina_components.aadl");
+END deploymentview::DV;
+
