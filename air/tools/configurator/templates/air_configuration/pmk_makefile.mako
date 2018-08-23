@@ -42,6 +42,7 @@ PMK_OBJECTS=$(patsubst %.c,$(TARGET_BUILD)/%.o,${'\\'}
 
 TARGET_CPPFLAGS+=${'\\'}
 -DPMK_MAX_CORES=${os_configuration.get_available_cores()}${'\\'}
+-DPMK_INIT_CACHE=${os_configuration.cache_init}${'\\'}
 -DPMK_${os_configuration.arch.upper()}_${os_configuration.bsp.upper()}${'\\'}
 -DPMK_PARTITION_BASE_ADDR=${hex(mmap.partition_space[0])}${'\\'}
 <%
