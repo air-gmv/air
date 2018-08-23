@@ -1,0 +1,694 @@
+---------------------------------------------------
+-- AADL2.1
+-- TASTE type interfaceview
+-- 
+-- generated code: do not edit
+---------------------------------------------------
+
+PACKAGE interfaceview::IV::IO_ROUTER
+PUBLIC
+
+WITH interfaceview::IV::IO_Ethernet;
+WITH Taste;
+WITH DataView;
+WITH TASTE_IV_Properties;
+SUBPROGRAM PI_TC_QUEUE_ThC
+FEATURES
+  t : IN PARAMETER DataView::TASTE_Boolean {
+    Taste::encoding => NATIVE;
+  };
+PROPERTIES
+  Taste::Associated_Queue_Size => 5;
+END PI_TC_QUEUE_ThC;
+
+SUBPROGRAM IMPLEMENTATION PI_TC_QUEUE_ThC.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 2 ms;
+END PI_TC_QUEUE_ThC.others;
+
+SUBPROGRAM PI_TM_QUEUE_ThC
+PROPERTIES
+  Taste::Associated_Queue_Size => 1;
+END PI_TM_QUEUE_ThC;
+
+SUBPROGRAM IMPLEMENTATION PI_TM_QUEUE_ThC.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 0 ms;
+END PI_TM_QUEUE_ThC.others;
+
+SUBPROGRAM PI_TM_QUEUE_MiM
+END PI_TM_QUEUE_MiM;
+
+SUBPROGRAM IMPLEMENTATION PI_TM_QUEUE_MiM.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 0 ms;
+END PI_TM_QUEUE_MiM.others;
+
+SUBPROGRAM PI_TC_QUEUE_MiM
+END PI_TC_QUEUE_MiM;
+
+SUBPROGRAM IMPLEMENTATION PI_TC_QUEUE_MiM.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 0 ms;
+END PI_TC_QUEUE_MiM.others;
+
+SUBPROGRAM RI_Recv_data
+END RI_Recv_data;
+
+SUBPROGRAM IMPLEMENTATION RI_Recv_data.others
+END RI_Recv_data.others;
+
+SUBPROGRAM RI_Send_data
+END RI_Send_data;
+
+SUBPROGRAM IMPLEMENTATION RI_Send_data.others
+END RI_Send_data.others;
+
+SYSTEM IO_ROUTER
+FEATURES
+  PI_TC_QUEUE_ThC : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::IO_ROUTER::PI_TC_QUEUE_ThC.others {
+    Taste::coordinates => "78083 148177";
+    Taste::RCMoperationKind => sporadic;
+    Taste::RCMperiod => 10 ms;
+    Taste::Deadline => 5 ms;
+    Taste::InterfaceName => "TC_QUEUE_ThC";
+  };
+  PI_TM_QUEUE_ThC : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::IO_ROUTER::PI_TM_QUEUE_ThC.others {
+    Taste::coordinates => "114715 148177";
+    Taste::RCMoperationKind => unprotected;
+    Taste::RCMperiod => 0 ms;
+    Taste::Deadline => 0 ms;
+    Taste::InterfaceName => "TM_QUEUE_ThC";
+  };
+  PI_TM_QUEUE_MiM : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::IO_ROUTER::PI_TM_QUEUE_MiM.others {
+    Taste::coordinates => "211050 148177";
+    Taste::RCMoperationKind => unprotected;
+    Taste::Deadline => 0 ms;
+    Taste::InterfaceName => "TM_QUEUE_MiM";
+  };
+  PI_TC_QUEUE_MiM : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::IO_ROUTER::PI_TC_QUEUE_MiM.others {
+    Taste::coordinates => "254049 148177";
+    Taste::RCMoperationKind => unprotected;
+    Taste::Deadline => 0 ms;
+    Taste::InterfaceName => "TC_QUEUE_MiM";
+  };
+  RI_Recv_data : REQUIRES SUBPROGRAM ACCESS interfaceview::IV::IO_Ethernet::PI_Recv_data.others {
+    Taste::coordinates => "248972 168210";
+    Taste::RCMoperationKind => any;
+    Taste::InterfaceName => "Recv_data";
+    Taste::labelInheritance => "true";
+  };
+  RI_Send_data : REQUIRES SUBPROGRAM ACCESS interfaceview::IV::IO_Ethernet::PI_Send_data.others {
+    Taste::coordinates => "149589 168210";
+    Taste::RCMoperationKind => any;
+    Taste::InterfaceName => "Send_data";
+    Taste::labelInheritance => "true";
+  };
+PROPERTIES
+  Source_Language => (C);
+  Taste::Active_Interfaces => any;
+END IO_ROUTER;
+
+SYSTEM IMPLEMENTATION IO_ROUTER.others
+END IO_ROUTER.others;
+
+END interfaceview::IV::IO_ROUTER;
+
+PACKAGE interfaceview::IV::LibPUS_ThermCtrl
+PUBLIC
+
+WITH interfaceview::IV::IO_ROUTER;
+WITH interfaceview::IV::ThermCtrl_Comp1;
+WITH interfaceview::IV::TermCtrl_Comp2;
+WITH Taste;
+WITH DataView;
+WITH TASTE_IV_Properties;
+SUBPROGRAM PI_executionCycle
+PROPERTIES
+  Taste::Associated_Queue_Size => 1;
+END PI_executionCycle;
+
+SUBPROGRAM IMPLEMENTATION PI_executionCycle.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 3 ms;
+END PI_executionCycle.others;
+
+SUBPROGRAM RI_TC_QUEUE_ThC
+FEATURES
+  t : IN PARAMETER DataView::TASTE_Boolean {
+    Taste::encoding => NATIVE;
+  };
+END RI_TC_QUEUE_ThC;
+
+SUBPROGRAM IMPLEMENTATION RI_TC_QUEUE_ThC.others
+END RI_TC_QUEUE_ThC.others;
+
+SUBPROGRAM RI_TM_QUEUE_ThC
+END RI_TM_QUEUE_ThC;
+
+SUBPROGRAM IMPLEMENTATION RI_TM_QUEUE_ThC.others
+END RI_TM_QUEUE_ThC.others;
+
+SUBPROGRAM PI_report_HK
+END PI_report_HK;
+
+SUBPROGRAM IMPLEMENTATION PI_report_HK.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 0 ms;
+END PI_report_HK.others;
+
+SUBPROGRAM PI_report_Event
+END PI_report_Event;
+
+SUBPROGRAM IMPLEMENTATION PI_report_Event.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 0 ms;
+END PI_report_Event.others;
+
+SUBPROGRAM RI_ThC1_Services
+FEATURES
+  function_event_id : IN PARAMETER DataView::T_Int8 {
+    Taste::encoding => NATIVE;
+  };
+END RI_ThC1_Services;
+
+SUBPROGRAM IMPLEMENTATION RI_ThC1_Services.others
+END RI_ThC1_Services.others;
+
+SUBPROGRAM RI_ThC2_Services
+FEATURES
+  function_event_id : IN PARAMETER DataView::T_Int8 {
+    Taste::encoding => NATIVE;
+  };
+END RI_ThC2_Services;
+
+SUBPROGRAM IMPLEMENTATION RI_ThC2_Services.others
+END RI_ThC2_Services.others;
+
+SYSTEM LibPUS_ThermCtrl
+FEATURES
+  PI_executionCycle : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::LibPUS_ThermCtrl::PI_executionCycle.others {
+    Taste::coordinates => "112321 66597";
+    Taste::RCMoperationKind => cyclic;
+    Taste::RCMperiod => 100 ms;
+    Taste::Deadline => 10 ms;
+    Taste::InterfaceName => "executionCycle";
+  };
+  RI_TC_QUEUE_ThC : REQUIRES SUBPROGRAM ACCESS interfaceview::IV::IO_ROUTER::PI_TC_QUEUE_ThC.others {
+    Taste::coordinates => "77915 122660";
+    Taste::RCMoperationKind => any;
+    Taste::InterfaceName => "TC_QUEUE_ThC";
+    Taste::labelInheritance => "true";
+  };
+  RI_TM_QUEUE_ThC : REQUIRES SUBPROGRAM ACCESS interfaceview::IV::IO_ROUTER::PI_TM_QUEUE_ThC.others {
+    Taste::coordinates => "120599 122660";
+    Taste::RCMoperationKind => any;
+    Taste::InterfaceName => "TM_QUEUE_ThC";
+    Taste::labelInheritance => "true";
+  };
+  PI_report_HK : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::LibPUS_ThermCtrl::PI_report_HK.others {
+    Taste::coordinates => "54665 82522";
+    Taste::RCMoperationKind => unprotected;
+    Taste::InterfaceName => "report_HK";
+  };
+  PI_report_Event : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::LibPUS_ThermCtrl::PI_report_Event.others {
+    Taste::coordinates => "54665 98447";
+    Taste::RCMoperationKind => unprotected;
+    Taste::InterfaceName => "report_Event";
+  };
+  RI_ThC1_Services : REQUIRES SUBPROGRAM ACCESS interfaceview::IV::ThermCtrl_Comp1::PI_ThC1_Services.others {
+    Taste::coordinates => "152456 82522";
+    Taste::RCMoperationKind => any;
+    Taste::InterfaceName => "ThC1_Services";
+    Taste::labelInheritance => "true";
+  };
+  RI_ThC2_Services : REQUIRES SUBPROGRAM ACCESS interfaceview::IV::TermCtrl_Comp2::PI_ThC2_Services.others {
+    Taste::coordinates => "152456 88892";
+    Taste::RCMoperationKind => any;
+    Taste::InterfaceName => "ThC2_Services";
+    Taste::labelInheritance => "true";
+  };
+PROPERTIES
+  Source_Language => (C);
+  Taste::Active_Interfaces => any;
+END LibPUS_ThermCtrl;
+
+SYSTEM IMPLEMENTATION LibPUS_ThermCtrl.others
+END LibPUS_ThermCtrl.others;
+
+END interfaceview::IV::LibPUS_ThermCtrl;
+
+PACKAGE interfaceview::IV::ThermCtrl_Comp1
+PUBLIC
+
+WITH interfaceview::IV::LibPUS_ThermCtrl;
+WITH Taste;
+WITH DataView;
+WITH TASTE_IV_Properties;
+SUBPROGRAM PI_ThC1_Services
+FEATURES
+  function_event_id : IN PARAMETER DataView::T_Int8 {
+    Taste::encoding => NATIVE;
+  };
+END PI_ThC1_Services;
+
+SUBPROGRAM IMPLEMENTATION PI_ThC1_Services.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 10 ms;
+END PI_ThC1_Services.others;
+
+SUBPROGRAM RI_report_HK
+END RI_report_HK;
+
+SUBPROGRAM IMPLEMENTATION RI_report_HK.others
+END RI_report_HK.others;
+
+SYSTEM ThermCtrl_Comp1
+FEATURES
+  PI_ThC1_Services : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::ThermCtrl_Comp1::PI_ThC1_Services.others {
+    Taste::coordinates => "99327 49397";
+    Taste::RCMoperationKind => sporadic;
+    Taste::RCMperiod => 2 ms;
+    Taste::Deadline => 10 ms;
+    Taste::InterfaceName => "ThC1_Services";
+  };
+  RI_report_HK : REQUIRES SUBPROGRAM ACCESS interfaceview::IV::LibPUS_ThermCtrl::PI_report_HK.others {
+    Taste::coordinates => "49569 30016";
+    Taste::RCMoperationKind => any;
+    Taste::InterfaceName => "report_HK";
+    Taste::labelInheritance => "true";
+  };
+PROPERTIES
+  Source_Language => (C);
+  Taste::Active_Interfaces => any;
+END ThermCtrl_Comp1;
+
+SYSTEM IMPLEMENTATION ThermCtrl_Comp1.others
+END ThermCtrl_Comp1.others;
+
+END interfaceview::IV::ThermCtrl_Comp1;
+
+PACKAGE interfaceview::IV::MissionMng_Comp1
+PUBLIC
+
+WITH Taste;
+WITH DataView;
+WITH TASTE_IV_Properties;
+SUBPROGRAM PI_MiM1_Services
+FEATURES
+  function_event_id : IN PARAMETER DataView::T_Int8 {
+    Taste::encoding => NATIVE;
+  };
+PROPERTIES
+  Taste::Associated_Queue_Size => 1;
+END PI_MiM1_Services;
+
+SUBPROGRAM IMPLEMENTATION PI_MiM1_Services.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 10 ms;
+END PI_MiM1_Services.others;
+
+SYSTEM MissionMng_Comp1
+FEATURES
+  PI_MiM1_Services : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::MissionMng_Comp1::PI_MiM1_Services.others {
+    Taste::coordinates => "197131 43663";
+    Taste::RCMoperationKind => sporadic;
+    Taste::RCMperiod => 2 ms;
+    Taste::Deadline => 10 ms;
+    Taste::InterfaceName => "MiM1_Services";
+  };
+PROPERTIES
+  Source_Language => (C);
+  Taste::Active_Interfaces => any;
+END MissionMng_Comp1;
+
+SYSTEM IMPLEMENTATION MissionMng_Comp1.others
+END MissionMng_Comp1.others;
+
+END interfaceview::IV::MissionMng_Comp1;
+
+PACKAGE interfaceview::IV::MissionMng_Comp2
+PUBLIC
+
+WITH interfaceview::IV::LibPUS_MissionMng;
+WITH Taste;
+WITH DataView;
+WITH TASTE_IV_Properties;
+SUBPROGRAM PI_MiM2_Services
+FEATURES
+  function_event_id : IN PARAMETER DataView::T_Int8 {
+    Taste::encoding => NATIVE;
+  };
+PROPERTIES
+  Taste::Associated_Queue_Size => 1;
+END PI_MiM2_Services;
+
+SUBPROGRAM IMPLEMENTATION PI_MiM2_Services.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 10 ms;
+END PI_MiM2_Services.others;
+
+SUBPROGRAM RI_report_HK
+END RI_report_HK;
+
+SUBPROGRAM IMPLEMENTATION RI_report_HK.others
+END RI_report_HK.others;
+
+SYSTEM MissionMng_Comp2
+FEATURES
+  PI_MiM2_Services : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::MissionMng_Comp2::PI_MiM2_Services.others {
+    Taste::coordinates => "249846 43345";
+    Taste::RCMoperationKind => sporadic;
+    Taste::RCMperiod => 2 ms;
+    Taste::Deadline => 10 ms;
+    Taste::InterfaceName => "MiM2_Services";
+  };
+  RI_report_HK : REQUIRES SUBPROGRAM ACCESS interfaceview::IV::LibPUS_MissionMng::PI_report_HK.others {
+    Taste::coordinates => "288152 14725";
+    Taste::RCMoperationKind => any;
+    Taste::InterfaceName => "report_HK";
+    Taste::labelInheritance => "true";
+  };
+PROPERTIES
+  Source_Language => (C);
+  Taste::Active_Interfaces => any;
+END MissionMng_Comp2;
+
+SYSTEM IMPLEMENTATION MissionMng_Comp2.others
+END MissionMng_Comp2.others;
+
+END interfaceview::IV::MissionMng_Comp2;
+
+PACKAGE interfaceview::IV::TermCtrl_Comp2
+PUBLIC
+
+WITH interfaceview::IV::LibPUS_ThermCtrl;
+WITH Taste;
+WITH DataView;
+WITH TASTE_IV_Properties;
+SUBPROGRAM PI_ThC2_Services
+FEATURES
+  function_event_id : IN PARAMETER DataView::T_Int8 {
+    Taste::encoding => NATIVE;
+  };
+PROPERTIES
+  Taste::Associated_Queue_Size => 1;
+END PI_ThC2_Services;
+
+SUBPROGRAM IMPLEMENTATION PI_ThC2_Services.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 10 ms;
+END PI_ThC2_Services.others;
+
+SUBPROGRAM RI_report_HK
+END RI_report_HK;
+
+SUBPROGRAM IMPLEMENTATION RI_report_HK.others
+END RI_report_HK.others;
+
+SUBPROGRAM RI_report_Event
+END RI_report_Event;
+
+SUBPROGRAM IMPLEMENTATION RI_report_Event.others
+END RI_report_Event.others;
+
+SYSTEM TermCtrl_Comp2
+FEATURES
+  PI_ThC2_Services : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::TermCtrl_Comp2::PI_ThC2_Services.others {
+    Taste::coordinates => "160375 43345";
+    Taste::RCMoperationKind => sporadic;
+    Taste::RCMperiod => 2 ms;
+    Taste::Deadline => 10 ms;
+    Taste::InterfaceName => "ThC2_Services";
+  };
+  RI_report_HK : REQUIRES SUBPROGRAM ACCESS interfaceview::IV::LibPUS_ThermCtrl::PI_report_HK.others {
+    Taste::coordinates => "121876 11491";
+    Taste::RCMoperationKind => any;
+    Taste::InterfaceName => "report_HK";
+    Taste::labelInheritance => "true";
+  };
+  RI_report_Event : REQUIRES SUBPROGRAM ACCESS interfaceview::IV::LibPUS_ThermCtrl::PI_report_Event.others {
+    Taste::coordinates => "121876 17542";
+    Taste::RCMoperationKind => any;
+    Taste::InterfaceName => "report_Event";
+    Taste::labelInheritance => "true";
+  };
+PROPERTIES
+  Source_Language => (C);
+  Taste::Active_Interfaces => any;
+END TermCtrl_Comp2;
+
+SYSTEM IMPLEMENTATION TermCtrl_Comp2.others
+END TermCtrl_Comp2.others;
+
+END interfaceview::IV::TermCtrl_Comp2;
+
+PACKAGE interfaceview::IV::LibPUS_MissionMng
+PUBLIC
+
+WITH interfaceview::IV::MissionMng_Comp1;
+WITH interfaceview::IV::MissionMng_Comp2;
+WITH interfaceview::IV::IO_ROUTER;
+WITH Taste;
+WITH DataView;
+WITH TASTE_IV_Properties;
+SUBPROGRAM PI_executionCycle
+PROPERTIES
+  Taste::Associated_Queue_Size => 1;
+END PI_executionCycle;
+
+SUBPROGRAM IMPLEMENTATION PI_executionCycle.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 3 ms;
+END PI_executionCycle.others;
+
+SUBPROGRAM RI_MiM1_Services
+FEATURES
+  function_event_id : IN PARAMETER DataView::T_Int8 {
+    Taste::encoding => NATIVE;
+  };
+END RI_MiM1_Services;
+
+SUBPROGRAM IMPLEMENTATION RI_MiM1_Services.others
+END RI_MiM1_Services.others;
+
+SUBPROGRAM RI_MiM2_Services
+FEATURES
+  function_event_id : IN PARAMETER DataView::T_Int8 {
+    Taste::encoding => NATIVE;
+  };
+END RI_MiM2_Services;
+
+SUBPROGRAM IMPLEMENTATION RI_MiM2_Services.others
+END RI_MiM2_Services.others;
+
+SUBPROGRAM PI_report_HK
+END PI_report_HK;
+
+SUBPROGRAM IMPLEMENTATION PI_report_HK.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 0 ms;
+END PI_report_HK.others;
+
+SUBPROGRAM RI_TM_QUEUE_MiM
+END RI_TM_QUEUE_MiM;
+
+SUBPROGRAM IMPLEMENTATION RI_TM_QUEUE_MiM.others
+END RI_TM_QUEUE_MiM.others;
+
+SUBPROGRAM RI_TC_QUEUE_MiM
+END RI_TC_QUEUE_MiM;
+
+SUBPROGRAM IMPLEMENTATION RI_TC_QUEUE_MiM.others
+END RI_TC_QUEUE_MiM.others;
+
+SYSTEM LibPUS_MissionMng
+FEATURES
+  PI_executionCycle : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::LibPUS_MissionMng::PI_executionCycle.others {
+    Taste::coordinates => "249606 68190";
+    Taste::RCMoperationKind => cyclic;
+    Taste::RCMperiod => 100 ms;
+    Taste::Deadline => 10 ms;
+    Taste::InterfaceName => "executionCycle";
+  };
+  RI_MiM1_Services : REQUIRES SUBPROGRAM ACCESS interfaceview::IV::MissionMng_Comp1::PI_MiM1_Services.others {
+    Taste::coordinates => "197051 77746";
+    Taste::RCMoperationKind => any;
+    Taste::InterfaceName => "MiM1_Services";
+    Taste::labelInheritance => "true";
+  };
+  RI_MiM2_Services : REQUIRES SUBPROGRAM ACCESS interfaceview::IV::MissionMng_Comp2::PI_MiM2_Services.others {
+    Taste::coordinates => "197051 87300";
+    Taste::RCMoperationKind => any;
+    Taste::InterfaceName => "MiM2_Services";
+    Taste::labelInheritance => "true";
+  };
+  PI_report_HK : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::LibPUS_MissionMng::PI_report_HK.others {
+    Taste::coordinates => "277959 92391";
+    Taste::RCMoperationKind => unprotected;
+    Taste::InterfaceName => "report_HK";
+  };
+  RI_TM_QUEUE_MiM : REQUIRES SUBPROGRAM ACCESS interfaceview::IV::IO_ROUTER::PI_TM_QUEUE_MiM.others {
+    Taste::coordinates => "211067 118200";
+    Taste::RCMoperationKind => any;
+    Taste::InterfaceName => "TM_QUEUE_MiM";
+    Taste::labelInheritance => "true";
+  };
+  RI_TC_QUEUE_MiM : REQUIRES SUBPROGRAM ACCESS interfaceview::IV::IO_ROUTER::PI_TC_QUEUE_MiM.others {
+    Taste::coordinates => "252476 118200";
+    Taste::RCMoperationKind => any;
+    Taste::InterfaceName => "TC_QUEUE_MiM";
+    Taste::labelInheritance => "true";
+  };
+PROPERTIES
+  Source_Language => (C);
+  Taste::Active_Interfaces => any;
+END LibPUS_MissionMng;
+
+SYSTEM IMPLEMENTATION LibPUS_MissionMng.others
+END LibPUS_MissionMng.others;
+
+END interfaceview::IV::LibPUS_MissionMng;
+
+PACKAGE interfaceview::IV::IO_Ethernet
+PUBLIC
+
+WITH Taste;
+WITH DataView;
+WITH TASTE_IV_Properties;
+SUBPROGRAM PI_Send_data
+END PI_Send_data;
+
+SUBPROGRAM IMPLEMENTATION PI_Send_data.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 0 ms;
+END PI_Send_data.others;
+
+SUBPROGRAM PI_Recv_data
+END PI_Recv_data;
+
+SUBPROGRAM IMPLEMENTATION PI_Recv_data.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 0 ms;
+END PI_Recv_data.others;
+
+SYSTEM IO_Ethernet
+FEATURES
+  PI_Send_data : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::IO_Ethernet::PI_Send_data.others {
+    Taste::coordinates => "158823 186048";
+    Taste::RCMoperationKind => unprotected;
+    Taste::InterfaceName => "Send_data";
+  };
+  PI_Recv_data : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::IO_Ethernet::PI_Recv_data.others {
+    Taste::coordinates => "243557 186048";
+    Taste::RCMoperationKind => unprotected;
+    Taste::InterfaceName => "Recv_data";
+  };
+PROPERTIES
+  Source_Language => (C);
+  Taste::Active_Interfaces => any;
+END IO_Ethernet;
+
+SYSTEM IMPLEMENTATION IO_Ethernet.others
+END IO_Ethernet.others;
+
+END interfaceview::IV::IO_Ethernet;
+
+PACKAGE interfaceview::IV
+PUBLIC
+
+WITH interfaceview::IV::IO_ROUTER;
+WITH interfaceview::IV::LibPUS_ThermCtrl;
+WITH interfaceview::IV::ThermCtrl_Comp1;
+WITH interfaceview::IV::MissionMng_Comp1;
+WITH interfaceview::IV::MissionMng_Comp2;
+WITH interfaceview::IV::TermCtrl_Comp2;
+WITH interfaceview::IV::LibPUS_MissionMng;
+WITH interfaceview::IV::IO_Ethernet;
+WITH Taste;
+WITH DataView;
+WITH TASTE_IV_Properties;
+SYSTEM interfaceview
+PROPERTIES
+  Taste::dataView => ("DataView");
+  Taste::dataViewPath => ("DataView.aadl");
+END interfaceview;
+
+SYSTEM IMPLEMENTATION interfaceview.others
+SUBCOMPONENTS
+  IO_ROUTER : SYSTEM interfaceview::IV::IO_ROUTER::IO_ROUTER.others {
+    Taste::coordinates => "66770 148177 272862 168210";
+  };
+  LibPUS_ThermCtrl : SYSTEM interfaceview::IV::LibPUS_ThermCtrl::LibPUS_ThermCtrl.others {
+    Taste::coordinates => "54984 66597 152775 122660";
+  };
+  ThermCtrl_Comp1 : SYSTEM interfaceview::IV::ThermCtrl_Comp1::ThermCtrl_Comp1.others {
+    Taste::coordinates => "49569 21097 99327 51308";
+  };
+  MissionMng_Comp1 : SYSTEM interfaceview::IV::MissionMng_Comp1::MissionMng_Comp1.others {
+    Taste::coordinates => "179529 7371 222852 43663";
+  };
+  MissionMng_Comp2 : SYSTEM interfaceview::IV::MissionMng_Comp2::MissionMng_Comp2.others {
+    Taste::coordinates => "228586 7031 288152 43345";
+  };
+  TermCtrl_Comp2 : SYSTEM interfaceview::IV::TermCtrl_Comp2::TermCtrl_Comp2.others {
+    Taste::coordinates => "121876 2572 160375 47167";
+  };
+  LibPUS_MissionMng : SYSTEM interfaceview::IV::LibPUS_MissionMng::LibPUS_MissionMng.others {
+    Taste::coordinates => "197051 68190 277959 118200";
+  };
+  IO_Ethernet : SYSTEM interfaceview::IV::IO_Ethernet::IO_Ethernet.others {
+    Taste::coordinates => "81741 186048 266492 201657";
+  };
+CONNECTIONS
+  IO_ROUTER_PI_TC_QUEUE_ThC_LibPUS_ThermCtrl_RI_TC_QUEUE_ThC : SUBPROGRAM ACCESS IO_ROUTER.PI_TC_QUEUE_ThC -> LibPUS_ThermCtrl.RI_TC_QUEUE_ThC {
+    Taste::coordinates => "77915 122660 77915 135418 78083 135418 78083 148177";
+  };
+  IO_ROUTER_PI_TM_QUEUE_ThC_LibPUS_ThermCtrl_RI_TM_QUEUE_ThC : SUBPROGRAM ACCESS IO_ROUTER.PI_TM_QUEUE_ThC -> LibPUS_ThermCtrl.RI_TM_QUEUE_ThC {
+    Taste::coordinates => "120599 122660 120599 139082 114715 139082 114715 148177";
+  };
+  IO_ROUTER_PI_TM_QUEUE_MiM_LibPUS_MissionMng_RI_TM_QUEUE_MiM : SUBPROGRAM ACCESS IO_ROUTER.PI_TM_QUEUE_MiM -> LibPUS_MissionMng.RI_TM_QUEUE_MiM {
+    Taste::coordinates => "211067 118200 211067 135896 211050 135896 211050 148177";
+  };
+  IO_ROUTER_PI_TC_QUEUE_MiM_LibPUS_MissionMng_RI_TC_QUEUE_MiM : SUBPROGRAM ACCESS IO_ROUTER.PI_TC_QUEUE_MiM -> LibPUS_MissionMng.RI_TC_QUEUE_MiM {
+    Taste::coordinates => "252476 118200 252476 133985 254049 133985 254049 148177";
+  };
+  IO_Ethernet_PI_Recv_data_IO_ROUTER_RI_Recv_data : SUBPROGRAM ACCESS IO_Ethernet.PI_Recv_data -> IO_ROUTER.RI_Recv_data {
+    Taste::coordinates => "248972 168210 248972 177129 243557 177129 243557 186048";
+  };
+  IO_Ethernet_PI_Send_data_IO_ROUTER_RI_Send_data : SUBPROGRAM ACCESS IO_Ethernet.PI_Send_data -> IO_ROUTER.RI_Send_data {
+    Taste::coordinates => "149589 168210 149589 177129 158823 177129 158823 186048";
+  };
+  LibPUS_ThermCtrl_PI_report_HK_TermCtrl_Comp2_RI_report_HK : SUBPROGRAM ACCESS LibPUS_ThermCtrl.PI_report_HK -> TermCtrl_Comp2.RI_report_HK {
+    Taste::coordinates => "121876 11491 44094 11491 44094 82522 54665 82522";
+  };
+  LibPUS_ThermCtrl_PI_report_HK_ThermCtrl_Comp1_RI_report_HK : SUBPROGRAM ACCESS LibPUS_ThermCtrl.PI_report_HK -> ThermCtrl_Comp1.RI_report_HK {
+    Taste::coordinates => "49569 30016 39280 30016 39280 82522 54665 82522";
+  };
+  LibPUS_ThermCtrl_PI_report_Event_TermCtrl_Comp2_RI_report_Event : SUBPROGRAM ACCESS LibPUS_ThermCtrl.PI_report_Event -> TermCtrl_Comp2.RI_report_Event {
+    Taste::coordinates => "121876 17542 44094 17542 44094 98447 54665 98447";
+  };
+  ThermCtrl_Comp1_PI_ThC1_Services_LibPUS_ThermCtrl_RI_ThC1_Services : SUBPROGRAM ACCESS ThermCtrl_Comp1.PI_ThC1_Services -> LibPUS_ThermCtrl.RI_ThC1_Services {
+    Taste::coordinates => "152456 82522 162745 82522 162745 49397 99327 49397";
+  };
+  TermCtrl_Comp2_PI_ThC2_Services_LibPUS_ThermCtrl_RI_ThC2_Services : SUBPROGRAM ACCESS TermCtrl_Comp2.PI_ThC2_Services -> LibPUS_ThermCtrl.RI_ThC2_Services {
+    Taste::coordinates => "152456 88892 168637 88892 168637 43345 160375 43345";
+  };
+  MissionMng_Comp1_PI_MiM1_Services_LibPUS_MissionMng_RI_MiM1_Services : SUBPROGRAM ACCESS MissionMng_Comp1.PI_MiM1_Services -> LibPUS_MissionMng.RI_MiM1_Services {
+    Taste::coordinates => "197051 77746 191189 77746 191189 52081 197131 52081 197131 43663";
+  };
+  MissionMng_Comp2_PI_MiM2_Services_LibPUS_MissionMng_RI_MiM2_Services : SUBPROGRAM ACCESS MissionMng_Comp2.PI_MiM2_Services -> LibPUS_MissionMng.RI_MiM2_Services {
+    Taste::coordinates => "197051 87300 188641 87300 188641 52430 249846 52430 249846 43345";
+  };
+  LibPUS_MissionMng_PI_report_HK_MissionMng_Comp2_RI_report_HK : SUBPROGRAM ACCESS LibPUS_MissionMng.PI_report_HK -> MissionMng_Comp2.RI_report_HK {
+    Taste::coordinates => "288152 14725 289557 14725 289557 92391 277959 92391";
+  };
+END interfaceview.others;
+
+PROPERTIES
+  Taste::dataView => ("DataView");
+  Taste::dataViewPath => ("DataView.aadl");
+  Taste::coordinates => "0 0 297000 210000";
+  Taste::version => "2.0";
+END interfaceview::IV;
+
