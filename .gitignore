@@ -46,6 +46,10 @@ tags
 # Eclipse
 .project
 
-# taste examples
-*.cache*
-*binary.c*
+#TASTE
+.cache
+binary.c
+*.zip
+*.old
+oldI*
+

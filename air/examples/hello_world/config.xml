@@ -12,7 +12,7 @@
         <Permissions>
           FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
         </Permissions>
-    </PartitionConfiguration>     
+    </PartitionConfiguration>
   </Partition>
 
 
@@ -22,11 +22,12 @@
     <Partition_Schedule PartitionIdentifier="1" PartitionName="part0" 
       PeriodDurationSeconds="0.3" PeriodSeconds="1.0">
       <Window_Schedule WindowIdentifier="1" PartitionPeriodStart="true" 
-        WindowDurationSeconds="0.3"  WindowStartSeconds="0.0"/>
+        WindowDurationSeconds="0.3"  WindowStartSeconds="0.0" />
+      <WindowConfiguration WindowIdentifier="1" Cores="0" />
     </Partition_Schedule>
   </Module_Schedule>
 
   
   <!-- Module configuration -->
-  <AIR_Configuration TicksPerSecond="200" RequiredCores="1"/>
+  <AIR_Configuration TicksPerSecond="200" RequiredCores="2"/>
 </ARINC_653_Module>
