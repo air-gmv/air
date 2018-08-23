@@ -1,0 +1,12 @@
+isUpdatedProperty('NIL','=>','candriver_test_CV_Thread','candriver_test_candriver_test','others','NIL','Priority','10','0').
+isUpdatedProperty('NIL','=>','candriver_test_CV_Thread','candriver_test_candriver_test','others','NIL','Deployment::Priority','10','0').
+isUpdatedProperty('NIL','=>','candriver_test_CV_Thread','candriver_test_candriver_test','others','NIL','Stack_Size','64KByte','0').
+isUpdatedProperty('NIL','=>','candriver_test_CV_Thread','candriver_test_candriver_test','others','NIL','Dispatch_Offset','0ms','0').
+isUpdatedProperty('NIL','=>','vt_gr740_candriver_update_CV_Thread','vt_gr740_candriver_update_vt_gr740_candriver_update','others','NIL','Priority','2','0').
+isUpdatedProperty('NIL','=>','vt_gr740_candriver_update_CV_Thread','vt_gr740_candriver_update_vt_gr740_candriver_update','others','NIL','Deployment::Priority','2','0').
+isUpdatedProperty('NIL','=>','vt_gr740_candriver_update_CV_Thread','vt_gr740_candriver_update_vt_gr740_candriver_update','others','NIL','Stack_Size','64KByte','0').
+isUpdatedProperty('NIL','=>','vt_gr740_candriver_update_CV_Thread','vt_gr740_candriver_update_vt_gr740_candriver_update','others','NIL','Dispatch_Offset','0ms','0').
+isUpdatedProperty('NIL','=>','vt_gr740_candriver_commands_CV_Thread','vt_gr740_candriver_commands_vt_gr740_candriver_commands','others','NIL','Priority','10','0').
+isUpdatedProperty('NIL','=>','vt_gr740_candriver_commands_CV_Thread','vt_gr740_candriver_commands_vt_gr740_candriver_commands','others','NIL','Deployment::Priority','10','0').
+isUpdatedProperty('NIL','=>','vt_gr740_candriver_commands_CV_Thread','vt_gr740_candriver_commands_vt_gr740_candriver_commands','others','NIL','Stack_Size','64KByte','0').
+isUpdatedProperty('NIL','=>','vt_gr740_candriver_commands_CV_Thread','vt_gr740_candriver_commands_vt_gr740_candriver_commands','others','NIL','Dispatch_Offset','0ms','0').

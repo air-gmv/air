@@ -1,0 +1,8 @@
+ESROCOS-gr740-candriver DEFINITIONS ::=
+BEGIN
+
+MyDummyInteger::=INTEGER(0..255)
+-- Define your own data types and constants here 
+
+END
+  
