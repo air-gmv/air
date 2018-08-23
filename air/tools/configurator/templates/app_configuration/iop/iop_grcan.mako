@@ -4,7 +4,7 @@
 		reader_task='can_reader',
 		writer_task='can_writer',
 		
-		header_prebuild='',
+		header_prebuild='NULL',
 		header_compare='can_compare_header',
 		header_copy='can_copy_header')
 %>\
