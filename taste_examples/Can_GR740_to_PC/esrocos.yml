@@ -1,0 +1,4 @@
+ASNACN_DIR: dataview/
+PROJECT_NAME: gr740-candriver
+deps:
+- types/base: ''

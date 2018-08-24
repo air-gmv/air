@@ -153,7 +153,7 @@ class IOParser(object):
         pdevice.id = xml.parse_attr(PHYSICAL_DEVICE_ID, VALID_IDENTIFIER_TYPE, True, self.logger)
         pdevice.device = xml.parse_attr(PHYSICAL_DEVICE_NAME, VALID_NAME_TYPE, True, self.logger)
 
-        self.logger.event(0, "dev:", pdevice.device)
+        self.logger.event(0, "dev:" + pdevice.device)
         # sanity check
         if self.logger.check_errors(): return False
 
@@ -162,13 +162,13 @@ class IOParser(object):
 
         # get device alias
         try:
-            self.logger.event(0, "alias0: ", pdevice.device)
-            self.logger.event(0, "alias: ", self.iop_configuration.alias[pdevice.device])
+            self.logger.event(0, "alias0: "+ pdevice.device)
+            self.logger.event(0, "alias: "+ self.iop_configuration.alias[pdevice.device])
             alias = self.iop_configuration.alias[pdevice.device]
             pdevice.device = alias
 
         except:
-            logger.logger.exception("Exception, See details below")
+            self.logger.event(0, "error:Exception, See details below")
             pass
 
         self.logger.event(0, "dev: ", pdevice.device)
@@ -181,7 +181,7 @@ class IOParser(object):
         # check if the device is valid
         bsp_devices = self.iop_configuration.devices
         if pdevice.device not in bsp_devices:
-            self.logger.error(LOG_UNSUPPORTED_DEVICE, xml.sourceline, pdevice.device)
+            self.logger.error(LOG_UNSUPPORTED_DEVICE, xml.sourceline, bsp_devices)
             return False
 
         self.logger.event(0, "AFTER", self.iop_configuration.devices)
