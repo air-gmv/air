@@ -2,8 +2,8 @@
 
 /* Declaration of the functions that have to be provided by the user */
 
-#ifndef __USER_CODE_H_hello__
-#define __USER_CODE_H_hello__
+#ifndef __USER_CODE_H_candriver_test__
+#define __USER_CODE_H_candriver_test__
 
 #include "C_ASN1_Types.h"
 
@@ -11,9 +11,11 @@
 extern "C" {
 #endif
 
-void hello_startup();
+void candriver_test_startup();
 
-void hello_PI_s(const asn1SccTASTE_Boolean *);
+void candriver_test_PI_samples(const asn1SccT_Int32 *);
+
+extern void candriver_test_RI_commands(const asn1SccT_Int32 *);
 
 #ifdef __cplusplus
 }

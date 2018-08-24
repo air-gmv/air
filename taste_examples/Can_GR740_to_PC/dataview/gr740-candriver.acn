@@ -1,0 +1,3 @@
+ESROCOS-gr740-candriver DEFINITIONS ::= BEGIN
+    MyDummyInteger[]
+END
