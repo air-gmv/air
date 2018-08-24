@@ -1,0 +1,74 @@
+---------------------------------------------------
+-- AADL2.1
+-- TASTE type deploymentview
+-- 
+-- generated code: do not edit
+---------------------------------------------------
+
+PACKAGE deploymentview::DV::Node1
+PUBLIC
+
+WITH Taste;
+WITH Deployment;
+WITH TASTE_DV_Properties;
+PROCESS gr740_partition
+END gr740_partition;
+
+PROCESS IMPLEMENTATION gr740_partition.others
+END gr740_partition.others;
+
+END deploymentview::DV::Node1;
+
+PACKAGE deploymentview::DV
+PUBLIC
+
+WITH interfaceview::IV::gr740_candriver;
+WITH interfaceview::IV::candriver_test;
+WITH ocarina_processors_leon;
+WITH deploymentview::DV::Node1;
+WITH Taste;
+WITH Deployment;
+WITH interfaceview::IV;
+WITH TASTE_DV_Properties;
+SYSTEM Node1
+END Node1;
+
+SYSTEM IMPLEMENTATION Node1.others
+SUBCOMPONENTS
+  IV_gr740_candriver : SYSTEM interfaceview::IV::gr740_candriver::gr740_candriver.others {
+    Taste::FunctionName => "gr740_candriver";
+  };
+  IV_candriver_test : SYSTEM interfaceview::IV::candriver_test::candriver_test.others {
+    Taste::FunctionName => "candriver_test";
+  };
+  gr740_partition : PROCESS deploymentview::DV::Node1::gr740_partition.others {
+    Taste::coordinates => "132081 77242 166651 106178";
+    Deployment::Port_Number => 0;
+  };
+  gr740_rtems51_posix : PROCESSOR ocarina_processors_leon::gr740.rtems51_posix {
+    Taste::coordinates => "127760 68975 170972 110312";
+  };
+PROPERTIES
+  Taste::APLC_Binding => (reference (gr740_partition)) APPLIES TO IV_gr740_candriver;
+  Taste::APLC_Binding => (reference (gr740_partition)) APPLIES TO IV_candriver_test;
+  Actual_Processor_Binding => (reference (gr740_rtems51_posix)) APPLIES TO gr740_partition;
+END Node1.others;
+
+SYSTEM deploymentview
+END deploymentview;
+
+SYSTEM IMPLEMENTATION deploymentview.others
+SUBCOMPONENTS
+  Node1 : SYSTEM Node1.others {
+    Taste::coordinates => "122359 57164 176373 116217";
+  };
+  interfaceview : SYSTEM interfaceview::IV::interfaceview.others;
+END deploymentview.others;
+
+PROPERTIES
+  Taste::coordinates => "0 0 297000 210000";
+  Taste::version => "2.0";
+  Taste::interfaceView => "gr740-candriver_iv.aadl";
+  Taste::HWLibraries => ("../../../tool-inst/share/ocarina/AADLv2/ocarina_components.aadl");
+END deploymentview::DV;
+
