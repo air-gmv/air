@@ -10,7 +10,7 @@
 //include <air.h>
 #include <rtems.h>
 #include "main.c"
-
+#include "rtems_config.h"
 /**
  * @brief Partition entry point
  */

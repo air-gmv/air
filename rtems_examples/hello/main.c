@@ -23,7 +23,7 @@ entry_point(void)
     while (1)
     {
         andp = andp + 1;
-        printf("*** RTEMS HELLO WORLD TEST **********\n");
+        printk("*** RTEMS HELLO WORLD TEST **********\n");
         rtems_task_wake_after(5);
     }
     //  exit( 0 );
