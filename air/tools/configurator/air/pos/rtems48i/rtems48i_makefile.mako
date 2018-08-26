@@ -7,13 +7,13 @@
     base_dir = os.path.join(
         os.path.relpath(air.INSTALL_DIRECTORY, output_dir),
         os.path.relpath(output_dir, air.ROOT_DIRECTORY))
-    
+
     # rtems build dir
     build_dir = os.path.join(
         os.path.relpath(air.INSTALL_DIRECTORY, output_dir),
         os.path.relpath(output_dir, air.ROOT_DIRECTORY),
         'rtems48i-build')
-    
+
     # rtems install dir
     install_dir = os.path.join(
         air.INSTALL_DIRECTORY,
@@ -60,6 +60,13 @@ ${'\t\t'}--disable-tests ${'\\'}
 ${'\t\t'}--enable-rtemsbsp=$(RTEMS_IMPR_BSP) ${'\\'}
 ${'\t\t'}--prefix=$(RTEMS_INSTALL_DIR) && cd ..; ${'\\'}
 ${'\t'}fi
+${'\t'}make -C $(RTEMS_BUILD_DIR) CPPFLAGS='$(AIR_HEADERS)' && ${'\\'}
+${'\t'}make -C $(RTEMS_BUILD_DIR) install && ${'\\'}
+${'\t'}make -C edilib BUILD_DIR='$(EDILIB_BUILD_DIR)'
+
+# RTEMS 4.10 No Configure
+${template.Rule('noconf', True, None)}
+${template.Remove(install_dir)}
 ${'\t'}make -C $(RTEMS_BUILD_DIR) CPPFLAGS='$(AIR_HEADERS)' && ${'\\'}
 ${'\t'}make -C $(RTEMS_BUILD_DIR) install && ${'\\'}
 ${'\t'}make -C edilib BUILD_DIR='$(EDILIB_BUILD_DIR)'
