@@ -76,12 +76,6 @@ def Run(args, logger):
         os.path.join(air.ROOT_DIRECTORY, 'Makefile.inc'),
         dict(os_configuration=os_configuration), logger, template_includes)
 
-    # create Makefile 2 rules
-    makoutils.applyMAKOTemplate(
-        os.path.join(air.AIR_TEMPLATES_DIRECTORY, 'inc_makefile2.mako'),
-        os.path.join(air.ROOT_DIRECTORY, 'Makefile2.inc'),
-        dict(os_configuration=os_configuration), logger, template_includes)
-
     # create kernel Makefile
     makoutils.applyMAKOTemplate(
         os.path.join(air.AIR_TEMPLATES_DIRECTORY, 'pmk_makefile.mako'),
