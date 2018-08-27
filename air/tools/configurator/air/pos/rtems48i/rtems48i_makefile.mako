@@ -27,12 +27,13 @@
 ${template.FileHeader("POS RTEMS-IMPR - RTEMS-IMPR personality")}\
 
 # Makefile Include file
-${template.MakefileInc2()}
+${template.MakefileInc()}
 
 CURRENT_PATH=$(shell pwd)
 
 # reguired AIR headers
 AIR_HEADERS=${'\\'}
+-DAIR_HYPERVISOR${'\\'}
 ${template.get_headers_directories(libair_headers)}\
 
 # RTEMS build and install directories

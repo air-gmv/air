@@ -54,11 +54,11 @@ include $(PROJECT_ROOT)/make/leaf.cfg
 
 # built in libraries include files
 CPPFLAGS+=${'\\'}
--DAIR_HYPERVISOR./${'\\'}
 -I./${'\\'}
 -B./${'\\'}
 -I../common/${'\\'}
 -B../common/${'\\'}
+-DRTEMS5${'\\'}
 ${template.LibraryIncludes(partition.libraries)}\
 
 # build LD falgs
