@@ -4,19 +4,7 @@ AIR has a user manual at https://gmvdrive.gmv.com/index.php/s/eScXCAybbecmT9b
 
 To install AIR after cloning from git, you should do the following:
 
-1) Install RTEMS toolchain for RTEMS 4.10 (used to build RTEMS48i)
-
-The source-builder tool does the installation.
-
-You should download rtems-source-builder-4.10.3-rc2.tar.xz, located at https://ftp.rtems.org/pub/rtems/releases/4.10/4.10.3-rc2/
-BUT IT DOES NO LONGER BUILDS CORRECTLY!
-
-Therefore AIR is now set to instead to use gaisler toolchain available at
-https://www.gaisler.com/anonftp/rcc/bin/linux/sparc-rtems-4.10-gcc-4.4.6-1.2.22-linux.tar.bz2
-
-Simply untar the file inside /opt folder as sudo.
-
-2) Install RTEMS toolchain for RTEMS 5
+1) Install RTEMS toolchain for RTEMS 5
 
 Execute the following:
 
@@ -28,7 +16,7 @@ $ ./source-builder/sb-check
 $ cd rtems
 $ ../source-builder/sb-set-builder --prefix=/opt/rtems/5 5/rtems-sparc
 
-3) Configure and build AIR
+2) Configure and build AIR
 
 Add the air_repo/air and rtems4.10 bin folder to the PATH env variable, we recommend doing the following way in .bashrc file:
 export RTEMS410=//opt/rtems-4.10/bin
