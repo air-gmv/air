@@ -61,7 +61,6 @@ ${template.RunMakeInDir(os.path.join(air.TOOLS_DIR_NAME, 'partition_assembler'),
 ${template.Remove(air.INSTALL_DIRECTORY)}
 ${template.Remove('Makefile')}
 ${template.Remove('Makefile.inc')}
-${template.Remove('Makefile2.inc')}
 ${template.Remove('.air_config')}
 
 
