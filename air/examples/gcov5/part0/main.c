@@ -37,7 +37,8 @@ static char *my_ctime( time_t t )
 
 void entry_point(void) 
 {
-	while(1)
+    int i=0;
+	while(i<15)
 	{
         
 
@@ -51,7 +52,7 @@ void entry_point(void)
             printf( "Time is : %s:%ld\n", my_ctime(start.tv_sec), start.tv_nsec);
             
         #endif
-
+    i++;
         rtems_task_wake_after(10);
 
     }
