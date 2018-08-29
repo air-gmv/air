@@ -11,17 +11,21 @@
  *           *  Uses gcc-internal data definitions.
  *            */
 
-#include "gcov.h"
-//#include <memory.h>
-#include <rtems.h>
-//#include <pmk.h>
-#include <pprintf.h>
 
-#if __GNUC__ == 4 && __GNUC_MINOR__ >= 9
+#include <stdlib.h>
+#include <memory.h>
+#include "gcov.h"
+
+#if (__GNUC__ >= 7)
+#define GCOV_COUNTERS           9
+#elif (__GNUC__ > 5) || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
+#define GCOV_COUNTERS           10
+#elif __GNUC__ == 4 && __GNUC_MINOR__ >= 9
 #define GCOV_COUNTERS           9
 #else
 #define GCOV_COUNTERS           8
 #endif
+
 
 #define GCOV_TAG_FUNCTION_LENGTH    3
 
@@ -39,7 +43,7 @@ typedef unsigned long long u64;
  *        */
 struct gcov_ctr_info {
         unsigned int num;
-            gcov_type *values;
+        gcov_type *values;
 };
 
 /**
@@ -61,10 +65,10 @@ struct gcov_ctr_info {
  *                 */
 struct gcov_fn_info {
         const struct gcov_info *key;
-            unsigned int ident;
-                unsigned int lineno_checksum;
-                    unsigned int cfg_checksum;
-                        struct gcov_ctr_info ctrs[0];
+        unsigned int ident;
+        unsigned int lineno_checksum;
+        unsigned int cfg_checksum;
+        struct gcov_ctr_info ctrs[0];
 };
 
 /**
@@ -82,12 +86,15 @@ struct gcov_fn_info {
  *             */
 struct gcov_info {
         unsigned int version;
-            struct gcov_info *next;
-                unsigned int stamp;
-                    const char *filename;
-                        void (*merge[GCOV_COUNTERS])(gcov_type *, unsigned int);
-                            unsigned int n_functions;
-                                struct gcov_fn_info **functions;
+        struct gcov_info *next;
+            
+        unsigned int stamp;
+        const char *filename;
+        
+        void (*merge[GCOV_COUNTERS])(gcov_type *, unsigned int);
+        
+        unsigned int n_functions;
+        struct gcov_fn_info **functions;
 };
 
 /*
@@ -107,6 +114,7 @@ const char *gcov_info_filename(struct gcov_info *info)
         return info->filename;
 }
 
+
 /**
  *  * store_gcov_u32 - store 32 bit number in gcov format to buffer
  *   * @buffer: target buffer or NULL
@@ -118,7 +126,7 @@ const char *gcov_info_filename(struct gcov_info *info)
  *         * file. Returns the number of bytes stored. If @buffer is %NULL, doesn't
  *          * store anything.
  *           */
-static air_sz_t store_gcov_u32(void *buffer, air_sz_t off, u32 v)
+static size_t store_gcov_u32(void *buffer, size_t off, u32 v)
 {
         u32 *data;
 
@@ -142,7 +150,7 @@ static air_sz_t store_gcov_u32(void *buffer, air_sz_t off, u32 v)
  *          * first. Returns the number of bytes stored. If @buffer is %NULL, doesn't store
  *           * anything.
  *            */
-static air_sz_t store_gcov_u64(void *buffer, air_sz_t off, u64 v)
+static size_t store_gcov_u64(void *buffer, size_t off, u64 v)
 {
         u32 *data;
 
@@ -163,14 +171,14 @@ static air_sz_t store_gcov_u64(void *buffer, air_sz_t off, u64 v)
  *     *
  *      * Returns the number of bytes that were/would have been stored into the buffer.
  *       */
-unsigned int convert_to_gcda(char *buffer, struct gcov_info *info)
+size_t convert_to_gcda(char *buffer, struct gcov_info *info)
 {
         struct gcov_fn_info *fi_ptr;
             struct gcov_ctr_info *ci_ptr;
                 unsigned int fi_idx;
                     unsigned int ct_idx;
                         unsigned int cv_idx;
-                            air_sz_t pos = 0;
+                            size_t pos = 0;
 
                                 /* File header. */
                                 pos += store_gcov_u32(buffer, pos, GCOV_DATA_MAGIC);

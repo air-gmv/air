@@ -31,20 +31,47 @@
      *            *      Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
      *             *         Paul Larson
      *              */
-#define COVERAGE_ENABLED
 
 #include "gcov_public.h"
-#include "gcov.h"
 #include <rtems.h>
 #include <pprintf.h>
 
-//#include <rtems.h>
-//#include <stdlib.h>
 typedef struct tagGcovInfo {
-         struct gcov_info *info;
-         struct tagGcovInfo *next;
+    struct gcov_info *info;
+    struct tagGcovInfo *next;
 } GcovInfo;
+
 GcovInfo *headGcov = NULL;
+
+char* buffer=NULL;
+
+void get_filename(char * original, char * new){
+    int i =0;
+    int j=0;
+    
+    //original filename format .../../[filename].gcda
+    //new filename format [filename].gcda
+    
+    while(original[i]!='\0')
+        i++;
+    
+    if(i<5)
+        return;
+
+    i=i-6;
+    while(original[i]!='/')
+        i--;
+    i++;
+    while(original[i]!='\0'){
+        new[j]=original[i];
+        i++;
+        j++;
+    }
+    new[j]='\0';
+    for(i=0; i<j+1;i++)
+        original[i]=new[i];
+    return;
+}
 
 /*
  *  * __gcov_init is called by gcc-generated constructor code for each object
@@ -52,10 +79,12 @@ GcovInfo *headGcov = NULL;
  *    */
 void __gcov_init(struct gcov_info *info)
 {
-        pprintf("gcov init\n");
+        char name[24];
+        get_filename(gcov_info_filename(info), name);
+     
         pprintf("__gcov_init called for %s!\n", gcov_info_filename(info));
         GcovInfo *newHead = malloc(sizeof(GcovInfo));
- 
+    
         if (!newHead) {
             pprintf("Out of memory!\n");
             return;
@@ -63,27 +92,25 @@ void __gcov_init(struct gcov_info *info)
         newHead->info = info;
         newHead->next = headGcov;
         headGcov = newHead;
-        pprintf("headGcov %d headgcov.info %d\n", headGcov, headGcov->info );
 }
 
 void __gcov_exit()
 {
         GcovInfo *tmp = headGcov;
-        pprintf("on gcov_exit %d %d\n", tmp, tmp->info);
+        pprintf("on gcov_exit for %s\n", gcov_info_filename(tmp->info));
         while(tmp) {
-               // char *buffer;
                 unsigned bytesNeeded = convert_to_gcda(NULL, tmp->info);
-                char buffer[bytesNeeded];
-            
+                buffer=malloc(bytesNeeded);
+                if (!buffer) {
+                    pprintf("Out of memory!");
+                    return;
+                }
+
                 convert_to_gcda(buffer, tmp->info);
                 pprintf("Emitting %6d bytes for %s\n", bytesNeeded, gcov_info_filename(tmp->info));
-                pprintf("for the bp\n");
+                free(buffer);
                 tmp = tmp->next;
+        
         }
 }
 
-void __gcov_merge_add(gcov_type *counters, unsigned int n_counters)
-{
-        pprintf("__gcov_merge_add isn't called, right? Right? RIGHT?");
-        return;
-}
