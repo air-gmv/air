@@ -38,7 +38,12 @@ static void *sparc_partition_isr_virtualization(
 
     if (tn == BSP_IPC_PCS) {
         isf->tpc = timer_ctrl.irq;
+        tn = timer_ctrl.irq;
     }
+    else
+        if(tn == BSP_IPC_IRQ)
+            return NULL;
+
     /* get an easy pointer to the virtual core structure */
     sparc_virtual_cpu_t *vcpu = &core_ctx->vcpu;
 
@@ -74,15 +79,11 @@ static void *sparc_partition_isr_virtualization(
             /* check if we are handling an interrupt */
             if (tn > 0x10 && tn < 0x1F && (tn - 0x10) <= psr_pil) {
 
-               /*AIR Inter-Processor interrupt for context switch 
-                *should not be handled by guestOS
-                */
-                if(tn != BSP_IPC_PCS)
-                    vcpu->ipend |= (1 << (tn - 0x10));
-
+                vcpu->ipend |= (1 << (tn - 0x10));
                 return NULL;
 
             } else {
+
                 /* disable virtual traps */
                 vcpu->psr &= ~SPARC_PSR_ET_MASK;
                 return (void *)tbr[tn];
