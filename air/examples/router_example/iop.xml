@@ -57,7 +57,7 @@
 				<SpwHeader Address="10"/>
 			</PhysicalRoute>
 			<LogicalRoute Id="21" LogicalDeviceId="0">
-				<SpwHeader Address="0x01,0x0B"/>
+				<SpwHeader Address="0x0B"/>
 			</LogicalRoute>
 		</Device>
 		<Device Id="3" Device="GRSPW3" Addr="11" Mask="0xff" Dest="0" Clk="1"
