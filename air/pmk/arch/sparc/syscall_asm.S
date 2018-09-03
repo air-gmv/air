@@ -57,6 +57,7 @@ syscall_branch_table:
     ba,a    syscall_simple_return            ! unmask virtual IRQ (NYI)
     ba,a    sparc_isr_handler_entry          ! get physical address     (in C)
     ba,a    syscall_get_core_id              ! get virtual core id
+    ba,a    syscall_set_tbr                  ! set virtual core tbr
     ba,a    syscall_boot_core                ! boot virtual core
     ba,a    syscall_get_us_per_tick          ! get us per tick
     ba,a    syscall_get_elapsed_ticks        ! get elapsed ticks
@@ -105,6 +106,48 @@ syscall_get_core_id:
 
     ba      syscall_simple_return
     ld      [%l3 + SPARC_VCPU_ID], %i0               ! virtual core id
+
+/**
+ * @brief Set a secondary core virtual cpu tbr
+ */
+syscall_set_tbr:
+
+    set     SYM(air_shared_area), %l3                ! shared area
+    ld      [%l3 + SHAREDAREA_CORE_CTRL], %l3        ! core control area
+
+    rd      %asr17, %l4
+    srl     %l4, 28, %l4
+    and     %l4, 0xff, %l4                           ! current physical core
+    umul    %l4, CORE_CTRL_SIZE, %l4                 ! core control offset
+    add     %l3, %l4, %l4                            ! current core control area
+
+    ld      [%l4 + CORE_CTRL_PARTITION], %l4         ! current partition
+    ld      [%l4 + PARTITION_CORE_CNT], %l5          ! partition core count
+
+    cmp     %i0, %l5
+    bge     syscall_invalid_config_return            ! no? then its an error
+    nop
+
+    ld      [%l4 + PARTITION_CORE_MAPPING], %l4      ! virtual to real core
+    umul    %i0, 0x04, %i0                           ! dest core memory offset
+    ld      [%l4 + %i0], %l4                         ! dest core id
+
+    umul    %l4, CORE_CTRL_SIZE, %l5                 ! dest core control offset
+    add     %l3, %l5, %l5                            ! dest core control area
+
+    ld      [%l5 + CORE_CTRL_CONTEXT], %l5           ! dest core context
+    set     PMK_IPC_SET_TBR, %l6                     ! IPC to set tbr
+
+    st      %l6, [%l5 + PMK_CORE_CTX_IPC_EVENT]      ! set dest IPC event
+
+    sethi   %hi(IRQ_force_register), %l5
+    ld      [%l5 + %lo(IRQ_force_register)], %l5     ! get force IRQ register
+
+    mov     1, %l6
+    umul    %l4, 0x04, %l4                           ! force IRQ register offset
+    sll     %l6, BSP_IPC_IRQ - 0x10, %l6             ! IRQ of IPC
+    ba      syscall_no_error_return
+    st      %l6, [%l5 + %l4]                         ! force IRQ on core
 
 /**
  * @brief Boot secondary core
