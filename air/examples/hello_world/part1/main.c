@@ -43,7 +43,7 @@ void entry_point(void)
             struct timespec start;
             clock_gettime( CLOCK_REALTIME, &start );
 
-            printf( "\n\n*** RTEMS5 HELLO WORLD TEST **********\n" );
+            printf( "\n\n*** RTEMS5 HELLO WORLD TEST **** PART1 ***\n" );
             printf( "Time is : %s:%ld\n", my_ctime(start.tv_sec), start.tv_nsec);
 
         #endif
