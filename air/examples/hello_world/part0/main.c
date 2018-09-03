@@ -21,8 +21,6 @@
 #include <rtems/score/timespec.h>
 #endif
 
-int andp=7;
-
 #ifndef RTEMS48I
 static char *my_ctime( time_t t )
 {
@@ -35,10 +33,10 @@ static char *my_ctime( time_t t )
 
 void entry_point(void) 
 {
+    int ticks_per_sec = 1000000 / air_syscall_get_us_per_tick();
+
 	while(1)
 	{
-        
-
         #ifdef RTEMS48I
             pprintf( "\n\n*** RTEMS48I HELLO WORLD TEST **********\n" );
         #else
@@ -47,12 +45,9 @@ void entry_point(void)
 
             printf( "\n\n*** RTEMS5 HELLO WORLD TEST **********\n" );
             printf( "Time is : %s:%ld\n", my_ctime(start.tv_sec), start.tv_nsec);
-            
+
         #endif
 
-        rtems_task_wake_after(10);
-
+        rtems_task_wake_after(ticks_per_sec/10);
     }
 }
-
-
