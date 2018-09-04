@@ -11,6 +11,12 @@ ${template.Rule('all', True, None)}
 ${template.RunMakeInDir(directory, 'all')}
 %endfor
 
+# No Configure
+${template.Rule('noconf', True, None)}
+%for i, directory in enumerate(directories):
+${template.RunMakeInDir(directory, 'noconf')}
+%endfor
+
 # Clean
 ${template.Rule('clean', True, None)}
 %for i, directory in enumerate(directories):

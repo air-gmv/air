@@ -19,6 +19,9 @@ ${template.MakefileInc()}
 # All
 ${template.Rule('all', True, [ 'pmk', 'pos', 'libs', 'tools' ])}
 
+# No Configure
+${template.Rule('noconf', True, [ 'pmk', 'posnc', 'libs', 'tools' ])}
+
 # PMK
 ${template.Rule('pmk', True, None)}
 ${template.RunMakeInDir(air.PMK_DIR_NAME, 'all')}
@@ -26,6 +29,10 @@ ${template.RunMakeInDir(air.PMK_DIR_NAME, 'all')}
 # POS
 ${template.Rule('pos', True, [ 'pmk' ])}
 ${template.RunMakeInDir(air.POS_DIR_NAME, 'all')}
+
+# POS No Configure
+${template.Rule('posnc', True, [ 'pmk' ])}
+${template.RunMakeInDir(air.POS_DIR_NAME, 'noconf')}
 
 # Libraries
 ${template.Rule('libs', True, [ 'pmk', 'pos' ])}
@@ -54,7 +61,6 @@ ${template.RunMakeInDir(os.path.join(air.TOOLS_DIR_NAME, 'partition_assembler'),
 ${template.Remove(air.INSTALL_DIRECTORY)}
 ${template.Remove('Makefile')}
 ${template.Remove('Makefile.inc')}
-${template.Remove('Makefile2.inc')}
 ${template.Remove('.air_config')}
 
 

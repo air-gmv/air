@@ -7,13 +7,13 @@
     base_dir = os.path.join(
         os.path.relpath(air.INSTALL_DIRECTORY, output_dir),
         os.path.relpath(output_dir, air.ROOT_DIRECTORY))
-    
+
     # rtems build dir
     build_dir = os.path.join(
         os.path.relpath(air.INSTALL_DIRECTORY, output_dir),
         os.path.relpath(output_dir, air.ROOT_DIRECTORY),
         'rtems5-build')
-    
+
     # rtems install dir
     install_dir = os.path.join(
         air.INSTALL_DIRECTORY,
@@ -24,7 +24,7 @@
     libair_headers = os_configuration.get_libair_headers()
 %>\
 <%namespace name="template" file="/makefile.mako"/>\
-${template.FileHeader("POS RTEMS-5.0 ")}\
+${template.FileHeader("POS RTEMS-5.0")}\
 
 # Makefile Include file
 ${template.MakefileInc()}
@@ -63,6 +63,11 @@ ${'\t'}fi
 ${'\t'}make -C $(RTEMS_BUILD_DIR) CPPFLAGS='$(AIR_HEADERS)' && ${'\\'}
 ${'\t'}make -C $(RTEMS_BUILD_DIR) install
 
+# RTEMS 5 with no configure
+${template.Rule('noconf', True, None)}
+${template.Remove(install_dir)}
+${'\t'}make -C $(RTEMS_BUILD_DIR) CPPFLAGS='$(AIR_HEADERS)' && ${'\\'}
+${'\t'}make -C $(RTEMS_BUILD_DIR) install
 
 # Clean
 ${template.Rule('clean', True, None)}

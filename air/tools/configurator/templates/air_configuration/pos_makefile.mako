@@ -44,6 +44,9 @@ ${template.FileList(public_headers)}\
 # All
 ${template.Rule('all', True, ['$(TARGET_LIBRARY)'])}
 
+# No Configure
+${template.Rule('noconf', True, ['$(TARGET_LIBRARY)'])}
+
 # Library
 ${template.Rule('$(TARGET_LIBRARY)', False, ['$(TARGET_OBJECTS)', '$(TARGET_HEADERS)'])}
 ${template.MakeLibrary('$@', '$(TARGET_OBJECTS)')}

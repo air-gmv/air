@@ -18,7 +18,7 @@ ${makoutils.cfileHeader("rtems_config.h", "RTEMS configuration")}
  */
 #define CONFIGURE_MICROSECONDS_PER_TICK ${tps_to_mpt()}
 
-#define CONFIGURE_MAXIMUM_PROCESSORS ${app_configuration.core_count}
+#define CONFIGURE_MAXIMUM_PROCESSORS 4
 #define CONFIGURE_MAXIMUM_POSIX_THREADS     10
 #define CONFIGURE_POSIX_INIT_THREAD_TABLE
 #define CONFIGURE_APPLICATION_NEEDS_SIMPLE_CONSOLE_DRIVER

@@ -13,12 +13,14 @@
 #define CONFIGURE_INIT
 #include <air.h>
 
+#define RTEMS48I
+
 #ifdef RTEMS48I
 	#include <pprintf.h>
 #else
-#include <time.h>
-#include <sys/time.h>
-#include <rtems/score/timespec.h>
+    #include <time.h>
+    #include <sys/time.h>
+    #include <rtems/score/timespec.h>
 #endif
 
 #ifndef RTEMS48I

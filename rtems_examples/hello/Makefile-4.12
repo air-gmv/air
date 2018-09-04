@@ -1,0 +1,40 @@
+#
+#  RTEMS_MAKEFILE_PATH is typically set in an environment variable
+#  Customized Makefile of GMV from version 4.8 to 4.11
+#
+
+PGM=${ARCH}/rtems_hello.exe
+
+# optional managers required
+MANAGERS=all
+
+# C source names
+CSRCS = init.c base.c gcc_4_7.c
+COBJS = $(CSRCS:%.c=${ARCH}/%.o) 
+#MP_UART=0x80000100 0x80100100
+#MKPROMFLAGS=-baud 38400 -freq 48 -romwidth 8 -romsize 8192 -ramwidth 32 -ramcs 1 -ramsize 8192
+
+
+
+include $(RTEMS_MAKEFILE_PATH)/Makefile.inc
+include $(RTEMS_CUSTOM)
+include $(PROJECT_ROOT)/make/leaf.cfg
+
+DEPFLAGS = -MT $@ -MD -MP -MF $(basename $@).d
+SYSFLAGS = -B $(PROJECT_LIB) -specs bsp_specs -qrtems
+WARNFLAGS = -Wall
+OPTFLAGS = -O2 -g -ffunction-sections -fdata-sections
+
+CPPFLAGS = -I$(RTEMS_MAKEFILE_PATH)/lib/include/bsp/ $(DEPFLAGS) -ftest-coverage -fprofile-arcs
+#CPU_CFLAGS = -mcpu=v8 -msoft-float -gdwarf-2 
+#CPU_CFLAGS = -mcpu=v8 -msoft-float
+
+
+#CFLAGS_OPTIMIZE_V += -I$(RTEMS_MAKEFILE_PATH)/lib/include/bsp/
+
+OBJS=   $(COBJS) $(CXXOBJS) $(ASOBJS)
+
+all:    ${ARCH} $(PGM)
+
+$(PGM): $(OBJS)
+	$(make-exe)

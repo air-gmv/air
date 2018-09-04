@@ -24,13 +24,13 @@ cores = 1
 
 # Kernel Compiler with FPU
 kernel_compiler = dict(
-    CC="sparc-rtems5-gcc --pipe",
-    CXX="sparc-rtems5-g++ --pipe",
-    LD="sparc-rtems5-gcc --pipe",
+    CC="sparc-rtems5-gcc --pipe ",
+    CXX="sparc-rtems5-g++ --pipe ",
+    LD="sparc-rtems5-gcc --pipe ",
     AR="sparc-rtems5-ar",
     RANLIB="sparc-rtems5-ranlib",
     CFLAGS="",
-    CPPFLAGS="-mcpu=leon3 -mflat -g -fno-builtin -nodefaultlibs -O2 -Wall -DAIR_HYPERVISOR",
+    CPPFLAGS="-mcpu=leon3 -mflat -g -fno-builtin -nodefaultlibs -O2 -Wall",
     CXXFLAGS="",
     LDFLAGS="",
     ARFLAGS="ruv"
@@ -39,9 +39,9 @@ kernel_compiler = dict(
 
 # Kernel Compiler with NO FPU
 kernel_compiler_no_fpu = dict(
-	CC="sparc-rtems5-gcc --pipe",
-	CXX="sparc-rtems5-g++ --pipe",
-	LD="sparc-rtems5-gcc --pipe",
+	CC="sparc-rtems5-gcc --pipe ",
+	CXX="sparc-rtems5-g++ --pipe ",
+	LD="sparc-rtems5-gcc --pipe ",
 	AR="sparc-rtems5-ar",
 	RANLIB="sparc-rtems5-ranlib",
 	CFLAGS="",
