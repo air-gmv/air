@@ -1,0 +1,155 @@
+---------------------------------------------------
+-- AADL2.2
+-- TASTE type concurrencyview
+-- 
+-- generated code: do not edit
+---------------------------------------------------
+
+PROPERTY SET AI IS
+  Root_System : AADLSTRING
+    APPLIES TO(SYSTEM IMPLEMENTATION);
+  Disabled_Processing_Tools : LIST OF AADLSTRING
+    APPLIES TO(SYSTEM IMPLEMENTATION);
+END AI;
+
+
+PACKAGE concurrencyview::CV
+PUBLIC
+WITH AI;
+WITH DataView;
+WITH ocarina_processors_leon;
+WITH deploymentview::DV::Node1;
+
+PROCESSOR Node1_gr740_rtems51_posix_cv
+EXTENDS ocarina_processors_leon::gr740
+END Node1_gr740_rtems51_posix_cv;
+
+PROCESSOR IMPLEMENTATION Node1_gr740_rtems51_posix_cv.final
+EXTENDS ocarina_processors_leon::gr740.rtems51_posix
+END Node1_gr740_rtems51_posix_cv.final;
+
+PROCESS gr740_partition
+EXTENDS deploymentview::DV::Node1::gr740_partition
+END gr740_partition;
+
+PROCESS IMPLEMENTATION gr740_partition.final
+SUBCOMPONENTS
+  vt_gr740_candriver_update : THREAD vt_gr740_candriver_update_vt_gr740_candriver_update.others;
+  vt_gr740_candriver_commands : THREAD vt_gr740_candriver_commands_vt_gr740_candriver_commands.others;
+  vt_candriver_test_samples : THREAD vt_candriver_test_samples_vt_candriver_test_samples.others;
+  gr740_candriver_pi_update : SUBPROGRAM gr740_candriver_pi_update.final;
+  gr740_candriver_pi_commands : SUBPROGRAM gr740_candriver_pi_commands.final;
+  candriver_test_pi_samples : SUBPROGRAM candriver_test_pi_samples.final;
+CONNECTIONS
+  PORT vt_candriver_test_samples.OUTPORT_commands_vt -> vt_gr740_candriver_commands.INPORT_artificial_commands;
+  PORT vt_gr740_candriver_update.OUTPORT_samples_vt -> vt_candriver_test_samples.INPORT_artificial_samples;
+  PORT vt_gr740_candriver_commands.OUTPORT_samples_vt -> vt_candriver_test_samples.INPORT_artificial_samples;
+END gr740_partition.final;
+
+SYSTEM deploymentview
+END deploymentview;
+
+SYSTEM IMPLEMENTATION deploymentview.final
+SUBCOMPONENTS
+  gr740_partition : PROCESS gr740_partition.final;
+  Node1_gr740_rtems51_posix_cv : PROCESSOR Node1_gr740_rtems51_posix_cv.final;
+PROPERTIES
+  AI::ROOT_SYSTEM => "generated";
+  ACTUAL_PROCESSOR_BINDING => (REFERENCE(Node1_gr740_rtems51_posix_cv)) APPLIES TO gr740_partition;
+END deploymentview.final;
+
+THREAD vt_gr740_candriver_update_vt_gr740_candriver_update
+FEATURES
+  OUTPORT_samples_vt : OUT EVENT PORT ;
+END vt_gr740_candriver_update_vt_gr740_candriver_update;
+
+THREAD IMPLEMENTATION vt_gr740_candriver_update_vt_gr740_candriver_update.others
+CALLS
+  MyCalls : { 
+    MyCall : SUBPROGRAM gr740_candriver_pi_update;
+  };
+PROPERTIES
+  DISPATCH_PROTOCOL => Periodic;
+  PERIOD => 1000ms;
+  DEADLINE => 0ms;
+  COMPUTE_EXECUTION_TIME => 0ms..0ms;
+END vt_gr740_candriver_update_vt_gr740_candriver_update.others;
+
+THREAD vt_gr740_candriver_commands_vt_gr740_candriver_commands
+FEATURES
+  INPORT_artificial_commands : IN EVENT PORT  {
+    QUEUE_SIZE => 1;
+  };
+  OUTPORT_samples_vt : OUT EVENT PORT ;
+END vt_gr740_candriver_commands_vt_gr740_candriver_commands;
+
+THREAD IMPLEMENTATION vt_gr740_candriver_commands_vt_gr740_candriver_commands.others
+CALLS
+  MyCalls : { 
+    MyCall : SUBPROGRAM gr740_candriver_pi_commands;
+  };
+PROPERTIES
+  DISPATCH_PROTOCOL => Sporadic;
+  PERIOD => 0ms;
+  DEADLINE => 0ms;
+  COMPUTE_EXECUTION_TIME => 0ms..0ms;
+END vt_gr740_candriver_commands_vt_gr740_candriver_commands.others;
+
+THREAD vt_candriver_test_samples_vt_candriver_test_samples
+FEATURES
+  INPORT_artificial_samples : IN EVENT PORT  {
+    QUEUE_SIZE => 1;
+  };
+  OUTPORT_commands_vt : OUT EVENT PORT ;
+END vt_candriver_test_samples_vt_candriver_test_samples;
+
+THREAD IMPLEMENTATION vt_candriver_test_samples_vt_candriver_test_samples.others
+CALLS
+  MyCalls : { 
+    MyCall : SUBPROGRAM candriver_test_pi_samples;
+  };
+PROPERTIES
+  DISPATCH_PROTOCOL => Sporadic;
+  PERIOD => 0ms;
+  DEADLINE => 0ms;
+  COMPUTE_EXECUTION_TIME => 0ms..0ms;
+END vt_candriver_test_samples_vt_candriver_test_samples.others;
+
+SUBPROGRAM gr740_candriver_pi_update
+PROPERTIES
+  COMPUTE_EXECUTION_TIME => 0ms..0ms;
+  SOURCE_LANGUAGE => (C);
+  SOURCE_NAME => "gr740_candriver_pi_update";
+  SOURCE_TEXT => ("gr740_candriver/gr740_candriver.c");
+END gr740_candriver_pi_update;
+
+SUBPROGRAM IMPLEMENTATION gr740_candriver_pi_update.final
+END gr740_candriver_pi_update.final;
+
+SUBPROGRAM gr740_candriver_pi_commands
+PROPERTIES
+  COMPUTE_EXECUTION_TIME => 0ms..0ms;
+  SOURCE_LANGUAGE => (C);
+  SOURCE_NAME => "gr740_candriver_pi_commands";
+  SOURCE_TEXT => ("gr740_candriver/gr740_candriver.c");
+END gr740_candriver_pi_commands;
+
+SUBPROGRAM IMPLEMENTATION gr740_candriver_pi_commands.final
+END gr740_candriver_pi_commands.final;
+
+SUBPROGRAM candriver_test_pi_samples
+PROPERTIES
+  COMPUTE_EXECUTION_TIME => 0ms..0ms;
+  SOURCE_LANGUAGE => (C);
+  SOURCE_NAME => "candriver_test_pi_samples";
+  SOURCE_TEXT => ("candriver_test/candriver_test.c");
+END candriver_test_pi_samples;
+
+SUBPROGRAM IMPLEMENTATION candriver_test_pi_samples.final
+END candriver_test_pi_samples.final;
+
+END concurrencyview::CV;
+
+
+
+
