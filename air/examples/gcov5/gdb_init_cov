@@ -1,0 +1,30 @@
+set print pretty on
+set pagination off
+set confirm off
+set print elements 0
+tar extended-remote :1234
+def reset
+   monitor l2cache invalidate
+   monitor l2cache enable
+   monitor ep 0x40000000
+   monitor reset
+   load
+end
+
+def coverage
+    hb base.c:110
+    commands
+        set $filename = tmp->info->filename
+        set $dataBegin = buffer
+        set $dataEnd = buffer + bytesNeeded
+        eval "dump binary memory %s 0x%lx 0x%lx", $filename, $dataBegin, $dataEnd
+        echo dump binary memory $filename $dataBegin $dataEnd
+        echo \n
+        c
+    end
+    reset
+    c
+end
+
+
+

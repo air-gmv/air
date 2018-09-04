@@ -4,7 +4,7 @@
   <!-- Partition 0  -->  
   <Partition PartitionIdentifier="1" PartitionName="part0" 
     Criticality="LEVEL_A" EntryPoint="entry_point" SystemPartition="false">
-    <PartitionConfiguration Personality="RTEMS5" Cores="1" Mode="source">
+    <PartitionConfiguration Personality="RTEMS48i" Cores="1" Mode="source">
         <Libs>LIBAIR; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
