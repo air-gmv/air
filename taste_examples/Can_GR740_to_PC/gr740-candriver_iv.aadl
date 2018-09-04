@@ -1,0 +1,179 @@
+---------------------------------------------------
+-- AADL2.1
+-- TASTE type interfaceview
+-- 
+-- generated code: do not edit
+---------------------------------------------------
+
+PACKAGE interfaceview::IV::gr740_candriver
+PUBLIC
+
+WITH interfaceview::IV::candriver_test;
+WITH Taste;
+WITH DataView;
+WITH TASTE_IV_Properties;
+SUBPROGRAM PI_update
+PROPERTIES
+  Taste::Associated_Queue_Size => 1;
+END PI_update;
+
+SUBPROGRAM IMPLEMENTATION PI_update.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 0 ms;
+END PI_update.others;
+
+SUBPROGRAM PI_commands
+FEATURES
+  cmds : IN PARAMETER DataView::T_Int32 {
+    Taste::encoding => NATIVE;
+  };
+PROPERTIES
+  Taste::Associated_Queue_Size => 1;
+END PI_commands;
+
+SUBPROGRAM IMPLEMENTATION PI_commands.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 0 ms;
+END PI_commands.others;
+
+SUBPROGRAM RI_samples
+FEATURES
+  smpls : IN PARAMETER DataView::T_Int32 {
+    Taste::encoding => NATIVE;
+  };
+END RI_samples;
+
+SUBPROGRAM IMPLEMENTATION RI_samples.others
+END RI_samples.others;
+
+SYSTEM gr740_candriver
+FEATURES
+  PI_update : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::gr740_candriver::PI_update.others {
+    Taste::coordinates => "106454 72283";
+    Taste::RCMoperationKind => cyclic;
+    Taste::RCMperiod => 1000 ms;
+    Taste::Deadline => 0 ms;
+    Taste::InterfaceName => "update";
+  };
+  PI_commands : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::gr740_candriver::PI_commands.others {
+    Taste::coordinates => "106454 56380";
+    Taste::RCMoperationKind => sporadic;
+    Taste::RCMperiod => 0 ms;
+    Taste::Deadline => 0 ms;
+    Taste::InterfaceName => "commands";
+  };
+  RI_samples : REQUIRES SUBPROGRAM ACCESS interfaceview::IV::candriver_test::PI_samples.others {
+    Taste::coordinates => "106454 77010";
+    Taste::RCMoperationKind => any;
+    Taste::InterfaceName => "samples";
+    Taste::labelInheritance => "true";
+  };
+PROPERTIES
+  Source_Language => (C);
+  Taste::Active_Interfaces => any;
+  Source_Text => ("gr740_candriver.zip");
+END gr740_candriver;
+
+SYSTEM IMPLEMENTATION gr740_candriver.others
+SUBCOMPONENTS
+  flagsToCompileWith : DATA DataView::Taste_directive {
+    Taste::FS_Default_Value => "compiler-option: ""-I/opt/rtems-5.1-2018.03.08/sparc-rtems5/gr740/lib/include -DCONFIGURE_DRIVER_AMBAPP_GAISLER_GRCAN""";
+  };
+END gr740_candriver.others;
+
+END interfaceview::IV::gr740_candriver;
+
+PACKAGE interfaceview::IV::candriver_test
+PUBLIC
+
+WITH interfaceview::IV::gr740_candriver;
+WITH Taste;
+WITH DataView;
+WITH TASTE_IV_Properties;
+SUBPROGRAM PI_samples
+FEATURES
+  smpls : IN PARAMETER DataView::T_Int32 {
+    Taste::encoding => NATIVE;
+  };
+PROPERTIES
+  Taste::Associated_Queue_Size => 1;
+END PI_samples;
+
+SUBPROGRAM IMPLEMENTATION PI_samples.others
+PROPERTIES
+  Compute_Execution_Time => 0 ms .. 0 ms;
+END PI_samples.others;
+
+SUBPROGRAM RI_commands
+FEATURES
+  cmds : IN PARAMETER DataView::T_Int32 {
+    Taste::encoding => NATIVE;
+  };
+END RI_commands;
+
+SUBPROGRAM IMPLEMENTATION RI_commands.others
+END RI_commands.others;
+
+SYSTEM candriver_test
+FEATURES
+  PI_samples : PROVIDES SUBPROGRAM ACCESS interfaceview::IV::candriver_test::PI_samples.others {
+    Taste::coordinates => "75903 77641";
+    Taste::RCMoperationKind => sporadic;
+    Taste::RCMperiod => 0 ms;
+    Taste::Deadline => 0 ms;
+    Taste::InterfaceName => "samples";
+  };
+  RI_commands : REQUIRES SUBPROGRAM ACCESS interfaceview::IV::gr740_candriver::PI_commands.others {
+    Taste::coordinates => "75903 56220";
+    Taste::RCMoperationKind => any;
+    Taste::InterfaceName => "commands";
+    Taste::labelInheritance => "true";
+  };
+PROPERTIES
+  Source_Language => (C);
+  Taste::Active_Interfaces => any;
+END candriver_test;
+
+SYSTEM IMPLEMENTATION candriver_test.others
+END candriver_test.others;
+
+END interfaceview::IV::candriver_test;
+
+PACKAGE interfaceview::IV
+PUBLIC
+
+WITH interfaceview::IV::gr740_candriver;
+WITH interfaceview::IV::candriver_test;
+WITH Taste;
+WITH DataView;
+WITH TASTE_IV_Properties;
+SYSTEM interfaceview
+PROPERTIES
+  Taste::dataView => ("DataView");
+  Taste::dataViewPath => ("gr740-candriver_dv.aadl");
+END interfaceview;
+
+SYSTEM IMPLEMENTATION interfaceview.others
+SUBCOMPONENTS
+  gr740_candriver : SYSTEM interfaceview::IV::gr740_candriver::gr740_candriver.others {
+    Taste::coordinates => "106454 48660 149445 82517";
+  };
+  candriver_test : SYSTEM interfaceview::IV::candriver_test::candriver_test.others {
+    Taste::coordinates => "31495 48346 75903 82675";
+  };
+CONNECTIONS
+  gr740_candriver_PI_commands_candriver_test_RI_commands : SUBPROGRAM ACCESS gr740_candriver.PI_commands -> candriver_test.RI_commands {
+    Taste::coordinates => "75903 56220 91178 56220 91178 56380 106454 56380";
+  };
+  candriver_test_PI_samples_gr740_candriver_RI_samples : SUBPROGRAM ACCESS candriver_test.PI_samples -> gr740_candriver.RI_samples {
+    Taste::coordinates => "106454 77010 91178 77010 91178 77641 75903 77641";
+  };
+END interfaceview.others;
+
+PROPERTIES
+  Taste::dataView => ("DataView");
+  Taste::dataViewPath => ("gr740-candriver_dv.aadl");
+  Taste::coordinates => "0 0 297000 210000";
+  Taste::version => "2.0";
+END interfaceview::IV;
+
