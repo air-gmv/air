@@ -36,14 +36,14 @@
 #include <rtems.h>
 #include <pprintf.h>
 
+#include "malloc.h"
+
 typedef struct tagGcovInfo {
     struct gcov_info *info;
     struct tagGcovInfo *next;
 } GcovInfo;
 
-GcovInfo *headGcov = NULL;
-
-char* buffer=NULL;
+struct GcovInfo *headGcov = NULL;
 
 void get_filename(char * original, char * new){
     int i =0;
@@ -82,14 +82,13 @@ void __gcov_init(struct gcov_info *info)
         char name[24];
         get_filename(gcov_info_filename(info), name);
      
-        pprintf("__gcov_init called for %s!\n", gcov_info_filename(info));
+        pprintf("__gcov_init called for %s!\n", gcov_info_filename(info)); 
         GcovInfo *newHead = malloc(sizeof(GcovInfo));
-    
         if (!newHead) {
             pprintf("Out of memory!\n");
             return;
         }
-        newHead->info = info;
+        newHead->info=info;
         newHead->next = headGcov;
         headGcov = newHead;
 }
@@ -97,10 +96,11 @@ void __gcov_init(struct gcov_info *info)
 void __gcov_exit()
 {
         GcovInfo *tmp = headGcov;
+        pprintf("head gcov %d %d\n", headGcov, tmp->next);
         pprintf("on gcov_exit for %s\n", gcov_info_filename(tmp->info));
         while(tmp) {
                 unsigned bytesNeeded = convert_to_gcda(NULL, tmp->info);
-                buffer=malloc(bytesNeeded);
+                char buffer[bytesNeeded];
                 if (!buffer) {
                     pprintf("Out of memory!");
                     return;
@@ -108,7 +108,6 @@ void __gcov_exit()
 
                 convert_to_gcda(buffer, tmp->info);
                 pprintf("Emitting %6d bytes for %s\n", bytesNeeded, gcov_info_filename(tmp->info));
-                free(buffer);
                 tmp = tmp->next;
         
         }
