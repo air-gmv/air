@@ -6,6 +6,10 @@
 .PHONY : all
 all: 
 
+# NoConf
+.PHONY : noconf
+noconf: 
+
 # Clean
 .PHONY : clean
 clean:

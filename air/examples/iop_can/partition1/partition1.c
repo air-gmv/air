@@ -30,7 +30,7 @@ void grcan_send_msg(PARTITION_ID_TYPE self_id){
 
 	pprintf("This is Partition %d - Sender Task\n", self_id);
 	int i = 0;
-	char sample1[] = "GMV";
+	char sample1[] = { 0x11, 0x22, 0x33, 0x44, 0x55};
 //	char sample2[] = "GMVS";
 //	char sample3[] = "TEST0";
 

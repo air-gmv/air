@@ -18,18 +18,6 @@ include $(AIR_ROOT)/Makefile.inc
 %endif
 </%def>
 
-<%def name="MakefileInc2(in_app=False)">\
-<%
-    import os
-    import air
-%>\
-%if not in_app:
-include ${os.path.join(os.path.relpath(air.ROOT_DIRECTORY, output_dir), 'Makefile2.inc')} \
-%else:
-include $(AIR_ROOT)/Makefile2.inc
-%endif
-</%def>
-
 <%def name="RTEMSMakefileInclude()">\
 <%
     import os

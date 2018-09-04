@@ -4,7 +4,7 @@
 		reader_task='gr1553{0}_read_task'.format(device.setup.mode.lower()),
 		writer_task='gr1553{0}_write_task'.format(device.setup.mode.lower()),
 		
-		header_prebuild= 'gr1553_compare_header',
+		header_prebuild='NULL',
 		header_compare='gr1553_compare_header',
 		header_copy='gr1553_copy_header')
 

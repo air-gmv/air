@@ -90,8 +90,9 @@ void test(PARTITION_ID_TYPE self_id) {
 	char sample[3] = "S0 ";
 
 	/* get the number of ticks per second */
-	int tps = 1000000 / air_syscall_get_us_per_tick();
+	uint32_t tps = 1000000 / air_syscall_get_us_per_tick();
 	pprintf("TPS %i\n", tps);
+    uint32_t interval = 0;
 
 	RETURN_CODE_TYPE rc = NO_ERROR;
 	rtems_interval time;
@@ -116,8 +117,12 @@ void test(PARTITION_ID_TYPE self_id) {
 			i=0;
 		}
 		sample[1] = 0x30 + i;
+        // 0.7 * tsp does not work!
+        interval = tps * 7;
+        interval = interval / 10;
+        pprintf("interval %i\n", interval);
 		
-		rtems_task_wake_after(0.7 * tps);
+		rtems_task_wake_after(interval);
 	}
 }
 

@@ -28,7 +28,7 @@ ${makoutils.cfileHeader("rtems_config.h", "RTEMS configuration")}
 
 #define CONFIGURE_RTEMS_INIT_TASKS_TABLE
 
-#define CONFIGURE_MAXIMUM_PROCESSORS ${partition.core_count}
+#define CONFIGURE_MAXIMUM_PROCESSORS 4
 
 #define CONFIGURE_INIT
 
