@@ -13,8 +13,6 @@
 #define CONFIGURE_INIT
 #include <air.h>
 
-#define RTEMS48I
-
 #ifdef RTEMS48I
 	#include <pprintf.h>
 #else
