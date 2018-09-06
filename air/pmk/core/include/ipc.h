@@ -27,7 +27,8 @@ typedef enum {
     PMK_IPC_BOOT_PARTITION_CORE                         = 0x01,
     PMK_IPC_TRASH_PARTITION_CORE                        = 0x02,
     PMK_IPC_MODULE_SHUTDOWN                             = 0x03,
-    PMK_IPC_MODULE_RESTART                              = 0x04
+    PMK_IPC_MODULE_RESTART                              = 0x04,
+    PMK_IPC_SET_TBR                                     = 0x05
 
 } pmk_ipc_message;
 
@@ -38,6 +39,7 @@ typedef enum {
 #define PMK_IPC_TRASH_PARTITION_CORE                      0x02
 #define PMK_IPC_MODULE_SHUTDOWN                           0x03
 #define PMK_IPC_MODULE_RESTART                            0x04
+#define PMK_IPC_SET_TBR                                   0x05
 
 #endif  /* ASM */
 #endif  /* __IPC_H__ */
