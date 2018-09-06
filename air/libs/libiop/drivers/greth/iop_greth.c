@@ -525,7 +525,10 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
 
 uint32_t greth_initialize(iop_device_driver_t *iop_dev, void *arg) {
 	
-	int device_found = 0;
+	/* Enable Eth Clock gate */
+        clock_gating_enable(&amba_conf, GATE_ETH0);
+    
+        int device_found = 0;
 	rtems_status_code status = RTEMS_SUCCESSFUL;
 	amba_apb_device apbgreth;
 	
