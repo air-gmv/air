@@ -67,7 +67,7 @@ void core_context_init(core_context_t *context, air_u32_t id) {
     /* initialize the IPC event */
     context->ipc_event          = PMK_IPC_NO_ACTION;
 
-    /* initialize the System State and HM event */
+    /* iitialize the System State and HM event */
     context->state = AIR_STATE_MODULE_EXEC;
     pmk_hm_event_t *hm_event = (pmk_hm_event_t *) \
             pmk_workspace_alloc(sizeof(pmk_hm_event_t));
@@ -189,20 +189,20 @@ void core_context_setup_partition(
         stack_high &= ~(SPARC_STACK_ALIGNMENT - 1);
         isf->i6_fp = stack_high;
 
-
         /* setup the initial cache state */
         switch (partition->init_cache) {
             case AIR_CACHE_ALL:
-                context->vcpu.cctrl = 0xF;
+                /* 0xC + Snooping + bit 21 = 0xA0000C*/
+                context->vcpu.cctrl = 0xA0000C;
                 break;
             case AIR_CACHE_DATA:
-                context->vcpu.cctrl = 0xC;
+                context->vcpu.cctrl = 0xC | 0x800000;
                 break;
             case AIR_CACHE_INSTRUCTION:
-                context->vcpu.cctrl = 0x3;
+                context->vcpu.cctrl = 0x3 | 0x800000;
                 break;
             default:
-                context->vcpu.cctrl = 0;
+                context->vcpu.cctrl = 0 | 0x800000;
                 break;
         }
 
