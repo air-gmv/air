@@ -37,6 +37,13 @@ SYM(air_syscall_get_core_id):
     retl
     nop
 
+    GLOBAL(air_syscall_set_tbr)
+SYM(air_syscall_set_tbr):
+
+    set     AIR_SYSCALL_SET_TBR, %o5
+    ta      AIR_SYSCALL_OS_TRAP - 0x80
+    retl
+    nop
 
     GLOBAL(air_syscall_boot_core)
 SYM(air_syscall_boot_core):

@@ -13,9 +13,11 @@
  */
 
 #include <air.h>
+#include <printk.h>
 
 #define LEON_CACHE_DATA_MASK        0xC
 #define LEON_CACHE_INST_MASK        0x3
+#define LEON_CACHE_SNOOPING_MASK    0x800000
 
 /**
  * @brief Enable cache
@@ -31,13 +33,13 @@ air_status_code_e air_syscall_enable_cache(air_cache_e type) {
     switch (type) {
 
         case AIR_CACHE_ALL:
-            action = LEON_CACHE_DATA_MASK | LEON_CACHE_INST_MASK;
+            action = LEON_CACHE_DATA_MASK | LEON_CACHE_INST_MASK | LEON_CACHE_SNOOPING_MASK;
             break;
         case AIR_CACHE_DATA:
-            action = LEON_CACHE_DATA_MASK;
+            action = LEON_CACHE_DATA_MASK | LEON_CACHE_SNOOPING_MASK;
             break;
         case AIR_CACHE_INSTRUCTION:
-            action = LEON_CACHE_INST_MASK;
+            action = LEON_CACHE_INST_MASK | LEON_CACHE_SNOOPING_MASK;
             break;
         default:
             return AIR_INVALID_PARAM;

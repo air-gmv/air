@@ -33,13 +33,16 @@ static void *sparc_partition_isr_virtualization(
 
     /* get core context */
     core_context_t *core_ctx = core_ctrl->context;
-
     /* get the trap number from the ISF */
     air_u32_t tn = SPARC_REAL_TRAP_NUMBER(isf->tpc);
 
     if (tn == BSP_IPC_PCS) {
         isf->tpc = timer_ctrl.irq;
+        tn = timer_ctrl.irq;
     }
+    else
+        if(tn == BSP_IPC_IRQ)
+            return NULL;
 
     /* get an easy pointer to the virtual core structure */
     sparc_virtual_cpu_t *vcpu = &core_ctx->vcpu;

@@ -738,7 +738,13 @@ air_u32_t air_syscall_get_core_id(void);
  *         NO_ERROR        - otherwise
  */
 air_status_code_e air_syscall_boot_core(air_u32_t idx, void *entry_point);
-
+/**
+ * @brief Copy boot core virtual tbr to secondary core
+ * @param idx secondary core index
+ * @return INVALID_CONFIG  - if the partition doesn't have access to core idx,
+ *         NO_ERROR        - otherwise
+ */
+air_status_code_e air_syscall_set_tbr(air_u32_t idx);
 /** @} */
 
 /**
@@ -799,36 +805,37 @@ void air_syscall_shutdown_module(void);
 #define AIR_SYSCALL_UNMASK_IRQ                     (AIR_SYSCALL_ARCH_COUNT + 2 )
 #define AIR_SYSCALL_GET_P_ADDR                     (AIR_SYSCALL_ARCH_COUNT + 3 )
 #define AIR_SYSCALL_GET_CORE_ID                    (AIR_SYSCALL_ARCH_COUNT + 4 )
-#define AIR_SYSCALL_BOOT_CORE                      (AIR_SYSCALL_ARCH_COUNT + 5 )
-#define AIR_SYSCALL_GET_US_PER_TICK                (AIR_SYSCALL_ARCH_COUNT + 6 )
-#define AIR_SYSCALL_GET_ELAPSED_TICKS              (AIR_SYSCALL_ARCH_COUNT + 7 )
-#define AIR_SYSCALL_GET_PARTITION_ID               (AIR_SYSCALL_ARCH_COUNT + 8 )
-#define AIR_SYSCALL_GET_PARTITION_STATUS           (AIR_SYSCALL_ARCH_COUNT + 9 )
-#define AIR_SYSCALL_SET_PARTITION_MODE             (AIR_SYSCALL_ARCH_COUNT + 10)
-#define AIR_SYSCALL_GET_SCHEDULE_ID                (AIR_SYSCALL_ARCH_COUNT + 11)
-#define AIR_SYSCALL_GET_SCHEDULE_STATUS            (AIR_SYSCALL_ARCH_COUNT + 12)
-#define AIR_SYSCALL_SET_SCHEDULE                   (AIR_SYSCALL_ARCH_COUNT + 13)
-#define AIR_SYSCALL_GET_TIME_OF_DAY                (AIR_SYSCALL_ARCH_COUNT + 14)
-#define AIR_SYSCALL_SET_TIME_OF_DAY                (AIR_SYSCALL_ARCH_COUNT + 15)
-#define AIR_SYSCALL_GET_PORT_ID                    (AIR_SYSCALL_ARCH_COUNT + 16)
-#define AIR_SYSCALL_GET_PORT_STATUS                (AIR_SYSCALL_ARCH_COUNT + 17)
-#define AIR_SYSCALL_CREATE_PORT                    (AIR_SYSCALL_ARCH_COUNT + 18)
-#define AIR_SYSCALL_READ_PORT                      (AIR_SYSCALL_ARCH_COUNT + 19)
-#define AIR_SYSCALL_WRITE_PORT                     (AIR_SYSCALL_ARCH_COUNT + 20)
-#define AIR_SYSCALL_GET_SHARED_AREA                (AIR_SYSCALL_ARCH_COUNT + 21)
-#define AIR_SYSCALL_RESTART_MODULE                 (AIR_SYSCALL_ARCH_COUNT + 22)
-#define AIR_SYSCALL_SHUTDOWN_MODULE                (AIR_SYSCALL_ARCH_COUNT + 23)
-#define AIR_SYSCALL_GET_EVENT                      (AIR_SYSCALL_ARCH_COUNT + 24)
-#define AIR_SYSCALL_GET_SYSTEM_STATE               (AIR_SYSCALL_ARCH_COUNT + 25)
-#define AIR_SYSCALL_SET_SYSTEM_STATE               (AIR_SYSCALL_ARCH_COUNT + 26)
-#define AIR_SYSCALL_GET_HM_EVENT                   (AIR_SYSCALL_ARCH_COUNT + 27)
-#define AIR_SYSCALL_RAISE_HM_EVENT                 (AIR_SYSCALL_ARCH_COUNT + 28)
-#define AIR_SYSCALL_PUTCHAR                        (AIR_SYSCALL_ARCH_COUNT + 29)
-#define AIR_SYSCALL_PRINT                          (AIR_SYSCALL_ARCH_COUNT + 30)
-#define AIR_SYSCALL_ENABLE_CACHE                   (AIR_SYSCALL_ARCH_COUNT + 31)
-#define AIR_SYSCALL_DISABLE_CACHE                  (AIR_SYSCALL_ARCH_COUNT + 32)
-#define AIR_SYSCALL_FREEZE_CACHE                   (AIR_SYSCALL_ARCH_COUNT + 33)
-#define AIR_SYSCALL_FLUSH_CACHE                    (AIR_SYSCALL_ARCH_COUNT + 34)
-#define AIR_SYSCALL_COUNT                          (AIR_SYSCALL_ARCH_COUNT + 35)
+#define AIR_SYSCALL_SET_TBR                        (AIR_SYSCALL_ARCH_COUNT + 5 )
+#define AIR_SYSCALL_BOOT_CORE                      (AIR_SYSCALL_ARCH_COUNT + 6 )
+#define AIR_SYSCALL_GET_US_PER_TICK                (AIR_SYSCALL_ARCH_COUNT + 7 )
+#define AIR_SYSCALL_GET_ELAPSED_TICKS              (AIR_SYSCALL_ARCH_COUNT + 8 )
+#define AIR_SYSCALL_GET_PARTITION_ID               (AIR_SYSCALL_ARCH_COUNT + 9 )
+#define AIR_SYSCALL_GET_PARTITION_STATUS           (AIR_SYSCALL_ARCH_COUNT + 10 )
+#define AIR_SYSCALL_SET_PARTITION_MODE             (AIR_SYSCALL_ARCH_COUNT + 11)
+#define AIR_SYSCALL_GET_SCHEDULE_ID                (AIR_SYSCALL_ARCH_COUNT + 12)
+#define AIR_SYSCALL_GET_SCHEDULE_STATUS            (AIR_SYSCALL_ARCH_COUNT + 13)
+#define AIR_SYSCALL_SET_SCHEDULE                   (AIR_SYSCALL_ARCH_COUNT + 14)
+#define AIR_SYSCALL_GET_TIME_OF_DAY                (AIR_SYSCALL_ARCH_COUNT + 15)
+#define AIR_SYSCALL_SET_TIME_OF_DAY                (AIR_SYSCALL_ARCH_COUNT + 16)
+#define AIR_SYSCALL_GET_PORT_ID                    (AIR_SYSCALL_ARCH_COUNT + 17)
+#define AIR_SYSCALL_GET_PORT_STATUS                (AIR_SYSCALL_ARCH_COUNT + 18)
+#define AIR_SYSCALL_CREATE_PORT                    (AIR_SYSCALL_ARCH_COUNT + 19)
+#define AIR_SYSCALL_READ_PORT                      (AIR_SYSCALL_ARCH_COUNT + 20)
+#define AIR_SYSCALL_WRITE_PORT                     (AIR_SYSCALL_ARCH_COUNT + 21)
+#define AIR_SYSCALL_GET_SHARED_AREA                (AIR_SYSCALL_ARCH_COUNT + 22)
+#define AIR_SYSCALL_RESTART_MODULE                 (AIR_SYSCALL_ARCH_COUNT + 23)
+#define AIR_SYSCALL_SHUTDOWN_MODULE                (AIR_SYSCALL_ARCH_COUNT + 24)
+#define AIR_SYSCALL_GET_EVENT                      (AIR_SYSCALL_ARCH_COUNT + 25)
+#define AIR_SYSCALL_GET_SYSTEM_STATE               (AIR_SYSCALL_ARCH_COUNT + 26)
+#define AIR_SYSCALL_SET_SYSTEM_STATE               (AIR_SYSCALL_ARCH_COUNT + 27)
+#define AIR_SYSCALL_GET_HM_EVENT                   (AIR_SYSCALL_ARCH_COUNT + 28)
+#define AIR_SYSCALL_RAISE_HM_EVENT                 (AIR_SYSCALL_ARCH_COUNT + 29)
+#define AIR_SYSCALL_PUTCHAR                        (AIR_SYSCALL_ARCH_COUNT + 30)
+#define AIR_SYSCALL_PRINT                          (AIR_SYSCALL_ARCH_COUNT + 31)
+#define AIR_SYSCALL_ENABLE_CACHE                   (AIR_SYSCALL_ARCH_COUNT + 32)
+#define AIR_SYSCALL_DISABLE_CACHE                  (AIR_SYSCALL_ARCH_COUNT + 33)
+#define AIR_SYSCALL_FREEZE_CACHE                   (AIR_SYSCALL_ARCH_COUNT + 34)
+#define AIR_SYSCALL_FLUSH_CACHE                    (AIR_SYSCALL_ARCH_COUNT + 35)
+#define AIR_SYSCALL_COUNT                          (AIR_SYSCALL_ARCH_COUNT + 36)
 
 #endif /* __AIR_H__ */

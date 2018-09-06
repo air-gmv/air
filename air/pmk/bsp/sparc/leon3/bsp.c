@@ -53,7 +53,7 @@ int bsp_core_init(void) {
         rc |= console_init();         /* initialize the console             */
         rc |= irqmp_init();           /* initialize the IRQASMP             */
     }
-    /* if it is a secondary core start it be setting 
+    /* if it is a secondary core start it by setting 
      * mpstat - multiprocessor status */
     else
     {

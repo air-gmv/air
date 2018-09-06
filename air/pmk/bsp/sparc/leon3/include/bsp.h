@@ -132,11 +132,11 @@ static inline void bsp_core_context_restore(pmk_core_ctrl_t core) {
 /**
  * @brief Interrupt number used for Inter-Processor communication
  */
-#define BSP_IPC_IRQ                         0x1D
+#define BSP_IPC_IRQ         0x1D
 /**
  * @brief Interrupt number used for Inter-Processor context-switch
  */
-#define BSP_IPC_PCS              0x1E
+#define BSP_IPC_PCS         0x1C
 
 
 

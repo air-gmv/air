@@ -77,6 +77,8 @@ syscall_sparc_branch_table:
     ba,a    syscall_sparc_get_irq_mask_register
     ba,a    syscall_sparc_set_irq_mask_register
     ba,a    syscall_sparc_set_irq_force_register
+    ba,a    syscall_sparc_get_inst_cache_config_register
+    ba,a    syscall_sparc_get_data_cache_config_register
 
 /**
  * @brief SPARC disable interrupts
@@ -444,8 +446,8 @@ syscall_sparc_rett:
 syscall_sparc_get_cache_register:
 
     /* usable bits of the cache mask (leno3) */
-    sethi   %hi(0x60000F), %l6
-    or      %l6, %lo(0x60000F), %l6
+    sethi   %hi(0xE0000F), %l6
+    or      %l6, %lo(0xE0000F), %l6
 
     lda     [%g0]2, %i0                         ! get cache register value
     ba      syscall_sparc_return                ! finish trap
@@ -463,8 +465,8 @@ syscall_sparc_set_cache_register:
     bz      syscall_sparc_return_invalid_config              ! no? then error
     nop                                                      ! delay slot
 
-    /* usable bits of the cache mask (leno3) */
-    set     0x60000F, %l4
+    /* usable bits of the cache mask (leon3 and leon4) */
+    set     0xE0000F, %l4
 
     /* mask user register */
     and     %i0, %l4, %i0
@@ -811,3 +813,31 @@ syscall_sparc_return_invalid_config:
     nop; nop; nop                                    ! WRPSR delay slots
     jmp     %l1                                      ! set PC
     rett    %l2                                      ! set nPC and exit trap
+
+/**
+ * @brief SPARC get instruction cache configuration register
+ */
+syscall_sparc_get_inst_cache_config_register:
+
+    /* usable bits of the cache mask (leno3) */
+    sethi   %hi(0x60000F), %l6
+    or      %l6, %lo(0x60000F), %l6
+
+    mov     0x8, %l7                            ! use l7 to hold addr
+    lda     [%l7]2, %i0                         ! get cache register value
+    ba      syscall_sparc_return                ! finish trap
+    and     %i0, %l6, %i0                       ! delay slot
+
+/**
+ * * @brief SPARC get data cache configuration register
+ */
+syscall_sparc_get_data_cache_config_register:
+
+    /* usable bits of the cache mask (leno3) */
+    sethi   %hi(0x60000F), %l6
+    or      %l6, %lo(0x60000F), %l6
+
+    mov     0xc, %l7                            ! use l7 to hold addr
+    lda     [%l7]2, %i0                         ! get cache register value
+    ba      syscall_sparc_return                ! finish trap
+    and     %i0, %l6, %i0                       ! delay slot
