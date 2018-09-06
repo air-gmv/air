@@ -29,6 +29,7 @@ void iop_init_mms(void) {
     air_syscall_get_partition_status(-1, &air_partition);
 }
 
+#ifdef CODE_ON_HOLD
 void iop_task_sleep(uint32_t first_task) {
 
 	rtems_status_code rc;
@@ -59,6 +60,7 @@ void iop_task_sleep(uint32_t first_task) {
 
 	}
 }
+#endif
 
 void iop_change_schedule() {
 

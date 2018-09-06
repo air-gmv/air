@@ -15,10 +15,18 @@ void iop_main_loop(void){
 
     int i;
 
+#ifdef COVERAGE_ENABLED
+    rtems_interval time1, time2;
+
+    rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time1);
+    iop_debug("  IOP :: air-dev-cov times is %d %d\n", time2, time1);
+#endif
+    
     iop_physical_device_t *devs[usr_configuration.physical_devices.length];
     for(i =0; i < usr_configuration.physical_devices.length; i++){
     	devs[i] = get_physical_device(i);
     }
+    
 
     for(;;)
     {
@@ -34,6 +42,17 @@ void iop_main_loop(void){
     	}
     	pos_dispatcher();
     	pos_router();
+
+#ifdef COVERAGE_ENABLED
+        iop_debug("  IOP :: air-dev-cov checking time\n");
+        if(rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time2)==RTEMS_SUCCESSFUL){
+            iop_debug("  IOP :: air-dev-cov times is %d %d\n", time2, time1);
+            if((time2-time1)>6000){
+                iop_debug("  IOP :: air-dev-cov timeout on libiop\n");
+                break;
+            }
+        }
+#endif
     }
 
     return RTEMS_SUCCESSFUL;
