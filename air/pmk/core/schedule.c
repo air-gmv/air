@@ -79,7 +79,7 @@ void pmk_scheduler_init(void) {
 	            PMK_INTERNAL_ERROR_CONFIG, __func__, __FILE__, __LINE__);
 	}
 
-    /* initialize the MTF synchronization barrier */
+	/* initialize the MTF synchronization barrier */
 	pmk_barrier_init(
 	        &scheduler_ctrl.mtf_barrier, air_shared_area.configured_cores);
 
@@ -242,8 +242,6 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
         /* begin: context switch measurement */
         RVS_Ipoint((core->idx  << 6) | (3 << 4) | (0 << 1) | 0);
 #endif
-
-        //printk("schedule mtf: %d, next: %d\n",  treta, t2);
 
         /* flag the switch */
         core->partition_switch = 1;
