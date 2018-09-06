@@ -20,6 +20,7 @@
 #include <ambapp.h>
 #include <pprintf.h>
 
+
 /**
  * 	@brief Finds the nth ahb device
  *  @param [in] ambaconf: Amba bus plug and play memory structure
@@ -105,6 +106,9 @@ int amba_find_next_ahbslv (amba_confarea_type * amba_conf, int vendor, int devic
 	return 0;
 }
 
+
+
+#ifdef CODE_ON_HOLD
 /**
  * 	@brief Finds the nth ahb master device
  *  @param [in] ambaconf: Amba bus plug and play memory structure
@@ -190,6 +194,7 @@ int amba_find_next_ahbmst(amba_confarea_type * amba_conf, int vendor, int device
 	/*We didn't find the device*/
 	return 0;
 }
+#endif
 
 /**
  * 	@brief Returns the number of APB Slave devices that have a given vendorid
@@ -284,6 +289,7 @@ int amba_find_next_apbslv (amba_confarea_type * amba_conf, int vendor, int devic
 	return 0;
 }
 
+#ifdef CODE_ON_HOLD
 /**
  * @fn 
  * @brief Prints vendor and deviceid for every device on AHB and APB buses.
@@ -394,3 +400,4 @@ void amba_debug_scan(unsigned int ioarea)
         }
     }
 }
+#endif

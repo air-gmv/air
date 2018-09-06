@@ -17,6 +17,7 @@
 /* reference time for window execution time */
 extern rtems_interval last_task_ticks;
 
+#ifdef CODE_ON_HOLD
 /**
  *  \brief Validates an incomming service request
  *  \param [in] *incoming: pointer to request wrapper to be validated
@@ -52,7 +53,10 @@ rtems_status_code validate_service_request(iop_wrapper_t *incoming){
     return status;
 
 }
+#endif
 
+
+#ifdef CODE_ON_HOLD
 /**
  *  \brief Dispacthes a request based on the operation and target device
  *  \param [in] *incoming: pointer to request wrapper to be dispatched
@@ -150,6 +154,7 @@ rtems_status_code process_service_request(iop_wrapper_t *incoming, int reply_add
 */
     return rc;
 }
+#endif
 
 
 /** 
@@ -355,6 +360,8 @@ void pre_dispatcher(){
 			process_remote_port(port);
 		}
 	}
+
+#ifdef CODE_ON_HOLD
 	/* iterate over all request ports*/
 	for (i = 0; i < usr_configuration.request_ports.length; i += 2){
 		/* get port */
@@ -365,6 +372,7 @@ void pre_dispatcher(){
 		process_request_port(port);
 		iop_debug(" Processed port request\n");
 	}
+#endif
 }
 
 /**
