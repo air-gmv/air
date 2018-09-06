@@ -18,11 +18,10 @@ $ ../source-builder/sb-set-builder --prefix=/opt/rtems/5 5/rtems-sparc
 
 2) Configure and build AIR
 
-Add the air_repo/air and rtems4.10 bin folder to the PATH env variable, we recommend doing the following way in .bashrc file:
-export RTEMS410=//opt/rtems-4.10/bin
-export AIR=/home/taste/work/air/air
-export PATH=$PATH:$AIR
-export PATH=$PATH:$RTEMS410
+Add the air_repo/air to the PATH env variable, we recommend doing the following way in .bashrc file:
+
+- export AIR=/home/taste/work/air/air
+- export PATH=$PATH:$AIR
 
 
 AIR configure requires python-mako, if not installed execute (in case of Debian)
