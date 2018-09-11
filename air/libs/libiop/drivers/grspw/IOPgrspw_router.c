@@ -43,7 +43,7 @@ static int router_cfgsts_set(router_priv_t *priv, unsigned int cfgsts);
 static int router_cfgsts_read(router_priv_t *priv, unsigned int *cfgsts);
 static int router_tc_read(router_priv_t *priv, unsigned int *tc);
 
-rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
+rtems_device_driver spw_router_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
 	
 	clock_gating_enable(&ambapp_plb, GATE_SPWR);
@@ -72,7 +72,7 @@ rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 	memset(&ahbspwrtr, 0, sizeof(struct ambapp_ahb_info));
 	
 	/* Scan for MAC AHB slave interface */
-	device_found = amba_find_ahbslv(&ambapp_plb, VENDOR_GAISLER, GAISLER_SPW_ROUTER, &ahbspwrtr);
+	device_found = amba_find_next_ahbslv(&ambapp_plb, VENDOR_GAISLER, GAISLER_SPW_ROUTER, &ahbspwrtr, 0);
 									
 	if (device_found != 1){
 	    ROUTER_DBG2("SPWRTR device not found...\n");
@@ -127,7 +127,7 @@ rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 	return RTEMS_SUCCESSFUL;
 }
 
-rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
+rtems_device_driver spw_router_open(iop_device_driver_t *iop_dev, void *arg)
 {	
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
 	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
@@ -144,7 +144,7 @@ rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg)
 	return RTEMS_SUCCESSFUL;
 }
 
-rtems_device_driver router_close(iop_device_driver_t *iop_dev, void *arg)
+rtems_device_driver spw_router_close(iop_device_driver_t *iop_dev, void *arg)
 {
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
 	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
@@ -450,5 +450,5 @@ static int router_tc_read(router_priv_t *priv, unsigned int *tc)
 //	return 0;
 //}
 
-rtems_device_driver router_write(iop_device_driver_t *iop_dev, void *arg){}
-rtems_device_driver router_read(iop_device_driver_t *iop_dev, void *arg){}
+rtems_device_driver spw_router_write(iop_device_driver_t *iop_dev, void *arg){}
+rtems_device_driver spw_router_read(iop_device_driver_t *iop_dev, void *arg){}
