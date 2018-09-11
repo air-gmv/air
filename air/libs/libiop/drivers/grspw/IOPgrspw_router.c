@@ -14,6 +14,7 @@
 
 #include <amba.h>
 #include <ambapp.h>
+#include <ambaext.h>
 
 #include <IOPgrspw_router.h>
 #include <spw_support.h>
@@ -45,10 +46,10 @@ static int router_tc_read(router_priv_t *priv, unsigned int *tc);
 rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
 	
-	clock_gating_enable(&amba_conf, GATE_SPWR);
+	clock_gating_enable(&ambapp_plb, GATE_SPWR);
 	int device_found = 0;
 	
-	amba_ahb_device ahbspwrtr;
+	struct ambapp_ahb_info ahbspwrtr;
 	
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
 	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
@@ -68,10 +69,10 @@ rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg)
 	for (j=0; j<32; j++)
 		cfg->timer_reload[j] = priv->timer_reload->timeout[j];	
 	
-	memset(&ahbspwrtr, 0, sizeof(amba_ahb_device));
+	memset(&ahbspwrtr, 0, sizeof(struct ambapp_ahb_info));
 	
 	/* Scan for MAC AHB slave interface */
-	device_found = amba_find_ahbslv(&amba_conf, VENDOR_GAISLER, GAISLER_SPW_ROUTER, &ahbspwrtr);
+	device_found = amba_find_ahbslv(&ambapp_plb, VENDOR_GAISLER, GAISLER_SPW_ROUTER, &ahbspwrtr);
 									
 	if (device_found != 1){
 	    ROUTER_DBG2("SPWRTR device not found...\n");
