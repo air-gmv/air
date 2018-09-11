@@ -96,10 +96,10 @@ void test(PARTITION_ID_TYPE self_id) {
 
 	RETURN_CODE_TYPE rc = NO_ERROR;
 	rtems_interval time;
-
+//        air_sparc_enable_fpu();
 	while(1) {
 
-		rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
+//		rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
 //		append_to_message(message, sample, offset);
 //		append_time_to_message(message, time, 3 + offset);
 //		append_to_message(message, " ", offset + 3 + 8);
@@ -136,7 +136,6 @@ int entry_func() {
 	rtems_id	id;
 	
 	PARTITION_ID_TYPE self_id;
-	
 	
 	/*Getting my own partition id*/
 	GET_PARTITION_ID(&self_id, &rc);
