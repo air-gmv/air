@@ -28,6 +28,7 @@
 #include <string.h>
 #include <iop_greth.h>
 #include <eth_support.h>
+#include <ambaext.h>
 
 //#define AUTONEG_ENABLED
 
@@ -136,7 +137,7 @@ static void greth_initialize_hardware(iop_eth_device_t *device){
 
     /* get phy control register default values */
     while ((phyctrl = read_mii(sc, phyaddr, 0)) & 0x8000) {}
-    
+
     /* reset PHY and wait for completion */
     write_mii(sc, phyaddr, 0, 0x8000 | phyctrl);
 
@@ -384,7 +385,8 @@ auto_neg_done:
 	
 	/* enable RX and setup speeds and duplex*/
 	regs->ctrl |= GRETH_CTRL_RXEN | (sc->fd << 4) | (sc->sp << 7) | (sc->gb << 8);
-	return;
+	iop_debug("  HArdware init done! leaving\n");
+        return;
 }
 
 /** 
@@ -402,7 +404,6 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper){
 
 	/* read while the descriptor is not enabled */
 	while (!((status = sc->rxdesc[sc->rx_ptr].ctrl) & GRETH_RXD_ENABLE)) {
-
 	    /* reset length and error flag */
 		len = error = 0;
 
@@ -411,6 +412,7 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper){
 		    (status & GRETH_RXD_CRCERR)  || (status & GRETH_RXD_OVERRUN) ||
 		    (status & GRETH_RXD_LENERR)  || (status & 0x7FF) < 42) {
 			error = 1;
+
 		}
 		
 		/* did we had and error during reception? */
@@ -418,7 +420,6 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper){
 
 			/* get packet length */
             len = status & 0x7FF;
-
             /* swap IOP buffers */
             iop_buffer_t *temp = wrapper->buffer;
             wrapper->buffer = sc->rx_iop_buffer[sc->rx_ptr];
@@ -485,7 +486,6 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
             return 0;
         }
     }
-
     /* get the size of the packet to send */
     uint16_t len = (uint16_t)get_buffer_size(wrapper->buffer);
     /* ignore long packets */
@@ -499,7 +499,7 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
         /* replace pointer in the descriptor */
         sc->txdesc[sc->tx_ptr].addr =
                 (uint32_t *)((uintptr_t)temp->p_addr + temp->header_off);
-
+        
         /* enable descriptor*/
         if (sc->tx_ptr < sc->txbufs - 1) {
 
@@ -526,19 +526,19 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
 uint32_t greth_initialize(iop_device_driver_t *iop_dev, void *arg) {
 	
 	/* Enable Eth Clock gate */
-        clock_gating_enable(&amba_conf, GATE_ETH0);
+        clock_gating_enable(&ambapp_plb, GATE_ETH0);
     
         int device_found = 0;
 	rtems_status_code status = RTEMS_SUCCESSFUL;
-	amba_apb_device apbgreth;
+	struct ambapp_apb_info apbgreth;
 	
 	iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
 	struct greth_softc *sc = (struct greth_softc *)(device->dev.driver);
 
-	memset(&apbgreth, 0, sizeof(amba_apb_device));
+	memset(&apbgreth, 0, sizeof(struct ambapp_apb_info));
 	
 	/* Scan for MAC AHB slave interface */
-	device_found = amba_find_apbslv(&amba_conf, VENDOR_GAISLER, GAISLER_ETHMAC,
+	device_found = ambapp_find_apbslv(&ambapp_plb, VENDOR_GAISLER, GAISLER_ETHMAC,
 									&apbgreth);
 
 	if (device_found != 1){
@@ -654,7 +654,6 @@ uint32_t greth_write(iop_device_driver_t *iop_dev, void *arg) {
         return RTEMS_INVALID_NAME;
     }
 
-		
-    greth_hw_send(sc, wrapper);
+    count=greth_hw_send(sc, wrapper);
 	return RTEMS_SUCCESSFUL;
 }

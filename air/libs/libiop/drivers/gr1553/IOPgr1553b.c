@@ -27,7 +27,7 @@
 
 #include <pprintf.h>
 /* Pointer to amba configuration */
-static amba_confarea_type *amba_bus;
+static struct ambapp_bus *amba_bus;
 
 static grb_priv *bdevs;
 static int number_grb_devices;
@@ -43,10 +43,10 @@ rtems_device_driver gr1553b_initialize(rtems_device_major_number major,
 	grb_priv *bDev;
 
 	/* Amba APB device */
-	amba_apb_device ambadev;
+	struct ambapp_apb_info ambadev;
 	
 	/* Get amba bus configuration */
-	amba_bus = &amba_conf;
+	amba_bus = &ambapp_plb;
 	
 	/* Iterator through all devices */
 	int i;
