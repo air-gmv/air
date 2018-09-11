@@ -103,7 +103,7 @@ spw_user_config *user_config;
 spw_user_config *defconf;
 
 /* Pointer to amba bus structure*/
-amba_confarea_type *amba_bus;
+struct ambapp_bus *amba_bus;
 
 /* Global var for debuging purposes */
 void *MURTA;
@@ -167,14 +167,14 @@ void set_sys_freq(){
 	#ifdef LEON3
 		/* LEON3: find timer address via AMBA Plug&Play info */	
 		{
-			amba_apb_device gptimer;
-			LEON3_Timer_Regs_Map *tregs;
+			struct ambapp_apb_info gptimer;
+			struct gptimer_regs  *tregs;
 			
 			/*search for gaisler timer in the amba bus*/
-			if ( amba_find_apbslv(&amba_conf,VENDOR_GAISLER,GAISLER_GPTIMER,&gptimer) == 1 ){
+			if ( ambapp_find_apbslv(&ambapp_plb,VENDOR_GAISLER,GAISLER_GPTIMER,&gptimer) == 1 ){
 				
 				/*Timer memory mapped registers*/
-				tregs = (LEON3_Timer_Regs_Map *)gptimer.start;
+				tregs = (struct gptimer_regs*)gptimer.start;
 				
 				/*Calculate System frequency based on the timer register*/
 				sys_freq_khz = (tregs->scaler_reload+1)*1000;
@@ -390,10 +390,10 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 	spw_user_config *config;
 	
 	/*Amba APB device*/
-	amba_apb_device dev;
+	struct ambapp_apb_info dev;
 	
 	/*Get amba bus configuration*/
-	amba_bus = &amba_conf;
+	amba_bus = &ambapp_plb;
 	
 	/* get memory for the internal structure */
 	// spw_dev = get_spw_dev();

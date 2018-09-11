@@ -786,7 +786,7 @@ int grcan_device_init(iop_device_driver_t *iop_dev)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv*) (device->dev.driver);
-	amba_apb_device grcandev;
+	struct ambapp_apb_info grcandev;
 	int dev_count = 0;
 	int offset= 0;
 
@@ -801,12 +801,12 @@ int grcan_device_init(iop_device_driver_t *iop_dev)
 	 * define to the value in use in the gr740
 	 */
 
-	memset(&grcandev, 0, sizeof(amba_apb_device));
-	dev_count = amba_find_apbslv(&amba_conf,
+	memset(&grcandev, 0, sizeof(struct ambapp_apb_info));
+	dev_count = ambapp_find_apbslv(&ambapp_plb,
 			VENDOR_GAISLER,
 			GAISLER_GRCAN,
 			&grcandev);
-	if(amba_find_next_apbslv(&amba_conf,
+	if(amba_find_next_apbslv(&ambapp_plb,
 			grcan_ids[0].vendor,
 			grcan_ids[0].device,
 			&grcandev,
@@ -826,7 +826,7 @@ int grcan_device_init(iop_device_driver_t *iop_dev)
 	iop_debug("Start: 0x%04x - IRQ 0x%04x - bus_id 0x%04x\n",
 			grcandev.start,
 			grcandev.irq,
-			grcandev.bus_id);
+			grcandev.ahbidx);
 
 	pDev->irq = grcandev.irq;
 	pDev->regs = (struct grcan_regs *) (grcandev.start + offset);
@@ -909,7 +909,7 @@ iop_device_operation grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
 	 *gpr = 0x000ffc3c;
 
 	 /* Enable CAN Clock gate */
-	 clock_gating_enable(&amba_conf, GATE_CAN);
+	 clock_gating_enable(&ambapp_plb, GATE_CAN);
 
 	// File system name should be configured in the iop_can_physical components
 	DBG("Can core %d\n", device->can_core);
