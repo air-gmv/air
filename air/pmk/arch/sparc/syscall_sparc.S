@@ -79,6 +79,7 @@ syscall_sparc_branch_table:
     ba,a    syscall_sparc_set_irq_force_register
     ba,a    syscall_sparc_get_inst_cache_config_register
     ba,a    syscall_sparc_get_data_cache_config_register
+    ba,a    syscall_sparc_set_ef
 
 /**
  * @brief SPARC disable interrupts
@@ -833,7 +834,7 @@ syscall_sparc_get_inst_cache_config_register:
  */
 syscall_sparc_get_data_cache_config_register:
 
-    /* usable bits of the cache mask (leno3) */
+    /* usable bits of the cache mask (leon3) */
     sethi   %hi(0x60000F), %l6
     or      %l6, %lo(0x60000F), %l6
 
@@ -841,3 +842,70 @@ syscall_sparc_get_data_cache_config_register:
     lda     [%l7]2, %i0                         ! get cache register value
     ba      syscall_sparc_return                ! finish trap
     and     %i0, %l6, %i0                       ! delay slot
+
+/**
+ * AIR trap handler of rtems5/cpukit/score/cpu/sparc/syscall.S syscall_irqdis_fp
+ *  Interrupt disable and set PSR[EF] according to caller %g1
+ *  On entry:
+ *    g1 = the desired PSR[EF] value (from caller)
+ *  On exit:
+ *    g1 = old psr (to user)
+ */
+syscall_sparc_set_ef:
+
+#if PMK_FPU_SUPPORT
+
+    /* check permissions to handle FPU */
+    ld      [%l3 + CORE_CTRL_PARTITION], %l4
+    ld      [%l4 + PARTITION_PERMISSIONS], %l4
+    btst    AIR_PERMISSION_FPU_CONTROL, %l4
+    bz      syscall_sparc_return_invalid_config
+    nop
+
+#else
+
+    ba      syscall_sparc_return_invalid_config
+    nop
+
+#endif
+
+    /* get virtual PSR */
+    ld      [%l3 + CORE_CTRL_CONTEXT], %l3
+    ld      [%l3 + CONTEXT_VCPU + SPARC_VCPU_PSR], %i0
+
+    /* get the CWP from the real PSR (psr is stored on %l0) */
+    and     %l0, SPARC_PSR_CWP_MASK, %l4
+    andn    %i0, SPARC_PSR_CWP_MASK, %i0
+    or      %i0, %l4, %i0
+
+    /* get the ICC from the real PSR (psr is stored on %l0) */
+    sethi   %hi(SPARC_PSR_ICC_MASK), %l4
+    or      %l4, %lo(SPARC_PSR_ICC_MASK), %l4   ! ICC mask
+    andn    %i0, %l4, %i0                       ! clear ICCs
+    and     %l0, %l4, %l4                       ! get real ICCs
+    or      %i0, %l4, %i0                       ! apply real ICCs to virtual ones
+
+    /* Disable interrupts */
+    or    %i0, 0x0f00, %l4 ! Set PIL=0xf to disable IRQ
+    /*
+     * We cannot use an intermediate value for operations with the PSR[EF]
+     * bit since they use a 13-bit sign extension and PSR[EF] is bit 12.
+     */
+    sethi %hi(SPARC_PSR_EF_MASK), %l5
+
+    andn  %l4, %l5, %l4        ! Clear PSR[EF]
+    and   %g1, %l5, %g1        ! Select PSR[EF] only from %g1
+    or    %l4, %g1, %l4        ! Set PSR[EF] according to %g1
+    or    %i0, SPARC_PSR_ET_MASK, %g1 ! return old PSR with ET=1
+
+    /* set virtual PSR */
+    ld    [%l3 + CORE_CTRL_CONTEXT], %l3
+    st    %l4, [%l3 + CONTEXT_VCPU + SPARC_VCPU_PSR]
+
+    /*Apply EF value to real psr*/
+    and     %l4, %l5, %l6
+    andn    %l0, %l5, %l0
+    or      %l0, %l6, %l0
+
+    ba    syscall_sparc_return_no_error   ! finish trap
+    or    %l0, 0x0f00, %l0   ! delay slot disables interrupts in real psr
