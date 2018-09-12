@@ -183,6 +183,13 @@ air_u32_t air_sparc_get_inst_cache_config_register(void);
 air_u32_t air_sparc_get_data_cache_config_register(void);
 
 /**
+ * @brief SPARC system call: RTEMS5 syscall_irqdis_fp version
+ * @returns NO_ERROR if the partition have permissions to control the FPU
+ *         INVALID_CONFIG otherwise
+ */
+air_u32_t air_sparc_set_ef(void);
+
+/**
  * @brief Disable Interrupts
  * @param level Interrupt level
  */
@@ -230,7 +237,8 @@ air_u32_t air_sparc_get_data_cache_config_register(void);
 #define AIR_SYSCALL_SPARC_SET_IRQ_FORCE_REGISTER       16
 #define AIR_SYSCALL_SPARC_GET_INST_CACHE_CFG_REGISTER  17
 #define AIR_SYSCALL_SPARC_GET_DATA_CACHE_CFG_REGISTER  18
-#define AIR_SYSCALL_SPARC_COUNT                        18
+#define AIR_SYSCALL_SPARC_SET_EF                       19
+#define AIR_SYSCALL_SPARC_COUNT                        19
 
 /**
  * @brief Defined as 0, as the SPARC uses two traps (one for the OS, another for
