@@ -44,6 +44,7 @@ makefile = os.path.join(POS_DIRECTORY, 'rtems5', 'rtems5_makefile.mako')
 # @brief List of lines to be add to Makefile.inc
 # RTEMS_DIRECTORY is  necessary only for lbiop
 makefile_inc = [
+    "RTEMS5_DIRECTORY=rtems5",
     "RTEMS5_TARGET=sparc-rtems5",
     "RTEMS5_BSP=leon3",
 ]
