@@ -68,8 +68,8 @@ include $(PROJECT_ROOT)/make/leaf.cfg
 
 TARGET_CPPFLAGS+=${'\\'}
 -B$(RTEMS_MAKEFILE_PATH)/lib${'\\'}
-${template.get_headers_directories(header_files)}
-##-DIOP_NEEDS_DEBUG${'\\'}
+-DAIR_HYPERVISOR${'\\'}
+${template.get_headers_directories(header_files)}${'\\'}
 
 SOURCE_FILES=${'\\'}
 ${template.FileList(source_files)}
