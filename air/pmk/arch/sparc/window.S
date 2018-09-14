@@ -133,7 +133,7 @@ SYM(sparc_window_overflow_handler):
 SYM(sparc_window_underflow_handler):
 
     /* save the globals used by this handler */
-    mov     %g1, %l4
+    mov     %g1, %l6
 
     /* determine the new WIM */
     mov     %wim, %l3
@@ -201,7 +201,7 @@ SYM(sparc_window_underflow_handler):
     save
 
     /* restore the used global */
-    mov     %l4, %g1
+    mov     %l6, %g1
 
     /* return from trap */
     jmp   %l1                        ! Re-execute restore.
