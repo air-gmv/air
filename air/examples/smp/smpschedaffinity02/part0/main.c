@@ -81,7 +81,7 @@ static void task_verify( bool ran, bool change_affinity, int cpu )
     CPU_ZERO(&task_data.cpuset);
     CPU_SET(cpu, &task_data.cpuset);
     sc = rtems_task_set_affinity( task_data.id, size, &task_data.cpuset );
-  //  rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+    rtems_test_assert(sc == RTEMS_SUCCESSFUL);
   }
 
   /* Reset the states */
@@ -186,7 +186,7 @@ static void test(void)
   CPU_ZERO(&cpuset);
   CPU_SET(0, &cpuset);
   sc = rtems_task_set_affinity( id_self, sizeof(cpuset), &cpuset );
-  //rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+  rtems_test_assert(sc == RTEMS_SUCCESSFUL);
 
   /* Verify init task went to cpu 0 */
   test_delay(50);
