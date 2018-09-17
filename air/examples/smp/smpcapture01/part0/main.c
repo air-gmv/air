@@ -131,7 +131,7 @@ static void test(void)
     &task_data[0].cpuset
   );
 
-//  rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+  rtems_test_assert(sc == RTEMS_SUCCESSFUL);
 
 
   /* Create and start tasks on each cpu with the appropriate affinity. */
@@ -145,7 +145,7 @@ static void test(void)
         RTEMS_DEFAULT_ATTRIBUTES,
         &task_data[ i ].id
       );
-//      rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+      rtems_test_assert(sc == RTEMS_SUCCESSFUL);
 
       sc = rtems_task_set_affinity(
         task_data[ i ].id,
@@ -186,7 +186,7 @@ static void test(void)
 
   for (i = 1; i < TASK_COUNT; i++) {
     sc = rtems_task_delete( task_data[ i ].id );
-//    rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+    rtems_test_assert(sc == RTEMS_SUCCESSFUL);
   }
   test_delay(25);
 }
@@ -204,13 +204,13 @@ int entry_point(rtems_task_argument arg)
   rtems_test_assert(sc == RTEMS_SUCCESSFUL);
 
   sc = rtems_capture_watch_ceiling (0);
-//  rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+  rtems_test_assert(sc == RTEMS_SUCCESSFUL);
 
   sc = rtems_capture_watch_floor (20);
-//  rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+  rtems_test_assert(sc == RTEMS_SUCCESSFUL);
 
   sc = rtems_capture_watch_global (true);
-//  rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+  rtems_test_assert(sc == RTEMS_SUCCESSFUL);
 
   sc = rtems_capture_set_trigger (
     0,
@@ -221,7 +221,7 @@ int entry_point(rtems_task_argument arg)
     rtems_capture_switch
   );
 
-//  rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+  rtems_test_assert(sc == RTEMS_SUCCESSFUL);
 
   for (i = 1; i < TASK_COUNT; i++) {
      to_name = rtems_build_name('T', 'A', '0', '0'+i);
@@ -236,12 +236,12 @@ int entry_point(rtems_task_argument arg)
   }
 
   sc = rtems_capture_set_control (true);
-//  rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+  rtems_test_assert(sc == RTEMS_SUCCESSFUL);
 
   test();
 
   sc = rtems_capture_set_control (false);
-//  rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+  rtems_test_assert(sc == RTEMS_SUCCESSFUL);
 
   rtems_capture_print_trace_records ( 22, false );
   rtems_capture_print_trace_records ( 22, false );

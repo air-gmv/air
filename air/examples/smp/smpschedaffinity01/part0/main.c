@@ -109,7 +109,7 @@ static void test(void)
         RTEMS_DEFAULT_ATTRIBUTES,
         &task_data[ i ].id
       );
-   //   rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+      rtems_test_assert(sc == RTEMS_SUCCESSFUL);
 
       printf(
         "Set TA%" PRIdrtems_task_argument " affinity to cpu %d\n",
@@ -117,7 +117,7 @@ static void test(void)
         task_data[i].expected_cpu
       );
       sc = rtems_task_set_affinity( task_data[ i ].id, size, &task_data[i].cpuset );
-  //    rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+      rtems_test_assert(sc == RTEMS_SUCCESSFUL);
 
       printf(
         "Start TA%" PRIdrtems_task_argument " on cpu %d\n",
@@ -125,7 +125,7 @@ static void test(void)
         task_data[i].expected_cpu
       );
       sc = rtems_task_start( task_data[ i ].id, task, i );
- //     rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+      rtems_test_assert(sc == RTEMS_SUCCESSFUL);
   }
 
   /* spin for 100 ticks */
