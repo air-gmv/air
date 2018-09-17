@@ -29,6 +29,7 @@
 #include <iop_greth.h>
 #include <eth_support.h>
 #include <ambaext.h>
+#include <iop_error.h>
 
 //#define AUTONEG_ENABLED
 
@@ -36,6 +37,8 @@
 #ifndef GRETH_AUTONEGO_TIMEOUT_MS
 #define GRETH_AUTONEGO_TIMEOUT_MS 3000
 #endif
+
+#define GRETH_INIT_TIMEOUT_S 3
 
 /** 
  * @brief Read a PHY register using MDIO
@@ -48,16 +51,35 @@ static uint32_t read_mii(
 
     /*return value*/
     uint32_t rv;
+    time_t tstart, tnow;
 
+    tstart =rtems_clock_get_uptime_seconds();
     /* wait for MDIO to be ready */
-    while (greth->regs->mdio_ctrl & GRETH_MDIO_BUSY) {}
+    while (greth->regs->mdio_ctrl & GRETH_MDIO_BUSY) {
+        tnow=rtems_clock_get_uptime_seconds();
+
+        /*Check if we surpasses allowed time*/
+        if ( (tnow-tstart) > GRETH_INIT_TIMEOUT_S ){
+            iop_debug("    greth - failed to read default value after %d msec\n",(tnow-tstart) );
+            return 0;
+        }
+    }
 
     /* write phyaddr and reg offset to MDIO ctrl */
     greth->regs->mdio_ctrl =
             (phy_addr << 11) | (reg_addr << 6) | GRETH_MDIO_READ;
 
+    tstart =rtems_clock_get_uptime_seconds();
     /* wait for MDIO to ready */
-    while (greth->regs->mdio_ctrl & GRETH_MDIO_BUSY) {}
+    while (greth->regs->mdio_ctrl & GRETH_MDIO_BUSY) {
+        tnow=rtems_clock_get_uptime_seconds();
+
+        /*Check if we surpasses allowed time*/
+        if ( (tnow-tstart) > GRETH_INIT_TIMEOUT_S ){
+            iop_debug("    greth - failed to read default value after %d msec\n",(tnow-tstart) );
+            return 0;
+        }
+    }
 
     /* check if there was an error */
     if (!(greth->regs->mdio_ctrl & GRETH_MDIO_LINKFAIL))
@@ -83,24 +105,45 @@ static uint32_t read_mii(
 static void write_mii(
         greth_softc_t *greth, uint32_t phy_addr,
         uint32_t reg_addr, uint32_t data){
-	
-	/* wait for MDIO to be ready */
-    while (greth->regs->mdio_ctrl & GRETH_MDIO_BUSY) {}
+    
+    time_t tstart, tnow;
+
+    tstart =rtems_clock_get_uptime_seconds();
+	/* wait for MDIO  to be ready */
+    while (greth->regs->mdio_ctrl & GRETH_MDIO_BUSY) {
+        tnow=rtems_clock_get_uptime_seconds();
+
+        /*Check if we surpasses allowed time*/
+        if ( (tnow-tstart)  > GRETH_INIT_TIMEOUT_S ){
+            iop_debug("    greth - failed to write MMI - timeout1\n");
+            return;
+        }
+    }
 	
 	/* set up the  write operation in ctrl register */
     greth->regs->mdio_ctrl =
             ((data & 0xFFFF) << 16) | (phy_addr << 11) |
             (reg_addr << 6) | GRETH_MDIO_WRITE;
-	
-	/* wait for MDIO to be ready */
-    while (greth->regs->mdio_ctrl & GRETH_MDIO_BUSY) {}
+
+    tstart =rtems_clock_get_uptime_seconds();
+    /* wait for MDIO  to be ready */
+    while (greth->regs->mdio_ctrl & GRETH_MDIO_BUSY) {
+        tnow=rtems_clock_get_uptime_seconds();
+
+        /*Check if we surpasses allowed time*/
+        if ( (tnow-tstart)  > GRETH_INIT_TIMEOUT_S ){
+            iop_debug("    greth - failed to write MMI - timeout2\n");
+            return;
+        }
+    }
+
 }
 
 /** 
  * @brief initialize GRETH core
  * @param device Ethernet device configuration pointer
  */
-static void greth_initialize_hardware(iop_eth_device_t *device){
+static int greth_initialize_hardware(iop_eth_device_t *device){
 	
 	int i;
     int phyaddr;
@@ -108,15 +151,12 @@ static void greth_initialize_hardware(iop_eth_device_t *device){
     int phystatus;
     int tmp1;
     int tmp2;
-    unsigned int msecs;
     greth_regs *regs;
+    unsigned int msecs;
 	char *memarea;
 	
 	greth_softc_t *sc = (greth_softc_t *)device->dev.driver;
 
-#ifdef AUTONEG_ENABLED
-    rtems_clock_time_value tstart, tnow;
-#endif
 
     iop_debug("    GRETH hardware initialization (0%08x)\n", sc->regs);
 
@@ -134,15 +174,19 @@ static void greth_initialize_hardware(iop_eth_device_t *device){
     /* Get the phy address which assumed to have been set
        correctly with the reset value in hardware*/
     phyaddr = (regs->mdio_ctrl >> 11) & 0x1F;
-
+    
     /* get phy control register default values */
-    while ((phyctrl = read_mii(sc, phyaddr, 0)) & 0x8000) {}
+    phyctrl = read_mii(sc, phyaddr, 0);
+    if((phyctrl & 0x8000) || (phyctrl == 0))
+        return RTEMS_IO_ERROR;
+    
 
     /* reset PHY and wait for completion */
     write_mii(sc, phyaddr, 0, 0x8000 | phyctrl);
-
-	/* wait for reset to be complete*/
-    while ((read_mii(sc, phyaddr, 0)) & 0x8000) {}
+    
+    phyctrl = read_mii(sc, phyaddr, 0);
+    if((phyctrl & 0x8000) || (phyctrl == 0))
+        return RTEMS_IO_ERROR;
 	
 	/* clear device's capabilities*/
     sc->gb = 0;
@@ -178,11 +222,11 @@ static void greth_initialize_hardware(iop_eth_device_t *device){
 			time.ticks  = 0;
 			rtems_clock_set(&time);
 
-			tstart.seconds = 0;
-			tstart.microseconds = 0;
+			tstart.tv_sec = 0;
+			tstart.tv_usec = 0;
             
 			/* rtems_clock_get(RTEMS_CLOCK_GET_TIME_VALUE,&tstart); */ // Use for RTEMS 4.8
-			rtems_clock_get_tod_timeval(&tstart) // Use for RTEMS 5
+			rtems_clock_get_tod_timeval(&tstart); // Use for RTEMS 5
 		}
 	#endif
 
@@ -196,8 +240,7 @@ static void greth_initialize_hardware(iop_eth_device_t *device){
             rtems_clock_get_tod_timeval(&tnow); // For RTEMS 5
 			
 			/*calculate deltat between now and tstart*/
-			msecs = (tnow.seconds-tstart.seconds)*1000+(tnow.microseconds-tstart.microseconds)/1000;
-			
+			msecs = (tnow.tv_sec-tstart.tv_sec)*1000+(tnow.tv_usec-tstart.tv_usec)/1000;
 			// /*Check if we surpasses autoneg time*/
 			if ( msecs > GRETH_AUTONEGO_TIMEOUT_MS ){
 				
@@ -317,9 +360,12 @@ auto_neg_done:
 			sc->fd = 0;
 		}
     }
-	
+    
 	/*wait for PHY to be ready*/
-    while ((read_mii(sc, phyaddr, 0)) & 0x8000) {}
+    phyctrl = read_mii(sc, phyaddr, 0);
+    if((phyctrl & 0x8000) || (phyctrl == 0))          
+        return RTEMS_IO_ERROR;
+
 	
 	/**
 	 *	Reset the controller.
@@ -386,7 +432,7 @@ auto_neg_done:
 	/* enable RX and setup speeds and duplex*/
 	regs->ctrl |= GRETH_CTRL_RXEN | (sc->fd << 4) | (sc->sp << 7) | (sc->gb << 8);
 	iop_debug("  HArdware init done! leaving\n");
-        return;
+        return RTEMS_SUCCESSFUL;
 }
 
 /** 
@@ -576,7 +622,7 @@ uint32_t greth_open(iop_device_driver_t *iop_dev, void *arg) {
 		status = RTEMS_NOT_CONFIGURED;
 	
 	/*Initialize the eth core*/
-	greth_initialize_hardware(device);
+	status= greth_initialize_hardware(device);
 
 	return status;
 }
