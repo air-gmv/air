@@ -278,6 +278,7 @@ rtems_status_code IOPinit() {
 	/* initialize Drivers*/
 	if (iop_init_drivers() != RTEMS_SUCCESSFUL){
 		iop_raise_error(HW_PROBLEM);
+                return RTEMS_IO_ERROR;
 	}
 	
 	iop_main_loop();
