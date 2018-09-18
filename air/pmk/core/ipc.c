@@ -19,34 +19,6 @@
 #include <multicore.h>
 
 /**
- * @brief Core boot
- * @param core Executing core control structure
- * @ingroup pmk_multicore
- */
-static void pmk_ipc_boot_partition_core(pmk_core_ctrl_t *core) {
-
-    /* setup the core context */
-    core_context_setup_partition(core->context, core->partition);
-
-    /* restore the new core context */
-    core_context_restore(core);
-}
-
-/**
- * @brief Core trash
- * @param core Executing core control structure
- * @ingroup pmk_multicore
- */
-static void pmk_ipc_trash_partition_core(pmk_core_ctrl_t *core) {
-
-    /* setup the core context as idle */
-    core_context_setup_idle(core->context);
-
-    /* restore the new core context */
-    core_context_restore(core);
-}
-
-/**
  * @brief Copy main Core virtual tbr
  * @param core Executing core control structure
  * @ingroup pmk_multicore
@@ -64,6 +36,37 @@ static void pmk_ipc_set_tbr(pmk_core_ctrl_t *core) {
 
     /*Set actual core context with partition's main core tbr*/
     core_vcpu->tbr = partition_vcpu->tbr;
+}
+
+/**
+ * @brief Core boot
+ * @param core Executing core control structure
+ * @ingroup pmk_multicore
+ */
+static void pmk_ipc_boot_partition_core(pmk_core_ctrl_t *core) {
+
+    /* setup the core context */
+    core_context_setup_partition(core->context, core->partition);
+
+    /* restore the new core context */
+    core_context_restore(core);
+
+    /*Heir VCPU trap table*/
+    pmk_ipc_set_tbr(core);
+}
+
+/**
+ * @brief Core trash
+ * @param core Executing core control structure
+ * @ingroup pmk_multicore
+ */
+static void pmk_ipc_trash_partition_core(pmk_core_ctrl_t *core) {
+
+    /* setup the core context as idle */
+    core_context_setup_idle(core->context);
+
+    /* restore the new core context */
+    core_context_restore(core);
 }
 
 
