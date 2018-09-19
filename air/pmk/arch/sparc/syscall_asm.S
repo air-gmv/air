@@ -56,6 +56,7 @@ syscall_branch_table:
     ba,a    syscall_simple_return            ! mask virtual IRQ (NYI)
     ba,a    syscall_simple_return            ! unmask virtual IRQ (NYI)
     ba,a    sparc_isr_handler_entry          ! get physical address     (in C)
+    ba,a    syscall_get_nb_cores             ! get partition core number
     ba,a    syscall_get_core_id              ! get virtual core id
     ba,a    syscall_set_tbr                  ! set virtual core tbr
     ba,a    syscall_boot_core                ! boot virtual core
@@ -88,6 +89,25 @@ syscall_branch_table:
     ba,a    syscall_simple_return            ! disable cache (in user land)
     ba,a    syscall_simple_return            ! freeze cache (in user land)
     ba,a    syscall_simple_return            ! flush cache (in user land)
+
+/**
+ * @brief Get current number of partition cores
+ */
+syscall_get_nb_cores:
+
+    set     SYM(air_shared_area), %l3                ! shared area
+    ld      [%l3 + SHAREDAREA_CORE_CTRL], %l3        ! core control area
+
+    rd      %asr17, %l4
+    srl     %l4, 28, %l4
+    and     %l4, 0xff, %l4                           ! current physical core
+    umul    %l4, CORE_CTRL_SIZE, %l4                 ! core control offset
+    add     %l3, %l4, %l4                            ! current core control area
+
+    ld      [%l4 + CORE_CTRL_PARTITION], %l4         ! current partition
+
+    ba      syscall_simple_return
+    ld      [%l4 + PARTITION_CORE_CNT], %i0          ! partition core count
 
 /**
  * @brief Get current virtual core id
