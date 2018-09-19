@@ -238,7 +238,7 @@ air_u32_t air_sparc_set_ef(void);
 #define AIR_SYSCALL_SPARC_GET_INST_CACHE_CFG_REGISTER  17
 #define AIR_SYSCALL_SPARC_GET_DATA_CACHE_CFG_REGISTER  18
 #define AIR_SYSCALL_SPARC_SET_EF                       19
-#define AIR_SYSCALL_SPARC_COUNT                        19
+#define AIR_SYSCALL_SPARC_COUNT                        20
 
 /**
  * @brief Defined as 0, as the SPARC uses two traps (one for the OS, another for

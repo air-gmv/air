@@ -88,7 +88,6 @@ void test(PARTITION_ID_TYPE self_id) {
 
     int i = 0, offset = 0;;
 	char sample[3] = "S0 ";
-
 	/* get the number of ticks per second */
 	uint32_t tps = 1000000 / air_syscall_get_us_per_tick();
 	pprintf("TPS %i\n", tps);
@@ -99,7 +98,11 @@ void test(PARTITION_ID_TYPE self_id) {
 
 	while(1) {
 
+#ifdef RTEMS48I
 		rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
+#else
+		time = rtems_clock_get_ticks_since_boot();
+#endif
 //		append_to_message(message, sample, offset);
 //		append_time_to_message(message, time, 3 + offset);
 //		append_to_message(message, " ", offset + 3 + 8);
@@ -117,11 +120,15 @@ void test(PARTITION_ID_TYPE self_id) {
 			i=0;
 		}
 		sample[1] = 0x30 + i;
-        // 0.7 * tsp does not work!
-        interval = tps * 7;
-        interval = interval / 10;
-        pprintf("interval %i\n", interval);
-		
+#ifdef RTEMS48I
+		// 0.7 * tps does not work!
+		interval = tps * 7;
+		interval /= 10;
+#else
+		interval = tps * 0.7;
+#endif
+		pprintf("interval %i\n", interval);
+
 		rtems_task_wake_after(interval);
 	}
 }
@@ -132,7 +139,11 @@ int entry_func() {
 
 	rtems_name 	name 		= 10000;
 	rtems_mode	mode		= RTEMS_PREEMPT ;
-	rtems_mode	mode_mask	= RTEMS_PREEMPT_MASK;
+#ifdef RTEMS48I
+	rtems_mode	mode_mask		= RTEMS_PREEMPT_MASK;
+#else
+	rtems_attribute	attribute_set	= RTEMS_LOCAL | RTEMS_FLOATING_POINT;
+#endif
 	rtems_id	id;
 	
 	PARTITION_ID_TYPE self_id;
@@ -143,9 +154,8 @@ int entry_func() {
 	if(NO_ERROR != rc) {
 		pprintf("GET_PARTITION_ID error %d\n", rc);
 	}
-	
+
 	pprintf("Initializing partition %d...\n", self_id);
-	
 	
 	/*Creating Source sampling Port*/
 	SAMPLING_PORT_NAME_TYPE NAME = "ssampling";
@@ -156,12 +166,15 @@ int entry_func() {
 	if (NO_ERROR != rc) {
 		pprintf("CREATE_SAMPLING_PORT error %d\n", rc);
 	}
-	
-	
+#ifdef RTEMS48I
 	if (RTEMS_SUCCESSFUL == rtems_task_create (name, 15, 4096, mode, mode_mask, &id)) {
 		rtems_task_start (id, test, self_id);
 	}
-	
+#else
+	if (RTEMS_SUCCESSFUL == rtems_task_create (name, 15, 4096, mode, attribute_set, &id)) {
+		rtems_task_start (id, test, self_id);
+	}
+#endif
 	SET_PARTITION_MODE(NORMAL, &rc);
 	if (NO_ERROR != rc) {
 		pprintf("SET_PARTITION_MODE error %d\n", rc);
