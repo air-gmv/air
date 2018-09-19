@@ -28,6 +28,13 @@ SYM(air_syscall_get_physical_addr):
     retl
     nop
 
+    GLOBAL(air_syscall_get_nb_cores)
+SYM(air_syscall_get_nb_cores):
+
+    set     AIR_SYSCALL_GET_NB_CORES, %o5
+    ta      AIR_SYSCALL_OS_TRAP - 0x80
+    retl
+    nop
 
     GLOBAL(air_syscall_get_core_id)
 SYM(air_syscall_get_core_id):
