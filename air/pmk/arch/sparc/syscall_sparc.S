@@ -899,13 +899,11 @@ syscall_sparc_set_ef:
     or    %i0, SPARC_PSR_ET_MASK, %g1 ! return old PSR with ET=1
 
     /* set virtual PSR */
-    ld    [%l3 + CORE_CTRL_CONTEXT], %l3
     st    %l4, [%l3 + CONTEXT_VCPU + SPARC_VCPU_PSR]
 
     /*Apply EF value to real psr*/
     and     %l4, %l5, %l6
     andn    %l0, %l5, %l0
-    or      %l0, %l6, %l0
 
     ba    syscall_sparc_return_no_error   ! finish trap
-    or    %l0, 0x0f00, %l0   ! delay slot disables interrupts in real psr
+    or      %l0, %l6, %l0
