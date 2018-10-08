@@ -208,6 +208,10 @@ sparc_isr_handler_from_partition:
 
     rd      %y, %g1
 
+    /* restore the globals used by this routine */
+    mov     %l6, %g6
+    mov     %l7, %g7
+
     /* call the trap handling function */
     ba      sparc_isr_handler_ready
     st      %g1, [%sp + ISF_Y_OFFSET]       ! save y, delay slot
