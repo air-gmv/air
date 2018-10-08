@@ -193,7 +193,8 @@ void core_context_setup_partition(
         switch (partition->init_cache) {
             case AIR_CACHE_ALL:
                 /* 0xC + Snooping + bit 21 = 0xA0000C*/
-                context->vcpu.cctrl = 0xF | 0x800000;
+               // context->vcpu.cctrl = 0xA0000C;
+                context->vcpu.cctrl = 0xC | 0x800000;
                 break;
             case AIR_CACHE_DATA:
                 context->vcpu.cctrl = 0xC | 0x800000;

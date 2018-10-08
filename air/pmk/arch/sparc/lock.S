@@ -88,7 +88,7 @@ SYM(sparc_unlock_irqrestore):
     clr     [%o0]                           ! releasing control
     ta      0x7F                            ! enable interrupts
     retl
-    nop
+    nop; nop
 
 /**
  * @brief Try to acquire the lock

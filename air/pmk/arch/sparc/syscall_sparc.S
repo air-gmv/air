@@ -481,6 +481,8 @@ syscall_sparc_set_cache_register:
 
     /* save user options */
     ld      [%l3 + CORE_CTRL_CONTEXT], %l3
+ //  st      %i0, [%l3 + CONTEXT_VCPU + SPARC_VCPU_CCTRL]
+
     /*Avoid store of FI & FD because these bits must read 0*/
     set     0x80000F, %l6
     and     %i0, %l6, %l6
