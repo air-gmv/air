@@ -598,7 +598,7 @@ SYM(sparc_disable_preemption):
     mov     %o0, %o1
     ta      0x7F
     retl
-    nop
+    nop; nop
 
 /**
  * @brief Enable preemption, by allowing all interrupts via PIL
@@ -610,4 +610,4 @@ SYM(sparc_enable_preemption):
     ta      0x7F
     mov     %o2, %o0
     retl
-    nop
+    nop; nop
