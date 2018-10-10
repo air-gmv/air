@@ -551,6 +551,7 @@ syscall_sparc_set_irq_mask_register:
     nop                                             ! delay slot
 
     /* store mask in core context */
+    ld      [%l3 + CORE_CTRL_CONTEXT], %l3
     st      %i1, [%l3 + CONTEXT_VCPU + SPARC_VCPU_IMASK]
 
     /* get the real core id */
