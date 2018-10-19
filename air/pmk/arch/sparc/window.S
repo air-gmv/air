@@ -235,6 +235,9 @@ SYM(sparc_window_underflow_handler):
     GLOBAL(sparc_window_flush_handler)
 SYM(sparc_window_flush_handler):
 
+    mov %g6, %l6
+    mov %g7, %l7
+
     /* disable MMU to prevent faults */
     mov     AC_M_SFSR, %g6
     lda     [%g6] ASI_LEON_MMUREGS, %g0         ! clear flauts
@@ -311,16 +314,20 @@ pmk_window_flush_done:
     bne     1f                                  ! yes? then health-monitor
     nop
 
-    /* compute the new WIM */
-    add     %g3, 2, %g3                   ! calculate desired WIM
-    and     %g3, SPARC_REGISTER_WINDOWS_COUNT - 1, %g3
-    mov     1, %g2
-    sll     %g2, %g3, %g2                 ! g4 = new WIM
-
-    /* apply the new WIM and restore PSR */
-    mov     %g2, %wim
+    /*restore PSR */
     mov     %g1, %psr
-    nop; nop; nop;                              ! WRPSR, WRWIM delay slots
+    /* compute the new WIM */
+    add     %g3, 2, %g2                   ! calculate desired WIM
+    and     %g2, SPARC_REGISTER_WINDOWS_COUNT - 1, %g2
+    mov     1, %g4
+    sll     %g4, %g2, %g4                 ! g4 = new WIM
+
+    /* apply the new WIM*/
+    mov     %g4, %wim
+    nop
+    /* restore globals */
+    mov %l6, %g6
+    mov %l7, %g7
 
     /* return from trap */
     jmp     %l2
@@ -349,6 +356,10 @@ pmk_window_flush_done:
     or      %l4, %lo(sparc_isr_handler_entry), %l4      ! get point to the ISR handler
 
     or      %g0, 0x2B, %l3                      ! set as data-store error
+
+    /* restore globals */
+    mov %l6, %g6
+    mov %l7, %g7
 
     /* return from trap */
     jmp     %l4                                 ! jump to health-monitor
