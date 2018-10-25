@@ -29,11 +29,12 @@
  * @param val Value do convert
  * @return Value in big endian notation
  */
-#if CPU_BIG_ENDIAN
+/*#if CPU_BIG_ENDIAN
 #define HTONS(val)      (val)
 #else
 #define HTONS(val)      ((((val) >> 8) & 0x00FF) | (((val) << 8) & 0xFF00))
-#endif
+#endif*/
+#define HTONS(val)      (val)
 
 /**
  * @brief

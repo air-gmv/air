@@ -56,7 +56,7 @@ LIBRARY_HEADERS=${'\\'}
 ${template.FileList(library_headers)}\
 
 RTEMS_MAKEFILE_PATH=${'\\'}
-${os.path.relpath(os.path.join(air.INSTALL_POS_DIRECTORY, '$(RTEMS_IMPR_DIRECTORY)', '$(RTEMS_IMPR_DIRECTORY)-install', '$(RTEMS_IMPR_TARGET)', '$(RTEMS_IMPR_BSP)'), output_dir)}
+${os.path.relpath(os.path.join(air.INSTALL_POS_DIRECTORY, '$(RTEMS5_DIRECTORY)', '$(RTEMS5_DIRECTORY)-install', '$(RTEMS5_TARGET)', '$(RTEMS5_BSP)'), output_dir)}
 
 ifneq ($(wildcard $(RTEMS_MAKEFILE_PATH)/Makefile.inc),)
 
@@ -68,8 +68,8 @@ include $(PROJECT_ROOT)/make/leaf.cfg
 
 TARGET_CPPFLAGS+=${'\\'}
 -B$(RTEMS_MAKEFILE_PATH)/lib${'\\'}
-${template.get_headers_directories(header_files)}
-##-DIOP_NEEDS_DEBUG${'\\'}
+-DAIR_HYPERVISOR${'\\'}
+${template.get_headers_directories(header_files)}${'\\'}
 
 SOURCE_FILES=${'\\'}
 ${template.FileList(source_files)}

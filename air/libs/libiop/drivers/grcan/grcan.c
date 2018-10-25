@@ -111,7 +111,7 @@ int state2err[4] = {
 	/* STATE_AHBERR  */ GRCAN_RET_AHBERR
 };
 
-int grcan_get_state(iop_device_driver_t *iop_dev){
+int iop_grcan_get_state(iop_device_driver_t *iop_dev){
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 
@@ -184,7 +184,7 @@ static unsigned int __inline__ _grcan_read_nocache(unsigned int address)
 #define NELEM(a) ((int) (sizeof (a) / sizeof (a[0])))
 static int grcan_count = 0;
 
-int grcan_get_status(iop_device_driver_t *iop_dev, unsigned int *data)
+int iop_grcan_get_status(iop_device_driver_t *iop_dev, unsigned int *data)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev->driver;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -432,7 +432,7 @@ static unsigned int grcan_hw_txspace(
 #define MAX_TSEG1 14
 #define MAX_TSEG2 8
 
-int grcan_start(iop_device_driver_t *iop_dev)
+int iop_grcan_start(iop_device_driver_t *iop_dev)
 {
 	FUNCDBG();
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
@@ -443,7 +443,7 @@ int grcan_start(iop_device_driver_t *iop_dev)
 			pDev->iop_buffers_storage,
 			device->rx_count + device->tx_count);
 
-	if (grcan_get_state(iop_dev) == STATE_STARTED) {
+	if (iop_grcan_get_state(iop_dev) == STATE_STARTED) {
 		return -1;
 	}
 
@@ -782,11 +782,11 @@ void print_grtiming(unsigned int corefreq, unsigned int rate, struct grcan_timin
  * 4. Create the driver's semaphores
  * */
 
-int grcan_device_init(iop_device_driver_t *iop_dev)
+int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv*) (device->dev.driver);
-	amba_apb_device grcandev;
+	struct ambapp_apb_info grcandev;
 	int dev_count = 0;
 	int offset= 0;
 
@@ -801,12 +801,12 @@ int grcan_device_init(iop_device_driver_t *iop_dev)
 	 * define to the value in use in the gr740
 	 */
 
-	memset(&grcandev, 0, sizeof(amba_apb_device));
-	dev_count = amba_find_apbslv(&amba_conf,
+	memset(&grcandev, 0, sizeof(struct ambapp_apb_info));
+	dev_count = ambapp_find_apbslv(&ambapp_plb,
 			VENDOR_GAISLER,
 			GAISLER_GRCAN,
 			&grcandev);
-	if(amba_find_next_apbslv(&amba_conf,
+	if(amba_find_next_apbslv(&ambapp_plb,
 			grcan_ids[0].vendor,
 			grcan_ids[0].device,
 			&grcandev,
@@ -826,7 +826,7 @@ int grcan_device_init(iop_device_driver_t *iop_dev)
 	iop_debug("Start: 0x%04x - IRQ 0x%04x - bus_id 0x%04x\n",
 			grcandev.start,
 			grcandev.irq,
-			grcandev.bus_id);
+			grcandev.ahbidx);
 
 	pDev->irq = grcandev.irq;
 	pDev->regs = (struct grcan_regs *) (grcandev.start + offset);
@@ -894,7 +894,7 @@ int grcan_device_init(iop_device_driver_t *iop_dev)
 
 /*
  * New function developed for AIR */
-iop_device_operation grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
+iop_device_operation iop_grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
 
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv*) (device->dev.driver);
@@ -909,12 +909,12 @@ iop_device_operation grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
 	 *gpr = 0x000ffc3c;
 
 	 /* Enable CAN Clock gate */
-	 clock_gating_enable(&amba_conf, GATE_CAN);
+	 clock_gating_enable(&ambapp_plb, GATE_CAN);
 
 	// File system name should be configured in the iop_can_physical components
 	DBG("Can core %d\n", device->can_core);
 
-	if( grcan_device_init(iop_dev) == RTEMS_INTERNAL_ERROR){
+	if( iop_grcan_device_init(iop_dev) == RTEMS_INTERNAL_ERROR){
 		// Couldn't initialize the device
 		DBG("Internal error on grcan_device_init\n");
 		return RTEMS_IO_ERROR;
@@ -927,7 +927,7 @@ iop_device_operation grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
  * Internal driver open routine. This corresponds more or less to the
  * original grcan_open on grcan driver from gaisler.
  */
-iop_device_operation grcan_open_internal(iop_device_driver_t *iop_dev, void *arg)
+iop_device_operation iop_grcan_open_internal(iop_device_driver_t *iop_dev, void *arg)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev =  (grcan_priv *) (device->dev.driver);
@@ -982,8 +982,8 @@ iop_device_operation grcan_open_internal(iop_device_driver_t *iop_dev, void *arg
 			~(BUFFER_ALIGNMENT_NEEDS-1));
 	DBG("Using rxbufsize: %d, txbufsize: %d\n",pDev->txbuf_size,pDev->rxbuf_size);
 
-	grcan_set_afilter(iop_dev, &(pDev->afilter));
-	grcan_set_sfilter(iop_dev, &(pDev->sfilter));
+	iop_grcan_set_afilter(iop_dev, &(pDev->afilter));
+	iop_grcan_set_sfilter(iop_dev, &(pDev->sfilter));
 
 	memset(&pDev->stats,0,sizeof(struct grcan_stats));
 	memset(pDev->_tx, 0x0f, pDev->txbuf_size);
@@ -996,7 +996,7 @@ iop_device_operation grcan_open_internal(iop_device_driver_t *iop_dev, void *arg
 /*
  * Open routine for AIR
  * */
-iop_device_operation grcan_open(iop_device_driver_t *iop_dev, void *arg){
+iop_device_operation iop_grcan_open(iop_device_driver_t *iop_dev, void *arg){
 
 	FUNCDBG();
 
@@ -1005,7 +1005,7 @@ iop_device_operation grcan_open(iop_device_driver_t *iop_dev, void *arg){
 
 	int ret;
 
-	if(grcan_open_internal(iop_dev, NULL) == NULL){
+	if(iop_grcan_open_internal(iop_dev, NULL) == NULL){
 		DBG("Failed to open GRCAN device %d\n", device->can_core);
 		return RTEMS_IO_ERROR;
 	}
@@ -1021,7 +1021,7 @@ iop_device_operation grcan_open(iop_device_driver_t *iop_dev, void *arg){
 		 */
 
 	/* Set baud */
-	ret = grcan_set_speed(iop_dev, device->baud_rate);
+	ret = iop_grcan_set_speed(iop_dev, device->baud_rate);
 	if(ret){
 		iop_debug("GRCAN%d: Failed to set speed. Error %d\n", device->can_core, ret);
 		return RTEMS_IO_ERROR;
@@ -1029,19 +1029,19 @@ iop_device_operation grcan_open(iop_device_driver_t *iop_dev, void *arg){
 		print_grtiming(pDev->corefreq_hz,device->baud_rate, &(pDev->config.timing));
 	}
 
-	if(grcan_set_selection(iop_dev, &(pDev->config.selection))){
+	if(iop_grcan_set_selection(iop_dev, &(pDev->config.selection))){
 		iop_debug("GRCAN%d: Failed to select channel.\n", device->can_core);
 		return RTEMS_IO_ERROR;
 	}
 	iop_debug("GRCAN%d: Channel selected.\n", device->can_core);
-	if(grcan_clr_stats(iop_dev)){
+	if(iop_grcan_clr_stats(iop_dev)){
 		iop_debug("GRCAN%d: Failed to clear statistics.\n", device->can_core);
 		return RTEMS_IO_ERROR;
 	}
 	iop_debug("GRCAN%d: Stats cleared.\n", device->can_core);
 
 	/* Start GRCAN driver */
-	if(grcan_start(iop_dev)){
+	if(iop_grcan_start(iop_dev)){
 		iop_debug("GRCAN%d: Failed to start", device->can_core);
 		return RTEMS_IO_ERROR;
 	}
@@ -1050,14 +1050,14 @@ iop_device_operation grcan_open(iop_device_driver_t *iop_dev, void *arg){
 	return RTEMS_SUCCESSFUL;
 }
 
-iop_device_operation grcan_close(iop_device_driver_t * iop_dev)
+iop_device_operation iop_grcan_close(iop_device_driver_t * iop_dev)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
   
 	FUNCDBG();
 
-	grcan_stop(iop_dev);
+	iop_grcan_stop(iop_dev);
 
 	grcan_hw_reset(pDev->regs);
 
@@ -1069,7 +1069,7 @@ iop_device_operation grcan_close(iop_device_driver_t * iop_dev)
 	return RTEMS_SUCCESSFUL;
 }
 
-iop_device_operation grcan_read(iop_device_driver_t *iop_dev, void *arg)
+iop_device_operation iop_grcan_read(iop_device_driver_t *iop_dev, void *arg)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1154,7 +1154,7 @@ iop_device_operation grcan_read(iop_device_driver_t *iop_dev, void *arg)
 	return RTEMS_SUCCESSFUL;
 }
  
-iop_device_operation grcan_write(iop_device_driver_t *iop_dev, void *arg)
+iop_device_operation iop_grcan_write(iop_device_driver_t *iop_dev, void *arg)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1228,7 +1228,7 @@ iop_device_operation grcan_write(iop_device_driver_t *iop_dev, void *arg)
 	return RTEMS_SUCCESSFUL;
 }
     
-int grcan_stop(iop_device_driver_t *iop_dev)
+int iop_grcan_stop(iop_device_driver_t *iop_dev)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *)(device->dev.driver);
@@ -1259,7 +1259,7 @@ int grcan_stop(iop_device_driver_t *iop_dev)
 	return 0;
 }
 			
-int grcan_set_silent(iop_device_driver_t *iop_dev, int silent)
+int iop_grcan_set_silent(iop_device_driver_t *iop_dev, int silent)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1275,7 +1275,7 @@ int grcan_set_silent(iop_device_driver_t *iop_dev, int silent)
 	return 0;
 }
 
-int grcan_set_abort(iop_device_driver_t *iop_dev, int abort)
+int iop_grcan_set_abort(iop_device_driver_t *iop_dev, int abort)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1293,7 +1293,7 @@ int grcan_set_abort(iop_device_driver_t *iop_dev, int abort)
 	return 0;
 }
 
-int grcan_clr_stats(iop_device_driver_t *iop_dev)
+int iop_grcan_clr_stats(iop_device_driver_t *iop_dev)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1305,7 +1305,7 @@ int grcan_clr_stats(iop_device_driver_t *iop_dev)
 	return 0;
 }
 
-int grcan_set_selection(iop_device_driver_t *iop_dev, const struct grcan_selection *selection)
+int iop_grcan_set_selection(iop_device_driver_t *iop_dev, const struct grcan_selection *selection)
 {
 	iop_can_device_t * device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1324,7 +1324,7 @@ int grcan_set_selection(iop_device_driver_t *iop_dev, const struct grcan_selecti
 	return 0;
 }
       
-int grcan_set_rxblock(iop_device_driver_t *iop_dev, int block)
+int iop_grcan_set_rxblock(iop_device_driver_t *iop_dev, int block)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1336,7 +1336,7 @@ int grcan_set_rxblock(iop_device_driver_t *iop_dev, int block)
 	return 0;
 }
 
-int grcan_set_txblock(iop_device_driver_t *iop_dev, int block)
+int iop_grcan_set_txblock(iop_device_driver_t *iop_dev, int block)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1348,7 +1348,7 @@ int grcan_set_txblock(iop_device_driver_t *iop_dev, int block)
 	return 0;
 }
 
-int grcan_set_txcomplete(iop_device_driver_t *iop_dev, int complete)
+int iop_grcan_set_txcomplete(iop_device_driver_t *iop_dev, int complete)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1360,7 +1360,7 @@ int grcan_set_txcomplete(iop_device_driver_t *iop_dev, int complete)
 	return 0;
 }
 
-int grcan_set_rxcomplete(iop_device_driver_t *iop_dev, int complete)
+int iop_grcan_set_rxcomplete(iop_device_driver_t *iop_dev, int complete)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1372,7 +1372,7 @@ int grcan_set_rxcomplete(iop_device_driver_t *iop_dev, int complete)
 	return 0;
 }
 
-int grcan_get_stats(iop_device_driver_t *iop_dev, struct grcan_stats *stats)
+int iop_grcan_get_stats(iop_device_driver_t *iop_dev, struct grcan_stats *stats)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1387,7 +1387,7 @@ int grcan_get_stats(iop_device_driver_t *iop_dev, struct grcan_stats *stats)
 	return 0;
 }
 
-int grcan_set_speed(iop_device_driver_t *iop_dev, unsigned int speed)
+int iop_grcan_set_speed(iop_device_driver_t *iop_dev, unsigned int speed)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1412,7 +1412,7 @@ int grcan_set_speed(iop_device_driver_t *iop_dev, unsigned int speed)
 	return 0;
 }
 
-int grcan_set_btrs(iop_device_driver_t *iop_dev, const struct grcan_timing *timing)
+int iop_grcan_set_btrs(iop_device_driver_t *iop_dev, const struct grcan_timing *timing)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1438,7 +1438,7 @@ int grcan_set_btrs(iop_device_driver_t *iop_dev, const struct grcan_timing *timi
 	return 0;
 }
 
-int grcan_set_afilter(iop_device_driver_t *iop_dev, const struct grcan_filter *filter)
+int iop_grcan_set_afilter(iop_device_driver_t *iop_dev, const struct grcan_filter *filter)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1459,7 +1459,7 @@ int grcan_set_afilter(iop_device_driver_t *iop_dev, const struct grcan_filter *f
 	return 0;
 }
 
-int grcan_set_sfilter(iop_device_driver_t *iop_dev, const struct grcan_filter *filter)
+int iop_grcan_set_sfilter(iop_device_driver_t *iop_dev, const struct grcan_filter *filter)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);

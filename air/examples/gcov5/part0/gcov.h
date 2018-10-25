@@ -33,8 +33,6 @@
 #ifndef GCOV_H
 #define GCOV_H GCOV_H
 
-#define COVERAGE_ENABLED
-
 
 #include "gcov_public.h"
 

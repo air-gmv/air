@@ -39,6 +39,7 @@ void test(PARTITION_ID_TYPE self_id) {
 		if (rc == NO_ERROR) {
 		    pprintf ("Partition %d: %s\n", self_id, msg);
 		}
+//                pprintf(".");
 	}
 }
 

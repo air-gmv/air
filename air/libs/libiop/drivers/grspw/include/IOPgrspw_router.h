@@ -148,16 +148,16 @@ typedef struct {
 /* Get Current Time-Code Register */
 #define GRSPWR_IOCTL_TC_GET	0x0c	/* OUT:    unsigned int */
 
-rtems_device_driver router_initialize(iop_device_driver_t *iop_dev, void *arg);
+rtems_device_driver spw_router_initialize(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver router_open(iop_device_driver_t *iop_dev, void *arg);
+rtems_device_driver spw_router_open(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver router_close(iop_device_driver_t *iop_dev, void *arg);
+rtems_device_driver spw_router_close(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver router_control(iop_device_driver_t *iop_dev, void *arg);
+rtems_device_driver spw_router_control(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver router_write(iop_device_driver_t *iop_dev, void *arg);
+rtems_device_driver spw_router_write(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver router_read(iop_device_driver_t *iop_dev, void *arg);
+rtems_device_driver spw_router_read(iop_device_driver_t *iop_dev, void *arg);
 
 #endif
