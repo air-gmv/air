@@ -17,6 +17,7 @@
 /* reference time for window execution time */
 extern rtems_interval last_task_ticks;
 
+#ifdef CODE_ON_HOLD
 /**
  *  \brief Validates an incomming service request
  *  \param [in] *incoming: pointer to request wrapper to be validated
@@ -52,7 +53,10 @@ rtems_status_code validate_service_request(iop_wrapper_t *incoming){
     return status;
 
 }
+#endif
 
+
+#ifdef CODE_ON_HOLD
 /**
  *  \brief Dispacthes a request based on the operation and target device
  *  \param [in] *incoming: pointer to request wrapper to be dispatched
@@ -150,6 +154,7 @@ rtems_status_code process_service_request(iop_wrapper_t *incoming, int reply_add
 */
     return rc;
 }
+#endif
 
 
 /** 
@@ -164,9 +169,8 @@ rtems_status_code process_service_request(iop_wrapper_t *incoming, int reply_add
 static void process_remote_port(iop_port_t *port){
 
     air_status_code_e rc = AIR_NO_ERROR;
-
+    iop_debug(" IOP :: process_remote_port\n");
     while (rc != AIR_NOT_AVAILABLE) {
-
         /* get a empty request wrapper from the wrapper chain*/
         iop_wrapper_t *wrapper = obtain_free_wrapper();
 
@@ -198,12 +202,14 @@ static void process_remote_port(iop_port_t *port){
             (port->type == AIR_QUEUING_PORT ||
             (port->type == AIR_SAMPLING_PORT &&
              status.last_msg_validity == AIR_MESSAGE_VALID))) {
+            
 
             /* setup the wrapper properties */
             wrapper->buffer->payload_off = sizeof(iop_header_t);
             wrapper->buffer->payload_size = size;
             wrapper->buffer->header_off = 0;
             wrapper->buffer->header_size = sizeof(iop_header_t);
+
 
             /* append data to aimed device */
             iop_chain_append(
@@ -215,7 +221,6 @@ static void process_remote_port(iop_port_t *port){
             }
 
         } else {
-
             /* release the wrapper */
             release_wrapper(wrapper);
             rc = AIR_NOT_AVAILABLE;
@@ -329,10 +334,10 @@ void pre_dispatcher(){
 
 	/* Get execution window reference time */
     /* this  call is for RTEMS 4.8, it is not deprecated */
-	 rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &last_task_ticks);
+//	 rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &last_task_ticks);
     
      /* If we switch to RTEMS 5 use  this one */
-     //last_task_ticks = rtems_clock_get_ticks_since_boot();
+        last_task_ticks = rtems_clock_get_ticks_since_boot();
     
 	//iop_debug("  :: IOP - pre-dispatcher read this time %d\n", last_task_ticks);
 
@@ -350,11 +355,12 @@ void pre_dispatcher(){
 		iop_port_t *port = get_remote_port(i);
 		/* only receive data from destination ports (linked to a device) */
 		if(port->device != NULL){
-
 			/* obtain and process data from current port */
 			process_remote_port(port);
 		}
 	}
+
+#ifdef CODE_ON_HOLD
 	/* iterate over all request ports*/
 	for (i = 0; i < usr_configuration.request_ports.length; i += 2){
 		/* get port */
@@ -365,6 +371,7 @@ void pre_dispatcher(){
 		process_request_port(port);
 		iop_debug(" Processed port request\n");
 	}
+#endif
 }
 
 /**
