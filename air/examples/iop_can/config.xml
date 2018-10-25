@@ -8,7 +8,7 @@
       Direction="DESTINATION" MaxMessageSize="8" RefreshRateSeconds="1.0"/>
     <Sampling_Port Name="partition_sender" 
       Direction="SOURCE" MaxMessageSize="8" RefreshRateSeconds="1.0"/>
-    <PartitionConfiguration Personality="RTEMS48i" Cores="1">
+    <PartitionConfiguration Personality="RTEMS5" Cores="1">
         <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
@@ -26,7 +26,7 @@
       Direction="SOURCE" MaxMessageSize="8" RefreshRateSeconds="1.0"/>
     <Sampling_Port Name="iop_receiver"
       Direction="DESTINATION" MaxMessageSize="8" RefreshRateSeconds="1.0"/>
-    <PartitionConfiguration Personality="RTEMS48i" IOP="iop.xml" Cores="1">
+    <PartitionConfiguration Personality="RTEMS5" IOP="iop.xml" Cores="1">
         <Libs>LIBAIR; LIBIOP; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>

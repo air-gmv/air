@@ -12,7 +12,7 @@
     <Sampling_Port Name="SEND_APP_RT2" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
     <Sampling_Port Name="SEND_APP_RT3" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
     <Sampling_Port Name="SEND_APP_RT4" Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
-    <PartitionConfiguration Personality="RTEMS48i" Cores="1">
+    <PartitionConfiguration Personality="RTEMS5" Cores="1">
         <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
@@ -34,7 +34,7 @@
     <Sampling_Port Name="RECV_IO_RT2" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
     <Sampling_Port Name="RECV_IO_RT3" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
     <Sampling_Port Name="RECV_IO_RT4" Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
-    <PartitionConfiguration Personality="RTEMS48i" IOP="iop.xml" Cores="1">
+    <PartitionConfiguration Personality="RTEMS5" IOP="iop.xml" Cores="1">
         <Libs>LIBAIR; LIBIOP; LIBPRINTF</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>

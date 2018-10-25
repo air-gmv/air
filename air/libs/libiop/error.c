@@ -16,7 +16,3 @@ rtems_status_code iop_raise_error(int error){
 	return RTEMS_SUCCESSFUL;
 }
 
-void iop_device_error(IOP_ERROR error) {
-
-    pprintf(" iop :: error %i\n", error);
-}

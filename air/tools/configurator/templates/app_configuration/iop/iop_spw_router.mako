@@ -38,11 +38,11 @@ static iop_spw_router_device_t device_configuration = ${'\\'}
     .dev        = {
 
         .driver         = (void *)&spwrtr_driver,
-        .init           = router_initialize,
-        .open           = router_open,
+        .init           = spw_router_initialize,
+        .open           = spw_router_open,
         .read           = NULL,
         .write          = NULL,
-        .close          = router_close,
+        .close          = spw_router_close,
     },
 
     /* spacewire router configuration configuration */

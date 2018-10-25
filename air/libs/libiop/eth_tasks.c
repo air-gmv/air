@@ -54,7 +54,6 @@ eth_writer(iop_physical_device_t * pdev)
     /* empty send queue */
     while (!iop_chain_is_empty(&pdev->sendqueue))
     {
-
         iop_wrapper_t *wrapper = obtain_wrapper(&pdev->sendqueue);
         uint8_t *message = (uint8_t *)
             ((uintptr_t) wrapper->buffer->v_addr + sizeof(iop_header_t));
@@ -65,7 +64,6 @@ eth_writer(iop_physical_device_t * pdev)
         {
 
             release_wrapper(wrapper);
-
             /* error sending packet */
         }
         else
@@ -79,7 +77,6 @@ eth_writer(iop_physical_device_t * pdev)
     /* re-queue failed transmissions */
     while (!iop_chain_is_empty(&error))
     {
-
         iop_wrapper_t *wrapper = obtain_wrapper(&error);
 
         iop_chain_append(&pdev->sendqueue, &wrapper->node);
@@ -145,7 +142,6 @@ eth_reader(iop_physical_device_t * pdev)
         {
             switch (eth_get_packet_type(wrapper->buffer))
             {
-
                 /* ARP packet */
             case HTONS(ETH_HDR_ARP_TYPE):
                 eth_send_arp_reply(driver, wrapper);
@@ -153,10 +149,11 @@ eth_reader(iop_physical_device_t * pdev)
 
                 /* IPv4 packet */
             case HTONS(ETH_HDR_IP_TYPE):
-
+                
                 /* check if it valid UDP packet for us */
                 if (eth_validate_packet(driver, wrapper))
                 {
+
                     iop_chain_append(&pdev->rcvqueue, &wrapper->node);
                     wrapper = NULL;
                 }
