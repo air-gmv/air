@@ -19,6 +19,47 @@
 #include <bsp.h>
 #include <ambapp.h>
 #include <pprintf.h>
+#include <ambaext.h>
+
+struct ambapp_bus amba_conf;
+
+struct ambapp_dev_find_match_arg {
+
+    int      index;
+    int      count;
+    int      type;
+    void      *dev;
+
+};
+
+/* AMBA PP find routines */
+
+static int ambapp_dev_find_match(struct ambapp_dev *dev, int index, void *arg)
+{
+    struct ambapp_dev_find_match_arg *p = arg;
+
+    if (p->index == 0) {
+
+        /* Found controller, stop */
+        if (p->type == DEV_APB_SLV) {
+            *(struct ambapp_apb_info *)p->dev = *DEV_TO_APB(dev);
+            p->dev = ((struct ambapp_apb_info *)p->dev)+1;
+        } else {
+            *(struct ambapp_ahb_info *)p->dev = *DEV_TO_AHB(dev);
+            p->dev = ((struct ambapp_ahb_info *)p->dev)+1;
+        }
+
+        p->count--;
+
+        if (p->count < 1)
+            return 1;
+
+    } else {
+        p->index--;
+    }
+
+    return 0;
+}
 
 /**
  * 	@brief Finds the nth ahb device
@@ -28,83 +69,26 @@
  *  @param [out] dev: plug and play data for the device
  *  @param [in]	index: Number of the devic to be found (e.g. 2nd GRETH core)
  */
-int amba_find_next_ahbslv (amba_confarea_type * amba_conf, int vendor, int device,
-						   amba_ahb_device * dev, int index)
+int amba_find_next_ahbslv (struct ambapp_bus * amba_conf, int vendor, int device,
+						struct  ambapp_ahb_info * dev, int index)
 {
-	/*AHB IO area mem address*/
-	unsigned int addr;
-	
-	/* AHB device configuration word */
-	unsigned int conf;
-	
-	/* AHB mem bar */
-	unsigned int mbar;
-	
-	/* iterator index through the AHB slave devices */
-	int i;
-	
-	/* iterator index through the AHB device mem areas */
-	int j;
-	
-	/*Number of apb devices of that type found*/
-	int cnt;
-	
-	/* iterate through the AHB slave devices */
-	for (cnt = i = 0; i < amba_conf->ahbslv.devnr; i++) 
-	{	
-		/*Get AHB device conf word*/
-		conf = amba_get_confword (amba_conf->ahbslv, i, 0);
-		
-		/*If the device vendor and device id coincides with the ones requested*/
-		if ((amba_vendor (conf) == vendor) && (amba_device (conf) == device)) 
-		{
-			/*If this in the n-th device of this type*/
-			if (cnt == index) 
-			{
-				/*Search for the Device's IO area*/
-				for (j = 0; j < 4; j++) 
-				{
-					/* get the io mem bar */
-					mbar = amba_ahb_get_membar (amba_conf->ahbslv, i, j);
-					
-					/*Get realtive addr of mem area*/
-					addr = amba_membar_start (mbar);
-					
-					/*Check memory type*/
-					if (amba_membar_type (mbar) == AMBA_TYPE_AHBIO) 
-					{	
-						/*obtain real memory address*/
-						addr = AMBA_TYPE_AHBIO_ADDR (addr, amba_conf->ioarea);
-					
-					/*It's not IO memory*/	
-					} else
-					{
-						/* convert address if needed */
-						if ((addr = amba_addr_from (amba_conf->mmaps, addr)) == 1) 
-						{	
-							/* no available memory translation available, will not be able to access*/
-							addr = 0;         
-						}
-					}
-					dev->start[j] = addr;
-				}
-				/*Get device IRQ line*/
-				dev->irq = amba_irq (conf);
-				
-				/*Get device version*/
-				dev->ver = amba_ver (conf);
-				
-				/*we have found the device*/
-				return 1;
-			}
-			/*This is not the n-th device. Increment Count*/
-			cnt++;
-		}
-	}
-	/*We didn't find the device*/
-	return 0;
+    int maxno = 1;
+
+    struct ambapp_dev_find_match_arg arg;
+
+    arg.index = index;
+    arg.count = maxno;
+    arg.type = DEV_AHB_SLV; /* AHB SLV */
+    arg.dev = dev;
+
+    ambapp_for_each(amba_conf, (OPTIONS_ALL|OPTIONS_AHB_SLVS), vendor, device, ambapp_dev_find_match, &arg);
+
+    return maxno - arg.count;
 }
 
+
+
+#ifdef CODE_ON_HOLD
 /**
  * 	@brief Finds the nth ahb master device
  *  @param [in] ambaconf: Amba bus plug and play memory structure
@@ -190,6 +174,7 @@ int amba_find_next_ahbmst(amba_confarea_type * amba_conf, int vendor, int device
 	/*We didn't find the device*/
 	return 0;
 }
+#endif
 
 /**
  * 	@brief Returns the number of APB Slave devices that have a given vendorid
@@ -198,34 +183,14 @@ int amba_find_next_ahbmst(amba_confarea_type * amba_conf, int vendor, int device
  *  @param [in] vendor: VendorID
  *  @param [in]	device: DeviceID
  */
-int amba_get_number_apbslv_devices (amba_confarea_type * amba_conf, int vendor,
+int amba_get_number_apbslv_devices (struct ambapp_bus * amba_conf, int vendor,
 									int device)
 {
-	/* APB device configuration word */
-	unsigned int conf;
-	
-	/* iterator index through the APB slave devices */
-	int i;
-	
-	/*Number of apb devices of that type found*/
-	int cnt;
-	
-	/* iterate through the APB slave devices */
-	for (cnt = i = 0; i < amba_conf->apbslv.devnr; i++)
-	{
-		/*Get apb device conf word*/
-		conf = amba_get_confword (amba_conf->apbslv, i, 0);
-		
-		/*If the device vendor and device id coincides with the ones requested*/
-		if ((amba_vendor (conf) == vendor) && (amba_device (conf) == device))
-		{
-			/*Increment the number of devices found*/
-			cnt++;
-		}
-	}
-	
-	/*Return the number of devices*/
-	return cnt;
+    int count = 10000;
+
+    ambapp_for_each(amba_conf, (OPTIONS_ALL|OPTIONS_APB_SLVS) , vendor, device, ambapp_find_by_idx, &count);
+
+    return 10000 - count;
 }
 
 
@@ -237,53 +202,23 @@ int amba_get_number_apbslv_devices (amba_confarea_type * amba_conf, int vendor,
  *  @param [out] dev: plug and play data for the device
  *  @param [in]	index: Number of the devic to be found (e.g. 2nd GRETH core)
  */
-int amba_find_next_apbslv (amba_confarea_type * amba_conf, int vendor, int device,
-						   amba_apb_device * dev, int index)
+int amba_find_next_apbslv (struct ambapp_bus * amba_conf, int vendor, int device,
+						 struct  ambapp_apb_info * dev, int index)
 {
-	/* APB device configuration word */
-	unsigned int conf;
-	
-	/* APB slave mem bar */
-	unsigned int iobar;
-	
-	/* iterator index through the APB slave devices */
-	int i;
-	
-	/*Number of apb devices of that type found*/
-	int cnt;
-	
-	/* iterate through the APB slave devices */
-	for (cnt = i = 0; i < amba_conf->apbslv.devnr; i++) 
-	{
-		/*Get apb device conf word*/
-		conf = amba_get_confword (amba_conf->apbslv, i, 0);
-		
-		/*If the device vendor and device id coincides with the ones requested*/
-		if ((amba_vendor (conf) == vendor) && (amba_device (conf) == device)) 
-		{
-			/*If this is the n-th device(index-th) */
-			if (cnt == index) 
-			{
-				/* get the io mem bar */
-				iobar = amba_apb_get_membar (amba_conf->apbslv, i);
-				
-				/*get the device IO mem area*/
-				dev->start = amba_iobar_start (amba_conf->apbslv.apbmst[i], iobar);
-				
-				/*get the device's IRQ*/
-				dev->irq = amba_irq (conf);
-				
-				/*device was sucessfully found*/
-				return 1;
-			}
-			/*this is not our device: increment the number of devices found*/
-			cnt++;
-		}
-	}
-	/*desired device was not found. Return*/
-	return 0;
+    int maxno = 1;
+
+    struct ambapp_dev_find_match_arg arg;
+
+    arg.index = index;
+    arg.count = maxno;
+    arg.type = DEV_APB_SLV; /* APB */  
+    arg.dev = dev;
+            
+    ambapp_for_each(amba_conf, (OPTIONS_ALL|OPTIONS_APB_SLVS), vendor, device, ambapp_dev_find_match, &arg);
+    return maxno - arg.count;
 }
 
+#ifdef CODE_ON_HOLD
 /**
  * @fn 
  * @brief Prints vendor and deviceid for every device on AHB and APB buses.
@@ -394,3 +329,4 @@ void amba_debug_scan(unsigned int ioarea)
         }
     }
 }
+#endif

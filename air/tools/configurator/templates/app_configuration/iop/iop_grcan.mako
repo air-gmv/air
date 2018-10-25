@@ -112,11 +112,11 @@ static iop_can_device_t device_configuration = ${'\\'}
 	/* device configuration */
 	.dev 		= {
 		.driver			= (void *)&grcan_driver,
-		.init			= grcan_initialize,
-		.open			= grcan_open,
-		.read			= grcan_read,
-		.write			= grcan_write,
-		.close			= grcan_close,
+		.init			= iop_grcan_initialize,
+		.open			= iop_grcan_open,
+		.read			= iop_grcan_read,
+		.write			= iop_grcan_write,
+		.close			= iop_grcan_close,
 	},
 	.can_core 	= ${device.setup.can_core},
 	.baud_rate 	= ${device.setup.baud},
