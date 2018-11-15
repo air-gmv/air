@@ -9,7 +9,8 @@
 
 #include <air.h>
 #include <stddef.h>
-#include <rtems/score/isr.h>
+#include <rtems/score/isrlevel.h>
+#include <rtems/score/address.h>
 
 typedef struct __chain_node  {
 
@@ -85,9 +86,9 @@ static inline void iop_chain_extract_unprotected(iop_chain_node *node) {
 static inline void iop_chain_extract(iop_chain_node *node) {
 
     ISR_Level level;
-    _ISR_Disable(level);
+    _ISR_Local_disable(level);
     iop_chain_extract_unprotected(node);
-    _ISR_Enable(level);
+    _ISR_Local_enable(level);
 }
 
 
@@ -117,9 +118,9 @@ static inline iop_chain_node *iop_chain_get_unprotected(iop_chain_control *chain
 static inline iop_chain_node *iop_chain_get(iop_chain_control *chain){
 
     ISR_Level level;
-    _ISR_Disable(level);
+    _ISR_Local_disable(level);
     iop_chain_node *node = iop_chain_get_unprotected(chain);
-    _ISR_Enable(level);
+    _ISR_Local_enable(level);
     return node;
 }
 
@@ -155,9 +156,9 @@ static inline void iop_chain_append(
         iop_chain_control *chain, iop_chain_node *node){
 
     ISR_Level level;
-    _ISR_Disable(level);
+    _ISR_Local_disable(level);
     iop_chain_append_unprotected(chain , node);
-    _ISR_Enable(level);
+    _ISR_Local_enable(level);
 }
 
 static inline void iop_chain_initialize(

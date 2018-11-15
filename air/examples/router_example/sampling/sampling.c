@@ -54,7 +54,7 @@ void test(PARTITION_ID_TYPE self_id) {
 		}
 		message[15] = 0x30 + i;
 		
-		rtems_task_wake_after(0.7 * tps);
+		rtems_task_wake_after((7 * tps)/10);
 	}
 }
 
