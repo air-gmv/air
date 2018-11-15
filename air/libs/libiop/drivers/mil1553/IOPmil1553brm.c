@@ -102,7 +102,7 @@ static unsigned int allbrm_memarea;
 static brm_priv *brms;
 
 /* Pointer to amba configuration */
-static amba_confarea_type *amba_bus;
+static struct ambapp_bus *amba_bus;
 
 /* Configuration for the MILSTD device*/
 milstd_config_t *config;
@@ -828,7 +828,7 @@ rtems_device_driver brm_initialize(rtems_device_major_number major, rtems_device
 	brm_priv *brm;
 	
 	/* AMBA AHB device*/
-	amba_ahb_device ambadev;
+	struct ambapp_ahb_info ambadev;
 	
 	/* Device's memory area*/
 	char *mem;
@@ -843,7 +843,7 @@ rtems_device_driver brm_initialize(rtems_device_major_number major, rtems_device
 	#endif
 	
 	/* Amba bus defining structure*/
-	amba_bus = &amba_conf;
+	amba_bus = &ambapp_plb;
 	
 	/* get number of brm cores present */
 	brm_cores = get_number_milstd_cores();
