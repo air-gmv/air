@@ -18,17 +18,26 @@
 #define __AMBAEXT_H__
 
 #include <ambapp.h>
+#include <iop.h>
 
-int amba_find_next_ahbslv (amba_confarea_type * amba_conf, int vendor, int device,
-						   amba_ahb_device * dev, int index);
+struct amba_dev_id {
+    unsigned short      vendor;
+    unsigned short      device;
+                /* Version ? */
+};
 
-int amba_get_number_apbslv_devices (amba_confarea_type * amba_conf, int vendor,
+extern struct ambapp_bus amba_conf;
+
+int amba_find_next_ahbslv (struct ambapp_bus * amba_conf, int vendor, int device,
+						   struct ambapp_ahb_info * dev, int index);
+
+int amba_get_number_apbslv_devices (struct ambapp_bus * amba_conf, int vendor,
 									int device);
-									
-int amba_find_next_apbslv (amba_confarea_type * amba_conf, int vendor, int device,
-						   amba_apb_device * dev, int index);
-						   
-int amba_find_next_ahbmst(amba_confarea_type * amba_conf, int vendor, int device,
-                          amba_ahb_device * dev, int index);
+
+int amba_find_next_apbslv (struct ambapp_bus * amba_conf, int vendor, int device,
+						  struct  ambapp_apb_info * dev, int index);
+
+int amba_find_next_ahbmst(struct ambapp_bus * amba_conf, int vendor, int device,
+                          struct ambapp_ahb_info * dev, int index);
 
 #endif

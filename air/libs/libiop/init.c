@@ -155,16 +155,18 @@ static rtems_status_code iop_init_drivers(void){
 
         /* get physical device */
         iop_physical_device_t *pdev = get_physical_device(i);
-//        iop_debug("Physical device address 0x%04x\n", pdev);
+        iop_debug("   Physical device address 0x%04x\n", pdev);
 
         /* initialize device */
         if (pdev->driver->init != NULL) {
             drc = pdev->driver->init(pdev->driver, NULL);
+            iop_debug("   Driver init result %d\n", drc);
         }
 
         /* open device */
         if (RTEMS_SUCCESSFUL == drc && pdev->driver->open != NULL) {
             drc = pdev->driver->open(pdev->driver, NULL);
+            iop_debug("   Driver open result %d\n", drc);
         }
 
         /* account for this device state */
@@ -276,6 +278,7 @@ rtems_status_code IOPinit() {
 	/* initialize Drivers*/
 	if (iop_init_drivers() != RTEMS_SUCCESSFUL){
 		iop_raise_error(HW_PROBLEM);
+                return RTEMS_IO_ERROR;
 	}
 	
 	iop_main_loop();
