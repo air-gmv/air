@@ -24,7 +24,6 @@ void setup_iop_buffers(
 
     uint32_t i;
     for (i = 0; i < count; ++i) {
-
         /* get virtual and physical addresses for this buffer */
         buffers[i].v_addr = &storage[i * IOP_BUFFER_SIZE];
         buffers[i].p_addr = (void *)air_syscall_get_physical_addr((uintptr_t)buffers[i].v_addr);
@@ -62,7 +61,6 @@ void release_wrapper(iop_wrapper_t *wrapper) {
 iop_wrapper_t *obtain_wrapper(iop_chain_control *ctl) {
 
     iop_chain_node *node = NULL;
-
     if (ctl != NULL) {
         /* get the node from the chain*/
         node = iop_chain_get(ctl);
@@ -158,6 +156,7 @@ void update_timers() {
         update_queue_timers(&pdev->sendqueue, usr_configuration.time_to_live);
         update_queue_timers(&pdev->rcvqueue, usr_configuration.time_to_live);
     }
+    iop_debug("     leaving update_timers\n");
 }
 
 /**
@@ -166,13 +165,13 @@ void update_timers() {
  * @param core_to_enable Which device to enable.
  *        Available devices are: ETH0, ETH1, SPWR, PCI, 1553 and CAN
  */
-void clock_gating_enable(amba_confarea_type* clk_amba_bus, clock_gating_device core_to_enable)
+void clock_gating_enable(struct ambapp_bus* clk_amba_bus, clock_gating_device core_to_enable)
 {
     /* Amba APB device */
-    amba_apb_device ambadev;
+    struct ambapp_apb_info ambadev;
 
     /* Get AMBA AHB device info from Plug&Play */
-    if(amba_find_next_apbslv(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE,&ambadev, 0) == 0){
+    if(amba_find_next_apbslv(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE,&ambadev,0 ) == 0){
 
         /* Device not found */
 		iop_debug("    Clock Gating unit not found!\n");

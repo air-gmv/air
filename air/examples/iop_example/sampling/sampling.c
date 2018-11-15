@@ -95,7 +95,7 @@ void test(PARTITION_ID_TYPE self_id) {
 
 	RETURN_CODE_TYPE rc = NO_ERROR;
 	rtems_interval time;
-
+//        air_sparc_enable_fpu();
 	while(1) {
 
 #ifdef RTEMS48I
@@ -147,7 +147,6 @@ int entry_func() {
 	rtems_id	id;
 	
 	PARTITION_ID_TYPE self_id;
-	
 	
 	/*Getting my own partition id*/
 	GET_PARTITION_ID(&self_id, &rc);
