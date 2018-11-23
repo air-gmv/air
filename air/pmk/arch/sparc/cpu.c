@@ -60,6 +60,8 @@ void core_context_init(core_context_t *context, air_u32_t id) {
     /* allocate space to hold an FPU context */
     context->fpu_context = (sparc_fpu_context_t *) \
             pmk_workspace_alloc(sizeof(sparc_fpu_context_t));
+
+    memset(context->fpu_context, 0, sizeof(sparc_fpu_context_t));
 #else
     context->fpu_context = (sparc_fpu_context_t *)NULL;
 #endif
