@@ -456,9 +456,8 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper){
 		/*Check for errors*/
 		if ((status & GRETH_RXD_TOOLONG) || (status & GRETH_RXD_DRIBBLE) ||
 		    (status & GRETH_RXD_CRCERR)  || (status & GRETH_RXD_OVERRUN) ||
-		    (status & GRETH_RXD_LENERR)  || (status & 0x7FF) < 42) {
-			error = 1;
-
+		    (status & GRETH_RXD_LENERR)  || (status & 0x7FF) < offsetof(eth_header_t, src_port)) {
+            error = 1;
 		}
 		
 		/* did we had and error during reception? */
@@ -476,9 +475,9 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper){
 
             /* setup offsets */
             wrapper->buffer->header_off = 0;
-            wrapper->buffer->header_size = 42;
-            wrapper->buffer->payload_off = 42;
-            wrapper->buffer->payload_size = len - 42;
+            wrapper->buffer->header_size = offsetof(eth_header_t, src_port);
+            wrapper->buffer->payload_off = offsetof(eth_header_t, src_port);
+            wrapper->buffer->payload_size = len - offsetof(eth_header_t, src_port);
 		}
 		
 		/* re-activate descriptor */
@@ -534,6 +533,7 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
     }
     /* get the size of the packet to send */
     uint16_t len = (uint16_t)get_buffer_size(wrapper->buffer);
+
     /* ignore long packets */
     if (len < IOP_BUFFER_SIZE) {
 
