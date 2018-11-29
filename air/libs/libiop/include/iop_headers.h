@@ -29,7 +29,7 @@ typedef struct {
 } __attribute__((packed)) milstd_header_t;
 
 /**
- * @brief Eth header (UDP Packet complete header)
+ * @brief Eth header (Eth + IP + UDP/TCP port header)
  */
 typedef struct  {
     /* EthII header */
@@ -49,13 +49,16 @@ typedef struct  {
     uint8_t src_ip[4];      /**< Source Ip address */
     uint8_t dst_ip[4];  /**< Destination IP address */
 
-    /* UDP header. */
-    uint16_t src_port;          /**< Source UDP port */
-    uint16_t dst_port;          /**< Destination UDP port */
-    uint16_t udplen;            /**< udp packet length */
-    uint16_t udpchksum;     /**< pseudo header + UDP header + data checksum */
+    uint16_t src_port;          /**< Source port */
+    uint16_t dst_port;          /**< Destination port */
 
 }  __attribute__((packed)) eth_header_t;
+
+typedef struct  {
+    /* UDP Specific header. */
+    uint16_t udplen;            /**< udp packet length */
+    uint16_t udpchksum;     /**< pseudo header + UDP header + data checksum */
+}  __attribute__((packed)) udp_header_t;
 
 typedef struct {
 	uint8_t extended;		/* CANBUS extended id option */
@@ -72,7 +75,7 @@ typedef struct {
 typedef union {
     milstd_header_t milstd_hdr;     /**< MILSTD 1553b header        */
     spw_header_t spw_header;        /**< SPW header                 */
-    eth_header_t eth_header;        /**< UDP packet header          */
+    eth_header_t eth_header;        /**< ETH header (ETH + IP + UDP/TCP ports)*/
     can_header_t can_header;		/**< CAN frame header		    */
 
 } __attribute__((packed)) iop_header_t;
