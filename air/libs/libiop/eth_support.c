@@ -75,33 +75,38 @@ uint16_t eth_ipv4_chksum(uint8_t *buf) {
 }
 
 /**
- * @brief Complete UDP header
+ * @brief Complete IP header
  * @param src_mac source MAC address
  * @param src_ip source IP address
  * @param data packet payload
  * @param len payload length
  */
 static void eth_complete_header(
-        udp_header_t *buf, uint8_t *src_mac, uint8_t *src_ip,
+        void *buf, uint8_t *src_mac, uint8_t *src_ip,
         uint8_t *data, uint16_t len) {
 
+    eth_header_t *eth = (eth_header_t *)buf;
     /* setup source MAC and IPs */
-    memcpy(buf->src_mac, src_mac, 6);
-    memcpy(buf->src_ip, src_ip, 4);
+    memcpy(eth->src_mac, src_mac, 6);
+    memcpy(eth->src_ip, src_ip, 4);
 
-    /* fill the IPv4 and UDP lengths */
-    buf->len = HTONS(len + IPV4_HDR_SIZE + UDP_HDR_SIZE);
-    buf->udplen = HTONS(len + UDP_HDR_SIZE);
+    /* fill the IPv4 length */
+    eth->len = HTONS(len + IPV4_HDR_SIZE + UDP_HDR_SIZE);
 
     /* force checksums to be zero*/
-    buf->ipchksum = 0;
-    buf->udpchksum = 0;
+    eth->ipchksum = 0;
 
     /* compute IP header checksum */
-    buf->ipchksum = ~eth_ipv4_chksum((uint8_t *)buf);
+    eth->ipchksum = ~eth_ipv4_chksum((uint8_t *)buf);
+
+    /*TODO add TCP*/
+    udp_header_t *udp = (udp_header_t *)(buf+sizeof(eth_header_t));
+
+    udp->udplen = HTONS(len + UDP_HDR_SIZE);
+    udp->udpchksum = 0;
 }
 
-void eth_prebuild_header(udp_header_t *buf) {
+void eth_prebuild_header(eth_header_t *buf) {
 
     /* the total length will be inserted when we have the data */
     buf->len = 0;
@@ -111,12 +116,6 @@ void eth_prebuild_header(udp_header_t *buf) {
 
     /* protocol is UDP */
     buf->proto = IPV4_HDR_PROTO;
-
-    /* UDP length is unknown. To Fill when we have data */
-    buf->udplen = 0;
-
-    /* checksum needs the data */
-    buf->udpchksum = 0;
 
     /* Version and Header Length. Always the same*/
     buf->vhl = 0x45;
@@ -152,14 +151,17 @@ void eth_copy_header(
 
     /* set the header size and offsets */
     iop_buf->header_off = iop_buf->header_size - sizeof(eth_header_t);
-    iop_buf->header_size = sizeof(eth_header_t);
+    iop_buf->header_size = sizeof(eth_header_t) + sizeof(udp_header_t);
 
     /* copy header from the route */
     memcpy(get_header(iop_buf), header, iop_buf->header_size);
 
+    /*TODO CHECK TYPE UDP or TCP*/
+    iop_buf->header_size += sizeof(udp_header_t);
+
     /* complete header with the device parameters */
     eth_complete_header(
-            (udp_header_t *)iop_buf->v_addr, eth_dev->mac, eth_dev->ip,
+            iop_buf->v_addr, eth_dev->mac, eth_dev->ip,
             get_payload(iop_buf), get_payload_size(iop_buf));
 }
 
@@ -212,8 +214,8 @@ void eth_send_arp_reply(iop_eth_device_t *eth_device, iop_wrapper_t *wrapper) {
 
 uint32_t eth_compare_header(iop_wrapper_t *wrapper, iop_header_t *header) {
 
-    udp_header_t *src = (udp_header_t *)header;
-    udp_header_t *rcv = (udp_header_t *)get_header(wrapper->buffer);
+    eth_header_t *src = (eth_header_t *)header;
+    eth_header_t *rcv = (eth_header_t *)get_header(wrapper->buffer);
 
     if (rcv->dst_port != src->src_port) {
         return 0;
@@ -226,11 +228,63 @@ uint32_t eth_compare_header(iop_wrapper_t *wrapper, iop_header_t *header) {
     return 1;
 }
 
+
+static int eth_handle_fragments(iop_wrapper_t *wrapper)
+{
+    eth_header_t *packet = (eth_header_t *)get_header(wrapper->buffer);
+    unsigned int pack_seq = (((unsigned int)packet->ipoffset[0] & 0x1f)<<8) + packet->ipoffset[1];
+    static unsigned int frags;
+    static unsigned char buf[14 + 65535];
+    static unsigned int head;
+
+    /*if is a fragment or there were fragments and this packet has a sequence number*/
+    if(packet->ipoffset[0] & 0x20 || (frags && pack_seq))
+    {
+        /*TODO Handle multiple fragmented packets*/
+
+        if(frags*185 == pack_seq)
+        {
+            if(!(packet->ipoffset[0] & 0x20))
+            {  /*packet is complete*/
+                memmove(buf+head, get_payload(wrapper->buffer), get_payload_size(wrapper->buffer));
+                wrapper->buffer->payload_size = head + get_payload_size(wrapper->buffer) - sizeof(eth_header_t);
+                wrapper->buffer->v_addr = buf;
+                head = 0;
+                frags = 0;
+            }
+            else
+            {   /*still fragmented*/
+                if(!frags)
+                {   /*Initial fragment*/
+                    memmove(buf, packet, get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer));
+                    head = get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer);
+                }
+                else
+                {
+                    memmove(buf+head, get_payload(wrapper->buffer), get_payload_size(wrapper->buffer));
+                    head += get_payload_size(wrapper->buffer);
+                }
+                frags++;
+                return 0;
+            }
+        }
+        else
+        {   /*The sequence nb is not what we're looking for. restart*/
+            memmove(buf, packet, get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer));
+            head = get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer);
+            frags = 1; /*Discard*/
+            return 0;
+        }
+    }
+    return 1;
+}
+
+
 uint32_t eth_validate_packet(
         iop_eth_device_t *dev, iop_wrapper_t *wrapper) {
 
-    /* get the UDP header */
-    udp_header_t *packet = (udp_header_t *)get_header(wrapper->buffer);
+    /* get the IP header */
+    eth_header_t *packet = (eth_header_t *)get_header(wrapper->buffer);
 
     /* check if the packet was for us */
     if (!eth_compare_mac((uint16_t*)dev->mac, (uint16_t*)packet->dst_mac) ||
@@ -263,18 +317,22 @@ uint32_t eth_validate_packet(
     /* fix padding */
     received_length = HTONS(packet->len);
 
-    /* check if the packet was fragmented */
-    if ((packet->ipoffset[0] & 0x3f) != 0 || packet->ipoffset[1] != 0) {
-
-        return 0;
-    }
-
     /* check if the checksum is valid */
     if (eth_ipv4_chksum(
             (uint8_t *)get_header(wrapper->buffer)) != (uint16_t)0xFFFF) {
 
         return 0;
     }
+
+    /*Fragmented packet handler*/
+    if(!eth_handle_fragments(wrapper))
+        return 0;
+
+    /*TODO Addapt to UDP or TCP*/
+    /* setup offsets */
+    wrapper->buffer->header_size = sizeof(eth_header_t)+sizeof(udp_header_t);
+    wrapper->buffer->payload_off = sizeof(eth_header_t)+sizeof(udp_header_t);
+    wrapper->buffer->payload_size -= sizeof(udp_header_t);
 
     /* packet is fine! */
     return 1;
