@@ -12,11 +12,6 @@
 #include <iop_support.h>
 
 /**
- * @brief Define UDP header (same as iop_eth_header_t)
- */
-typedef eth_header_t udp_header_t;
-
-/**
  * @brief Ethernet device
  */
 typedef struct {
@@ -26,6 +21,7 @@ typedef struct {
     uint8_t mac[6];                 /**< Device MAC address             */
     uint16_t rx_count;              /**< Device RX descriptor count     */
     uint16_t tx_count;              /**< Device TX descriptor count     */
+//    uint16_t type;                  /**< Protocol type UDP/TCP          */
 
 } iop_eth_device_t;
 
@@ -74,10 +70,10 @@ typedef struct {
  */
 uint16_t eth_ipv4_chksum(uint8_t *buf);
 /**
- * @brief Pre-build the UDP header
- * @param buf pointer to the UDP header
+ * @brief Pre-build the IP header
+ * @param buf pointer to the Ethernet header
  */
-void eth_prebuild_header(udp_header_t *buf);
+void eth_prebuild_header(eth_header_t *buf);
 /**
  * @brief Compare two ethernet headers
  * @param wrapper Received packet
