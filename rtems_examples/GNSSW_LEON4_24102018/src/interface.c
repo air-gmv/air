@@ -1,6 +1,6 @@
 #ifdef _rtems_app
 
-//#include <system.h>
+#include <system.h>
 
 /* Application */
 #include <stdio.h>
@@ -8,20 +8,20 @@
 #include <strings.h>
 #include <ctype.h>
 #include <rtems.h>
-//#include <rtems/rtems_bsdnet.h>
+#include <rtems/rtems_bsdnet.h>
 #include <rtems/error.h>
 #include <sys/types.h>
-//#include <sys/socket.h> 
-//#include <netinet/in.h>
-//#include <arpa/inet.h>
-//#include <netdb.h>
+#include <sys/socket.h> 
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 #include <sys/time.h>
 #include <stdlib.h>
 
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
-//#include <rtems/dosfs.h>
+#include <rtems/dosfs.h>
 #include <rtems/bdpart.h>
 #include <rtems/libcsupport.h>
 #include <rtems/fsmount.h>
@@ -32,10 +32,10 @@
 #include <time.h>
 #include <sys/resource.h>
 
-//#include <bsp/grspw_pkt.h>
-//#include "grspw_pkt_lib.h"
-//#include <bsp/grspw_router.h>
-//#include <spwinterface.h>
+#include <bsp/grspw_pkt.h>
+#include "grspw_pkt_lib.h"
+#include <bsp/grspw_router.h>
+#include <spwinterface.h>
 #include <manag.h>
 #include <interface.h>
 #include <pthread.h>
@@ -47,19 +47,6 @@
 #include <dataBuffer.h>
 #include <init.h>
 
-#include <a653.h>
-#include <imaspex.h>
-
-
-  #define CONFIGURE_MINIMUM_TASK_STACK_SIZE CPU_STACK_MINIMUM_SIZE
-
-/* DMS-IOP queue (TM/TC) inter-partition port ids */
-static QUEUING_PORT_ID_TYPE QRECV_IOP;
-static QUEUING_PORT_ID_TYPE QSEND_IOP;
-/* inter-partition ports maximum size definitions */
-#define MAX_MESSAGE_SIZE MAX_BUFFER_SIZE // bytes
-#define MAX_NB_MESSAGES 10 // queue messages
-
 #ifdef RTEMS_SMP
 #warning " SMP support is enabled "
 #else
@@ -70,9 +57,9 @@ static QUEUING_PORT_ID_TYPE QSEND_IOP;
 // Socket management
 /////////////////////////////////////////
 int sd;
-//struct sockaddr_in serveraddr;
-//int sockaddrlen = (int)sizeof(struct sockaddr_in);
-//struct sockaddr_in clientaddr;
+struct sockaddr_in serveraddr;
+int sockaddrlen = (int)sizeof(struct sockaddr_in);
+struct sockaddr_in clientaddr;
 
 int udp_port = 0;
 unsigned long addr_tmp;
@@ -355,7 +342,6 @@ int nospw = 0;
 int tasks_stop = 0;
 
 int num_pkt_prew = 0;
-#if 0
 grspw_device devs[DEVS_MAX];
 
 int dma_process(grspw_device *dev);
@@ -417,7 +403,7 @@ struct grspw_config dev_def_cfg =
 		},
 };
 /******************************************************/
-#endif
+
 #ifndef _rtems_app
 // Windows
 #ifdef TCP_interface  
@@ -507,35 +493,15 @@ int initializeUDP(void)
 
 
 #else
-
-void setup_ports(void)
-{
-    RETURN_CODE_TYPE rc;
-
-    printf("Initializing ports ...\n");
-
-    /*Creating QRECV_TC_IOP Queuing Port*/
-    CREATE_QUEUING_PORT("QRECV_IOP", MAX_MESSAGE_SIZE, MAX_NB_MESSAGES, DESTINATION, FIFO, &QRECV_IOP, &rc );
-    if(NO_ERROR != rc)
-    {
-        printf("CREATE_QUEUING_PORT QRECV_IOP error %d\n", rc);
-    }
-    /*Creating QSEND_TM_IOP Queuing Port*/
-    CREATE_QUEUING_PORT("QSEND_IOP", MAX_MESSAGE_SIZE, MAX_NB_MESSAGES, SOURCE, FIFO, &QSEND_IOP, &rc );
-    if(NO_ERROR != rc)
-    {
-        printf("CREATE_QUEUING_PORT QSEND_IOP error %d\n", rc);
-    }
-}
 /*
  * RTEMS Startup Task
  */
 
-int entry_point (rtems_task_argument ignored)
+rtems_task Init (rtems_task_argument ignored)
 {
         rtems_status_code status;    // status of rtems function
         rtems_time_of_day time;      // rtems system time
-//        int   i 	  = 0;       // Function return value and increment    
+        int   ret, i 	  = 0;       // Function return value and increment    
         
         rtems_interrupt_level level;
 
@@ -571,22 +537,21 @@ int entry_point (rtems_task_argument ignored)
     #endif      
         
     /* Initialize Driver manager and Networking, in config.c */
-    //printk(">> initialize system:\n"); 
-    //system_init(); 
-    setup_ports();
-    //rtems_task_wake_after(10);
-
+    printk(">> initialize system:\n"); 
+    system_init(); 
+    rtems_task_wake_after(10);
+    
 #ifdef TCP_interface
     printk(">> initialize TCP\n");
-    //initializeTCP();
+    initializeTCP();
 #else
     printk(">> initialize UDP\n");
-    //initializeUDP();
+    initializeUDP();    
 #endif
     
-    printk(">> initialize SpW\n");
+    printk(">> initialize SpW\n");    
     nospw = 0;
-#if 0
+    
     /* Initialize two GRSPW AMBA ports */
    printf(">> Setting up SpaceWire router\n");
    if (router_setup_custom()) 
@@ -645,9 +610,9 @@ int entry_point (rtems_task_argument ignored)
        
     printk(">> SpaceWire initialize done\n");   
     printk(">> initialize Tasks\n");
-#endif
+
     //  Create tck tasks
-    for ( ii = 0 ; ii < 3 ; ii++ )
+    for ( ii = 0 ; ii < 3 ; ii++ ) 
     {
       status =  rtems_task_create(
                             rtems_build_name( task_param[ ii ].name[0],task_param[ ii ].name[1],task_param[ ii ].name[2], task_param[ ii ].name[3]),
@@ -696,8 +661,8 @@ int entry_point (rtems_task_argument ignored)
             printf(">ERROR: task_set_affinity(): %s\n",rtems_status_text(status));
        }
     }
-
-#ifdef SEB_FFT
+        
+#ifdef SEB_FFT    
     /* INIT SEB FFT */
     printk(">> initialize fft: %d\n",FFT_SIZE_MAX);   
     Init_FFT_Algorithm(FFT_SIZE_MAX);
@@ -749,7 +714,6 @@ int initializeTCP(void)
 #else
 int initializeUDP(void)
 {
-#if 0
     udp_port= CLIENTPORT; // UDP
 
     sd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -776,7 +740,7 @@ int initializeUDP(void)
     clientaddr.sin_family = AF_INET;   
     addr_tmp= inet_addr(IP_CLIENT);      // SERVER IP
     clientaddr.sin_addr.s_addr = addr_tmp;
-# endif
+    
     return 0;
 }
 #endif
@@ -791,15 +755,17 @@ int receiveUDP_TC(void)
 {
 	int rc;
 	int fail = 0;
-//	int i = 0, k = 0;
+	int i = 0, k = 0;
         
- //       grspw_device *dev;
-
+        grspw_device *dev;
+        
+        int num_pkt = 0;
+        
 	int nSamplesPerRead = 0;       /* Used to compute # ms per read call. */
 	int nSamples;
 
     #ifdef PROFILER
-       double ElapsedSeconds = 0;
+	double ElapsedSeconds = 0;
     #endif
 
     //rtems_task_wake_after(100);
@@ -847,7 +813,6 @@ int receiveUDP_TC(void)
 
                     /* Compute # integers to read in each read call. */
                     nBytesToRead = nSamplesPerRead * BYTES_PER_WORD / NBITS_PER_WORD;                             
-                    
                 }
 
                 #ifdef TCP_interface            
@@ -855,7 +820,7 @@ int receiveUDP_TC(void)
                 #else
                     SendUdpOK();  
                 #endif 
-#if 0
+                    
                 if(Config.Com.onspw == 1)
                 {
                     printf(">> Started SpW DMA control task\n");
@@ -880,7 +845,6 @@ int receiveUDP_TC(void)
                         }
                     }
                 }
-#endif
             }
         }
         else if(rc == nBytesToRead/25)  // read 4kB for primaryIterations == 100
@@ -893,7 +857,7 @@ int receiveUDP_TC(void)
             #endif
 
             ioBuffer.inIndexBytes = ioBuffer.inIndexBytes + rc;
-
+            
             if(ioBuffer.inIndexBytes == nBytesToRead) // read 100kB 
             {
                 printf("\n");
@@ -936,9 +900,11 @@ int receiveUDP_TC(void)
     }
 }
 
+
 int GetCNF(void)
 {
 	int i = 0;
+        int k = 0;
         
                 Config.Com.onspw				= *(int *)				(buffer + i); i += sizeof(int);
 		Config.Com.mode					= *(E_ExecutionMode*)                   (buffer + i); i += sizeof(E_ExecutionMode);
@@ -1044,20 +1010,12 @@ int GetCNF(void)
 #endif
 {
 	buffer[0] = 0;
-    RETURN_CODE_TYPE rc;
-    SYSTEM_TIME_TYPE timeout = 0;
-    printf("SendUdpOK\n");
-
-    SEND_QUEUING_MESSAGE(QSEND_IOP, (MESSAGE_ADDR_TYPE )buffer, 1, timeout, &rc );
+	sendto(sd,buffer,1,0,(struct sockaddr *)&serveraddr, sockaddrlen);
 }
 
 void SendResultCalculation(char *BufferToSend, int LenToSend)
 {
-    RETURN_CODE_TYPE rc;
-    SYSTEM_TIME_TYPE timeout = 0;
-    printf("SendResultCalculation %d\n",LenToSend);
-
-    SEND_QUEUING_MESSAGE(QSEND_IOP, (MESSAGE_ADDR_TYPE )BufferToSend, LenToSend, timeout, &rc );
+	sendto(sd,BufferToSend,LenToSend,0,(struct sockaddr *)&serveraddr, sockaddrlen);
 }
 
 #ifdef TCP_interface            
@@ -1066,17 +1024,10 @@ void SendResultCalculation(char *BufferToSend, int LenToSend)
             int RecvUdp(void) 
 #endif
 {
-	RETURN_CODE_TYPE rc;
-    MESSAGE_SIZE_TYPE len = 0;
+	int rc;
 
-    while(!len)
-        RECEIVE_QUEUING_MESSAGE(QRECV_IOP, INFINITE_TIME_VALUE, (MESSAGE_ADDR_TYPE )buffer, &len, &rc );
-
-    if(rc)
-        return -1;
-
-    printf("RECV %d\n",len);
-	return len;
+	rc = recvfrom(sd, buffer, MAX_BUFFER_SIZE, 0, (struct sockaddr *)&serveraddr, &sockaddrlen);
+	return rc;
 }
 
 
@@ -1093,6 +1044,7 @@ void PrepSendBuffer(void)
 {
 	idx = 0;
 	int k = 0;
+	int Ch_SVN[MAXNUMCHAN];
 			
 	double gpstow = (pvtProcess.firstPvtFlag ? timeStamp.gpsTime.TOW : 0.0);
 
@@ -1277,7 +1229,7 @@ void SendBuffer(void)
 #endif    
         }  
 }
-/*
+
 void memory_statistic(int memory_bytes, char *place, int *address, int add_sub)
 {  
   if(add_sub)
@@ -1291,7 +1243,7 @@ void memory_statistic(int memory_bytes, char *place, int *address, int add_sub)
   
    printf("%s: %d sum: %d in address: %p | %d\n",place,memory_bytes,memory_bytes_sum, address, address);
 }
-*/
+
 
 
 /***************************************************************************************
@@ -1429,7 +1381,7 @@ rtems_task Tck2_task( rtems_task_argument unused )
     #ifdef PROFILER
         double ElapsedSeconds = 0;
     #endif
-
+        
     #ifdef PROFILER
         ManageLoopTracking2_StartTime = GetStartTime();
     #endif	
@@ -1437,12 +1389,12 @@ rtems_task Tck2_task( rtems_task_argument unused )
     for (ms = 0; ms < 100; ms++)
     {       
         ManageLoopTracking(Tck2Ch, 1, core[1].nchan);
-
+             
         for (i = 0 ; i < Config.Mng.nChannelspercore  ; i++)
-        {					
+        {					        
             Tck2Ch[i].outIndex.bit	+=  Tck2Ch[i].corrAuxIndex.outSize_P->bit;
             Tck2Ch[i].outIndex.word	+=  Tck2Ch[i].corrAuxIndex.outSize_P->word;
-
+            
             // Check BIT ROLL-OVER
             if (Tck2Ch[i].outIndex.bit >= NBITS_PER_WORD)
             {
@@ -1461,7 +1413,7 @@ rtems_task Tck2_task( rtems_task_argument unused )
                 Tck2Ch[i].outIndex.bit  = auxIndex % NBITS_PER_WORD;
                 Tck2Ch[i].outIndex.word = auxIndex / NBITS_PER_WORD;
             }            
-
+            
             Tck2Ch[i].chCounterMs++;              
         } 
     } 
@@ -1472,7 +1424,7 @@ rtems_task Tck2_task( rtems_task_argument unused )
     #endif 
 
     rtems_event_send(task_param[ 5 ].id, RTEMS_EVENT_2); 
-
+    
     rtems_task_suspend(task_param[ 1 ].id);
 }
 
@@ -1645,8 +1597,6 @@ rtems_task Main_task( rtems_task_argument unused )
 
 int dev_init(int idx)
 {
-
-#if 0
 	grspw_device *dev = &devs[idx];
 	int i, ctrl, clkdiv, tc;
     
@@ -1717,13 +1667,12 @@ int dev_init(int idx)
 	grspw_list_clr(&dev->tx_list);
 	grspw_list_clr(&dev->tx_buf_list);
 	dev->rx_list_cnt = dev->tx_list_cnt = dev->tx_buf_list_cnt = 0;
-#endif
+
 	return 0;
 }
 
 void init_pkts(void)
 {
-#if 0
 	spwpkt *pkt;
 	int i, j;
 
@@ -1770,10 +1719,8 @@ void init_pkts(void)
 			}
 		}
 	}
-#endif
 }
 
-#if 0
 rtems_task dma_task(rtems_task_argument unused)
 {
     int num_pkt = 0;
@@ -1917,7 +1864,7 @@ int dma_process(grspw_device *dev)
     return 0;
 }
 
-#endif
+
 
 /* Must be deleted after add gnss .lib file and */
 void ManageFftAcquisition(T_supportData *supportData_P, int core_index)
