@@ -1,7 +1,7 @@
 #include <manag.h>
 #include <rtems/score/thread.h>
 #include <interface.h>
-//#include <spwinterface.h>
+#include <spwinterface.h>
 
 #include "siria.h"
 #include <configuration.h>
@@ -45,12 +45,11 @@ int                             Tck2ChIdx = 0;
 int                             Tck3ChIdx = 0;
 
 /* SpW Interface */
-#if 0
 extern int nospw; 
 extern grspw_device devs[DEVS_MAX];
 extern struct grspw_config dev_def_cfg;
 extern int dma_process(grspw_device *dev);
-#endif
+
 #ifdef _rtems_app
 extern struct timeval MainLoop_StartTime;
 extern struct timeval AcquisitionTrackingAid_StartTime;
@@ -197,7 +196,7 @@ void ReceiverProcessing(void)
 
         T_Channel *chanAux;
 
-//        grspw_device *dev;
+        grspw_device *dev;
         
 	int i = 0, j = 0, msTh = ComData.lengthMs/2;
         int primaryIterations = 100;//4;
@@ -311,8 +310,7 @@ while (continueExecution())
     #endif  
         
         if(Config.Com.onspw == 1) // Read samples from SpW
-        {
-#if 0
+        {           
             for (int idx2 = 0; idx2 < nospw; idx2++) 
             {
                     dev = &devs[idx2];
@@ -320,8 +318,7 @@ while (continueExecution())
                             continue;
 
                     dma_process(dev);
-           }
-#endif 
+            }
         }
         else // Read samples from UDP
         {   
@@ -443,7 +440,7 @@ while (continueExecution())
                         #endif                    
                     } 
                 }
-
+                
 /* setup Tracking if acq new satelite */  
                 for(int core_index1 = 0; core_index1 < NACQCHAN; core_index1++)		
                 {         
@@ -488,7 +485,7 @@ while (continueExecution())
                         }                                            
                     }  
                 }
-
+                
                 // Manage VirtualTracking Acquisition GPS
                 if (rxProcessingStatus.vtQueueGps.N > supportData[0].satManag_P->vtChannels.N && aidData.pvtStatus == 3 )
                 //if (rxProcessingStatus.vtQueueGps.N > supportData[0].satManag_P->vtChannels.N && aidData.pvtStatus >= 0 )
@@ -539,7 +536,7 @@ while (continueExecution())
                     chanAux->corrAuxIndex.outSize_P              = &supportData[0].outSize;
                     chanAux->chCounterMs = ComData.counterMs;
                 } 
-
+                
 /* split chDataAll to three tck data structures */   
             int nchan;   
             // check if any core is available for tracking
@@ -566,7 +563,7 @@ while (continueExecution())
                     }
                 }
             }
-
+                        
             Tck1ChIdx = 0;
             Tck2ChIdx = 0;
             Tck3ChIdx = 0;  
@@ -592,11 +589,11 @@ while (continueExecution())
                 }						
             }  
                 in = 0;      
-
 /* start tck tasks */       
             if(core[0].activity == TCK)
             {              
                 in |= (RTEMS_EVENT_1);
+
                 if(core[0].init == START_TCK1 && core[0].activityprev == ACQ)       
                 {   
                     core[0].activityprev = NONE;
@@ -613,7 +610,7 @@ while (continueExecution())
                     rtems_task_restart(task_param[ 0 ].id, 0 ); 
                 }                                
             }
-
+            
             if(core[1].activity == TCK)
             {           
                 in |= (RTEMS_EVENT_2);
@@ -643,7 +640,7 @@ while (continueExecution())
                     rtems_task_restart(task_param[ 2 ].id, 2 ); 
                 }                
             }
-
+      
                 for (int idx7 = 0; idx7 < primaryIterations; idx7++)
                 {                                                          
                     int cpt = ComData.counterMs%4;
@@ -823,7 +820,7 @@ while (continueExecution())
                         
                     ComData.counterMs++;
                 }          
-
+            
                 initFirstLoop = 0;                             
                
                 if(Config.Com.onspw == 0)
