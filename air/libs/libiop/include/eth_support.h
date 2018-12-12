@@ -91,10 +91,21 @@ void eth_copy_header(
         iop_physical_device_t *iop_dev,
         iop_wrapper_t *wrapper,
         iop_header_t *header);
-
+/**
+ * @brief Validate received packet
+ * @param iop_dev IO device
+ * @param wrapper IOP wrapper with the packet
+ * @return 1 new packet received, 0 otherwise
+ */
 uint32_t eth_validate_packet(
         iop_eth_device_t *dev, iop_wrapper_t *wrapper);
-
+/**
+ * @brief Fragment a wrapper
+ * @param wrapper IOP wrapper with the packet to be fragmented
+ * @param buffer auxiliary buffer that will be filled with all data to be transmitted
+ * @return size of data in buffer to be transmit
+ */
+uint32_t eth_fragment_packet(iop_wrapper_t *wrapper, uint8_t *buf);
 
 /**
  * @brief Get the type of ethernet packet

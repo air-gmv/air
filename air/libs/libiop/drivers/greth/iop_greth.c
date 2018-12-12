@@ -153,7 +153,6 @@ static int greth_initialize_hardware(iop_eth_device_t *device){
     int tmp2;
     greth_regs *regs;
     unsigned int msecs;
-	char *memarea;
 	
 	greth_softc_t *sc = (greth_softc_t *)device->dev.driver;
 
@@ -506,10 +505,7 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper){
 
 /** 
  *  \param [in]  sc	: internal driver structure
- *  \param [in]  b : pointer to header
- *  \param [in]  c : header length in bytes
- *  \param [in]  data : pointer to data
- *  \param [in]  data_len: data length in bytes
+ *  \param [in]  wrapper : wrapper with buffer to tx
  *
  *  \return number of bytes written
  *
@@ -517,45 +513,62 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper){
  **/
 static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
 
-    /* check if there are descriptor available */
-    while (sc->txdesc[sc->tx_ptr].ctrl & GRETH_TXD_ENABLE){
-
-        /* Are we allowed to block?*/
-        if (sc->tx_blocking) {
-
-            /* wait a moment for any RX descriptors to get available */
-            rtems_task_wake_after(sc->wait_ticks);
-        } else {
-
-            /* We can't block waiting, so we return */
-            return 0;
-        }
-    }
+    uint8_t buffer[14 + 65535 + 44*(14+20)];/*eth_head + Max_data_tx + (max_frags*eth+IP )*/
     /* get the size of the packet to send */
     uint16_t len = (uint16_t)get_buffer_size(wrapper->buffer);
+    uint16_t lenght;
+    uint8_t *ptr = buffer;
 
-    /* ignore long packets */
-    if (len < IOP_BUFFER_SIZE) {
+    /* fragment */
+    if(len > 1514)
+        len = eth_fragment_packet(wrapper, buffer);
+    else
+        memcpy(buffer, get_header(wrapper->buffer), len);
 
-        /* swap IOP buffers */
-        iop_buffer_t *temp = wrapper->buffer;
-        wrapper->buffer = sc->tx_iop_buffer[sc->tx_ptr];
-        sc->tx_iop_buffer[sc->tx_ptr] = temp;
+    while (len)
+    {
+        /* check if there are descriptor available */
+        while (sc->txdesc[sc->tx_ptr].ctrl & GRETH_TXD_ENABLE){
+
+            /* Are we allowed to block?*/
+            if (sc->tx_blocking) {
+
+                /* wait a moment for any RX descriptors to get available */
+                rtems_task_wake_after(sc->wait_ticks);
+            } else {
+
+                /* We can't block waiting, so we return */
+                return 0;
+            }
+        }
+
+        if(len > 1514)
+            lenght = 1514;
+        else
+            lenght = len;
 
         /* replace pointer in the descriptor */
-        sc->txdesc[sc->tx_ptr].addr =
-                (uint32_t *)((uintptr_t)temp->p_addr + temp->header_off);
-        
+        sc->txdesc[sc->tx_ptr].addr = (uint32_t *)air_syscall_get_physical_addr((uintptr_t)ptr);
+
+//         /* swap IOP buffers */
+//          iop_buffer_t *temp = wrapper->buffer;
+//          wrapper->buffer = sc->tx_iop_buffer[sc->tx_ptr];
+//          sc->tx_iop_buffer[sc->tx_ptr] = temp;
+// 
+//         /* replace pointer in the descriptor */
+//         sc->txdesc[sc->tx_ptr].addr =
+//                 (uint32_t *)((uintptr_t)temp->p_addr + temp->header_off);
+
         /* enable descriptor*/
         if (sc->tx_ptr < sc->txbufs - 1) {
 
             /* re enable descriptor and write total data length*/
-            sc->txdesc[sc->tx_ptr].ctrl = GRETH_TXD_ENABLE | len;
+            sc->txdesc[sc->tx_ptr].ctrl = GRETH_TXD_ENABLE | lenght;
         } else {
 
             /* this is last descriptor so also activate WRAP */
             sc->txdesc[sc->tx_ptr].ctrl =
-                    GRETH_TXD_WRAP | GRETH_TXD_ENABLE | len;
+                    GRETH_TXD_WRAP | GRETH_TXD_ENABLE | lenght;
         }
 
         /* enable transmission */
@@ -563,11 +576,15 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
 
         /* increment descriptor */
         sc->tx_ptr = (sc->tx_ptr + 1) % sc->txbufs;
+
+        len -= lenght;
+        ptr += lenght;
     }
 
     /* return number of bytes written */
-    return len;
+    return (int)(ptr - buffer);
 }
+
 
 uint32_t greth_initialize(iop_device_driver_t *iop_dev, void *arg) {
 	
@@ -685,7 +702,6 @@ uint32_t greth_read(iop_device_driver_t *iop_dev, void *arg) {
 
 uint32_t greth_write(iop_device_driver_t *iop_dev, void *arg) {
 
-	int count;
     iop_wrapper_t *wrapper = (iop_wrapper_t *)arg;
     iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
     greth_softc_t *sc = (greth_softc_t *)device->dev.driver;
@@ -700,6 +716,6 @@ uint32_t greth_write(iop_device_driver_t *iop_dev, void *arg) {
         return RTEMS_INVALID_NAME;
     }
 
-    count=greth_hw_send(sc, wrapper);
+    greth_hw_send(sc, wrapper);
 	return RTEMS_SUCCESSFUL;
 }
