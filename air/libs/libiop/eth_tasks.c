@@ -55,8 +55,6 @@ eth_writer(iop_physical_device_t * pdev)
     while (!iop_chain_is_empty(&pdev->sendqueue))
     {
         iop_wrapper_t *wrapper = obtain_wrapper(&pdev->sendqueue);
-        uint8_t *message = (uint8_t *)
-            ((uintptr_t) wrapper->buffer->v_addr + sizeof(iop_header_t));
 
         /* write to the device */
         if (eth_driver->dev.write((iop_device_driver_t *) eth_driver,
