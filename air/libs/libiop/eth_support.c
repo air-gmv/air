@@ -149,15 +149,16 @@ void eth_copy_header(
     /* get underlying IOP buffer */
     iop_buffer_t *iop_buf = wrapper->buffer;
 
-    /* set the header size and offsets */
+    /* set the header size and offsets TODO: TCP support */
     iop_buf->header_off = iop_buf->header_size - sizeof(eth_header_t);
     iop_buf->header_size = sizeof(eth_header_t) + sizeof(udp_header_t);
+    iop_buf->payload_off = iop_buf->header_size;
+
+    /*Add missing space to UDP or TCP header. memmove does not overlap memory*/
+    memmove(wrapper->buffer->v_addr+iop_buf->header_size, wrapper->buffer->v_addr+sizeof(eth_header_t), iop_buf->payload_size);
 
     /* copy header from the route */
     memcpy(get_header(iop_buf), header, iop_buf->header_size);
-
-    /*TODO CHECK TYPE UDP or TCP*/
-    iop_buf->header_size += sizeof(udp_header_t);
 
     /* complete header with the device parameters */
     eth_complete_header(
@@ -234,7 +235,7 @@ static int eth_handle_fragments(iop_wrapper_t *wrapper)
     eth_header_t *packet = (eth_header_t *)get_header(wrapper->buffer);
     unsigned int pack_seq = (((unsigned int)packet->ipoffset[0] & 0x1f)<<8) + packet->ipoffset[1];
     static unsigned int frags;
-    static unsigned char buf[14 + 65535];
+    static unsigned char buf[14 + 65535]; /*14(eth)+20(IP)+8(UDP)+Data*/
     static unsigned int head;
 
     /*if is a fragment or there were fragments and this packet has a sequence number*/
@@ -310,7 +311,6 @@ uint32_t eth_validate_packet(
 
     /* check if the packet is length is correct */
     if (HTONS(packet->len) > received_length) {
-
         return 0;
     }
 
@@ -320,7 +320,6 @@ uint32_t eth_validate_packet(
     /* check if the checksum is valid */
     if (eth_ipv4_chksum(
             (uint8_t *)get_header(wrapper->buffer)) != (uint16_t)0xFFFF) {
-
         return 0;
     }
 
@@ -328,7 +327,7 @@ uint32_t eth_validate_packet(
     if(!eth_handle_fragments(wrapper))
         return 0;
 
-    /*TODO Addapt to UDP or TCP*/
+    /*TODO Adapt to UDP or TCP*/
     /* setup offsets */
     wrapper->buffer->header_size = sizeof(eth_header_t)+sizeof(udp_header_t);
     wrapper->buffer->payload_off = sizeof(eth_header_t)+sizeof(udp_header_t);
@@ -336,4 +335,66 @@ uint32_t eth_validate_packet(
 
     /* packet is fine! */
     return 1;
+}
+
+
+uint32_t eth_fragment_packet(iop_wrapper_t *wrapper, uint8_t *buf)
+{
+
+    uint16_t size = (uint16_t)get_buffer_size(wrapper->buffer);
+
+    /*buf idx to copy to*/
+    uint16_t tail;
+    /*lenght to be copied*/
+    uint16_t lenght = sizeof(eth_header_t)+sizeof(udp_header_t);
+    /*total bytes copied from wrapper*/
+    uint16_t total;
+
+    memmove(buf, get_header(wrapper->buffer), lenght);
+    tail = lenght;
+
+    eth_header_t *header = (eth_header_t *)buf;
+    header->ipoffset[0] |= 0x20; /*set MF flag*/
+    header->len = 1500;
+    header->ipchksum = 0;
+    header->ipchksum = ~eth_ipv4_chksum((uint8_t *)header);
+
+    lenght = 1514 - tail; /*next cpy lenght is 1472*/
+
+    memmove(buf+tail, get_payload(wrapper->buffer), lenght);
+    tail += lenght;
+    total = 1514;
+
+    /*create new fragments without UDP header*/
+    for(int i=1; size != total; i++)
+    {
+        /*copy original packet header */
+        lenght = sizeof(eth_header_t)-4;
+        memmove(buf+tail, get_header(wrapper->buffer), lenght);
+        header = (eth_header_t *)(buf+tail);
+        tail += lenght;
+
+        /*Update MF flag and sequence number*/
+        if(size - total > 1480) /*look for the last fragment*/
+        {
+            header->ipoffset[0] |= 0x20; /*set MF flag*/
+            lenght = 1514 - lenght;
+        }else{
+            lenght = size - total;
+        }
+
+        /*Calculate fragment offset*/
+        header->ipoffset[0] |= ((185 * i) & 0x1F00) >> 8;
+        header->ipoffset[1] |= ((185 * i) & 0x00FF);
+        header->len = IPV4_HDR_SIZE + lenght;
+
+        header->ipchksum = 0;
+        header->ipchksum = ~eth_ipv4_chksum((uint8_t *)header);
+
+        memmove(buf+tail, get_header(wrapper->buffer)+total, lenght);
+        tail += lenght;
+        total += lenght;
+    }
+
+    return tail;
 }
