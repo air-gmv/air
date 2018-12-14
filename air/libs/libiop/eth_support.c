@@ -391,7 +391,8 @@ uint32_t eth_fragment_packet(iop_wrapper_t *wrapper, uint8_t *buf)
         header->ipchksum = 0;
         header->ipchksum = ~eth_ipv4_chksum((uint8_t *)header);
 
-        memmove(buf+tail, get_header(wrapper->buffer)+total, lenght);
+        memmove(buf+tail, ((uint8_t*)get_header(wrapper->buffer))+total, lenght);
+
         tail += lenght;
         total += lenght;
     }
