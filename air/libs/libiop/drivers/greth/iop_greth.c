@@ -513,7 +513,7 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper){
  **/
 static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
 
-    uint8_t buffer[14 + 65535 + 44*(14+20)];/*eth_head + Max_data_tx + (max_frags*eth+IP )*/
+    static uint8_t buffer[14 + 65535 + 44*(14+20)];/*eth_head + Max_data_tx + (max_frags*eth+IP )*/
     /* get the size of the packet to send */
     uint16_t len = (uint16_t)get_buffer_size(wrapper->buffer);
     uint16_t lenght;
