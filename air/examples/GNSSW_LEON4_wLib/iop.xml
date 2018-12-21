@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<IOPartition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="iop.xsd" version="1.0" date="2018-11-06" name="GNSSW_LEON4" request_number="64" time_to_live="5">
+	
+	<RemotePorts>
+		<Port Name="QRECV_GNSS" LogicalDeviceId="1"/>
+		<Port Name="QSEND_GNSS" />
+	</RemotePorts>	
+	
+	<LogicalDevices>
+		<Device Id="1" Name="ETH" />
+	</LogicalDevices>	
+	
+	<PhysicalDevices>
+		<Device Id="0" Device="ETH0" Ip="172.19.13.192" MAC="00:50:C2:75:a3:30" TXD="128" RXD="128">
+			<PhysicalRoute Id="2" PortId="QSEND_GNSS">
+				<EthHeader Ip="172.19.13.68" MAC="10:62:e5:4f:d8:d2" Port="3333"/> //BOARD PORT
+			</PhysicalRoute>
+			<LogicalRoute Id="1" LogicalDeviceId="1">
+				<EthHeader Ip="172.19.13.68" MAC="10:62:e5:4f:d8:d2" Port="3334"/> //PC PORT
+			</LogicalRoute>
+	    </Device>		
+	</PhysicalDevices>
+	
+	<ModuleSchedules>
+		<Schedule ScheduleIdentifier="1">
+		    <DevicesConfiguration>
+			    <Device DeviceId="0" Device="ETH0" Reads="5"/>
+			</DevicesConfiguration>
+			<RoutesConfiguration>
+				<Route RouteId="1" Active="true"/>
+				<Route RouteId="2" Active="true"/>
+			</RoutesConfiguration>
+		</Schedule>
+	</ModuleSchedules>
+</IOPartition>
