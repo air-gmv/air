@@ -270,12 +270,23 @@ static int eth_handle_fragments(iop_wrapper_t *wrapper)
             }
         }
         else
-        {   /*The sequence nb is not what we're looking for. restart*/
-            memmove(buf, packet, get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer));
-            head = get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer);
-            frags = 1; /*Discard*/
+        {   /*The sequence nb is not what we're looking for. restart if this packet has sq nb 0*/
+            if(!pack_seq)
+            {
+                memmove(buf, packet, get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer));
+                head = get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer);
+                frags = 1; /*restart packet sequence*/
+            }
+            else
+                frags = 0; /*Discard this packet*/
+
             return 0;
         }
+    }
+    else
+    {
+        if(pack_seq)
+            return 0; /*it's a out of order last fragment*/
     }
     return 1;
 }

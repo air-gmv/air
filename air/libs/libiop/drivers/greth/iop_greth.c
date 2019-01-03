@@ -516,12 +516,25 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
     static uint8_t buffer[14 + 65535 + 44*(14+20)];/*eth_head + Max_data_tx + (max_frags*eth+IP )*/
     /* get the size of the packet to send */
     uint16_t len = (uint16_t)get_buffer_size(wrapper->buffer);
-    uint16_t lenght;
+    uint16_t lenght, frags;
     uint8_t *ptr = buffer;
 
     /* fragment */
     if(len > 1514)
+    {
         len = eth_fragment_packet(wrapper, buffer);
+
+        frags = len/1514;
+        if (len % 1514)
+            frags += 1;
+
+        if(frags > sc->txbufs)
+        {
+            iop_debug("    GRETH Tx not send. Increase descriptors count\n");
+            return -1;
+        }
+
+    }
     else
         memcpy(buffer, get_header(wrapper->buffer), len);
 
@@ -550,11 +563,10 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
         /* replace pointer in the descriptor */
         sc->txdesc[sc->tx_ptr].addr = (uint32_t *)air_syscall_get_physical_addr((uintptr_t)ptr);
 
-//         /* swap IOP buffers */
-//          iop_buffer_t *temp = wrapper->buffer;
-//          wrapper->buffer = sc->tx_iop_buffer[sc->tx_ptr];
-//          sc->tx_iop_buffer[sc->tx_ptr] = temp;
-// 
+         /* swap IOP buffers */
+          iop_buffer_t *temp = wrapper->buffer;
+          wrapper->buffer = sc->tx_iop_buffer[sc->tx_ptr];
+          sc->tx_iop_buffer[sc->tx_ptr] = temp;
 //         /* replace pointer in the descriptor */
 //         sc->txdesc[sc->tx_ptr].addr =
 //                 (uint32_t *)((uintptr_t)temp->p_addr + temp->header_off);
