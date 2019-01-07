@@ -249,7 +249,8 @@ static int eth_handle_fragments(iop_wrapper_t *wrapper)
             {  /*packet is complete*/
                 memmove(buf+head, get_payload(wrapper->buffer), get_payload_size(wrapper->buffer));
                 wrapper->buffer->payload_size = head + get_payload_size(wrapper->buffer) - sizeof(eth_header_t);
-                wrapper->buffer->v_addr = buf;
+
+                memmove(wrapper->buffer->v_addr, buf, head + get_payload_size(wrapper->buffer));
                 head = 0;
                 frags = 0;
             }
