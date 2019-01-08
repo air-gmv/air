@@ -48,7 +48,7 @@ void release_wrapper(iop_wrapper_t *wrapper) {
 
     wrapper->timer = 0;
     iop_buffer_t *buf = wrapper->buffer;
-    memset(buf->v_addr, 0, buf->payload_size);
+    memset(buf->v_addr, 0, get_buffer_size(buf));
     buf->header_off = 0;
     buf->header_size = 0;
     buf->payload_off = 0;
