@@ -248,9 +248,12 @@ static int eth_handle_fragments(iop_wrapper_t *wrapper)
             if(!(packet->ipoffset[0] & 0x20))
             {  /*packet is complete*/
                 memmove(buf+head, get_payload(wrapper->buffer), get_payload_size(wrapper->buffer));
-                wrapper->buffer->payload_size = head + get_payload_size(wrapper->buffer) - sizeof(eth_header_t);
 
                 memmove(wrapper->buffer->v_addr, buf, head + get_payload_size(wrapper->buffer));
+
+                /*Subtract from payload eth header. We still need to subtract TCP/UDP header as well*/
+                wrapper->buffer->payload_size = head + get_payload_size(wrapper->buffer) - sizeof(eth_header_t);
+
                 head = 0;
                 frags = 0;
             }
@@ -308,13 +311,11 @@ uint32_t eth_validate_packet(
 
     /* check the if IP version is valid */
     if (packet->vhl != 0x45) {
-
         return 0;
     }
 
     /* check if the packet is an UDP packet */
     if (packet->proto != IPV4_HDR_PROTO) {
-
         return 0;
     }
 
