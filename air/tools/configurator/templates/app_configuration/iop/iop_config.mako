@@ -40,7 +40,17 @@ static iop_logical_device_t *logical_device_list[${len(iop_configuration.logical
 
 static iop_wrapper_t requests_storage[${iop_configuration.requests}];
 
-${iop_template.IopBuffersStorage(iop_configuration.requests)}\
+<%
+    maxsize = 0
+    for i, port in enumerate(iop_configuration.ports):
+        if getattr(port, 'max_message_size', 0) > maxsize:
+            maxsize = port.max_message_size
+%>\
+/**
+ * @brief IOP buffers
+ */
+static iop_buffer_t iop_buffers[${iop_configuration.requests}];
+static uint8_t iop_buffers_storage[${iop_configuration.requests} * ${maxsize}];
 
 
 /**
