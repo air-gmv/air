@@ -92,7 +92,7 @@ void pmk_partition_ports_init(pmk_partition_t *partition) {
         /* get port */
         pmk_port_t *port = ((pmk_port_t **)partition->ports.elements)[i];
 #ifdef PMK_DEBUG
-    printk(" :: The pmk_partition_ports_init channel info %s\n", port->channel->name);
+    printk(" :: The pmk_partition_ports_%s\n", port->name);
 #endif
 
         /* link port to partition */
