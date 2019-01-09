@@ -14,6 +14,7 @@ import utils.templates as makoutils
 import air.configurations as air_configuration
 
 
+from air import *
 from localization.logger import *
 import parsers.a653.definitions as a653_definitions
 
@@ -28,8 +29,7 @@ def InputArgs(arg_parser, logger):
                         help='Input XML configuration')
     arg_parser.add_argument('-dm', '--debug_mode', dest='debug_mode', action='store_const', const=True, default=False)
     arg_parser.add_argument('-kfs', '--keep-files-silent', dest='keep_files_silent', action='store_const', const=True, default=False)
-
-
+    arg_parser.add_argument('-ks', '--kernel_space', nargs=1, type=lambda x: hex(int(x,0)) , dest='kernel_space', action='store', default=None, choices =[hex(x*0x1000000) for x in  range(0x1, 0xc0)])
 
 ## @brief Show installation information
 def ShowInstallInfo(logger):
@@ -53,6 +53,7 @@ def Run(args, os_configuration, logger):
     # show info
     if args.keep_files_silent: fileutils.keep_files = True
 
+  
     #check hardcoded files to replace generated
     fileutils.setHardcodedFiles()
 
@@ -73,6 +74,17 @@ def Run(args, os_configuration, logger):
     # set debug mode flag
     os_configuration.debug_mode = args.debug_mode
 
+    #set kernel space to user set values, all other config values remain the same
+    if args.kernel_space is not None:
+                    os_configuration=air_configuration.load_configuration(logger)
+                    air_configuration.supported_architectures[os_configuration.arch][os_configuration.bsp].mmap = MMAP(
+                        kernel_space=[os_configuration.get_memory_map().kernel_space[0], 
+                                        int(args.kernel_space[0],0)],
+                        partition_space=[os_configuration.get_memory_map().kernel_space[0]+int(args.kernel_space[0],0), 
+                                        os_configuration.get_memory_map().partition_space[1]],
+                        units=os_configuration.get_memory_map().units,
+                        default_unit=os_configuration.get_memory_map().default_unit)
+               
     # parse module
     from parsers.air.parser import airParser
 
@@ -88,6 +100,7 @@ def Run(args, os_configuration, logger):
     # get arch configurations
     app_configuration.arch = os_configuration.archConfiguration(app_configuration)
 
+   
     # create temporary file to hold the new files
     temp_directory = os.path.join(air.WORKING_DIRECTORY, '.temp')
 
@@ -99,7 +112,6 @@ def Run(args, os_configuration, logger):
 
     # generation partition Makefiles and glue code
     for i, partition in enumerate(app_configuration.partitions):
-
         logger.event(0, LOG_EVENT_PARTITION_CONFIG, partition)
 
         # get partition config and templates
@@ -196,6 +208,7 @@ def Run(args, os_configuration, logger):
     record = fileutils.createFileRecord(temp_directory)
     fileutils.saveFileRecord(os.path.join(air.WORKING_DIRECTORY, '.config'), record)
     fileutils.safeRemoveDirectory(temp_directory)
+
 
 def configure_iop(os_configuration, app_configuration, partition, temp_directory, logger):
 

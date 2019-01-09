@@ -24,6 +24,9 @@ PGM=$(EXEC)
 #     IO Manager = io
 MANAGERS=sem rtmon msg timer io
 
+MODULES   := $(sort $(dir $(wildcard ./*/*.c)))
+BUILD_DIR := $(addprefix o-optimize/,$(MODULES))
+
 # C source code and headers filenames used in the example
 CSRCS=$(shell find ./ -type f -name '*.c')
 CHDRS=$(shell find ./ -type f -name '*.h')
@@ -66,7 +69,7 @@ LDFLAGS += -Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putcha
 
 OBJS = $(COBJS) $(ASOBJS)
  
-all:    $(ARCH) $(PGM)  
+all:    $(ARCH) $(BUILD_DIR) $(PGM)  
     
 $(PGM): $(OBJS) $(CHDRS)
 ${'\t'}$(make-exe)
