@@ -25,7 +25,7 @@ typedef air_i32_t air_identifier_t;
 /**
  * @brief Name type
  */
-typedef char air_name_t[32];
+typedef char air_name_t[320];
 /**
  * @brief Name type pointer
  */

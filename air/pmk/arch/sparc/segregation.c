@@ -74,6 +74,9 @@ static air_u32_t ln_index[3] = { 0, 0, 0 };
 static air_u32_t ln_size[3] = { L1_SIZE, L2_SIZE, L3_SIZE };
 static air_u32_t ln_entries[3] = { L1_ENTRIES, L2_ENTRIES, L3_ENTRIES };
 
+/* ram_end - pointer to ram end address, from application linker file*/
+extern air_u32_t *ram_end;
+
 
 /**
  * @brief Converts PMK MMU abstraction flags into SPARC MMU hardware flags
@@ -293,6 +296,11 @@ void sparc_segregation_init() {
         /* link the context to the L1 tables */
         mmu_context[i] = MMU_PTD_PTP(ctrl->l1_tables) | MMU_PTD_ET;
     }
+
+
+#ifdef PMK_DEBUG
+    printk(" :: RAM end for application 0x%06x\n", &ram_end);
+#endif
 }
 
 void sparc_map_memory(
@@ -316,7 +324,6 @@ void sparc_map_memory(
             p_addr, p_addr + size - 1,
             unit, sparc_permissions);
 #endif
-
         /* size must aligned to the memory unit */
         size = ((size) + ((unit) - 1)) & ~((unit) - 1);
 
@@ -348,7 +355,13 @@ static air_u32_t sparc_segregation_access_ok(void *addr, air_sz_t size) {
     }*/
 
     /* check if address is in the range of the partitions */
-    if ((air_uptr_t)addr < PMK_PARTITION_BASE_ADDR) {
+    if ((air_uptr_t)addr < &ram_end) {
+        #ifdef PMK_DEBUG
+            printk(" :: Segregation access not ok\n");
+            printk("     on address 0x%06x\n", addr);
+            printk("     with content: %s\n", &addr);
+
+        #endif
 
         return 0;
     }
