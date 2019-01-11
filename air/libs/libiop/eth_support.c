@@ -251,8 +251,8 @@ static int eth_handle_fragments(iop_wrapper_t *wrapper)
 
                 memmove(wrapper->buffer->v_addr, buf, head + get_payload_size(wrapper->buffer));
 
-                /*Subtract from payload eth header. We still need to subtract TCP/UDP header as well*/
-                wrapper->buffer->payload_size = head + get_payload_size(wrapper->buffer) - sizeof(eth_header_t);
+                /*Subtract from payload eth+IP header. We still need to subtract TCP/UDP header as well*/
+                wrapper->buffer->payload_size = head + get_payload_size(wrapper->buffer) - offsetof(eth_header_t, src_port);
 
                 head = 0;
                 frags = 0;
@@ -279,6 +279,7 @@ static int eth_handle_fragments(iop_wrapper_t *wrapper)
             {
                 memmove(buf, packet, get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer));
                 head = get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer);
+
                 frags = 1; /*restart packet sequence*/
             }
             else
@@ -341,10 +342,10 @@ uint32_t eth_validate_packet(
         return 0;
 
     /*TODO Adapt to UDP or TCP*/
-    /* setup offsets */
+    /* setup UDP/TCP offsets */
     wrapper->buffer->header_size = sizeof(eth_header_t)+sizeof(udp_header_t);
     wrapper->buffer->payload_off = sizeof(eth_header_t)+sizeof(udp_header_t);
-    wrapper->buffer->payload_size -= sizeof(udp_header_t);
+    wrapper->buffer->payload_size -= (sizeof(eth_header_t) - offsetof(eth_header_t, src_port) + sizeof(udp_header_t));
 
     /* packet is fine! */
     return 1;
@@ -382,7 +383,7 @@ uint32_t eth_fragment_packet(iop_wrapper_t *wrapper, uint8_t *buf)
     for(int i=1; size != total; i++)
     {
         /*copy original packet header */
-        lenght = sizeof(eth_header_t)-4;
+        lenght = offsetof(eth_header_t, src_port);
         memmove(buf+tail, get_header(wrapper->buffer), lenght);
         header = (eth_header_t *)(buf+tail);
         tail += lenght;
