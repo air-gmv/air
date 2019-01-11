@@ -66,5 +66,6 @@ SECTIONS
         air_workspace = .;
         . += ${hex(configuration.arch.workspace_size)};
     } >ram
+    ram_end = ORIGIN(ram)+ LENGTH(ram);
     air_kernel_memory_end = .;
 }

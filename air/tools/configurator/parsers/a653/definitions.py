@@ -87,7 +87,7 @@ SAMPLING_CHANNEL                            = 'SAMPLING_PORT'
 A653_TIMESCALE								= 1E9
 
 
-VALID_NAME_TYPE				= [ str, lambda x : 0 < len(x) < 31 ]
+VALID_NAME_TYPE				= [ str, lambda x : 0 < len(x) < 319 ]
 VALID_FLOAT_TYPE			= [ parserutils.str2float, lambda x : x >= 0 ]
 VALID_DECIMAL_TYPE			= [ parserutils.str2int, lambda x : x >= 0 ]
 VALID_IDENTIFIER_TYPE		= [ parserutils.str2int, lambda x : x >= 0 ]
