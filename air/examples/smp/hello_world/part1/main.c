@@ -28,8 +28,8 @@ struct
   int        actual_cpu;
 }task_param[2] = {
 /*  name task  id task   expected cpu     cpuset   run     cpu  */
-  {   "TA01"  ,  0x0   ,       1       , {{0x2}} , false  , -1},
-  {   "TA02"  ,  0x0   ,       0       , {{0x1}} , false  , -1}
+  {   "TA03"  ,  0x0   ,       1       , {{0x2}} , false  , -1},
+  {   "TA04"  ,  0x0   ,       0       , {{0x1}} , false  , -1}
 };
 
 static char *my_ctime( time_t t )
@@ -52,7 +52,7 @@ rtems_task Periodic_task(rtems_task_argument arg)
 
         /* Print the cpu number and task name */
         locked_printf(
-            "HELLO WORLD CPU %lu running task %s @ %s:%ld\n",
+            "-HELLO WORLD CPU %lu running task %s @ %s:%ld\n",
             rtems_get_current_processor(),
             rtems_object_get_name( task_param[arg].id, sizeof(buffer), buffer ),
             my_ctime(start.tv_sec), start.tv_nsec);
