@@ -49,7 +49,7 @@ eth_writer(iop_physical_device_t * pdev)
     /* get underlying driver */
     iop_eth_device_t *eth_driver = (iop_eth_device_t *) pdev->driver;
 
-    iop_debug(" :: IOP - eth-writer running!\n");
+//    iop_debug(" :: IOP - eth-writer running!\n");
 
     /* empty send queue */
     while (!iop_chain_is_empty(&pdev->sendqueue))
@@ -66,15 +66,15 @@ eth_writer(iop_physical_device_t * pdev)
         }
         else
         {
-
+            
             iop_chain_append(&error, &wrapper->node);
             iop_raise_error(HW_WRITE_ERROR);
         }
     }
 
     /* re-queue failed transmissions */
-    while (!iop_chain_is_empty(&error))
-    {
+    while (!iop_chain_is_empty(&error)){
+        iop_debug("ON ERROR CHAIN\n");
         iop_wrapper_t *wrapper = obtain_wrapper(&error);
 
         iop_chain_append(&pdev->sendqueue, &wrapper->node);
@@ -116,7 +116,7 @@ eth_reader(iop_physical_device_t * pdev)
     /* get underlying driver */
     iop_eth_device_t *driver = (iop_eth_device_t *) pdev->driver;
 
-    iop_debug(" :: IOP - eth-reader running!\n");
+   // iop_debug(" :: IOP - eth-reader running!\n");
 
     uint32_t i;
     uint32_t skip;
@@ -142,6 +142,7 @@ eth_reader(iop_physical_device_t * pdev)
             {
                 /* ARP packet */
             case HTONS(ETH_HDR_ARP_TYPE):
+                iop_debug("arp packet\n");
                 eth_send_arp_reply(driver, wrapper);
                 break;
 
@@ -154,11 +155,15 @@ eth_reader(iop_physical_device_t * pdev)
 
                     iop_chain_append(&pdev->rcvqueue, &wrapper->node);
                     wrapper = NULL;
+                }else{
+                  //  printf("invalid packet\n");
                 }
+                break;
+            default:
+                iop_debug("other packet\n");
                 break;
             }
         }
-
         /* free wrapper if it wasn't used */
         if (wrapper != NULL)
         {

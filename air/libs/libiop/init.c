@@ -88,8 +88,9 @@ static void iop_init_queues(void){
     /* setup Remote Ports buffers */
     for (i = 0; i < usr_configuration.wrappers_count; ++i) {
         /* get virtual and physical addresses for this buffer */
-        usr_configuration.iop_buffers[i].v_addr = &usr_configuration.iop_buffers_storage[i * size];
+        usr_configuration.iop_buffers[i].v_addr = &usr_configuration.iop_buffers_storage[i * (size+94)];
         usr_configuration.iop_buffers[i].p_addr = (void *)air_syscall_get_physical_addr((uintptr_t)usr_configuration.iop_buffers[i].v_addr);
+       // iop_debug(" IOP :: Wrapper %d on v_addr 0x%06x\n", i, usr_configuration.iop_buffers[i].v_addr);
     }
 
     /* append buffers to the wrappers */

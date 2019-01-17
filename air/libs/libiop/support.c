@@ -102,7 +102,7 @@ void update_queue_timers(iop_chain_control *queue, uint32_t timeout) {
 
                 /* release the request wrapper */
                 release_wrapper(curr_wrapper);
-
+            
                 /* continue processing the new wrapper */
                 curr_wrapper = next_wrapper;
 
@@ -129,8 +129,8 @@ void update_timers() {
 
     uint32_t i;
 
-    iop_debug("    updating logical devices timers (%i)\n",
-              usr_configuration.logical_devices.length);
+//    iop_debug("    updating logical devices timers (%i)\n",
+//              usr_configuration.logical_devices.length);
 
     for (i = 0; i < usr_configuration.logical_devices.length; ++i) {
 
@@ -143,8 +143,8 @@ void update_timers() {
         //update_request_timers(&ldev->pending_rcvqueue, usr_configuration.time_to_live);
     }
 
-    iop_debug("    updating physical devices timers (%i)\n",
-              usr_configuration.physical_devices.length);
+ //   iop_debug("    updating physical devices timers (%i)\n",
+//            usr_configuration.physical_devices.length);
 
     /* iterate over all physical devices */
     for (i = 0; i < usr_configuration.physical_devices.length; ++i) {
@@ -156,7 +156,7 @@ void update_timers() {
         update_queue_timers(&pdev->sendqueue, usr_configuration.time_to_live);
         update_queue_timers(&pdev->rcvqueue, usr_configuration.time_to_live);
     }
-    iop_debug("     leaving update_timers\n");
+  //  iop_debug("     leaving update_timers\n");
 }
 
 /**
@@ -204,4 +204,25 @@ void clock_gating_enable(struct ambapp_bus* clk_amba_bus, clock_gating_device co
 
     /* 5. Lock the GR1553 gate */
     CLEAR_BIT_REG(&gate_regs->unlock, core_to_enable);
+}
+
+void clock_gating_disable(struct ambapp_bus* clk_amba_bus, clock_gating_device core_to_enable)
+{
+        /* Amba APB device */
+        struct ambapp_apb_info ambadev;
+
+        /* Get AMBA AHB device info from Plug&Play */
+        if(amba_find_next_apbslv(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE,&ambadev,0 ) == 0){
+
+            /* Device not found */
+            iop_debug("    Clock Gating unit not found!\n");
+            return;
+        }
+
+        /* Copy pointer to device's memory mapped registers */
+        struct clkgate_regs *gate_regs = (void *)ambadev.start;
+
+        SET_BIT_REG(&gate_regs->unlock, core_to_enable);
+        CLEAR_BIT_REG(&gate_regs->clock_enable, core_to_enable);
+        CLEAR_BIT_REG(&gate_regs->unlock, core_to_enable);
 }

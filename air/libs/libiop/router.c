@@ -28,6 +28,7 @@ static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
 
     size_t max_size = 0;
     size_t size = get_payload_size(wrapper->buffer);
+//    iop_debug("size %d\n", size);
 
     /* get maximum size allowed by the port */
     if (port->type == AIR_QUEUING_PORT) {
@@ -51,10 +52,12 @@ static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
 
     /* fix maximum size */
     if (size > max_size) {
+        iop_debug("cropped %d %d\n", size, max_size);
 
         /** @todo use max size? is this an error? */
         size = max_size;
     }
+    iop_debug("WP %d 0x%06x\n", size, get_payload(wrapper->buffer));
 
     /* send data */
     air_status_code_e rc = air_syscall_write_port(
@@ -68,6 +71,12 @@ static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
     if (rc != AIR_NO_ERROR && rc != AIR_NOT_AVAILABLE) {
         iop_raise_error(WRITE_ERROR_S);
     }
+    if (rc == AIR_NOT_AVAILABLE) {
+            iop_debug("AIR not available qport\n");
+    }
+
+  
+
 }
 
 /**
@@ -225,7 +234,7 @@ void route_reply(iop_physical_device_t *pdev, iop_wrapper_t *wrapper) {
 //rtems_task pre_router(rtems_task_argument arg){
 void pre_router(){
 
-	iop_debug("\n :: IOP - pre-router running!\n");
+//	iop_debug("\n :: IOP - pre-router running!\n");
 
 	/* loop through all logical devices */
 	int i;
@@ -259,7 +268,7 @@ void pos_router(){
 
 	int i;
 
-	iop_debug("\n :: IOP - pos-router running!\n");
+//	iop_debug("\n :: IOP - pos-router running!\n");
 
 	/* iterate over all physical devices */
 	for (i = 0; i < usr_configuration.physical_devices.length; ++i) {
@@ -268,7 +277,7 @@ void pos_router(){
 		iop_physical_device_t *pdev =
 				((iop_physical_device_t **)
 						usr_configuration.physical_devices.elements)[i];
-
+               
 		/* See if data was received on this device from HW */
 		while (!iop_chain_is_empty(&pdev->rcvqueue)){
 
@@ -277,6 +286,8 @@ void pos_router(){
 
 			/* apply routing information to this data */
 			route_reply(pdev, reply_wrapper);
+
 		}
+               
 	}
 }
