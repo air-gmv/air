@@ -207,6 +207,7 @@ static int greth_initialize_hardware(iop_eth_device_t *device){
 		sc->auto_neg = 1;
 		
 	#ifdef AUTONEG_ENABLED
+                struct timeval tstart, tnow;
 		/* try to get current time*/
 		//if ( rtems_clock_get(RTEMS_CLOCK_GET_TIME_VALUE,&tstart) == RTEMS_NOT_DEFINED){ // use for RTEMS 4.
 		if ( rtems_clock_get_tod_timeval(&tstart) == RTEMS_NOT_DEFINED){ // use for RTEMS 5
@@ -407,14 +408,17 @@ auto_neg_done:
    }
 
     /* setup RX descriptors */
+        iop_debug("uintprt_t %d\n", sizeof(uintptr_t));
 	for (i = 0; i < device->rx_count; i++){
 
         /* map an IOP buffer to the descriptor */
         sc->rx_iop_buffer[i] = &sc->iop_buffers[device->tx_count + i];
-
+        iop_debug(" IOP :: Mapping IO buffer %d on v_addr 0x%06x\n", i, sc->rx_iop_buffer[i]->v_addr );
 	    /* get descriptor physical address*/
 		sc->rxdesc[i].addr = sc->rx_iop_buffer[i]->p_addr;
 		sc->rxdesc[i].ctrl = GRETH_RXD_ENABLE;
+        iop_debug(" IOP :: descriptor physical address 0x%06x\n", sc->rxdesc[i].addr );
+
     }
 
 	/* active wrap bit in last table descriptor*/
@@ -430,7 +434,7 @@ auto_neg_done:
 	
 	/* enable RX and setup speeds and duplex*/
 	regs->ctrl |= GRETH_CTRL_RXEN | (sc->fd << 4) | (sc->sp << 7) | (sc->gb << 8);
-	iop_debug("  HArdware init done! leaving\n");
+	iop_debug("  HArdware init done! leaving gigabit capabilities %d\n", sc->gb);
         return RTEMS_SUCCESSFUL;
 }
 
@@ -449,47 +453,63 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper){
 
 	/* read while the descriptor is not enabled */
 	while (!((status = sc->rxdesc[sc->rx_ptr].ctrl) & GRETH_RXD_ENABLE)) {
-	    /* reset length and error flag */
-		len = error = 0;
+	        
+                /* disable receiver */
+//                sc->regs->ctrl &= ~GRETH_CTRL_RXEN;
+                
+                /* reset length and error flag */
 
+		len = error = 0;
+              //  iop_debug("IO :: rxdesc %d\n", sc->rx_ptr);
 		/*Check for errors*/
 		if ((status & GRETH_RXD_TOOLONG) || (status & GRETH_RXD_DRIBBLE) ||
 		    (status & GRETH_RXD_CRCERR)  || (status & GRETH_RXD_OVERRUN) ||
 		    (status & GRETH_RXD_LENERR)  || (status & 0x7FF) < offsetof(eth_header_t, src_port)) {
-            error = 1;
-		}
+                        error = 1;
+                        printk("IO :: error greth recieve %d desc %d len %d %d\n", status,sc->rx_ptr, (status & 0x7FF), offsetof(eth_header_t, src_port) );
+            	}
 		
 		/* did we had and error during reception? */
 		if (error == 0) {
 
 			/* get packet length */
-            len = status & 0x7FF;
-            /* swap IOP buffers */
-            iop_buffer_t *temp = wrapper->buffer;
-            wrapper->buffer = sc->rx_iop_buffer[sc->rx_ptr];
-            sc->rx_iop_buffer[sc->rx_ptr] = temp;
+                    len = status & 0x7FF;
+                    /* swap IOP buffers */
+                  /*  iop_buffer_t *temp = wrapper->buffer;
+                    wrapper->buffer = sc->rx_iop_buffer[sc->rx_ptr];
+                    sc->rx_iop_buffer[sc->rx_ptr] = temp;
+                    */
+                    uint32_t v_addr= wrapper->buffer->v_addr;
+                    uint32_t p_addr= wrapper->buffer->p_addr;
+                  //  iop_debug("0x%06x 0x%06x .",wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr );
+                    memcpy(wrapper->buffer, sc->rx_iop_buffer[sc->rx_ptr], sizeof(iop_buffer_t) );
+                    wrapper->buffer->v_addr=v_addr;
+                    wrapper->buffer->p_addr=p_addr;
 
-            /* replace pointer in the descriptor */
-            sc->rxdesc[sc->rx_ptr].addr = sc->rx_iop_buffer[sc->rx_ptr]->p_addr;
+                    memmove(wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, len );
+                   iop_debug("RX 0x%06x 0x%06x %d %d\n",wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, len, sc->rx_ptr );
 
-            /* setup offsets */
-            wrapper->buffer->header_off = 0;
-            wrapper->buffer->header_size = offsetof(eth_header_t, src_port);
-            wrapper->buffer->payload_off = offsetof(eth_header_t, src_port);
-            wrapper->buffer->payload_size = len - offsetof(eth_header_t, src_port);
-		}
-		
-		/* re-activate descriptor */
+
+                    /* replace pointer in the descriptor */
+                    sc->rxdesc[sc->rx_ptr].addr = sc->rx_iop_buffer[sc->rx_ptr]->p_addr;
+                                      
+                    /* setup offsets */
+                    wrapper->buffer->header_off = 0;
+                    wrapper->buffer->header_size = offsetof(eth_header_t, src_port);
+                    wrapper->buffer->payload_off = offsetof(eth_header_t, src_port);
+                    wrapper->buffer->payload_size = len - offsetof(eth_header_t, src_port);
+		}	
+                /* re-activate descriptor */
 		if (sc->rx_ptr == sc->rxbufs - 1) {
 			/* this is the last descriptor so enable it and activate WRAP*/
 			sc->rxdesc[sc->rx_ptr].ctrl = GRETH_RXD_ENABLE | GRETH_RXD_WRAP;
+                        iop_debug("LAST DESCRIPTOR\n");
 		} else {
 			/* just enable the descriptor */
 			sc->rxdesc[sc->rx_ptr].ctrl = GRETH_RXD_ENABLE;
 		}
-
-        /* increment descriptor */
-        sc->rx_ptr = (sc->rx_ptr + 1) % sc->rxbufs;
+                /* increment descriptor */
+                sc->rx_ptr = (sc->rx_ptr + 1) % sc->rxbufs;
 
 		/*enable reception*/
 		sc->regs->ctrl |= GRETH_CTRL_RXEN;
@@ -498,8 +518,14 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper){
 		if (len != 0) {
 			break;
 		}
-	}
-	
+             //   iop_debug("hw receive len %d\n", len);
+
+                   
+                if(error){
+                    return -1;
+                }
+
+        }
 	return len;
 }
 
@@ -548,7 +574,7 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
                 /* wait a moment for any RX descriptors to get available */
                 rtems_task_wake_after(sc->wait_ticks);
             } else {
-
+                iop_debug("Desc %d blocked\n ", sc->tx_ptr);
                 /* We can't block waiting, so we return */
                 return 0;
             }
@@ -560,16 +586,22 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
             lenght = len;
 
         /*put data to tx into iop_buffer*/
-        memmove(wrapper->buffer->v_addr, ptr, lenght);
+     //   memmove(wrapper->buffer->v_addr, ptr, lenght);
 
         /* swap IOP buffers */
-        iop_buffer_t *temp = wrapper->buffer;
+      /*  iop_buffer_t *temp = wrapper->buffer;
         wrapper->buffer = sc->tx_iop_buffer[sc->tx_ptr];
         sc->tx_iop_buffer[sc->tx_ptr] = temp;
-
+    */
         /* replace pointer in the descriptor */
-        sc->txdesc[sc->tx_ptr].addr =
-                 (uint32_t *)((uintptr_t)temp->p_addr + temp->header_off);
+      //  sc->txdesc[sc->tx_ptr].addr =
+       //          (uint32_t *)((uintptr_t)temp->p_addr + temp->header_off);
+        
+           memmove(sc->tx_iop_buffer[sc->tx_ptr]->v_addr, ptr,  lenght );
+          iop_debug("TX 0x%06x 0x%06x %d\n",ptr, sc->tx_iop_buffer[sc->tx_ptr]->v_addr, lenght );
+                          
+                                             
+        sc->txdesc[sc->tx_ptr].addr =sc->tx_iop_buffer[sc->tx_ptr]->p_addr;
 
         /* enable descriptor*/
         if (sc->tx_ptr < sc->txbufs - 1) {
@@ -581,10 +613,11 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
             /* this is last descriptor so also activate WRAP */
             sc->txdesc[sc->tx_ptr].ctrl =
                     GRETH_TXD_WRAP | GRETH_TXD_ENABLE | lenght;
+            iop_debug("TX - LAST DESCRIPTOR %d\n", sc->tx_ptr);
         }
 
         /* enable transmission */
-        sc->regs->ctrl = sc->regs->ctrl | GRETH_CTRL_TXEN;
+     //   sc->regs->ctrl = sc->regs->ctrl | GRETH_CTRL_TXEN;
 
         /* increment descriptor */
         sc->tx_ptr = (sc->tx_ptr + 1) % sc->txbufs;
@@ -592,7 +625,7 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
         len -= lenght;
         ptr += lenght;
     }
-
+    sc->regs->ctrl = sc->regs->ctrl | GRETH_CTRL_TXEN;
     /* return number of bytes written */
     return (int)(ptr - buffer);
 }
@@ -682,14 +715,16 @@ uint32_t greth_read(iop_device_driver_t *iop_dev, void *arg) {
     iop_wrapper_t *wrapper = (iop_wrapper_t *)arg;
     iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
     greth_softc_t *sc = (greth_softc_t *)device->dev.driver;
-	
+
     /* check if driver was initialized */
 	if(!sc->started) {
+                iop_debug("drivernot started\n");
 		return RTEMS_NOT_CONFIGURED;
 	}
 
 	/* sanity check */
 	if (wrapper == NULL || wrapper->buffer == NULL){
+                iop_debug("insane\n");
 		return RTEMS_INVALID_NAME;
 	}
 
@@ -706,11 +741,99 @@ uint32_t greth_read(iop_device_driver_t *iop_dev, void *arg) {
 			/* We can't block waiting, so we return */
 			return RTEMS_RESOURCE_IN_USE;
 		}
-	}
+        }
+        if(count<0){
+            iop_debug("read error\n");         
+            return RTEMS_INTERNAL_ERROR;
+        }
 
 	return RTEMS_SUCCESSFUL;
 }
 
+uint32_t greth_reset(iop_device_driver_t *iop_dev){
+        /**
+         *   *  Reset the controller.
+         *       */
+    printf("GRETH_RESET!!!\n");
+    clock_gating_disable(&ambapp_plb, GATE_ETH0);
+    printf("GRETH0 clock disabled\n");
+    clock_gating_enable(&ambapp_plb, GATE_ETH0);
+iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
+               
+            /*Initialize the eth core*/
+          greth_initialize_hardware(device);
+
+    printf("GRETH0 initialized\n");
+
+
+
+#if 0
+     clock_gating_enable(&ambapp_plb, GATE_ETH0);
+
+        greth_softc_t *sc = (greth_softc_t *)device->dev.driver;
+        int i=0;
+
+        sc->regs->ctrl = 0;
+        sc->regs->ctrl = GRETH_CTRL_RST;    /* Reset ON */
+        sc->regs->ctrl = 0;
+
+        /* Initialize rx/tx descriptor pointers */
+        sc->tx_ptr = 0;
+        sc->tx_dptr = 0;
+        sc->tx_cnt = 0;
+       sc->rx_ptr = 0;
+
+        /* align the TX and RX descriptor tables */
+        sc->txdesc = (greth_rxtxdesc *)(((uintptr_t)sc->txdesc + 1024) & ~(1024 - 1));
+        sc->rxdesc = (greth_rxtxdesc *)((((uintptr_t)sc->rxdesc + 1024) & ~(1024 - 1)) + 1024);
+
+        /* insert the descriptor table address in the HW register*/
+        sc->regs->txdesc = (uint32_t)air_syscall_get_physical_addr((uintptr_t)sc->txdesc);
+        sc->regs->rxdesc = (uint32_t)air_syscall_get_physical_addr((uintptr_t)sc->rxdesc);
+
+        /* setup IOP buffers */
+        setup_iop_buffers(sc->iop_buffers,sc->iop_buffers_storage,device->rx_count + device->tx_count);
+
+        /* setup TX descriptors */
+        for (i = 0; i < device->tx_count; i++){
+
+              /* clear descriptor control*/
+             sc->txdesc[i].ctrl = 0;
+
+             /* map an IOP buffer to the descriptor */
+             sc->tx_iop_buffer[i] = &sc->iop_buffers[i];
+
+             /* get descriptor physical address*/
+             sc->txdesc[i].addr = sc->tx_iop_buffer[i]->p_addr;
+        }
+
+        /* setup RX descriptors */
+       for (i = 0; i < device->rx_count; i++){
+
+             /* map an IOP buffer to the descriptor */
+            sc->rx_iop_buffer[i] = &sc->iop_buffers[device->tx_count + i];
+
+           /* get descriptor physical address*/
+            sc->rxdesc[i].addr = sc->rx_iop_buffer[i]->p_addr;
+            sc->rxdesc[i].ctrl = GRETH_RXD_ENABLE;
+       }
+
+       /* active wrap bit in last table descriptor*/
+       sc->rxdesc[sc->rxbufs - 1].ctrl |= GRETH_RXD_WRAP;
+                                                                    
+       /* set our MAC address */
+       sc->regs->mac_addr_msb = device->mac[0] << 8  | device->mac[1];
+       sc->regs->mac_addr_lsb = device->mac[2] << 24 | device->mac[3] << 16 |
+           device->mac[4] << 8  | device->mac[5];
+
+       /* clear status*/
+       sc->regs->status = 0xffffffff;
+                                                                                
+       /* enable RX and setup speeds and duplex*/
+       sc->regs->ctrl |= GRETH_CTRL_RXEN | (sc->fd << 4) | (sc->sp << 7) | (sc->gb << 8);
+#endif
+        return 1;
+}
 
 uint32_t greth_write(iop_device_driver_t *iop_dev, void *arg) {
 

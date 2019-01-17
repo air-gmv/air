@@ -238,17 +238,20 @@ static int eth_handle_fragments(iop_wrapper_t *wrapper)
     static unsigned char buf[14 + 65535]; /*14(eth)+20(IP)+8(UDP)+Data*/
     static unsigned int head;
 
+//printf("frag %d seq %d frag packet %d %d\n", frags, pack_seq, packet->ipoffset[0], packet->ipoffset[1] );
+
     /*if is a fragment or there were fragments and this packet has a sequence number*/
     if(packet->ipoffset[0] & 0x20 || (frags && pack_seq))
     {
         /*TODO Handle multiple fragmented packets*/
-
         if(frags*185 == pack_seq)
         {
             if(!(packet->ipoffset[0] & 0x20))
             {  /*packet is complete*/
+             //   printf("packet complete\n");
+                
                 memmove(buf+head, get_payload(wrapper->buffer), get_payload_size(wrapper->buffer));
-
+                
                 memmove(wrapper->buffer->v_addr, buf, head + get_payload_size(wrapper->buffer));
 
                 /*Subtract from payload eth+IP header. We still need to subtract TCP/UDP header as well*/
@@ -261,6 +264,7 @@ static int eth_handle_fragments(iop_wrapper_t *wrapper)
             {   /*still fragmented*/
                 if(!frags)
                 {   /*Initial fragment*/
+                 //   printf("first frag\n");
                     memmove(buf, packet, get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer));
                     head = get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer);
                 }
@@ -292,6 +296,9 @@ static int eth_handle_fragments(iop_wrapper_t *wrapper)
     {
         if(pack_seq)
             return 0; /*it's a out of order last fragment*/
+        else{
+           iop_debug("Valid non fraged packet 0x%06x 0x%06x %d\n", get_header(wrapper->buffer), get_payload(wrapper->buffer), get_payload_size(wrapper->buffer)); 
+        }
     }
     return 1;
 }
@@ -303,20 +310,23 @@ uint32_t eth_validate_packet(
     /* get the IP header */
     eth_header_t *packet = (eth_header_t *)get_header(wrapper->buffer);
 
-    /* check if the packet was for us */
+   /* check if the packet was for us */
     if (!eth_compare_mac((uint16_t*)dev->mac, (uint16_t*)packet->dst_mac) ||
         !eth_compare_ip((uint16_t *)dev->ip, (uint16_t*)packet->dst_ip)){
+        iop_debug("invalid packet - wrong address\n");
 
         return 0;
     }
 
     /* check the if IP version is valid */
     if (packet->vhl != 0x45) {
+        iop_debug("invalid packet - ipv\n");
         return 0;
     }
 
     /* check if the packet is an UDP packet */
     if (packet->proto != IPV4_HDR_PROTO) {
+        iop_debug("invalid packet - not udp\n");
         return 0;
     }
 
@@ -325,6 +335,7 @@ uint32_t eth_validate_packet(
 
     /* check if the packet is length is correct */
     if (HTONS(packet->len) > received_length) {
+        iop_debug("invalid packet - wring length %d packet len %d\n", received_length, packet->len);
         return 0;
     }
 
@@ -334,18 +345,24 @@ uint32_t eth_validate_packet(
     /* check if the checksum is valid */
     if (eth_ipv4_chksum(
             (uint8_t *)get_header(wrapper->buffer)) != (uint16_t)0xFFFF) {
+        iop_debug("invalid packet - wrong checksum\n");
         return 0;
     }
 
     /*Fragmented packet handler*/
-    if(!eth_handle_fragments(wrapper))
+    if(!eth_handle_fragments(wrapper)){
+        iop_debug("invalid packet - invalid fragment\n");
+
         return 0;
+    }
 
     /*TODO Adapt to UDP or TCP*/
     /* setup UDP/TCP offsets */
     wrapper->buffer->header_size = sizeof(eth_header_t)+sizeof(udp_header_t);
     wrapper->buffer->payload_off = sizeof(eth_header_t)+sizeof(udp_header_t);
     wrapper->buffer->payload_size -= (sizeof(eth_header_t) - offsetof(eth_header_t, src_port) + sizeof(udp_header_t));
+
+    iop_debug("PCKT %d %d\n", wrapper->buffer->header_size, wrapper->buffer->payload_size);
 
     /* packet is fine! */
     return 1;

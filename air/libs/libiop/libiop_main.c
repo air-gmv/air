@@ -35,11 +35,14 @@ void iop_main_loop(void){
     	pre_router();
 
 		/* run all the device drivers writer and reader functions */
+
     	for(i = 0; i < usr_configuration.physical_devices.length; i++){
     		devs[i]->reader_task(devs[i]);
     		devs[i]->writer_task(devs[i]);
 
     	}
+
+
     	pos_dispatcher();
     	pos_router();
 
