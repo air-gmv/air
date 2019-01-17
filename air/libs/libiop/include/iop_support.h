@@ -105,7 +105,7 @@ void update_timers();
  *        Available devices are: ETH0, ETH1, SPWR, PCI, 1553 and CAN
  */
 void clock_gating_enable(struct ambapp_bus* clk_amba_bus, clock_gating_device core_to_enable);
-
+void clock_gating_disable(struct ambapp_bus* clk_amba_bus, clock_gating_device core_to_enable);
 #define get_physical_device(i) \
     ((iop_physical_device_t **)usr_configuration.physical_devices.elements)[(i)]
 
