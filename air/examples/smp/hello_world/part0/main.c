@@ -46,7 +46,19 @@ rtems_task Periodic_task(rtems_task_argument arg)
     char  buffer[10];   /* name assumed to be 10 characters or less */
     int ticks_per_sec = 1000000 / air_syscall_get_us_per_tick();
 
+    rtems_name        name;
+    rtems_id          period;
+    rtems_status_code status;
+    name = rtems_build_name( 'P', 'E', 'R', '1' );
+    status = rtems_rate_monotonic_create( name, &period );
+
+    if ( status != 0 ) {
+        printf( "rtems_monotonic_create failed with status of %d.\n", status );
+        exit( 1 );
+    }
     while ( 1 ) {
+        if ( rtems_rate_monotonic_period( period, ticks_per_sec ) == RTEMS_TIMEOUT )
+            break;
 
         clock_gettime( CLOCK_REALTIME, &start );
 
@@ -55,10 +67,20 @@ rtems_task Periodic_task(rtems_task_argument arg)
             "HELLO WORLD CPU %lu running task %s @ %s:%ld\n",
             rtems_get_current_processor(),
             rtems_object_get_name( task_param[arg].id, sizeof(buffer), buffer ),
-            my_ctime(start.tv_sec), start.tv_nsec);
+            my_ctime(start.tv_sec), start.tv_nsec) ;
 
-        rtems_task_wake_after(ticks_per_sec);
+        /* Perform some periodic actions */
     }
+
+    /* missed period so delete period and SELF */
+    status = rtems_rate_monotonic_delete( period );
+    if ( status != 0 ) {
+        printf( "rtems_rate_monotonic_delete failed with status of %d.\n", status );
+        exit( 1 );
+    }
+    status = rtems_task_delete( RTEMS_SELF );    /* should not return */
+    printf( "rtems_task_delete returned with status of %d.\n", status );
+    exit( 1 );
 }
 
 void entry_point(void) 
