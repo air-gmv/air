@@ -230,7 +230,7 @@ typedef enum E_FftAcqStatus
 /**************/
 typedef enum E_StartMode
 {
-   COLD_START,	  // 0 Cold -> no aiding data.
+   COLD_START_M,	  // 0 Cold -> no aiding data.
    WARM_ALM,	  // 1 Warm -> based on almanac, FFT-based Acq.
    WARM_EPH,	  // 2 Warm -> based on ephemerides (rinex file), FFT-based Acq.
    WARM_SP3,	  // 3 Warm -> based on ephemerides (SP3 file), FFT-based Acq.
