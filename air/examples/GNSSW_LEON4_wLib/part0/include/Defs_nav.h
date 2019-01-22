@@ -110,8 +110,8 @@
 /**********/
 /* STATUS */
 /**********/
-#define INVALID           0
-#define VALID             1
+#define INVALID_STAT           0
+#define VALID_STAT             1
 #define RECOVER           2
 #define	RESET			  3
 
