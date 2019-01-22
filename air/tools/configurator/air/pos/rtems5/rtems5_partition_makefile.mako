@@ -73,3 +73,6 @@ all:    $(ARCH) $(BUILD_DIR) $(PGM)
     
 $(PGM): $(OBJS) $(CHDRS)
 ${'\t'}$(make-exe)
+
+$(BUILD_DIR):
+${'\t'}@mkdir -p $@
