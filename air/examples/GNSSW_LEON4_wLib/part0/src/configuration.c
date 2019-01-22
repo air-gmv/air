@@ -1300,8 +1300,8 @@ void   initializeConfig(void)
    managementParams.prnFbd.max = 32;
 
    // STARTMODE parameter.
-   managementParams.startMode.def = COLD_START;
-   managementParams.startMode.min = COLD_START;
+   managementParams.startMode.def = COLD_START_M;
+   managementParams.startMode.min = COLD_START_M;
    managementParams.startMode.max = ASSISTED_SP3;
 
    // PRNFBD parameter.
