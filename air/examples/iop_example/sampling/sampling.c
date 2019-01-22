@@ -174,7 +174,7 @@ int entry_func() {
 		rtems_task_start (id, test, self_id);
 	}
 #endif
-	SET_PARTITION_MODE(NORMAL_MODE, &rc);
+	SET_PARTITION_MODE(NORMAL, &rc);
 	if (NO_ERROR != rc) {
 		pprintf("SET_PARTITION_MODE error %d\n", rc);
 	}
