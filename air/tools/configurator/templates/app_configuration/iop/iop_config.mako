@@ -45,6 +45,7 @@ static iop_wrapper_t requests_storage[${iop_configuration.requests}];
     for i, port in enumerate(iop_configuration.ports):
         if getattr(port, 'max_message_size', 0) > maxsize:
             maxsize = port.max_message_size
+    maxsize += 94 # add space for headers. Max size is eth TCP: 14+20+60
 %>\
 /**
  * @brief IOP buffers
