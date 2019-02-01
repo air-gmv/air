@@ -100,7 +100,6 @@ SYM(sparc_core_context_save):
     mov     %g3, %o3
     mov     %g4, %o4
     mov     %g5, %o5
-
 /*
  * Flush all partition windows
  *  - Disable MMU faults
@@ -149,9 +148,28 @@ pmk_partition_context_save_window_flushing:     ! label for debugging
     /* check if the address is in kernel zone */
     set     SYM(air_kernel_memory_end), %g3
     cmp     %sp, %g3
+    bgu pmk_partition_context_save_window_dump
+    nop
+
+    /* If ISR nesting level > 1 then a preemptible ISR was interrupted*/
+    /* Get current control control and context */
+    rd      %asr17, %g3
+    srl     %g3, 28, %g3
+    and     %g3, 0xff, %g3                       ! core index
+
+    /* get current core control structure */
+    umul    %g3, CORE_CTRL_SIZE, %g3             ! core control mem. offset
+    set     air_shared_area, %g5                 ! shared area pointer
+    ld      [%g5 + SHAREDAREA_CORE_CTRL], %g5    ! shared area->cores
+    add     %g5, %g3, %g5                        ! current core control
+    ld      [%g5 + CORE_CTRL_CONTEXT], %g3       ! core context pointer
+
+    ld      [%g3 + CONTEXT_NESTING_LEVEL], %g5   ! get ISR nesting level
+    cmp     %g5, 0x1
     bleu    pmk_partition_context_save_window_flush_loop
     nop
 
+pmk_partition_context_save_window_dump:
     /* dump the window content */
     std     %l0, [%sp + CPU_STACK_FRAME_L0_OFFSET]
     std     %l2, [%sp + CPU_STACK_FRAME_L2_OFFSET]
@@ -175,6 +193,7 @@ pmk_partition_context_save_window_flushing:     ! label for debugging
 pmk_partition_context_save_finish:
 
     /* enable MMU and clear fault register */
+    lda     [%g0] ASI_LEON_MMUREGS, %g5     ! read MMU control
     andn    %g5, 0x2, %g5
     sta     %g5, [%g0] ASI_LEON_MMUREGS     ! clear no flaut bit
     mov     AC_M_SFAR, %g5
@@ -201,7 +220,6 @@ pmk_partition_context_save_finish:
     mov     %o4, %g4
     retl                                    ! return to caller
     mov     %o5, %g5                        ! optimized delay slot
-
 /**
  * @brief Partition context restore
  * @param %o0 current core control pointer
