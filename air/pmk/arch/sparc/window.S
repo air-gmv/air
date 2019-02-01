@@ -134,6 +134,7 @@ SYM(sparc_window_underflow_handler):
 
     /* save the globals used by this handler */
     mov     %g1, %l6
+    mov     %g2, %l7
 
     /* determine the new WIM */
     mov     %wim, %l3
@@ -145,14 +146,14 @@ SYM(sparc_window_underflow_handler):
     mov     %l5, %wim
     nop; nop; nop                               ! WRWIM delay
 
-    /* jump into the window that we witch to restore */
+    /* jump into the window that we wish to restore */
     restore
     restore
 
     /*
      * since PMK is compiled with a flat model, this trap can only occur from
      * code in userland, thus the kernel must protected against invalid stack
-     * pointers
+     * pointers, except syscalls where we explicitly enabled pre-emption.
      */
 
     /* 1st check if the address is aligned */
@@ -163,9 +164,28 @@ SYM(sparc_window_underflow_handler):
     /* 2nd check if the address is in kernel zone */
     set     SYM(air_kernel_memory_end), %g1
     cmp     %sp, %g1
-    bleu    1f
+    bgu sparc_window_underflow_handler_restore
     nop
 
+    /* Only restore an address in kernel zone while we are executing a ISR*/
+    /* Get current control control and context */
+    rd      %asr17, %g1
+    srl     %g1, 28, %g1
+    and     %g1, 0xff, %g1                       ! core index
+
+    /* get current core control structure */
+    umul    %g1, CORE_CTRL_SIZE, %g1             ! core control mem. offset
+    set     air_shared_area, %g2                 ! shared area pointer
+    ld      [%g2 + SHAREDAREA_CORE_CTRL], %g2    ! shared area->cores
+    add     %g2, %g1, %g2                        ! current core control
+    ld      [%g2 + CORE_CTRL_CONTEXT], %g1       ! core context pointer
+
+    ld      [%g1 + CONTEXT_NESTING_LEVEL], %g2   ! get ISR nesting level
+    tst     %g2
+    bz      1f
+    nop
+
+sparc_window_underflow_handler_restore:
     /* 3rd disable MMU to prevent faults */
     mov     AC_M_SFSR, %g1
     lda     [%g1] ASI_LEON_MMUREGS, %g0         ! clear flauts
@@ -202,6 +222,7 @@ SYM(sparc_window_underflow_handler):
 
     /* restore the used global */
     mov     %l6, %g1
+    mov     %l7, %g2
 
     /* return from trap */
     jmp   %l1                        ! Re-execute restore.
