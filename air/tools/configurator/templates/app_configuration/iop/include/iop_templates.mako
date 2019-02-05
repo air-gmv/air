@@ -114,8 +114,8 @@ extern iop_port_t remote_ports[${len(iop_configuration.ports)}];
         .eth_header = {
             .dst_ip      = { ${','.join(header.ip)} },
             .dst_mac     = { ${','.join(['0x{0}'.format(o) for o in header.mac ])}},
-            .dst_port    = HTONS(${header.port}),
-            .src_port    = HTONS(${header.port})
+            .proto_header.dst_port    = HTONS(${header.port}),
+            .proto_header.src_port    = HTONS(${header.port})
         }
     }\
 </%def>
