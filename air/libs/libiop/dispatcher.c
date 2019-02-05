@@ -181,11 +181,9 @@ static void process_remote_port(iop_port_t *port){
         }
 
         /* get the message space */
-       // uint8_t *message = (uint8_t *)
-       //         ((uintptr_t)wrapper->buffer->v_addr + sizeof(iop_header_t));
         uint8_t *message = (uint8_t *)
-                            ((uintptr_t)wrapper->buffer->v_addr + sizeof(eth_header_t));
-        /* read regular message */
+                ((uintptr_t)wrapper->buffer->v_addr + sizeof(iop_header_t));
+              /* read regular message */
         air_sampling_port_status_t status;
         status.operation = AIR_SAMPLING_MODE_REGULAR;
 
@@ -207,10 +205,10 @@ static void process_remote_port(iop_port_t *port){
              status.last_msg_validity == AIR_MESSAGE_VALID))) {
         //   size=30000; 
             /* setup the wrapper properties */
-            wrapper->buffer->payload_off = sizeof(eth_header_t);
+            wrapper->buffer->payload_off = sizeof(iop_header_t);
             wrapper->buffer->payload_size = size;
             wrapper->buffer->header_off = 0;
-            wrapper->buffer->header_size = sizeof(eth_header_t);
+            wrapper->buffer->header_size = sizeof(iop_header_t);
 
             iop_debug("RP %d 0x%06x 0x%06x 0x%06x\n", size, message,get_header(wrapper->buffer), get_payload(wrapper->buffer));
 

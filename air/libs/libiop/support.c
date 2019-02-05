@@ -58,16 +58,40 @@ void release_wrapper(iop_wrapper_t *wrapper) {
     iop_chain_append(&usr_configuration.free_wrappers, &wrapper->node);
 }
 
-iop_wrapper_t *obtain_wrapper(iop_chain_control *ctl) {
+void release_fragment(iop_fragment_t *fragment) {
 
+    fragment->payload = NULL;
+    fragment->header_size=0;
+    fragment->payload_size=0;
+    memset(fragment->header, 0, sizeof(iop_header_t));
+   
+    iop_chain_append(&usr_configuration.free_fragments, &fragment->node);
+}
+
+
+static inline iop_chain_node * obtain_node(iop_chain_control *ctl){
+    
     iop_chain_node *node = NULL;
     if (ctl != NULL) {
         /* get the node from the chain*/
         node = iop_chain_get(ctl);
     }
 
+    /* Return the node*/
+    return node;
+
+}
+
+iop_wrapper_t *obtain_wrapper(iop_chain_control *ctl) {
+
     /* Return the empty wrapper*/
-    return (iop_wrapper_t *)node;
+    return (iop_wrapper_t *)obtain_node(ctl);
+}
+
+iop_fragment_t *obtain_fragment(iop_chain_control *ctl){
+
+    /* Return the empty fragment*/
+    return (iop_fragment_t *)obtain_node(ctl);
 }
 
 void update_queue_timers(iop_chain_control *queue, uint32_t timeout) {
