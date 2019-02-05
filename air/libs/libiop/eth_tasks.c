@@ -49,27 +49,42 @@ eth_writer(iop_physical_device_t * pdev)
     /* get underlying driver */
     iop_eth_device_t *eth_driver = (iop_eth_device_t *) pdev->driver;
 
+    static iop_wrapper_t *wrapper=NULL;
+
+     uint32_t i=0;
+     uint32_t reads =
+        pdev->reads_per_period[air_schedule.current_schedule_index];
+
 //    iop_debug(" :: IOP - eth-writer running!\n");
 
     /* empty send queue */
-    while (!iop_chain_is_empty(&pdev->sendqueue))
+    /*TODO limit writes to given number*/
+    while ((!iop_chain_is_empty(&pdev->sendqueue) || wrapper!=NULL) && i<reads)
     {
-        iop_wrapper_t *wrapper = obtain_wrapper(&pdev->sendqueue);
-
+        /*no wrapper set for trasnmition?*/
+        if(wrapper==NULL){
+            wrapper=obtain_wrapper(&pdev->sendqueue);
+            eth_fragment_packet(wrapper);
+        }
+     
         /* write to the device */
         if (eth_driver->dev.write((iop_device_driver_t *) eth_driver,
-                                  wrapper) == RTEMS_SUCCESSFUL)
+                                 wrapper) == RTEMS_SUCCESSFUL)
         {
+            /*all fragments sent?*/
+            if(iop_chain_is_empty(&wrapper->fragment_queue)){
 
-            release_wrapper(wrapper);
-            /* error sending packet */
+                release_wrapper(wrapper);
+                wrapper=NULL;
+            }                
         }
         else
         {
-            
+            /*TODO review this, beware of requeueing*/
             iop_chain_append(&error, &wrapper->node);
             iop_raise_error(HW_WRITE_ERROR);
         }
+        i++;
     }
 
     /* re-queue failed transmissions */
@@ -79,6 +94,19 @@ eth_writer(iop_physical_device_t * pdev)
 
         iop_chain_append(&pdev->sendqueue, &wrapper->node);
     }
+}
+
+int packet_is_final(iop_wrapper_t *wrapper){
+
+    iop_fragment_t *frag = wrapper->fragment_queue.last;
+
+    if((frag->header.eth_header.ipoffset[0] & 0x20)==0){
+        /*no more fragments*/
+     //   iop_debug("no more frags %d\n", frag->header.eth_header.ipoffset[0]);
+        return 1;
+    }
+
+    return 0;
 }
 
 /**
@@ -95,7 +123,6 @@ eth_writer(iop_physical_device_t * pdev)
  *  Failed reads are reported to FDIR
  *  
  */
-
 void
 eth_reader(iop_physical_device_t * pdev)
 {
@@ -118,6 +145,8 @@ eth_reader(iop_physical_device_t * pdev)
 
    // iop_debug(" :: IOP - eth-reader running!\n");
 
+    static iop_wrapper_t *wrapper = NULL;
+
     uint32_t i;
     uint32_t skip;
     uint32_t reads =
@@ -125,14 +154,18 @@ eth_reader(iop_physical_device_t * pdev)
     for (i = 0; i < reads; ++i)
     {
 
-        /* get an empty reply wrapper */
-        iop_wrapper_t *wrapper = obtain_free_wrapper();
+        if(wrapper == NULL){
+            wrapper=obtain_free_wrapper();
+            
+            /* sanity check */
+            if (wrapper == NULL)
+            {
+                iop_raise_error(OUT_OF_MEMORY);
+                break;
+            }
 
-        /* sanity check */
-        if (wrapper == NULL)
-        {
-            iop_raise_error(OUT_OF_MEMORY);
-            break;
+            iop_chain_initialize_empty(&wrapper->fragment_queue);
+
         }
 
         /* read from the device */
@@ -141,33 +174,39 @@ eth_reader(iop_physical_device_t * pdev)
             switch (eth_get_packet_type(wrapper->buffer))
             {
                 /* ARP packet */
-            case HTONS(ETH_HDR_ARP_TYPE):
-                iop_debug("arp packet\n");
+            case HTONS(ETH_HDR_ARP_TYPE): /*TODO separate wrapper for arp packets*/
+             //   iop_debug("arp packet\n");
                 eth_send_arp_reply(driver, wrapper);
                 break;
 
                 /* IPv4 packet */
             case HTONS(ETH_HDR_IP_TYPE):
                 
-                /* check if it valid UDP packet for us */
-                if (eth_validate_packet(driver, wrapper))
-                {
+                if(packet_is_final(wrapper)){
+                    
+                    if(!iop_chain_is_empty(&wrapper->fragment_queue)){
+                        /*when packet set to send release fragments*/
+                        iop_fragment_t *frag_aux;
+                        while(!iop_chain_is_empty(&wrapper->fragment_queue)){
+                            frag_aux = obtain_fragment(&wrapper->fragment_queue);
+                            release_fragment(frag_aux);
+                        }  
+                    }
 
                     iop_chain_append(&pdev->rcvqueue, &wrapper->node);
                     wrapper = NULL;
-                }else{
-                  //  printf("invalid packet\n");
                 }
                 break;
+            
             default:
-                iop_debug("other packet\n");
+             //   iop_debug("other packet\n");
                 break;
             }
         }
         /* free wrapper if it wasn't used */
-        if (wrapper != NULL)
-        {
-            release_wrapper(wrapper);
-        }
+    //    if (wrapper != NULL)
+    //    {
+    //        release_wrapper(wrapper);
+    //    }
     }
 }

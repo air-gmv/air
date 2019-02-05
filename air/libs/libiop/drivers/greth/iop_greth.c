@@ -30,6 +30,7 @@
 #include <eth_support.h>
 #include <ambaext.h>
 #include <iop_error.h>
+#include <eth_support.h>
 
 //#define AUTONEG_ENABLED
 
@@ -434,9 +435,52 @@ auto_neg_done:
 	
 	/* enable RX and setup speeds and duplex*/
 	regs->ctrl |= GRETH_CTRL_RXEN | (sc->fd << 4) | (sc->sp << 7) | (sc->gb << 8);
+//        regs->ctrl |= GRETH_CTRL_RXEN | (sc->fd << 4) | (0 << 7) | (0 << 8);
 	iop_debug("  HArdware init done! leaving gigabit capabilities %d\n", sc->gb);
         return RTEMS_SUCCESSFUL;
 }
+
+uint32_t greth_validate_packet(iop_eth_device_t *dev, eth_header_t *packet) {
+
+    /*check packet type*/
+    if(packet->type == HTONS(ETH_HDR_ARP_TYPE)){
+        /*arp packet found*/
+        return 1;
+    }    
+
+    if(packet->type == HTONS(ETH_HDR_IP_TYPE)){
+        /* check if the packet was for us */
+        if (!eth_compare_mac((uint16_t*)dev->mac, (uint16_t*)packet->dst_mac) ||
+                          !eth_compare_ip((uint16_t *)dev->ip, (uint16_t*)packet->dst_ip)){
+      //      iop_debug("invalid packet - wrong address\n");
+            return -1;
+        }
+
+        /* check the if IP version is valid */
+        if (packet->vhl != 0x45) {
+       //     iop_debug("invalid packet - ipv\n");
+            return -1;
+        }
+
+        /* check if the packet is an UDP packet */
+        if (packet->proto != IPV4_HDR_PROTO) {
+       //     iop_debug("invalid packet - not udp\n");
+            return -1;
+        }
+
+        /* check if the checksum is valid */
+        if (eth_ipv4_chksum(packet) != (uint16_t)0xFFFF) {
+       //     iop_debug("invalid packet - wrong checksum\n");
+            return -1;
+        }
+
+        return 0;
+    }
+    
+  //  iop_debug("other packet %d\n", packet->type );
+    return -1;
+}
+
 
 /** 
  *  \param [in]  sc	: internal driver structure
@@ -447,87 +491,168 @@ auto_neg_done:
  *
  *  \brief reads data from Ethernet
  **/
-static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper){
+static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper, iop_eth_device_t *device){
 	
-	uint32_t len = 0, status = 0, error;
+    uint32_t len = 0, status = 0, error=0;
+        
+    /* read if the descriptor is not enabled */
+    while(!((status = sc->rxdesc[sc->rx_ptr].ctrl) & GRETH_RXD_ENABLE)){
 
-	/* read while the descriptor is not enabled */
-	while (!((status = sc->rxdesc[sc->rx_ptr].ctrl) & GRETH_RXD_ENABLE)) {
-	        
-                /* disable receiver */
-//                sc->regs->ctrl &= ~GRETH_CTRL_RXEN;
-                
-                /* reset length and error flag */
-
-		len = error = 0;
-              //  iop_debug("IO :: rxdesc %d\n", sc->rx_ptr);
-		/*Check for errors*/
-		if ((status & GRETH_RXD_TOOLONG) || (status & GRETH_RXD_DRIBBLE) ||
-		    (status & GRETH_RXD_CRCERR)  || (status & GRETH_RXD_OVERRUN) ||
-		    (status & GRETH_RXD_LENERR)  || (status & 0x7FF) < offsetof(eth_header_t, src_port)) {
-                        error = 1;
-                        printk("IO :: error greth recieve %d desc %d len %d %d\n", status,sc->rx_ptr, (status & 0x7FF), offsetof(eth_header_t, src_port) );
-            	}
-		
-		/* did we had and error during reception? */
-		if (error == 0) {
-
-			/* get packet length */
-                    len = status & 0x7FF;
-                    /* swap IOP buffers */
-                  /*  iop_buffer_t *temp = wrapper->buffer;
-                    wrapper->buffer = sc->rx_iop_buffer[sc->rx_ptr];
-                    sc->rx_iop_buffer[sc->rx_ptr] = temp;
-                    */
-                    uint32_t v_addr= wrapper->buffer->v_addr;
-                    uint32_t p_addr= wrapper->buffer->p_addr;
-                  //  iop_debug("0x%06x 0x%06x .",wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr );
-                    memcpy(wrapper->buffer, sc->rx_iop_buffer[sc->rx_ptr], sizeof(iop_buffer_t) );
-                    wrapper->buffer->v_addr=v_addr;
-                    wrapper->buffer->p_addr=p_addr;
-
-                    memmove(wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, len );
-                   iop_debug("RX 0x%06x 0x%06x %d %d\n",wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, len, sc->rx_ptr );
-
-
-                    /* replace pointer in the descriptor */
-                    sc->rxdesc[sc->rx_ptr].addr = sc->rx_iop_buffer[sc->rx_ptr]->p_addr;
-                                      
-                    /* setup offsets */
-                    wrapper->buffer->header_off = 0;
-                    wrapper->buffer->header_size = offsetof(eth_header_t, src_port);
-                    wrapper->buffer->payload_off = offsetof(eth_header_t, src_port);
-                    wrapper->buffer->payload_size = len - offsetof(eth_header_t, src_port);
-		}	
-                /* re-activate descriptor */
-		if (sc->rx_ptr == sc->rxbufs - 1) {
-			/* this is the last descriptor so enable it and activate WRAP*/
-			sc->rxdesc[sc->rx_ptr].ctrl = GRETH_RXD_ENABLE | GRETH_RXD_WRAP;
-                        iop_debug("LAST DESCRIPTOR\n");
-		} else {
-			/* just enable the descriptor */
-			sc->rxdesc[sc->rx_ptr].ctrl = GRETH_RXD_ENABLE;
-		}
-                /* increment descriptor */
-                sc->rx_ptr = (sc->rx_ptr + 1) % sc->rxbufs;
-
-		/*enable reception*/
-		sc->regs->ctrl |= GRETH_CTRL_RXEN;
-
-		/* if we read something*/
-		if (len != 0) {
-			break;
-		}
-             //   iop_debug("hw receive len %d\n", len);
-
-                   
-                if(error){
-                    return -1;
-                }
+        /*Check for errors*/
+        if ((status & GRETH_RXD_TOOLONG) || (status & GRETH_RXD_DRIBBLE) ||
+            (status & GRETH_RXD_CRCERR)  || (status & GRETH_RXD_OVERRUN) ||
+            (status & GRETH_RXD_LENERR)  || 
+            (status & 0x7FF) < sizeof(eth_header_t)- sizeof(ethproto_header_t)) {
+                error = 1;
+                printk("IO :: error greth recieve %d desc %d len %d %d 0x%06x\n", 
+                            status,sc->rx_ptr, (status & 0x7FF), sc->regs->status, sc->rxdesc[sc->rx_ptr].addr);
 
         }
-	return len;
+            
+        if(error==0){
+            iop_debug("desc %d 0x%06x len %d\n",sc->rx_ptr, sc->rxdesc[sc->rx_ptr].addr, status & 0x7FF );
+            /* get packet length */
+            len = status & 0x7FF;
+                
+            /*get free fragment*/
+            iop_fragment_t *frag = obtain_free_fragment();
+                
+            if(frag==NULL){
+                /*no more free fragments*/
+                iop_raise_error(OUT_OF_MEMORY);
+                return -1;
+            } 
+
+                
+            /*get packet header*/
+            memcpy(&frag->header, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, sizeof(eth_header_t));
+
+            int valid = -1;
+
+            if((valid = greth_validate_packet(device, &frag->header.eth_header)) == 0){
+                /*IP packet udp handle packet fragments*/
+
+                unsigned int pack_seq = (((unsigned int)frag->header.eth_header.ipoffset[0] & 0x1f)<<8) + frag->header.eth_header.ipoffset[1];
+                
+                /*is there a sequence number?*/
+                if(pack_seq == 0){ 
+                    
+                    if(!iop_chain_is_empty(&wrapper->fragment_queue)){
+                        /*iop_chain already had fragments from old uncomplete packet, release them.*/
+                        iop_fragment_t *frag_aux;
+                        while(!iop_chain_is_empty(&wrapper->fragment_queue)){
+                            frag_aux = obtain_fragment(&wrapper->fragment_queue);
+                            release_fragment(frag_aux);
+                        }  
+                                                                                                                                    }
+
+                    
+                    /*set descriptor info to wrapper*/
+                    memcpy(wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, 1520); /*TODO define on 1520*/
+                    frag->header_size = sizeof(eth_header_t);
+                    frag->payload = wrapper->buffer->v_addr + frag->header_size;
+                    frag->payload_size = len-frag->header_size; 
+                         
+                    iop_chain_append(&wrapper->fragment_queue, &frag->node);
+                         
+                    wrapper->buffer->header_off=0;
+                    wrapper->buffer->header_size = frag->header_size;
+                    wrapper->buffer->payload_off= frag->header_size;
+                    wrapper->buffer->payload_size = frag->payload_size;
+
+                    iop_debug("seq 0 desc %d %d\n", sc->rx_ptr, frag->header.eth_header.ipoffset[0]);
+
+                }else{
+                    /*packet with sequence number in order?*/
+                    if(iop_chain_is_empty(&wrapper->fragment_queue)){
+                        /*No chain, assume out of order packet*/
+                        iop_debug("seq outof order desc %d %d\n", sc->rx_ptr, pack_seq);
+                        release_fragment(frag);
+                        len = 0;
+                    }else{
+                        iop_fragment_t *last_frag= wrapper->fragment_queue.last;
+                        unsigned int last_pack_seq = (((unsigned int)last_frag->header.eth_header.ipoffset[0] & 0x1f)<<8) + last_frag->header.eth_header.ipoffset[1];
+
+                        if(last_pack_seq + 185 != pack_seq){ /*TODO magic number 185*/
+                            /*wrong sequence number trash this fragment*/
+                            iop_debug("seq wrong desc %d %d", sc->rx_ptr, last_pack_seq);
+                            release_fragment(frag);
+                            len=0;
+                        }else{
+
+                            /*At this point we have a fragmented packet with correct sequence number*/
+                    
+                            frag->header_size = sizeof(eth_header_t) - sizeof(ethproto_header_t);
+                            frag->payload = last_frag->payload + last_frag->payload_size;
+                            frag->payload_size = len - frag->header_size; 
+                    
+                            /*set descriptor info to wrapper*/
+                            memcpy(frag->payload, sc->rx_iop_buffer[sc->rx_ptr]->v_addr+frag->header_size, frag->payload_size); /*TODO define on 1520*/
+                            wrapper->buffer->payload_size += frag->payload_size;
+                            iop_chain_append(&wrapper->fragment_queue, &frag->node);
+                            iop_debug("seq correct desc %d %d %d\n", sc->rx_ptr, wrapper->buffer->payload_size, pack_seq);
+                    
+                        }
+                    }
+                }
+            }else{
+                /*is packet arp?*/
+                if(valid == 1){
+                    iop_debug("arp packet desc %d\n", sc->rx_ptr);
+
+                    if(!iop_chain_is_empty(&wrapper->fragment_queue)){
+                        /*iop_chain already had fragments from old uncomplete packet, release them.*/
+                        iop_fragment_t *frag_aux;
+                        while(!iop_chain_is_empty(&wrapper->fragment_queue)){
+                            frag_aux = obtain_fragment(&wrapper->fragment_queue);
+                            release_fragment(frag_aux);
+                        }  
+                    }
+                    /*set descriptor info to wrapper*/
+                    memcpy(wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, 1520); /*TODO define on 1520*/
+                    frag->header_size = sizeof(eth_header_t);
+                    frag->payload = wrapper->buffer->v_addr + frag->header_size;
+                    frag->payload_size = len-frag->header_size; 
+                    
+                    iop_chain_append(&wrapper->fragment_queue, &frag->node);
+                    
+                    wrapper->buffer->header_off=0;
+                    wrapper->buffer->header_size = frag->header_size;
+                    wrapper->buffer->payload_off= frag->header_size;
+                    wrapper->buffer->payload_size = frag->payload_size;
+
+                }else{
+                    iop_debug("invalid desc %d %d\n", sc->rx_ptr, wrapper->buffer->payload_size);
+
+                    len=0;
+                }
+
+            }
+        }
+
+        /* re-activate descriptor */
+        if (sc->rx_ptr == sc->rxbufs - 1) {
+            /* this is the last descriptor so enable it and activate WRAP*/
+            sc->rxdesc[sc->rx_ptr].ctrl = GRETH_RXD_ENABLE | GRETH_RXD_WRAP;
+            iop_debug("LAST DESCRIPTOR\n");
+        } else {
+            /* just enable the descriptor */
+            sc->rxdesc[sc->rx_ptr].ctrl = GRETH_RXD_ENABLE;
+        }
+        /* increment descriptor */
+        sc->rx_ptr = (sc->rx_ptr + 1) % sc->rxbufs;
+
+        /*enable reception*/
+        sc->regs->ctrl |= GRETH_CTRL_RXEN;
+
+        if(error)
+            return -1;
+
+        return len;
+    }
+    return 0;
 }
+
 
 /** 
  *  \param [in]  sc	: internal driver structure
@@ -539,95 +664,63 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper){
  **/
 static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
 
-    static uint8_t buffer[14 + 65535 + 44*(14+20)];/*eth_head + Max_data_tx + (max_frags*eth+IP )*/
     /* get the size of the packet to send */
-    uint16_t len = (uint16_t)get_buffer_size(wrapper->buffer);
-    uint16_t lenght, frags;
-    uint8_t *ptr = buffer;
-
-    /* fragment */
-    if(len > 1514)
-    {
-        len = eth_fragment_packet(wrapper, buffer);
-
-        frags = len/1514;
-        if (len % 1514)
-            frags += 1;
-
-        if(frags > sc->txbufs)
-        {
-            iop_debug("    GRETH Tx not send. Increase descriptors count\n");
-            return -1;
-        }
+    uint16_t len = 0;
+    
+    /*sanity check*/
+    if(iop_chain_is_empty(&wrapper->fragment_queue)){
+    //    iop_debug("fragment chain empty\n");
+        return -1; /*chango to error tag*/
     }
-    else
-        memcpy(buffer, get_header(wrapper->buffer), len);
+    
+    /*fetch next fragment on wrapper to send*/
+    iop_fragment_t *frag=obtain_fragment(&wrapper->fragment_queue);
+    
+    
+    /* check if there are descriptor available */
+    while (sc->txdesc[sc->tx_ptr].ctrl & GRETH_TXD_ENABLE){
+        /* Are we allowed to block?*/
+        if (sc->tx_blocking) {
 
-    while (len)
-    {
-        /* check if there are descriptor available */
-        while (sc->txdesc[sc->tx_ptr].ctrl & GRETH_TXD_ENABLE){
-
-            /* Are we allowed to block?*/
-            if (sc->tx_blocking) {
-
-                /* wait a moment for any RX descriptors to get available */
-                rtems_task_wake_after(sc->wait_ticks);
-            } else {
-                iop_debug("Desc %d blocked\n ", sc->tx_ptr);
-                /* We can't block waiting, so we return */
-                return 0;
-            }
-        }
-
-        if(len > 1514)
-            lenght = 1514;
-        else
-            lenght = len;
-
-        /*put data to tx into iop_buffer*/
-     //   memmove(wrapper->buffer->v_addr, ptr, lenght);
-
-        /* swap IOP buffers */
-      /*  iop_buffer_t *temp = wrapper->buffer;
-        wrapper->buffer = sc->tx_iop_buffer[sc->tx_ptr];
-        sc->tx_iop_buffer[sc->tx_ptr] = temp;
-    */
-        /* replace pointer in the descriptor */
-      //  sc->txdesc[sc->tx_ptr].addr =
-       //          (uint32_t *)((uintptr_t)temp->p_addr + temp->header_off);
-        
-           memmove(sc->tx_iop_buffer[sc->tx_ptr]->v_addr, ptr,  lenght );
-          iop_debug("TX 0x%06x 0x%06x %d\n",ptr, sc->tx_iop_buffer[sc->tx_ptr]->v_addr, lenght );
-                          
-                                             
-        sc->txdesc[sc->tx_ptr].addr =sc->tx_iop_buffer[sc->tx_ptr]->p_addr;
-
-        /* enable descriptor*/
-        if (sc->tx_ptr < sc->txbufs - 1) {
-
-            /* re enable descriptor and write total data length*/
-            sc->txdesc[sc->tx_ptr].ctrl = GRETH_TXD_ENABLE | lenght;
+             /* wait a moment for any RX descriptors to get available */
+            rtems_task_wake_after(sc->wait_ticks);
         } else {
-
-            /* this is last descriptor so also activate WRAP */
-            sc->txdesc[sc->tx_ptr].ctrl =
-                    GRETH_TXD_WRAP | GRETH_TXD_ENABLE | lenght;
-            iop_debug("TX - LAST DESCRIPTOR %d\n", sc->tx_ptr);
+            /* We can't block waiting, so we return */
+      //      iop_debug("can't block\n");
+            return 0;
         }
 
-        /* enable transmission */
-     //   sc->regs->ctrl = sc->regs->ctrl | GRETH_CTRL_TXEN;
-
-        /* increment descriptor */
-        sc->tx_ptr = (sc->tx_ptr + 1) % sc->txbufs;
-
-        len -= lenght;
-        ptr += lenght;
     }
+
+    len=frag->header_size + frag->payload_size;
+
+    /*Copy header to descriptor*/
+    memcpy(sc->tx_iop_buffer[sc->tx_ptr]->v_addr, &frag->header, frag->header_size );
+
+    /*Copy payload to descriptor*/
+    memcpy(sc->tx_iop_buffer[sc->tx_ptr]->v_addr+frag->header_size, frag->payload, frag->payload_size );
+  //  iop_debug("TX - size %d %d 0x%06x desc %d\n", frag->header_size, frag->payload_size, frag->payload, sc->tx_ptr);
+    /* enable descriptor*/
+    if (sc->tx_ptr < sc->txbufs - 1) {
+
+        /* re enable descriptor and write total data length*/
+        sc->txdesc[sc->tx_ptr].ctrl = GRETH_TXD_ENABLE | len;
+    } else {
+
+        /* this is last descriptor so also activate WRAP */
+        sc->txdesc[sc->tx_ptr].ctrl = GRETH_TXD_WRAP | GRETH_TXD_ENABLE | len ;
+        iop_debug("TX - LAST DESCRIPTOR %d\n", sc->tx_ptr);
+    }
+
+    /* enable transmission */
     sc->regs->ctrl = sc->regs->ctrl | GRETH_CTRL_TXEN;
-    /* return number of bytes written */
-    return (int)(ptr - buffer);
+    
+    /* increment descriptor */
+    sc->tx_ptr = (sc->tx_ptr + 1) % sc->txbufs;
+    
+    release_fragment(frag);
+
+    return len;
 }
 
 
@@ -729,7 +822,7 @@ uint32_t greth_read(iop_device_driver_t *iop_dev, void *arg) {
 	}
 
 	/* While we have read no data*/
-	while ((count = greth_hw_receive(sc, wrapper)) == 0) {
+	while ((count = greth_hw_receive(sc, wrapper, device)) == 0) {
 		
 		/* Are we allowed to block?*/
 		if (sc->rx_blocking) {

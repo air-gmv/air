@@ -11,6 +11,14 @@
 #include <rtems.h>
 #include <iop_support.h>
 
+#define ETHII_HDR_SIZE                              (14)
+#define IPV4_HDR_SIZE                               (20)
+#define UDP_HDR_SIZE                                 (8)
+
+#define IPV4_HDR_TTL                                (64)
+#define IPV4_HDR_PROTO                              (17)
+
+
 /**
  * @brief Ethernet device
  */
@@ -46,6 +54,15 @@ typedef struct {
 #define ETH_HDR_ARP_TYPE                        ((uint16_t)0x0806)
 
 /**
+ *  * @brief ARP request operation code
+ *   */
+#define ARP_HDR_REQUEST                                     ((uint16_t)0x0001)
+/**
+ *  * @brief ARP reply operation code
+ *   */
+#define ARP_HDR_REPLY                                       ((uint16_t)0x0002)
+
+/**
  * @brief ARP - Address Resolution Protocol Packet
  */
 typedef struct {
@@ -62,6 +79,17 @@ typedef struct {
     uint8_t tpa[4];                 /**< Target Protocol address        */
 
 } __attribute__((packed)) arp_packet_t ;
+
+static inline uint32_t eth_compare_ip(uint16_t *ip1, uint16_t *ip2) {
+
+        return ip1[0] == ip2[0] && ip1[1] == ip2[1];
+}
+
+static inline uint32_t eth_compare_mac(uint16_t *mac1, uint16_t *mac2) {
+
+        return mac1[0] == mac2[0] && mac1[1] == mac2[1] && mac1[2] == mac2[2];
+}
+
 
 /**
  * @brief Computes the ipv4 packet checksum
@@ -81,6 +109,10 @@ void eth_prebuild_header(eth_header_t *buf);
  * @return true if header match, false otherwise
  */
 uint32_t eth_compare_header(iop_wrapper_t *wrapper, iop_header_t *header);
+
+
+void eth_send_arp_reply(iop_eth_device_t *eth_device, iop_wrapper_t *wrapper);
+    
 /**
  * @brief Copy and Complete ethernet header
  * @param iop_dev IO device
@@ -99,6 +131,15 @@ void eth_copy_header(
  */
 uint32_t eth_validate_packet(
         iop_eth_device_t *dev, iop_wrapper_t *wrapper);
+
+/**
+ * @brief Fragment a wrapper
+ * @param wrapper IOP wrapper with the packet to be fragmented
+ * @return 
+ */
+uint32_t eth_fragment_packet(iop_wrapper_t *wrapper);
+
+#if 0
 /**
  * @brief Fragment a wrapper
  * @param wrapper IOP wrapper with the packet to be fragmented
@@ -106,6 +147,7 @@ uint32_t eth_validate_packet(
  * @return size of data in buffer to be transmit
  */
 uint32_t eth_fragment_packet(iop_wrapper_t *wrapper, uint8_t *buf);
+#endif
 
 /**
  * @brief Get the type of ethernet packet
