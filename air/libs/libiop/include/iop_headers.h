@@ -29,6 +29,37 @@ typedef struct {
 } __attribute__((packed)) milstd_header_t;
 
 /**
+ * @brief Ethernet protocol UDP header
+ *  
+ */
+typedef struct  {
+    /* UDP Specific header. */
+    uint16_t udplen;            /**< udp packet length */
+    uint16_t udpchksum;     /**< pseudo header + UDP header + data checksum */
+}  __attribute__((packed)) udp_header_t;
+
+
+/**
+ * @brief Ethernet protocol specific header
+ *
+ * This header is a union of all supported specific protocol headers
+ */
+typedef union {
+
+    udp_header_t udp_header;  
+
+} __attribute__((packed)) protospec_header_t;
+
+typedef struct {
+
+    uint16_t src_port;          /**< Source port */
+    uint16_t dst_port;          /**< Destination port */
+
+    protospec_header_t specific_header;
+
+} __attribute__((packed)) ethproto_header_t;
+
+/**
  * @brief Eth header (Eth + IP + UDP/TCP port header)
  */
 typedef struct  {
@@ -49,16 +80,9 @@ typedef struct  {
     uint8_t src_ip[4];      /**< Source Ip address */
     uint8_t dst_ip[4];  /**< Destination IP address */
 
-    uint16_t src_port;          /**< Source port */
-    uint16_t dst_port;          /**< Destination port */
+    ethproto_header_t proto_header; /** Protocol specific header**/
 
 }  __attribute__((packed)) eth_header_t;
-
-typedef struct  {
-    /* UDP Specific header. */
-    uint16_t udplen;            /**< udp packet length */
-    uint16_t udpchksum;     /**< pseudo header + UDP header + data checksum */
-}  __attribute__((packed)) udp_header_t;
 
 typedef struct {
 	uint8_t extended;		/* CANBUS extended id option */

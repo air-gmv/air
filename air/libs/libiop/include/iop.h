@@ -74,7 +74,23 @@ typedef struct {
     uint32_t timer;                 /**< Number of periods after which this request will be discarded*/
     iop_buffer_t *buffer;           /**< reply header   */
 
+    iop_chain_control fragment_queue;   /** Chain of fragments for this packet **/
+
 } iop_wrapper_t;
+
+/**
+ * @brief Packet fragment
+ */
+typedef struct{
+    iop_chain_node node;
+    
+    iop_header_t header;
+    void *payload;
+
+    uint32_t header_size;
+    uint32_t payload_size;
+    
+} iop_fragment_t;
 
 /**
  * @brief List of elements
@@ -159,6 +175,8 @@ typedef struct {
     iop_buffer_t *iop_buffers;
     uint8_t *iop_buffers_storage;
     uint32_t wrappers_count;
+    iop_fragment_t *fragments;
+    uint32_t fragment_count;
 
     /* devices and ports */
     iop_list_t remote_ports;
@@ -171,6 +189,7 @@ typedef struct {
 
     /* requests chains */
     iop_chain_control free_wrappers;        /**< Chain of empty requests */
+    iop_chain_control free_fragments;
 
 } iop_configuration_t;
 
