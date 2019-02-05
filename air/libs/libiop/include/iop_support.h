@@ -73,6 +73,13 @@ void copy_iop_buffer(iop_buffer_t *dst, iop_buffer_t *src);
 void release_wrapper(iop_wrapper_t *wrapper);
 
 /**
+ * @brief Releases a IOP fragment back to the free queue
+ * @param frag IOP fragment pointer
+ *    */
+void release_fragment(iop_fragment_t *frag);
+
+
+/**
  * @brief Gets a IOP wrapper from a given queue
  * @param ctl Queue of IOP wrappers
  * @return NULL if no wrapper available in queue, IOP wrapper pointer otherwise
@@ -80,11 +87,26 @@ void release_wrapper(iop_wrapper_t *wrapper);
 iop_wrapper_t *obtain_wrapper(iop_chain_control *ctl);
 
 /**
+ * @brief Gets a IOP fragment from a given queue
+ * @param ctl Queue of IOP fragments
+ * @return NULL if no wrapper available in queue, IOP wrapper pointer otherwise
+ */
+iop_fragment_t *obtain_fragment(iop_chain_control *ctl);
+
+/**
  * @brief Gets a free IOP wrapper
  * @return NULL if no wrapper available in queue, IOP wrapper pointer otherwise
  */
 #define obtain_free_wrapper() \
     obtain_wrapper(&usr_configuration.free_wrappers)
+
+/**
+ * @brief Gets a free IOP fragment
+ * @return NULL if no fragment available in queue, IOP fragment pointer otherwise
+ */
+#define obtain_free_fragment() \
+        obtain_fragment(&usr_configuration.free_fragments)
+
 
 /**
  * @brief Updates the timers on the wrappers
@@ -105,7 +127,7 @@ void update_timers();
  *        Available devices are: ETH0, ETH1, SPWR, PCI, 1553 and CAN
  */
 void clock_gating_enable(struct ambapp_bus* clk_amba_bus, clock_gating_device core_to_enable);
-
+void clock_gating_disable(struct ambapp_bus* clk_amba_bus, clock_gating_device core_to_enable);
 #define get_physical_device(i) \
     ((iop_physical_device_t **)usr_configuration.physical_devices.elements)[(i)]
 

@@ -29,7 +29,7 @@ def InputArgs(arg_parser, logger):
                         help='Input XML configuration')
     arg_parser.add_argument('-dm', '--debug_mode', dest='debug_mode', action='store_const', const=True, default=False)
     arg_parser.add_argument('-kfs', '--keep-files-silent', dest='keep_files_silent', action='store_const', const=True, default=False)
-    arg_parser.add_argument('-ks', '--kernel_space', nargs=1, type=lambda x: hex(int(x,0)) , dest='kernel_space', action='store', default=None, choices =[hex(x*0x1000000) for x in  range(0x1, 0xc0)])
+    arg_parser.add_argument('-ks', '--kernel_space', nargs=1, type=lambda x: hex(int(x,0)) , dest='kernel_space', action='store', default=None, choices =[hex(x*0x1000000) for x in  range(0x1, 0xc0)], help='Kernel space size in hex format, ex: 0x200000', metavar='')
 
 ## @brief Show installation information
 def ShowInstallInfo(logger):

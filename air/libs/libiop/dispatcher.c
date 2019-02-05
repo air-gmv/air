@@ -169,7 +169,7 @@ rtems_status_code process_service_request(iop_wrapper_t *incoming, int reply_add
 static void process_remote_port(iop_port_t *port){
 
     air_status_code_e rc = AIR_NO_ERROR;
-    iop_debug(" IOP :: process_remote_port\n");
+  //  iop_debug(" IOP :: process_remote_port\n");
     while (rc != AIR_NOT_AVAILABLE) {
         /* get a empty request wrapper from the wrapper chain*/
         iop_wrapper_t *wrapper = obtain_free_wrapper();
@@ -183,8 +183,7 @@ static void process_remote_port(iop_port_t *port){
         /* get the message space */
         uint8_t *message = (uint8_t *)
                 ((uintptr_t)wrapper->buffer->v_addr + sizeof(iop_header_t));
-
-        /* read regular message */
+              /* read regular message */
         air_sampling_port_status_t status;
         status.operation = AIR_SAMPLING_MODE_REGULAR;
 
@@ -197,19 +196,21 @@ static void process_remote_port(iop_port_t *port){
                 (size_t *)&size,
                 &status);
 
+//        status.last_msg_validity = AIR_MESSAGE_VALID;
+//        size=60000;
         /* if no errors occurred */
         if (rc == AIR_NO_ERROR && size > 0 &&
             (port->type == AIR_QUEUING_PORT ||
             (port->type == AIR_SAMPLING_PORT &&
              status.last_msg_validity == AIR_MESSAGE_VALID))) {
-            
-
+        //   size=30000; 
             /* setup the wrapper properties */
             wrapper->buffer->payload_off = sizeof(iop_header_t);
             wrapper->buffer->payload_size = size;
             wrapper->buffer->header_off = 0;
             wrapper->buffer->header_size = sizeof(iop_header_t);
 
+            iop_debug("RP %d 0x%06x 0x%06x 0x%06x\n", size, message,get_header(wrapper->buffer), get_payload(wrapper->buffer));
 
             /* append data to aimed device */
             iop_chain_append(
@@ -218,12 +219,13 @@ static void process_remote_port(iop_port_t *port){
             /* if this an sampling port, the processing is over */
             if (port->type == AIR_SAMPLING_PORT) {
                 rc = AIR_NOT_AVAILABLE;
-            }
+             }
 
         } else {
             /* release the wrapper */
             release_wrapper(wrapper);
             rc = AIR_NOT_AVAILABLE;
+        //    iop_debug("IOP :: process remote port errors\n");
         }
         rtems_task_wake_after(1);
     }
@@ -331,7 +333,7 @@ void pre_dispatcher(){
 
     uint32_t i;
 
-	iop_debug("\n :: IOP - pre-dispatcher running!\n");
+//	iop_debug("\n :: IOP - pre-dispatcher running!\n");
 
 	/* Get execution window reference time */
     /* this  call is for RTEMS 4.8, it is not deprecated */
@@ -399,7 +401,7 @@ void pos_dispatcher(){
 	//iop_task_sleep(0);
 	
 
-	iop_debug("\n :: IOP - pos-dispatcher doing nothing!\n");
+//	iop_debug("\n :: IOP - pos-dispatcher doing nothing!\n");
 
 //	rtems_interval time;
 //	/*rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time); // use this for rtems 4.8 */
