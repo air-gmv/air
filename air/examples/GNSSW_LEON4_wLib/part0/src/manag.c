@@ -1597,7 +1597,7 @@ static void pvtManagement(T_supportData *supportData_P)
 			rxProcessingStatus.pvtThread.svnProcessedNr = pvtProcess.ppMeas.NM_ls;
 			memcpy(&rxProcessingStatus.pvtThread.svnProcessedList,&pvtProcess.ppMeas.SVN_ls,sizeof(pvtProcess.ppMeas.SVN_ls));
 
-			aidingData.vtData.clkData.hotClkBiasStatus = VALID;
+			aidingData.vtData.clkData.hotClkBiasStatus = VALID_STAT;
 
 			// Store most recent time when position was computed (for virtual-tracking purposes).
 			aidingData.vtData.pvtHotMs =  ComData.counterMs;
