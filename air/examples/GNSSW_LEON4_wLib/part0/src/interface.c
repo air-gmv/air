@@ -54,11 +54,12 @@
   #define CONFIGURE_MINIMUM_TASK_STACK_SIZE CPU_STACK_MINIMUM_SIZE
 
 /* DMS-IOP queue (TM/TC) inter-partition port ids */
-static QUEUING_PORT_ID_TYPE QRECV_IOP;
-static QUEUING_PORT_ID_TYPE QSEND_IOP;
+static SAMPLING_PORT_ID_TYPE QRECV_IOP;
+static SAMPLING_PORT_ID_TYPE QSEND_IOP;
 /* inter-partition ports maximum size definitions */
-#define MAX_MESSAGE_SIZE 7000// bytes
+#define MAX_MESSAGE_SIZE 30000// bytes
 #define MAX_NB_MESSAGES 20 // queue messages
+#define REFRESH_RATE 500000000
 
 #ifdef RTEMS_SMP
 #warning " SMP support is enabled "
@@ -503,17 +504,18 @@ int initializeUDP(void)
 void setup_ports(void)
 {
     RETURN_CODE_TYPE rc;
-
+    SYSTEM_TIME_TYPE refreshRate= REFRESH_RATE;
+    MESSAGE_SIZE_TYPE size = MAX_MESSAGE_SIZE;
     printf("Initializing ports ...\n");
 
     /*Creating QRECV_TC_IOP Queuing Port*/
-    CREATE_QUEUING_PORT("QRECV_IOP", MAX_MESSAGE_SIZE, MAX_NB_MESSAGES, DESTINATION, FIFO, &QRECV_IOP, &rc );
+    CREATE_SAMPLING_PORT("QRECV_IOP", size,  DESTINATION, refreshRate, &QRECV_IOP, &rc );
     if(NO_ERROR != rc)
     {
         printf("CREATE_QUEUING_PORT QRECV_IOP error %d\n", rc);
     }
     /*Creating QSEND_TM_IOP Queuing Port*/
-    CREATE_QUEUING_PORT("QSEND_IOP", MAX_MESSAGE_SIZE, MAX_NB_MESSAGES, SOURCE, FIFO, &QSEND_IOP, &rc );
+    CREATE_SAMPLING_PORT("QSEND_IOP", size, SOURCE, refreshRate, &QSEND_IOP, &rc );
     if(NO_ERROR != rc)
     {
         printf("CREATE_QUEUING_PORT QSEND_IOP error %d\n", rc);
@@ -795,7 +797,15 @@ int receiveUDP_TC(void)
     #ifdef PROFILER
        double ElapsedSeconds = 0;
     #endif
+    
+    char sendbuff[30000];
+    int i=0;
+    RETURN_CODE_TYPE rc2;
+    for(i=0; i<30000; i++){
+        sendbuff[i]=100+i;
+    }
 
+   
     //rtems_task_wake_after(100);
 #ifdef TCP_interface
 	rc = RecvTcp();
@@ -1039,19 +1049,17 @@ int GetCNF(void)
 {
 	buffer[0] = 0;
     RETURN_CODE_TYPE rc;
-    SYSTEM_TIME_TYPE timeout = 0;
 //    printf("SendUdpOK\n");
 
-    SEND_QUEUING_MESSAGE(QSEND_IOP, (MESSAGE_ADDR_TYPE )buffer, 1, timeout, &rc );
+    WRITE_SAMPLING_MESSAGE(QSEND_IOP, (MESSAGE_ADDR_TYPE )buffer, 1, &rc );
 }
 
 void SendResultCalculation(char *BufferToSend, int LenToSend)
 {
     RETURN_CODE_TYPE rc;
-    SYSTEM_TIME_TYPE timeout = 0;
     printf("SendResultCalculation %d\n",LenToSend);
 
-    SEND_QUEUING_MESSAGE(QSEND_IOP, (MESSAGE_ADDR_TYPE )BufferToSend, LenToSend, timeout, &rc );
+    WRITE_SAMPLING_MESSAGE(QSEND_IOP, (MESSAGE_ADDR_TYPE )BufferToSend, LenToSend, &rc );
 }
 
 #ifdef TCP_interface            
@@ -1062,16 +1070,26 @@ void SendResultCalculation(char *BufferToSend, int LenToSend)
 {
 	RETURN_CODE_TYPE rc;
     MESSAGE_SIZE_TYPE len = 0;
+    UPDATED_TYPE updated;
+    unsigned int received=0;
 
-    while(!len){
-        RECEIVE_QUEUING_MESSAGE(QRECV_IOP, INFINITE_TIME_VALUE, (MESSAGE_ADDR_TYPE )buffer, &len, &rc );
-      //  printf("recv port %d", rc);
+    while(!received){
+        READ_UPDATED_SAMPLING_MESSAGE(QRECV_IOP, (MESSAGE_ADDR_TYPE )buffer, &len, &updated,  &rc );
+        if(INVALID_PARAM == rc){
+            printf("READ_UPDATED_SAMPLING_MESSAGE error %d\n", rc);
+        }
+        else if(NEW_MESSAGE == updated)
+        {
+          //  printf("READ_UPDATED_SAMPLING_MESSAGE returned %d bytes.\n", len);
+            received = 1;
+        }else{
+             rtems_task_wake_after(2);
+        }
+      //  if(len==0)
+      //      rtems_task_wake_after(1);
     }
-    if(rc)
-        return -1;
-
-//    printf("RECV %d\n",len);
-	return len;
+    
+    return len;
 }
 
 
@@ -1601,7 +1619,7 @@ rtems_task Acq1_task( rtems_task_argument unused )
             
             setAcqChannelMod(&supportData[rxProcessingStatus.acqGalFlag], supportData[rxProcessingStatus.acqGalFlag].acqAux_P[0].svnIndex, -supportData[rxProcessingStatus.acqGalFlag].satManag_P->acqFftSat[slot_index].dopplerFreqHz, DopplerRange, 0);
         }
-  
+        printf("manage fft id %d data %d\n",(unsigned int)rxProcessingStatus.acqGalFlag, &supportData[rxProcessingStatus.acqGalFlag]) ;
         ManageFftAcquisition(&supportData[rxProcessingStatus.acqGalFlag], 0);   
         
         if(rxProcessingStatus.secondFft == 1 && supportData[rxProcessingStatus.acqGalFlag].acqAux_P[0].acqFftStatus == ACQ_MED) // add if 2nd acquisition success
