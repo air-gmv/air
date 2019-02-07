@@ -58,3 +58,4 @@ LOG_UNSUPPORTED_DEVICE                    = "Line {0}, device {1} is not support
 LOG_UNSUPPORTED_IOP                       = "Line {0}, IOP is not supported by the current target"
 
 LOG_TARGET_NOT_SUPPORTED                  = "Target {0} is not supported by this configuration"
+LOG_NOT_A653                              = "Value '{0}' for attribute '{1}' is not compliant with ARINC635"
