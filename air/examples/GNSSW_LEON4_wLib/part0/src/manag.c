@@ -342,29 +342,31 @@ while (continueExecution())
     #ifdef TCP_interface
             rc = RecvTcp();
     #else
-          //  printf("receiving udp\n");
+//            printf("receiving udp\n");
         rc = RecvUdp();
     #endif
-        // printf("received %d\n", rc);
+  //       printf("received %d\n", rc);
                     if(rc == nBytesToRead/25)// for primaryIterations == 100
                     //if(rc == nBytesToRead)     // for primaryIterations == 4
                     {
     #ifdef TCP_interface            
                             TcpBufferCopy();
     #else
-                UdpBufferCopy();   
+                        UdpBufferCopy();   
     #endif
                          ioBuffer.inIndexBytes = ioBuffer.inIndexBytes + nBytesToRead/25;   // for primaryIterations == 100
                          // ioBuffer.inIndexBytes = ioBuffer.inIndexBytes + nBytesToRead; // for primaryIterations == 4
-                      //  printf("received bytes %d...",ioBuffer.inIndexBytes  );
+                     //   printf("received bytes %d of %d...\n",ioBuffer.inIndexBytes, nBytesToRead  );
                         if(ioBuffer.inIndexBytes == nBytesToRead)//100000)
                         {
+                         //   printf("nbytesread, samples max %d\n",ioBuffer.inIndexBytes );
                             ioBuffer.nFree = ioBuffer.nFree - ioBuffer.packPerRecp;
                             rec_ok = 1;
                             executionStatus = EXECUTING;
                         }
                         else if(ioBuffer.inIndexBytes == nBytesToRead*2)//200000)
                         {	
+                          //  printf("2 * nbytesread, samples max %d\n",ioBuffer.inIndexBytes );
                             ioBuffer.nFree = ioBuffer.nFree - ioBuffer.packPerRecp;
                             ioBuffer.inIndexBytes = 0;
                             rec_ok = 1;
@@ -390,7 +392,7 @@ while (continueExecution())
 //#ifdef MAIN_LOOP_GO  
         if(executionStatus == EXECUTING)
         {
-            printf("executing\n");
+         //   printf("executing\n");
             executionStatus = WAIT_FOR_SAMPLES;
             // Copy samples from IO buffer to PROCESSING buffer.
             copyBuffer();
@@ -443,6 +445,7 @@ while (continueExecution())
 
                         #ifdef PCMonitor
                             // Send output data to PCmonitor
+                            print("prepping buffer\n");
                             PrepSendBuffer();
                             SendBuffer();
                             print("Sent buffer\n");
@@ -453,6 +456,7 @@ while (continueExecution())
 /* setup Tracking if acq new satelite */  
                 for(int core_index1 = 0; core_index1 < NACQCHAN; core_index1++)		
                 {         
+                 //   printf("acq new stellite %d\n", core_index1);
                     status = rtems_event_receive(RTEMS_EVENT_5, RTEMS_EVENT_ALL | RTEMS_NO_WAIT, RTEMS_NO_TIMEOUT, &out);
                     if ( status == RTEMS_SUCCESSFUL ) 
                     {          
@@ -650,12 +654,12 @@ while (continueExecution())
                     rtems_task_restart(task_param[ 2 ].id, 2 ); 
                 }                
             }*/
-            printf("tasks started\n");
+        //    printf("tasks started\n");
 
                 for (int idx7 = 0; idx7 < primaryIterations; idx7++)
                 {                                                          
                     int cpt = ComData.counterMs%4;
-                                                            
+                  //  printf("it %d cpt %d\n", idx7, cpt);                                        
                     // copy data into aiding function structures ( possibly to be modified)
                     if ( pvtProcess.ekfData.solFlag == 0 ) //timeStamp.gpsTime.TOW <= pvtProcess.firstPvtTow + 3 && pvtProcess.firstPvtFlag == 0)
                     {
@@ -706,7 +710,7 @@ while (continueExecution())
                         AcquisitionTrackingAid_StartTime = GetStartTime();
                     #endif 
                         
-                    AcquisitionTrackingAid(supportData, &chDataAll, &aidData, &AcqTckAid);
+                   AcquisitionTrackingAid(supportData, &chDataAll, &aidData, &AcqTckAid);
                     
                     #ifdef PROFILER
                         ElapsedSeconds = GetElapsedTime(AcquisitionTrackingAid_StartTime);
@@ -728,7 +732,7 @@ while (continueExecution())
                                 supportData[rxProcessingStatus.acqGalFlag].acqAux_P[core_index3].acqCounterMs  = ComData.counterMs;
                                 acq_svn = supportData[rxProcessingStatus.acqGalFlag].acqAux_P[core_index3].slot;
                                 acq_system_flag = supportData[rxProcessingStatus.acqGalFlag].genSysData_P->systemFlag;
-                                printf("ACQ core[0] activity: %d core[0] init: %d core[0] activitprev %d\n", core[0].activity, core[0].init, core[0].activityprev);
+                            //    printf("ACQ core[0] activity: %d core[0] init: %d core[0] activitprev %d\n", core[0].activity, core[0].init, core[0].activityprev);
                                 switch(core_index3)
                                 {
                                     case 0:
@@ -772,7 +776,7 @@ while (continueExecution())
                                         rxProcessingStatus.secondFft = 1;
 
                                         // Perform the second acquisition
-                                        printf("ACQ2 core[0] activity: %d core[0] init: %d core[0] activitprev %d\n", core[0].activity, core[0].init, core[0].activityprev);
+                                  //      printf("ACQ2 core[0] activity: %d core[0] init: %d core[0] activitprev %d\n", core[0].activity, core[0].init, core[0].activityprev);
                                         switch(core_index4)
                                         {
                                             case 0:     
@@ -848,7 +852,7 @@ while (continueExecution())
                             non_completed &= ~out;
                         }
                     } 
-                
+               //     printf("rtems_event_completed\n"); 
                     for (i = 0; i < core[0].nchan; i++)	
                     {
                         chDataAll.Ch[Tck1Ch[i].chIndex] = Tck1Ch[i];

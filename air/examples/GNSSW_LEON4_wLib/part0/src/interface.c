@@ -797,15 +797,7 @@ int receiveUDP_TC(void)
     #ifdef PROFILER
        double ElapsedSeconds = 0;
     #endif
-    
-    char sendbuff[30000];
-    int i=0;
-    RETURN_CODE_TYPE rc2;
-    for(i=0; i<30000; i++){
-        sendbuff[i]=100+i;
-    }
 
-   
     //rtems_task_wake_after(100);
 #ifdef TCP_interface
 	rc = RecvTcp();
@@ -1083,7 +1075,7 @@ void SendResultCalculation(char *BufferToSend, int LenToSend)
           //  printf("READ_UPDATED_SAMPLING_MESSAGE returned %d bytes.\n", len);
             received = 1;
         }else{
-             rtems_task_wake_after(2);
+             rtems_task_wake_after(1);
         }
       //  if(len==0)
       //      rtems_task_wake_after(1);
