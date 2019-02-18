@@ -11,20 +11,27 @@
 	</LogicalDevices>	
 	
 	<PhysicalDevices>
-		<Device Id="0" Device="ETH0" Ip="172.19.13.192" MAC="00:50:C2:75:a3:30" TXD="128" RXD="128">
+            	<Device Id="0" Device="ETH0" Ip="172.19.13.192" MAC="00:50:C2:75:a3:30" TXD="128" RXD="128"> 
 			<PhysicalRoute Id="2" PortId="QSEND_GNSS">
 				<EthHeader Ip="172.19.13.68" MAC="10:62:e5:4f:d8:d2" Port="3333"/> //BOARD PORT
 			</PhysicalRoute>
 			<LogicalRoute Id="1" LogicalDeviceId="1">
 				<EthHeader Ip="172.19.13.68" MAC="10:62:e5:4f:d8:d2" Port="3334"/> //PC PORT
 			</LogicalRoute>
-	    </Device>		
-	</PhysicalDevices>
-	
+            </Device>	
+            <!-- <Device Id="0" Device="ETH0" Ip="192.168.0.17" MAC="00:50:C2:75:a3:30" TXD="64" RXD="64"> 
+                <PhysicalRoute Id="2" PortId="QSEND_GNSS">
+                    <EthHeader Ip="192.168.0.10" MAC="10:62:e5:4f:d8:d2" Port="3333"/> 
+                    </PhysicalRoute>
+                    <LogicalRoute Id="1" LogicalDeviceId="1">
+                        <EthHeader Ip="192.168.0.10" MAC="10:62:e5:4f:d8:d2" Port="3334"/>
+                        </LogicalRoute>
+                    </Device> --> 
+                </PhysicalDevices>        
 	<ModuleSchedules>
 		<Schedule ScheduleIdentifier="1">
 		    <DevicesConfiguration>
-			    <Device DeviceId="0" Device="ETH0" Reads="5"/>
+			    <Device DeviceId="0" Device="ETH0" Reads="20"/>
 			</DevicesConfiguration>
 			<RoutesConfiguration>
 				<Route RouteId="1" Active="true"/>
