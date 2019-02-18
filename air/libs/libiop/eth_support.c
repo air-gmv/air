@@ -186,10 +186,10 @@ void eth_send_arp_reply(iop_eth_device_t *eth_device, iop_wrapper_t *wrapper) {
         /*TODO arp packet on sending queue? now could break udp fragment queueing*/
         
         /*setup dummy fragment so driver send remains generic*/
-        iop_chain_initialize_empty(&wrapper->fragment_queue);
-    
+        
         /*fetch free fragment*/
         iop_fragment_t *frag = obtain_free_fragment();
+        iop_chain_initialize_empty(&wrapper->fragment_queue);
 
         if(frag==NULL){
             iop_raise_error(OUT_OF_MEMORY);
@@ -367,9 +367,7 @@ uint32_t eth_fragment_packet(iop_wrapper_t *wrapper)
     uint8_t *next_payload = get_payload(wrapper->buffer);
     uint16_t total = 0;
 
-    /*init fragment chain for this packet*/
-    iop_chain_initialize_empty(&wrapper->fragment_queue);
-    
+     
     /*fetch free fragment*/
     iop_fragment_t *frag = obtain_free_fragment();
 

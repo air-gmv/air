@@ -163,9 +163,7 @@ eth_reader(iop_physical_device_t * pdev)
                 iop_raise_error(OUT_OF_MEMORY);
                 break;
             }
-
-            iop_chain_initialize_empty(&wrapper->fragment_queue);
-
+ 
         }
 
         /* read from the device */
@@ -183,7 +181,7 @@ eth_reader(iop_physical_device_t * pdev)
             case HTONS(ETH_HDR_IP_TYPE):
                 
                 if(packet_is_final(wrapper)){
-                    
+#if 0 
                     if(!iop_chain_is_empty(&wrapper->fragment_queue)){
                         /*when packet set to send release fragments*/
                         iop_fragment_t *frag_aux;
@@ -192,7 +190,7 @@ eth_reader(iop_physical_device_t * pdev)
                             release_fragment(frag_aux);
                         }  
                     }
-
+#endif
                     iop_chain_append(&pdev->rcvqueue, &wrapper->node);
                     wrapper = NULL;
                 }
