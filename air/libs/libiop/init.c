@@ -91,12 +91,15 @@ static void iop_init_queues(void){
         usr_configuration.iop_buffers[i].v_addr = &usr_configuration.iop_buffers_storage[i * (size+94)]; //add max total space needed eth header (TCP) = 14+20+60 TODO remove 94 and use something proper
 
         usr_configuration.iop_buffers[i].p_addr = (void *)air_syscall_get_physical_addr((uintptr_t)usr_configuration.iop_buffers[i].v_addr);
+
     }
 
     /* append buffers to the wrappers */
     for (i = 0; i < usr_configuration.wrappers_count; ++i) {
         usr_configuration.wrappers[i].buffer = &usr_configuration.iop_buffers[i];
      //   iop_debug(" IOP :: Wrapper %d on v_addr 0x%06x\n", i, usr_configuration.wrappers[i].buffer->v_addr);
+        /*initialize wrapper fragment queue*/
+        iop_chain_initialize_empty(&usr_configuration.wrappers[i].fragment_queue);
     }
 
     /* initialize chain of empty wrappers*/
