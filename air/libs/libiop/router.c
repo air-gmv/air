@@ -57,7 +57,6 @@ static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
         /** @todo use max size? is this an error? */
         size = max_size;
     }
-    iop_debug("WP %d 0x%06x\n", size, get_payload(wrapper->buffer));
 
     /* send data */
     air_status_code_e rc = air_syscall_write_port(
@@ -74,6 +73,7 @@ static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
     if (rc == AIR_NOT_AVAILABLE) {
             iop_debug("AIR not available qport\n");
     }
+    iop_debug("WP %d 0x%06x %d\n", size, get_payload(wrapper->buffer), rc);
 
   
 

@@ -342,10 +342,10 @@ while (continueExecution())
     #ifdef TCP_interface
             rc = RecvTcp();
     #else
-//            printf("receiving udp\n");
+            printf("receiving udp\n");
         rc = RecvUdp();
     #endif
-  //       printf("received %d\n", rc);
+         printf("received %d\n", rc);
                     if(rc == nBytesToRead/25)// for primaryIterations == 100
                     //if(rc == nBytesToRead)     // for primaryIterations == 4
                     {
