@@ -516,7 +516,6 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper, iop_eth_d
                 
             /*get free fragment*/
             iop_fragment_t *frag = obtain_free_fragment();
-                
             if(frag==NULL){
                 /*no more free fragments*/
                 iop_raise_error(OUT_OF_MEMORY);
@@ -623,7 +622,7 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper, iop_eth_d
 
                 }else{
                     iop_debug("invalid desc %d %d\n", sc->rx_ptr, wrapper->buffer->payload_size);
-
+                    release_fragment(frag);
                     len=0;
                 }
 
@@ -719,8 +718,6 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
     sc->tx_ptr = (sc->tx_ptr + 1) % sc->txbufs;
     
     release_fragment(frag);
-
-    return len;
 }
 
 

@@ -1067,6 +1067,7 @@ void SendResultCalculation(char *BufferToSend, int LenToSend)
 
     while(!received){
         READ_UPDATED_SAMPLING_MESSAGE(QRECV_IOP, (MESSAGE_ADDR_TYPE )buffer, &len, &updated,  &rc );
+       // printk("RPPOL %d %d %d\n", len, updated, rc);
         if(INVALID_PARAM == rc){
             printf("READ_UPDATED_SAMPLING_MESSAGE error %d\n", rc);
         }
@@ -1075,7 +1076,7 @@ void SendResultCalculation(char *BufferToSend, int LenToSend)
           //  printf("READ_UPDATED_SAMPLING_MESSAGE returned %d bytes.\n", len);
             received = 1;
         }else{
-             rtems_task_wake_after(1);
+          //   rtems_task_wake_after(1);
         }
       //  if(len==0)
       //      rtems_task_wake_after(1);

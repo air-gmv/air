@@ -105,7 +105,7 @@ iop_fragment_t *obtain_fragment(iop_chain_control *ctl);
  * @return NULL if no fragment available in queue, IOP fragment pointer otherwise
  */
 #define obtain_free_fragment() \
-        obtain_fragment(&usr_configuration.free_fragments)
+    obtain_fragment(&usr_configuration.free_fragments)
 
 
 /**
