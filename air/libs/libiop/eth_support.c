@@ -189,7 +189,12 @@ void eth_send_arp_reply(iop_eth_device_t *eth_device, iop_wrapper_t *wrapper) {
         
         /*fetch free fragment*/
         iop_fragment_t *frag = obtain_free_fragment();
-        iop_chain_initialize_empty(&wrapper->fragment_queue);
+        while(!iop_chain_is_empty(&wrapper->fragment_queue)){
+            release_fragment(obtain_fragment(&wrapper->fragment_queue));
+        }
+
+
+        //iop_chain_initialize_empty(&wrapper->fragment_queue);
 
         if(frag==NULL){
             iop_raise_error(OUT_OF_MEMORY);
@@ -370,7 +375,6 @@ uint32_t eth_fragment_packet(iop_wrapper_t *wrapper)
      
     /*fetch free fragment*/
     iop_fragment_t *frag = obtain_free_fragment();
-
     if(frag==NULL){
         iop_raise_error(OUT_OF_MEMORY);
         return -1;
@@ -413,7 +417,6 @@ uint32_t eth_fragment_packet(iop_wrapper_t *wrapper)
     for(int i=1; size != total; i++)
     {
         frag = obtain_free_fragment();
-        
         if(frag==NULL){
             iop_raise_error(OUT_OF_MEMORY);
             return -1;

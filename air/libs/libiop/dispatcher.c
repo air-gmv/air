@@ -227,7 +227,7 @@ static void process_remote_port(iop_port_t *port){
             rc = AIR_NOT_AVAILABLE;
         //    iop_debug("IOP :: process remote port errors\n");
         }
-        rtems_task_wake_after(1);
+    //    rtems_task_wake_after(1);
     }
 }
 

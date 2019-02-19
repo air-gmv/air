@@ -40,19 +40,19 @@
 
   <!-- Schedule 1 -->
   <Module_Schedule ScheduleIdentifier="1" ScheduleName="schedule"
-    InitialModuleSchedule="true" MajorFrameSeconds="1000.0">
+    InitialModuleSchedule="true" MajorFrameSeconds="3000.0">
 
     <Partition_Schedule PartitionIdentifier="1" PartitionName="iop" 
-      PeriodDurationSeconds="1000.0" PeriodSeconds="1000.0">
+      PeriodDurationSeconds="3000.0" PeriodSeconds="3000.0">
       <Window_Schedule WindowIdentifier="1" PartitionPeriodStart="true" 
-        WindowDurationSeconds="1000.0" WindowStartSeconds="0.0"/>
+        WindowDurationSeconds="3000.0" WindowStartSeconds="0.0"/>
       <WindowConfiguration WindowIdentifier="1" Cores="3" />
     </Partition_Schedule>
 
     <Partition_Schedule PartitionIdentifier="2" PartitionName="part0" 
-      PeriodDurationSeconds="1000.0" PeriodSeconds="1000.0">
+      PeriodDurationSeconds="3000.0" PeriodSeconds="3000.0">
       <Window_Schedule WindowIdentifier="2" PartitionPeriodStart="true" 
-        WindowDurationSeconds="1000.0"  WindowStartSeconds="0.0" />
+        WindowDurationSeconds="3000.0"  WindowStartSeconds="0.0" />
       <WindowConfiguration WindowIdentifier="2" Cores="0;1;2" />
     </Partition_Schedule>
 

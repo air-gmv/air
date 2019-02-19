@@ -55,8 +55,9 @@ void release_wrapper(iop_wrapper_t *wrapper) {
     buf->payload_size = 0;
     buf->size = 0;
 
-    while(!iop_chain_is_empty(&wrapper->fragment_queue))
+    while(!iop_chain_is_empty(&wrapper->fragment_queue)){
         release_fragment(obtain_fragment(&wrapper->fragment_queue));
+    }
 
     iop_chain_append(&usr_configuration.free_wrappers, &wrapper->node);
 }
