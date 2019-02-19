@@ -175,6 +175,8 @@ eth_reader(iop_physical_device_t * pdev)
             case HTONS(ETH_HDR_ARP_TYPE): /*TODO separate wrapper for arp packets*/
              //   iop_debug("arp packet\n");
                 eth_send_arp_reply(driver, wrapper);
+                release_wrapper(wrapper);
+                wrapper=NULL;
                 break;
 
                 /* IPv4 packet */
