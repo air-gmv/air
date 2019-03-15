@@ -9,6 +9,7 @@
 #include <init.h>
 #include <pvtFilter.h>
 
+
 //*****************************************************************************
 //                        DEFINITIONS
 //*****************************************************************************
@@ -176,6 +177,8 @@ extern task_param_t task_param[6];
 int rec_ok = 1;
 rtems_event_set in = 0;
 rtems_event_set out = 0;
+extern  uint8_t chk;
+
 
 void ReceiverProcessing(void)
 {        
@@ -298,7 +301,6 @@ void ReceiverProcessing(void)
 	/*************/
     executionStatus = WAIT_FOR_SAMPLES;
     rtems_status_code status;     // status of rtems function
-   
 #ifdef PCMonitor
 while (1)
 {
@@ -333,19 +335,20 @@ while (continueExecution())
 
                 while (rec_ok != 1)
                 {
+                 //   printk("sendk %d\n", chk);
     #ifdef TCP_interface            
                             SendTcpOK();
     #else
-                SendUdpOK();  
+                SendUdpOK(chk);  
     #endif  
 
     #ifdef TCP_interface
             rc = RecvTcp();
     #else
-            printf("receiving udp\n");
-        rc = RecvUdp();
+        //    printf("receiving udp\n");
+        rc = RecvUdp_check(&chk);
     #endif
-         printf("received %d\n", rc);
+       //  printf("received %d %d\n", rc, chk);
                     if(rc == nBytesToRead/25)// for primaryIterations == 100
                     //if(rc == nBytesToRead)     // for primaryIterations == 4
                     {
@@ -843,7 +846,6 @@ while (continueExecution())
                 {
                     /* wait untill tck finish - RTEMS events are used for synchronization */      
                     rtems_event_set non_completed = in;
-                   
                     while (non_completed) 
                     {
                         status = rtems_event_receive(in, RTEMS_EVENT_ANY | RTEMS_WAIT, RTEMS_NO_TIMEOUT, &out);
@@ -852,7 +854,6 @@ while (continueExecution())
                             non_completed &= ~out;
                         }
                     } 
-               //     printf("rtems_event_completed\n"); 
                     for (i = 0; i < core[0].nchan; i++)	
                     {
                         chDataAll.Ch[Tck1Ch[i].chIndex] = Tck1Ch[i];
@@ -887,11 +888,9 @@ while (continueExecution())
 
                             #ifdef PCMonitor
                                 // Send output data to PCmonitor
-                                printf("send buffer2\n");
 
                                 PrepSendBuffer();
                                 SendBuffer();
-                                printf("sent buffer2\n");
                             #endif                    
                         } 
                     }               
