@@ -88,10 +88,8 @@ def Run(args, os_configuration, logger):
     # parse module
     from parsers.air.parser import airParser
 
-    print("  PARSING configs")
     app_configuration = airParser(os_configuration, logger)
     app_configuration.parse(args.xml_file)
-    #print("  done PARSING configs")
     # sanity check
     if logger.total_errors > 0:
         logger.error(' :: XML configuration contains errors...')
