@@ -362,11 +362,10 @@ def phy_grcan(iop_parser, xml, pdevice):
     setup.selection			= xml.parse_attr(CANBUS_SELECTION, VALID_EN, True, iop_parser.logger)
     setup.enable0			= xml.parse_attr(CANBUS_ENABLE0, VALID_EN, True, iop_parser.logger)
     setup.enable1			= xml.parse_attr(CANBUS_ENABLE1, VALID_EN, True, iop_parser.logger)
-    
+
     # sanity check
     if iop_parser.logger.check_errors(): return False
     pdevice.setup = setup
-    print(pdevice)
     return True
 
 ## CANBUS schedule device setup
@@ -406,7 +405,6 @@ def phy_gr1553b(iop_parser, xml, pdevice):
     # sanity check
     if iop_parser.logger.check_errors(): return False
     pdevice.setup = setup
-    print(pdevice)
     return True
 
 ## GR1553B schedule device setup
