@@ -15,8 +15,8 @@ static iop_header_t route_header[1] = \
         .eth_header = {
             .dst_ip      = { 172,19,13,68 },
             .dst_mac     = { 0x10,0x62,0xe5,0x4f,0xd8,0xd2},
-            .dst_port    = HTONS(3334),
-            .src_port    = HTONS(3334)
+            .proto_header.dst_port    = HTONS(3334),
+            .proto_header.src_port    = HTONS(3334)
         }
     }
 };
