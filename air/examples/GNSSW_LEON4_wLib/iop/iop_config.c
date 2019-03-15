@@ -37,8 +37,8 @@ static iop_wrapper_t requests_storage[1024];
  * @brief IOP buffers
  */
 static iop_buffer_t iop_buffers[1024];
-static uint8_t iop_buffers_storage[1024 * IOP_BUFFER_SIZE];
-
+static uint8_t iop_buffers_storage[1024 * (65094+8)];
+static iop_fragment_t fragments[1024];
 
 /**
  * @brief IOP application configurations
@@ -48,7 +48,9 @@ iop_configuration_t usr_configuration = {
     .wrappers               = requests_storage,
     .iop_buffers            = iop_buffers,
     .iop_buffers_storage    = iop_buffers_storage,
-    .wrappers_count           = 1024,
+    .wrappers_count         = 1024,
+    .fragments              = fragments,
+    .fragment_count         = 1024,
 
     .physical_devices       = {
         .length             = 1,

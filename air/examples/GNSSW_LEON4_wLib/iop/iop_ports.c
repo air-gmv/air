@@ -14,39 +14,37 @@
  */
 extern iop_logical_device_t logical_device_0;
 
+
 /**
- * @brief Queuing ports configurations
+ * @brief Sampling ports configurations
  */
-static air_queuing_port_configuration_t queuing_ports[] = {
+static air_sampling_port_configuration_t sampling_ports[] = {
     {
-        .max_message_size   = 7000,
-        .max_nb_message     = 20,
+        .max_message_size   = 65000,
+        .refresh_period     = 125,
         .port_direction     = AIR_DESTINATION_PORT,
-        .port_discipline    = 0
     },
     {
         .max_message_size   = 7000,
-        .max_nb_message     = 20,
+        .refresh_period     = 125,
         .port_direction     = AIR_SOURCE_PORT,
-        .port_discipline    = 0
     },
 };
-
 
 /**
  * @brief IOP remote ports
  */
 iop_port_t remote_ports[2] = {
     {
-        .type               = AIR_QUEUING_PORT,
+        .type               = AIR_SAMPLING_PORT,
         .name               = "QRECV_GNSS",
-        .configuration      = &queuing_ports[0],
+        .configuration      = &sampling_ports[0],
         .device             = &logical_device_0
     },
     {
-        .type               = AIR_QUEUING_PORT,
+        .type               = AIR_SAMPLING_PORT,
         .name               = "QSEND_GNSS",
-        .configuration      = &queuing_ports[1],
+        .configuration      = &sampling_ports[1],
         .device             = NULL
     },
 };

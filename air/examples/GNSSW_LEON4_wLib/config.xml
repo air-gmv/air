@@ -6,8 +6,8 @@
     Criticality="LEVEL_A" EntryPoint="empty" SystemPartition="false">
     <!--  <Queuing_Port Name="QRECV_GNSS" Direction="DESTINATION" MaxMessageSize="7000" MaxNbMessages="20"/>
     <Queuing_Port Name="QSEND_GNSS" Direction="SOURCE" MaxMessageSize="7000" MaxNbMessages="20" /> -->
-    <Sampling_Port Name="QRECV_GNSS" Direction="DESTINATION" MaxMessageSize="30000" RefreshRateSeconds="0.5"/>
-    <Sampling_Port Name="QSEND_GNSS" Direction="SOURCE" MaxMessageSize="30000" RefreshRateSeconds="0.5"/>>
+    <Sampling_Port Name="QRECV_GNSS" Direction="DESTINATION" MaxMessageSize="65000" RefreshRateSeconds="0.25"/>
+    <Sampling_Port Name="QSEND_GNSS" Direction="SOURCE" MaxMessageSize="7000" RefreshRateSeconds="0.25"/>
     <PartitionConfiguration Personality="RTEMS5" IOP="iop.xml" Cores="1">
         <Libs>LIBAIR; LIBIOP</Libs>
         <Devices></Devices>
@@ -24,13 +24,13 @@
     Criticality="LEVEL_A" EntryPoint="entry_point" SystemPartition="false">
     <!--  <Queuing_Port Name="QRECV_IOP" Direction="DESTINATION" MaxMessageSize="7000" MaxNbMessages="20" />
     <Queuing_Port Name="QSEND_IOP" Direction="SOURCE" MaxMessageSize="7000" MaxNbMessages="20" /> -->
-    <Sampling_Port Name="QRECV_IOP" Direction="DESTINATION" MaxMessageSize="30000" RefreshRateSeconds="0.5" />
-    <Sampling_Port Name="QSEND_IOP" Direction="SOURCE" MaxMessageSize="30000" RefreshRateSeconds="0.5" />
+    <Sampling_Port Name="QRECV_IOP" Direction="DESTINATION" MaxMessageSize="7000" RefreshRateSeconds="0.25" />
+    <Sampling_Port Name="QSEND_IOP" Direction="SOURCE" MaxMessageSize="65000" RefreshRateSeconds="0.25" />
     <PartitionConfiguration Personality="RTEMS5" Cores="3">
         <Libs>LIBAIR; IMASPEX</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
-        <Memory Size="0xD000000" />
+        <Memory Size="0xF000000" />
         <Permissions>
           FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
         </Permissions>
@@ -40,19 +40,19 @@
 
   <!-- Schedule 1 -->
   <Module_Schedule ScheduleIdentifier="1" ScheduleName="schedule"
-    InitialModuleSchedule="true" MajorFrameSeconds="3000.0">
+    InitialModuleSchedule="true" MajorFrameSeconds="5000.0">
 
     <Partition_Schedule PartitionIdentifier="1" PartitionName="iop" 
-      PeriodDurationSeconds="3000.0" PeriodSeconds="3000.0">
+      PeriodDurationSeconds="5000.0" PeriodSeconds="5000.0">
       <Window_Schedule WindowIdentifier="1" PartitionPeriodStart="true" 
-        WindowDurationSeconds="3000.0" WindowStartSeconds="0.0"/>
+        WindowDurationSeconds="5000.0" WindowStartSeconds="0.0"/>
       <WindowConfiguration WindowIdentifier="1" Cores="3" />
     </Partition_Schedule>
 
     <Partition_Schedule PartitionIdentifier="2" PartitionName="part0" 
-      PeriodDurationSeconds="3000.0" PeriodSeconds="3000.0">
+      PeriodDurationSeconds="5000.0" PeriodSeconds="5000.0">
       <Window_Schedule WindowIdentifier="2" PartitionPeriodStart="true" 
-        WindowDurationSeconds="3000.0"  WindowStartSeconds="0.0" />
+        WindowDurationSeconds="5000.0"  WindowStartSeconds="0.0" />
       <WindowConfiguration WindowIdentifier="2" Cores="0;1;2" />
     </Partition_Schedule>
 
@@ -83,5 +83,5 @@
   </Connection_Table>
 
   <!-- Module configuration -->
-  <AIR_Configuration TicksPerSecond="200" RequiredCores="4"/>
+  <AIR_Configuration TicksPerSecond="500" RequiredCores="4"/>
 </ARINC_653_Module>

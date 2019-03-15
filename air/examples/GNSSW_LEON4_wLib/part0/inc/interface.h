@@ -47,7 +47,7 @@
 
 #ifdef _rtems_app
 #define IP_SERV				"172.19.13.192"//"192.168.56.100"
-#define IP_CLIENT			"172.19.13.53"//"192.168.56.1"
+#define IP_CLIENT			"172.19.13.68"//"192.168.56.1"
 
 #else
 
@@ -65,7 +65,7 @@
 
 #endif
 
-#define MAX_BUFFER_SIZE 7000 
+#define MAX_BUFFER_SIZE 65000 
 
 #define SERVPORT	3333
 #define CLIENTPORT	3334
@@ -78,7 +78,7 @@ void TcpBufferCopy(void);
 int receiveTCP_TC(void);
 #else
 int initializeUDP(void);
-void SendUdpOK(void);
+void SendUdpOK(uint8_t i);
 int RecvUdp(void);
 void UdpBufferCopy(void);
 int receiveUDP_TC(void);

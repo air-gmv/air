@@ -57,9 +57,11 @@
 static SAMPLING_PORT_ID_TYPE QRECV_IOP;
 static SAMPLING_PORT_ID_TYPE QSEND_IOP;
 /* inter-partition ports maximum size definitions */
-#define MAX_MESSAGE_SIZE 30000// bytes
+#define MAX_MESSAGE_SIZE1 65000// bytes
+#define MAX_MESSAGE_SIZE2 7000// bytes
+
 #define MAX_NB_MESSAGES 20 // queue messages
-#define REFRESH_RATE 500000000
+#define REFRESH_RATE 250000000
 
 #ifdef RTEMS_SMP
 #warning " SMP support is enabled "
@@ -329,6 +331,9 @@ extern int Tck1ChIdx;
 extern int Tck2ChIdx;
 extern int Tck3ChIdx;
 
+uint8_t chk=0;
+
+
 int ii = 0;
 
 task_param_t task_param[6] =
@@ -505,17 +510,18 @@ void setup_ports(void)
 {
     RETURN_CODE_TYPE rc;
     SYSTEM_TIME_TYPE refreshRate= REFRESH_RATE;
-    MESSAGE_SIZE_TYPE size = MAX_MESSAGE_SIZE;
+    MESSAGE_SIZE_TYPE size1 = MAX_MESSAGE_SIZE1;
+MESSAGE_SIZE_TYPE size2 = MAX_MESSAGE_SIZE2;
     printf("Initializing ports ...\n");
 
     /*Creating QRECV_TC_IOP Queuing Port*/
-    CREATE_SAMPLING_PORT("QRECV_IOP", size,  DESTINATION, refreshRate, &QRECV_IOP, &rc );
+    CREATE_SAMPLING_PORT("QRECV_IOP", size2,  DESTINATION, refreshRate, &QRECV_IOP, &rc );
     if(NO_ERROR != rc)
     {
         printf("CREATE_QUEUING_PORT QRECV_IOP error %d\n", rc);
     }
     /*Creating QSEND_TM_IOP Queuing Port*/
-    CREATE_SAMPLING_PORT("QSEND_IOP", size, SOURCE, refreshRate, &QSEND_IOP, &rc );
+    CREATE_SAMPLING_PORT("QSEND_IOP", size1, SOURCE, refreshRate, &QSEND_IOP, &rc );
     if(NO_ERROR != rc)
     {
         printf("CREATE_QUEUING_PORT QSEND_IOP error %d\n", rc);
@@ -799,10 +805,13 @@ int receiveUDP_TC(void)
     #endif
 
     //rtems_task_wake_after(100);
+//    printf("receiving\n");
+
 #ifdef TCP_interface
 	rc = RecvTcp();
 #else
-    rc = RecvUdp();
+    rc = RecvUdp_check(&chk);
+    printf("recv %d %d\n", rc, chk);
 #endif
     
     if (rc<0) 
@@ -817,7 +826,7 @@ int receiveUDP_TC(void)
             #ifdef TCP_interface            
                 SendTcpOK();
             #else
-                SendUdpOK();  
+                SendUdpOK(chk);  
             #endif 
 
             printf(">> Initialize ... \n");
@@ -849,7 +858,8 @@ int receiveUDP_TC(void)
                 #ifdef TCP_interface            
                     SendTcpOK();
                 #else
-                    SendUdpOK();  
+                    SendUdpOK(chk); 
+                   printf("sned second ok\n"); 
                 #endif 
 #if 0
                 if(Config.Com.onspw == 1)
@@ -905,7 +915,7 @@ int receiveUDP_TC(void)
 #ifdef TCP_interface            
                     SendTcpOK();
 #else
-        SendUdpOK();  
+        SendUdpOK(chk);  
 #endif
             }
             else if(rc == 5000)  // read 50kB 
@@ -914,7 +924,7 @@ int receiveUDP_TC(void)
 #ifdef TCP_interface            
                     SendTcpOK();
 #else
-        SendUdpOK();  
+        SendUdpOK(chk);  
 #endif
             }
             else
@@ -924,7 +934,8 @@ int receiveUDP_TC(void)
 #ifdef TCP_interface            
                     SendTcpOK();
 #else
-        SendUdpOK();  
+                    printf("send last ok\n");
+        SendUdpOK(chk);  
 #endif
             }
 
@@ -1036,14 +1047,17 @@ int GetCNF(void)
 #ifdef TCP_interface            
 			void SendTcpOK(void)
 #else
-            void SendUdpOK(void)  
+            void SendUdpOK(uint8_t i)  
 #endif
 {
-	buffer[0] = 0;
+    
+     char buffer_ok[1] ={i};
     RETURN_CODE_TYPE rc;
-//    printf("SendUdpOK\n");
-
-    WRITE_SAMPLING_MESSAGE(QSEND_IOP, (MESSAGE_ADDR_TYPE )buffer, 1, &rc );
+   // printf("SendUdpOK %d\n", i);
+        unsigned int length=1;
+    WRITE_SAMPLING_MESSAGE(QSEND_IOP, (MESSAGE_ADDR_TYPE )buffer_ok, length, &rc );
+    if(AIR_NO_ERROR != rc )
+        printk("sendok error/n");
 }
 
 void SendResultCalculation(char *BufferToSend, int LenToSend)
@@ -1062,29 +1076,72 @@ void SendResultCalculation(char *BufferToSend, int LenToSend)
 {
 	RETURN_CODE_TYPE rc;
     MESSAGE_SIZE_TYPE len = 0;
-    UPDATED_TYPE updated;
+    VALIDITY_TYPE val;
     unsigned int received=0;
 
     while(!received){
-        READ_UPDATED_SAMPLING_MESSAGE(QRECV_IOP, (MESSAGE_ADDR_TYPE )buffer, &len, &updated,  &rc );
-       // printk("RPPOL %d %d %d\n", len, updated, rc);
-        if(INVALID_PARAM == rc){
-            printf("READ_UPDATED_SAMPLING_MESSAGE error %d\n", rc);
-        }
-        else if(NEW_MESSAGE == updated)
-        {
-          //  printf("READ_UPDATED_SAMPLING_MESSAGE returned %d bytes.\n", len);
-            received = 1;
+        READ_SAMPLING_MESSAGE(QRECV_IOP, (MESSAGE_ADDR_TYPE )buffer, &len, &val,  &rc );
+       // printk("RPPOL %d %d %d 0x%06x\n", len, val, rc, (MESSAGE_ADDR_TYPE )buffer);
+        if(AIR_NO_ERROR != rc  || val != AIR_MESSAGE_VALID){
+          //  rtems_task_wake_after(1);
         }else{
-          //   rtems_task_wake_after(1);
+            received = 1;
         }
-      //  if(len==0)
-      //      rtems_task_wake_after(1);
     }
+  
     
     return len;
 }
 
+#ifdef TCP_interface            
+    int RecvTcp(void)
+#else
+    int RecvUdp_check(uint8_t *chk) 
+#endif
+{
+    RETURN_CODE_TYPE rc;
+    MESSAGE_SIZE_TYPE len = 0;
+    VALIDITY_TYPE val;
+    unsigned int received=0;
+
+    while(!received){
+        READ_SAMPLING_MESSAGE(QRECV_IOP, (MESSAGE_ADDR_TYPE )buffer, &len, &val,  &rc );
+        // printk("RPPOL %d %d %d 0x%06x\n", len, val, rc, (MESSAGE_ADDR_TYPE )buffer);
+        if(AIR_NO_ERROR != rc  || val != AIR_MESSAGE_VALID){
+            //  rtems_task_wake_after(1);
+        }else{
+            received = 1;
+        }
+    }
+    *chk=chksum8(buffer, len);
+//   printk(" chk %d\n",  chk); 
+    return len;
+
+}
+                                      
+#ifdef TCP_interface            
+    int RecvTcp_timeout(void)
+#else
+    int RecvUdp_timeout(void) 
+#endif
+{
+    RETURN_CODE_TYPE rc;
+    MESSAGE_SIZE_TYPE len = 0;
+    VALIDITY_TYPE val;
+    unsigned int received=0;
+    unsigned int i=0;
+
+    while(!received && i<1500){
+        READ_SAMPLING_MESSAGE(QRECV_IOP, (MESSAGE_ADDR_TYPE )buffer, &len, &val,  &rc );
+        if(AIR_NO_ERROR != rc  || val != AIR_MESSAGE_VALID){
+           // rtems_task_wake_after(2);
+        }else {
+            received=1;
+        }
+        i++;
+    }
+    return len;
+}
 
 #ifdef TCP_interface            
 			void TcpBufferCopy(void)
@@ -1264,41 +1321,58 @@ void PrepSendBuffer(void)
 	searchOneBinOneAccumulation_counter=0;
 	//
     #endif // #ifdef PROFILER
-       printf("sendBuffer %d %d %d %d %d %d %d %d\n", send_buffer[0], send_buffer[1], send_buffer[2], send_buffer[3], send_buffer[4], send_buffer[5], send_buffer[6], send_buffer[7] ); 
 }
 
 void SendBuffer(void)
 {       
         int recv_len=-1;    
+        int val=0;
 
-        while(recv_len<=0){
+        uint8_t chk1=chksum8(send_buffer, idx);
+
+        while(!val){
 	    SendResultCalculation(send_buffer, idx);
             printf("calc sent %d\n", idx);
+
 #ifdef TCP_interface            
             recv_len=RecvTcp();
 #else
-            recv_len=RecvUdp(); 
+            recv_len=RecvUdp_timeout(); 
+            if(recv_len>0 && (uint8_t)buffer[0]==chk1)
+                val=1;
+
 #endif 
-            printf("received %d\n", recv_len);
+            printf("received %d %d %d\n", recv_len, chk1, (uint8_t)buffer[0]);
         }
+        recv_len=RecvUdp_timeout();
         recv_len=-1;
+        val=0;
         if(idx_test_out > 0)
         {
-            while(recv_len<=0){
+            uint8_t chk2=chksum8(test_out, idx_test_out);
+            while(!val){
 
                 SendResultCalculation(test_out, idx_test_out); 
                  printf("calc2 sent %d\n", idx);
-
+            
 #ifdef TCP_interface            
                 recv_len=RecvTcp();
 #else
-                recv_len=RecvUdp(); 
-                 printf("received2 %d\n", recv_len);
+                recv_len=RecvUdp_timeout(); 
+                if(recv_len>0 && (uint8_t)buffer[0]==chk2)
+                    val=1;
+
+                 printf("received2 %d %d %d\n", recv_len, chk2, (uint8_t)buffer[0]);
 
 #endif 
             }
-            idx_test_out = 0;              
+            idx_test_out = 0;         
+            recv_len=RecvUdp_timeout(); 
+               printf("received %d %d %d\n", recv_len, chk1, (uint8_t)buffer[0]);
+
         }
+        printf("done \n");
+     
         
 }
 /*
@@ -1390,7 +1464,7 @@ double GetElapsedTime(LARGE_INTEGER StartingTime)
 
 rtems_task Tck1_task( rtems_task_argument unused )
 {
-    printf(" :: TCK1\n");
+//    printf(" :: TCK1\n");
     int i = 0;    
     int ms = 0;
     int auxIndex = 0;
@@ -1441,13 +1515,13 @@ rtems_task Tck1_task( rtems_task_argument unused )
     #endif  
 
     rtems_event_send(task_param[ 5 ].id, RTEMS_EVENT_1); 
-   printf(" :: TCK1 DONE\n"); 
+ //  printf(" :: TCK1 DONE\n"); 
     rtems_task_suspend(task_param[ 0 ].id);
 }
 
 rtems_task Tck2_task( rtems_task_argument unused )
 {
-    printf(" :: TCK2\n");
+ //   printf(" :: TCK2\n");
 
     int i = 0; 
     int ms = 0;
@@ -1487,7 +1561,7 @@ rtems_task Tck2_task( rtems_task_argument unused )
              }            
              Tck2Ch[i].chCounterMs++;              
         }
-
+#if 1
         ManageLoopTracking(Tck3Ch, 2, core[2].nchan);
 
         for (i = 0 ; i < core[2].nchan ; i++)
@@ -1516,7 +1590,7 @@ rtems_task Tck2_task( rtems_task_argument unused )
             
             Tck3Ch[i].chCounterMs++;              
         }
-
+#endif
 
     } 
 
@@ -1526,13 +1600,13 @@ rtems_task Tck2_task( rtems_task_argument unused )
     #endif 
 
     rtems_event_send(task_param[ 5 ].id, RTEMS_EVENT_2); 
-printf(" :: TCK2 DONE\n");
+//printf(" :: TCK2 DONE\n");
     rtems_task_suspend(task_param[ 1 ].id);
 }
 
 rtems_task Tck3_task( rtems_task_argument unused )
 {
-    printf(" :: TCK3\n");
+  //  printf(" :: TCK3\n");
 
     int i = 0;
     int ms = 0;
@@ -1587,13 +1661,13 @@ rtems_task Tck3_task( rtems_task_argument unused )
     #endif 
 
     rtems_event_send(task_param[ 5 ].id, RTEMS_EVENT_3);
-     printf(" :: TCK3 DONE\n");
+//     printf(" :: TCK3 DONE\n");
     rtems_task_suspend(task_param[ 2 ].id);
 }
 
 rtems_task Acq1_task( rtems_task_argument unused )
 {
-    printf(" :: ACQ1\n");
+ //   printf(" :: ACQ1\n");
 
     #ifdef PROFILER
         double ElapsedSeconds = 0;
@@ -1612,7 +1686,7 @@ rtems_task Acq1_task( rtems_task_argument unused )
             
             setAcqChannelMod(&supportData[rxProcessingStatus.acqGalFlag], supportData[rxProcessingStatus.acqGalFlag].acqAux_P[0].svnIndex, -supportData[rxProcessingStatus.acqGalFlag].satManag_P->acqFftSat[slot_index].dopplerFreqHz, DopplerRange, 0);
         }
-        printf("manage fft id %d data %d\n",(unsigned int)rxProcessingStatus.acqGalFlag, &supportData[rxProcessingStatus.acqGalFlag]) ;
+    //    printf("manage fft id %d data %d\n",(unsigned int)rxProcessingStatus.acqGalFlag, &supportData[rxProcessingStatus.acqGalFlag]) ;
         ManageFftAcquisition(&supportData[rxProcessingStatus.acqGalFlag], 0);   
         
         if(rxProcessingStatus.secondFft == 1 && supportData[rxProcessingStatus.acqGalFlag].acqAux_P[0].acqFftStatus == ACQ_MED) // add if 2nd acquisition success
@@ -1623,7 +1697,7 @@ rtems_task Acq1_task( rtems_task_argument unused )
     
     #ifdef PROFILER
         ElapsedSeconds = GetElapsedTime(ManageFftAcquisition_StartTime);
-        ManageFftAcquisition_time = ElapsedSeconds; //ManageFftAcquisition_time + ElapsedSeconds;    
+        ManageFftAcquisition_time = ElapsedSeconds; //ManageFftAcquisition_time + ElapsedSeconds;  
     #endif	     
  
    if(rxProcessingStatus.secondFft == 0)
@@ -1635,7 +1709,7 @@ rtems_task Acq1_task( rtems_task_argument unused )
         rxProcessingStatus.secondFft = 0;
         rtems_event_send(task_param[ 5 ].id, RTEMS_EVENT_5); 
    }
-        printf(" :: ACQ1 DONE\n");
+   //     printf(" :: ACQ1 DONE\n");
    rtems_task_suspend(task_param[ 3 ].id);
 }
 

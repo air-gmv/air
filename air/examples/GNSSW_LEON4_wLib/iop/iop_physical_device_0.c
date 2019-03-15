@@ -75,7 +75,7 @@ static iop_eth_device_t device_configuration = \
  * @brief Device Scheduling
  */
 static uint32_t reads_per_period[] = \
-    { 5 };
+    { 20 };
 
 /**
  * @brief Routes Headers
@@ -86,8 +86,8 @@ static iop_header_t route_header[1] = \
         .eth_header = {
             .dst_ip      = { 172,19,13,68 },
             .dst_mac     = { 0x10,0x62,0xe5,0x4f,0xd8,0xd2},
-            .dst_port    = HTONS(3333),
-            .src_port    = HTONS(3333)
+            .proto_header.dst_port    = HTONS(3333),
+            .proto_header.src_port    = HTONS(3333)
         }
     }
 };
