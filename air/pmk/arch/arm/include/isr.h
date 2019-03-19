@@ -35,6 +35,6 @@ void arm_isr_default_handler(arm_interrupt_stack_frame_t *frame,
 
 air_uptr_t arm_isr_install_handler(air_u32_t vector, void *handler);
 
-void arm_restore_fpu(pmk_core_ctrl_t *core);
+void arm_restore_fpu(arm_vfp_context_t *vfp_context);
 
 #endif /* ARM_ISR_H */

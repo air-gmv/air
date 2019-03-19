@@ -41,9 +41,7 @@ global(bare_start)
     bls     1b
 
     /* todo SMP */
-    SWITCH_FROM_ARM_TO_THUMB    r4
-    bl      arm_pos_init
-    SWITCH_FROM_THUMB_TO_ARM
+    BL2C    arm_pos_init
 
 2:
     /* setup stack. already done in AIR */
@@ -59,9 +57,7 @@ global(bare_start)
 
 //  cpsie   aif, #ARM_PSR_USR
 
-    SWITCH_FROM_ARM_TO_THUMB    r4
-    bl      main
-    SWITCH_FROM_THUMB_TO_ARM
+    BL2C    main
 
     mov     r1, #(AIR_MODE_IDLE)
     mov     r0, #(0xffffffff)
@@ -83,9 +79,7 @@ global(pos_exceptions)
 pos_undef:
     push    {r0-r4, lr}
 
-    SWITCH_FROM_ARM_TO_THUMB    r4
-    bl      pos_hm_undef
-    SWITCH_FROM_THUMB_TO_ARM
+    BL2C    pos_hm_undef
 
     pop     {r0-r4, lr}
     svc     #(AIR_SYSCALL_ARM_RETT)
@@ -93,9 +87,7 @@ pos_undef:
 pos_pref_abort:
     push    {r0-r4, lr}
 
-    SWITCH_FROM_ARM_TO_THUMB    r4
-    bl      pos_hm_pref_abort
-    SWITCH_FROM_THUMB_TO_ARM
+    BL2C    pos_hm_pref_abort
 
     pop     {r0-r4, lr}
     svc     #(AIR_SYSCALL_ARM_RETT)
@@ -103,9 +95,7 @@ pos_pref_abort:
 pos_data_abort:
     push    {r0-r4, lr}
 
-    SWITCH_FROM_ARM_TO_THUMB    r4
-    bl      pos_hm_data_abort
-    SWITCH_FROM_THUMB_TO_ARM
+    BL2C    pos_hm_data_abort
 
     pop     {r0-r4, lr}
     svc     #(AIR_SYSCALL_ARM_RETT)

@@ -102,9 +102,7 @@ arm_save_non_user_mode:
 
 arm_irq_isr_handler:
     /************************ Call high level handler  ************************/
-    SWITCH_FROM_ARM_TO_THUMB    r2
-    bl      arm_isr_handler
-    SWITCH_FROM_THUMB_TO_ARM
+    BL2C    arm_isr_handler
     /********************* Return from high level handler *********************/
 
     /* Get Per_CPU core */
