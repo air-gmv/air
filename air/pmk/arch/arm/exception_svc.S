@@ -47,9 +47,7 @@ global(exception_svc)
     teq     r1, #(AIR_SYSCALL_ARM_RETT)
     beq     arm_rett
 
-    SWITCH_FROM_ARM_TO_THUMB    r3
-    bl      arm_svc_handler
-    SWITCH_FROM_THUMB_TO_ARM
+    BL2C    arm_svc_handler
 
     pop     {r1, r3}
     msr     spsr, r1
@@ -58,9 +56,7 @@ global(exception_svc)
 
 
 arm_rett:
-    SWITCH_FROM_ARM_TO_THUMB    r3
-    bl      arm_syscall_rett
-    SWITCH_FROM_THUMB_TO_ARM
+    BL2C    arm_syscall_rett
 
     add     sp, #32
     cpsid   aif, #ARM_PSR_SYS

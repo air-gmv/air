@@ -69,6 +69,14 @@
 #endif
 .endm
 
+.macro BL2C label
+#if defined(__thumb__)
+    blx     \label
+#else
+    bl      \label
+#endif
+.endm
+
 #if PMK_FPU_SUPPORT
     #if defined(__ARM_NEON)
         #define VFP_D32

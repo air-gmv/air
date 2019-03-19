@@ -18,7 +18,6 @@
 #ifdef ASM
 
 #define global(label) \
-    .align 4; \
     .globl label; \
     label:
 

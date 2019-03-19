@@ -35,10 +35,8 @@ global(exception_fiq)
     mov     r2, #0
 
     /* Call high level handler */
-    SWITCH_FROM_ARM_TO_THUMB    r3
     mrc     p15, 0, r3, c13, c0, 4
-    bl      arm_hm_handler
-    SWITCH_FROM_THUMB_TO_ARM
+    BL2C    arm_hm_handler
 
     /* Get Per_CPU core */
     mrc     p15, 0, r1, c13, c0, 4
@@ -85,9 +83,7 @@ global(exception_data_abort)
     ldr     r3, [sp, #24] // preferred return addr
 
     /* Call high level handler */
-    SWITCH_FROM_ARM_TO_THUMB    r4
-    bl      arm_hm_handler
-    SWITCH_FROM_THUMB_TO_ARM
+    BL2C    arm_hm_handler
 
     /* Get Per_CPU core */
     mrc     p15, 0, r1, c13, c0, 4
@@ -135,9 +131,7 @@ global(exception_undef)
     mov     r1, #0
 
     /* Call high level handler */
-    SWITCH_FROM_ARM_TO_THUMB    r4
-    bl      arm_hm_handler
-    SWITCH_FROM_THUMB_TO_ARM
+    BL2C    arm_hm_handler
 
     /* Get Per_CPU core */
     mrc     p15, 0, r1, c13, c0, 4

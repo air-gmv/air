@@ -21,24 +21,23 @@
 #include <armv7.h>
 #include <asm_offsets.h>
 
-    .arm
+    .thumb
+    .syntax unified
+
 global(arm_restore_fpu)
 #if PMK_FPU_SUPPORT
-    SWITCH_FROM_THUMB_TO_ARM
-
     mrc     p15, 0, r1, c1, c0, 2
-    orr     r1, #(0b1010 << 20)
+    orr.w   r1, #(0b1010 << 20)
     mcr     p15, 0, r1, c1, c0, 2
 
-    ldr     r1, [r0, #(offsetof_pmk_core_ctrl_t_context)]
-    ldr     r0, [r1, #(offsetof_arm_core_context_t_isf_pointer)]
-    ldr     r1, [r0, #(offsetof_arm_interrupt_stack_frame_t_vfp_context)]
-    ldm     r1!, {r2-r3}
+    ldm     r0!, {r2-r3}
     vmsr    fpexc, r2
-    tst     r2, #(1 << 30)
+
+    tst.w   r2, #(1 << 30)
+    ittt    ne
     vmsrne  fpscr, r3
-    vldmiane r1!, {d0-d15}
-    vldmiane r1, {d16-d31}
+    vldmiane r0!, {d0-d15}
+    vldmiane r0, {d16-d31}
 #endif
 
 #ifdef __thumb__
