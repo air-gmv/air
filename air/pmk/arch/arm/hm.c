@@ -65,7 +65,7 @@ air_uptr_t arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
                 return (air_uptr_t)(vbar + 6);
 
             case AIR_FLOAT_ERROR:
-                arm_restore_fpu(core);
+                arm_restore_fpu(((arm_interrupt_stack_frame_t *)(core->context->isf_pointer))->vfp_context);
                 arm_syscall_rett(core);
                 return NULL;
 
@@ -98,11 +98,21 @@ air_uptr_t arm_hm_handler(air_u32_t id, air_u32_t far, air_u32_t fsr, air_u32_t 
         /* Lazy Switching. fsr is the spsr */
         if ((fsr && ARM_PSR_T)) {
 
-            if ( ( (*instr & 0xec00) == 0xec00 ) &&
-                    ( ((*instr & 0xf000000) == 0xa000000) || ((*instr & 0xf000000) == 0xb000000) ) ) {
-
+            if ( ((*instr & 0xef00) == 0xef00) ||
+                    ((*instr & 0x0e10ef00) == 0x0a00ee00) ||
+                    ((*instr & 0x0e00ee00) == 0x0a00ec00) ||
+                    ((*instr & 0xff10) == 0xf900) ||
+                    ((*instr & 0x0e10ef00) == 0x0a10ee00) ||
+                    ((*instr & 0x0e00efe0) == 0x0a00ec40) )
                 error_id = AIR_FLOAT_ERROR;
-            }
+        } else {
+            if ( ((*instr & 0xfe000000) == 0xf2000000) ||
+                    ((*instr & 0x0f000e10) == 0x0e000a00) ||
+                    ((*instr & 0x0e000e00) == 0x0c000a00) ||
+                    ((*instr & 0xff100000) == 0xf4000000) ||
+                    ((*instr & 0x0f000e10) == 0x0e000a10) ||
+                    ((*instr & 0x0fe00e00) == 0x0c400a00) )
+                error_id = AIR_FLOAT_ERROR;
         }
 
     } else if (id == ARM_EXCEPTION_PREF_ABORT) {

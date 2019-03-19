@@ -187,26 +187,23 @@ setup_stack:
 //  mov     r0, r4 /* original cpsr */
 //  mov     r1, r5 /* machine type number or ~0 for DT boot */
 //  mov     r2, r6 /* physical address of ATAGs or DTB */
-    SWITCH_FROM_ARM_TO_THUMB    r4
-    bl      bsp_start_hook
-    SWITCH_FROM_THUMB_TO_ARM
+    BL2C    bsp_start_hook
 
     /* Reading the MPIDR into r8. Not available before ARMv7 */
     mrc     p15, 0, r8, c0, c0, 5
     and     r8, #0xff
     cmp     r8, #0
 
+    mov     r0, #0
     bne     secondary_core_init
 
-    SWITCH_FROM_ARM_TO_THUMB    r4
-    mov     r0, #0
-    bl      pmk_init
+    /**< Core 0 init */
+    BL2C    pmk_init
+    b       twiddle
 
     /**< Secondary cores init */
-global(secondary_core_init)
-    SWITCH_FROM_ARM_TO_THUMB    r4
-    mov     r0, #0
-    bl      pmk_core_initialize
+secondary_core_init:
+    BL2C    pmk_core_initialize
 
     /* never returns here */
 twiddle:
