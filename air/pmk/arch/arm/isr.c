@@ -63,7 +63,7 @@ air_uptr_t arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
     air_u32_t psr = vcpu->psr;
     air_u32_t psr_i = ((psr & ARM_PSR_I) >> 7);
     air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
-    air_u32_t **vbar = vcpu->vbar;
+    air_uptr_t vbar = vcpu->vbar;
 
     air_u32_t iccpmr = vgic->iccpmr;
     air_uptr_t icdiser = vgic->icdiser;
