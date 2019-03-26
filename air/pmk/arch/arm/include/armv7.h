@@ -229,7 +229,7 @@ typedef struct {
 typedef struct {
     air_u32_t id;                       /**< virtual CPU id                 */
     air_u32_t psr;                      /**< virtual PSR                    */
-    air_u32_t **vbar;                   /**< virtual vector base address    */
+    air_uptr_t vbar;                    /**< virtual vector base address    */
     air_u32_t cctrl;                    /**< cache control                  */
 } arm_virtual_cpu_t;
 
