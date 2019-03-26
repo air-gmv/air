@@ -53,14 +53,13 @@ void arm_syscall_enable_fpu(pmk_core_ctrl_t *core) {
 
 air_u32_t arm_syscall_get_tbr(pmk_core_ctrl_t *core) {
 
-    air_u32_t **vbar = core->context->vcpu.vbar;
+    air_uptr_t vbar = core->context->vcpu.vbar;
     return (air_u32_t)vbar;
 }
 
 void arm_syscall_set_tbr(pmk_core_ctrl_t *core, air_u32_t val) {
 
-    air_u32_t **vbar = (air_u32_t **)val;
-    core->context->vcpu.vbar = vbar;
+    core->context->vcpu.vbar = (air_uptr_t)val;
 }
 
 air_u32_t arm_syscall_get_psr(pmk_core_ctrl_t *core) {

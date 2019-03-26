@@ -27,7 +27,7 @@ air_uptr_t arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
 
     air_u32_t psr = vcpu->psr;
     air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
-    air_u32_t **vbar = vcpu->vbar;
+    air_uptr_t vbar = vcpu->vbar;
 
 #ifdef PMK_DEBUG_HM
     printk("entered partition_hm_handler. vbar = 0x%x, vbar+4 = 0x%x, vpsr = 0x%x\n", (int)vbar, (int)(vbar+4), psr);
@@ -49,20 +49,20 @@ air_uptr_t arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
 
             switch (hm_event->error_id) {
             case AIR_POWER_ERROR:
-                return (air_uptr_t)(vbar + 0);
+                return vbar + 0;
 
             case AIR_UNIMPLEMENTED_ERROR:
-                return (air_uptr_t)(vbar + 1);
+                return vbar + 1;
 
             case AIR_VIOLATION_ERROR:
-                return (air_uptr_t)(vbar + 3);
+                return vbar + 3;
 
             case AIR_SEGMENTATION_ERROR:
-                return (air_uptr_t)(vbar + 4);
+                return vbar + 4;
 
             case AIR_IO_ERROR:
                 // TODO not sure in this case
-                return (air_uptr_t)(vbar + 6);
+                return vbar + 6;
 
             case AIR_FLOAT_ERROR:
                 arm_restore_fpu(((arm_interrupt_stack_frame_t *)(core->context->isf_pointer))->vfp_context);
