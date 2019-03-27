@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <ARINC_653_Module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ModuleName="GNSS">
 
-  <!-- IOP Partition  -->  
-  <Partition PartitionIdentifier="1" PartitionName="iop" 
-    Criticality="LEVEL_A" EntryPoint="empty" SystemPartition="false">
-    <!--  <Queuing_Port Name="QRECV_GNSS" Direction="DESTINATION" MaxMessageSize="7000" MaxNbMessages="20"/>
-    <Queuing_Port Name="QSEND_GNSS" Direction="SOURCE" MaxMessageSize="7000" MaxNbMessages="20" /> -->
-    <Sampling_Port Name="QRECV_GNSS" Direction="DESTINATION" MaxMessageSize="65000" RefreshRateSeconds="0.25"/>
-    <Sampling_Port Name="QSEND_GNSS" Direction="SOURCE" MaxMessageSize="7000" RefreshRateSeconds="0.25"/>
-    <PartitionConfiguration Personality="RTEMS5" IOP="iop.xml" Cores="1">
-        <Libs>LIBAIR; LIBIOP</Libs>
-        <Devices></Devices>
-        <Cache>CODE; DATA</Cache>
-        <Memory Size="0xA000000" />
-        <Permissions>
-           FPU_CONTROL; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
-        </Permissions>
-    </PartitionConfiguration>
-  </Partition>
-
-  <!-- Partition 0  -->  
+    <!-- Partition 0  -->  
   <Partition PartitionIdentifier="2" PartitionName="part0" 
     Criticality="LEVEL_A" EntryPoint="entry_point" SystemPartition="false">
     <!--  <Queuing_Port Name="QRECV_IOP" Direction="DESTINATION" MaxMessageSize="7000" MaxNbMessages="20" />
     <Queuing_Port Name="QSEND_IOP" Direction="SOURCE" MaxMessageSize="7000" MaxNbMessages="20" /> -->
     <Sampling_Port Name="QRECV_IOP" Direction="DESTINATION" MaxMessageSize="7000" RefreshRateSeconds="0.25" />
-    <Sampling_Port Name="QSEND_IOP" Direction="SOURCE" MaxMessageSize="65000" RefreshRateSeconds="0.25" />
+    <Sampling_Port Name="QSEND_IOP" Direction="SOURCE" MaxMessageSize="60000" RefreshRateSeconds="0.25" />
     <PartitionConfiguration Personality="RTEMS5" Cores="3">
         <Libs>LIBAIR; IMASPEX</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
-        <Memory Size="0xF000000" />
+        <Memory Size="0xA000000" />
         <Permissions>
           FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
         </Permissions>
     </PartitionConfiguration>
   </Partition>
 
+  <!-- IOP Partition  -->
+         <Partition PartitionIdentifier="1" PartitionName="iop" 
+    Criticality="LEVEL_A" EntryPoint="empty" SystemPartition="false">
+    <!--  <Queuing_Port Name="QRECV_GNSS" Direction="DESTINATION" MaxMessageSize="7000" MaxNbMessages="20"/>
+    <Queuing_Port Name="QSEND_GNSS" Direction="SOURCE" MaxMessageSize="7000" MaxNbMessages="20" /> -->
+    <Sampling_Port Name="QRECV_GNSS" Direction="DESTINATION" MaxMessageSize="60000" RefreshRateSeconds="0.25"/>
+    <Sampling_Port Name="QSEND_GNSS" Direction="SOURCE" MaxMessageSize="7000" RefreshRateSeconds="0.25"/>
+    <PartitionConfiguration Personality="RTEMS5" IOP="iop.xml" Cores="1">
+        <Libs>LIBAIR; LIBIOP</Libs>
+        <Devices></Devices>
+        <Cache>CODE; DATA</Cache>
+        <Memory Size="0x4000000" />
+        <Permissions>
+           FPU_CONTROL; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
+       </Permissions>
+   </PartitionConfiguration>
+     </Partition>
+    
 
   <!-- Schedule 1 -->
   <Module_Schedule ScheduleIdentifier="1" ScheduleName="schedule"
