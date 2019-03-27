@@ -282,7 +282,7 @@ void ReceiverProcessing(void)
             core[core_index2].activity       = TCK;
             core[core_index2].nchan          = 0;
 	}
-	
+        core[2].activity       = NONE;
 	core[NCORES-1].status       = BUSY_C;
         core[NCORES-1].init         = DONE;
         core[NCORES-1].activityprev = NONE;
@@ -411,7 +411,7 @@ while (continueExecution())
                 // Code-period rate between GPS and GALILEO is 4-to-1:
                 // process 4 GPS iterations per 1 GALILEO iteration.
                 /*****************************************************/                               
-                
+#ifdef USE_SPW              
                 if(initFirstLoop = 0 && Config.Com.onspw == 1)
                 {
                     for (int idx3 = 0; idx3 < core[0].nchan; idx3++)	
@@ -455,7 +455,7 @@ while (continueExecution())
                         #endif                    
                     } 
                 }
-
+#endif
 /* setup Tracking if acq new satelite */  
                 for(int core_index1 = 0; core_index1 < NACQCHAN; core_index1++)		
                 {         
@@ -643,7 +643,7 @@ while (continueExecution())
                 }
             }
 
-     /*       if(core[2].activity == TCK)
+            if(core[2].activity == TCK)
             {               
                 in |= (RTEMS_EVENT_3);
 
@@ -656,7 +656,7 @@ while (continueExecution())
                 {
                     rtems_task_restart(task_param[ 2 ].id, 2 ); 
                 }                
-            }*/
+            }
         //    printf("tasks started\n");
 
                 for (int idx7 = 0; idx7 < primaryIterations; idx7++)
