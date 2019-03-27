@@ -28,7 +28,6 @@ static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
 
     size_t max_size = 0;
     size_t size = get_payload_size(wrapper->buffer);
-//    iop_debug("size %d\n", size);
 
     /* get maximum size allowed by the port */
     if (port->type == AIR_QUEUING_PORT) {
@@ -52,7 +51,6 @@ static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
 
     /* fix maximum size */
     if (size > max_size) {
-        iop_debug("cropped %d %d\n", size, max_size);
 
         /** @todo use max size? is this an error? */
         size = max_size;
@@ -72,10 +70,7 @@ static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
     }
     if (rc == AIR_NOT_AVAILABLE) {
             iop_debug("AIR not available qport\n");
-    }
-    iop_debug("WP %d 0x%06x %d\n", size, get_payload(wrapper->buffer), rc);
-
-  
+    } 
 
 }
 
