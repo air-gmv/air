@@ -183,19 +183,9 @@ void eth_send_arp_reply(iop_eth_device_t *eth_device, iop_wrapper_t *wrapper) {
         /* change the operation to reply */
         arp_pck->oper = HTONS(ARP_HDR_REPLY);
 
-        /*TODO arp packet on sending queue? now could break udp fragment queueing*/
-        
-        /*setup dummy fragment so driver send remains generic*/
-        
+        /*setup dummy fragment so driver send remains generic*/ 
         /*fetch free fragment*/
         iop_fragment_t *frag = obtain_free_fragment();
-        while(!iop_chain_is_empty(&wrapper->fragment_queue)){
-            release_fragment(obtain_fragment(&wrapper->fragment_queue));
-        }
-
-
-        //iop_chain_initialize_empty(&wrapper->fragment_queue);
-
         if(frag==NULL){
             iop_raise_error(OUT_OF_MEMORY);
             return;
@@ -204,11 +194,24 @@ void eth_send_arp_reply(iop_eth_device_t *eth_device, iop_wrapper_t *wrapper) {
         frag->header_size = 0;
         frag->payload = get_header(wrapper->buffer);
         frag->payload_size = get_buffer_size(wrapper->buffer);
+        
+        /*fetch auxiliar wrapper to swap buffers with
+         * wrapper - arp wrapper
+         * wrapper_send - wrapper to sent, where arp buffer will be*/
+        iop_wrapper_t *wrapper_send=obtain_free_wrapper();
+        iop_buffer_t *buffer= wrapper_send->buffer;
+        wrapper_send->buffer= wrapper->buffer;
+        wrapper->buffer=buffer;
 
-        iop_chain_append(&wrapper->fragment_queue, &frag->node);
-       
+        iop_chain_append(&wrapper_send->fragment_queue, &frag->node);
+        iop_debug("ARP Reply Send 0x%06x 0x%06x %d\n", wrapper_send, wrapper_send->buffer, wrapper_send->buffer->payload_size ); 
         /* write packet */
-        eth_device->dev.write((iop_device_driver_t *)eth_device, wrapper);
+        eth_device->dev.write((iop_device_driver_t *)eth_device, wrapper_send);
+        
+        /*swap buffers back and release auxiliary wrapper*/
+        wrapper->buffer=wrapper_send->buffer;
+        wrapper_send->buffer=buffer;
+        release_wrapper(wrapper_send);
     }
 }
 
@@ -384,7 +387,7 @@ uint32_t eth_fragment_packet(iop_wrapper_t *wrapper)
     /*this is independent on the packet needing fragmentation*/
     /*TODO rethink memcpy*/
     memcpy(&frag->header, get_header(wrapper->buffer), get_header_size(wrapper->buffer));
-  //  iop_debug("FCH 0x%06x 0x%06x %d %d\n", &frag->header, get_header(wrapper->buffer), get_header_size(wrapper->buffer), frag->header.eth_header.dst_ip[0]);
+    iop_debug("FCH 0x%06x 0x%06x %d %d %d\n", &frag->header, wrapper->buffer, get_header_size(wrapper->buffer), frag->header.eth_header.dst_ip[0], wrapper->buffer->payload_size);
     frag->header_size = get_header_size(wrapper->buffer);
     
     total += frag->header_size;
