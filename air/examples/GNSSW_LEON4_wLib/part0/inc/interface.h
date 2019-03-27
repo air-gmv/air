@@ -65,7 +65,7 @@
 
 #endif
 
-#define MAX_BUFFER_SIZE 65000 
+#define MAX_BUFFER_SIZE 60000 
 
 #define SERVPORT	3333
 #define CLIENTPORT	3334

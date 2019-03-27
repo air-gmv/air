@@ -37,7 +37,7 @@ static iop_wrapper_t requests_storage[1024];
  * @brief IOP buffers
  */
 static iop_buffer_t iop_buffers[1024];
-static uint8_t iop_buffers_storage[1024 * (65094+8)];
+static uint8_t iop_buffers_storage[1024 * (60094 + 94)];
 static iop_fragment_t fragments[1024];
 
 /**

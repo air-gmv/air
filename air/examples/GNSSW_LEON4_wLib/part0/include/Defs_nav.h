@@ -134,7 +134,7 @@
 #define NSYSTEMS  2
 #endif
 
-#define NCORES		3
+#define NCORES		4
 #define NACQCHAN        1
 //#define NCHANPERCORE    4
 #define NUMTCKTASK       3

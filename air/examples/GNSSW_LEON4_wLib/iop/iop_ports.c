@@ -20,7 +20,7 @@ extern iop_logical_device_t logical_device_0;
  */
 static air_sampling_port_configuration_t sampling_ports[] = {
     {
-        .max_message_size   = 65000,
+        .max_message_size   = 60000,
         .refresh_period     = 125,
         .port_direction     = AIR_DESTINATION_PORT,
     },
