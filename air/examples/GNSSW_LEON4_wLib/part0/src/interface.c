@@ -57,7 +57,7 @@
 static SAMPLING_PORT_ID_TYPE QRECV_IOP;
 static SAMPLING_PORT_ID_TYPE QSEND_IOP;
 /* inter-partition ports maximum size definitions */
-#define MAX_MESSAGE_SIZE1 65000// bytes
+#define MAX_MESSAGE_SIZE1 60000// bytes
 #define MAX_MESSAGE_SIZE2 7000// bytes
 
 #define MAX_NB_MESSAGES 20 // queue messages
@@ -340,11 +340,11 @@ task_param_t task_param[6] =
 {
 /*  name task  id task   id perd_task    expected cpu   cpuset    run     cpu  */
   {   "TCK1"  ,  0x0   ,     0x0      ,       0       , {{0x1}} , false  , -1},  // TCR1
-  {   "TCK2"  ,  0x0   ,     0x0      ,       1       , {{0x2}} , false  , -1},  // TCR2 
+  {   "TCK2"  ,  0x0   ,     0x0      ,       2       , {{0x4}} , false  , -1},  // TCR2 
   {   "TCK3"  ,  0x0   ,     0x0      ,       1       , {{0x2}} , false  , -1},  // TCR3 
   {   "ACQ1"  ,  0x0   ,     0x0      ,       0       , {{0x1}} , false  , -1},  // ACQ1
   {   "ACQ2"  ,  0x0   ,     0x0      ,       1       , {{0x2}} , false  , -1},  // ACQ2
-  {   "MAIN"  ,  0x0   ,     0x0      ,       2       , {{0x4}} , false  , -1}   // MAIN
+  {   "MAIN"  ,  0x0   ,     0x0      ,       1       , {{0x2}} , false  , -1}   // MAIN
 };
     
 /******************** SpW variables ********************/ 
@@ -851,7 +851,8 @@ int receiveUDP_TC(void)
                     } while ((nSamplesPerRead % NBITS_PER_WORD) != 0);
 
                     /* Compute # integers to read in each read call. */
-                    nBytesToRead = nSamplesPerRead * BYTES_PER_WORD / NBITS_PER_WORD;                             
+                    nBytesToRead = nSamplesPerRead * BYTES_PER_WORD / NBITS_PER_WORD;                               
+                   printf("nbytestoread %d\n", nBytesToRead); 
                     
                 }
 
@@ -1053,7 +1054,7 @@ int GetCNF(void)
     
      char buffer_ok[1] ={i};
     RETURN_CODE_TYPE rc;
-   // printf("SendUdpOK %d\n", i);
+//    printf("SendUdpOK %d\n", i);
         unsigned int length=1;
     WRITE_SAMPLING_MESSAGE(QSEND_IOP, (MESSAGE_ADDR_TYPE )buffer_ok, length, &rc );
     if(AIR_NO_ERROR != rc )
@@ -1063,7 +1064,7 @@ int GetCNF(void)
 void SendResultCalculation(char *BufferToSend, int LenToSend)
 {
     RETURN_CODE_TYPE rc;
-    printf("SendResultCalculation %d\n",LenToSend);
+   // printf("SendResultCalculation %d\n",LenToSend);
 
     WRITE_SAMPLING_MESSAGE(QSEND_IOP, (MESSAGE_ADDR_TYPE )BufferToSend, LenToSend, &rc );
 }
@@ -1131,7 +1132,7 @@ void SendResultCalculation(char *BufferToSend, int LenToSend)
     unsigned int received=0;
     unsigned int i=0;
 
-    while(!received && i<1500){
+    while(!received && i<8000){
         READ_SAMPLING_MESSAGE(QRECV_IOP, (MESSAGE_ADDR_TYPE )buffer, &len, &val,  &rc );
         if(AIR_NO_ERROR != rc  || val != AIR_MESSAGE_VALID){
            // rtems_task_wake_after(2);
@@ -1332,7 +1333,7 @@ void SendBuffer(void)
 
         while(!val){
 	    SendResultCalculation(send_buffer, idx);
-            printf("calc sent %d\n", idx);
+            printf("c %d\n", idx);
 
 #ifdef TCP_interface            
             recv_len=RecvTcp();
@@ -1342,7 +1343,7 @@ void SendBuffer(void)
                 val=1;
 
 #endif 
-            printf("received %d %d %d\n", recv_len, chk1, (uint8_t)buffer[0]);
+            printf("r %d %d %d\n", recv_len, chk1, (uint8_t)buffer[0]);
         }
         recv_len=RecvUdp_timeout();
         recv_len=-1;
@@ -1353,7 +1354,7 @@ void SendBuffer(void)
             while(!val){
 
                 SendResultCalculation(test_out, idx_test_out); 
-                 printf("calc2 sent %d\n", idx);
+                 printf("c2 %d\n", idx_test_out);
             
 #ifdef TCP_interface            
                 recv_len=RecvTcp();
@@ -1362,16 +1363,16 @@ void SendBuffer(void)
                 if(recv_len>0 && (uint8_t)buffer[0]==chk2)
                     val=1;
 
-                 printf("received2 %d %d %d\n", recv_len, chk2, (uint8_t)buffer[0]);
+                 printf("r2 %d %d %d\n", recv_len, chk2, (uint8_t)buffer[0]);
 
 #endif 
             }
             idx_test_out = 0;         
             recv_len=RecvUdp_timeout(); 
-               printf("received %d %d %d\n", recv_len, chk1, (uint8_t)buffer[0]);
+          //     printf("received %d %d %d\n", recv_len, chk1, (uint8_t)buffer[0]);
 
         }
-        printf("done \n");
+       // printf("done \n");
      
         
 }
@@ -1561,7 +1562,7 @@ rtems_task Tck2_task( rtems_task_argument unused )
              }            
              Tck2Ch[i].chCounterMs++;              
         }
-#if 1
+#if 0
         ManageLoopTracking(Tck3Ch, 2, core[2].nchan);
 
         for (i = 0 ; i < core[2].nchan ; i++)
