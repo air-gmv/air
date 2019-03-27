@@ -414,11 +414,15 @@ auto_neg_done:
 
         /* map an IOP buffer to the descriptor */
         sc->rx_iop_buffer[i] = &sc->iop_buffers[device->tx_count + i];
+#ifdef DBG_BUFFERS
         iop_debug(" IOP :: Mapping IO buffer %d on v_addr 0x%06x\n", i, sc->rx_iop_buffer[i]->v_addr );
-	    /* get descriptor physical address*/
+#endif    
+        /* get descriptor physical address*/
 		sc->rxdesc[i].addr = sc->rx_iop_buffer[i]->p_addr;
 		sc->rxdesc[i].ctrl = GRETH_RXD_ENABLE;
+#ifdef DBG_BUFFERS
         iop_debug(" IOP :: descriptor physical address 0x%06x\n", sc->rxdesc[i].addr );
+#endif
 
     }
 
@@ -543,7 +547,7 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper, iop_eth_d
                             frag_aux = obtain_fragment(&wrapper->fragment_queue);
                             release_fragment(frag_aux);
                         }  
-                                                                                                                                    }
+                                                                                                                                }
 
                     
                     /*set descriptor info to wrapper*/
@@ -598,27 +602,28 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper, iop_eth_d
                 /*is packet arp?*/
                 if(valid == 1){
                     iop_debug("arp packet desc %d\n", sc->rx_ptr);
-
-                    if(!iop_chain_is_empty(&wrapper->fragment_queue)){
-                        /*iop_chain already had fragments from old uncomplete packet, release them.*/
-                        iop_fragment_t *frag_aux;
-                        while(!iop_chain_is_empty(&wrapper->fragment_queue)){
-                            frag_aux = obtain_fragment(&wrapper->fragment_queue);
-                            release_fragment(frag_aux);
-                        }  
+                    /*set ARP wrapper: ARP wrapper is only released after ARP reply has been sent*/
+                    static iop_wrapper_t *arp_wrapper=NULL;
+                    if(arp_wrapper==NULL)
+                        arp_wrapper=obtain_free_wrapper();
+                    else{
+                        release_wrapper(arp_wrapper);
+                        arp_wrapper=obtain_free_wrapper();
                     }
+
                     /*set descriptor info to wrapper*/
-                    memcpy(wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, 1520); /*TODO define on 1520*/
-                    frag->header_size = sizeof(eth_header_t);
-                    frag->payload = wrapper->buffer->v_addr + frag->header_size;
-                    frag->payload_size = len-frag->header_size; 
-                    
-                    iop_chain_append(&wrapper->fragment_queue, &frag->node);
-                    
-                    wrapper->buffer->header_off=0;
-                    wrapper->buffer->header_size = frag->header_size;
-                    wrapper->buffer->payload_off= frag->header_size;
-                    wrapper->buffer->payload_size = frag->payload_size;
+                   memcpy(arp_wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, 1520); /*TODO define on 1520*/
+                                        
+                    arp_wrapper->buffer->header_off=0;
+                    arp_wrapper->buffer->header_size = sizeof(eth_header_t);
+                    arp_wrapper->buffer->payload_off= sizeof(eth_header_t);
+                    arp_wrapper->buffer->payload_size = len;
+
+                    /*swap original wrapper buffer for ARP wrapper buffer*/
+                    wrapper->buffer=arp_wrapper->buffer;
+                                    
+                    /*release unused fragment*/
+                    release_fragment(frag);
 
                 }else{
                     iop_debug("invalid desc %d %d\n", sc->rx_ptr, wrapper->buffer->payload_size);
@@ -633,7 +638,6 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper, iop_eth_d
         if (sc->rx_ptr == sc->rxbufs - 1) {
             /* this is the last descriptor so enable it and activate WRAP*/
             sc->rxdesc[sc->rx_ptr].ctrl = GRETH_RXD_ENABLE | GRETH_RXD_WRAP;
-            iop_debug("LAST DESCRIPTOR\n");
         } else {
             /* just enable the descriptor */
             sc->rxdesc[sc->rx_ptr].ctrl = GRETH_RXD_ENABLE;
@@ -668,7 +672,7 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
     
     /*sanity check*/
     if(iop_chain_is_empty(&wrapper->fragment_queue)){
-    //    iop_debug("fragment chain empty\n");
+        iop_debug("fragment chain empty\n");
         return -1; /*chango to error tag*/
     }
     
@@ -685,7 +689,7 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
             rtems_task_wake_after(sc->wait_ticks);
         } else {
             /* We can't block waiting, so we return */
-      //      iop_debug("can't block\n");
+            iop_debug("can't block\n");
             return 0;
         }
 
@@ -698,7 +702,7 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
 
     /*Copy payload to descriptor*/
     memcpy(sc->tx_iop_buffer[sc->tx_ptr]->v_addr+frag->header_size, frag->payload, frag->payload_size );
-  //  iop_debug("TX - size %d %d 0x%06x desc %d\n", frag->header_size, frag->payload_size, frag->payload, sc->tx_ptr);
+    iop_debug("TX - size %d %d 0x%06x desc %d\n", frag->header_size, frag->payload_size, frag->payload, sc->tx_ptr);
     /* enable descriptor*/
     if (sc->tx_ptr < sc->txbufs - 1) {
 
@@ -836,7 +840,7 @@ uint32_t greth_read(iop_device_driver_t *iop_dev, void *arg) {
             iop_debug("read error\n");         
             return RTEMS_INTERNAL_ERROR;
         }
-
+       
 	return RTEMS_SUCCESSFUL;
 }
 
@@ -938,6 +942,7 @@ uint32_t greth_write(iop_device_driver_t *iop_dev, void *arg) {
     if (wrapper == NULL ||
         wrapper->buffer == NULL ||
         wrapper->buffer->payload_size == 0){
+        iop_debug(" greth_write :: arguments inconsistent wrapper 0x%06x buffer 0x%06x paylaod %d\n", wrapper, wrapper->buffer, wrapper->buffer->payload_size);
         return RTEMS_INVALID_NAME;
     }
 
