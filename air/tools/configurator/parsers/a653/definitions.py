@@ -4,114 +4,114 @@
 
 import utils.parser as parserutils
 
-ARINC_653_MODULE                            = 'ARINC_653_Module'
+ARINC_653_MODULE                    = 'ARINC_653_Module'
 
-SYSTEM_HM									= 'System_HM_Table'
-MODULE_HM									= "Module_HM_Table"
-PARTITION_HM								= "Partition_HM_Table"
+SYSTEM_HM                           = 'System_HM_Table'
+MODULE_HM                           = "Module_HM_Table"
+PARTITION_HM                        = "Partition_HM_Table"
 
-MODULE_LEVEL								= 'MODULE'
-PARTITION_LEVEL								= 'PARTITION'
-PROCESS_LEVEL								= 'PROCESS'
+MODULE_LEVEL                        = 'MODULE'
+PARTITION_LEVEL                     = 'PARTITION'
+PROCESS_LEVEL                       = 'PROCESS'
 
-HM_STATE_ENTRY								= "System_State_Entry"
-HM_STATE_ENTRY_ID							= "SystemState"
-HM_STATE_ENTRY_DESCRIPTION					= "Description"
+HM_STATE_ENTRY                      = "System_State_Entry"
+HM_STATE_ENTRY_ID                   = "SystemState"
+HM_STATE_ENTRY_DESCRIPTION          = "Description"
 
-HM_ERROR_LEVEL								= "Error_ID_Level"
-HM_ERROR_LEVEL_ID          					= 'ErrorIdentifier'
-HM_ERROR_LEVEL_DESCRIPTION 					= 'Description'
-HM_ERROR_LEVEL_TYPE       					= 'ErrorLevel'
-HM_ERROR_LEVEL_CODE        					= 'ErrorCode'
+HM_ERROR_LEVEL                      = "Error_ID_Level"
+HM_ERROR_LEVEL_ID                   = 'ErrorIdentifier'
+HM_ERROR_LEVEL_DESCRIPTION          = 'Description'
+HM_ERROR_LEVEL_TYPE                 = 'ErrorLevel'
+HM_ERROR_LEVEL_CODE                 = 'ErrorCode'
 
-HM_ERROR_ACTION								= "Error_ID_Action"
-HM_ERROR_ACTION_ID          				= 'ErrorIdentifier'
-HM_ERROR_ACTION_DESCRIPTION 				= 'Description'
-HM_ERROR_ACTION_TYPE       					= 'Action'
+HM_ERROR_ACTION                     = "Error_ID_Action"
+HM_ERROR_ACTION_ID                  = 'ErrorIdentifier'
+HM_ERROR_ACTION_DESCRIPTION         = 'Description'
+HM_ERROR_ACTION_TYPE                = 'Action'
 
-PARTITION									= 'Partition'
-PARTITION_ID      							= 'PartitionIdentifier'
-PARTITION_NAME    							= 'PartitionName'
-PARTITION_IS_SYSTEM     					= 'SystemPartition'
-PARTITION_CRITICALITY   					= 'Criticality'
-PARTITION_ENTRY_POINT  						= 'EntryPoint'
-PARTITION_CALLBACK                          = 'PartitionCallback'
+PARTITION                           = 'Partition'
+PARTITION_ID                        = 'PartitionIdentifier'
+PARTITION_NAME                      = 'PartitionName'
+PARTITION_IS_SYSTEM                 = 'SystemPartition'
+PARTITION_CRITICALITY               = 'Criticality'
+PARTITION_ENTRY_POINT               = 'EntryPoint'
+PARTITION_CALLBACK                  = 'PartitionCallback'
 
-QUEUING_PORT                                = 'Queuing_Port'
-QUEUING_PORT_NAME                           = 'Name'
-QUEUING_PORT_MAX_MSG_SIZE                   = 'MaxMessageSize'
-QUEUING_PORT_DIRECTION                      = 'Direction'
-QUEUING_PORT_MAX_NB_MSGS                    = 'MaxNbMessages'
-QUEUING_PORT_DISCIPLINE                     = 'Discipline'
+QUEUING_PORT                        = 'Queuing_Port'
+QUEUING_PORT_NAME                   = 'Name'
+QUEUING_PORT_MAX_MSG_SIZE           = 'MaxMessageSize'
+QUEUING_PORT_DIRECTION              = 'Direction'
+QUEUING_PORT_MAX_NB_MSGS            = 'MaxNbMessages'
+QUEUING_PORT_DISCIPLINE             = 'Discipline'
 
-SAMPLING_PORT                               = 'Sampling_Port'
-SAMPLING_PORT_NAME                          = 'Name'
-SAMPLING_PORT_MAX_MSG_SIZE                  = 'MaxMessageSize'
-SAMPLING_PORT_DIRECTION                     = 'Direction'
-SAMPLING_PORT_REFRESH_RATE                  = 'RefreshRateSeconds'
+SAMPLING_PORT                       = 'Sampling_Port'
+SAMPLING_PORT_NAME                  = 'Name'
+SAMPLING_PORT_MAX_MSG_SIZE          = 'MaxMessageSize'
+SAMPLING_PORT_DIRECTION             = 'Direction'
+SAMPLING_PORT_REFRESH_RATE          = 'RefreshRateSeconds'
 
-SCHEDULE 									= 'Module_Schedule'
-SCHEDULE_ID       							= 'ScheduleIdentifier'
-SCHEDULE_NAME     							= 'ScheduleName'
-SCHEDULE_IS_INITIAL 						= 'InitialModuleSchedule'
-SCHEDULE_MTF								= 'MajorFrameSeconds'
+SCHEDULE                            = 'Module_Schedule'
+SCHEDULE_ID                         = 'ScheduleIdentifier'
+SCHEDULE_NAME                       = 'ScheduleName'
+SCHEDULE_IS_INITIAL                 = 'InitialModuleSchedule'
+SCHEDULE_MTF                        = 'MajorFrameSeconds'
 
-PARTITION_SCHEDULE							= 'Partition_Schedule'
-PARTITION_SCHEDULE_PERIOD					= 'PeriodSeconds'
-PARTITION_SCHEDULE_DURATION					= 'PeriodDurationSeconds'
-PARTITION_SCHEDULE_SET_SCHEDULE				= 'SetModuleSchedule'
-PARTITION_SCHEDULE_CHANGE_ACTION			= 'ScheduleChangeAction'
+PARTITION_SCHEDULE                  = 'Partition_Schedule'
+PARTITION_SCHEDULE_PERIOD           = 'PeriodSeconds'
+PARTITION_SCHEDULE_DURATION         = 'PeriodDurationSeconds'
+PARTITION_SCHEDULE_SET_SCHEDULE     = 'SetModuleSchedule'
+PARTITION_SCHEDULE_CHANGE_ACTION    = 'ScheduleChangeAction'
 
-WINDOW										= 'Window_Schedule'
-WINDOW_ID         							= 'WindowIdentifier'
-WINDOW_START  								= 'WindowStartSeconds'
-WINDOW_DURATION								= 'WindowDurationSeconds'
-WINDOW_PERIOD_START   						= 'PartitionPeriodStart'
+WINDOW                              = 'Window_Schedule'
+WINDOW_ID                           = 'WindowIdentifier'
+WINDOW_START                        = 'WindowStartSeconds'
+WINDOW_DURATION                     = 'WindowDurationSeconds'
+WINDOW_PERIOD_START                 = 'PartitionPeriodStart'
 
-CONNECTION_TABLE                            = 'Connection_Table'
-CHANNEL                                     = 'Channel'
-CHANNEL_ID                                  = 'ChannelIdentifier'
-CHANNEL_NAME                                = 'ChannelName'
-CHANNEL_SRC                                 = 'Source'
-CHANNEL_DST                                 = 'Destination'
+CONNECTION_TABLE                    = 'Connection_Table'
+CHANNEL                             = 'Channel'
+CHANNEL_ID                          = 'ChannelIdentifier'
+CHANNEL_NAME                        = 'ChannelName'
+CHANNEL_SRC                         = 'Source'
+CHANNEL_DST                         = 'Destination'
 
-CHANNEL_STANDARD_PARTITION                  = 'Standard_Partition'
-CHANNEL_PORT_NAME                           = 'PortName'
+CHANNEL_STANDARD_PARTITION          = 'Standard_Partition'
+CHANNEL_PORT_NAME                   = 'PortName'
 
-PORT_SOURCE                                 = 'SOURCE'
-PORT_DESTINATION                            = 'DESTINATION'
+PORT_SOURCE                         = 'SOURCE'
+PORT_DESTINATION                    = 'DESTINATION'
 
-QUEUING_CHANNEL                             = 'QUEUING_PORT'
-SAMPLING_CHANNEL                            = 'SAMPLING_PORT'
+QUEUING_CHANNEL                     = 'QUEUING_PORT'
+SAMPLING_CHANNEL                    = 'SAMPLING_PORT'
 
-A653_TIMESCALE								= 1E9
+A653_TIMESCALE                      = 1E9
 
 
-VALID_NAME_TYPE				= [ str, lambda x : 0 < len(x) < 257 ]
+VALID_NAME_TYPE             = [ str, lambda x : 0 < len(x) < 257 ]
 VALID_NAME_TYPE_A653                    = [ str, lambda x : 0 < len(x) < 31 ]
-VALID_FLOAT_TYPE			= [ parserutils.str2float, lambda x : x >= 0 ]
-VALID_DECIMAL_TYPE			= [ parserutils.str2int, lambda x : x >= 0 ]
-VALID_IDENTIFIER_TYPE		= [ parserutils.str2int, lambda x : x >= 0 ]
-VALID_BOOLEAN_TYPE			= [ parserutils.str2bool, lambda x : isinstance(x, bool) ]
-VALID_CRITICALITY_TYPE 		= [ str, lambda x : x in ['LEVEL_A', 'LEVEL_B', 'LEVEL_C', 'LEVEL_D', 'LEVEL_E'] ]
-VALID_DIRECTION_TYPE 		= [ str, lambda x : x in [PORT_SOURCE, PORT_DESTINATION] ]
-VALID_ERROR_LEVEL_TYPE		= [ str, lambda x : x in [MODULE_LEVEL, PARTITION_LEVEL, PROCESS_LEVEL] ]
-VALID_ERROR_CODE_TYPE		= [ str, lambda x : x in ['DEADLINE_MISSED', 'APPLICATION_ERROR', 'NUMERIC_ERROR',
+VALID_FLOAT_TYPE            = [ parserutils.str2float, lambda x : x >= 0 ]
+VALID_DECIMAL_TYPE          = [ parserutils.str2int, lambda x : x >= 0 ]
+VALID_IDENTIFIER_TYPE       = [ parserutils.str2int, lambda x : x >= 0 ]
+VALID_BOOLEAN_TYPE          = [ parserutils.str2bool, lambda x : isinstance(x, bool) ]
+VALID_CRITICALITY_TYPE      = [ str, lambda x : x in ['LEVEL_A', 'LEVEL_B', 'LEVEL_C', 'LEVEL_D', 'LEVEL_E'] ]
+VALID_DIRECTION_TYPE        = [ str, lambda x : x in [PORT_SOURCE, PORT_DESTINATION] ]
+VALID_ERROR_LEVEL_TYPE      = [ str, lambda x : x in [MODULE_LEVEL, PARTITION_LEVEL, PROCESS_LEVEL] ]
+VALID_ERROR_CODE_TYPE       = [ str, lambda x : x in ['DEADLINE_MISSED', 'APPLICATION_ERROR', 'NUMERIC_ERROR',
                                                       'ILLEGAL_REQUEST', 'STACK_OVERFLOW', 'MEMORY_VIOLATION',
                                                       'HARDWARE_FAULT', 'POWER_FAILURE'] ]
-VALID_MODULE_ACTION_TYPE	= [ str, lambda x : x in ['IGNORE', 'SHUTDOWN', 'RESET'] ]
-VALID_PARTITION_ACTION_TYPE	= [ str, lambda x : x in ['IGNORE', 'IDLE', 'WARM_START', 'COLD_START'] ]
+VALID_MODULE_ACTION_TYPE    = [ str, lambda x : x in ['IGNORE', 'SHUTDOWN', 'RESET'] ]
+VALID_PARTITION_ACTION_TYPE = [ str, lambda x : x in ['IGNORE', 'IDLE', 'WARM_START', 'COLD_START'] ]
 
-SYSTEM_STATE_STR			= 'System State Entry (Id: {0:02X})'
-ERROR_LEVEL_STR				= 'Error Level (Id: {0:02X}, Level: {1:^13})'
-ERROR_ACTION_STR			= 'Error Action (Id: {0:02X}, Action: {1:^12})'
-SCHEDULE_PARTITION_STR		= 'Partition Schedule (Id: {0}, Name: {1})'
-PARTITION_STR				= 'Partition (Id: {0}, Name: {1})'
+SYSTEM_STATE_STR            = 'System State Entry (Id: {0:02X})'
+ERROR_LEVEL_STR             = 'Error Level (Id: {0:02X}, Level: {1:^13})'
+ERROR_ACTION_STR            = 'Error Action (Id: {0:02X}, Action: {1:^12})'
+SCHEDULE_PARTITION_STR      = 'Partition Schedule (Id: {0}, Name: {1})'
+PARTITION_STR               = 'Partition (Id: {0}, Name: {1})'
 QUEUING_PORT_STR            = 'Queuing Port (Name: {0})'
 SAMPLING_PORT_STR           = 'Sampling Port (Name: {0})'
-SCHEDULE_STR				= 'Schedule (Id: {0}, Name: {1})'
-WINDOW_STR_0				= 'Window (Id: {0})'
-WINDOW_STR_1				= 'Empty Window'
+SCHEDULE_STR                = 'Schedule (Id: {0}, Name: {1})'
+WINDOW_STR_0                = 'Window (Id: {0})'
+WINDOW_STR_1                = 'Empty Window'
 CHANNEL_STR                 = 'Channel (Id: {0}, Name: {1})'
 
 
@@ -119,10 +119,10 @@ CHANNEL_STR                 = 'Channel (Id: {0}, Name: {1})'
 class SystemState(object):
 
     def __init__(self):
-        self.id				= -1
-        self.description	= ""
-        self.errors			= []
-        self.xml_line		= 0
+        self.id             = -1
+        self.description    = ""
+        self.errors         = []
+        self.xml_line       = 0
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.id == other.id
@@ -143,11 +143,11 @@ class SystemState(object):
 class ErrorLevel(object):
 
     def __init__(self):
-        self.id				= -1
-        self.code			= ''
-        self.level			= MODULE_LEVEL
-        self.description	= ''
-        self.xml_line		= 0
+        self.id             = -1
+        self.code           = ''
+        self.level          = MODULE_LEVEL
+        self.description    = ''
+        self.xml_line       = 0
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.id == other.id
@@ -168,11 +168,11 @@ class ErrorLevel(object):
 class ErrorAction(object):
 
     def __init__(self):
-        self.id				= -1
-        self.code			= ''
-        self.action			= 'IGNORE'
-        self.description	= ''
-        self.xml_line		= 0
+        self.id             = -1
+        self.code           = ''
+        self.action         = 'IGNORE'
+        self.description    = ''
+        self.xml_line       = 0
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.id == other.id
@@ -194,17 +194,17 @@ class Partition(object):
 
     def __init__(self):
         self.index          = 0
-        self.id				= -1
-        self.name			= ''
-        self.criticality	= 'LEVEL_E'
-        self.is_system		= False
-        self.entry_point	= ''
-        self.hm_table		= []
+        self.id             = -1
+        self.name           = ''
+        self.criticality    = 'LEVEL_E'
+        self.is_system      = False
+        self.entry_point    = ''
+        self.hm_table       = []
         self.hm_callback    = ''
         self.directory      = ''
         self.executable     = ''
         self.ports          = []
-        self.xml_line		= 0
+        self.xml_line       = 0
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and \
@@ -287,13 +287,13 @@ class Schedule(object):
 
     def __init__(self):
         self.index      = 0
-        self.id 		= -1
-        self.name 		= ''
-        self.initial 	= False
-        self.mtf 		= 0
-        self.partitions	= []
-        self.extensions	= None
-        self.xml_line	= 0
+        self.id         = -1
+        self.name       = ''
+        self.initial    = False
+        self.mtf        = 0
+        self.partitions = []
+        self.extensions = None
+        self.xml_line   = 0
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and \
@@ -320,13 +320,13 @@ class Schedule(object):
 class PartitionSchedule(object):
 
     def __init__(self):
-        self.period			= 0
-        self.duration		= 0
-        self.set_schedule	= False
-        self.change_action	= 'IGNORE'
-        self.partition     	= None
-        self.windows		= []
-        self.xml_line		= 0
+        self.period         = 0
+        self.duration       = 0
+        self.set_schedule   = False
+        self.change_action  = 'IGNORE'
+        self.partition      = None
+        self.windows        = []
+        self.xml_line       = 0
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.partition == other.partition
@@ -348,11 +348,11 @@ class PartitionSchedule(object):
 class Window(object):
 
     def __init__(self):
-        self.id				= -1
-        self.start			= 0
-        self.duration		= 0
-        self.period_start	= False
-        self.partition		= None
+        self.id             = -1
+        self.start          = 0
+        self.duration       = 0
+        self.period_start   = False
+        self.partition      = None
         self.xml_line       = 0
 
     def __eq__(self, other):
