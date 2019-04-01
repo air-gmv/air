@@ -48,12 +48,6 @@ SHM_EXTENSION_STR                   = "Shared Memory Area (Id: {0}, Name: {1})"
 SHM_EXTENSION_PARTITION_STR         = "{0} Access Type : {1}"
 
 
-AIR_PERMISSION_FPU_CONTROL          = 'FPU_CONTROL'
-AIR_PERMISSION_CACHE_CONTROL        = 'CACHE_CONTROL'
-AIR_PERMISSION_GLOBAL_TIME          = 'GLOBAL_TIME'
-AIR_PERMISSION_SET_TOD              = 'SET_TOD'
-AIR_PERMISSION_MODULE_CONTROL       = 'MODULE_CONTROL'
-
 VALID_AIR_FILE                      = [ str, lambda x : len(x) > 0 ]
 VALID_AIR_CACHE                     = [ parserutils.str2strList,
                                         lambda x: all(c.upper() in
