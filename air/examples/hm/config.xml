@@ -3,139 +3,145 @@
 
   <System_HM_Table>
     <System_State_Entry Description="Module Initialization" SystemState="0">
-      <Error_ID_Level Description="Configuration Error" ErrorIdentifier="1" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Module Config Error" ErrorIdentifier="2" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="5" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="7" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="8" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="9" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="10" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Stack error" ErrorIdentifier="12" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="14" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Debug Error" ErrorIdentifier="15" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="0" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="1" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="2" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Unimplemented Error" ErrorIdentifier="3" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="4" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="5" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="6" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="I/O Error" ErrorIdentifier="7" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Configuration Error" ErrorIdentifier="8" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Module Config Error" ErrorIdentifier="9" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Stack error" ErrorIdentifier="10" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Debug Error" ErrorIdentifier="11" ErrorLevel="MODULE"/>
     </System_State_Entry>
     <System_State_Entry Description="PMK Execution" SystemState="1">
-      <Error_ID_Level Description="Configuration Error" ErrorIdentifier="1" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Module Config Error" ErrorIdentifier="2" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="5" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="7" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="8" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="9" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="10" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Stack error" ErrorIdentifier="12" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="14" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Debug Error" ErrorIdentifier="15" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="0" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="1" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="2" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Unimplemented Error" ErrorIdentifier="3" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="4" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="5" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="6" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="I/O Error" ErrorIdentifier="7" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Configuration Error" ErrorIdentifier="8" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Module Config Error" ErrorIdentifier="9" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Stack error" ErrorIdentifier="10" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Debug Error" ErrorIdentifier="11" ErrorLevel="MODULE"/>
     </System_State_Entry>
     <System_State_Entry Description="Partition Initialization" SystemState="2">
-      <Error_ID_Level Description="Partition Conf Error" ErrorIdentifier="3" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Partition Init Error" ErrorIdentifier="4" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="5" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="7" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="8" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="9" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="10" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Stack error" ErrorIdentifier="12" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="14" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Debug Error" ErrorIdentifier="15" ErrorLevel="PARTITION"/>
-
+      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="0" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="1" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="2" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Unimplemented Error" ErrorIdentifier="3" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="4" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="5" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="6" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="I/O Error" ErrorIdentifier="7" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Partition Conf Error" ErrorIdentifier="8" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Partition Init Error" ErrorIdentifier="9" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Stack error" ErrorIdentifier="10" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Debug Error" ErrorIdentifier="11" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="APEX Error" ErrorIdentifier="12" ErrorLevel="PARTITION"/>
     </System_State_Entry>
     <System_State_Entry Description="Partition Operating System" SystemState="3">
-      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="5" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Deadline Miss" ErrorIdentifier="6" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="7" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="8" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="9" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="10" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Stack error" ErrorIdentifier="12" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="App Hardware Error" ErrorIdentifier="13" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="14" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Debug Error" ErrorIdentifier="15" ErrorLevel="PARTITION"/>
-
+      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="0" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="1" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="2" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Unimplemented Error" ErrorIdentifier="3" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="4" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="5" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="6" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="I/O Error" ErrorIdentifier="7" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Partition Conf Error" ErrorIdentifier="8" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Partition Init Error" ErrorIdentifier="9" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Stack error" ErrorIdentifier="10" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Debug Error" ErrorIdentifier="11" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="APEX Error" ErrorIdentifier="12" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Deadline Miss" ErrorIdentifier="13" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="App Hardware Error" ErrorIdentifier="14" ErrorLevel="PARTITION"/>
       </System_State_Entry>
     <System_State_Entry Description="Partition Application" SystemState="4">
-      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="5" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Deadline Miss" ErrorIdentifier="6" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="7" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="8" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="9" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="10" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Application Error" ErrorIdentifier="11" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Stack error" ErrorIdentifier="12" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="App Hardware Error" ErrorIdentifier="13" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="14" ErrorLevel="PARTITION"/>
-      <Error_ID_Level Description="Debug Error" ErrorIdentifier="15" ErrorLevel="PARTITION"/>
-      
+      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="0" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="1" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="2" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Unimplemented Error" ErrorIdentifier="3" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="4" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="5" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="6" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="I/O Error" ErrorIdentifier="7" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Partition Conf Error" ErrorIdentifier="8" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Partition Init Error" ErrorIdentifier="9" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Stack error" ErrorIdentifier="10" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Debug Error" ErrorIdentifier="11" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="APEX Error" ErrorIdentifier="12" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Deadline Miss" ErrorIdentifier="13" ErrorLevel="PARTITION"/>
     </System_State_Entry>
     <System_State_Entry Description="Health Monitor Processing" SystemState="6">
-      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="5" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="7" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="8" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="9" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="10" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Stack error" ErrorIdentifier="12" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="14" ErrorLevel="MODULE"/>
-      <Error_ID_Level Description="Debug Error" ErrorIdentifier="15" ErrorLevel="MODULE"/>
-
-      
-      
-      
+      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="0" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="1" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="2" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Unimplemented Error" ErrorIdentifier="3" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="4" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="5" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="6" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="I/O Error" ErrorIdentifier="7" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Stack error" ErrorIdentifier="10" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Debug Error" ErrorIdentifier="11" ErrorLevel="MODULE"/>
       </System_State_Entry>
   </System_HM_Table>
+
   <Module_HM_Table>
     <System_State_Entry Description="Module Initialization" SystemState="0">
-      <Error_ID_Action Action="SHUTDOWN" Description="Configuration Error" ErrorIdentifier="1"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Module Config Error" ErrorIdentifier="2"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Segmentation Error" ErrorIdentifier="5"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Illegal Instruction" ErrorIdentifier="7"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Divide by zero" ErrorIdentifier="8"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Overflow Error" ErrorIdentifier="9"/>
-      <Error_ID_Action Action="IGNORE" Description="Floating Point Error" ErrorIdentifier="10"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Stack error" ErrorIdentifier="12"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Power Interrupt" ErrorIdentifier="14"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Debug Error" ErrorIdentifier="15"/>
-
-      
-      
-      
+      <Error_ID_Action Action="SHUTDOWN" Description="Power Interrupt" ErrorIdentifier="0"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Illegal Instruction" ErrorIdentifier="1"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Segmentation Error" ErrorIdentifier="2"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Unimplemented Error" ErrorIdentifier="3"/>
+      <Error_ID_Action Action="IGNORE" Description="Floating Point Error" ErrorIdentifier="4"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Overflow Error" ErrorIdentifier="5"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Divide by zero" ErrorIdentifier="6"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="I/O Error" ErrorIdentifier="7"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Configuration Error" ErrorIdentifier="8"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Module Config Error" ErrorIdentifier="9"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Stack error" ErrorIdentifier="10"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Debug Error" ErrorIdentifier="11"/>
     </System_State_Entry>
     <System_State_Entry Description="PMK Execution" SystemState="1">
-      <Error_ID_Action Action="IGNORE" Description="Configuration Error" ErrorIdentifier="1"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Module Config Error" ErrorIdentifier="2"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Segmentation Error" ErrorIdentifier="5"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Illegal Instruction" ErrorIdentifier="7"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Divide by zero" ErrorIdentifier="8"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Overflow Error" ErrorIdentifier="9"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Floating Point Error" ErrorIdentifier="10"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Stack error" ErrorIdentifier="12"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Power Interrupt" ErrorIdentifier="14"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Debug Error" ErrorIdentifier="15"/>
-
-      
-
-
+      <Error_ID_Action Action="SHUTDOWN" Description="Power Interrupt" ErrorIdentifier="0"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Illegal Instruction" ErrorIdentifier="1"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Segmentation Error" ErrorIdentifier="2"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Unimplemented Error" ErrorIdentifier="3"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Floating Point Error" ErrorIdentifier="4"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Overflow Error" ErrorIdentifier="5"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Divide by zero" ErrorIdentifier="6"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="I/O Error" ErrorIdentifier="7"/>
+      <Error_ID_Action Action="IGNORE" Description="Configuration Error" ErrorIdentifier="8"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Module Config Error" ErrorIdentifier="9"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Stack error" ErrorIdentifier="10"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Debug Error" ErrorIdentifier="11"/>
      </System_State_Entry>
     <System_State_Entry Description="Health Monitor Processing" SystemState="6">
-      <Error_ID_Action Action="SHUTDOWN" Description="Segmentation Error" ErrorIdentifier="5"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Illegal Instruction" ErrorIdentifier="7"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Divide by zero" ErrorIdentifier="8"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Overflow Error" ErrorIdentifier="9"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Floating Point Error" ErrorIdentifier="10"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Stack error" ErrorIdentifier="12"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Power Interrupt" ErrorIdentifier="14"/>
-      <Error_ID_Action Action="SHUTDOWN" Description="Debug Error" ErrorIdentifier="15"/>
-
-      
-      
+      <Error_ID_Action Action="SHUTDOWN" Description="Power Interrupt" ErrorIdentifier="0"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Illegal Instruction" ErrorIdentifier="1"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Segmentation Error" ErrorIdentifier="2"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Unimplemented Error" ErrorIdentifier="3"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Floating Point Error" ErrorIdentifier="4"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Overflow Error" ErrorIdentifier="5"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Divide by zero" ErrorIdentifier="6"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="I/O Error" ErrorIdentifier="7"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Stack error" ErrorIdentifier="10"/>
+      <Error_ID_Action Action="SHUTDOWN" Description="Debug Error" ErrorIdentifier="11"/>
       </System_State_Entry>
   </Module_HM_Table>
 	
 	
   <!-- partition producer 0-->
-  <Partition PartitionIdentifier="1" PartitionName="p0" Criticality="LEVEL_A" SystemPartition="true" EntryPoint="producer">
+  <Partition PartitionIdentifier="1" PartitionName="p0" Criticality="LEVEL_A" EntryPoint="producer">
     <Sampling_Port Direction="SOURCE" MaxMessageSize="32" Name="SEND_SAMP1" RefreshRateSeconds="1.000"/>
     <Sampling_Port Direction="DESTINATION" MaxMessageSize="32" Name="RECV_SAMP1" RefreshRateSeconds="1.000"/>
-    <PartitionConfiguration Personality="RTEMS5" Cores="1" Mode="binary">
-      <Libs>LIBAIR;IMASPEX;LIBPRINTF</Libs>
+    <PartitionConfiguration Personality="RTEMS5" Cores="1">
+      <Libs>LIBAIR;LIBPRINTF;IMASPEX</Libs>
       <Cache>CODE; DATA</Cache>
       <Memory Size="0x500000" />
       <Permissions>
@@ -145,11 +151,11 @@
   </Partition>
 
   <!-- partition receiver 1 -->
-  <Partition PartitionIdentifier="2" PartitionName="p1" Criticality="LEVEL_A" SystemPartition="true" EntryPoint="receiver">
+  <Partition PartitionIdentifier="2" PartitionName="p1" Criticality="LEVEL_A" EntryPoint="receiver">
     <Sampling_Port Direction="SOURCE" MaxMessageSize="32" Name="SEND_SAMP2" RefreshRateSeconds="1.000"/>
     <Sampling_Port Direction="DESTINATION" MaxMessageSize="32" Name="RECV_SAMP2" RefreshRateSeconds="1.000"/>
-    <PartitionConfiguration Personality="RTEMS5" Cores="1" Mode="binary">
-      <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
+    <PartitionConfiguration Personality="RTEMS5" Cores="1">
+      <Libs>LIBAIR; IMASPEX</Libs>
       <Cache>CODE; DATA</Cache>
       <Memory Size="0x500000" />
       <Permissions>
@@ -157,7 +163,7 @@
       </Permissions>
     </PartitionConfiguration>
   </Partition>
-  
+
 	<Module_Schedule  ScheduleIdentifier="1" ScheduleName="test_sched" InitialModuleSchedule="true" MajorFrameSeconds="2.000">
 		<Partition_Schedule PartitionIdentifier="1" PartitionName="p0" PeriodSeconds="2.000" PeriodDurationSeconds="1.000">
 			<Window_Schedule WindowIdentifier="101" WindowStartSeconds="0.0" WindowDurationSeconds="1.000" PartitionPeriodStart="true" />
@@ -191,80 +197,94 @@
 
   <Partition_HM_Table PartitionIdentifier="1" PartitionName="p0">
     <System_State_Entry Description="Partition Initialization" SystemState="2">
-      <Error_ID_Action Action="IDLE" Description="Partition Conf Error" ErrorIdentifier="3"/>
-      <Error_ID_Action Action="IDLE" Description="Partition Init Error" ErrorIdentifier="4"/>
-      <Error_ID_Action Action="COLD_START" Description="Segmentation Error" ErrorIdentifier="5"/>
-      <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="7"/>
-      <Error_ID_Action Action="COLD_START" Description="Divide by zero" ErrorIdentifier="8"/>
-      <Error_ID_Action Action="COLD_START" Description="Overflow Error" ErrorIdentifier="9"/>
-      <Error_ID_Action Action="WARM_START" Description="Floating Point Error" ErrorIdentifier="10"/>
-      <Error_ID_Action Action="COLD_START" Description="Stack error" ErrorIdentifier="12"/>
-      <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="14"/>
-      <Error_ID_Action Action="IGNORE" Description="Debug Error" ErrorIdentifier="15"/>
+      <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="0"/>
+      <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="1"/>
+      <Error_ID_Action Action="COLD_START" Description="Segmentation Error" ErrorIdentifier="2"/>
+      <Error_ID_Action Action="COLD_START" Description="Unimplemented Error" ErrorIdentifier="3"/>
+      <Error_ID_Action Action="IGNORE" Description="Floating Point Error" ErrorIdentifier="4"/>
+      <Error_ID_Action Action="COLD_START" Description="Overflow Error" ErrorIdentifier="5"/>
+      <Error_ID_Action Action="WARM_START" Description="Divide by zero" ErrorIdentifier="6"/>
+      <Error_ID_Action Action="COLD_START" Description="I/O Error" ErrorIdentifier="7"/>
+      <Error_ID_Action Action="IDLE" Description="Partition Conf Error" ErrorIdentifier="8"/>
+      <Error_ID_Action Action="IDLE" Description="Partition Init Error" ErrorIdentifier="9"/>
+      <Error_ID_Action Action="COLD_START" Description="Stack error" ErrorIdentifier="10"/>
+      <Error_ID_Action Action="IGNORE" Description="Debug Error" ErrorIdentifier="11"/>
+      <Error_ID_Action Action="WARM_START" Description="APEX Error" ErrorIdentifier="12"/>
     </System_State_Entry>
     <System_State_Entry Description="Partition Operating System" SystemState="3">
-      <Error_ID_Action Action="COLD_START" Description="Segmentation Error" ErrorIdentifier="5"/>
-      <Error_ID_Action Action="WARM_START" Description="Deadline Miss" ErrorIdentifier="6"/>
-      <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="7"/>
-      <Error_ID_Action Action="COLD_START" Description="Divide by zero" ErrorIdentifier="8"/>
-      <Error_ID_Action Action="COLD_START" Description="Overflow Error" ErrorIdentifier="9"/>
-      <Error_ID_Action Action="WARM_START" Description="Floating Point Error" ErrorIdentifier="10"/>
-      <Error_ID_Action Action="COLD_START" Description="Stack error" ErrorIdentifier="12"/>
-      <Error_ID_Action Action="COLD_START" Description="App Hardware Error" ErrorIdentifier="13"/>
-      <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="14"/>
-      <Error_ID_Action Action="IGNORE" Description="Debug Error" ErrorIdentifier="15"/>
+      <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="0"/>
+      <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="1"/>
+      <Error_ID_Action Action="COLD_START" Description="Segmentation Error" ErrorIdentifier="2"/>
+      <Error_ID_Action Action="COLD_START" Description="Unimplemented Error" ErrorIdentifier="3"/>
+      <Error_ID_Action Action="IGNORE" Description="Floating Point Error" ErrorIdentifier="4"/>
+      <Error_ID_Action Action="COLD_START" Description="Overflow Error" ErrorIdentifier="5"/>
+      <Error_ID_Action Action="COLD_START" Description="Divide by zero" ErrorIdentifier="6"/>
+      <Error_ID_Action Action="COLD_START" Description="I/O Error" ErrorIdentifier="7"/>
+      <Error_ID_Action Action="COLD_START" Description="Stack error" ErrorIdentifier="10"/>
+      <Error_ID_Action Action="IGNORE" Description="Debug Error" ErrorIdentifier="11"/>
+      <Error_ID_Action Action="WARM_START" Description="APEX Error" ErrorIdentifier="12"/>
+      <Error_ID_Action Action="WARM_START" Description="Deadline Miss" ErrorIdentifier="13"/>
+      <Error_ID_Action Action="COLD_START" Description="App Hardware Error" ErrorIdentifier="14"/>
     </System_State_Entry>
     <System_State_Entry Description="Partition Application" SystemState="4">
-      <Error_ID_Action Action="COLD_START" Description="Segmentation Error" ErrorIdentifier="5"/>
-      <Error_ID_Action Action="WARM_START" Description="Deadline Miss" ErrorIdentifier="6"/>
-      <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="7"/>
-      <Error_ID_Action Action="WARM_START" Description="Divide by zero" ErrorIdentifier="8"/>
-      <Error_ID_Action Action="WARM_START" Description="Overflow Error" ErrorIdentifier="9"/>
-      <Error_ID_Action Action="WARM_START" Description="Floating Point Error" ErrorIdentifier="10"/>
-      <Error_ID_Action Action="COLD_START" Description="Application Error" ErrorIdentifier="11"/>
-      <Error_ID_Action Action="COLD_START" Description="Stack error" ErrorIdentifier="12"/>
-      <Error_ID_Action Action="COLD_START" Description="App Hardware Error" ErrorIdentifier="13"/>
-      <Error_ID_Action Action="COLD_START" Description="Power Interrupt" ErrorIdentifier="14"/>
-      <Error_ID_Action Action="WARM_START" Description="Debug Error" ErrorIdentifier="15"/>
+      <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="0"/>
+      <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="1"/>
+      <Error_ID_Action Action="COLD_START" Description="Segmentation Error" ErrorIdentifier="2"/>
+      <Error_ID_Action Action="COLD_START" Description="Unimplemented Error" ErrorIdentifier="3"/>
+      <Error_ID_Action Action="IGNORE" Description="Floating Point Error" ErrorIdentifier="4"/>
+      <Error_ID_Action Action="WARM_START" Description="Overflow Error" ErrorIdentifier="5"/>
+      <Error_ID_Action Action="WARM_START" Description="Divide by zero" ErrorIdentifier="6"/>
+      <Error_ID_Action Action="COLD_START" Description="I/O Error" ErrorIdentifier="7"/>
+      <Error_ID_Action Action="COLD_START" Description="Stack error" ErrorIdentifier="10"/>
+      <Error_ID_Action Action="IGNORE" Description="Debug Error" ErrorIdentifier="11"/>
+      <Error_ID_Action Action="WARM_START" Description="APEX Error" ErrorIdentifier="12"/>
+      <Error_ID_Action Action="WARM_START" Description="Deadline Miss" ErrorIdentifier="13"/>
     </System_State_Entry>
   </Partition_HM_Table>
   <Partition_HM_Table PartitionCallback="partition_HM_callback" PartitionIdentifier="2" PartitionName="p1">
     <System_State_Entry Description="Partition Initialization" SystemState="2">
-      <Error_ID_Action Action="IDLE" Description="Partition Conf Error" ErrorIdentifier="3"/>
-      <Error_ID_Action Action="IDLE" Description="Partition Init Error" ErrorIdentifier="4"/>
-      <Error_ID_Action Action="COLD_START" Description="Segmentation Error" ErrorIdentifier="5"/>
-      <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="7"/>
-      <Error_ID_Action Action="COLD_START" Description="Divide by zero" ErrorIdentifier="8"/>
-      <Error_ID_Action Action="COLD_START" Description="Overflow Error" ErrorIdentifier="9"/>
-      <Error_ID_Action Action="WARM_START" Description="Floating Point Error" ErrorIdentifier="10"/>
-      <Error_ID_Action Action="COLD_START" Description="Stack error" ErrorIdentifier="12"/>
-      <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="14"/>
-      <Error_ID_Action Action="IGNORE" Description="Debug Error" ErrorIdentifier="15"/>
+      <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="0"/>
+      <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="1"/>
+      <Error_ID_Action Action="COLD_START" Description="Segmentation Error" ErrorIdentifier="2"/>
+      <Error_ID_Action Action="COLD_START" Description="Unimplemented Error" ErrorIdentifier="3"/>
+      <Error_ID_Action Action="IGNORE" Description="Floating Point Error" ErrorIdentifier="4"/>
+      <Error_ID_Action Action="COLD_START" Description="Overflow Error" ErrorIdentifier="5"/>
+      <Error_ID_Action Action="IGNORE" Description="Divide by zero" ErrorIdentifier="6"/>
+      <Error_ID_Action Action="COLD_START" Description="I/O Error" ErrorIdentifier="7"/>
+      <Error_ID_Action Action="IDLE" Description="Partition Conf Error" ErrorIdentifier="8"/>
+      <Error_ID_Action Action="IDLE" Description="Partition Init Error" ErrorIdentifier="9"/>
+      <Error_ID_Action Action="COLD_START" Description="Stack error" ErrorIdentifier="10"/>
+      <Error_ID_Action Action="IGNORE" Description="Debug Error" ErrorIdentifier="11"/>
+      <Error_ID_Action Action="WARM_START" Description="APEX Error" ErrorIdentifier="12"/>
     </System_State_Entry>
     <System_State_Entry Description="Partition Operating System" SystemState="3">
-      <Error_ID_Action Action="COLD_START" Description="Segmentation Error" ErrorIdentifier="5"/>
-      <Error_ID_Action Action="WARM_START" Description="Deadline Miss" ErrorIdentifier="6"/>
-      <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="7"/>
-      <Error_ID_Action Action="COLD_START" Description="Divide by zero" ErrorIdentifier="8"/>
-      <Error_ID_Action Action="COLD_START" Description="Overflow Error" ErrorIdentifier="9"/>
-      <Error_ID_Action Action="WARM_START" Description="Floating Point Error" ErrorIdentifier="10"/>
-      <Error_ID_Action Action="COLD_START" Description="Stack error" ErrorIdentifier="12"/>
-      <Error_ID_Action Action="COLD_START" Description="App Hardware Error" ErrorIdentifier="13"/>
-      <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="14"/>
-      <Error_ID_Action Action="IGNORE" Description="Debug Error" ErrorIdentifier="15"/>
+      <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="0"/>
+      <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="1"/>
+      <Error_ID_Action Action="COLD_START" Description="Segmentation Error" ErrorIdentifier="2"/>
+      <Error_ID_Action Action="COLD_START" Description="Unimplemented Error" ErrorIdentifier="3"/>
+      <Error_ID_Action Action="IGNORE" Description="Floating Point Error" ErrorIdentifier="4"/>
+      <Error_ID_Action Action="COLD_START" Description="Overflow Error" ErrorIdentifier="5"/>
+      <Error_ID_Action Action="COLD_START" Description="Divide by zero" ErrorIdentifier="6"/>
+      <Error_ID_Action Action="COLD_START" Description="I/O Error" ErrorIdentifier="7"/>
+      <Error_ID_Action Action="COLD_START" Description="Stack error" ErrorIdentifier="10"/>
+      <Error_ID_Action Action="IGNORE" Description="Debug Error" ErrorIdentifier="11"/>
+      <Error_ID_Action Action="WARM_START" Description="APEX Error" ErrorIdentifier="12"/>
+      <Error_ID_Action Action="WARM_START" Description="Deadline Miss" ErrorIdentifier="13"/>
+      <Error_ID_Action Action="COLD_START" Description="App Hardware Error" ErrorIdentifier="14"/>
     </System_State_Entry>
     <System_State_Entry Description="Partition Application" SystemState="4">
-      <Error_ID_Action Action="COLD_START" Description="Segmentation Error" ErrorIdentifier="5"/>
-      <Error_ID_Action Action="WARM_START" Description="Deadline Miss" ErrorIdentifier="6"/>
-      <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="7"/>
-      <Error_ID_Action Action="WARM_START" Description="Divide by zero" ErrorIdentifier="8"/>
-      <Error_ID_Action Action="WARM_START" Description="Overflow Error" ErrorIdentifier="9"/>
-      <Error_ID_Action Action="WARM_START" Description="Floating Point Error" ErrorIdentifier="10"/>
-      <Error_ID_Action Action="COLD_START" Description="Application Error" ErrorIdentifier="11"/>
-      <Error_ID_Action Action="COLD_START" Description="Stack error" ErrorIdentifier="12"/>
-      <Error_ID_Action Action="COLD_START" Description="App Hardware Error" ErrorIdentifier="13"/>
-      <Error_ID_Action Action="COLD_START" Description="Power Interrupt" ErrorIdentifier="14"/>
-      <Error_ID_Action Action="WARM_START" Description="Debug Error" ErrorIdentifier="15"/>
+      <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="0"/>
+      <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="1"/>
+      <Error_ID_Action Action="COLD_START" Description="Segmentation Error" ErrorIdentifier="2"/>
+      <Error_ID_Action Action="COLD_START" Description="Unimplemented Error" ErrorIdentifier="3"/>
+      <Error_ID_Action Action="IGNORE" Description="Floating Point Error" ErrorIdentifier="4"/>
+      <Error_ID_Action Action="WARM_START" Description="Overflow Error" ErrorIdentifier="5"/>
+      <Error_ID_Action Action="WARM_START" Description="Divide by zero" ErrorIdentifier="6"/>
+      <Error_ID_Action Action="COLD_START" Description="I/O Error" ErrorIdentifier="7"/>
+      <Error_ID_Action Action="COLD_START" Description="Stack error" ErrorIdentifier="10"/>
+      <Error_ID_Action Action="IGNORE" Description="Debug Error" ErrorIdentifier="11"/>
+      <Error_ID_Action Action="WARM_START" Description="APEX Error" ErrorIdentifier="12"/>
+      <Error_ID_Action Action="WARM_START" Description="Deadline Miss" ErrorIdentifier="13"/>
     </System_State_Entry>
   </Partition_HM_Table>
 
