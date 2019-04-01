@@ -155,8 +155,40 @@ void pmk_partition_halt(pmk_partition_t *partition) {
  */
 void pmk_partition_restart(pmk_partition_t *partition) {
 
-    /* halt the partition */
-    pmk_partition_halt(partition);
+    cpu_preemption_flags_t flags;
+
+    air_u32_t i, vcpu;
+
+    /* get current core */
+    air_u32_t core_id = bsp_get_core_id();
+
+    /* halt partition's other cores */
+    for (i = 0; i < partition->cores; ++i) {
+        if (partition->core_mapping[i] < PMK_MAX_CORES &&
+            partition->core_mapping[i] != core_id) {
+
+            core_context_set_ipc_message(&partition->context[i],
+                    PMK_IPC_TRASH_PARTITION_CORE);
+            bsp_interrupt_core(partition->core_mapping[i], BSP_IPC_IRQ);
+
+        } else {
+            /*This vcpu is responsible for partition reload*/
+            vcpu = i;
+        }
+    }
+
+    /* flag the partition as halted*/
+    partition->state = PMK_PARTITION_STATE_HALTED;
+
+    cpu_enable_preemption(flags);
+
+    /* reload partition */
+    pmk_partition_load(partition->elf, cpu_get_physical_addr(partition->mmu_ctrl, partition->mmap->v_addr), partition->mmap->v_addr);
+
+    cpu_disable_preemption(flags);
+
+    /*Now this vcpu can go idle*/
+    core_context_setup_idle(&partition->context[vcpu]);
 
     /* flag it to initialize on the next scheduling point */
     partition->state = PMK_PARTITION_STATE_INIT;
