@@ -16,11 +16,9 @@
 #ifndef apx_a653_decl
 #define apx_a653_decl
 
+#include <air.h>
 
 #define MAX_NUMBER_OF_PARTITIONS SYSTEM_LIMIT_NUMBER_OF_PARTITIONS
-
-#define ERROR_HANDLER_PRIO MAX_PRIORITY_VALUE
-#define PARTITION_ERROR_HANDLER_PRIO 6
 
 #define SYSTEM_LIMIT_NUMBER_OF_PARTITIONS 32         /* module scope       */
 #define SYSTEM_LIMIT_NUMBER_OF_MESSAGES 512          /* module scope       */
@@ -258,13 +256,6 @@ extern void RAISE_APPLICATION_ERROR (
 	/*in */ MESSAGE_ADDR_TYPE 		MESSAGE_ADDR,
 	/*in */ ERROR_MESSAGE_SIZE_TYPE LENGTH,
 	/*out*/ RETURN_CODE_TYPE  		*RETURN_CODE );
-
-
-typedef enum{
-    partition_init = 4,
-	partition_error_handler = 6,
-	process_execution = 7
-}system_state_type;
 
 
 /* MMS types and definitions ------------------------------- */
