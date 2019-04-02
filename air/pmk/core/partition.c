@@ -50,7 +50,7 @@ void pmk_partitions_init(void) {
         partition->start_condition = AIR_START_CONDITION_NORMAL;
 
         /* initialize the partition reset count */
-        partition->restart_count = ~0;
+        partition->restart_count = 0;
 
         /* initialize PMK internal partition state*/
         partition->state = PMK_PARTITION_STATE_NOT_RUN;
@@ -96,9 +96,6 @@ void pmk_partition_start(pmk_partition_t *partition, core_context_t *context) {
    /* reset elapsed ticks and last tick */
    partition->elapsed_ticks = 0;
    partition->last_clock_tick = 0;
-
-   /* increment the number of restarts */
-   ++partition->restart_count;
 
    /* reset entry point */
    core_context_set_entry_point(context, NULL);
@@ -157,7 +154,7 @@ void pmk_partition_restart(pmk_partition_t *partition) {
 
     cpu_preemption_flags_t flags;
 
-    air_u32_t i, vcpu;
+    air_u32_t i, vcpu = 0;
 
     /* get current core */
     air_u32_t core_id = bsp_get_core_id();
@@ -189,6 +186,9 @@ void pmk_partition_restart(pmk_partition_t *partition) {
 
     /*Now this vcpu can go idle*/
     core_context_setup_idle(&partition->context[vcpu]);
+
+    /* increment the number of restarts */
+    ++partition->restart_count;
 
     /* flag it to initialize on the next scheduling point */
     partition->state = PMK_PARTITION_STATE_INIT;

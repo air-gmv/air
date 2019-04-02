@@ -35,7 +35,7 @@ air_status_code_e pmk_syscall_get_partition_id(
     if (NULL != name) {
 
         /* check partition permissions */
-        if ((partition->permissions & AIR_PERMISSION_ARINC_SYSTEM) == 0 &&
+        if ((partition->permissions & AIR_PERMISSION_SUPERVISOR) == 0 &&
             (partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0) {
 
             /* disable preemption and return */
@@ -94,7 +94,7 @@ air_status_code_e pmk_syscall_get_partition_status(
     if (pid >= 0 && partition->id != pid) {
 
         /* check partition permissions */
-        if ((partition->permissions & AIR_PERMISSION_ARINC_SYSTEM) == 0 &&
+        if ((partition->permissions & AIR_PERMISSION_SUPERVISOR) == 0 &&
             (partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0) {
 
             /* disable preemption and return */
@@ -123,13 +123,7 @@ air_status_code_e pmk_syscall_get_partition_status(
     local_status.permissions = partition->permissions;
     local_status.operating_mode = partition->mode;
     local_status.start_condition = partition->start_condition;
-
-    /* check if the partition was already executed */
-    if (partition->state != PMK_PARTITION_STATE_NOT_RUN) {
-        local_status.restart_count = partition->restart_count;
-    } else {
-        local_status.restart_count = 0;
-    }
+    local_status.restart_count = partition->restart_count;
 
     /* copy status to partition */
     if (pmk_segregation_put_user(context, local_status, status) != 0) {
@@ -156,7 +150,7 @@ air_status_code_e pmk_syscall_set_partition_mode(
 
         /* check for valid permissions */
         if ((partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0 &&
-            (partition->permissions & AIR_PERMISSION_ARINC_SYSTEM) == 0) {
+            (partition->permissions & AIR_PERMISSION_SUPERVISOR) == 0) {
 
             return AIR_INVALID_CONFIG;
         }
