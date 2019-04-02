@@ -85,8 +85,7 @@ typedef enum {
 #define AIR_PERMISSION_SET_TOD              0x00000010
 #define AIR_PERMISSION_SET_PARTITION_MODE   0x00000020
 #define AIR_PERMISSION_SET_SCHEDULE         0x00000040
-#define AIR_PERMISSION_ARINC_SYSTEM         0x00000080
-#define AIR_PERMISSION_MODULE_CONTROL       0x00000100
+#define AIR_PERMISSION_MODULE_CONTROL       0x00000080
 #else
 
 
@@ -151,10 +150,8 @@ typedef enum {
     AIR_PERMISSION_SET_PARTITION_MODE     = 0x00000020,
     /** Can set change the module schedule                                  */
     AIR_PERMISSION_SET_SCHEDULE           = 0x00000040,
-    /** Act as ARINC system partition                                       */
-    AIR_PERMISSION_ARINC_SYSTEM           = 0x00000080,
     /** Can control the module (without supervisor)                         */
-    AIR_PERMISSION_MODULE_CONTROL         = 0x00000100,
+    AIR_PERMISSION_MODULE_CONTROL         = 0x00000080
 
 } air_permissions_e;
 
