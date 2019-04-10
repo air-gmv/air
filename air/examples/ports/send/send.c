@@ -12,9 +12,8 @@
 #include <rtems/rtems/tasks.h> 
 #include <rtems/rtems/sem.h> 
 #include <rtems/rtems/clock.h> 
- 
-#include <a653.h>
-#include <air.h>
+
+#include <imaspex.h>
 
 #ifdef RTEMS48I
 	#include <pprintf.h>
@@ -23,7 +22,7 @@
 
 
 
-#define TPS 100 /*ticks per second specified in the XML*/
+#define TPS 200 /*ticks per second specified in the XML*/
 
 SAMPLING_PORT_ID_TYPE SEND_PORT;
 QUEUING_PORT_ID_TYPE qpid;
@@ -33,7 +32,7 @@ QUEUING_PORT_ID_TYPE qpid;
  *			outputs a simple string via a sampling port		* 
 ------------------------------------------------------------*/
 
-void test(PARTITION_ID_TYPE self_id) {
+void test(uintptr_t self_id) {
 
 	char message[18]= "This is sample 0\0";
 	int i=0;

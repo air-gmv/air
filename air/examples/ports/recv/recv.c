@@ -12,16 +12,15 @@
 #include <rtems/rtems/tasks.h> 
 #include <rtems/rtems/sem.h> 
 #include <rtems/rtems/clock.h> 
- 
-#include <a653.h>
-#include <air.h>
+
+#include <imaspex.h>
 
 #ifdef RTEMS48I
 	#include <pprintf.h>
 #endif
 
 
-#define TPS 100 /*ticks per second specified in the XML*/
+#define TPS 200 /*ticks per second specified in the XML*/
 
 
 SAMPLING_PORT_ID_TYPE RECV_PORT;
