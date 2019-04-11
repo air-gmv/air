@@ -1,70 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<ARINC_653_Module ModuleName="bare">
+<ARINC_653_Module ModuleName="periodic">
 
-	
-  <!-- partition producer 0-->
+
+  <!-- partition 0-->
   <Partition PartitionIdentifier="1" PartitionName="p0" Criticality="LEVEL_A" SystemPartition="true" EntryPoint="producer">
-    <Sampling_Port Direction="SOURCE" MaxMessageSize="32" Name="SEND_SAMP1" RefreshRateSeconds="1.000"/>
-    <Sampling_Port Direction="DESTINATION" MaxMessageSize="32" Name="RECV_SAMP1" RefreshRateSeconds="1.000"/>
-    <PartitionConfiguration Personality="RTEMS48I" Cores="1" Mode="binary">
+    <PartitionConfiguration Personality="RTEMS48I" Cores="1">
       <Libs>LIBAIR;IMASPEX;LIBPRINTF</Libs>
       <Cache>CODE; DATA</Cache>
       <Memory Size="0x500000" />
       <Permissions>
-       CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+       CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
       </Permissions>
-    </PartitionConfiguration>         
+    </PartitionConfiguration>
   </Partition>
 
-  <!-- partition receiver 1 -->
-  <Partition PartitionIdentifier="2" PartitionName="p1" Criticality="LEVEL_A" SystemPartition="true" EntryPoint="receiver">
-    <Sampling_Port Direction="SOURCE" MaxMessageSize="32" Name="SEND_SAMP2" RefreshRateSeconds="1.000"/>
-    <Sampling_Port Direction="DESTINATION" MaxMessageSize="32" Name="RECV_SAMP2" RefreshRateSeconds="1.000"/>
-    <PartitionConfiguration Personality="RTEMS48I" Cores="1" Mode="binary">
-      <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
-      <Cache>CODE; DATA</Cache>
-      <Memory Size="0x500000" />
-      <Permissions>
-       CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
-      </Permissions>
-    </PartitionConfiguration>         
-  </Partition>
-  
-	<Module_Schedule  ScheduleIdentifier="1" ScheduleName="test_sched" InitialModuleSchedule="true" MajorFrameSeconds="2.000">
-		<Partition_Schedule PartitionIdentifier="1" PartitionName="p0" PeriodSeconds="2.000" PeriodDurationSeconds="1.000">
-			<Window_Schedule WindowIdentifier="101" WindowStartSeconds="0.0" WindowDurationSeconds="1.000" PartitionPeriodStart="true" />
-			<WindowConfiguration WindowIdentifier="101" Cores="0" />
-		</Partition_Schedule>
-		<Partition_Schedule PartitionIdentifier="2" PartitionName="p1" PeriodSeconds="2.000" PeriodDurationSeconds="1.000">
-			<Window_Schedule WindowIdentifier="201" WindowStartSeconds="1.0" WindowDurationSeconds="1.000" PartitionPeriodStart="true" />
-			<WindowConfiguration WindowIdentifier="201" Cores="1" />
-		</Partition_Schedule>
-	</Module_Schedule>
-  
-    <Connection_Table>
-    <Channel ChannelIdentifier="1" ChannelName="SAMPLING1">
-      <Source>
-        <Standard_Partition PartitionIdentifier="1" PartitionName="p0" PortName="SEND_SAMP1"/>
-      </Source>
-      <Destination>
-        <Standard_Partition PartitionIdentifier="2" PartitionName="p1" PortName="RECV_SAMP2"/>
-      </Destination>
-    </Channel>
-    
-    <Channel ChannelIdentifier="1" ChannelName="SAMPLING2">
-      <Source>
-        <Standard_Partition PartitionIdentifier="2" PartitionName="p1" PortName="SEND_SAMP2"/>
-      </Source>
-      <Destination>
-        <Standard_Partition PartitionIdentifier="1" PartitionName="p0" PortName="RECV_SAMP1"/>
-      </Destination>
-    </Channel>
-    </Connection_Table>  
+    <Module_Schedule  ScheduleIdentifier="1" ScheduleName="test_sched" InitialModuleSchedule="true" MajorFrameSeconds="2.000">
+        <Partition_Schedule PartitionIdentifier="1" PartitionName="p0" PeriodSeconds="2.000" PeriodDurationSeconds="1.000">
+            <Window_Schedule WindowIdentifier="101" WindowStartSeconds="0.0" WindowDurationSeconds="1.000" PartitionPeriodStart="true" />
+            <WindowConfiguration WindowIdentifier="101" Cores="0" />
+        </Partition_Schedule>
+    </Module_Schedule>
 
-	 
-	 
-  <AIR_Configuration TicksPerSecond="1000" RequiredCores="2"/>
-  
+  <AIR_Configuration TicksPerSecond="1000" RequiredCores="1"/>
+
 </ARINC_653_Module>
 
 
