@@ -165,8 +165,9 @@ void core_context_setup_partition(
         /* setup partition real PSR */
         isf->psr = SPARC_PSR_S_MASK;
 
-        /* check if the partition have supervisor permissions */
-        if ((partition->permissions & AIR_PERMISSION_SUPERVISOR) != 0) {
+        /* check if the partition have supervisor permissions*/
+        /* This check should be whether it's a System_Partition or not (TODO)*/
+        if (partition->permissions == AIR_PERMISSION_SUPERVISOR) {
 
             isf->psr |= SPARC_PSR_PS_MASK;
         }

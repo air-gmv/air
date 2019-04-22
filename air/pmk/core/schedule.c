@@ -178,7 +178,7 @@ void pmk_apply_next_schedule(pmk_core_ctrl_t *core) {
         }
 
         /* apply schedule change permission */
-        if (1 == partition_schedule->set_schedule) {
+        if (1 == partition_schedule->set_schedule || AIR_PERMISSION_SUPERVISOR == partition->permissions) {
 
             partition_schedule->partition->permissions |=
                     AIR_PERMISSION_SET_SCHEDULE;
