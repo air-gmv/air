@@ -35,8 +35,7 @@ air_status_code_e pmk_syscall_get_partition_id(
     if (NULL != name) {
 
         /* check partition permissions */
-        if ((partition->permissions & AIR_PERMISSION_SUPERVISOR) == 0 &&
-            (partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0) {
+        if ((partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0) {
 
             /* disable preemption and return */
             cpu_disable_preemption(flags);
@@ -94,8 +93,7 @@ air_status_code_e pmk_syscall_get_partition_status(
     if (pid >= 0 && partition->id != pid) {
 
         /* check partition permissions */
-        if ((partition->permissions & AIR_PERMISSION_SUPERVISOR) == 0 &&
-            (partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0) {
+        if ((partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0) {
 
             /* disable preemption and return */
             cpu_disable_preemption(flags);
@@ -149,8 +147,7 @@ air_status_code_e pmk_syscall_set_partition_mode(
     if (partition->id != pid && pid != -1) {
 
         /* check for valid permissions */
-        if ((partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0 &&
-            (partition->permissions & AIR_PERMISSION_SUPERVISOR) == 0) {
+        if ((partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0){
 
             return AIR_INVALID_CONFIG;
         }
