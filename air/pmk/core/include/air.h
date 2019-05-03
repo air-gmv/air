@@ -153,7 +153,7 @@ typedef enum {
     /** Can control the module (without supervisor)                         */
     AIR_PERMISSION_MODULE_CONTROL         = 1 << 6,
     /** Supervisor access                                                   */
-    AIR_PERMISSION_SUPERVISOR             = ~(1 << 7)
+    AIR_PERMISSION_SUPERVISOR             = (1 << 7) - 1
 
 } air_permissions_e;
 
