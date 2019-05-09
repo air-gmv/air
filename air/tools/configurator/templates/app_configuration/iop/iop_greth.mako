@@ -71,6 +71,7 @@ static iop_eth_device_t device_configuration = ${'\\'}
     /* ethernet configuration */
     .ip         = { ${', '.join(device.setup.ip)} },
     .mac        = { ${', '.join(['0x{0}'.format(o) for o in device.setup.mac])} },
+    .id         = ${device.setup.id},
     .rx_count   = ${device.setup.rxd_count},
     .tx_count   = ${device.setup.txd_count}
 };
