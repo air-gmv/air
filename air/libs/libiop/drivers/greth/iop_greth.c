@@ -153,8 +153,7 @@ static int greth_initialize_hardware(iop_eth_device_t *device){
     int tmp2;
     greth_regs *regs;
     unsigned int msecs;
-	char *memarea;
-	
+
 	greth_softc_t *sc = (greth_softc_t *)device->dev.driver;
 
 
@@ -545,7 +544,7 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
         /* replace pointer in the descriptor */
         sc->txdesc[sc->tx_ptr].addr =
                 (uint32_t *)((uintptr_t)temp->p_addr + temp->header_off);
-        
+
         /* enable descriptor*/
         if (sc->tx_ptr < sc->txbufs - 1) {
 
@@ -570,46 +569,38 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
 }
 
 uint32_t greth_initialize(iop_device_driver_t *iop_dev, void *arg) {
-	
-	/* Enable Eth Clock gate */
-        clock_gating_enable(&ambapp_plb, GATE_ETH0);
-    
-        int device_found = 0;
-	rtems_status_code status = RTEMS_SUCCESSFUL;
-	struct ambapp_apb_info apbgreth;
-	
-	iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
-	struct greth_softc *sc = (struct greth_softc *)(device->dev.driver);
 
-	memset(&apbgreth, 0, sizeof(struct ambapp_apb_info));
-	
-	/* Scan for MAC AHB slave interface */
-	device_found = ambapp_find_apbslv(&ambapp_plb, VENDOR_GAISLER, GAISLER_ETHMAC,
-									&apbgreth);
+    struct ambapp_apb_info apbgreth;
+    iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
+    struct greth_softc *sc = (struct greth_softc *)(device->dev.driver);
 
-	if (device_found != 1){
-	    iop_debug("    GRETH device not found...\n");
-		return RTEMS_INTERNAL_ERROR;
-	}
-	
-	if (status == RTEMS_SUCCESSFUL){
+    /* Enable Eth Clock gate */
+    clock_gating_enable(&ambapp_plb, GATE_ETH0+device->id);
 
-		/* Store configuration parameters */
-		sc->txbufs = device->tx_count;
-		sc->rxbufs = device->rx_count;
-		
-		sc->regs = (void *)apbgreth.start;
-		
-		sc->acceptBroadcast = 0;
-		sc->tx_blocking = 0;
-		sc->rx_blocking = 0;
-		sc->wait_ticks = 1;
-		
-		/* Device was innited */
-		sc->started = 1;
-	}
-	
-	return status;
+    memset(&apbgreth, 0, sizeof(struct ambapp_apb_info));
+
+    /* Scan for MAC AHB slave interface */
+    if (amba_find_next_apbslv(&ambapp_plb, VENDOR_GAISLER, GAISLER_ETHMAC,
+                                    &apbgreth,device->id) != 1){
+        iop_debug("    GRETH device not found...\n");
+        return RTEMS_INTERNAL_ERROR;
+    }
+
+    /* Store configuration parameters */
+    sc->txbufs = device->tx_count;
+    sc->rxbufs = device->rx_count;
+
+    sc->regs = (void *)apbgreth.start;
+
+    sc->acceptBroadcast = 0;
+    sc->tx_blocking = 0;
+    sc->rx_blocking = 0;
+    sc->wait_ticks = 1;
+
+    /* Device was initiate */
+    sc->started = 1;
+
+    return RTEMS_SUCCESSFUL;
 }
 
 uint32_t greth_open(iop_device_driver_t *iop_dev, void *arg) {
