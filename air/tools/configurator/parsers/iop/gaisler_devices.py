@@ -72,6 +72,7 @@ VALID_MODE                  = [ str, lambda x : x in [ 'BC', 'RT'] ]
 class GRETHPhySetup(object):
 
     def __init__(self):
+        self.id         = 0
         self.ip         = ''            # ip address
         self.mac        = ''            # mac address
         self.txd_count  = 0             # number of tx descriptors
@@ -153,11 +154,11 @@ class SPWRTRSchSetup(object):
 
     def details(self):
         return 'SPWRTR Schedule Setup (Reads - {0})'.format(self.reads)
-    
-    
+
+
 # CANBUS physical device
 class GRCANPhySetup(object):
-    
+
     def __init__(self):
         self.can_core = 0
         self.baud = 0
@@ -168,18 +169,18 @@ class GRCANPhySetup(object):
         self.selection = 0
         self.enable0 = 0
         self.enable1 = 1
-        
+
     def details(self):
-        return 'CAN Physical Device Setup (Baud: {0} TXD: {1} RXD: {2} Code: {3} Mask: {4} Selection: {5} Enable0: {6} Enable1: {7})'\
-        .format( self.baud, self.txd, self.rxd, self.code, self.mask, self.selection, self.enable0, self.enable1)
-        
+        return 'CAN Physical Device Setup (Core: {0} Baud: {0} TXD: {1} RXD: {2} Code: {3} Mask: {4} Selection: {5} Enable0: {6} Enable1: {7})'\
+        .format( self.can_core, self.baud, self.txd, self.rxd, self.code, self.mask, self.selection, self.enable0, self.enable1)
+
 # CANBUS Schedule device setup
 class GRCANSchSetup(object):
-    
+
     def __init__(self):
         self.device = None
         self.reads  = ''            # number of reads per period
-        
+
     def details(self):
         return 'CANBUS Schedule Setup (Reads - {0}'.format(self.reads)
 
@@ -216,6 +217,7 @@ def phy_greth(iop_parser, xml, pdevice):
 
     # parse setup
     setup           = GRETHPhySetup()
+    setup.id        = pdevice.minor
     setup.ip        = xml.parse_attr(GRETH_IP, VALID_IP, True, iop_parser.logger)
     setup.mac       = xml.parse_attr(GRETH_MAC, VALID_MAC, True, iop_parser.logger)
     setup.txd_count = xml.parse_attr(GRETH_TXD, VALID_XD, True, iop_parser.logger)
@@ -354,14 +356,15 @@ def phy_grcan(iop_parser, xml, pdevice):
 
     # parse setup
     setup                   = GRCANPhySetup()
-    setup.baud	            = xml.parse_attr(CANBUS_BAUD, VALID_READS, True, iop_parser.logger)
+    setup.can_core          = pdevice.minor
+    setup.baud              = xml.parse_attr(CANBUS_BAUD, VALID_READS, True, iop_parser.logger)
     setup.txd_count         = xml.parse_attr(CANBUS_TXD, VALID_XD, True, iop_parser.logger)
     setup.rxd_count         = xml.parse_attr(CANBUS_RXD, VALID_XD, True, iop_parser.logger)
     setup.code              = xml.parse_attr(CANBUS_CODE, VALID_MASK_CODE, True, iop_parser.logger)
     setup.mask              = xml.parse_attr(CANBUS_MASK, VALID_MASK_CODE, True, iop_parser.logger)
-    setup.selection			= xml.parse_attr(CANBUS_SELECTION, VALID_EN, True, iop_parser.logger)
-    setup.enable0			= xml.parse_attr(CANBUS_ENABLE0, VALID_EN, True, iop_parser.logger)
-    setup.enable1			= xml.parse_attr(CANBUS_ENABLE1, VALID_EN, True, iop_parser.logger)
+    setup.selection         = xml.parse_attr(CANBUS_SELECTION, VALID_EN, True, iop_parser.logger)
+    setup.enable0           = xml.parse_attr(CANBUS_ENABLE0, VALID_EN, True, iop_parser.logger)
+    setup.enable1           = xml.parse_attr(CANBUS_ENABLE1, VALID_EN, True, iop_parser.logger)
 
     # sanity check
     if iop_parser.logger.check_errors(): return False
@@ -373,10 +376,10 @@ def phy_grcan(iop_parser, xml, pdevice):
 # @param xml XML setup node
 # @param pdevice current physical device
 def sch_grcan(iop_parser, xml, pdevice):
-    
+
     # clear previous errors and warnings
     iop_parser.logger.clear_errors(0)
-    
+
     # parse setup
     setup       = GRCANSchSetup()
     setup.reads = xml.parse_attr(CANBUS_READS, VALID_READS, True, iop_parser.logger)
