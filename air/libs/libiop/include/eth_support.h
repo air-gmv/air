@@ -24,6 +24,7 @@ typedef struct {
     iop_device_driver_t dev;        /**< Generic device configuration   */
     uint8_t ip[4];                  /**< Device IP address              */
     uint8_t mac[6];                 /**< Device MAC address             */
+    uint8_t id;                     /**< Device ID                      */
     uint16_t rx_count;              /**< Device RX descriptor count     */
     uint16_t tx_count;              /**< Device TX descriptor count     */
 
