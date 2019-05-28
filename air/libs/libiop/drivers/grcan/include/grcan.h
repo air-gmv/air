@@ -25,6 +25,7 @@
 #include <air.h>
 #include <iop.h>
 #include <can_support.h>
+#include <stdint.h>
 
 #ifndef __GRCAN_H__
 #define __GRCAN_H__
@@ -247,25 +248,13 @@ typedef struct grcan_priv_ {
 
 	rtems_id rx_sem, tx_sem, txempty_sem, dev_sem;
 
-	/* AIR Memory */
-	iop_buffer_t *iop_buffers;
-	uint8_t *iop_buffers_storage;
-	iop_buffer_t **tx_iop_buffer; /* mapping of TX descriptor and IOP buffers */
-	iop_buffer_t **rx_iop_buffer; /* mapping of RX descriptor and IOP buffers */
-
 } grcan_priv;
 
-
-
-/*
- * Return number of GRCAN devices available to driver
- */
-int grcan_dev_count(void);
 
 /*
  * Initialize GRCAN
  * */
-iop_device_operation iop_grcan_initialize(
+uint32_t iop_grcan_initialize(
 		iop_device_driver_t *iop_dev,
 		void *arg);
 
@@ -277,7 +266,7 @@ iop_device_operation iop_grcan_initialize(
  * return:	Device handle to use with all other grcan_ API functions. The
  *		function returns NULL if device can not be opened.
  */
-iop_device_operation iop_grcan_open(iop_device_driver_t *iop_dev,
+uint32_t iop_grcan_open(iop_device_driver_t *iop_dev,
 		void *arg);
 
 /*
@@ -296,7 +285,7 @@ iop_device_operation iop_grcan_open(iop_device_driver_t *iop_dev,
  *
  * return: This function always returns 0 (success)
  */
-iop_device_operation iop_grcan_close(iop_device_driver_t *iop_dev);
+uint32_t iop_grcan_close(iop_device_driver_t *iop_dev);
 
 /*
  * Receive CAN messages
@@ -317,7 +306,7 @@ iop_device_operation iop_grcan_close(iop_device_driver_t *iop_dev);
  *                              Device has left started mode.
  *   GRCAN_RET_AHBERR:          Similar to BUSOFF, but was caused by AHB Error.
  */
-iop_device_operation iop_grcan_read(
+uint32_t iop_grcan_read(
 	iop_device_driver_t *iop_dev,
 	void *arg
 );
@@ -341,7 +330,7 @@ iop_device_operation iop_grcan_read(
  *                              Device has left started mode
  *   GRCAN_RET_AHBERR:          Similar to BUSOFF, but was caused by AHB Error.
  */
-iop_device_operation iop_grcan_write(
+uint32_t iop_grcan_write(
 	iop_device_driver_t *iop_dev,
 	void *arg
 );
