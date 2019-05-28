@@ -21,7 +21,6 @@ typedef struct {
 	uint16_t tx_count;
 } iop_can_device_t;
 
-/* TODO the next three functions are stubs */
 void can_copy_header(
 		iop_physical_device_t *iop_dev,
 		iop_wrapper_t *wrapper,
