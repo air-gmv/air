@@ -41,6 +41,8 @@ typedef enum {
     PMK_PARTITION_STATE_RUNNING                 = 0x2,
     /** Partition execution halted                                          */
     PMK_PARTITION_STATE_HALTED                  = 0x3,
+    /** Partition is restarting                                             */
+    PMK_PARTITION_STATE_RESTARTING              = 0x4
 
 } pmk_partition_state_t;
 
@@ -121,9 +123,10 @@ void pmk_partition_halt(pmk_partition_t *partition);
 void pmk_partition_restart(pmk_partition_t *partition);
 
 /**
- * @brief Idle partition
+ * @brief Reload ELF into partition's memory
+ * @param partition partition control structure
  */
-void pmk_partition_idle(void);
+void pmk_partition_reload(pmk_partition_t *partition);
 
 /**
  * @brief Get partition configuration by Id
@@ -137,6 +140,13 @@ pmk_partition_t *pmk_get_partition_by_id(air_identifier_t pid);
  * @return partition configuration pointer if name is valid, NULL otherwise
  */
 pmk_partition_t *pmk_get_partition_by_name(air_name_ptr_t name);
+/**
+ * @brief Setups a reload partition context
+ * @param partition the partition to be reloaded
+ * @param context the core context responsible for the reload
+ */
+void core_context_setup_reload_partition(
+        core_context_t *context, pmk_partition_t *partition);
 /**
  * @brief Setups a core partition context
  * @param partition partition information

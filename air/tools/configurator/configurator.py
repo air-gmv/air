@@ -30,7 +30,7 @@ __app__			= os.path.basename(__file__)
 #Uncomment this for full debugging of an error and check configurator.log results
 # set level for logging.DEBUG for full info
 #logging.basicConfig(filename='configurator.log', format='%(levelname)s:%(filename)s:%(funcName)s:%(lineno)d:%(message)s', filemode='w', level=logging.INFO)
-logging.basicConfig(format='%(levelname)s:%(filename)s:%(funcName)s:%(lineno)d:%(message)s', filemode='w', level=logging.INFO)
+#logging.basicConfig(format='%(levelname)s:%(filename)s:%(funcName)s:%(lineno)d:%(message)s', filemode='w', level=logging.INFO)
 # we can set more attributes to log see https://docs.python.org/2/library/logging.html#logrecord-attributes
 
 ##
@@ -42,7 +42,6 @@ if __name__ == "__main__":
 
     # display
     terminal_utils.printWelcomeBox(AIR_CONFIG_WELCOME, __version__)
-
     # Handle input arguments
     arg_parser = ArgumentParser(prog=__file__, description=AIR_DESCRIPTION, formatter_class=RawTextHelpFormatter)
 

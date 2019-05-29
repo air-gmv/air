@@ -69,6 +69,15 @@ static void pmk_ipc_trash_partition_core(pmk_core_ctrl_t *core) {
     core_context_restore(core);
 }
 
+/**
+ * @brief Core reload
+ * @param core Executing core control structure
+ * @ingroup pmk_multicore
+ */
+static void pmk_ipc_reload_core(pmk_core_ctrl_t *core) {
+
+    core_context_setup_reload_partition(core->context, core->partition);
+}
 
 void pmk_ipc_handler(void *isf, pmk_core_ctrl_t *core) {
 
@@ -102,6 +111,10 @@ void pmk_ipc_handler(void *isf, pmk_core_ctrl_t *core) {
 
         case PMK_IPC_SET_TBR:
             pmk_ipc_set_tbr(core);
+            break;
+
+        case PMK_IPC_PARTITION_RESTART:
+            pmk_ipc_reload_core(core);
             break;
 
         /* no action */

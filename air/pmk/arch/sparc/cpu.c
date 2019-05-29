@@ -128,6 +128,49 @@ void core_context_setup_idle(core_context_t *context) {
     isf->nkpc = (air_u32_t)bsp_idle_loop + 0x00000004;
 }
 
+
+/**
+ * @brief Setups a reload partition context
+ * @param partition the partition to be reloaded
+ * @param context the core context responsible for the reload
+ *
+ * This function setups a core context the architecture dependent part of
+ * an reload context
+ */
+void core_context_setup_reload_partition(core_context_t *context, pmk_partition_t *partition) {
+
+    /* initialize the virtual core */
+    context->vcpu.psr = 0;
+    context->vcpu.tbr = 0;
+    context->vcpu.ipend = 0;
+    context->vcpu.imask = 0;
+    context->vcpu.mmu_ctrl = 1;
+    context->vcpu.mmu_fsr = 0;
+
+    /* initial stack frame */
+    sparc_interrupt_stack_frame_t *isf =
+            (sparc_interrupt_stack_frame_t *)(context->isf_stack_pointer);
+
+    /* setup the space for the 1st window and the restore point */
+    isf->i6_fp = (air_u32_t)isf;
+    context->stack_pointer = (void *)isf;
+
+    context->trash = 0;
+
+    /* The next ISR is handled as if it's interrupting an ISR */
+    context->isr_nesting_level = 2;
+
+    /* setup the context return PSR */
+    isf->psr  = SPARC_PSR_S_MASK;
+    isf->psr |= SPARC_PSR_PS_MASK;      /* the reload funtion is in the PMK */
+
+    /* setup the context entry point */
+    isf->pc   = (air_u32_t)pmk_partition_reload;
+    isf->nkpc = (air_u32_t)pmk_partition_reload + 0x00000004;
+    isf->i0 = (air_u32_t) partition;
+}
+
+
 /**
  * @brief Setups a core partition context
  * @param partition partition information
@@ -166,8 +209,9 @@ void core_context_setup_partition(
         /* setup partition real PSR */
         isf->psr = SPARC_PSR_S_MASK;
 
-        /* check if the partition have supervisor permissions */
-        if ((partition->permissions & AIR_PERMISSION_SUPERVISOR) != 0) {
+        /* check if the partition have supervisor permissions*/
+        /* This check should be whether it's a System_Partition or not (TODO)*/
+        if (partition->permissions == AIR_PERMISSION_SUPERVISOR) {
 
             isf->psr |= SPARC_PSR_PS_MASK;
         }
