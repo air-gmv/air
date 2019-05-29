@@ -1,27 +1,37 @@
-/*  Main
- *
- *  COPYRIGHT (c) 1989-1999.
- *  On-Line Applications Research Corporation (OAR).
- *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  $Id: init.c,v 1.13 2003/09/04 18:53:41 joel Exp $
- */
+/* ============================================================================
+ *  Copyright (C) GMVIS Skysoft S.A., 2008-2019
+ * ============================================================================
+ *  This file is part of the AIR - ARINC 653 Interface in RTEMS - Operating
+ *  system.
+ *  The license and distribution terms for this file may be found in the file 
+ *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE. 
+ * ==========================================================================*/
 
 #define CONFIGURE_INIT
 #include <air.h>
 
-#ifdef RTEMS48I
-	#include <pprintf.h>
-#else
+#include <stdlib.h>
 #include <time.h>
 #include <sys/time.h>
 #include <rtems/score/timespec.h>
-#endif
+#include <rtems/test.h>
+#include "tmacros.h"
+#include "test_support.h"
 
-#ifndef RTEMS48I
+struct
+{
+  char       name[5];
+  rtems_id   id;
+  int        expected_cpu;
+  cpu_set_t  cpuset;
+  bool       run;
+  int        actual_cpu;
+}task_param[2] = {
+/*  name task  id task   expected cpu     cpuset   run     cpu  */
+  {   "TA01"  ,  0x0   ,       1       , {{0x2}} , false  , -1},
+  {   "TA02"  ,  0x0   ,       0       , {{0x1}} , false  , -1}
+};
+
 static char *my_ctime( time_t t )
 {
   static char b[32];
@@ -29,26 +39,78 @@ static char *my_ctime( time_t t )
   b[ strlen(b) - 1] = '\0';
   return b;
 }
-#endif
+
+rtems_task Periodic_task(rtems_task_argument arg)
+{
+    struct timespec start;
+    char  buffer[10];   /* name assumed to be 10 characters or less */
+    int ticks_per_sec = 1000000 / air_syscall_get_us_per_tick();
+
+    rtems_name        name;
+    rtems_id          period;
+    rtems_status_code status;
+    name = rtems_build_name( 'P', 'E', 'R', '1' );
+    status = rtems_rate_monotonic_create( name, &period );
+
+    if ( status != 0 ) {
+        printf( "rtems_monotonic_create failed with status of %d.\n", status );
+        exit( 1 );
+    }
+    while ( 1 ) {
+        if ( rtems_rate_monotonic_period( period, ticks_per_sec ) == RTEMS_TIMEOUT )
+            break;
+
+        clock_gettime( CLOCK_REALTIME, &start );
+
+        /* Print the cpu number and task name */
+        locked_printf(
+            "HELLO WORLD CPU %lu running task %s @ %s:%ld\n",
+            rtems_get_current_processor(),
+            rtems_object_get_name( task_param[arg].id, sizeof(buffer), buffer ),
+            my_ctime(start.tv_sec), start.tv_nsec) ;
+
+        /* Perform some periodic actions */
+    }
+
+    /* missed period so delete period and SELF */
+    status = rtems_rate_monotonic_delete( period );
+    if ( status != 0 ) {
+        printf( "rtems_rate_monotonic_delete failed with status of %d.\n", status );
+        exit( 1 );
+    }
+    status = rtems_task_delete( RTEMS_SELF );    /* should not return */
+    printf( "rtems_task_delete returned with status of %d.\n", status );
+    exit( 1 );
+}
 
 void entry_point(void) 
 {
-    int ticks_per_sec = 1000000 / air_syscall_get_us_per_tick();
+    rtems_status_code status;    // status of rtems function
 
-	while(1)
-	{
-        #ifdef RTEMS48I
-            pprintf( "\n\n*** RTEMS48I HELLO WORLD TEST **********\n" );
-        #else
-            struct timespec start;
-            clock_gettime( CLOCK_REALTIME, &start );
+    locked_print_initialize();
 
-            printf( "\n\n*** RTEMS5 HELLO WORLD TEST **********\n" );
-            printf( "Time is : %s:%ld\n", my_ctime(start.tv_sec), start.tv_nsec);
-  //          printf("TOTAL PROCESSORS %d\nCURRENT PROCESSOR %d\n",(int)rtems_get_processor_count(), (int)rtems_get_current_processor());
+    for (int i=0; i <= 1; i++ ) 
+    {
+        status = rtems_task_create(
+                                rtems_build_name( task_param[i].name[0],task_param[i].name[1],task_param[i].name[2], task_param[i].name[3]),
+                                2,
+                                RTEMS_MINIMUM_STACK_SIZE,
+                                RTEMS_DEFAULT_MODES,
+                                RTEMS_FLOATING_POINT,
+                                &task_param[i].id
+                              );
 
-        #endif
+        directive_failed( status, "task create" );
 
-        rtems_task_wake_after(ticks_per_sec/10);
+        status = rtems_task_set_affinity( task_param[i].id, sizeof(cpu_set_t), &task_param[i].cpuset );
+
+        rtems_test_assert(status == RTEMS_SUCCESSFUL);
+        printf("> Set %s affinity to cpu %d\n", task_param[i].name, task_param[i].expected_cpu );
+
+        status = rtems_task_start( task_param[ i ].id, Periodic_task, i );
+        directive_failed( status, "task start" );
     }
+
+    /* Delete Init task*/
+    rtems_task_delete( RTEMS_SELF );
 }

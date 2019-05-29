@@ -46,7 +46,6 @@ class IOParser(object):
 
     def get_physical_device(self, pd_id):
 
-        self.logger.event(0, "PHY DEVS", self.physical_devices)
         pdevices = [pd for pd in self.physical_devices if pd.id == pd_id]
         return pdevices[0] if len(pdevices) == 1 else None
 
@@ -78,7 +77,7 @@ class IOParser(object):
             return False
 
         # store logical device
-        self.logger.information(1, ldevice.details())
+        self.logger.information(2, ldevice.details())
         ldevice.idx = len(self.logical_devices)
         self.logical_devices.append(ldevice)
         return True
@@ -135,15 +134,13 @@ class IOParser(object):
             return False
 
         # save port
-        self.logger.information(2, port.details())
+        self.logger.information(3, port.details())
         self.ports.append(port)
 
     ## Parse physical device
     # @param self object pointer
     # @param xml logical device xml node
     def parse_physical_device(self, xml):
-
-        self.logger.event(0, "     PARSING physical device")
 
         # clear previous errors and warnings
         self.logger.clear_errors(0)
@@ -153,7 +150,7 @@ class IOParser(object):
         pdevice.id = xml.parse_attr(PHYSICAL_DEVICE_ID, VALID_IDENTIFIER_TYPE, True, self.logger)
         pdevice.device = xml.parse_attr(PHYSICAL_DEVICE_NAME, VALID_NAME_TYPE, True, self.logger)
 
-        self.logger.event(0, "dev:" + pdevice.device)
+        self.logger.event(2, "dev:"+ pdevice.device)
         # sanity check
         if self.logger.check_errors(): return False
 
@@ -162,8 +159,7 @@ class IOParser(object):
 
         # get device alias
         try:
-            self.logger.event(0, "alias0: "+ pdevice.device)
-            self.logger.event(0, "alias: "+ self.iop_configuration.alias[pdevice.device])
+            self.logger.event(2, "alias: "+ self.iop_configuration.alias[pdevice.device])
             alias = self.iop_configuration.alias[pdevice.device]
             pdevice.device = alias
 
@@ -171,31 +167,26 @@ class IOParser(object):
             self.logger.event(0, "error:Exception, See details below")
             pass
 
-        self.logger.event(0, "dev: ", pdevice.device)
         # check for redefinitions
         if any(pdevice == other for other in self.physical_devices):
             self.logger.error(LOG_REDEFINITION, xml.sourceline, pdevice)
             return False
 
-        self.logger.event(0, "BEFORE")
         # check if the device is valid
         bsp_devices = self.iop_configuration.devices
         if pdevice.device not in bsp_devices:
             self.logger.error(LOG_UNSUPPORTED_DEVICE, xml.sourceline, bsp_devices)
             return False
 
-        self.logger.event(0, "AFTER", self.iop_configuration.devices)
         # extract the device name
         regex_match = match(PHYSICAL_DEVICE_PATTERN, pdevice.device)
         if not regex_match:
             self.logger.error(LOG_UNSUPPORTED_DEVICE, xml.sourceline, pdevice.device)
             return False
 
-        self.logger.event(0, "BEFORE")
         pdevice.type  = regex_match.group('type').upper()
         pdevice.minor = regex_match.group('minor').upper()
 
-        self.logger.event(0, "AFTER", pdevice.type)
         # check if a parser for that device is available
         if pdevice.type not in iop_supported_devices.keys():
             self.logger.error(LOG_UNSUPPORTED_DEVICE, xml.sourceline, pdevice.device)
@@ -211,30 +202,23 @@ class IOParser(object):
         if not pdevice.parser[1](self, xml, pdevice):
             return False
 
-        self.logger.information(1, pdevice.setup.details())
-
-        self.logger.event(0, 'BEFORE parsing physical routing')
+        self.logger.information(2, pdevice.setup.details())
 
         if ( pdevice.type == RTR ):
             pdevice.idx = len(self.physical_devices)
             self.physical_devices.append(pdevice)
-            self.logger.event(0, "     done PARSING SPWRTR device")
+            self.logger.event(2, "done PARSING SPWRTR device")
             return True
 
         # Parse physical Routing
         xml_routes = xml.parse_tag(ROUTE_PHYSICAL, 1, maxint, self.logger)
         for xml_route in xml_routes:
             rc &= self.parse_device_routes(xml_route, pdevice)
-            self.logger.event(0, rc)
 
-        self.logger.event(0, 'AFTER parsing physical routing and BEFORE logical')
         # Parse Logical Routing
         xml_routes = xml.parse_tag(ROUTE_LOGICAL, 1, maxint, self.logger)
         for nblroutes, xml_route in enumerate(xml_routes):
             rc &= self.parse_device_routes(xml_route, pdevice)
-            self.logger.event(0, rc)
-
-        self.logger.event(0, "PHYDEV?", rc)
 
         # Retrieve MIL-STD-1553 list
         if ( pdevice.type == MIL and pdevice.setup.mode == "BC" ):
@@ -243,15 +227,13 @@ class IOParser(object):
             xml_millist = xml.parse_tag(MILLIST, 1, maxint, self.logger)
             for xml_list in xml_millist:
                 rc &= self.parse_mil_list(xml_list, pdevice)
-            self.logger.event(0, rc)
             if rc:
-                self.logger.event(0, 'done parse MIL-STD-1553 device list')
+                self.logger.event(2, "done MIL LIST parsing")
 
         if rc:
             pdevice.idx = len(self.physical_devices)
             self.physical_devices.append(pdevice)
 
-        self.logger.event(0, "     done PARSING physical device")
         return rc
 
     ## Parse mil list
@@ -259,7 +241,7 @@ class IOParser(object):
     def parse_mil_list(self, xml, pdevice):
 
         # clear previous errors and warnings
-        self.logger.clear_errors(2)
+        self.logger.clear_errors(3)
 
         list       = MILList()
         list.id    = xml.parse_attr(MIL_ID, VALID_IDENTIFIER_TYPE, True, self.logger)
@@ -273,7 +255,7 @@ class IOParser(object):
         #    self.logger.error(LOG_REDEFINITION, xml.sourceline, list)
         #    return False
 
-        self.logger.information(2, list.details())
+        self.logger.event(2, list.details())
 
         # Parse List Slots
         xml_slots = xml.parse_tag(MILSLOT, 1, maxint, self.logger)
@@ -291,7 +273,7 @@ class IOParser(object):
     def parse_mil_slot(self, xml):
 
         # clear previous errors and warnings
-        self.logger.clear_errors(3)
+        self.logger.clear_errors(4)
 
         # parse attributes
         cmd = MILSlot()
@@ -306,7 +288,7 @@ class IOParser(object):
         cmd.wcmode  = xml.parse_attr(MILSLOTWCMODE, VALID_MILWCMODE_TYPE, True, self.logger)
         cmd.time = xml.parse_attr(MILSLOTTIME, VALID_MILTIME_TYPE, True, self.logger)
 
-        self.logger.information(3, cmd.details())
+        self.logger.information(4, cmd.details())
 
         # sanity check
         if self.logger.check_errors(): return False
@@ -330,7 +312,7 @@ class IOParser(object):
             if self.logger.check_errors(): return False
 
             # check if remote port exists
-            self.logger.event(0, "PHY PORT ID: ", port_id)
+            self.logger.event(2, ROUTE_PHYSICAL_STR.format(port_id))
             route.port = self.get_remote_port(port_id)
             if route.port is None:
                 self.logger.error(LOG_UNDEFINED, xml.sourceline, REMOTE_PORT_STR.format(port_id))
@@ -350,7 +332,7 @@ class IOParser(object):
 
             # check if logical device exists
             ldevice = self.get_logical_device(ld_id)
-            self.logger.event(0, "LOGICAL DEV is ", ldevice)
+            self.logger.event(2, ROUTE_LOGICAL_STR.format(ldevice.name))
             if ldevice is None:
                 self.logger.error(LOG_UNDEFINED, xml.sourceline, LOGICAL_DEVICE_STR.format(ld_id, '---'))
                 return False
@@ -374,8 +356,8 @@ class IOParser(object):
         if route.header is None: return False
 
         # parse complete
-        self.logger.information(2, route.details())
-        self.logger.information(3, route.header.details())
+        self.logger.information(3, route.details())
+        self.logger.information(4, route.header.details())
         self.routes.append(route)
         return True
 
@@ -509,7 +491,7 @@ class IOParser(object):
                 self.logger.error(LOG_PARTITION_NOT_SCHEDULED_1, xml.sourceline, self.partition, schedule)
                 return False
 
-            self.logger.information(1, partition_schedule.details())
+            self.logger.information(2, partition_schedule.details())
 
             # define routes scheduling
             route_schedule          = RouteSchedule()
@@ -568,7 +550,7 @@ class IOParser(object):
         route = routes[0]
         if active and not route in route_schedule.routes:
             route_schedule.routes.append(route)
-            self.logger.information(2, route.details())
+            self.logger.information(4, route.details())
 
         return True
 
@@ -592,7 +574,7 @@ class IOParser(object):
             # check if device exists
             pdevice  = self.get_physical_device(pd_id)
 
-            self.logger.event(0, "BEFORE PARSING PDEV SCHED", pdevice)
+            self.logger.event(2, "PARSING Physical Device (Id:{0}) schedule", pd_id)
             if pdevice is None:
                 self.logger.error(LOG_UNDEFINED, xml_device.sourceline, PHYSICAL_DEVICE_STR.format(pd_id, '---'))
                 rc = False
@@ -604,7 +586,7 @@ class IOParser(object):
                 rc = False
                 continue
 
-            self.logger.information(2, device.details())
+            self.logger.information(3, device.details())
             route_schedule.devices.append(device)
 
         return  rc
@@ -624,22 +606,22 @@ class IOParser(object):
         if xml is None: return False
 
         # parse logical devices
-        self.logger.event(0, LOG_EVENT_IOP_LDEVICES)
+        self.logger.event(1, LOG_EVENT_IOP_LDEVICES)
         xml_ldevices = xml.parse_tag(LOGICAL_DEVICE, 0, sys.maxint, self.logger)
         for xml_node in xml_ldevices: self.parse_logical_device(xml_node)
 
         # parse remote ports
-        self.logger.event(0, LOG_EVENT_IOP_REMOTE_PORTS)
+        self.logger.event(1, LOG_EVENT_IOP_REMOTE_PORTS)
         xml_rports = xml.parse_tag(REMOTE_PORT, 0, sys.maxint, self.logger)
         for xml_node in xml_rports: self.parse_remote_port(xml_node)
 
         # parse physical devices
-        self.logger.event(0, LOG_EVENT_IOP_PDEVICES)
+        self.logger.event(1, LOG_EVENT_IOP_PDEVICES)
         xml_pdevices = xml.parse_tag(PHYSICAL_DEVICE, 0, sys.maxint, self.logger)
         for xml_node in xml_pdevices: self.parse_physical_device(xml_node)
 
         # parse scheduling
-        self.logger.event(0, LOG_EVENT_IOP_SCHEDULE)
+        self.logger.event(1, LOG_EVENT_IOP_SCHEDULE)
         xml_schedules = xml.parse_tag(SCHEDULING, 1, sys.maxint, self.logger)
         for xml_node in xml_schedules: self.parse_schedule(xml_node)
 
