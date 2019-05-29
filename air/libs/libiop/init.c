@@ -58,16 +58,49 @@ static void iop_init_queues(void){
     iop_debug(" :: IOP - initializing queues (%i)\n",
               usr_configuration.wrappers_count);
 
-    /* setup IOP buffers */
-    setup_iop_buffers(
-            usr_configuration.iop_buffers,
-            usr_configuration.iop_buffers_storage,
-            usr_configuration.wrappers_count);
+    uint32_t i;
+    uint32_t size = 0;
+    union Config {
+        air_queuing_port_configuration_t *qport;
+        air_sampling_port_configuration_t *sport;
+    } config;
+
+    /*Find the largest of Remote Ports maxMsgSize*/
+    for (i = 0; i < usr_configuration.remote_ports.length; ++i) {
+
+        /* get port */
+        iop_port_t *port = get_remote_port(i);
+
+        if(port->type == AIR_QUEUING_PORT)
+        {
+            config.qport = (air_queuing_port_configuration_t *)port->configuration;
+            if (config.qport->max_message_size > size)
+                size = config.qport->max_message_size;
+        }
+        else
+        {
+            config.sport = (air_sampling_port_configuration_t *)port->configuration;
+            if (config.sport->max_message_size > size)
+                size = config.sport->max_message_size;
+        }
+    }
+    /* setup Remote Ports buffers */
+    for (i = 0; i < usr_configuration.wrappers_count; ++i) {
+        /* get virtual and physical addresses for this buffer, align to doubleword */
+        usr_configuration.iop_buffers[i].v_addr = (((uintptr_t)&usr_configuration.iop_buffers_storage[i * (size+94)] + 0x08) & ~(0x08-1)); //add max total space needed eth header (TCP) = 14+20+60 TODO remove 94 and use something proper
+
+        usr_configuration.iop_buffers[i].p_addr = (void *)air_syscall_get_physical_addr((uintptr_t)usr_configuration.iop_buffers[i].v_addr);
+
+    }
 
     /* append buffers to the wrappers */
-    uint32_t i;
     for (i = 0; i < usr_configuration.wrappers_count; ++i) {
         usr_configuration.wrappers[i].buffer = &usr_configuration.iop_buffers[i];
+#ifdef DBG_BUFFERS
+        iop_debug(" IOP :: Wrapper %d on v_addr 0x%06x\n", i, usr_configuration.wrappers[i].buffer->v_addr);
+#endif
+        /*initialize wrapper fragment queue*/
+        iop_chain_initialize_empty(&usr_configuration.wrappers[i].fragment_queue);
     }
 
     /* initialize chain of empty wrappers*/
@@ -75,9 +108,16 @@ static void iop_init_queues(void){
             &usr_configuration.free_wrappers,
             (void *)usr_configuration.wrappers,
             usr_configuration.wrappers_count, sizeof(iop_wrapper_t));
-}
 
-/**
+    /* setup fragment queue*/
+    iop_chain_initialize(
+            &usr_configuration.free_fragments,
+            (void *)usr_configuration.fragments,
+            usr_configuration.fragment_count, sizeof(iop_fragment_t));
+
+ }
+
+/**l
  * @brief Initializes physical and logical devices.
  */
 static void iop_init_devs() {

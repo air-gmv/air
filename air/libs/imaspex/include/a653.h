@@ -80,10 +80,10 @@ typedef enum {
 
 typedef enum {
 
-	IDLE                    = AIR_MODE_IDLE,
-	COLD_START              = AIR_MODE_COLD_START,
-	WARM_START              = AIR_MODE_WARM_START,
-	NORMAL                  = AIR_MODE_NORMAL
+	IDLE              = AIR_MODE_IDLE,
+	COLD_START        = AIR_MODE_COLD_START,
+	WARM_START        = AIR_MODE_WARM_START,
+	NORMAL            = AIR_MODE_NORMAL
 
 } OPERATING_MODE_TYPE;
 
@@ -127,8 +127,8 @@ typedef NAME_TYPE SAMPLING_PORT_NAME_TYPE;
 typedef APEX_INTEGER SAMPLING_PORT_ID_TYPE;
 
 typedef enum {
-    INVALID         = AIR_MESSAGE_INVALID,
-    VALID           = AIR_MESSAGE_VALID
+    INVALID    = AIR_MESSAGE_INVALID,
+    VALID      = AIR_MESSAGE_VALID
 } VALIDITY_TYPE;
 
 typedef struct {

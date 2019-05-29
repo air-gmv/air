@@ -40,8 +40,19 @@ static iop_logical_device_t *logical_device_list[${len(iop_configuration.logical
 
 static iop_wrapper_t requests_storage[${iop_configuration.requests}];
 
-${iop_template.IopBuffersStorage(iop_configuration.requests)}\
-
+<%
+    maxsize = 0
+    for i, port in enumerate(iop_configuration.ports):
+        if getattr(port, 'max_message_size', 0) > maxsize:
+            maxsize = port.max_message_size
+    maxsize += 94 # add space for headers. Max size is eth TCP: 14+20+60
+%>\
+/**
+ * @brief IOP buffers
+ */
+static iop_buffer_t iop_buffers[${iop_configuration.requests}];
+static uint8_t iop_buffers_storage[${iop_configuration.requests} * (${maxsize} + 94)];
+static iop_fragment_t fragments[${iop_configuration.requests}];
 
 /**
  * @brief IOP application configurations
@@ -51,7 +62,9 @@ iop_configuration_t usr_configuration = {
     .wrappers               = requests_storage,
     .iop_buffers            = iop_buffers,
     .iop_buffers_storage    = iop_buffers_storage,
-    .wrappers_count           = ${iop_configuration.requests},
+    .wrappers_count         = ${iop_configuration.requests},
+    .fragments              = fragments,
+    .fragment_count         = ${iop_configuration.requests},
 
     .physical_devices       = {
         .length             = ${len(iop_configuration.physical_devices)},

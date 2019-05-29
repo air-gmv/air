@@ -22,6 +22,7 @@
 
 #include <iop.h>
 #include <stdint.h> 
+#include <eth_support.h>
 
 #define GRETH_TOTAL_BD           128	/**< Max number of decriptors*/
 #define GRETH_MAXBUF_LEN         1520	/**< Ethernet max frame size*/
@@ -266,5 +267,6 @@ uint32_t greth_read(iop_device_driver_t *iop_dev, void *arg);
  *         RTEMS_SUCCESSFUL otherwise
  **/
 uint32_t greth_write(iop_device_driver_t *iop_dev, void *arg);
+uint32_t greth_reset(iop_device_driver_t *iop_dev);
 
 #endif /* __IOP_GRETH_H__ */
