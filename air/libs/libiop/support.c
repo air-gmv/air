@@ -48,26 +48,54 @@ void release_wrapper(iop_wrapper_t *wrapper) {
 
     wrapper->timer = 0;
     iop_buffer_t *buf = wrapper->buffer;
-    memset(buf->v_addr, 0, buf->payload_size);
+    memset(buf->v_addr, 0, get_buffer_size(buf));
     buf->header_off = 0;
     buf->header_size = 0;
     buf->payload_off = 0;
     buf->payload_size = 0;
     buf->size = 0;
 
+    while(!iop_chain_is_empty(&wrapper->fragment_queue)){
+        release_fragment(obtain_fragment(&wrapper->fragment_queue));
+    }
+
     iop_chain_append(&usr_configuration.free_wrappers, &wrapper->node);
 }
 
-iop_wrapper_t *obtain_wrapper(iop_chain_control *ctl) {
+void release_fragment(iop_fragment_t *fragment) {
 
+    fragment->payload = NULL;
+    fragment->header_size=0;
+    fragment->payload_size=0;
+    memset(fragment->header, 0, sizeof(iop_header_t));
+   
+    iop_chain_append(&usr_configuration.free_fragments, &fragment->node);
+}
+
+
+static inline iop_chain_node * obtain_node(iop_chain_control *ctl){
+    
     iop_chain_node *node = NULL;
     if (ctl != NULL) {
         /* get the node from the chain*/
         node = iop_chain_get(ctl);
     }
 
+    /* Return the node*/
+    return node;
+
+}
+
+iop_wrapper_t *obtain_wrapper(iop_chain_control *ctl) {
+
     /* Return the empty wrapper*/
-    return (iop_wrapper_t *)node;
+    return (iop_wrapper_t *)obtain_node(ctl);
+}
+
+iop_fragment_t *obtain_fragment(iop_chain_control *ctl){
+
+    /* Return the empty fragment*/
+    return (iop_fragment_t *)obtain_node(ctl);
 }
 
 void update_queue_timers(iop_chain_control *queue, uint32_t timeout) {
@@ -102,7 +130,7 @@ void update_queue_timers(iop_chain_control *queue, uint32_t timeout) {
 
                 /* release the request wrapper */
                 release_wrapper(curr_wrapper);
-
+            
                 /* continue processing the new wrapper */
                 curr_wrapper = next_wrapper;
 
@@ -129,8 +157,8 @@ void update_timers() {
 
     uint32_t i;
 
-    iop_debug("    updating logical devices timers (%i)\n",
-              usr_configuration.logical_devices.length);
+//    iop_debug("    updating logical devices timers (%i)\n",
+//              usr_configuration.logical_devices.length);
 
     for (i = 0; i < usr_configuration.logical_devices.length; ++i) {
 
@@ -143,8 +171,8 @@ void update_timers() {
         //update_request_timers(&ldev->pending_rcvqueue, usr_configuration.time_to_live);
     }
 
-    iop_debug("    updating physical devices timers (%i)\n",
-              usr_configuration.physical_devices.length);
+ //   iop_debug("    updating physical devices timers (%i)\n",
+//            usr_configuration.physical_devices.length);
 
     /* iterate over all physical devices */
     for (i = 0; i < usr_configuration.physical_devices.length; ++i) {
@@ -156,7 +184,7 @@ void update_timers() {
         update_queue_timers(&pdev->sendqueue, usr_configuration.time_to_live);
         update_queue_timers(&pdev->rcvqueue, usr_configuration.time_to_live);
     }
-    iop_debug("     leaving update_timers\n");
+  //  iop_debug("     leaving update_timers\n");
 }
 
 /**
@@ -204,4 +232,25 @@ void clock_gating_enable(struct ambapp_bus* clk_amba_bus, clock_gating_device co
 
     /* 5. Lock the GR1553 gate */
     CLEAR_BIT_REG(&gate_regs->unlock, core_to_enable);
+}
+
+void clock_gating_disable(struct ambapp_bus* clk_amba_bus, clock_gating_device core_to_enable)
+{
+        /* Amba APB device */
+        struct ambapp_apb_info ambadev;
+
+        /* Get AMBA AHB device info from Plug&Play */
+        if(amba_find_next_apbslv(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE,&ambadev,0 ) == 0){
+
+            /* Device not found */
+            iop_debug("    Clock Gating unit not found!\n");
+            return;
+        }
+
+        /* Copy pointer to device's memory mapped registers */
+        struct clkgate_regs *gate_regs = (void *)ambadev.start;
+
+        SET_BIT_REG(&gate_regs->unlock, core_to_enable);
+        CLEAR_BIT_REG(&gate_regs->clock_enable, core_to_enable);
+        CLEAR_BIT_REG(&gate_regs->unlock, core_to_enable);
 }

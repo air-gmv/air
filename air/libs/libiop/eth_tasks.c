@@ -49,38 +49,60 @@ eth_writer(iop_physical_device_t * pdev)
     /* get underlying driver */
     iop_eth_device_t *eth_driver = (iop_eth_device_t *) pdev->driver;
 
-    iop_debug(" :: IOP - eth-writer running!\n");
+    static iop_wrapper_t *wrapper=NULL;
 
-    /* empty send queue */
-    while (!iop_chain_is_empty(&pdev->sendqueue))
+     uint32_t i=0;
+     uint32_t reads =
+        pdev->reads_per_period[air_schedule.current_schedule_index];
+
+//    iop_debug(" :: IOP - eth-writer running!\n");
+
+    while ((!iop_chain_is_empty(&pdev->sendqueue) || wrapper!=NULL) && i<reads)
     {
-        iop_wrapper_t *wrapper = obtain_wrapper(&pdev->sendqueue);
-        uint8_t *message = (uint8_t *)
-            ((uintptr_t) wrapper->buffer->v_addr + sizeof(iop_header_t));
-
+        /*no wrapper set for trasnmition?*/
+        if(wrapper==NULL){
+            wrapper=obtain_wrapper(&pdev->sendqueue);
+            eth_fragment_packet(wrapper);
+        }
         /* write to the device */
         if (eth_driver->dev.write((iop_device_driver_t *) eth_driver,
-                                  wrapper) == RTEMS_SUCCESSFUL)
+                                 wrapper) == RTEMS_SUCCESSFUL)
         {
+            /*all fragments sent?*/
+            if(iop_chain_is_empty(&wrapper->fragment_queue)){
 
-            release_wrapper(wrapper);
-            /* error sending packet */
+                release_wrapper(wrapper);
+                wrapper=NULL;
+            }                
         }
         else
         {
-
+            /*TODO review this, beware of requeueing*/
             iop_chain_append(&error, &wrapper->node);
             iop_raise_error(HW_WRITE_ERROR);
         }
+        i++;
     }
 
     /* re-queue failed transmissions */
-    while (!iop_chain_is_empty(&error))
-    {
+    while (!iop_chain_is_empty(&error)){
         iop_wrapper_t *wrapper = obtain_wrapper(&error);
 
         iop_chain_append(&pdev->sendqueue, &wrapper->node);
     }
+}
+
+int packet_is_final(iop_wrapper_t *wrapper){
+
+    iop_fragment_t *frag = wrapper->fragment_queue.last;
+
+    if((frag->header.eth_header.ipoffset[0] & 0x20)==0){
+        /*no more fragments*/
+     //   iop_debug("no more frags %d\n", frag->header.eth_header.ipoffset[0]);
+        return 1;
+    }
+
+    return 0;
 }
 
 /**
@@ -97,7 +119,6 @@ eth_writer(iop_physical_device_t * pdev)
  *  Failed reads are reported to FDIR
  *  
  */
-
 void
 eth_reader(iop_physical_device_t * pdev)
 {
@@ -118,8 +139,10 @@ eth_reader(iop_physical_device_t * pdev)
     /* get underlying driver */
     iop_eth_device_t *driver = (iop_eth_device_t *) pdev->driver;
 
-    iop_debug(" :: IOP - eth-reader running!\n");
+   // iop_debug(" :: IOP - eth-reader running!\n");
 
+    static iop_wrapper_t *wrapper = NULL;
+    iop_wrapper_t *aux=NULL;
     uint32_t i;
     uint32_t skip;
     uint32_t reads =
@@ -127,44 +150,60 @@ eth_reader(iop_physical_device_t * pdev)
     for (i = 0; i < reads; ++i)
     {
 
-        /* get an empty reply wrapper */
-        iop_wrapper_t *wrapper = obtain_free_wrapper();
+        if(wrapper == NULL){
+            wrapper=obtain_free_wrapper();
 
-        /* sanity check */
-        if (wrapper == NULL)
+            /* sanity check */
+            if (wrapper == NULL)
+            {
+                iop_raise_error(OUT_OF_MEMORY);
+                break;
+            }
+ 
+        }
+
+        /*auxiliary wrapper for ARP bufer swapping*/
+        aux=obtain_free_wrapper();
+        if (aux == NULL)
         {
             iop_raise_error(OUT_OF_MEMORY);
             break;
         }
-
+        
+        /*safeguard original wrapper buffer*/
+        iop_buffer_t *aux_buf= aux->buffer;
+        aux->buffer=wrapper->buffer;
+        
         /* read from the device */
         if (driver->dev.read((iop_device_driver_t *) driver, wrapper) == 0)
         {
+
             switch (eth_get_packet_type(wrapper->buffer))
             {
                 /* ARP packet */
-            case HTONS(ETH_HDR_ARP_TYPE):
+            case HTONS(ETH_HDR_ARP_TYPE): 
+                /*GRETH read swaps original wrapper buffer with ARP buffer*/
                 eth_send_arp_reply(driver, wrapper);
+                /*restore original wrapper buffer*/
+                wrapper->buffer=aux->buffer;
                 break;
 
                 /* IPv4 packet */
             case HTONS(ETH_HDR_IP_TYPE):
-                
-                /* check if it valid UDP packet for us */
-                if (eth_validate_packet(driver, wrapper))
-                {
-
+                if(packet_is_final(wrapper)){
                     iop_chain_append(&pdev->rcvqueue, &wrapper->node);
                     wrapper = NULL;
                 }
                 break;
+            
+            default:
+             //   iop_debug("other packet\n");
+                break;
             }
         }
 
-        /* free wrapper if it wasn't used */
-        if (wrapper != NULL)
-        {
-            release_wrapper(wrapper);
-        }
+        /*restore auxiliary wrapper buffer for release*/
+        aux->buffer=aux_buf;
+        release_wrapper(aux);
     }
 }
