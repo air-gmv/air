@@ -54,6 +54,23 @@ class a653parser(object):
 
         return None if not matches else matches[0]
 
+    def validate_a653(self, value, attr, definition, logger):
+
+        validator = definition[1]
+        if attr is None:
+            return False
+        try:
+            valid = validator(value)
+        except:
+            logger.logger.exception("Exception, See details below")
+            valid = False
+        
+        # Invalid value
+        if not valid:
+            self.logger.warning(LOG_NOT_A653, value, attr)
+            return False
+        return True
+
     ## Parse partition
     # @param self object pointer
     # @param xml_node partition XML node
@@ -67,14 +84,16 @@ class a653parser(object):
         partition 				= Partition()
         partition.id          	= xml_node.parse_attr(PARTITION_ID, VALID_IDENTIFIER_TYPE, True, self.logger)
         partition.name        	= xml_node.parse_attr(PARTITION_NAME, VALID_NAME_TYPE, False, self.logger)
+        self.validate_a653(partition.name,PARTITION_NAME, VALID_NAME_TYPE_A653, self.logger)
         partition.is_system   	= xml_node.parse_attr(PARTITION_IS_SYSTEM, VALID_BOOLEAN_TYPE, False, self.logger)
         partition.criticality 	= xml_node.parse_attr(PARTITION_CRITICALITY, VALID_CRITICALITY_TYPE, False, self.logger)
         partition.entry_point 	= xml_node.parse_attr(PARTITION_ENTRY_POINT, VALID_NAME_TYPE, False, self.logger)
+        self.validate_a653(partition.entry_point, PARTITION_ENTRY_POINT, VALID_NAME_TYPE_A653, self.logger)
         partition.xml_line    	= xml_node.sourceline
-
+        
         # sanity check
         if self.logger.check_errors(): return False
-
+      
         # check for partition redefinition
         if any(partition == other for other in self.partitions):
             self.logger.error(LOG_REDEFINITION, xml_node.sourceline, partition)
@@ -119,6 +138,7 @@ class a653parser(object):
         # parse queuing port
         qport                   = QueuingPort()
         qport.name              = xml.parse_attr(QUEUING_PORT_NAME, VALID_NAME_TYPE, True, self.logger)
+        self.validate_a653(qport.name,QUEUING_PORT_NAME,  VALID_NAME_TYPE_A653, self.logger)
         qport.direction         = xml.parse_attr(QUEUING_PORT_DIRECTION, VALID_DIRECTION_TYPE, True, self.logger)
         qport.discipline        = ''
         qport.max_nb_message    = xml.parse_attr(QUEUING_PORT_MAX_NB_MSGS, VALID_DECIMAL_TYPE, True, self.logger)
@@ -152,6 +172,7 @@ class a653parser(object):
         # parse sampling port
         sport                   = SamplingPort()
         sport.name              = xml.parse_attr(SAMPLING_PORT_NAME, VALID_NAME_TYPE, True, self.logger)
+        self.validate_a653(sport.name,SAMPLING_PORT_NAME, VALID_NAME_TYPE_A653, self.logger)
         sport.direction         = xml.parse_attr(SAMPLING_PORT_DIRECTION, VALID_DIRECTION_TYPE, True, self.logger)
         sport.refresh_period    = xml.parse_attr(SAMPLING_PORT_REFRESH_RATE, VALID_FLOAT_TYPE, True, self.logger)
         sport.max_message_size  = xml.parse_attr(SAMPLING_PORT_MAX_MSG_SIZE, VALID_DECIMAL_TYPE, True, self.logger)
@@ -188,6 +209,7 @@ class a653parser(object):
         schedule = Schedule()
         schedule.id         = xml_node.parse_attr(SCHEDULE_ID, VALID_IDENTIFIER_TYPE, True, self.logger)
         schedule.name       = xml_node.parse_attr(SCHEDULE_NAME, VALID_NAME_TYPE, True, self.logger)
+        self.validate_a653(schedule.name,SCHEDULE_NAME, VALID_NAME_TYPE_A653, self.logger)
         schedule.is_initial = xml_node.parse_attr(SCHEDULE_IS_INITIAL, VALID_BOOLEAN_TYPE, multiple, self.logger, True)
         schedule.mtf        = xml_node.parse_attr(SCHEDULE_MTF, VALID_FLOAT_TYPE, True, self.logger)
         schedule.xml_line   = xml_node.sourceline
@@ -383,6 +405,7 @@ class a653parser(object):
         channel             = Channel()
         channel.id          = xml.parse_attr(CHANNEL_ID, VALID_IDENTIFIER_TYPE, True, self.logger)
         channel.name        = xml.parse_attr(CHANNEL_NAME, VALID_NAME_TYPE, False, self.logger)
+        self.validate_a653(channel.name,CHANNEL_NAME, VALID_NAME_TYPE_A653, self.logger)
         channel.xml_line    = xml.sourceline
 
         # sanity check
@@ -571,8 +594,6 @@ class a653parser(object):
         # complete HM tables
         self.complete_hm_tables()
 
-        self.logger.event(0, "  PARSING connection table")
-
         # parse connection table
         self.logger.event(0, LOG_EVENT_CONNECTION_TABLE)
         xml_connection_table = xml.parse_tag(CONNECTION_TABLE, 0, 1, self.logger)
@@ -581,7 +602,6 @@ class a653parser(object):
             xml_channels = xml_connection_table.parse_tag(CHANNEL, 0, sys.maxint, self.logger)
             for xml_node in xml_channels: self.parse_channel(xml_node)
 
-        self.logger.event(0, "  PARSING ports table")
         # assign global index to the ports and check for unused ports
         index = 0
         self.logger.clear_errors(0)
@@ -592,10 +612,10 @@ class a653parser(object):
                     self.logger.error(LOG_UNUSED_PORT, port.xml_line, port)
 
 
-        self.logger.event(0, "  PARSING others")
+        self.logger.event(0, "PARSING others")
         # parse other extensions
         self.parse_other(xml)
-        self.logger.event(0, "  done PARSING others")
+        self.logger.event(0, "done PARSING others")
 
     def parse_hm_table(self, xml, target): pass
     def complete_hm_tables(self): pass

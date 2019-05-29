@@ -165,6 +165,7 @@ class PhysicalDevice(object):
         self.id             = 0
         self.device         = ''
         self.type           = ''
+        self.minor          = 0
         self.routes         = []
 
     def __eq__(self, other):

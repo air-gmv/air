@@ -176,7 +176,7 @@ void irqmp_enable_interrupt(air_u32_t core_id, air_u32_t tn) {
         pmk_irq_mask[core_id] |= 1 << tn;
         irqasmp.regs[0]->mask[core_id] |= 1 << tn;
         IRQ_mask_protected_interrupts |= (1 << tn);
-        IRQ_force_protected_interrupts &= ~((1 << tn) | (1 << (tn)));
+        IRQ_force_protected_interrupts &= ~(1 << tn);
     }
 
     return;
@@ -191,8 +191,8 @@ void irqmp_disable_interrupt(air_u32_t core_id, air_u32_t tn) {
 
         pmk_irq_mask[core_id] &= ~(1 << tn);
         irqasmp.regs[0]->mask[core_id] &= ~(1 << tn);
-        IRQ_mask_protected_interrupts |= (1 << tn);
-        IRQ_force_protected_interrupts &= ~((1 << tn) | (1 << (tn + 17)));
+        IRQ_mask_protected_interrupts &= ~(1 << tn);
+        IRQ_force_protected_interrupts |= (1 << tn);
     }
 
     return;
