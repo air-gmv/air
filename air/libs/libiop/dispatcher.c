@@ -183,8 +183,7 @@ static void process_remote_port(iop_port_t *port){
         /* get the message space */
         uint8_t *message = (uint8_t *)
                 ((uintptr_t)wrapper->buffer->v_addr + sizeof(iop_header_t));
-
-        /* read regular message */
+              /* read regular message */
         air_sampling_port_status_t status;
         status.operation = AIR_SAMPLING_MODE_REGULAR;
 
@@ -202,14 +201,11 @@ static void process_remote_port(iop_port_t *port){
             (port->type == AIR_QUEUING_PORT ||
             (port->type == AIR_SAMPLING_PORT &&
              status.last_msg_validity == AIR_MESSAGE_VALID))) {
-            
-
             /* setup the wrapper properties */
             wrapper->buffer->payload_off = sizeof(iop_header_t);
             wrapper->buffer->payload_size = size;
             wrapper->buffer->header_off = 0;
             wrapper->buffer->header_size = sizeof(iop_header_t);
-
 
             /* append data to aimed device */
             iop_chain_append(
@@ -218,12 +214,13 @@ static void process_remote_port(iop_port_t *port){
             /* if this an sampling port, the processing is over */
             if (port->type == AIR_SAMPLING_PORT) {
                 rc = AIR_NOT_AVAILABLE;
-            }
+             }
 
         } else {
             /* release the wrapper */
             release_wrapper(wrapper);
             rc = AIR_NOT_AVAILABLE;
+            iop_debug("IOP :: process remote port errors\n");
         }
         rtems_task_wake_after(1);
     }
@@ -245,20 +242,20 @@ static void process_request_port(iop_port_t *port){
 
     air_status_code_e rc = AIR_NO_ERROR;
 
-    /*
+#if 0
     while (rc != AIR_NOT_AVAILABLE) {
 
-        /* get a empty request wrapper from the wrapper chain*
+        /* get a empty request wrapper from the wrapper chain*/
         request_wrapper_t *incoming_request =
                 extract_request_wrapper(&usr_configuration.empty_requests);
 
-        /* check if an empty wrapper was available *
+        /* check if an empty wrapper was available */
         if (incoming_request == NULL) {
             iop_raise_error(NO_REQUESTS);
             break;
         }
 
-        /* read from port *
+        /* read from port */
         size_t size;
         rc = air_syscall_read_port(
                 port->type,
@@ -267,52 +264,53 @@ static void process_request_port(iop_port_t *port){
                 (size_t *)&size,
                 NULL);
 
-        /* if no errors occurred *
+        /* if no errors occurred */
         if (rc == AIR_NO_ERROR) {
 
-            /* validate service_request before processing it *
+            /* validate service_request before processing it */
             rtems_status_code status =
                     validate_service_request(incoming_request);
 
-            /* if request is valid *
+            /* if request is valid */
             if (status == RTEMS_SUCCESSFUL) {
 
-                /* dispatch current incoming request *
+                /* dispatch current incoming request */
                 process_service_request(incoming_request, port->id);
 
-            /* request is not valid, but the user wants a reply *
+            /* request is not valid, but the user wants a reply */
             } else if (incoming_request->doreply == 1) {
 
-                /* get a new reply wrapper *
+                /* get a new reply wrapper */
                 reply_wrapper_t *reply_wrapper = extract_reply_wrapper(
                                         &usr_configuration.empty_replys);
 
-                /* request is not valid *
+                /* request is not valid */
                 reply_wrapper->reply.status = RTEMS_INVALID_NUMBER;
 
-                /* send Reply and release request *
+                /* send Reply and release request */
                 append_reply(incoming_request, reply_wrapper);
 
-                /* avoid Releasing the incoming request twice *
+                /* avoid Releasing the incoming request twice */
                 status = RTEMS_SUCCESSFUL;
 
-            /* release request *
+            /* release request */
             } else {
 
-                /* release request *
+                /* release request */
                 free_request_wrapper(incoming_request);
             }
 
-            /* if this an sampling port, the processing is over *
+            /* if this an sampling port, the processing is over */
             if (port->type == AIR_SAMPLING_PORT) {
                  rc = AIR_NOT_AVAILABLE;
             }
         } else {
 
-            /* release request *
+            /* release request */
             free_request_wrapper(incoming_request);
         }
-    }*/
+    }
+#endif
 }
 
 /**
@@ -330,7 +328,7 @@ void pre_dispatcher(){
 
     uint32_t i;
 
-	iop_debug("\n :: IOP - pre-dispatcher running!\n");
+//	iop_debug("\n :: IOP - pre-dispatcher running!\n");
 
 	/* Get execution window reference time */
     /* this  call is for RTEMS 4.8, it is not deprecated */
@@ -398,7 +396,7 @@ void pos_dispatcher(){
 	//iop_task_sleep(0);
 	
 
-	iop_debug("\n :: IOP - pos-dispatcher doing nothing!\n");
+//	iop_debug("\n :: IOP - pos-dispatcher doing nothing!\n");
 
 //	rtems_interval time;
 //	/*rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time); // use this for rtems 4.8 */
@@ -408,36 +406,36 @@ void pos_dispatcher(){
 //	append_time_to_message(&msg_relay, time, 22+26);//22+52
 //	iop_debug("Relay at dispatcher: %s\n", msg_relay);
 
-
+#if 0
 	/* verify if the number of retries was exceeded */
 	//update_reply_timers(&error, usr_configuration.time_to_live);
 
-	/* retry to send failed replies: see if there are failed replies *
+	/* retry to send failed replies: see if there are failed replies */
 	while (!iop_chain_is_empty(&error)) {
 
-		/* extract reply from failed reply chain *
+		/* extract reply from failed reply chain */
 		reply_wrapper = extract_reply_wrapper(&error);
 
-		/* append previously failed reply to the pending reply chain *
+		/* append previously failed reply to the pending reply chain */
 		iop_chain_append(&usr_configuration.pending_replys,
 									&reply_wrapper->node);
 	}
 
-	/* while there are replies to be sent in the pending reply chain *
+	/* while there are replies to be sent in the pending reply chain */
 	while (!iop_chain_is_empty(&usr_configuration.pending_replys)) {
 
-		/* Get a reply wrapper from the pending replies chain *
+		/* Get a reply wrapper from the pending replies chain */
 		reply_wrapper = extract_reply_wrapper(&usr_configuration.pending_replys);
 
-		/* send reply *
+		/* send reply */
 		int rc = send_reply(reply_wrapper);
 
-		/* there was an error while sending the reply *
+		/* there was an error while sending the reply */
 		if (rc == 0){
 
-			/* add the reply to the temporary error chain *
+			/* add the reply to the temporary error chain */
 			iop_chain_append(&error, &reply_wrapper->node);
 		}
 	}
-	*/
+#endif
 }
