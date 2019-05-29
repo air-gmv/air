@@ -152,6 +152,15 @@ static inline void iop_chain_prepend_unprotected(
    iop_chain_insert_unprotected(iop_chain_head(chain), node);
 }
 
+static inline void iop_chain_prepend (
+        iop_chain_control *chain, iop_chain_node *node) {
+    ISR_Level level;
+    _ISR_Local_disable(level);
+    iop_chain_prepend_unprotected(chain , node);
+    _ISR_Local_enable(level);
+
+}
+
 static inline void iop_chain_append(
         iop_chain_control *chain, iop_chain_node *node){
 
