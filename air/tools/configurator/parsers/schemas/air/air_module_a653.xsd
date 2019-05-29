@@ -368,11 +368,11 @@ power up.</xs:documentation>
 	</xs:simpleType>
 	<xs:simpleType name="NameType">
 		<xs:annotation>
-			<xs:documentation>A 1..30 character string.</xs:documentation>
+			<xs:documentation>A 1..256 character string.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:minLength value="1"/>
-			<xs:maxLength value="30"/>
+			<xs:maxLength value="256"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="CriticalityType">
