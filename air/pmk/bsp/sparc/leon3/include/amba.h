@@ -149,7 +149,8 @@ int amba_get_apb_slave(
 /*
  * AMBA Plug & Play configuration area
  */
-extern amba_confarea_t amba_confarea;
+amba_confarea_t amba_confarea;
+
 
 /** @} */
 

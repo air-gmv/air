@@ -798,6 +798,12 @@ air_u32_t air_syscall_print(char *str, air_sz_t len);
 void air_syscall_shutdown_module(void);
 
 /**
+ * @brief Extract AMBA Plug & Play configuration area
+ * @param ambaptr pointer to amba config area
+ */
+air_uptr_t air_syscall_get_ambaconf(void);
+
+/**
  * @}
  */
 
@@ -843,6 +849,7 @@ void air_syscall_shutdown_module(void);
 #define AIR_SYSCALL_DISABLE_CACHE                  (AIR_SYSCALL_ARCH_COUNT + 34)
 #define AIR_SYSCALL_FREEZE_CACHE                   (AIR_SYSCALL_ARCH_COUNT + 35)
 #define AIR_SYSCALL_FLUSH_CACHE                    (AIR_SYSCALL_ARCH_COUNT + 36)
-#define AIR_SYSCALL_COUNT                          (AIR_SYSCALL_ARCH_COUNT + 37)
+#define AIR_SYSCALL_GET_AMBACONF                   (AIR_SYSCALL_ARCH_COUNT + 37)
+#define AIR_SYSCALL_COUNT                          (AIR_SYSCALL_ARCH_COUNT + 38)
 
 #endif /* __AIR_H__ */

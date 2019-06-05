@@ -16,13 +16,6 @@
 #include <console.h>
 #include <segregation.h>
 
-/**
- * @brief AMBA Plug & Play configuration area
- * @ingroup bsp_leon_amba
- */
-amba_confarea_t amba_confarea;
-
-
 extern void leon_restart_core();
 extern void leon_shutdown_core();
 extern void sparc_trap_table_int(void);

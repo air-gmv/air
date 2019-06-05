@@ -89,6 +89,7 @@ syscall_branch_table:
     ba,a    syscall_simple_return            ! disable cache (in user land)
     ba,a    syscall_simple_return            ! freeze cache (in user land)
     ba,a    syscall_simple_return            ! flush cache (in user land)
+    ba,a    sparc_isr_handler_entry          ! get amba configuration   (in C)
 
 /**
  * @brief Get current number of partition cores

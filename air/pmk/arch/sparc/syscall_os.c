@@ -23,7 +23,7 @@
 #include <health_monitor.h>
 #include <schedule.h>
 #include <configurations.h>
-
+#include <amba.h>
 
 #define LOW_BITS_MASK           0x000003FF
 #define HIGH_BITS_MASK          0xFFFFFC00
@@ -206,6 +206,10 @@ static void sparc_syscall_os_handler(
                     core,
                     (char *)isf->i0,
                     (air_sz_t)isf->i1);
+            break;
+
+        case AIR_SYSCALL_GET_AMBACONF:
+            isf->i0 = (air_u32_t)&amba_confarea;
             break;
 
         /* system call not defined */
