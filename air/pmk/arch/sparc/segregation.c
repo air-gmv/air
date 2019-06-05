@@ -355,7 +355,7 @@ static air_u32_t sparc_segregation_access_ok(void *addr, air_sz_t size) {
     }*/
 
     /* check if address is in the range of the partitions */
-    if ((air_uptr_t)addr < &ram_end) {
+    if (addr < (void *)&ram_end) {
         #ifdef PMK_DEBUG
             printk(" :: Segregation access not ok\n");
             printk("     on address 0x%06x\n", addr);
