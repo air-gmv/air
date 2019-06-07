@@ -10,7 +10,7 @@
  */
 
 #include <iop.h>
-#include <string.h>
+#include <bsp.h>
 #include <iop_support.h>
 #include <eth_support.h>
 #include <iop_error.h>
@@ -26,31 +26,31 @@
 static uint16_t chksum(uint16_t sum, const uint8_t *data, uint16_t len){
 
     uint16_t t;
-	const uint8_t *dataptr;
-	const uint8_t *last_byte;
+    const uint8_t *dataptr;
+    const uint8_t *last_byte;
 
-	dataptr = data;
-	last_byte = data + len - 1;
-  
-	while(dataptr < last_byte) {	/* At least two more bytes */
-		t = (dataptr[0] << 8) + dataptr[1];
-		sum += t;
-		if(sum < t) {
-			sum++;		/* carry */
-		}
-		dataptr += 2;
-	}
-  
-	if(dataptr == last_byte) {
-		t = (dataptr[0] << 8) + 0;
-		sum += t;
-		if(sum < t) {
-			sum++;		/* carry */
-		}
-	}
+    dataptr = data;
+    last_byte = data + len - 1;
 
-	/* Return sum in host byte order. */
-	return sum;
+    while(dataptr < last_byte) {    /* At least two more bytes */
+        t = (dataptr[0] << 8) + dataptr[1];
+        sum += t;
+        if(sum < t) {
+            sum++;      /* carry */
+        }
+        dataptr += 2;
+    }
+
+    if(dataptr == last_byte) {
+        t = (dataptr[0] << 8) + 0;
+        sum += t;
+        if(sum < t) {
+            sum++;      /* carry */
+        }
+    }
+
+    /* Return sum in host byte order. */
+    return sum;
 }
 
 uint16_t eth_ipv4_chksum(uint8_t *buf) {
@@ -138,15 +138,10 @@ void eth_copy_header(
     iop_buf->header_off = iop_buf->header_size - sizeof(eth_header_t);
     iop_buf->header_size = sizeof(eth_header_t);
     iop_buf->payload_off = iop_buf->header_size;
-        
-    /*Add missing space to UDP or TCP header. memmove does not overlap memory*/
- //   memmove(wrapper->buffer->v_addr+iop_buf->header_size, 
- //           wrapper->buffer->v_addr+offsetof(eth_header_t, proto_header.specific_header), 
- //           iop_buf->payload_size);
- 
+
     /* copy header from the route */
     memcpy(get_header(iop_buf), header, iop_buf->header_size);
-   
+
     /* complete header with the device parameters */
     eth_complete_header(
             iop_buf->v_addr, eth_dev->mac, eth_dev->ip,
@@ -190,11 +185,11 @@ void eth_send_arp_reply(iop_eth_device_t *eth_device, iop_wrapper_t *wrapper) {
             iop_raise_error(OUT_OF_MEMORY);
             return;
         }
-    
+
         frag->header_size = 0;
         frag->payload = get_header(wrapper->buffer);
         frag->payload_size = get_buffer_size(wrapper->buffer);
-        
+
         /*fetch auxiliar wrapper to swap buffers with
          * wrapper - arp wrapper
          * wrapper_send - wrapper to sent, where arp buffer will be*/
@@ -207,7 +202,7 @@ void eth_send_arp_reply(iop_eth_device_t *eth_device, iop_wrapper_t *wrapper) {
         iop_debug("ARP Reply Send 0x%06x 0x%06x %d\n", wrapper_send, wrapper_send->buffer, wrapper_send->buffer->payload_size ); 
         /* write packet */
         eth_device->dev.write((iop_device_driver_t *)eth_device, wrapper_send);
-        
+
         /*swap buffers back and release auxiliary wrapper*/
         wrapper->buffer=wrapper_send->buffer;
         wrapper_send->buffer=buffer;
@@ -239,8 +234,6 @@ static int eth_handle_fragments(iop_wrapper_t *wrapper)
     static unsigned char buf[14 + 65535]; /*14(eth)+20(IP)+8(UDP)+Data*/
     static unsigned int head;
 
-//printf("frag %d seq %d frag packet %d %d\n", frags, pack_seq, packet->ipoffset[0], packet->ipoffset[1] );
-
     /*if is a fragment or there were fragments and this packet has a sequence number*/
     if(packet->ipoffset[0] & 0x20 || (frags && pack_seq))
     {
@@ -249,11 +242,10 @@ static int eth_handle_fragments(iop_wrapper_t *wrapper)
         {
             if(!(packet->ipoffset[0] & 0x20))
             {  /*packet is complete*/
-             //   printf("packet complete\n");
-                
-                memmove(buf+head, get_payload(wrapper->buffer), get_payload_size(wrapper->buffer));
-                
-                memmove(wrapper->buffer->v_addr, buf, head + get_payload_size(wrapper->buffer));
+
+                memcpy(buf+head, get_payload(wrapper->buffer), get_payload_size(wrapper->buffer));
+
+                memcpy(wrapper->buffer->v_addr, buf, head + get_payload_size(wrapper->buffer));
 
                 /*Subtract from payload eth+IP header. We still need to subtract TCP/UDP header as well*/
                 wrapper->buffer->payload_size = head + get_payload_size(wrapper->buffer) - offsetof(eth_header_t, proto_header);
@@ -265,13 +257,12 @@ static int eth_handle_fragments(iop_wrapper_t *wrapper)
             {   /*still fragmented*/
                 if(!frags)
                 {   /*Initial fragment*/
-                 //   printf("first frag\n");
-                    memmove(buf, packet, get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer));
+                    memcpy(buf, packet, get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer));
                     head = get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer);
                 }
                 else
                 {
-                    memmove(buf+head, get_payload(wrapper->buffer), get_payload_size(wrapper->buffer));
+                    memcpy(buf+head, get_payload(wrapper->buffer), get_payload_size(wrapper->buffer));
                     head += get_payload_size(wrapper->buffer);
                 }
                 frags++;
@@ -282,7 +273,7 @@ static int eth_handle_fragments(iop_wrapper_t *wrapper)
         {   /*The sequence nb is not what we're looking for. restart if this packet has sq nb 0*/
             if(!pack_seq)
             {
-                memmove(buf, packet, get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer));
+                memcpy(buf, packet, get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer));
                 head = get_header_size(wrapper->buffer) + get_payload_size(wrapper->buffer);
 
                 frags = 1; /*restart packet sequence*/
@@ -298,7 +289,7 @@ static int eth_handle_fragments(iop_wrapper_t *wrapper)
         if(pack_seq)
             return 0; /*it's a out of order last fragment*/
         else{
-           iop_debug("Valid non fraged packet 0x%06x 0x%06x %d\n", get_header(wrapper->buffer), get_payload(wrapper->buffer), get_payload_size(wrapper->buffer)); 
+           iop_debug("Valid non fragged packet 0x%06x 0x%06x %d\n", get_header(wrapper->buffer), get_payload(wrapper->buffer), get_payload_size(wrapper->buffer)); 
         }
     }
     return 1;
@@ -310,7 +301,7 @@ uint32_t eth_validate_packet(
 
     /* get the IP header */
     eth_header_t *packet = (eth_header_t *)get_header(wrapper->buffer);
-    
+
    /* check if the packet was for us */
     if (!eth_compare_mac((uint16_t*)dev->mac, (uint16_t*)packet->dst_mac) ||
         !eth_compare_ip((uint16_t *)dev->ip, (uint16_t*)packet->dst_ip)){
@@ -375,21 +366,21 @@ uint32_t eth_fragment_packet(iop_wrapper_t *wrapper)
     uint8_t *next_payload = get_payload(wrapper->buffer);
     uint16_t total = 0;
 
-     
+
     /*fetch free fragment*/
     iop_fragment_t *frag = obtain_free_fragment();
     if(frag==NULL){
         iop_raise_error(OUT_OF_MEMORY);
         return -1;
     }
-    
+
     /*set first fragment*/
     /*this is independent on the packet needing fragmentation*/
     /*TODO rethink memcpy*/
     memcpy(&frag->header, get_header(wrapper->buffer), get_header_size(wrapper->buffer));
     iop_debug("FCH 0x%06x 0x%06x %d %d %d\n", &frag->header, wrapper->buffer, get_header_size(wrapper->buffer), frag->header.eth_header.dst_ip[0], wrapper->buffer->payload_size);
     frag->header_size = get_header_size(wrapper->buffer);
-    
+
     total += frag->header_size;
 
     frag->payload = get_payload(wrapper->buffer);
@@ -407,7 +398,7 @@ uint32_t eth_fragment_packet(iop_wrapper_t *wrapper)
     frag->header.eth_header.ipchksum = 0;
     frag->header.eth_header.ipchksum = ~eth_ipv4_chksum((uint8_t *)&frag->header);
     frag->payload_size = 1514 - frag->header_size; /*TODO 1514 again..*/
-    
+
     /*update auxiliars*/
     next_payload += frag->payload_size;
     total += frag->payload_size;
@@ -458,7 +449,7 @@ uint32_t eth_fragment_packet(iop_wrapper_t *wrapper)
         iop_chain_append(&wrapper->fragment_queue, &frag->node);
         frag=NULL;
     }
-    
+
     return 0;
 }
 
