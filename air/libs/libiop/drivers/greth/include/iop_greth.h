@@ -21,7 +21,6 @@
 #define __IOP_GRETH_H__
 
 #include <iop.h>
-#include <stdint.h> 
 #include <eth_support.h>
 
 #define GRETH_TOTAL_BD           128	/**< Max number of decriptors*/
