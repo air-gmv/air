@@ -8,14 +8,8 @@
  * http://www.rtems.org/license/LICENSE.
  */
 
-#include <bsp.h>
 #include <air.h>
-#include <rtems.h>
-
-#include <amba.h>
-#include <ambapp.h>
-#include <ambaext.h>
-
+#include <bsp.h>
 #include <IOPgrspw_router.h>
 #include <spw_support.h>
 
@@ -32,31 +26,42 @@
 
 static void router_hwinfo(router_priv_t *priv,	struct router_hw_info *hwinfo);
 static int router_config_set(router_priv_t *priv, router_config_t *cfg);
-static int router_config_read(router_priv_t *priv, router_config_t *cfg);
+//static int router_config_read(router_priv_t *priv, router_config_t *cfg);
 static int router_routes_set(router_priv_t *priv, router_routes *routes);
-static int router_routes_read(router_priv_t *priv, router_routes *routes);
+//static int router_routes_read(router_priv_t *priv, router_routes *routes);
 static int router_ps_set(router_priv_t *priv, router_ps *ps);
-static int router_ps_read(router_priv_t *priv, router_ps *ps);
+//static int router_ps_read(router_priv_t *priv, router_ps *ps);
 static int router_we_set(router_priv_t *priv, int we);
 static int router_port_ctrl(router_priv_t *priv, router_port *port);
-static int router_cfgsts_set(router_priv_t *priv, unsigned int cfgsts);
-static int router_cfgsts_read(router_priv_t *priv, unsigned int *cfgsts);
-static int router_tc_read(router_priv_t *priv, unsigned int *tc);
+//static int router_cfgsts_set(router_priv_t *priv, unsigned int cfgsts);
+//static int router_cfgsts_read(router_priv_t *priv, unsigned int *cfgsts);
+//static int router_tc_read(router_priv_t *priv, unsigned int *tc);
 
-rtems_device_driver spw_router_initialize(iop_device_driver_t *iop_dev, void *arg)
+void router_print_hwinfo(struct router_hw_info *hwinfo)
+{
+	iop_debug(" Hardware Configuration of SpaceWire Router:\n");
+	iop_debug("  Number of SpW ports:           %d\n", hwinfo->nports_spw);
+	iop_debug("  Number of AMBA ports:          %d\n", hwinfo->nports_amba);
+	iop_debug("  Number of FIFO ports:          %d\n", hwinfo->nports_fifo);
+	iop_debug("  Timers available:              %s\n", hwinfo->timers_avail ? "YES" : "NO");
+	iop_debug("  Plug and Play available:       %s\n", hwinfo->pnp_avail ? "YES" : "NO");
+	iop_debug("  MAJOR Version:                 %d\n", hwinfo->ver_major);
+	iop_debug("  MINOR Version:                 %d\n", hwinfo->ver_minor);
+	iop_debug("  PATCH Version:                 %d\n", hwinfo->ver_patch);
+	iop_debug("  Current Instance ID:           %d\n", hwinfo->iid);
+}
+
+air_status_code_e spw_router_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
 	
-	clock_gating_enable(&ambapp_plb, GATE_SPWR);
+	clock_gating_enable(&amba_confarea, GATE_SPWR);
 	int device_found = 0;
 	
-	struct ambapp_ahb_info ahbspwrtr;
+	amba_ahb_dev_t ahbspwrtr;
 	
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
 	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
 	
-	char prefix[32];
-	rtems_status_code status;
-
 	router_config_t *cfg = &priv->config;
 	
 	cfg->flags = device->flags;
@@ -69,14 +74,14 @@ rtems_device_driver spw_router_initialize(iop_device_driver_t *iop_dev, void *ar
 	for (j=0; j<32; j++)
 		cfg->timer_reload[j] = priv->timer_reload->timeout[j];	
 	
-	memset(&ahbspwrtr, 0, sizeof(struct ambapp_ahb_info));
+	memset(&ahbspwrtr, 0, sizeof(amba_ahb_dev_t));
 	
 	/* Scan for MAC AHB slave interface */
-	device_found = amba_find_next_ahbslv(&ambapp_plb, VENDOR_GAISLER, GAISLER_SPW_ROUTER, &ahbspwrtr, 0);
+	device_found = amba_get_ahb_slave(&amba_confarea, VENDOR_GAISLER, GAISLER_SPW_ROUTER, 0, &ahbspwrtr);
 									
 	if (device_found != 1){
 	    ROUTER_DBG2("SPWRTR device not found...\n");
-		return RTEMS_INTERNAL_ERROR;
+		return AIR_INTERNAL_ERROR;
 	}
 	
 	priv->regs = (struct router_regs *)0xFF880000;
@@ -91,18 +96,18 @@ rtems_device_driver spw_router_initialize(iop_device_driver_t *iop_dev, void *ar
 	priv->nports = priv->hwinfo.nports_spw + priv->hwinfo.nports_amba +
 			priv->hwinfo.nports_fifo;
 	if ( (priv->nports < 2) || (priv->nports > 32) ) {
-		ROUTER_DBG("RTEMS_INTERNAL_ERROR at priv->nports = %d\n", priv->nports);
-		return RTEMS_INTERNAL_ERROR;
+		ROUTER_DBG("AIR_INTERNAL_ERROR at priv->nports = %d\n", priv->nports);
+		return AIR_INTERNAL_ERROR;
 	}
 	
 	if ( router_we_set(priv, 0) ) {
-		ROUTER_DBG2("RTEMS_INTERNAL_ERROR at router_we_set\n");
-		return RTEMS_INTERNAL_ERROR;
+		ROUTER_DBG2("AIR_INTERNAL_ERROR at router_we_set\n");
+		return AIR_INTERNAL_ERROR;
 	}
 	
 	if ( router_config_set(priv, cfg) ) {
-		ROUTER_DBG2("RTEMS_INTERNAL_ERROR at router_config_set\n");
-		return RTEMS_INTERNAL_ERROR;
+		ROUTER_DBG2("AIR_INTERNAL_ERROR at router_config_set\n");
+		return AIR_INTERNAL_ERROR;
 	}
 	iop_debug("   Router config/status reg: 0x%x\n", REG_READ(&priv->regs->cfgsts));
 	
@@ -115,43 +120,41 @@ rtems_device_driver spw_router_initialize(iop_device_driver_t *iop_dev, void *ar
 	}
 	
 	if ( router_ps_set(priv, priv->ps) ) {
-		ROUTER_DBG2("RTEMS_INTERNAL_ERROR at router_ps_set\n");
-		return RTEMS_INTERNAL_ERROR;
+		ROUTER_DBG2("AIR_INTERNAL_ERROR at router_ps_set\n");
+		return AIR_INTERNAL_ERROR;
 	}
 	
 	if ( router_routes_set(priv, priv->routes) ) {
-		ROUTER_DBG2("RTEMS_INTERNAL_ERROR at router_routes_set\n");
-		return RTEMS_INTERNAL_ERROR;
+		ROUTER_DBG2("AIR_INTERNAL_ERROR at router_routes_set\n");
+		return AIR_INTERNAL_ERROR;
 	}
 
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
-rtems_device_driver spw_router_open(iop_device_driver_t *iop_dev, void *arg)
+air_status_code_e spw_router_open(iop_device_driver_t *iop_dev, void *arg)
 {	
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
 	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
-
-	int i;
 	
 	if ( !priv || priv->open ) {
 		ROUTER_DBG2("Router failed to initialize\n");
-		return RTEMS_RESOURCE_IN_USE;
+		return AIR_NOT_AVAILABLE;
 	}
 	
 	priv->open = 1;
 
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
-rtems_device_driver spw_router_close(iop_device_driver_t *iop_dev, void *arg)
+air_status_code_e spw_router_close(iop_device_driver_t *iop_dev, void *arg)
 {
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
 	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
 
 	priv->open = 0;
 
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
 static void router_hwinfo(
@@ -174,20 +177,6 @@ static void router_hwinfo(
 	hwinfo->iid         = (tmp >>  0) & 0xff;
 }
 
-void router_print_hwinfo(struct router_hw_info *hwinfo)
-{
-	iop_debug(" Hardware Configuration of SpaceWire Router:\n");
-	iop_debug("  Number of SpW ports:           %d\n", hwinfo->nports_spw);
-	iop_debug("  Number of AMBA ports:          %d\n", hwinfo->nports_amba);
-	iop_debug("  Number of FIFO ports:          %d\n", hwinfo->nports_fifo);
-	iop_debug("  Timers available:              %s\n", hwinfo->timers_avail ? "YES" : "NO");
-	iop_debug("  Plug and Play available:       %s\n", hwinfo->pnp_avail ? "YES" : "NO");
-	iop_debug("  MAJOR Version:                 %d\n", hwinfo->ver_major);
-	iop_debug("  MINOR Version:                 %d\n", hwinfo->ver_minor);
-	iop_debug("  PATCH Version:                 %d\n", hwinfo->ver_patch);
-	iop_debug("  Current Instance ID:           %d\n", hwinfo->iid);
-}
-
 static int router_config_set(
 	router_priv_t *priv,
 	router_config_t *cfg)
@@ -196,7 +185,7 @@ static int router_config_set(
 
 	if ( (cfg->flags & (ROUTER_FLG_TPRES|ROUTER_FLG_TRLD)) &&
 	     !priv->hwinfo.timers_avail ) {
-		return RTEMS_NOT_IMPLEMENTED;
+		return AIR_NOT_AVAILABLE;
 	}
 
 	/* Write only configuration bits in Config register */
@@ -227,7 +216,7 @@ static int router_config_set(
 
 	return 0;
 }
-
+/*
 static int router_config_read(
 	router_priv_t *priv,
 	router_config_t *cfg)
@@ -243,7 +232,7 @@ static int router_config_read(
 
 	return 0;
 }
-
+*/
 static int router_routes_set(
 	router_priv_t *priv,
 	router_routes *routes)
@@ -253,7 +242,7 @@ static int router_routes_set(
 		REG_WRITE(&priv->regs->routes[i], routes->route[i]);
 	return 0;
 }
-
+/*
 static int router_routes_read(
 	router_priv_t *priv,
 	router_routes *routes)
@@ -263,7 +252,7 @@ static int router_routes_read(
 		routes->route[i] = REG_READ(&priv->regs->routes[i]);
 	return 0;
 }
-
+*/
 static int router_ps_set(router_priv_t *priv, router_ps *ps)
 {
 	int i;
@@ -272,7 +261,7 @@ static int router_ps_set(router_priv_t *priv, router_ps *ps)
 		REG_WRITE(&priv->regs->psetup[i], *(p));
 	return 0;
 }
-
+/*
 static int router_ps_read(router_priv_t *priv, router_ps *ps)
 {
 	int i;
@@ -281,7 +270,7 @@ static int router_ps_read(router_priv_t *priv, router_ps *ps)
 		REG_WRITE(&priv->regs->psetup[i], *(p));
 	return 0;
 }
-
+*/
 /* Configuration writer enable */
 static int router_we_set(router_priv_t *priv, int we)
 {
@@ -294,7 +283,7 @@ static int router_port_ctrl(router_priv_t *priv, router_port *port)
 	unsigned int ctrl, sts;
 
 	if ( port->port > priv->nports )
-		return RTEMS_INVALID_NAME;
+		return AIR_INVALID_PARAM;
 
 	ctrl = port->ctrl;
 	if ( port->flag & ROUTER_PORTFLG_GET_CTRL ) {
@@ -316,7 +305,7 @@ static int router_port_ctrl(router_priv_t *priv, router_port *port)
 	port->sts = sts;
 	return 0;
 }
-
+/*
 static int router_cfgsts_set(router_priv_t *priv, unsigned int cfgsts)
 {
 	REG_WRITE(&priv->regs->cfgsts, cfgsts);
@@ -334,8 +323,8 @@ static int router_tc_read(router_priv_t *priv, unsigned int *tc)
 	*tc = REG_READ(&priv->regs->timecode);
 	return 0;
 }
-
-//rtems_device_driver router_control(
+*/
+//air_status_code_e router_control(
 //	rtems_device_major_number major,
 //	rtems_device_minor_number minor,
 //	void                    * arg
@@ -348,7 +337,7 @@ static int router_tc_read(router_priv_t *priv, unsigned int *tc)
 //
 //	if ( drvmgr_get_dev(&router_drv_info.general, minor, &dev) ) {
 //		ROUTER_DBG("Wrong minor %d\n", minor);
-//		return RTEMS_INVALID_NAME;
+//		return AIR_INVALID_PARAM;
 //	}
 //	priv = (router_priv_t *)dev->priv;
 //
@@ -444,11 +433,11 @@ static int router_tc_read(router_priv_t *priv, unsigned int *tc)
 //		break;
 //	}
 //
-//	default: return RTEMS_NOT_IMPLEMENTED;
+//	default: return AIR_NOT_AVAILABLE;
 //	}
 //
 //	return 0;
 //}
 
-rtems_device_driver spw_router_write(iop_device_driver_t *iop_dev, void *arg){}
-rtems_device_driver spw_router_read(iop_device_driver_t *iop_dev, void *arg){}
+air_status_code_e spw_router_write(iop_device_driver_t *iop_dev, void *arg){return AIR_SUCCESSFUL;}
+air_status_code_e spw_router_read(iop_device_driver_t *iop_dev, void *arg){return AIR_SUCCESSFUL;}
