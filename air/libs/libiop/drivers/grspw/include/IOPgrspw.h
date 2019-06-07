@@ -23,7 +23,6 @@
 #define __SPW_H__
 
 #include <iop.h>
-#include <ambapp.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,8 +30,8 @@ extern "C" {
 
 #define SPW_LINKERR_EVENT RTEMS_EVENT_0
 
-#define MEM_READ(addr) _MEM_READ((void *)(addr))
-#define SPW_READ(addr) _SPW_READ((void *)(addr))
+#define MEM_READ(addr) _MEM_READ((volatile void *)(addr))
+#define SPW_READ(addr) _SPW_READ((volatile void *)(addr))
 #define SPW_WRITE(addr,v) *addr=v
 
 #define SPW_REG(c,r) (c->regs->r)
@@ -170,7 +169,7 @@ typedef struct {
    unsigned int retry; 				/** Retry Transmitting a failed packet*/
    unsigned int wait_ticks; 		/** rtems_wake_after(wait_ticks)*/
 
-   rtems_id event_id; 				/** task id that should receive link err irq event */
+   unsigned int event_id; 			/** task id that should receive link err irq event */
    
    unsigned int is_rmap;			/** This core contains a RMAP HW core*/
    unsigned int is_rxunaligned;		/** RMAP core permits unaligned accesses to memory*/
@@ -232,18 +231,18 @@ typedef struct {
  * @brief composes a RX descriptor
  */
 typedef struct {
-   volatile uint32_t ctrl;	/** Control Resgister*/
-   uint8_t *addr;	/** Pointer to data buffer*/
+   volatile unsigned int ctrl;	/** Control Resgister*/
+   volatile unsigned int *addr;	/** Pointer to data buffer*/
 } SPACEWIRE_RXBD;
 
 /**
  * @brief TX descriptor
  */
 typedef struct {
-   volatile uint32_t ctrl;			/** Control Register*/
-   uint8_t *addr_header;	/** Address to header buffer*/
-   volatile uint32_t len;			/** Data control and Header */
-   uint8_t *addr_data;		/** Address to data buffer*/
+   volatile unsigned int ctrl;			/** Control Register*/
+   volatile unsigned int *addr_header;	/** Address to header buffer*/
+   volatile unsigned int len;			/** Data control and Header */
+   volatile unsigned int *addr_data;		/** Address to data buffer*/
 } SPACEWIRE_TXBD;
 
 /**
@@ -283,8 +282,8 @@ typedef struct {
    
 
    /* semaphores*/
-   rtems_id txsp;				/** Sempahore id for write: Not used*/
-   rtems_id rxsp;				/** Sempahore id for read: Not used*/
+   unsigned int txsp;			/** Sempahore id for write: Not used*/
+   unsigned int rxsp;			/** Sempahore id for read: Not used*/
 
 	uint8_t *bdtable;		/** Pointer to the descriptor table */
    
@@ -335,17 +334,17 @@ typedef struct {
 #define SPACEWIRE_IOCTRL_STOP                65
 /**@}*/
 
-rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg);
+air_status_code_e spw_initialize(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver spw_open(iop_device_driver_t *iop_dev, void *arg);
+air_status_code_e spw_open(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver spw_close(iop_device_driver_t *iop_dev, void *arg);
+air_status_code_e spw_close(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg);
+air_status_code_e spw_read(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg );
+air_status_code_e spw_write(iop_device_driver_t *iop_dev, void *arg );
 
-rtems_device_driver spw_control(iop_device_driver_t *iop_dev, void *arg);
+air_status_code_e spw_control(iop_device_driver_t *iop_dev, void *arg);
 
 #ifdef __cplusplus
 }
