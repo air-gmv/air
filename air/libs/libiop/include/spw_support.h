@@ -8,7 +8,6 @@
 #define __SPW_SUPPORT_H__
 
 #include <iop.h>
-#include <rtems.h>
 #include <iop_support.h>
 
 /**
@@ -89,7 +88,7 @@ void spw_copy_header(
  *  If the user didn't request a reply then the write will be retried until the
  *  request times out.
  */
-rtems_task spw_writer(rtems_task_argument arg);
+void spw_writer(air_uptr_t arg);
 
 /**
  *  @brief Task that polls eth0 for new data packets
@@ -105,11 +104,11 @@ rtems_task spw_writer(rtems_task_argument arg);
  *  Failed reads are reported to FDIR
  *
  */
-rtems_task spw_reader(rtems_task_argument arg);
+void spw_reader(air_uptr_t arg);
 
 /* These do nothing */
-rtems_task spwrtr_reader(rtems_task_argument arg);
+void spwrtr_reader(air_uptr_t arg);
 
-rtems_task spwrtr_writer(rtems_task_argument arg);
+void spwrtr_writer(air_uptr_t arg);
 
 #endif /* __ETH_SUPPORT_H__ */
