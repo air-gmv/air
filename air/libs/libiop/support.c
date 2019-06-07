@@ -12,12 +12,11 @@
  */
 
 #include <iop.h>
-#include <rtems.h>
+#include <bsp.h>
 #include <iop_mms.h>
 #include <iop_chain.h>
 #include <iop_error.h>
 #include <iop_support.h>
-
 
 void setup_iop_buffers(
         iop_buffer_t *buffers, uint8_t *storage, uint32_t count) {
@@ -67,7 +66,7 @@ void release_fragment(iop_fragment_t *fragment) {
     fragment->payload = NULL;
     fragment->header_size=0;
     fragment->payload_size=0;
-    memset(fragment->header, 0, sizeof(iop_header_t));
+    memset( &fragment->header, 0, sizeof(iop_header_t));
    
     iop_chain_append(&usr_configuration.free_fragments, &fragment->node);
 }
@@ -193,13 +192,13 @@ void update_timers() {
  * @param core_to_enable Which device to enable.
  *        Available devices are: ETH0, ETH1, SPWR, PCI, 1553 and CAN
  */
-void clock_gating_enable(struct ambapp_bus* clk_amba_bus, clock_gating_device core_to_enable)
+void clock_gating_enable(amba_confarea_t* clk_amba_bus, clock_gating_device core_to_enable)
 {
     /* Amba APB device */
-    struct ambapp_apb_info ambadev;
+    amba_apb_dev_t ambadev;
 
     /* Get AMBA AHB device info from Plug&Play */
-    if(amba_find_next_apbslv(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE,&ambadev,0 ) == 0){
+    if(amba_get_apb_slave(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE, 0, &ambadev) == 0){
 
         /* Device not found */
 		iop_debug("    Clock Gating unit not found!\n");
@@ -213,7 +212,7 @@ void clock_gating_enable(struct ambapp_bus* clk_amba_bus, clock_gating_device co
      * 3. Write a 1 to the corresponding bit in the clock enable register
      * 4. Write a 0 to the corresponding bit in the core reset register
      * 5. Write a 0 to the corresponding bit in the unlock register
-     * /
+     */
 
     /* Copy pointer to device's memory mapped registers */
     struct clkgate_regs *gate_regs = (void *)ambadev.start;
@@ -234,13 +233,19 @@ void clock_gating_enable(struct ambapp_bus* clk_amba_bus, clock_gating_device co
     CLEAR_BIT_REG(&gate_regs->unlock, core_to_enable);
 }
 
-void clock_gating_disable(struct ambapp_bus* clk_amba_bus, clock_gating_device core_to_enable)
+/**
+ * @brief Disable device with clock gating
+ * @param clk_amba_bus AMBA bus where the clock gating is located
+ * @param core_to_disable Which device to enable.
+ *        Available devices are: ETH0, ETH1, SPWR, PCI, 1553 and CAN
+ */
+void clock_gating_disable(amba_confarea_t* clk_amba_bus, clock_gating_device core_to_disable)
 {
         /* Amba APB device */
-        struct ambapp_apb_info ambadev;
+        amba_apb_dev_t ambadev;
 
         /* Get AMBA AHB device info from Plug&Play */
-        if(amba_find_next_apbslv(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE,&ambadev,0 ) == 0){
+        if(amba_get_apb_slave(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE, 0, &ambadev) == 0){
 
             /* Device not found */
             iop_debug("    Clock Gating unit not found!\n");
@@ -250,7 +255,7 @@ void clock_gating_disable(struct ambapp_bus* clk_amba_bus, clock_gating_device c
         /* Copy pointer to device's memory mapped registers */
         struct clkgate_regs *gate_regs = (void *)ambadev.start;
 
-        SET_BIT_REG(&gate_regs->unlock, core_to_enable);
-        CLEAR_BIT_REG(&gate_regs->clock_enable, core_to_enable);
-        CLEAR_BIT_REG(&gate_regs->unlock, core_to_enable);
+        SET_BIT_REG(&gate_regs->unlock, core_to_disable);
+        CLEAR_BIT_REG(&gate_regs->clock_enable, core_to_disable);
+        CLEAR_BIT_REG(&gate_regs->unlock, core_to_disable);
 }

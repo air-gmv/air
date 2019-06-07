@@ -12,7 +12,7 @@
 #define __IOP_SUPPORT_H__
 
 #include <iop.h>
-#include <ambapp.h>
+#include <amba.h>
 
 /* Macros to set or clear a bit from a register */
 #define SET_BIT_REG(adr, bit) *(volatile uint32_t *)(adr) |= (1<<bit);
@@ -25,7 +25,7 @@ typedef enum {
     GATE_SPWR = 2,
     GATE_PCI  = 3,
     GATE_1553 = 4,
-	GATE_CAN  = 5
+    GATE_CAN  = 5
 } clock_gating_device;
 
 /**
@@ -126,8 +126,16 @@ void update_timers();
  * @param core_to_enable Which device to enable.
  *        Available devices are: ETH0, ETH1, SPWR, PCI, 1553 and CAN
  */
-void clock_gating_enable(struct ambapp_bus* clk_amba_bus, clock_gating_device core_to_enable);
-void clock_gating_disable(struct ambapp_bus* clk_amba_bus, clock_gating_device core_to_enable);
+void clock_gating_enable(amba_confarea_t* clk_amba_bus, clock_gating_device core_to_enable);
+
+/**
+ * @brief Disable device with clock gating
+ * @param clk_amba_bus AMBA bus where the clock gating is located
+ * @param core_to_disable Which device to enable.
+ *        Available devices are: ETH0, ETH1, SPWR, PCI, 1553 and CAN
+ */
+void clock_gating_disable(amba_confarea_t* clk_amba_bus, clock_gating_device core_to_disable);
+
 #define get_physical_device(i) \
     ((iop_physical_device_t **)usr_configuration.physical_devices.elements)[(i)]
 
