@@ -13,6 +13,14 @@ ${makoutils.cfileHeader("init.c", "Partition Initialization")}
  * @brief Partition entry point
  */
 extern int ${partition.entry_point}() __attribute__ ((weak));
+
+%if partition.iop is not None:
+/**
+ * @brief IOP initialization
+ */
+extern air_status_code_e IOPinit();
+%endif
+
 %if partition.hm_callback:
 /**
  * @brief Partition health-monitor callback
@@ -29,7 +37,6 @@ static void hm_isr_handler(void) {
     /* get HM event */
     air_hm_event_t hm_event;
     air_syscall_get_hm_event(&hm_event);
-
 
     /* call partition HM callback */
     if (${partition.hm_callback} != NULL) {
@@ -51,8 +58,13 @@ int main(void) {
     %if 'imaspex' in partition.libraries:
     /* initialize IMASPEX */
     imaspex_init();
-
     %endif
+
+    %if partition.iop is not None:
+    /* initialize IOP */
+    IOPinit();
+    %endif
+
     /* call entry point */
     if (${partition.entry_point} != NULL) {
         ${partition.entry_point}();
