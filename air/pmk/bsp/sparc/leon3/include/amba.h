@@ -20,15 +20,15 @@
 /**
  * @brief Maximum AHB master devices to hold in memory
  */
-#define AHB_MASTERS                             (64)
+#define AHB_MASTERS                             (16)
 /**
  * @brief Maximum AHB slave devices to hold in memory
  */
-#define AHB_SLAVES                              (64)
+#define AHB_SLAVES                              (16)
 /**
  * @brief Maximum APB slave devices to hold in memory
  */
-#define APB_SLAVES                              (64)
+#define APB_SLAVES                              (32)
 
 /**
  * @brief APB device information
@@ -145,6 +145,17 @@ int amba_get_ahb_device(
 int amba_get_apb_slave(
         amba_confarea_t *amba_conf, int vendor, int device, int index,
         amba_apb_dev_t *dev);
+
+/**
+ * 	@brief Returns the number of APB Slave devices that have a given vendorid
+ *   and deviceid
+ *  @param [in] ambaconf: Amba bus plug and play memory structure
+ *  @param [in] vendor: VendorID
+ *  @param [in]	device: DeviceID
+ */
+int amba_get_number_apbslv_devices (
+        amba_confarea_t * amba_conf, int vendor, int device);
+
 
 /*
  * AMBA Plug & Play configuration area

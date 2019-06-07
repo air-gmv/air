@@ -7,13 +7,9 @@
  *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
  * ==========================================================================*/
 
-#include <pmk.h>
 #include <bsp.h>
-#include <amba.h>
-#include <clock.h>
 #include <irqmp.h>
 #include <l2cache.h>
-#include <console.h>
 #include <segregation.h>
 
 extern void leon_restart_core();
