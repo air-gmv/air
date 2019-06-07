@@ -42,11 +42,10 @@
 #ifndef __GR1553BC_H__
 #define __GR1553BC_H__
 
+#include <iop.h>
 #include <stdint.h>
 #include <IOPgr1553b.h>
 #include <IOPlibio.h>
-#include <iop.h>
-#include <rtems/score/chain.h>
 #include <IOPmilstd_config.h>
 
 /* A BC descriptor accessed as is */
@@ -118,11 +117,11 @@ void gr1553bc_continue_list();
 void gr1553bc_start_async();
 void gr1553bc_start_sync();
 
-rtems_status_code gr1553bc_add_async_data(uint8_t *data, milstd_header_t *hdr, uint32_t size);
-rtems_status_code gr1553bc_erase_async_data();
+air_status_code_e gr1553bc_add_async_data(uint8_t *data, milstd_header_t *hdr, uint32_t size);
+air_status_code_e gr1553bc_erase_async_data();
 
-rtems_status_code grbc_merge_data_with_command(uint8_t *data, milstd_header_t *hdr, uint32_t size);
-rtems_status_code grbc_process_completed_commands(libio_rw_args_t *rw_args);
+air_status_code_e grbc_merge_data_with_command(uint8_t *data, milstd_header_t *hdr, uint32_t size);
+air_status_code_e grbc_process_completed_commands(libio_rw_args_t *rw_args);
 
 unsigned long get_virtual_addr(unsigned long p_addr);
 

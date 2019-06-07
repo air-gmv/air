@@ -28,18 +28,13 @@
  *
  */
 
-#include <rtems.h>
-#include <amba.h>
-#include <ambapp.h>
-#include <ambaext.h>
-#include <stdint.h>
-
 
 #include <iop_error.h>
 #include <IOPgr1553b.h>
 #include <IOPgr1553bc.h>
 #include <IOPmilstd_config.h>
 #include <IOPdriverconfig_interface.h>
+#include <bsp.h>
 
 /** returns the first address found after p that is aligned with c  */
 #define MEM_ALIGN(p,c) ((((unsigned int)(p))+((c)-1)) & ~((c)-1))
@@ -321,14 +316,14 @@ static inline uint32_t create_descriptor_word1(bc_command_t *ul, int timeout, in
 	return word;
 }
 
-static inline rtems_status_code bc_verify_command_status(uint32_t sw)
+static inline air_status_code_e bc_verify_command_status(uint32_t sw)
 {	
-	rtems_status_code status = RTEMS_SUCCESSFUL;
+	air_status_code_e status = AIR_SUCCESSFUL;
 	
 	/* verify transfer status */
 	if((sw & 0x7) != 0){
 		
-		status = RTEMS_INTERNAL_ERROR;
+		status = AIR_INTERNAL_ERROR;
 		
 		/* something has gone wrong with the transfer */
 		iop_raise_error(HW_PROBLEM);
@@ -384,7 +379,7 @@ static int update_command(struct gr1553bc_bd_tr *desc, libio_rw_args_t *rw_args)
 	  (subaddress1 == 0) || (subaddress1 == 31))){
 		  
 		/* this is a BC-RT command. Verify if data was sent correctly  */
-		if(bc_verify_command_status(desc->status) == RTEMS_SUCCESSFUL){
+		if(bc_verify_command_status(desc->status) == AIR_SUCCESSFUL){
 			
 			/* we shall wait for new data from the user. dummy this command */
 			dummy_command(&desc->settings[1]);
@@ -395,7 +390,7 @@ static int update_command(struct gr1553bc_bd_tr *desc, libio_rw_args_t *rw_args)
 	} else{ /*< there is data to be read */
 	
 		/*  Verify if data was received correctly  */
-		if(bc_verify_command_status(desc->status) == RTEMS_SUCCESSFUL){
+		if(bc_verify_command_status(desc->status) == AIR_SUCCESSFUL){
 			
 			/* detect mode code */
 			if((subaddress1 == 0) || (subaddress1 == 31)){
@@ -479,8 +474,8 @@ static int update_command(struct gr1553bc_bd_tr *desc, libio_rw_args_t *rw_args)
  * @param [in,out] rw_args Input/Output buffer and respective sizes
  *
  * @return status of the operation:
- *  	- RTEMS_SUCCESSFUL: Data was successfully read.
- * 		- RTEMS_TIMEOUT: End of list.
+ *  	- AIR_SUCCESSFUL: Data was successfully read.
+ * 		- AIR_TIMED_OUT: End of list.
  *
  * This function will obtain the list that is currently being processed by
  * the bc core and will process the already completed commands. Each command is
@@ -490,10 +485,10 @@ static int update_command(struct gr1553bc_bd_tr *desc, libio_rw_args_t *rw_args)
  * reached its end. The function starts processing the list in a previously read 
  * position. It then follows the branching structure of the list. 
  */
-rtems_status_code grbc_process_completed_commands(libio_rw_args_t *rw_args)
+air_status_code_e grbc_process_completed_commands(libio_rw_args_t *rw_args)
 {
 	/* return code */
-	rtems_status_code status;
+	air_status_code_e status;
 	
 	/* Current device */
 	grb_priv *bDev;
@@ -507,7 +502,7 @@ rtems_status_code grbc_process_completed_commands(libio_rw_args_t *rw_args)
 	/* current minor device internal data structure */
 	bDev = bdevs;
 	
-	status = RTEMS_SUCCESSFUL;
+	status = AIR_SUCCESSFUL;
 	
 	/* @todo place a limit in the number of reads... */
 	while(end == 0){
@@ -522,7 +517,7 @@ rtems_status_code grbc_process_completed_commands(libio_rw_args_t *rw_args)
 			if(((current->status & GR1553BC_STATUS_ACESSED) >> 31) == 1){
 			
 				/* this descriptor was not acessed. try again later */
-				status = RTEMS_TIMEOUT; 
+				status = AIR_TIMED_OUT; 
 				
 				/* we reached the end of the command list */
 				end = 1;
@@ -560,9 +555,9 @@ rtems_status_code grbc_process_completed_commands(libio_rw_args_t *rw_args)
  * @param [in] hdr Mil-std header comprising a RT address and a subaddress
  * @param [in] size data buffer length in bytes
  *
- * @return rtems_status_code; status of the operation:
- *  	- RTEMS_SUCCESSFUL: Data was successfully written to the list
- * 		- RTEMS_NOT_DEFINED: this data is not linked to any command in the list
+ * @return air_status_code_e; status of the operation:
+ *  	- AIR_SUCCESSFUL: Data was successfully written to the list
+ * 		- AIR_NOT_AVAILABLE: this data is not linked to any command in the list
  *
  * This function inserts incoming user data in the bc command list. For that
  * purpose it uses a shortcut mapping that matches every command in the list
@@ -571,11 +566,11 @@ rtems_status_code grbc_process_completed_commands(libio_rw_args_t *rw_args)
  * This header is composed by one RT address and one subaddress.
  *
  */
-rtems_status_code grbc_merge_data_with_command(uint8_t *data, milstd_header_t *hdr, uint32_t size)
+air_status_code_e grbc_merge_data_with_command(uint8_t *data, milstd_header_t *hdr, uint32_t size)
 {
 	
 	/* return code */
-	rtems_status_code status;
+	air_status_code_e status;
 	
 	/* Current device */
 	grb_priv *bDev = bdevs;
@@ -592,7 +587,7 @@ rtems_status_code grbc_merge_data_with_command(uint8_t *data, milstd_header_t *h
 	if(desc == NULL){
 		
 		/* no descriptor was obatined */
-		status = RTEMS_NOT_DEFINED;
+		status = AIR_NOT_AVAILABLE;
 	
 	} else{
 	
@@ -606,7 +601,7 @@ rtems_status_code grbc_merge_data_with_command(uint8_t *data, milstd_header_t *h
 		desc->status |= (1<<31);
 		
 		/* data was appended sucessfully */
-		status = RTEMS_SUCCESSFUL;
+		status = AIR_SUCCESSFUL;
 	}
 	
 	return status;
@@ -615,21 +610,21 @@ rtems_status_code grbc_merge_data_with_command(uint8_t *data, milstd_header_t *h
 /**
  * @brief Erase the commands belonging to a bc async command list.
  *
- * @return rtems_status_code; status of the operation:
- *      - RTEMS_SUCCESSFUL: Data was successfully erased
- *      - RTEMS_IO_ERROR: the BC did not finish executing all the previous async list
+ * @return air_status_code_e; status of the operation:
+ *      - AIR_SUCCESSFUL: Data was successfully erased
+ *      - AIR_DEVICE_ERROR: the BC did not finish executing all the previous async list
  *
  * This function removes the previous asynchronous command list and the asynchronous buffer.
  *
  */
-rtems_status_code gr1553bc_erase_async_data()
+air_status_code_e gr1553bc_erase_async_data()
 {
     /* Check if the asynchronous list is still running */
     if((GR1553BC_READ_REG(&bdevs->regs->bc_ctrl) & GR1553B_BC_ACT_ASSRT) != 0){
         /* This is not necessarily a failure as this does not prevent appending new data
          * but may require special handling */
         iop_raise_error(TIME_ERROR);
-        return RTEMS_IO_ERROR;
+        return AIR_DEVICE_ERROR;
     }
 
     iop_debug("Erasing 1553 asynchronous list\n");
@@ -638,7 +633,7 @@ rtems_status_code gr1553bc_erase_async_data()
     memset(bdevs->async, 0, iop_milstd_get_async_command_list_size() * 4 * 4);
     memset(bdevs->async_buf_mem_start, 0, iop_milstd_get_data_buffers_size() * 16);
 
-    return RTEMS_SUCCESSFUL;
+    return AIR_SUCCESSFUL;
 }
 /**
  * @brief Appends incoming data to a milstd command belonging to a bc async command list.
@@ -647,10 +642,10 @@ rtems_status_code gr1553bc_erase_async_data()
  * @param [in] hdr Mil-std header comprising a RT address and a subaddress
  * @param [in] size data buffer length in bytes
  *
- * @return rtems_status_code; status of the operation:
- *      - RTEMS_SUCCESSFUL: Data was successfully written to the list
- *      - RTEMS_INVALID_SIZE: Size has to be maximum 32 words (one transaction)
- *      - RTEMS_TOO_MANY: Too many commands in the list
+ * @return air_status_code_e; status of the operation:
+ *      - AIR_SUCCESSFUL: Data was successfully written to the list
+ *      - AIR_INVALID_SIZE: Size has to be maximum 32 words (one transaction)
+ *      - AIR_NOT_AVAILABLE: Too many commands in the list
  *
  * This function inserts incoming user data in the bc async command list. When inserting the
  * first data, the previous data needs to be erased through gr1553bc_erase_async_data. This
@@ -659,7 +654,7 @@ rtems_status_code gr1553bc_erase_async_data()
  * gr1553bc_erase_async_data is defined by ASYNCHRONOUS_COMMAND_LIST_SIZE.
  *
  */
-rtems_status_code gr1553bc_add_async_data(uint8_t *data, milstd_header_t *hdr, uint32_t size)
+air_status_code_e gr1553bc_add_async_data(uint8_t *data, milstd_header_t *hdr, uint32_t size)
 {
     int i;
     int wcmc;
@@ -668,7 +663,7 @@ rtems_status_code gr1553bc_add_async_data(uint8_t *data, milstd_header_t *hdr, u
     /* Verify that the data fits in one slot */
     if(size > 64){
         iop_raise_error(WRITE_ERROR_Q);
-        return RTEMS_INVALID_SIZE;
+        return AIR_INVALID_SIZE;
     }
 
     /* In case the size is odd, the single byte should still be sent
@@ -686,7 +681,7 @@ rtems_status_code gr1553bc_add_async_data(uint8_t *data, milstd_header_t *hdr, u
     /* If the end of the list is reached then there is no available slot */
     if(i == iop_milstd_get_async_command_list_size()){
         iop_raise_error(QUEUE_OVERFLOW);
-        return RTEMS_TOO_MANY;
+        return AIR_NOT_AVAILABLE;
     }
 
     iop_debug("Adding %i words to RT %i and SA %i\n",wcmc,hdr->desc,hdr->address);
@@ -711,7 +706,7 @@ rtems_status_code gr1553bc_add_async_data(uint8_t *data, milstd_header_t *hdr, u
     /* lets copy the data */
     memcpy(buffer, (void *)data, size);
 
-    return RTEMS_SUCCESSFUL;
+    return AIR_SUCCESSFUL;
 }
 
 static void translate_command(grb_priv *priv, unsigned int offset, unsigned int *data_offset)

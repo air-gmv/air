@@ -24,21 +24,14 @@
  *
  */
 
-#include <rtems.h>
-#include <stdint.h>
-#include <amba.h>
-#include <ambapp.h>
-#include <pprintf.h>
 
 #include <IOPgr1553b.h>
 #include <IOPgr1553rt.h>
 
-#include <ambaext.h>
-
 #include <iop_error.h>
 #include <IOPlibio.h>
 #include <iop.h>
-
+#include <bsp.h>
 #include <IOPmilstd_config.h>
 #include <IOPdriverconfig_interface.h>
 
@@ -203,7 +196,7 @@ void gr1553rt_device_init(grb_priv *priv){
 
 }
 
-rtems_status_code gr1553rt_read(rtems_device_minor_number minor, void *arg){
+air_status_code_e gr1553rt_read(uint32_t minor, void *arg){
 	
 	unsigned int sw;
 	unsigned int wc;
@@ -220,7 +213,7 @@ rtems_status_code gr1553rt_read(rtems_device_minor_number minor, void *arg){
 	struct gr1553rt_bd *bd;
 	
 	/* function return code */
-	rtems_status_code status = RTEMS_SUCCESSFUL;
+	air_status_code_e status = AIR_SUCCESSFUL;
 	
 	/* Number of data buffers per subaddress */
 	unsigned int buf_per_sub = priv->user_config->databufs_per_sub;
@@ -228,7 +221,7 @@ rtems_status_code gr1553rt_read(rtems_device_minor_number minor, void *arg){
 	
 	/* Verify if the user correctly provided data and header*/
 	if((rw_args->data == NULL) || (rw_args->hdr == NULL)){
-		return RTEMS_INVALID_ADDRESS;
+		return AIR_INVALID_PARAM;
 	}
 	
 	/* check for HW based errors */
@@ -281,7 +274,7 @@ rtems_status_code gr1553rt_read(rtems_device_minor_number minor, void *arg){
 				/* mark as read */
 				read = 1;
 				
-				status = RTEMS_SUCCESSFUL;
+				status = AIR_SUCCESSFUL;
 			}
 			
 			/* if there was an error we reenable the descriptor */
@@ -309,7 +302,7 @@ rtems_status_code gr1553rt_read(rtems_device_minor_number minor, void *arg){
 	if(read == 0){
 		
 		/* EWOULDBLOCK */
-		status = RTEMS_RESOURCE_IN_USE;
+		status = AIR_UNSUCCESSFUL;
 	}
 	
 	return status;
@@ -317,7 +310,7 @@ rtems_status_code gr1553rt_read(rtems_device_minor_number minor, void *arg){
 }
 
 
-rtems_status_code gr1553rt_write(rtems_device_minor_number minor, void *arg){
+air_status_code_e gr1553rt_write(uint32_t minor, void *arg){
 	
 	 /* This core's internal structure */
 	grb_priv *priv = &bdevs[minor];
@@ -338,12 +331,12 @@ rtems_status_code gr1553rt_write(rtems_device_minor_number minor, void *arg){
 	
 	/* Verify if user request does not exceed the maximum data size for milstd*/
 	if(rw_args->data_len > 64){
-		return RTEMS_INVALID_SIZE;
+		return AIR_INVALID_CONFIG;
 	}
 	
 	/* Verify if the user correctly provided data and header*/
 	if((rw_args->data == NULL) || (rw_args->hdr == NULL)){
-		return RTEMS_INVALID_ADDRESS;
+		return AIR_INVALID_PARAM;
 	}
 	
 	/* Get target subaddress */
@@ -351,7 +344,7 @@ rtems_status_code gr1553rt_write(rtems_device_minor_number minor, void *arg){
 	
 	/* verify if we have a valid subaddress */
 	if((suba < 0) || (suba > 32)){
-		return RTEMS_INVALID_ADDRESS;
+		return AIR_INVALID_PARAM;
 	}
 	
 	/* obtain table entry for this subaddress */
@@ -390,5 +383,5 @@ rtems_status_code gr1553rt_write(rtems_device_minor_number minor, void *arg){
 	/* inform user of how much data was written*/
     rw_args->bytes_moved = wc+2;
 	
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }

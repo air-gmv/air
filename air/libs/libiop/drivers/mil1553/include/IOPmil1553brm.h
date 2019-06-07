@@ -19,7 +19,6 @@
 #ifndef __MIL1553BRM_H__
 #define __MIL1553BRM_H__
 
-#include <ambapp.h>
 #include <iop.h>
 #include <IOPlibio.h>
 
@@ -94,7 +93,7 @@ typedef struct config {
 	unsigned int bc_block_number;	/**< Number of command blocks used in BC mode*/
 	unsigned int bm_block_number;	/**< Number of command blocks used in BM mode*/
 		
-	rtems_id event_id;				/**< Error handler task id*/
+	unsigned int event_id;				/**< Error handler task id*/
 	int tx_blocking;				/**< TX blocking behavior*/
 	int rx_blocking;				/**< RX blocking behavior*/
 	unsigned int ignore_mode_data;	/**< Ignore mode data. Focus available memory on sub-addresses*/
@@ -247,12 +246,12 @@ typedef struct {
 
     int tx_blocking, rx_blocking;	/**< Write and read directives blocking configuration*/
 
-    rtems_id dev_sem;				/**< Semaphore ID for the device's semaphore*/
+    unsigned int dev_sem;			/**< Semaphore ID for the device's semaphore*/
 	int minor;						/**< Minor number of this device*/
 	int irqno;						/**< IRQ line*/
 	unsigned int mode;				/**< Current mode*/
 		
-	rtems_id event_id; 				/**< event that may be signalled upon errors, needs to be set through ioctl command BRM_SET_EVENTID */
+	unsigned int event_id; 			/**< event that may be signalled upon errors, needs to be set through ioctl command BRM_SET_EVENTID */
 	unsigned int status;			/**< Status of the Operation */
 	int bc_list_fail;				/**< Did the command block list completed successfully?*/
 	
@@ -348,16 +347,16 @@ typedef struct {
  * Function set used to access the MilStd driver
  * @{
  */
-rtems_device_driver brm_initialize(rtems_device_major_number major, rtems_device_minor_number minor, void *arg);
-rtems_device_driver brm_open(rtems_device_major_number major, rtems_device_minor_number minor, void *arg);
-rtems_device_driver brm_close(rtems_device_major_number major, rtems_device_minor_number minor, void *arg);
-rtems_device_driver brm_read(rtems_device_major_number major, rtems_device_minor_number minor, void *arg);
-rtems_device_driver brm_write(rtems_device_major_number major, rtems_device_minor_number minor, void *arg);
-rtems_device_driver brm_control(rtems_device_major_number major, rtems_device_minor_number minor, void *arg);
+air_status_code_e brm_initialize(unsigned int major, unsigned int minor, void *arg);
+air_status_code_e brm_open(unsigned int major, unsigned int minor, void *arg);
+air_status_code_e brm_close(unsigned int major, unsigned int minor, void *arg);
+air_status_code_e brm_read(unsigned int major, unsigned int minor, void *arg);
+air_status_code_e brm_write(unsigned int major, unsigned int minor, void *arg);
+air_status_code_e brm_control(unsigned int major, unsigned int minor, void *arg);
 
 unsigned int brm_get_operative_mode(int minor);
-rtems_status_code brm_do_list(int minor);
-rtems_status_code brm_list_done(int minor);
+air_status_code_e brm_do_list(int minor);
+air_status_code_e brm_list_done(int minor);
 void *brm_get_memarea(int minor);
 int brm_get_number_bc_blocks(int minor);
 
@@ -366,12 +365,12 @@ void brm_bc_start_list(unsigned int minor);
 
 void brm_bc_stop_list(unsigned int minor);
 
-rtems_status_code brm_bc_init_user_list(unsigned int minor);
+air_status_code_e brm_bc_init_user_list(unsigned int minor);
 
-rtems_status_code brm_bc_process_completed_list(unsigned int minor, 
+air_status_code_e brm_bc_process_completed_list(unsigned int minor, 
 												libio_rw_args_t *rw_args);
 												
-rtems_status_code brm_bc_insert_new_data(unsigned int minor, uint8_t *data,
+air_status_code_e brm_bc_insert_new_data(unsigned int minor, uint8_t *data,
 										 milstd_header_t *hdr, unsigned int size);
 										 
 

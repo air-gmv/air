@@ -47,7 +47,6 @@
 extern "C" {
 #endif
 
-#include <rtems.h>
 #include <stdint.h>
 #include <iop.h>
 #include <IOPmilstd_config.h>
@@ -452,16 +451,16 @@ typedef struct  {
 
 /* General */
 
-rtems_device_driver gr1553b_initialize(rtems_device_major_number major,
-								   rtems_device_minor_number minor,
+air_status_code_e gr1553b_initialize(uint32_t major,
+								   uint32_t minor,
 								   void *arg);
 								   
-rtems_device_driver gr1553b_open(rtems_device_major_number major,
-						     rtems_device_minor_number minor,
+air_status_code_e gr1553b_open(uint32_t major,
+						     uint32_t minor,
 						     void *arg);
 
-rtems_device_driver gr1553b_close(rtems_device_major_number major,
-						     rtems_device_minor_number minor,
+air_status_code_e gr1553b_close(uint32_t major,
+						     uint32_t minor,
 						     void *arg);
 
 #ifdef __cplusplus

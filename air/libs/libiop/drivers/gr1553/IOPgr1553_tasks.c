@@ -17,15 +17,16 @@
 #include <gr1553_support.h>
 #include <IOPmilstd_config.h>
 #include <iop_mms.h>
+#include <bsp.h>
 
 /**
  *  @brief Task reading new 1553 data from the BC
  *
  */
-rtems_task gr1553bc_read_task(iop_physical_device_t *pdev){
+void gr1553bc_read_task(iop_physical_device_t *pdev){
 
     /* return code of several operations */
-    rtems_status_code status = RTEMS_SUCCESSFUL;
+    air_status_code_e status = AIR_SUCCESSFUL;
 
     /* structure used to communicate with the driver layer */
     libio_rw_args_t rw_args;
@@ -86,11 +87,11 @@ rtems_task gr1553bc_read_task(iop_physical_device_t *pdev){
             status = grbc_process_completed_commands(&rw_args);
 
             /* check if the read operation was successful */
-            if(status == RTEMS_SUCCESSFUL){
+            if(status == AIR_SUCCESSFUL){
 
                 skip = 0;
 
-            } else if (status == RTEMS_TIMEOUT){
+            } else if (status == AIR_TIMED_OUT){
                 /* the list has ended */
             } else {
                 /* this branch is never used */
@@ -124,10 +125,10 @@ rtems_task gr1553bc_read_task(iop_physical_device_t *pdev){
  *  @brief Task writing new 1553 data to the BC
  *
  */
-rtems_task gr1553bc_write_task(iop_physical_device_t *pdev){
+void gr1553bc_write_task(iop_physical_device_t *pdev){
 
     /* return code of several operations */
-    rtems_status_code status = RTEMS_NOT_IMPLEMENTED;
+    air_status_code_e status = AIR_NO_ACTION;
 
     /* Flag to initialise the pointer */
     int init = 0;
@@ -148,7 +149,7 @@ rtems_task gr1553bc_write_task(iop_physical_device_t *pdev){
         status = grbc_merge_data_with_command(get_payload(req_wrapper->buffer), &hdr->milstd_hdr, get_payload_size(req_wrapper->buffer));
 
         /*There's no BC-RT command on the list with the provided config(rt+sub+wcmc). Send async*/
-        if (status == RTEMS_NOT_DEFINED)
+        if (status == AIR_NOT_AVAILABLE)
         {
             iop_debug("write async\n");
             if (!init)
@@ -161,10 +162,10 @@ rtems_task gr1553bc_write_task(iop_physical_device_t *pdev){
 
             status = gr1553bc_add_async_data(get_payload(req_wrapper->buffer), &hdr->milstd_hdr, get_payload_size(req_wrapper->buffer));
 
-            if (status == RTEMS_INVALID_SIZE)
+            if (status == AIR_INVALID_SIZE)
                 iop_debug("grbc_write Invalid Size\n");
             else
-                if(status == RTEMS_TOO_MANY)
+                if(status == AIR_NOT_AVAILABLE)
                     iop_debug("grbc_write No Avail Slot\n");
         }
         /* release Wrapper*/
@@ -184,7 +185,7 @@ rtems_task gr1553bc_write_task(iop_physical_device_t *pdev){
  *  @brief TODO
  *
  */
-rtems_task gr1553rt_read_task(iop_physical_device_t *pdev){
+void gr1553rt_read_task(iop_physical_device_t *pdev){
     
     
     
@@ -195,7 +196,7 @@ rtems_task gr1553rt_read_task(iop_physical_device_t *pdev){
  *  @brief TODO
  *
  */
-rtems_task gr1553rt_write_task(iop_physical_device_t *pdev){
+void gr1553rt_write_task(iop_physical_device_t *pdev){
     
     
 };
