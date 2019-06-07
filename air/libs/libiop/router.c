@@ -16,11 +16,9 @@
  */
 
 #include <iop.h>
-#include <rtems.h>
 #include <iop_error.h>
 #include <iop_support.h>
 #include <iop_mms.h>
-#include <string.h>
 #include <iop_functions.h>
 
 static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
