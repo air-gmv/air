@@ -30,7 +30,7 @@
  *  If the user didn't request a reply then the write will be retried until the
  *  request times out.
  */
-rtems_task spw_writer(rtems_task_argument arg){
+void spw_writer(air_uptr_t arg){
 
 	iop_debug("\n :: IOP - spw-writer running!\n");
 
@@ -50,9 +50,8 @@ rtems_task spw_writer(rtems_task_argument arg){
 		iop_wrapper_t *wrapper = obtain_wrapper(&pdev->sendqueue);
 			
 		/* write to the device */
-		int error;
-		if ( (error = spw_driver->dev.write((iop_device_driver_t *)spw_driver,
-			wrapper)) == RTEMS_SUCCESSFUL){
+		if (spw_driver->dev.write((iop_device_driver_t *)spw_driver,
+			wrapper) == AIR_SUCCESSFUL){
 				
 			uint32_t j;
 			iop_debug(" : spw_tasks :: spw_writer:head_off: %d, head_size: %d, load_off: %d, load_size %d\n",
@@ -70,7 +69,7 @@ rtems_task spw_writer(rtems_task_argument arg){
 
 		/* error sending packet */
 		} else {
-			iop_debug(" :: ERROR writing : %d", error);
+			iop_debug(" :: SPW ERROR writing");
 			iop_chain_append(&error, &wrapper->node);
 			iop_raise_error(HW_WRITE_ERROR);
 		}
@@ -100,7 +99,7 @@ rtems_task spw_writer(rtems_task_argument arg){
  */
 
 
-rtems_task spw_reader(rtems_task_argument arg){
+void spw_reader(air_uptr_t arg){
 
 	iop_debug("\n :: IOP - spw-reader running!\n");
 	
@@ -115,7 +114,6 @@ rtems_task spw_reader(rtems_task_argument arg){
     iop_spw_device_t *driver = (iop_spw_device_t *)pdev->driver;
 
 	uint32_t i;
-	uint32_t skip;
 	uint32_t reads = pdev->reads_per_period[air_schedule.current_schedule_index];
 	for (i = 0; i < reads; ++i){
 
@@ -129,7 +127,7 @@ rtems_task spw_reader(rtems_task_argument arg){
 		}
 		
 		/* read from the device */
-		if (driver->dev.read((iop_device_driver_t *)driver, wrapper) == RTEMS_SUCCESSFUL) {
+		if (driver->dev.read((iop_device_driver_t *)driver, wrapper) == AIR_SUCCESSFUL) {
 			uint32_t j;
 			iop_debug(" : spw_tasks :: spw_reader:message with %dB\n  <payload> ", wrapper->buffer->payload_size);
 			for (j = 0; j < wrapper->buffer->payload_size; j++)
@@ -150,12 +148,12 @@ rtems_task spw_reader(rtems_task_argument arg){
 }
 
 
-rtems_task spwrtr_reader(rtems_task_argument arg){
+void spwrtr_reader(air_uptr_t arg){
 
 	iop_debug(" :: IOP - spwrtr-reader running!\n");
 }
 
-rtems_task spwrtr_writer(rtems_task_argument arg){
+void spwrtr_writer(air_uptr_t arg){
 
 	iop_debug(" :: IOP - spwrtr-writer running!\n");
 }
