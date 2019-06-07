@@ -29,17 +29,8 @@
  * Modified by gmvs @ GMV 2018
  * gmvs@gmv.com
  */
-
-#include <bsp.h>
-
 #include <grcan.h>
-#include <ambaext.h>
-#include <ambapp.h>
-#include <can_support.h>
-#include <iop.h>
-#include <amba.h>
-#include <air.h>
-#include <ambapp.h>
+#include <bsp.h>
 
 /* Maximum number of GRCAN devices supported by driver */
 #define GRCAN_COUNT_MAX 8
@@ -105,10 +96,10 @@
 /*********************************************************/
 
 int state2err[4] = {
-	/* STATE_STOPPED */ GRCAN_RET_NOTSTARTED,
-	/* STATE_STARTED */ GRCAN_RET_OK,
-	/* STATE_BUSOFF  */ GRCAN_RET_BUSOFF,
-	/* STATE_AHBERR  */ GRCAN_RET_AHBERR
+	/* STATE_STOPPED */ AIR_NOT_AVAILABLE,
+	/* STATE_STARTED */ AIR_NO_ERROR,
+	/* STATE_BUSOFF  */ AIR_DEVICE_NOT_FOUND,
+	/* STATE_AHBERR  */ AIR_DEVICE_ERROR
 };
 
 int iop_grcan_get_state(iop_device_driver_t *iop_dev){
@@ -200,19 +191,12 @@ int iop_grcan_get_status(iop_device_driver_t *iop_dev, unsigned int *data)
 	return 0;
 }
 
-struct amba_dev_id grcan_ids[] =
-{
-	{VENDOR_GAISLER, GAISLER_GRCAN},
-	{VENDOR_GAISLER, GAISLER_GRHCAN},
-	{0, 0}		/* Mark end of table */
-};
-
 static void __inline__ grcan_hw_reset(struct grcan_regs *regs)
 {
 	regs->ctrl = GRCAN_CTRL_RESET;
 }
 
-static rtems_device_driver grcan_hw_start(grcan_priv *pDev)
+static air_status_code_e grcan_hw_start(grcan_priv *pDev)
 {
 	/*
 	 * tmp is set but never used. GCC gives a warning for this
@@ -228,7 +212,7 @@ static rtems_device_driver grcan_hw_start(grcan_priv *pDev)
 	/* Check that memory has been allocated successfully */
 	if(pDev->tx == NULL || pDev->rx == NULL){
 		DBG("No memory allocated\n");
-		return RTEMS_NO_MEMORY;
+		return AIR_OUT_OF_MEMORY;
 	}
 
 	/*
@@ -242,7 +226,7 @@ static rtems_device_driver grcan_hw_start(grcan_priv *pDev)
 
 	/* Setup receiver */
 	pDev->regs->rx0addr =
-			(unsigned int) air_syscall_get_physical_addr((uintptr_t)pDev->rx);
+			(unsigned int) air_syscall_get_physical_addr((air_uptr_t)pDev->rx);
 	pDev->regs->rx0size = pDev->rxbuf_size;
 
 	DBG("RX buffer size %d | SW RX buffer size %d\n",
@@ -251,7 +235,7 @@ static rtems_device_driver grcan_hw_start(grcan_priv *pDev)
 
 	/* Setup Transmitter */
 	pDev->regs->tx0addr =
-			(unsigned int) air_syscall_get_physical_addr((uintptr_t)pDev->tx);
+			(unsigned int) air_syscall_get_physical_addr((air_uptr_t)pDev->tx);
 	pDev->regs->tx0size = pDev->txbuf_size;
 
 	/* Setup acceptance filters */
@@ -283,7 +267,7 @@ static rtems_device_driver grcan_hw_start(grcan_priv *pDev)
 	/* Leave transmitter disabled, it is enabled when
 	* trying to send something.
 	*/
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
 static void grcan_hw_stop(grcan_priv *pDev)
@@ -313,9 +297,11 @@ static void grcan_sw_stop(grcan_priv *pDev)
 	 * Entering into started mode again will reset the
 	 * semaphore count.
    */
+#if 0
 	rtems_semaphore_release(pDev->rx_sem);
 	rtems_semaphore_release(pDev->tx_sem);
 	rtems_semaphore_release(pDev->txempty_sem);
+#endif
 }
 
 static void grcan_hw_config(struct grcan_regs *regs, struct grcan_config *conf)
@@ -447,7 +433,7 @@ int iop_grcan_start(iop_device_driver_t *iop_dev)
 		return -1;
 	}
 
-	if ( (grcan_hw_start(pDev)) != RTEMS_SUCCESSFUL ){
+	if ( (grcan_hw_start(pDev)) != AIR_SUCCESSFUL ){
 		DBG("Hardware start unsuccessful\n");
 		return -2;
 	}
@@ -455,10 +441,11 @@ int iop_grcan_start(iop_device_driver_t *iop_dev)
 	/* Clear semaphore state. This is to avoid effects from previous
 	 * bus-off/stop where semaphores where flushed() but the count remained.
 	 */
+#if 0
 	rtems_semaphore_obtain(pDev->rx_sem, RTEMS_NO_WAIT, 0);
 	rtems_semaphore_obtain(pDev->tx_sem, RTEMS_NO_WAIT, 0);
 	rtems_semaphore_obtain(pDev->txempty_sem, RTEMS_NO_WAIT, 0);
-
+#endif
 	/* Read and write are now open... */
 	pDev->started = STATE_STARTED;
 	DBGC(DBG_STATE, "STOPPED|BUSOFF|AHBERR->STARTED\n");
@@ -677,7 +664,7 @@ static int grcan_hw_write_try(
   )
 {
 	unsigned int rp, wp, size, txmax;
-	uint32_t addr;
+	unsigned int addr;
 	int ret;
 	grcan_msg *dest;
 	CANMsg *source;
@@ -786,9 +773,22 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv*) (device->dev.driver);
-	struct ambapp_apb_info grcandev;
-	int dev_count = 0;
+	amba_apb_dev_t grcandev;
+//	int dev_count = 0;
 	int offset= 0;
+
+    struct amba_dev_id {
+        unsigned short      vendor;
+        unsigned short      device;
+                /* Version ? */
+    };
+
+    struct amba_dev_id grcan_ids[] =
+    {
+        {VENDOR_GAISLER, GAISLER_GRCAN},
+        {VENDOR_GAISLER, GAISLER_GRHCAN},
+        {0, 0}		/* Mark end of table */
+    };
 
 	FUNCDBG();
 
@@ -801,33 +801,32 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 	 * define to the value in use in the gr740
 	 */
 
-	memset(&grcandev, 0, sizeof(struct ambapp_apb_info));
-	dev_count = ambapp_find_apbslv(&ambapp_plb,
-			VENDOR_GAISLER,
-			GAISLER_GRCAN,
-			&grcandev);
-	if(amba_find_next_apbslv(&ambapp_plb,
-			grcan_ids[0].vendor,
-			grcan_ids[0].device,
-			&grcandev,
-			5))
-	{
-		DBG("amba_find_apbslv did not work, %d devices found.\n", dev_count);
-		return -1;
-	}
+	memset(&grcandev, 0, sizeof(amba_apb_dev_t));
+// 	dev_count = ambapp_find_apbslv(&amba_confarea,
+// 			VENDOR_GAISLER,
+// 			GAISLER_GRCAN,
+// 			&grcandev);
+    if(amba_get_apb_slave(&amba_confarea,
+            grcan_ids[0].vendor,
+            grcan_ids[0].device,
+            0,
+            &grcandev) != 1)
+    {
+        return -1;
+    }
 	/* In this case we want to reach the second can core
 	 * which is equal to the first address with an offset
 	 * of 0x1000 */
 	if(device->can_core == 1){
 		offset = 4096;
 	}
-	DBG("amba_find_apbslv found %d device\n", dev_count);
 
+#if 0
 	iop_debug("Start: 0x%04x - IRQ 0x%04x - bus_id 0x%04x\n",
 			grcandev.start,
 			grcandev.irq,
 			grcandev.ahbidx);
-
+#endif
 	pDev->irq = grcandev.irq;
 	pDev->regs = (struct grcan_regs *) (grcandev.start + offset);
 	pDev->minor = device->can_core;
@@ -843,16 +842,16 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 	DBG("Registers are set\n");
 	/* TODO compute grcan_timing from clock frequency and configured baudrate
 	 * from iop config */
-
+#if 0
 	/* RX Semaphore created with count = 0 */
 	if ( rtems_semaphore_create(rtems_build_name('G', 'C', 'R', '0' + pDev->minor),
 		0,
 		RTEMS_FIFO|RTEMS_SIMPLE_BINARY_SEMAPHORE|RTEMS_NO_INHERIT_PRIORITY|\
 		RTEMS_LOCAL|RTEMS_NO_PRIORITY_CEILING,
 		0,
-		&(pDev->rx_sem)) != RTEMS_SUCCESSFUL ) {
+		&(pDev->rx_sem)) != AIR_SUCCESSFUL ) {
 		DBG("rx_sem couldn't be created\n");
-		return RTEMS_INTERNAL_ERROR;
+		return AIR_INTERNAL_ERROR;
 	}
 	DBG("rx_sem successful with ID: %d\n", (int)pDev->rx_sem);
 	/* TX Semaphore created with count = 0 */
@@ -862,9 +861,9 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 			RTEMS_FIFO|RTEMS_SIMPLE_BINARY_SEMAPHORE|RTEMS_NO_INHERIT_PRIORITY|\
 			RTEMS_LOCAL|RTEMS_NO_PRIORITY_CEILING,
 			0,
-			&(pDev->tx_sem)) != RTEMS_SUCCESSFUL){
+			&(pDev->tx_sem)) != AIR_SUCCESSFUL){
 		DBG("tx_sem couldn't be created\n");
-		return RTEMS_INTERNAL_ERROR;
+		return AIR_INTERNAL_ERROR;
 	}
 	DBG("tx_sem successful with ID: %d\n", (int) pDev->tx_sem);
 	/* TX Empty Semaphore created with count = 0 */
@@ -873,9 +872,9 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 		RTEMS_FIFO|RTEMS_SIMPLE_BINARY_SEMAPHORE|RTEMS_NO_INHERIT_PRIORITY|\
 		RTEMS_LOCAL|RTEMS_NO_PRIORITY_CEILING,
 		0,
-		&(pDev->txempty_sem)) != RTEMS_SUCCESSFUL ) {
+		&(pDev->txempty_sem)) != AIR_SUCCESSFUL ) {
 		DBG("txempty_sem couldn't be created\n");
-		return RTEMS_INTERNAL_ERROR;
+		return AIR_INTERNAL_ERROR;
 	}
 	DBG("txempty_sem successful with ID: %d\n", (int) pDev->txempty_sem);
 	/* Device Semaphore created with count = 1 */
@@ -884,20 +883,18 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 		RTEMS_FIFO|RTEMS_SIMPLE_BINARY_SEMAPHORE|RTEMS_NO_INHERIT_PRIORITY|\
 		RTEMS_LOCAL|RTEMS_NO_PRIORITY_CEILING,
 		0,
-		&(pDev->dev_sem)) != RTEMS_SUCCESSFUL ) {
+		&(pDev->dev_sem)) != AIR_SUCCESSFUL ) {
 		DBG("dev_sem couldn't be created\n");
-		return RTEMS_INTERNAL_ERROR;
+		return AIR_INTERNAL_ERROR;
 	}
 	DBG("dev_sem created with ID: %d\n", (int) pDev->dev_sem);
+#endif
 	return 0;
 }
 
 /*
  * New function developed for AIR */
-iop_device_operation iop_grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
-
-	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
-	grcan_priv *pDev = (grcan_priv*) (device->dev.driver);
+air_status_code_e iop_grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
 
 	FUNCDBG();
 
@@ -909,47 +906,44 @@ iop_device_operation iop_grcan_initialize(iop_device_driver_t *iop_dev, void *ar
 	 *gpr = 0x000ffc3c;
 
 	 /* Enable CAN Clock gate */
-	 clock_gating_enable(&ambapp_plb, GATE_CAN);
+	 clock_gating_enable(&amba_confarea, GATE_CAN);
 
-	// File system name should be configured in the iop_can_physical components
-	DBG("Can core %d\n", device->can_core);
-
-	if( iop_grcan_device_init(iop_dev) == RTEMS_INTERNAL_ERROR){
+	if( iop_grcan_device_init(iop_dev) == AIR_INTERNAL_ERROR){
 		// Couldn't initialize the device
 		DBG("Internal error on grcan_device_init\n");
-		return RTEMS_IO_ERROR;
+		return AIR_DEVICE_ERROR;
 	}
 
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
 /*
  * Internal driver open routine. This corresponds more or less to the
  * original grcan_open on grcan driver from gaisler.
  */
-iop_device_operation iop_grcan_open_internal(iop_device_driver_t *iop_dev, void *arg)
+air_status_code_e iop_grcan_open_internal(iop_device_driver_t *iop_dev, void *arg)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev =  (grcan_priv *) (device->dev.driver);
-	uint32_t ret;
+	air_status_code_e ret = AIR_SUCCESSFUL;
 
 	FUNCDBG();
 	DBG("CAN core %d\n", device->can_core);
-
+#if 0
 	/* Wait until we get semaphore */
 	DBG("Attempting to take semaphore ID: %d\n", pDev->dev_sem);
 	if (rtems_semaphore_obtain(pDev->dev_sem, RTEMS_WAIT, RTEMS_NO_TIMEOUT)
-		!= RTEMS_SUCCESSFUL) {
+		!= AIR_SUCCESSFUL) {
 		DBG("Failed to obtain the semaphore. Returning...\n");
-		return RTEMS_IO_ERROR;
+		return AIR_DEVICE_ERROR;
 	}
 
 	DBG("Semaphore taken\n");
-
+#endif
 	/* is device busy/taken? */
 	if  ( pDev->open ) {
 		DBG("Device taken\n");
-		ret = RTEMS_IO_ERROR;
+		ret = AIR_DEVICE_ERROR;
 		goto out;
 	}
 
@@ -989,14 +983,16 @@ iop_device_operation iop_grcan_open_internal(iop_device_driver_t *iop_dev, void 
 	memset(pDev->_tx, 0x0f, pDev->txbuf_size);
 
 	out:
+#if 0
 	rtems_semaphore_release(pDev->dev_sem);
+#endif
 	return ret;
 }
 
 /*
  * Open routine for AIR
  * */
-iop_device_operation iop_grcan_open(iop_device_driver_t *iop_dev, void *arg){
+air_status_code_e iop_grcan_open(iop_device_driver_t *iop_dev, void *arg){
 
 	FUNCDBG();
 
@@ -1005,12 +1001,12 @@ iop_device_operation iop_grcan_open(iop_device_driver_t *iop_dev, void *arg){
 
 	int ret;
 
-	if(iop_grcan_open_internal(iop_dev, NULL) == NULL){
+	if(iop_grcan_open_internal(iop_dev, NULL) != AIR_SUCCESSFUL){
 		DBG("Failed to open GRCAN device %d\n", device->can_core);
-		return RTEMS_IO_ERROR;
+		return AIR_DEVICE_ERROR;
 	}
 
-	/* Set /* Set up CAN driver:
+	/* Set up CAN driver:
 		 *  ¤ Calculate grcan_timing
 		 *  ¤ baud rate
 		 *  ¤ Channel
@@ -1024,33 +1020,33 @@ iop_device_operation iop_grcan_open(iop_device_driver_t *iop_dev, void *arg){
 	ret = iop_grcan_set_speed(iop_dev, device->baud_rate);
 	if(ret){
 		iop_debug("GRCAN%d: Failed to set speed. Error %d\n", device->can_core, ret);
-		return RTEMS_IO_ERROR;
+		return AIR_DEVICE_ERROR;
 	}else{
 		print_grtiming(pDev->corefreq_hz,device->baud_rate, &(pDev->config.timing));
 	}
 
 	if(iop_grcan_set_selection(iop_dev, &(pDev->config.selection))){
 		iop_debug("GRCAN%d: Failed to select channel.\n", device->can_core);
-		return RTEMS_IO_ERROR;
+		return AIR_DEVICE_ERROR;
 	}
 	iop_debug("GRCAN%d: Channel selected.\n", device->can_core);
 	if(iop_grcan_clr_stats(iop_dev)){
 		iop_debug("GRCAN%d: Failed to clear statistics.\n", device->can_core);
-		return RTEMS_IO_ERROR;
+		return AIR_DEVICE_ERROR;
 	}
 	iop_debug("GRCAN%d: Stats cleared.\n", device->can_core);
 
 	/* Start GRCAN driver */
 	if(iop_grcan_start(iop_dev)){
 		iop_debug("GRCAN%d: Failed to start", device->can_core);
-		return RTEMS_IO_ERROR;
+		return AIR_DEVICE_ERROR;
 	}
 	iop_debug("GRCAN%d: Device started", device->can_core);
 
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
-iop_device_operation iop_grcan_close(iop_device_driver_t * iop_dev)
+air_status_code_e iop_grcan_close(iop_device_driver_t * iop_dev)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1066,15 +1062,15 @@ iop_device_operation iop_grcan_close(iop_device_driver_t * iop_dev)
 	/* Mark Device as closed */
 	pDev->open = 0;
 
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
-iop_device_operation iop_grcan_read(iop_device_driver_t *iop_dev, void *arg)
+air_status_code_e iop_grcan_read(iop_device_driver_t *iop_dev, void *arg)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 	CANMsg dest;
-	unsigned int count, left;
+	unsigned int count;
 	int nread;
 	int req_cnt;
 	int i;
@@ -1092,12 +1088,12 @@ iop_device_operation iop_grcan_read(iop_device_driver_t *iop_dev, void *arg)
 	DBG("grcan_read on device grcan%d\n", device->can_core);
 	if ( (!iop_buffer) || (req_cnt<1) ){
 		DBG("Invalid argument\n");
-		return GRCAN_RET_INVARG;
+		return AIR_INVALID_PARAM;
 	}
 
 	if (pDev->started != STATE_STARTED) {
 		DBG("Trying to read a device not started\n");
-		return GRCAN_RET_NOTSTARTED;
+		return AIR_INVALID_MODE;
 	}
 	DBG("Attempting to read %d message(s)\n", req_cnt);
 	nread = grcan_hw_read_try(pDev,pDev->regs,&dest,req_cnt);
@@ -1141,25 +1137,25 @@ iop_device_operation iop_grcan_read(iop_device_driver_t *iop_dev, void *arg)
 		if ( count > 0 ) {
 			/* Successfully received messages (at least one) */
 			iop_debug("%d messages read\n", count);
-			return RTEMS_SUCCESSFUL;
+			return AIR_SUCCESSFUL;
 		}
 
 		/* nothing read, shall we block? */
 		if ( !pDev->rxblock ) {
 			/* non-blocking mode */
-			return GRCAN_RET_TIMEOUT;
+			return AIR_TIMED_OUT;
 		}
 	}
 
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
  
-iop_device_operation iop_grcan_write(iop_device_driver_t *iop_dev, void *arg)
+air_status_code_e iop_grcan_write(iop_device_driver_t *iop_dev, void *arg)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 	CANMsg source;
-	unsigned int count, left;
+	unsigned int count;
 	int nwritten;
 	int req_cnt;
 	int i;
@@ -1168,7 +1164,7 @@ iop_device_operation iop_grcan_write(iop_device_driver_t *iop_dev, void *arg)
 
 	/* check proper length and buffer pointer */
 	if(arg == NULL){
-		return GRCAN_RET_INVARG;
+		return AIR_INVALID_PARAM;
 	}
 
 	iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
@@ -1176,13 +1172,13 @@ iop_device_operation iop_grcan_write(iop_device_driver_t *iop_dev, void *arg)
 
 	if(iop_buffer->v_addr == NULL){
 		DBG("Bad iop_buffer\n");
-		return RTEMS_INVALID_NAME;
+		return AIR_INVALID_SIZE;
 	}
 
 	DBGC(DBG_TX,"\n");
 
 	if ((pDev->started != STATE_STARTED) || pDev->config.silent || pDev->flushing)
-		return GRCAN_RET_NOTSTARTED;
+		return AIR_NOT_AVAILABLE;
 
 	req_cnt = 1;
 
@@ -1215,17 +1211,17 @@ iop_device_operation iop_grcan_write(iop_device_driver_t *iop_dev, void *arg)
 		if ( count > 0 ) {
 		  /* Successfully transmitted chars (at least one char) */
 			DBG("Successfully transmitted %d chars\n", count);
-			return RTEMS_SUCCESSFUL;
+			return AIR_SUCCESSFUL;
 		}
 
 		/* nothing written, shall we block? */
 		if ( !pDev->txblock ) {
 		  /* non-blocking mode */
-		  return GRCAN_RET_TIMEOUT;
+		  return AIR_TIMED_OUT;
 		}
 	}
 
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
     
 int iop_grcan_stop(iop_device_driver_t *iop_dev)
