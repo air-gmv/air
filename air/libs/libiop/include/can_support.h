@@ -8,7 +8,6 @@
 #define __CAN_SUPPORT_H__
 
 #include <iop.h>
-#include <rtems.h>
 #include <iop_support.h>
 
 typedef struct {

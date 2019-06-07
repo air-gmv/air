@@ -8,7 +8,6 @@
 #define __ETH_SUPPORT_H__
 
 #include <iop.h>
-#include <rtems.h>
 #include <iop_support.h>
 
 #define ETHII_HDR_SIZE                              (14)

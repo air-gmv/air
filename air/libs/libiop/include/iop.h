@@ -13,7 +13,6 @@
 #define __IOP_H__
 
 #include <air.h>
-#include <rtems.h>
 #include <iop_chain.h>
 #include <iop_headers.h>
 
@@ -119,7 +118,7 @@ typedef struct {
  * @param arg Input argument (device structure pointer)
  * @return return type of an RTEMS task
  */
-typedef rtems_task (*iop_device_driver_task)(rtems_task_argument arg);
+typedef void (*iop_device_driver_task)(air_uptr_t arg);
 
 
 typedef void (*iop_header_prebuild_f)(iop_header_t *header);
@@ -218,8 +217,8 @@ struct __iop_physical_device_t {
     iop_chain_control sendqueue;            /**< type: service_request_t    */
 
     /* device tasks */
-    rtems_id reader_id;
-    rtems_id writer_id;
+    air_u32_t reader_id;
+    air_u32_t writer_id;
     iop_device_driver_task reader_task;     /**< device reader task         */
     iop_device_driver_task writer_task;     /**< device writer task         */
 
