@@ -13,7 +13,7 @@
 #ifndef __ERROR_H__
 #define __ERROR_H__
 
-#include <rtems.h>
+#include <iop.h>
 
 /**
  * @brief IOP Error codes
@@ -37,6 +37,6 @@ typedef enum errors {
 
 } IOP_ERROR;
 
-rtems_status_code iop_raise_error(int error);
+air_status_code_e iop_raise_error(int error);
 
 #endif
