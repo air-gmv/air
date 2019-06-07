@@ -20,7 +20,7 @@
 
 /**
  *  @brief Task that writes pending write requests to ETH0
- *  @param [in] arg: not used
+ *  @param [in] pdev: physical device
  *
  *  Obtains write requests from the send queue chain and writes them to ETH0.
  *  In case of a failed write, if the user requested a reply he is informed that
@@ -32,9 +32,6 @@
 void
 eth_writer(iop_physical_device_t * pdev)
 {
-
-    /* get task physical device */
-
     if (pdev == NULL)
     {
         iop_debug(" :: IOP - eth_writer parameter cannot be NULL!\n");
@@ -66,14 +63,13 @@ eth_writer(iop_physical_device_t * pdev)
         }
         /* write to the device */
         if (eth_driver->dev.write((iop_device_driver_t *) eth_driver,
-                                 wrapper) == RTEMS_SUCCESSFUL)
+                                 wrapper) == AIR_SUCCESSFUL)
         {
             /*all fragments sent?*/
             if(iop_chain_is_empty(&wrapper->fragment_queue)){
-
                 release_wrapper(wrapper);
                 wrapper=NULL;
-            }                
+            }
         }
         else
         {
@@ -94,7 +90,7 @@ eth_writer(iop_physical_device_t * pdev)
 
 int packet_is_final(iop_wrapper_t *wrapper){
 
-    iop_fragment_t *frag = wrapper->fragment_queue.last;
+    iop_fragment_t *frag = (iop_fragment_t *) wrapper->fragment_queue.last;
 
     if((frag->header.eth_header.ipoffset[0] & 0x20)==0){
         /*no more fragments*/
@@ -107,7 +103,7 @@ int packet_is_final(iop_wrapper_t *wrapper){
 
 /**
  *  @brief Task that polls eth0 for new data packets
- *  @param [in] arg: not used
+ *  @param [in] pdev: physical device
  *
  *  This tasks polls for new data and places it on a reply structure.
  *  Data is validated against acceptable values. Incoming packets other than 
@@ -122,19 +118,11 @@ int packet_is_final(iop_wrapper_t *wrapper){
 void
 eth_reader(iop_physical_device_t * pdev)
 {
-    /* get task physical device */
-//    iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
-
     if (pdev == NULL)
     {
         iop_debug(" :: IOP - eth_reader parameter cannot be NULL!\n");
         return;
     }
-
-    /* initialize error chain (packets to be resent) */
-    iop_chain_control error;
-
-    iop_chain_initialize_empty(&error);
 
     /* get underlying driver */
     iop_eth_device_t *driver = (iop_eth_device_t *) pdev->driver;
@@ -144,9 +132,8 @@ eth_reader(iop_physical_device_t * pdev)
     static iop_wrapper_t *wrapper = NULL;
     iop_wrapper_t *aux=NULL;
     uint32_t i;
-    uint32_t skip;
-    uint32_t reads =
-        pdev->reads_per_period[air_schedule.current_schedule_index];
+    uint32_t reads = pdev->reads_per_period[air_schedule.current_schedule_index];
+
     for (i = 0; i < reads; ++i)
     {
 
@@ -159,7 +146,6 @@ eth_reader(iop_physical_device_t * pdev)
                 iop_raise_error(OUT_OF_MEMORY);
                 break;
             }
- 
         }
 
         /*auxiliary wrapper for ARP bufer swapping*/
@@ -169,13 +155,13 @@ eth_reader(iop_physical_device_t * pdev)
             iop_raise_error(OUT_OF_MEMORY);
             break;
         }
-        
+
         /*safeguard original wrapper buffer*/
         iop_buffer_t *aux_buf= aux->buffer;
         aux->buffer=wrapper->buffer;
-        
+
         /* read from the device */
-        if (driver->dev.read((iop_device_driver_t *) driver, wrapper) == 0)
+        if (driver->dev.read((iop_device_driver_t *) driver, wrapper) == AIR_SUCCESSFUL)
         {
 
             switch (eth_get_packet_type(wrapper->buffer))
@@ -195,9 +181,8 @@ eth_reader(iop_physical_device_t * pdev)
                     wrapper = NULL;
                 }
                 break;
-            
+
             default:
-             //   iop_debug("other packet\n");
                 break;
             }
         }
