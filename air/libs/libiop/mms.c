@@ -16,7 +16,7 @@
 #include <iop_mms.h>
 #include <iop_error.h>
 
-rtems_interval last_task_ticks;
+air_u32_t last_task_ticks;
 air_schedule_status_t air_schedule;
 air_partition_status_t air_partition;
 
@@ -33,7 +33,7 @@ void iop_init_mms(void) {
 void iop_task_sleep(uint32_t first_task) {
 
 	rtems_status_code rc;
-	rtems_interval current_task_ticks, sleep_ticks;
+	air_u32_t current_task_ticks, sleep_ticks;
 
 	/* compute ticks until next period */
     /* this  commented call is for RTEMS 4.8, it is not deprecated */
