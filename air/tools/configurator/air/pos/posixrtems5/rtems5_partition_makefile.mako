@@ -7,6 +7,11 @@
     lib_name, lib_make = makoutils.getMakefileLib(input_file)
     build_dir = os.path.relpath(air.INSTALL_PMK_DIRECTORY, air.SOURCE_PMK_DIRECTORY)
 
+    if partition.is_system:
+        kernel_headers_dirs = set([os.path.dirname(d) for d in os_configuration.get_kernel_headers()])
+        kernel_headers = [
+            os.path.join('$(AIR_PMK)', os.path.relpath(h, air.SOURCE_PMK_DIRECTORY))
+            for h in kernel_headers_dirs]
 %>\
 <%namespace name="template" file="/makefile.mako"/>\
 ${template.FileHeader('{0} : {1}'.format(lib_name.upper(), partition))}\
@@ -43,6 +48,9 @@ LD_LIBS =${'\\'}
 % for i, libname in enumerate(partition.libraries):
 $(AIR_LIBS)/${libname.lower()}/${libname.lower()}.a${'\\' if i < len(partition.libraries) - 1 else '\\'}
 % endfor
+% if partition.is_system:
+$(AIR_PMK)/pmk.a
+% endif
 
 # The RTEMS_MAKEFILE_PATH is defined by the user for the specific CPU and BSP
 RTEMS_MAKEFILE_PATH=$(AIR_POS)/${os.path.join('rtems5', 'rtems5-install', 'sparc-rtems5', 'leon3')}
@@ -54,6 +62,12 @@ include $(PROJECT_ROOT)/make/leaf.cfg
 
 # built in libraries include files
 CPPFLAGS+=${'\\'}
+% if partition.is_system:
+-DPMK_MAX_CORES=${os_configuration.get_available_cores()}${'\\'}
+% for i, directory in enumerate(kernel_headers):
+-I${directory}${'\\'}
+% endfor
+% endif
 -I./${'\\'}
 -B./${'\\'}
 -I../common/${'\\'}
