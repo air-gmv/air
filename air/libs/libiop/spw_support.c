@@ -3,7 +3,7 @@
 #include <iop_support.h>
 #include <spw_support.h>
 
-void spw_prebuild_header(spw_header_t *buf) {
+void spw_prebuild_header(iop_header_t *buf) {
 
     /* the total length will be inserted when we have the data */
     //buf->hlen = 0;
