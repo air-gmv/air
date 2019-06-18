@@ -22,6 +22,7 @@
 #include <air.h>
 #include <iop.h>
 #include <can_support.h>
+#include <stdint.h>
 
 #ifndef __GRCAN_H__
 #define __GRCAN_H__
@@ -231,22 +232,8 @@ typedef struct grcan_priv_ {
 	struct grcan_config config;
 	struct grcan_stats stats;
 
-	unsigned int rx_sem, tx_sem, txempty_sem, dev_sem;
-
-	/* AIR Memory */
-	iop_buffer_t *iop_buffers;
-	unsigned char *iop_buffers_storage;
-	iop_buffer_t **tx_iop_buffer; /* mapping of TX descriptor and IOP buffers */
-	iop_buffer_t **rx_iop_buffer; /* mapping of RX descriptor and IOP buffers */
-
 } grcan_priv;
 
-
-
-/*
- * Return number of GRCAN devices available to driver
- */
-int grcan_dev_count(void);
 
 /*
  * Initialize GRCAN

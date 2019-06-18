@@ -11,8 +11,7 @@
  * Modified by: gmvs@gmv.com
  * 
  * The original driver has been modified to be included in the Hypervisor
- * AIR, developed by gmv. It is assumed to be used for the GR740 board.
- * 
+ * AIR, developed by gmv.
  *
  * NOTE: When running this example on GR740, the following have to be configured:
  * - CAN pin multiplexing
@@ -36,7 +35,6 @@
 #define GRCAN_COUNT_MAX 8
 
 #define WRAP_AROUND_TX_MSGS 1
-#define WRAP_AROUND_RX_MSGS 2
 #define GRCAN_MSG_SIZE sizeof(grcan_msg)
 #define BLOCK_SIZE (16*4)
 
@@ -53,32 +51,9 @@
 #define RX_BUF_SIZE ((3*BLOCK_SIZE)*16)
 #endif
 
-#ifndef IRQ_CLEAR_PENDING
- #define IRQ_CLEAR_PENDING(irqno) 
-#endif
-
-#ifndef IRQ_UNMASK
- #define IRQ_UNMASK(irqno) 
-#endif
-
-#ifndef IRQ_MASK
- #define IRQ_MASK(irqno) 
-#endif
-
-#ifndef GRCAN_DEFAULT_BAUD
-  /* default to 500kbits/s */
-  #define GRCAN_DEFAULT_BAUD 500000
-#endif
-
 #ifndef GRCAN_SAMPLING_POINT
 #define GRCAN_SAMPLING_POINT 80
 #endif
-
-/* This assumes that the driver is used on the GR740 board */
-#define CAN_CLOCK_SPEED 250000000
-/* From GRCAN datasheet */
-#define GRCAN0 0xffa01000
-#define GRCAN1 0xffa02000
 
 /****************** DEBUG Definitions ********************/
 #define DBG_TX 2
@@ -171,9 +146,6 @@ static unsigned int __inline__ _grcan_read_nocache(unsigned int address)
   return tmp;
 }
 #endif
-
-#define NELEM(a) ((int) (sizeof (a) / sizeof (a[0])))
-static int grcan_count = 0;
 
 int iop_grcan_get_status(iop_device_driver_t *iop_dev, unsigned int *data)
 {
@@ -273,13 +245,10 @@ static air_status_code_e grcan_hw_start(grcan_priv *pDev)
 static void grcan_hw_stop(grcan_priv *pDev)
 {
   FUNCDBG();
-     
+
   /* Mask all IRQs */
   pDev->regs->imr = 0;
-  IRQ_MASK(pDev->irq+GRCAN_IRQ_TXSYNC);
-  IRQ_MASK(pDev->irq+GRCAN_IRQ_RXSYNC);
-  IRQ_MASK(pDev->irq+GRCAN_IRQ_IRQ);
-  
+
   /* Disable receiver & transmitter */
   pDev->regs->rx0ctrl = 0;
   pDev->regs->tx0ctrl = 0;
@@ -424,10 +393,6 @@ int iop_grcan_start(iop_device_driver_t *iop_dev)
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
 
-	/* setup IOP buffers */
-	setup_iop_buffers(pDev->iop_buffers,
-			pDev->iop_buffers_storage,
-			device->rx_count + device->tx_count);
 
 	if (iop_grcan_get_state(iop_dev) == STATE_STARTED) {
 		return -1;
@@ -735,10 +700,6 @@ static int grcan_hw_write_try(
 	return ret;
 }
 
-int grcan_dev_count(void)
-{
-	return grcan_count;
-}
 
 void print_grtiming(unsigned int corefreq, unsigned int rate, struct grcan_timing *timing)
 {
@@ -792,15 +753,6 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 
 	FUNCDBG();
 
-	/* Get device information from AMBA PnP information
-	 * GMVS find the bus on which the device is
-	 *
-	 * The list of apbslv devices is in a file called ambapp.h
-	 * and not int the gaisler.h file.
-	 * gmvs - We had to change the value of the GAISLER_GRCAN
-	 * define to the value in use in the gr740
-	 */
-
 	memset(&grcandev, 0, sizeof(amba_apb_dev_t));
 // 	dev_count = ambapp_find_apbslv(&amba_confarea,
 // 			VENDOR_GAISLER,
@@ -828,16 +780,20 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 			grcandev.ahbidx);
 #endif
 	pDev->irq = grcandev.irq;
-	pDev->regs = (struct grcan_regs *) (grcandev.start + offset);
+	pDev->regs = (struct grcan_regs *) (grcandev.start);
 	pDev->minor = device->can_core;
 	DBG ("REGS: 0x%04x - IRQ: 0x%04x - Minor: %d\n", pDev->regs, pDev->irq, pDev->minor);
 
-	/* Hard coded for lack of a beter way */
-	pDev->corefreq_hz = CAN_CLOCK_SPEED;
+    /* Get frequency in Hz */
+ //   pDev->corefreq_hz = amba_confarea.ahbs[grcandev.ahbidx].freq_hz;
+	pDev->corefreq_hz = 250000000;
+
+
 	DBG("GRCAN frequency: %d Hz\n", pDev->corefreq_hz);
 
-	/* Reset Hardware before attaching IRQ handler */
+	/* Reset Hardware*/
 	grcan_hw_reset(pDev->regs);
+
 //	iop_debug("GRCAN: System frequency set at: %dHz\n", pDev->corefreq_hz);
 	DBG("Registers are set\n");
 	/* TODO compute grcan_timing from clock frequency and configured baudrate
@@ -980,7 +936,6 @@ air_status_code_e iop_grcan_open_internal(iop_device_driver_t *iop_dev, void *ar
 	iop_grcan_set_sfilter(iop_dev, &(pDev->sfilter));
 
 	memset(&pDev->stats,0,sizeof(struct grcan_stats));
-	memset(pDev->_tx, 0x0f, pDev->txbuf_size);
 
 	out:
 #if 0
@@ -1125,12 +1080,12 @@ uint32_t iop_grcan_read(iop_device_driver_t *iop_dev, void *arg)
 		header.id,
 		header.extended,
 		header.rtr);
-	memcpy(iop_buffer->v_addr + iop_buffer->header_off,
+	memcpy(get_header(iop_buffer),
 			&header,
-			iop_buffer->header_size);
-	memcpy(iop_buffer->v_addr + iop_buffer->payload_off,
+			get_header_size(iop_buffer));
+	memcpy(get_payload(iop_buffer),
 			dest.data,
-			iop_buffer->payload_size);
+			get_payload_size(iop_buffer));
 
 	count = nread;
 	if ( !( pDev->rxblock && pDev->rxcomplete && (count!=req_cnt) ) ){
@@ -1183,7 +1138,7 @@ uint32_t iop_grcan_write(iop_device_driver_t *iop_dev, void *arg)
 	req_cnt = 1;
 
 	/* Setup the the can message in the CANMsg format */
-	can_header = (can_header_t *) (iop_buffer->v_addr + iop_buffer->header_off);
+	can_header = (can_header_t *) get_header(iop_buffer);
 	DBG("From iop_buffers\nSource ID: %d RTR: %d Ext: %d\n",
 			can_header->id,
 			can_header->rtr,
@@ -1192,14 +1147,14 @@ uint32_t iop_grcan_write(iop_device_driver_t *iop_dev, void *arg)
 	source.rtr = can_header->rtr;
 	source.extended = can_header->extended;
 	DBG("Message:\n");
-	for(i = 0 ; i < iop_buffer->payload_size; i++){
-		tmp = (char *) (iop_buffer->v_addr + iop_buffer->payload_off + i);
+	for(i = 0 ; i < get_payload_size(iop_buffer); i++){
+		tmp = (char *) (get_payload(iop_buffer) + i);
 		source.data[i] = *tmp;
 		iop_debug("%c", source.data[i]);
 	}
 	iop_debug("\n");
 
-	source.len = iop_buffer->payload_size;
+	source.len = get_payload_size(iop_buffer);
 	DBG("Payload size %d\n", source.len);
 
 	nwritten = grcan_hw_write_try(pDev,pDev->regs,&source,req_cnt);
@@ -1482,13 +1437,3 @@ int iop_grcan_set_sfilter(iop_device_driver_t *iop_dev, const struct grcan_filte
 
 	return 0;
 }
-
-/* Error indicators */
-#define GRCAN_IRQ_ERRORS \
-		(GRCAN_RXAHBERR_IRQ | GRCAN_TXAHBERR_IRQ | GRCAN_OFF_IRQ)
-#define GRCAN_STAT_ERRORS (GRCAN_STAT_AHBERR | GRCAN_STAT_OFF)
-/* Warning & RX/TX sync indicators */
-#define GRCAN_IRQ_WARNS \
-		(GRCAN_ERR_IRQ | GRCAN_OR_IRQ | GRCAN_TXLOSS_IRQ | \
-		 GRCAN_RXSYNC_IRQ | GRCAN_TXSYNC_IRQ)
-#define GRCAN_STAT_WARNS (GRCAN_STAT_OR | GRCAN_STAT_PASS)
