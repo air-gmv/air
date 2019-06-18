@@ -334,17 +334,17 @@ typedef struct {
 #define SPACEWIRE_IOCTRL_STOP                65
 /**@}*/
 
-air_status_code_e spw_initialize(iop_device_driver_t *iop_dev, void *arg);
+uint32_t spw_initialize(iop_device_driver_t *iop_dev, void *arg);
 
-air_status_code_e spw_open(iop_device_driver_t *iop_dev, void *arg);
+uint32_t spw_open(iop_device_driver_t *iop_dev, void *arg);
 
-air_status_code_e spw_close(iop_device_driver_t *iop_dev, void *arg);
+uint32_t spw_close(iop_device_driver_t *iop_dev, void *arg);
 
-air_status_code_e spw_read(iop_device_driver_t *iop_dev, void *arg);
+uint32_t spw_read(iop_device_driver_t *iop_dev, void *arg);
 
-air_status_code_e spw_write(iop_device_driver_t *iop_dev, void *arg );
+uint32_t spw_write(iop_device_driver_t *iop_dev, void *arg );
 
-air_status_code_e spw_control(iop_device_driver_t *iop_dev, void *arg);
+uint32_t spw_control(iop_device_driver_t *iop_dev, void *arg);
 
 #ifdef __cplusplus
 }

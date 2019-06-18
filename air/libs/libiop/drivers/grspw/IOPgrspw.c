@@ -383,7 +383,7 @@ void spw_check_tx(SPW_DEV *pDev){
  *     - RTEMS_SUCESSFULL operation completed successfully
  *	
  **/
-air_status_code_e spw_initialize(iop_device_driver_t *iop_dev, void *arg)
+uint32_t spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
 	
 	iop_spw_device_t *device = (iop_spw_device_t *)iop_dev;
@@ -557,7 +557,7 @@ air_status_code_e spw_initialize(iop_device_driver_t *iop_dev, void *arg)
  *		- AIR_SUCCESSFUL if the operation completed sucessfully
  *	
  **/
-air_status_code_e spw_open(iop_device_driver_t *iop_dev, void *arg)
+uint32_t spw_open(iop_device_driver_t *iop_dev, void *arg)
 {
 	
 	/*Current SpW device*/
@@ -623,7 +623,7 @@ air_status_code_e spw_open(iop_device_driver_t *iop_dev, void *arg)
  *		- AIR_SUCCESSFUL if the operation completed sucessfully
  *
  **/	
-air_status_code_e spw_close(iop_device_driver_t *iop_dev, void *arg)
+uint32_t spw_close(iop_device_driver_t *iop_dev, void *arg)
 {   
 	/*Current SpW device*/
 	iop_spw_device_t *device = (iop_spw_device_t *)iop_dev;
@@ -661,7 +661,7 @@ air_status_code_e spw_close(iop_device_driver_t *iop_dev, void *arg)
  *		- AIR_NOT_AVAILABLE: There is no data to be read and we can't block
  *
  **/	
-air_status_code_e spw_read(iop_device_driver_t *iop_dev, void *arg)
+uint32_t spw_read(iop_device_driver_t *iop_dev, void *arg)
 {
 	/*Current SpW device*/
 	iop_spw_device_t *device = (iop_spw_device_t *)iop_dev;
@@ -738,7 +738,7 @@ air_status_code_e spw_read(iop_device_driver_t *iop_dev, void *arg)
  *		- AIR_NOT_AVAILABLE: Write buffers are full and we can't block waiting
  *
  **/	
-air_status_code_e spw_write(iop_device_driver_t *iop_dev, void *arg)
+uint32_t spw_write(iop_device_driver_t *iop_dev, void *arg)
 {   
 	/*Current SpW device*/
 	iop_spw_device_t *device = (iop_spw_device_t *)iop_dev;
