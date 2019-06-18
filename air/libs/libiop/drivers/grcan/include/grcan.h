@@ -22,7 +22,6 @@
 #include <air.h>
 #include <iop.h>
 #include <can_support.h>
-#include <stdint.h>
 
 #ifndef __GRCAN_H__
 #define __GRCAN_H__
