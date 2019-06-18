@@ -736,7 +736,6 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 	grcan_priv *pDev = (grcan_priv*) (device->dev.driver);
 	amba_apb_dev_t grcandev;
 //	int dev_count = 0;
-	int offset= 0;
 
     struct amba_dev_id {
         unsigned short      vendor;
@@ -761,17 +760,11 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
     if(amba_get_apb_slave(&amba_confarea,
             grcan_ids[0].vendor,
             grcan_ids[0].device,
-            0,
+            device->can_core,
             &grcandev) != 1)
     {
         return -1;
     }
-	/* In this case we want to reach the second can core
-	 * which is equal to the first address with an offset
-	 * of 0x1000 */
-	if(device->can_core == 1){
-		offset = 4096;
-	}
 
 #if 0
 	iop_debug("Start: 0x%04x - IRQ 0x%04x - bus_id 0x%04x\n",
