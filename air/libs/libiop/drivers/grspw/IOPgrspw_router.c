@@ -51,7 +51,7 @@ void router_print_hwinfo(struct router_hw_info *hwinfo)
 	iop_debug("  Current Instance ID:           %d\n", hwinfo->iid);
 }
 
-air_status_code_e spw_router_initialize(iop_device_driver_t *iop_dev, void *arg)
+uint32_t spw_router_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
 	
 	clock_gating_enable(&amba_confarea, GATE_SPWR);
@@ -132,7 +132,7 @@ air_status_code_e spw_router_initialize(iop_device_driver_t *iop_dev, void *arg)
 	return AIR_SUCCESSFUL;
 }
 
-air_status_code_e spw_router_open(iop_device_driver_t *iop_dev, void *arg)
+uint32_t spw_router_open(iop_device_driver_t *iop_dev, void *arg)
 {	
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
 	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
@@ -147,7 +147,7 @@ air_status_code_e spw_router_open(iop_device_driver_t *iop_dev, void *arg)
 	return AIR_SUCCESSFUL;
 }
 
-air_status_code_e spw_router_close(iop_device_driver_t *iop_dev, void *arg)
+uint32_t spw_router_close(iop_device_driver_t *iop_dev, void *arg)
 {
 	iop_spw_router_device_t *device = (iop_spw_router_device_t *)iop_dev;
 	router_priv_t *priv = (router_priv_t *)(device->dev.driver);
@@ -439,5 +439,5 @@ static int router_tc_read(router_priv_t *priv, unsigned int *tc)
 //	return 0;
 //}
 
-air_status_code_e spw_router_write(iop_device_driver_t *iop_dev, void *arg){return AIR_SUCCESSFUL;}
-air_status_code_e spw_router_read(iop_device_driver_t *iop_dev, void *arg){return AIR_SUCCESSFUL;}
+uint32_t spw_router_write(iop_device_driver_t *iop_dev, void *arg){return AIR_SUCCESSFUL;}
+uint32_t spw_router_read(iop_device_driver_t *iop_dev, void *arg){return AIR_SUCCESSFUL;}
