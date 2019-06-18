@@ -91,35 +91,37 @@ static void eth_complete_header(
     udp->udpchksum = 0;
 }
 
-void eth_prebuild_header(eth_header_t *buf) {
+void eth_prebuild_header(iop_header_t *buf) {
+
+    eth_header_t * eth = (eth_header_t *) buf;
 
     /* the total length will be inserted when we have the data */
-    buf->len = 0;
+    eth->len = 0;
 
     /* time to Live is defined in UIP_TTL (64) */
-    buf->ttl = IPV4_HDR_TTL;
+    eth->ttl = IPV4_HDR_TTL;
 
     /* protocol is UDP */
-    buf->proto = IPV4_HDR_PROTO;
+    eth->proto = IPV4_HDR_PROTO;
 
     /* Version and Header Length. Always the same*/
-    buf->vhl = 0x45;
+    eth->vhl = 0x45;
 
     /* Type of Service: always 0*/
-    buf->tos = 0;
+    eth->tos = 0;
 
     /* We don't fragment packets, so this is zero*/
-    buf->ipoffset[0] = buf->ipoffset[1] = 0;
+    eth->ipoffset[0] = eth->ipoffset[1] = 0;
 
     /* We don't fragment packets, so this can have almost any value*/
-    buf->ipid[0] = 0;
-    buf->ipid[1] = 1 & 0xff;
+    eth->ipid[0] = 0;
+    eth->ipid[1] = 1 & 0xff;
 
     /* checksum needs the user data */
-    buf->ipchksum = 0;
+    eth->ipchksum = 0;
 
     /* set type of packet */
-    buf->type = HTONS(ETH_HDR_IP_TYPE);
+    eth->type = HTONS(ETH_HDR_IP_TYPE);
 }
 
 

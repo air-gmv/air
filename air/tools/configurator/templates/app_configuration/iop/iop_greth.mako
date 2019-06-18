@@ -47,8 +47,8 @@ static greth_softc_t greth_driver = ${'\\'}
     .iop_buffers_storage    = iop_buffers_storage,
 
     /** @note descriptor table address are split and aligned at the runtime */
-    .txdesc = descriptor_table,
-    .rxdesc = descriptor_table,
+    .txdesc = (greth_rxtxdesc*) descriptor_table,
+    .rxdesc = (greth_rxtxdesc*) descriptor_table,
 
     .tx_iop_buffer = tx_iop_buffer,
     .rx_iop_buffer = rx_iop_buffer
