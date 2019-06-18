@@ -77,7 +77,7 @@ air_status_code_e spw_router_initialize(iop_device_driver_t *iop_dev, void *arg)
 	memset(&ahbspwrtr, 0, sizeof(amba_ahb_dev_t));
 	
 	/* Scan for MAC AHB slave interface */
-	device_found = amba_get_ahb_slave(&amba_confarea, VENDOR_GAISLER, GAISLER_SPW_ROUTER, 0, &ahbspwrtr);
+	device_found = amba_get_ahb_slave(&amba_confarea, VENDOR_GAISLER, GAISLER_SPWROUTER, 0, &ahbspwrtr);
 									
 	if (device_found != 1){
 	    ROUTER_DBG2("SPWRTR device not found...\n");
