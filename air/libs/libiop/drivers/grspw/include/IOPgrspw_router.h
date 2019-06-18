@@ -147,16 +147,14 @@ typedef struct {
 /* Get Current Time-Code Register */
 #define GRSPWR_IOCTL_TC_GET	0x0c	/* OUT:    unsigned int */
 
-air_status_code_e spw_router_initialize(iop_device_driver_t *iop_dev, void *arg);
+uint32_t spw_router_initialize(iop_device_driver_t *iop_dev, void *arg);
 
-air_status_code_e spw_router_open(iop_device_driver_t *iop_dev, void *arg);
+uint32_t spw_router_open(iop_device_driver_t *iop_dev, void *arg);
 
-air_status_code_e spw_router_close(iop_device_driver_t *iop_dev, void *arg);
+uint32_t spw_router_close(iop_device_driver_t *iop_dev, void *arg);
 
-air_status_code_e spw_router_control(iop_device_driver_t *iop_dev, void *arg);
+uint32_t spw_router_write(iop_device_driver_t *iop_dev, void *arg);
 
-air_status_code_e spw_router_write(iop_device_driver_t *iop_dev, void *arg);
-
-air_status_code_e spw_router_read(iop_device_driver_t *iop_dev, void *arg);
+uint32_t spw_router_read(iop_device_driver_t *iop_dev, void *arg);
 
 #endif
