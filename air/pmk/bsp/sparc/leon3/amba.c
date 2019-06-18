@@ -55,6 +55,20 @@
  * @ingroup bsp_leon_amba
  */
 #define get_irq(x)                              ((x) & 0x1F)
+/**
+ * @brief Set address bit
+ * @param adr register address
+ * @param bit bit position
+ * @ingroup bsp_leon_amba
+ */
+#define SET_BIT_REG(adr, bit)               *(volatile unsigned int *)(adr) |= (1<<bit);
+/**
+ * @brief Clear address bit
+ * @param adr register address
+ * @param bit bit position
+ * @ingroup bsp_leon_amba
+ */
+#define CLEAR_BIT_REG(adr, bit)             *(volatile unsigned int *)(adr) &= ~(1<<bit);
 
 /**
  * @brief Search an AMBA I/O area for AHP Slaves
@@ -366,4 +380,68 @@ int amba_get_number_apbslv_devices (
             ++count;
     }
     return count;
+}
+
+int clock_gating_enable(amba_confarea_t* clk_amba_bus, clock_gating_device core_to_enable)
+{
+    /* Amba APB device */
+    amba_apb_dev_t ambadev;
+
+    /* Get AMBA AHB device info from Plug&Play */
+    if(amba_get_apb_slave(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE, 0, &ambadev) == 0)
+        return 0;
+
+    /* From LEON4 UM:
+     * To enable the clock for a core, the following procedure should be applied
+     * 1. Write a 1 to the corresponding bit in the unlock register
+     * 2. Write a 1 to the corresponding bit in the core reset register
+     * 3. Write a 1 to the corresponding bit in the clock enable register
+     * 4. Write a 0 to the corresponding bit in the core reset register
+     * 5. Write a 0 to the corresponding bit in the unlock register
+     */
+
+    /* Copy pointer to device's memory mapped registers */
+    clkgate_regs *gate_regs = (void *)ambadev.start;
+
+    /* 1. Unlock the GR1553 gate to allow enabling it */
+    SET_BIT_REG(&gate_regs->unlock, core_to_enable);
+
+    /* 2. Reset the GR1553 gate */
+    SET_BIT_REG(&gate_regs->core_reset, core_to_enable);
+
+    /* 3. Enable the GR1553 gate */
+    SET_BIT_REG(&gate_regs->clock_enable, core_to_enable);
+
+    /* 4. Clear the GR1553 gate reset*/
+    CLEAR_BIT_REG(&gate_regs->core_reset, core_to_enable);
+
+    /* 5. Lock the GR1553 gate */
+    CLEAR_BIT_REG(&gate_regs->unlock, core_to_enable);
+
+    return 1;
+}
+
+
+int clock_gating_disable(amba_confarea_t* clk_amba_bus, clock_gating_device core_to_disable)
+{
+    /* Amba APB device */
+    amba_apb_dev_t ambadev;
+
+    /* Get AMBA AHB device info from Plug&Play */
+    if(amba_get_apb_slave(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE, 0, &ambadev) == 0)
+        return 0;
+
+    /* Copy pointer to device's memory mapped registers */
+    clkgate_regs *gate_regs = (void *)ambadev.start;
+
+    /* From LEON4 UM:
+     * 1. Write a 1 to the corresponding bit in the unlock register
+     * 2. Write a 0 to the corresponding bit in the clock enable register
+     * 3. Write a 0 to the corresponding bit in the unlock register
+     */
+    SET_BIT_REG(&gate_regs->unlock, core_to_disable);
+    CLEAR_BIT_REG(&gate_regs->clock_enable, core_to_disable);
+    CLEAR_BIT_REG(&gate_regs->unlock, core_to_disable);
+
+    return 1;
 }
