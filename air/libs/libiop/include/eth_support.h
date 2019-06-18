@@ -101,7 +101,7 @@ uint16_t eth_ipv4_chksum(uint8_t *buf);
  * @brief Pre-build the IP header
  * @param buf pointer to the Ethernet header
  */
-void eth_prebuild_header(eth_header_t *buf);
+void eth_prebuild_header(iop_header_t *buf);
 /**
  * @brief Compare two ethernet headers
  * @param wrapper Received packet
