@@ -26,7 +26,7 @@ void can_copy_header(
 		iop_wrapper_t *wrapper,
 		iop_header_t *header);
 
-uint16_t can_compare_header(
+uint32_t can_compare_header(
 		iop_wrapper_t *wrapper,
 		iop_header_t *header);
 
