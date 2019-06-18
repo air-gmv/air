@@ -12,31 +12,6 @@
 #define __IOP_SUPPORT_H__
 
 #include <iop.h>
-#include <amba.h>
-
-/* Macros to set or clear a bit from a register */
-#define SET_BIT_REG(adr, bit) *(volatile uint32_t *)(adr) |= (1<<bit);
-#define CLEAR_BIT_REG(adr, bit) *(volatile uint32_t *)(adr) &= ~(1<<bit);
-
-/* Available unit for clock gating */
-typedef enum {
-    GATE_ETH0 = 0,
-    GATE_ETH1 = 1,
-    GATE_SPWR = 2,
-    GATE_PCI  = 3,
-    GATE_1553 = 4,
-    GATE_CAN  = 5
-} clock_gating_device;
-
-/**
- * @brief The Clock Gating register mapping
- */
-struct clkgate_regs {
-    volatile uint32_t unlock;      /**< 0x00 Unlock register */
-    volatile uint32_t clock_enable;/**< 0x04 Clock enable register */
-    volatile uint32_t core_reset;  /**< 0x08 Core reset register */
-    volatile uint32_t override;    /**< 0x0C CPU/FPU override register */
-};
 
 #define get_header(buf) \
     ((iop_buffer_t *)((uintptr_t)(buf)->v_addr + (buf)->header_off))
@@ -119,22 +94,6 @@ void update_queue_timers(iop_chain_control *queue, uint32_t timeout);
  * @brief Update expiration timers
  */
 void update_timers();
-
-/**
- * @brief Enable device with clock gating
- * @param clk_amba_bus AMBA bus where the clock gating is located
- * @param core_to_enable Which device to enable.
- *        Available devices are: ETH0, ETH1, SPWR, PCI, 1553 and CAN
- */
-void clock_gating_enable(amba_confarea_t* clk_amba_bus, clock_gating_device core_to_enable);
-
-/**
- * @brief Disable device with clock gating
- * @param clk_amba_bus AMBA bus where the clock gating is located
- * @param core_to_disable Which device to enable.
- *        Available devices are: ETH0, ETH1, SPWR, PCI, 1553 and CAN
- */
-void clock_gating_disable(amba_confarea_t* clk_amba_bus, clock_gating_device core_to_disable);
 
 #define get_physical_device(i) \
     ((iop_physical_device_t **)usr_configuration.physical_devices.elements)[(i)]
