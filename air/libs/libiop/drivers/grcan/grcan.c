@@ -894,7 +894,7 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 
 /*
  * New function developed for AIR */
-air_status_code_e iop_grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
+uint32_t iop_grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
 
 	FUNCDBG();
 
@@ -992,7 +992,7 @@ air_status_code_e iop_grcan_open_internal(iop_device_driver_t *iop_dev, void *ar
 /*
  * Open routine for AIR
  * */
-air_status_code_e iop_grcan_open(iop_device_driver_t *iop_dev, void *arg){
+uint32_t iop_grcan_open(iop_device_driver_t *iop_dev, void *arg){
 
 	FUNCDBG();
 
@@ -1046,7 +1046,7 @@ air_status_code_e iop_grcan_open(iop_device_driver_t *iop_dev, void *arg){
 	return AIR_SUCCESSFUL;
 }
 
-air_status_code_e iop_grcan_close(iop_device_driver_t * iop_dev)
+uint32_t iop_grcan_close(iop_device_driver_t * iop_dev, void *arg)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1065,7 +1065,7 @@ air_status_code_e iop_grcan_close(iop_device_driver_t * iop_dev)
 	return AIR_SUCCESSFUL;
 }
 
-air_status_code_e iop_grcan_read(iop_device_driver_t *iop_dev, void *arg)
+uint32_t iop_grcan_read(iop_device_driver_t *iop_dev, void *arg)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);
@@ -1150,7 +1150,7 @@ air_status_code_e iop_grcan_read(iop_device_driver_t *iop_dev, void *arg)
 	return AIR_SUCCESSFUL;
 }
  
-air_status_code_e iop_grcan_write(iop_device_driver_t *iop_dev, void *arg)
+uint32_t iop_grcan_write(iop_device_driver_t *iop_dev, void *arg)
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv *) (device->dev.driver);

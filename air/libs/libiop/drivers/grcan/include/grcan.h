@@ -251,7 +251,7 @@ int grcan_dev_count(void);
 /*
  * Initialize GRCAN
  * */
-air_status_code_e iop_grcan_initialize(
+uint32_t iop_grcan_initialize(
 		iop_device_driver_t *iop_dev,
 		void *arg);
 
@@ -263,7 +263,7 @@ air_status_code_e iop_grcan_initialize(
  * return:	Device handle to use with all other grcan_ API functions. The
  *		function returns NULL if device can not be opened.
  */
-air_status_code_e iop_grcan_open(iop_device_driver_t *iop_dev,
+uint32_t iop_grcan_open(iop_device_driver_t *iop_dev,
 		void *arg);
 
 /*
@@ -282,7 +282,8 @@ air_status_code_e iop_grcan_open(iop_device_driver_t *iop_dev,
  *
  * return: This function always returns 0 (success)
  */
-air_status_code_e iop_grcan_close(iop_device_driver_t *iop_dev);
+uint32_t iop_grcan_close(iop_device_driver_t *iop_dev,
+        void *args);
 
 /*
  * Receive CAN messages
@@ -303,7 +304,7 @@ air_status_code_e iop_grcan_close(iop_device_driver_t *iop_dev);
  *                              Device has left started mode.
  *   GRCAN_RET_AHBERR:          Similar to BUSOFF, but was caused by AHB Error.
  */
-air_status_code_e iop_grcan_read(
+uint32_t iop_grcan_read(
 	iop_device_driver_t *iop_dev,
 	void *arg
 );
@@ -327,7 +328,7 @@ air_status_code_e iop_grcan_read(
  *                              Device has left started mode
  *   GRCAN_RET_AHBERR:          Similar to BUSOFF, but was caused by AHB Error.
  */
-air_status_code_e iop_grcan_write(
+uint32_t iop_grcan_write(
 	iop_device_driver_t *iop_dev,
 	void *arg
 );

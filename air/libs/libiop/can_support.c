@@ -32,7 +32,7 @@ void can_copy_header(
 /* This function compares the ID on the wrapper
  * to the ID  of a given header. */
 
-uint16_t can_compare_header(
+uint32_t can_compare_header(
 		iop_wrapper_t *wrapper,
 		iop_header_t *header){
 
