@@ -78,31 +78,14 @@ void spw_copy_header(
         iop_header_t *header);
 		
 /**
- *  @brief Task that writes pending write requests to ETH0
+ *  @brief Task that writes pending write requests to spw
  *  @param [in] arg: not used
- *
- *  Obtains write requests from the sendqueue chain and writes them to ETH0.
- *  In case of a failed write, if the user requested a reply he is informed that
- *  the write failed and the write request is discarded immediately. Is then up
- *  to the user to take the necessary actions.\n
- *  If the user didn't request a reply then the write will be retried until the
- *  request times out.
  */
 void spw_writer(air_uptr_t arg);
 
 /**
- *  @brief Task that polls eth0 for new data packets
+ *  @brief Task that polls spw for new data packets
  *  @param [in] arg: not used
- *
- *  This tasks polls for new data and places it on a reply structure.
- *  Data is validated against acceptable values. Incoming packets other than
- *  UDP/IP and ARP are discarded. Ip packets are validated by the UDP/IP stack.
- *  Not valid packets are discarded.
- *  @see uip_validate_ip_packet
- *
- *  Any incoming ARP requests are replied immeditely.\n
- *  Failed reads are reported to FDIR
- *
  */
 void spw_reader(air_uptr_t arg);
 
