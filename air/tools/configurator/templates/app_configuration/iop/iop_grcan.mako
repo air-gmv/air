@@ -57,11 +57,6 @@ static grcan_priv grcan_driver = ${'\\'}
 	.txblock = 0,
 	.rxblock = 0,
 	
-	.tx_sem = 0,
-	.rx_sem = 0,
-	.txempty_sem = 0,
-	.dev_sem = 0,
-	
 	.txbuf_size = ${device.setup.txd_count*16*4},
 	.rxbuf_size = ${device.setup.rxd_count*16*4},
 	
