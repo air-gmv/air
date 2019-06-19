@@ -1,9 +1,8 @@
 <%
     # device functions
     device_functions = dict(
-		reader_task='gr1553{0}_read_task'.format(device.setup.mode.lower()),
-		writer_task='gr1553{0}_write_task'.format(device.setup.mode.lower()),
-		
+		reader_task='gr1553_read_task',
+		writer_task='gr1553_write_task',
 		header_prebuild='NULL',
 		header_compare='gr1553_compare_header',
 		header_copy='gr1553_copy_header')
@@ -24,7 +23,7 @@
         else:
             init_nb_cmd = len(device.setup.millist[0].slot) + 1
 
-        init_nb_cmd_async = device.setup.lroutes
+        init_nb_cmd_async = device.setup.lroutes + 1
         init_data_buf = len(device.setup.millist[0].slot)
         if (device.setup.lroutes > len(device.setup.millist[0].slot)):
             init_data_buf = device.setup.lroutes;
@@ -57,15 +56,18 @@ ${MILAlloc(device)}\
 ${iop_template.RemotePortList(iop_configuration)}\
 
 /** @brief GR1553B driver configuration */
-static iop_device_driver_t device_configuration = ${'\\'}
+static iop_1553_device_t device_configuration = ${'\\'}
 {
     /* device configuration */
-        .driver         = NULL,
+    .dev        = {
+
+        .driver         = (void *)&mildriver,
         .init           = gr1553b_initialize,
         .open           = gr1553b_open,
-        .read           = NULL,
-        .write          = NULL,
+        .read           = gr1553${device.setup.mode.lower()}_read,
+        .write          = gr1553${device.setup.mode.lower()}_write,
         .close          = gr1553b_close,
+    }
 };
 
 ${iop_template.PhysicalDevice(iop_configuration, device, device_functions)}\
@@ -76,7 +78,6 @@ ${MILFuncs(device)}\
 
 
 <%def name="MILDefs(pdevice)">\
-#define GR1553B_DEVICES 1
 
 #define COMMAND_LIST_SIZE ${init_nb_cmd}
 #define ASYNCHRONOUS_COMMAND_LIST_SIZE ${init_nb_cmd_async}
@@ -97,16 +98,26 @@ ${MILFuncs(device)}\
 
 <%def name="MILAlloc(pdevice)">\
 /**
- * @brief Device Internal Struture
- */
-static grb_priv bdevs[GR1553B_DEVICES];
-
-/**
  * @brief MIL-STD-1553 user configurations
  */
-static grb_user_config_t userconf[GR1553B_DEVICES] = ${'\\'}
+static grb_user_config_t userconf = ${'\\'}
 {
-${MILConfigStruct(pdevice)}
+    .operating_mode = GR1553B_MODE_${pdevice.setup.mode},
+    .msg_timeout = 0,
+    .retry_mode = 1,
+    .rtaddress = 10,
+    .modecode = 0x55555555,  	/* legalize ALL mode codes */
+    .enabled_subs = 0xFFFFFFFF, /* legalize ALL subaddresses*/
+    .databufs_per_sub = 12,
+    .time_res = 10
+};
+
+/**
+ * @brief Device Internal Struture
+ */
+static grb_priv mildriver = \
+{
+    .user_config    = &userconf
 };
 
 % if pdevice.setup.mode == 'BC':
@@ -154,8 +165,6 @@ static bc_command_t *command_list = NULL;
 </%def>
 
 
-
-
 <%def name="MILFuncs(pdevice)">\
 /**
  * @brief Driver Interface Functions
@@ -183,48 +192,6 @@ gr1553hwaddr *iop_get_gr1553hwlist(){
 void *iop_get_grb_mem(void){
     return (void *)&gr1553bmem[0];
 }
-
-grb_user_config_t *iop_grb_get_user_config(unsigned int minor){
-
-    /* Return value */
-    grb_user_config_t *rc;
-
-    /* Verify if the requested minor is available */
-    if(minor > GR1553B_DEVICES){
-
-        /* There is no such device */
-        rc = NULL;
-	
-    } else{
-
-        /* return user config */
-        rc = &userconf[minor];
-    }
-
-    return rc;
-}
-
-grb_priv *iop_grb_get_priv_mem(void){
-    return &bdevs[0];
-}
-
-int iop_get_number_grb_cores(void){
-    return GR1553B_DEVICES;
-}
-</%def>
-
-
-<%def name="MILConfigStruct(pdevice)">\
-    {
-        .operating_mode = GR1553B_MODE_${pdevice.setup.mode},
-        .msg_timeout = 0,
-        .retry_mode = 1,
-        .rtaddress = 10,
-        .modecode = 0x55555555,  	/* legalize ALL mode codes */
-        .enabled_subs = 0xFFFFFFFF, /* legalize ALL subaddresses*/
-        .databufs_per_sub = 12,
-        .time_res = 10
-    }\
 </%def>
 
 
