@@ -347,7 +347,7 @@ static inline void clear_acessed_bit(volatile uint32_t *sw)
 }
  
 
-static int update_command(struct gr1553bc_bd_tr *desc, libio_rw_args_t *rw_args){
+static int update_command(struct gr1553bc_bd_tr *desc, iop_buffer_t *buf){
 	
 	int rc = 0;
 	
@@ -399,19 +399,13 @@ static int update_command(struct gr1553bc_bd_tr *desc, libio_rw_args_t *rw_args)
 				if((wcmc == 16) || (wcmc == 18) || (wcmc == 19)){
 					
 					/* copy received data to user buffer */
-					memcpy(rw_args->data, (void *)get_virtual_addr(desc->dptr), 2);
-					
-					/* header length */
-					rw_args->hdr_len = 1;
+					memcpy(get_payload(buf), (void *)get_virtual_addr(desc->dptr), 2);
 					
 					/* data length */
-					rw_args->data_len = 2;
-					
-					/* data length */
-					rw_args->bytes_moved = 2;
+					buf->payload_size = 2;
 					
 					/* copy milstd header */
-					hdr = (milstd_header_t *)rw_args->hdr;
+					hdr = (milstd_header_t *)get_header(buf);
 					
 					/* RT address 1 */
 					hdr->desc = ((desc->settings[1] >> 11) & 0x1f);
@@ -433,19 +427,13 @@ static int update_command(struct gr1553bc_bd_tr *desc, libio_rw_args_t *rw_args)
 				}
 				
 				/* copy received data to user buffer */
-				memcpy(rw_args->data, (void *)get_virtual_addr(desc->dptr), wcmc*2);
-				
-				/* header length */
-				rw_args->hdr_len = sizeof(milstd_header_t);
+				memcpy(get_payload(buf), (void *)get_virtual_addr(desc->dptr), wcmc*2);
 				
 				/* data length */
-				rw_args->data_len = wcmc*2;
-				
-				/* data length */
-				rw_args->bytes_moved = wcmc*2;
+				buf->payload_size = wcmc*2;
 				
 				/* copy milstd header */
-				hdr = (milstd_header_t *)rw_args->hdr;
+				hdr = (milstd_header_t *)get_header(buf);
 				
 				/* RT address 1 */
 				hdr->desc = ((desc->settings[1] >> 11) & 0x1f);
@@ -471,7 +459,8 @@ static int update_command(struct gr1553bc_bd_tr *desc, libio_rw_args_t *rw_args)
 /**
  * @brief Iterates through a BC command list, extracts any data a does maintenance operations
  *
- * @param [in,out] rw_args Input/Output buffer and respective sizes
+ * @param [in] iop_dev iop 1553 support struct
+ * @param [out] arg pointer to iop wrapper
  *
  * @return status of the operation:
  *  	- AIR_SUCCESSFUL: Data was successfully read.
@@ -485,23 +474,23 @@ static int update_command(struct gr1553bc_bd_tr *desc, libio_rw_args_t *rw_args)
  * reached its end. The function starts processing the list in a previously read 
  * position. It then follows the branching structure of the list. 
  */
-air_status_code_e grbc_process_completed_commands(libio_rw_args_t *rw_args)
+uint32_t gr1553bc_read(iop_device_driver_t *iop_dev, void *arg)
 {
+    /* Get driver priv struct */
+    iop_1553_device_t *device = (iop_1553_device_t *) iop_dev;
+    grb_priv *bDev = (grb_priv *) (device->dev.driver);
+
+    iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
+
 	/* return code */
 	air_status_code_e status;
-	
-	/* Current device */
-	grb_priv *bDev;
 	
 	/* indicates if data was sucessfully read or if the list has ended */
 	int end = 0;
 	
 	/* current bc descriptor */
 	struct gr1553bc_bd_tr *current;
-	
-	/* current minor device internal data structure */
-	bDev = bdevs;
-	
+
 	status = AIR_SUCCESSFUL;
 	
 	/* @todo place a limit in the number of reads... */
@@ -525,7 +514,7 @@ air_status_code_e grbc_process_completed_commands(libio_rw_args_t *rw_args)
 			} else{
 				
 				/* descriptor was acessed, so obtain any data and check for errors */
-				if(update_command(current, rw_args) == 1){
+				if(update_command(current, wrapper->buffer) == 1){
 				
 					/* data was successfully read */
 					end = 1;
@@ -551,9 +540,8 @@ air_status_code_e grbc_process_completed_commands(libio_rw_args_t *rw_args)
 /** 
  * @brief Appends incoming data to a milstd command belonging to a bc command list.
  *
- * @param [in] data input data buffer
- * @param [in] hdr Mil-std header comprising a RT address and a subaddress
- * @param [in] size data buffer length in bytes
+ * @param [in] iop_dev iop 1553 support struct
+ * @param [out] arg pointer to iop wrapper
  *
  * @return air_status_code_e; status of the operation:
  *  	- AIR_SUCCESSFUL: Data was successfully written to the list
@@ -566,33 +554,33 @@ air_status_code_e grbc_process_completed_commands(libio_rw_args_t *rw_args)
  * This header is composed by one RT address and one subaddress.
  *
  */
-air_status_code_e grbc_merge_data_with_command(uint8_t *data, milstd_header_t *hdr, uint32_t size)
+uint32_t gr1553bc_write(iop_device_driver_t *iop_dev, void *arg)
 {
-	
-	/* return code */
-	air_status_code_e status;
-	
-	/* Current device */
-	grb_priv *bDev = bdevs;
-	
-	/* Current descriptor */
-	struct gr1553bc_bd_tr *desc;
-	
+
+    /* Get driver priv struct */
+    iop_1553_device_t *device = (iop_1553_device_t *) iop_dev;
+    grb_priv *bDev = (grb_priv *) (device->dev.driver);
+
+    iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
+
+    /* return code */
+    air_status_code_e status;
+
+    /* Current descriptor */
+    struct gr1553bc_bd_tr *desc;
+
+    milstd_header_t *hdr = (milstd_header_t *)get_header(wrapper->buffer);
+
 	iop_chain_control *aux = &bDev->shortcut[(hdr->desc & 0x1f)];
 	
 	/* find if this data request can be matched to any descriptor */
-	desc = (struct gr1553bc_bd_tr *)find_shortcut(aux, hdr, size);
+	desc = (struct gr1553bc_bd_tr *)find_shortcut(aux, hdr, get_payload_size(wrapper->buffer));
 	
 	/* verify if we obtained a valid descriptor */
-	if(desc == NULL){
-		
-		/* no descriptor was obatined */
-		status = AIR_NOT_AVAILABLE;
-	
-	} else{
-	
+	if(desc != NULL){
+
 		/* lets copy the data */
-		memcpy((void *)get_virtual_addr(desc->dptr), (void *)data, size);
+		memcpy((void *)get_virtual_addr(desc->dptr), (void *)get_payload(wrapper->buffer), get_payload_size(wrapper->buffer));
 		
 		/* and enable the descriptor. Clear dummy bit */
 		desc->settings[1] &= ~GR1553BC_TR_DUMMY_1;
@@ -603,8 +591,22 @@ air_status_code_e grbc_merge_data_with_command(uint8_t *data, milstd_header_t *h
 		/* data was appended sucessfully */
 		status = AIR_SUCCESSFUL;
 	}
-	
-	return status;
+	else
+    {
+        /*There's no BC-RT command on the list with the provided config(rt+sub+wcmc). Send async*/
+        iop_debug("write async\n");
+
+        /* Clean existing list */
+        gr1553bc_erase_async_data();
+
+        status = gr1553bc_add_async_data(get_payload(wrapper->buffer), hdr, get_payload_size(wrapper->buffer));
+
+        /*Start Async list if not already running*/
+        if(status == AIR_SUCCESSFUL)
+            if(!(GR1553BC_READ_REG(&bdevs->regs->bc_ctrl) & GR1553B_BC_ACT_ASSRT))
+                gr1553bc_start_async();
+    }
+    return status;
 }
 
 /**
@@ -612,7 +614,7 @@ air_status_code_e grbc_merge_data_with_command(uint8_t *data, milstd_header_t *h
  *
  * @return air_status_code_e; status of the operation:
  *      - AIR_SUCCESSFUL: Data was successfully erased
- *      - AIR_DEVICE_ERROR: the BC did not finish executing all the previous async list
+ *      - AIR_NOT_AVAILABLE: the BC did not finish executing all the previous async list
  *
  * This function removes the previous asynchronous command list and the asynchronous buffer.
  *
@@ -623,15 +625,14 @@ air_status_code_e gr1553bc_erase_async_data()
     if((GR1553BC_READ_REG(&bdevs->regs->bc_ctrl) & GR1553B_BC_ACT_ASSRT) != 0){
         /* This is not necessarily a failure as this does not prevent appending new data
          * but may require special handling */
-        iop_raise_error(TIME_ERROR);
-        return AIR_DEVICE_ERROR;
+        return AIR_NOT_AVAILABLE;
     }
 
     iop_debug("Erasing 1553 asynchronous list\n");
 
     /* Erase the asynchronous blocks */
-    memset(bdevs->async, 0, iop_milstd_get_async_command_list_size() * 4 * 4);
-    memset(bdevs->async_buf_mem_start, 0, iop_milstd_get_data_buffers_size() * 16);
+    memset(bdevs->async, 0, (iop_milstd_get_async_command_list_size()-1) * 16);
+    memset(bdevs->async_buf_mem_start, 0, (iop_milstd_get_async_command_list_size()-1) * 2 * 32);
 
     return AIR_SUCCESSFUL;
 }
@@ -671,7 +672,7 @@ air_status_code_e gr1553bc_add_async_data(uint8_t *data, milstd_header_t *hdr, u
     wcmc = ((size + 1) / 2) % 32;
 
     /* Find the next available slot in the asynchronous command list */
-    for(i = 0; i < iop_milstd_get_async_command_list_size(); i++){
+    for(i = 0; i < iop_milstd_get_async_command_list_size()-1; i++){
         /* An empty list should have a null pointer*/
         if(bdevs->async[i].dptr == 0){
             break;
@@ -679,7 +680,7 @@ air_status_code_e gr1553bc_add_async_data(uint8_t *data, milstd_header_t *hdr, u
     }
 
     /* If the end of the list is reached then there is no available slot */
-    if(i == iop_milstd_get_async_command_list_size()){
+    if(i == iop_milstd_get_async_command_list_size()-1){
         iop_raise_error(QUEUE_OVERFLOW);
         return AIR_NOT_AVAILABLE;
     }
@@ -877,6 +878,10 @@ void gr1553bc_init_list()
 		translate_command(bDev, i, &data_offset);
 	
 	}
+
+    /* Last async command ends list */
+    if(iop_milstd_get_async_command_list_size())
+        bDev->async[iop_milstd_get_async_command_list_size() - 1].settings[0] = 0x800000FF;
 }
 
 /**
