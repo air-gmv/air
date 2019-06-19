@@ -19,24 +19,18 @@
 #include <IOPgr1553rt.h>
 #include <IOPdriverconfig_interface.h>
 
-static grb_priv *bdev;
-
-air_status_code_e gr1553b_initialize(uint32_t major,
-                                    uint32_t minor,
-                                    void *arg)
+uint32_t gr1553b_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
+
+    /* Get driver priv struct */
+    iop_1553_device_t *device = (iop_1553_device_t *) iop_dev;
+    grb_priv *bdev = (grb_priv *) (device->dev.driver);
 
     /* Amba APB device */
     amba_apb_dev_t ambadev;
 
     /* Iterator through shortcuts */
     int j;
-
-    /* get memory for the devices internal structure */
-    bdev = iop_grb_get_priv_mem();
-
-    /* zero out device structure  */
-    memset(bdev, 0, sizeof(grb_priv));
 
     amba_confarea_t * ptrarea = (amba_confarea_t *)air_syscall_get_ambaconf();
 
@@ -59,9 +53,6 @@ air_status_code_e gr1553b_initialize(uint32_t major,
 
     /* Clear IRQ since it is not used*/
     bdev->irq = 0;
-
-    /* Obtain user configuration */
-    bdev->user_config = iop_grb_get_user_config(0);
 
     /* Don't continue if the core is not configured */
     if(bdev->user_config == NULL){
@@ -115,10 +106,12 @@ air_status_code_e gr1553b_initialize(uint32_t major,
     return AIR_SUCCESSFUL;
 }
 
-air_status_code_e gr1553b_open(uint32_t major,
-						     uint32_t minor,
-						     void *arg)
+uint32_t gr1553b_open(iop_device_driver_t *iop_dev, void *arg)
 {
+    /* Get driver priv struct */
+    iop_1553_device_t *device = (iop_1553_device_t *) iop_dev;
+    grb_priv *bdev = (grb_priv *) (device->dev.driver);
+
 	/* return code */
 	air_status_code_e status = AIR_SUCCESSFUL;
 	
@@ -154,10 +147,12 @@ air_status_code_e gr1553b_open(uint32_t major,
 }
 
 
-air_status_code_e gr1553b_close(uint32_t major,
-						     uint32_t minor,
-						     void *arg)
+uint32_t gr1553b_close(iop_device_driver_t *iop_dev, void *arg)
 {
+    /* Get driver priv struct */
+    iop_1553_device_t *device = (iop_1553_device_t *) iop_dev;
+    grb_priv *bdev = (grb_priv *) (device->dev.driver);
+
 	/* return code */
 	air_status_code_e status = AIR_SUCCESSFUL;
 	
