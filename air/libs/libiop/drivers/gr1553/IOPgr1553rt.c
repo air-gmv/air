@@ -151,7 +151,7 @@ static void gr1553rt_init_table(grb_priv *priv){
 
 void gr1553rt_device_init(grb_priv *priv){
 	/* obtain device private structures (used by other functions )*/
-	bdevs = iop_grb_get_priv_mem();
+	bdevs = priv;
 
 	/* obtain cores memory */
 	priv->mem_start = (uint32_t *)iop_get_grb_mem();

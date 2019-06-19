@@ -120,9 +120,6 @@ void gr1553bc_start_sync();
 air_status_code_e gr1553bc_add_async_data(uint8_t *data, milstd_header_t *hdr, uint32_t size);
 air_status_code_e gr1553bc_erase_async_data();
 
-air_status_code_e grbc_merge_data_with_command(uint8_t *data, milstd_header_t *hdr, uint32_t size);
-air_status_code_e grbc_process_completed_commands(libio_rw_args_t *rw_args);
-
 unsigned long get_virtual_addr(unsigned long p_addr);
 
 #endif

@@ -47,8 +47,8 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
 #include <iop.h>
+#include <gr1553_support.h>
 #include <IOPmilstd_config.h>
 
 /*grb_user_config_t operating modes*/
@@ -449,19 +449,15 @@ typedef struct  {
 #define GR1553BC_READ_REG(adr) (*(volatile uint32_t *)(adr))
 
 
-/* General */
+uint32_t gr1553b_initialize(iop_device_driver_t *iop_dev, void *arg);
 
-air_status_code_e gr1553b_initialize(uint32_t major,
-								   uint32_t minor,
-								   void *arg);
-								   
-air_status_code_e gr1553b_open(uint32_t major,
-						     uint32_t minor,
-						     void *arg);
+uint32_t gr1553b_open(iop_device_driver_t *iop_dev, void *arg);
 
-air_status_code_e gr1553b_close(uint32_t major,
-						     uint32_t minor,
-						     void *arg);
+uint32_t gr1553b_close(iop_device_driver_t *iop_dev, void *arg);
+
+uint32_t gr1553bc_write(iop_device_driver_t *iop_dev, void *arg);
+
+uint32_t gr1553bc_read(iop_device_driver_t *iop_dev, void *arg);
 
 #ifdef __cplusplus
 }

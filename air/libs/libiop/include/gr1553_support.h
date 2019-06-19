@@ -10,6 +10,12 @@
 #include <iop.h>
 #include <iop_support.h>
 
+typedef struct {
+	/* Generic device configuration */
+	iop_device_driver_t dev;
+
+} iop_1553_device_t;
+
 /* These do nothing */
 uint32_t gr1553_compare_header(iop_wrapper_t *wrapper, iop_header_t *header);
 
@@ -18,10 +24,7 @@ void gr1553_copy_header(
         iop_wrapper_t *wrapper,
         iop_header_t *header);
 
-void gr1553bc_read_task(iop_physical_device_t *pdev);
-void gr1553bc_write_task(iop_physical_device_t *pdev);
-
-void gr1553rt_read_task(iop_physical_device_t *pdev);
-void gr1553rt_write_task(iop_physical_device_t *pdev);
+void gr1553_read_task(iop_physical_device_t *pdev);
+void gr1553_write_task(iop_physical_device_t *pdev);
 
 #endif /* __GR1553_SUPPORT_H__ */
