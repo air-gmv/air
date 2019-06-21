@@ -14,6 +14,14 @@ ${makoutils.cfileHeader("init.c", "Partition Initialization")}
  * @brief Partition entry point
  */
 extern int ${partition.entry_point}() __attribute__ ((weak));
+
+%if partition.iop is not None:
+/**
+ * @brief IOP initialization
+ */
+extern rtems_status_code IOPinit();
+%endif
+
 %if partition.hm_callback:
 /**
  * @brief Partition health-monitor callback
@@ -22,12 +30,7 @@ extern void ${partition.hm_callback}(
         air_state_e state_id,
         air_error_e error_id) __attribute__ ((weak));
 %endif
-%if partition.iop is not None:
-/**
- * @brief IOP initialization
- */
-extern rtems_status_code IOPinit();
-%endif
+
 /**
  * @brief Health-Monitor ISR handler
  */
@@ -53,13 +56,11 @@ void *POSIX_Init(
 )
 {
     /* register HM ISR handler */
-    /* HM is now Disabled
     rtems_isr_entry isr_ignored;
     rtems_interrupt_catch(
             (rtems_isr_entry)hm_isr_handler,
             AIR_IRQ_HM_EVENT,
             &isr_ignored);
-    */
 
     %if 'imaspex' in partition.libraries:
     /* initialize IMASPEX */
