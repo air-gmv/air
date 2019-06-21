@@ -108,6 +108,17 @@ typedef struct {
 	unsigned int id;
 } CANMsg;
 
+enum {
+	GRCAN_RET_OK            =  0,
+	GRCAN_RET_INVARG        = -1,
+	GRCAN_RET_NOTSTARTED    = -2,
+	GRCAN_RET_TIMEOUT       = -3,
+	/* Bus-off condition detected (request aborted by driver) */
+	GRCAN_RET_BUSOFF        = -4,
+	/* AHB error condition detected (request aborted by driver) */
+	GRCAN_RET_AHBERR        = -5,
+};
+
 /*
  * User functions can cause these transitions:
  *   STATE_STOPPED -> STATE_STARTED

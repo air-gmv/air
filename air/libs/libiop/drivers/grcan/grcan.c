@@ -31,9 +31,6 @@
 #include <grcan.h>
 #include <bsp.h>
 
-/* Maximum number of GRCAN devices supported by driver */
-#define GRCAN_COUNT_MAX 8
-
 #define WRAP_AROUND_TX_MSGS 1
 #define GRCAN_MSG_SIZE sizeof(grcan_msg)
 #define BLOCK_SIZE (16*4)
@@ -70,11 +67,11 @@
 #include <debug_defs.h>
 /*********************************************************/
 
-int state2err[4] = {
-	/* STATE_STOPPED */ AIR_NOT_AVAILABLE,
-	/* STATE_STARTED */ AIR_NO_ERROR,
-	/* STATE_BUSOFF  */ AIR_DEVICE_NOT_FOUND,
-	/* STATE_AHBERR  */ AIR_DEVICE_ERROR
+static int state2err[4] = {
+	/* STATE_STOPPED */ GRCAN_RET_NOTSTARTED,
+	/* STATE_STARTED */ GRCAN_RET_OK,
+	/* STATE_BUSOFF  */ GRCAN_RET_BUSOFF,
+	/* STATE_AHBERR  */ GRCAN_RET_AHBERR
 };
 
 int iop_grcan_get_state(iop_device_driver_t *iop_dev){
