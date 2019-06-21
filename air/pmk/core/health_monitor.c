@@ -148,7 +148,7 @@ void pmk_hm_isr_handler_partition_level(
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
     pmk_partition_t *partition = core->partition;
-    printk ("HM Partition state id %d, error id %d \n", state_id, error_id);
+    printk ("HM Partition %d state id %d, error id %d \n", partition->id, state_id, error_id);
 
     /* allow partition to be preempted */
     cpu_enable_preemption(flags);
