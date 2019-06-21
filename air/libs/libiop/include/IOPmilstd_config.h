@@ -14,8 +14,6 @@
 #ifndef __MILSTD_CONFIG_H__
 #define __MILSTD_CONFIG_H__
 
-#include <stdint.h>
-
 /**
  *  @brief Bus Controller command block interface
  *

@@ -110,15 +110,15 @@ void gr1553bc_close(grb_priv *priv);
 void gr1553bc_stop(grb_priv *priv, int options);
 void gr1553bc_device_uninit(grb_priv *priv);
 
-void gr1553bc_init_list();
-void gr1553bc_pause_list();
-void gr1553bc_continue_list();
+void gr1553bc_init_list(grb_priv *priv);
+void gr1553bc_pause_list(grb_priv *priv);
+void gr1553bc_continue_list(grb_priv *priv);
 
-void gr1553bc_start_async();
-void gr1553bc_start_sync();
+void gr1553bc_start_async(grb_priv *priv);
+void gr1553bc_start_sync(grb_priv *priv);
 
-air_status_code_e gr1553bc_add_async_data(uint8_t *data, milstd_header_t *hdr, uint32_t size);
-air_status_code_e gr1553bc_erase_async_data();
+air_status_code_e gr1553bc_add_async_data(grb_priv *priv, uint8_t *data, milstd_header_t *hdr, uint32_t size);
+air_status_code_e gr1553bc_erase_async_data(grb_priv *priv);
 
 unsigned long get_virtual_addr(unsigned long p_addr);
 

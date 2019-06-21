@@ -162,8 +162,10 @@ typedef struct {
 	struct gr1553bc_bd_tr *async; 		/**< current bc asynchronous command list */
 	milstd_data_buf *buf_mem_start;		/**< pointer to device's buffer memory */
 	milstd_data_buf *async_buf_mem_start; /**< pointer to device's asynchronous buffer memory */
-	iop_chain_control shortcut[32];			/**< Used as a shortcut to map write requests to their respective command */
-	
+	iop_chain_control shortcut[32];		/**< Used as a shortcut to map write requests to their respective command */
+	void *shortcut_cmd;					/**< pointer to write_cmd_shortcut_t allocated memory */
+	unsigned int shortcut_offset;		/**< index to where to put new shortcut */
+
 	/* rt specific */
 	struct gr1553rt_sa* sa_table;		/**< Subaddress table used for RT mode */
 	struct gr1553rt_bd* bds_start;		/**< Start Address for buffer descriptors */
