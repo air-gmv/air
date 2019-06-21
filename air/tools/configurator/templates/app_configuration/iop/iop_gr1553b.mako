@@ -43,8 +43,8 @@
  */
  
 #include <iop.h>
-#include <stdint.h>
 #include <IOPgr1553b.h>
+#include <IOPgr1553${device.setup.mode.lower()}.h>
 #include <IOPmilstd_config.h>
 #include <IOPdriverconfig_interface.h>
 #include <gr1553_support.h>
@@ -97,28 +97,6 @@ ${MILFuncs(device)}\
 
 
 <%def name="MILAlloc(pdevice)">\
-/**
- * @brief MIL-STD-1553 user configurations
- */
-static grb_user_config_t userconf = ${'\\'}
-{
-    .operating_mode = GR1553B_MODE_${pdevice.setup.mode},
-    .msg_timeout = 0,
-    .retry_mode = 1,
-    .rtaddress = 10,
-    .modecode = 0x55555555,  	/* legalize ALL mode codes */
-    .enabled_subs = 0xFFFFFFFF, /* legalize ALL subaddresses*/
-    .databufs_per_sub = 12,
-    .time_res = 10
-};
-
-/**
- * @brief Device Internal Struture
- */
-static grb_priv mildriver = \
-{
-    .user_config    = &userconf
-};
 
 % if pdevice.setup.mode == 'BC':
 /**
@@ -131,6 +109,12 @@ static uint32_t gr1553bmem[BC_MEMORY_SIZE+4];
  * Need one for the async and sync register and one for each in Command List
  */
 static gr1553hwaddr gr1553hwlist[COMMAND_LIST_SIZE + 2];
+
+/**
+ * @brief List of matching physical/virtual addresses used in the GR1553BC 
+ * Need one for the async and sync register and one for each in Command List
+ */
+static write_cmd_shortcut_t shortcut_mem[${device.setup.lroutes}];
 
 /**
  * @brief BC Transfer List
@@ -162,6 +146,30 @@ static uint32_t gr1553bmem[RT_MEMORY_SIZE];
 static gr1553hwaddr *gr1553hwlist = NULL;
 static bc_command_t *command_list = NULL;
 % endif
+
+/**
+ * @brief MIL-STD-1553 user configurations
+ */
+static grb_user_config_t userconf = ${'\\'}
+{
+    .operating_mode = GR1553B_MODE_${pdevice.setup.mode},
+    .msg_timeout = 0,
+    .retry_mode = 1,
+    .rtaddress = 10,
+    .modecode = 0x55555555,  	/* legalize ALL mode codes */
+    .enabled_subs = 0xFFFFFFFF, /* legalize ALL subaddresses*/
+    .databufs_per_sub = 12,
+    .time_res = 10
+};
+
+/**
+ * @brief Device Internal Struture
+ */
+static grb_priv mildriver = \
+{
+    .user_config    = &userconf,
+    .shortcut_cmd   = (void *)shortcut_mem
+};
 </%def>
 
 
