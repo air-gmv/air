@@ -246,9 +246,9 @@ typedef struct {
 //  air_u32_t hppi;                     /**< highest pending priority       */
 //  air_u32_t abp;                      /**< icc control                    */
 //  air_u32_t iid;                      /**< interface id                   */
-    air_u32_t icdiser[32];              /**< icd set-enable                 */
-    air_u32_t icdispr[32];              /**< icd set-pending                */
-    air_u32_t icdipr[1020];             /**< icd priority                   */
+    air_u32_t icdiser[16];              /**< icd set-enable                 */
+    air_u32_t icdispr[16];              /**< icd set-pending                */
+    air_u32_t icdipr[516];              /**< icd priority                   */
 } arm_virtual_gic_t;
 
 /**
@@ -274,6 +274,7 @@ typedef struct {
     air_uptr_t ttbr0;                   /**< context id                     */
     air_uptr_t ttbr1;                   /**< context id                     */
     air_u32_t ttbcr;
+    air_u32_t reserved;                 /**< alignment                      */
 } arm_mmu_context_t;
 
 /**
@@ -284,7 +285,6 @@ typedef struct {
     air_u32_t mmu_context_entries;
     air_u32_t mmu_l1_tables_entries;
     air_u32_t mmu_l2_tables_entries;
-    air_u32_t mmu_l3_tables_entries;
 } arm_mmu_configuration_t;
 
 /* SVC defines */
