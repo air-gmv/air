@@ -20,12 +20,12 @@
 extern air_u32_t air_workspace;
 extern air_u32_t air_kernel_memory_start;
 extern air_u32_t air_kernel_memory_end;
+extern air_u32_t air_kernel_end;
 /**
  * @brief mmu setup for each partition containing pmk
  */
 void bsp_segregation(pmk_partition_t *partition) {
 
-/*
 #ifdef PMK_DEBUG
     printk("   :: BSP segregation\n"
             "      air_kernel_memory_start = 0x%08x\n"
@@ -37,7 +37,6 @@ void bsp_segregation(pmk_partition_t *partition) {
             (air_u32_t)&air_kernel_memory_end - (air_u32_t)&air_kernel_memory_start,
             (air_uptr_t)&air_workspace);
 #endif
-*/
 
     /* Map PMK into partition mmu with supervisor access */
     cpu_segregation_map_memory(
@@ -45,7 +44,7 @@ void bsp_segregation(pmk_partition_t *partition) {
             &air_kernel_memory_start,
             &air_kernel_memory_start,
             (air_u32_t)&air_kernel_memory_end - (air_u32_t)&air_kernel_memory_start,
-            0x00040000,
+            0x00100000,
             PMK_MMU_SR | PMK_MMU_SW | PMK_MMU_SE | PMK_MMU_CACHEABLE);
 
     /* TODO SECURITY FLAW ALSO IN SPARC */
@@ -53,7 +52,7 @@ void bsp_segregation(pmk_partition_t *partition) {
             partition->mmu_ctrl,
             (void *)0xe0000000,
             (void *)0xe0000000,
-            0xffffffff - 0xe0000000,
+            0xffffffff - 0xe0000000 + 1,
             0x00100000,
             PMK_MMU_SR | PMK_MMU_SW | PMK_MMU_SE | PMK_MMU_DEVICE);
 }
