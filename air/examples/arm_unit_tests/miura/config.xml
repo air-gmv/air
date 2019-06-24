@@ -2,7 +2,7 @@
 <ARINC_653_Module ModuleName="bare">
 	<!-- partition 0 -->
 	<Partition PartitionIdentifier="1" PartitionName="p0" 
-			Criticality="LEVEL_A" SystemPartition="false" EntryPoint="entry_point">
+			Criticality="LEVEL_A" SystemPartition="false" EntryPoint="_start">
 		<PartitionConfiguration Personality="BARE" Cores="1">
 			<Libs>LIBAIR;LIBPRINTF</Libs>
 			<Cache>CODE; DATA</Cache>
@@ -15,7 +15,7 @@
 	
 	<!-- partition 1 -->
 	<Partition PartitionIdentifier="2" PartitionName="p1" 
-			Criticality="LEVEL_A" SystemPartition="true" EntryPoint="entry_point">
+			Criticality="LEVEL_A" SystemPartition="true" EntryPoint="_start">
 		<PartitionConfiguration Personality="BARE" Cores="1">
 			<Libs>LIBAIR;LIBPRINTF</Libs>
 			<Cache>CODE; DATA</Cache>
