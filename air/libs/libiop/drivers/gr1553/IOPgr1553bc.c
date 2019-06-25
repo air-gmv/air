@@ -800,8 +800,6 @@ void gr1553bc_init_list(grb_priv *priv)
 	/* User defined command list */
 	bc_command_t *cl;
 	
-	uint32_t *mem;
-	
 	/* command list size */
 	int cl_size;
 	
@@ -821,11 +819,8 @@ void gr1553bc_init_list(grb_priv *priv)
 	priv->cl = cl;
 	priv->cl_size = cl_size;
 	
-	/* obtain device's internal memory */
-	mem = iop_get_grb_mem();
-	
 	/* Align memory to a 16 bytes boundary */
-	priv->mem_start = (void *) MEM_ALIGN(mem, GR1553BC_BD_ALIGN);
+	priv->mem_start = (void *) MEM_ALIGN(priv->mem_start, GR1553BC_BD_ALIGN);
 	
 	/* first memory zone will be used to contain the command list*/
 	priv->sync = priv->mem_start;
