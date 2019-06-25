@@ -48,9 +48,6 @@ uint32_t gr1553b_initialize(iop_device_driver_t *iop_dev, void *arg)
     /* Copy pointer to device's memory mapped registers */
     bdev->regs = (void *)ambadev.start;
 
-    /* TODO: Copy device's minor*/
-    bdev->minor = 0;
-
     /* Clear IRQ since it is not used*/
     bdev->irq = 0;
 
@@ -64,7 +61,6 @@ uint32_t gr1553b_initialize(iop_device_driver_t *iop_dev, void *arg)
     /* Clear pointers. These fields will be filled later*/
     bdev->cl = NULL;
     bdev->cl_size = 0;
-    bdev->mem_start = NULL;
     bdev->buf_mem_start = (milstd_data_buf *) NULL;
     bdev->sync = NULL;
     bdev->last_read = NULL;
