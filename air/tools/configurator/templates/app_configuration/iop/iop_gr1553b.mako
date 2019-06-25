@@ -48,8 +48,6 @@
 #include <IOPmilstd_config.h>
 #include <IOPdriverconfig_interface.h>
 #include <gr1553_support.h>
- 
-${MILDefs(device)}\
 
 ${MILAlloc(device)}\
 
@@ -77,32 +75,18 @@ ${MILFuncs(device)}\
 <% return %>
 
 
-<%def name="MILDefs(pdevice)">\
+<%def name="MILAlloc(pdevice)">\
 
 #define COMMAND_LIST_SIZE ${init_nb_cmd}
 #define ASYNCHRONOUS_COMMAND_LIST_SIZE ${init_nb_cmd_async}
 #define DATA_BUFFERS ${init_data_buf}
 
-/**
- * The memory is structured as follows:
- * COMMAND_LIST | DATA_BUFFERS | ASYNCHRONOUS_COMMAND_LIST | DATA_BUFFERS
- */
-#define BC_MEMORY_SIZE ((COMMAND_LIST_SIZE*4) + 2*(DATA_BUFFERS*16) + (ASYNCHRONOUS_COMMAND_LIST_SIZE*4))
-
-/**
- * SA_TABLE_SIZE*2 + WORDS_PER_DESC(20)*DESC_PER_SUBADRESSES(12)*ENABLED_SUBADDRESSES(32)*2(RX and TX)
- */
-#define RT_MEMORY_SIZE (256+(16+3+1)*32*12*2)
-</%def>
-
-
-<%def name="MILAlloc(pdevice)">\
-
 % if pdevice.setup.mode == 'BC':
 /**
- * @brief Device Internal Memory. This memory will be 16 bytes aligned (+4)
+ * The memory is structured as follows:
+ * COMMAND_LIST | DATA_BUFFERS | ASYNCHRONOUS_COMMAND_LIST | DATA_BUFFERS | 16 BYTE ALIGNMENT
  */
-static uint32_t gr1553bmem[BC_MEMORY_SIZE+4];
+#define GR1553_MEMORY_SIZE ((COMMAND_LIST_SIZE*4) + 2*(DATA_BUFFERS*16) + (ASYNCHRONOUS_COMMAND_LIST_SIZE*4) + 4)
 
 /**
  * @brief List of matching physical/virtual addresses used in the GR1553BC 
@@ -136,16 +120,22 @@ ${MILBCListStruct_management('LOOP', 0)}
 };
 % else:
 /**
- * @brief Device Internal Memory
+ * SA_TABLE_SIZE*2 + WORDS_PER_DESC(20)*DESC_PER_SUBADRESSES(12)*ENABLED_SUBADDRESSES(32)*2(RX and TX) + 16 BYTE ALIGNMENT
  */
-static uint32_t gr1553bmem[RT_MEMORY_SIZE];
+#define GR1553_MEMORY_SIZE (256+(16+3+1)*32*12*2+4)
 
 /**
  * @brief BC related
  */
-static gr1553hwaddr *gr1553hwlist = NULL;
-static bc_command_t *command_list = NULL;
+#define gr1553hwlist (void*)NULL
+#define command_list (void*)NULL
+#define shortcut_mem (void*)NULL
 % endif
+
+/**
+ * @brief Device Internal Memory
+ */
+static uint32_t gr1553bmem[GR1553_MEMORY_SIZE];
 
 /**
  * @brief MIL-STD-1553 user configurations
@@ -167,6 +157,8 @@ static grb_user_config_t userconf = ${'\\'}
  */
 static grb_priv mildriver = \
 {
+    .mem_start      = gr1553bmem,
+    .minor          = ${pdevice.setup.id},
     .user_config    = &userconf,
     .shortcut_cmd   = (void *)shortcut_mem
 };
@@ -178,7 +170,7 @@ static grb_priv mildriver = \
  * @brief Driver Interface Functions
  */
 bc_command_t *iop_milstd_get_command_list(){
-    return &command_list[0];
+    return command_list;
 }
 
 int iop_milstd_get_command_list_size(){
@@ -194,11 +186,7 @@ int iop_milstd_get_data_buffers_size(){
 }
 
 gr1553hwaddr *iop_get_gr1553hwlist(){
-    return &gr1553hwlist[0];
-}
-
-void *iop_get_grb_mem(void){
-    return (void *)&gr1553bmem[0];
+    return gr1553hwlist;
 }
 </%def>
 

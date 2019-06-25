@@ -188,6 +188,7 @@ class GRCANSchSetup(object):
 class MILPhySetup(object):
 
     def __init__(self):
+        self.id   = 0
         self.mode = ''
         self.lroutes = 0
         self.millist = []
@@ -403,6 +404,7 @@ def phy_gr1553b(iop_parser, xml, pdevice):
 
     # parse setup
     setup                   = MILPhySetup()
+    setup.id                = pdevice.minor
     setup.mode              = xml.parse_attr(MIL_MODE, VALID_MODE, True, iop_parser.logger)
 
     # sanity check
