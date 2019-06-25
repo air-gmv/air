@@ -43,8 +43,6 @@
 #define GR1553RT_WRITE_REG(adr, val) *(volatile uint32_t *)(adr) = (val)
 #define GR1553RT_READ_REG(adr) (*(volatile uint32_t *)(adr))
 
-static grb_priv *bdevs;
-
 static void gr1553rt_init_table(grb_priv *priv){
 	
 	/* subaddress table */
@@ -150,13 +148,8 @@ static void gr1553rt_init_table(grb_priv *priv){
 }
 
 void gr1553rt_device_init(grb_priv *priv){
-	/* obtain device private structures (used by other functions )*/
-	bdevs = priv;
-
-	/* obtain cores memory */
-	priv->mem_start = (uint32_t *)iop_get_grb_mem();
 	
-	/* align memory to 128kb boundary */
+	/* align memory to 128kb boundary *//* TODO shouldn't be 16 bytes? */
 	priv->sa_table = (struct gr1553rt_sa *)(((uint32_t)priv->mem_start + 0x1ff) & (~0x1ff));
 	
 	/* Subaddress table occupies 128kb. The remaining memory is used for descriptors */
@@ -196,15 +189,16 @@ void gr1553rt_device_init(grb_priv *priv){
 
 }
 
-air_status_code_e gr1553rt_read(uint32_t minor, void *arg){
+uint32_t gr1553rt_read(iop_device_driver_t *iop_dev, void *arg){
 	
 	unsigned int sw;
 	unsigned int wc;
 	int read = 0;
 	int i, z;
 	
-	/* This core's internal structure */
-	grb_priv *priv = &bdevs[minor];
+	/* Get driver priv struct */
+	iop_1553_device_t *device = (iop_1553_device_t *) iop_dev;
+	grb_priv *priv = (grb_priv *) (device->dev.driver);
 	
 	/* user arguments*/
 	libio_rw_args_t *rw_args = (libio_rw_args_t *) arg;
@@ -310,10 +304,11 @@ air_status_code_e gr1553rt_read(uint32_t minor, void *arg){
 }
 
 
-air_status_code_e gr1553rt_write(uint32_t minor, void *arg){
+uint32_t gr1553rt_write(iop_device_driver_t *iop_dev, void *arg){
 	
-	 /* This core's internal structure */
-	grb_priv *priv = &bdevs[minor];
+	/* Get driver priv struct */
+	iop_1553_device_t *device = (iop_1553_device_t *) iop_dev;
+	grb_priv *priv = (grb_priv *) (device->dev.driver);
 	
 	/* user arguments*/
 	libio_rw_args_t *rw_args = (libio_rw_args_t *) arg;
