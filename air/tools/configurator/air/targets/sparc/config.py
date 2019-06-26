@@ -25,7 +25,7 @@ MAX_CORES                  = 4
 
 CPU_CORE_CONTROL           = [        0x8,        0x28]
 CPU_CORE_CONTEXT           = [        0x4,        0x44]
-CPU_CORE_CONTEXT_STACK     = [        0x8,       0x5C0]
+CPU_CORE_CONTEXT_STACK     = [        0x8,       0xB80]
 CPU_CORE_CONTEXT_FPU       = [        0x8,        0x88]
 CPU_CORE_CONTEXT_HM        = [        0x8,        0x10]
 CPU_MMU_CONTROL            = [        0x4,         0x8]
