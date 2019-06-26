@@ -25,7 +25,7 @@
  * @brief Stack size allocated for each core context
  * @ingroup cpu_sparc
  */
-#define CONTEXT_STACK_SIZE                                  (8 * (0x60 + 0x58))
+#define CONTEXT_STACK_SIZE                                  (16 * (0x60 + 0x58))
 
 /**
  * @brief SPARC Initial stack
@@ -84,8 +84,11 @@ void core_context_init(core_context_t *context, air_u32_t id) {
     printk("       stack: [0x%08x : 0x%08x]\n",
             stack_space, context->isf_stack_pointer);
     printk("         fpu: [0x%08x : 0x%08x]\n",
-            context->fpu_context, context->fpu_context +
+            context->fpu_context, (air_uptr_t) context->fpu_context +
             sizeof(sparc_fpu_context_t));
+    printk("          hm: [0x%08x : 0x%08x]\n",
+            context->hm_event, context->hm_event +
+            sizeof(pmk_hm_event_t));
 
 #endif
 }
