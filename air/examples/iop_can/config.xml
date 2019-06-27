@@ -21,18 +21,18 @@
   
   <!-- Partition 2  -->  
   <Partition PartitionIdentifier="2" PartitionName="iop" 
-    Criticality="LEVEL_A" EntryPoint="empty" SystemPartition="false">
+    Criticality="LEVEL_A" EntryPoint="empty" SystemPartition="true">
     <Sampling_Port Name="iop_sender"
       Direction="SOURCE" MaxMessageSize="8" RefreshRateSeconds="1.0"/>
     <Sampling_Port Name="iop_receiver"
       Direction="DESTINATION" MaxMessageSize="8" RefreshRateSeconds="1.0"/>
-    <PartitionConfiguration Personality="RTEMS5" IOP="iop.xml" Cores="1">
-        <Libs>LIBAIR; LIBIOP; LIBPRINTF</Libs>
+    <PartitionConfiguration Personality="Bare" IOP="iop.xml" Cores="1">
+        <Libs>LIBIOP</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x400000" />
         <Permissions>
-          FPU_CONTROL; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
+          SUPERVISOR;
         </Permissions>
     </PartitionConfiguration>     
   </Partition>
