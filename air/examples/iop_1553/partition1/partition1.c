@@ -12,12 +12,12 @@
 #include <rtems/rtems/clock.h> 
  
 #include <a653.h>
-
+#include <imaspex.h>
 #include <string.h>
 #include <pprintf.h>
 
 /* inter-partition ports maximum size definitions */
-#define MAX_MESSAGE_SIZE 1024 // bytes
+#define MAX_MESSAGE_SIZE 64 // bytes
 #define IOP_REFRESH_RATE 1000000000 // 1s in ns
 
 #define false 0
@@ -199,8 +199,8 @@ uint8_t get_iop_data()
                     memcpy(&aux[j], readFrom, sizeof(uint16_t));
                     readFrom = readFrom + sizeof (uint16_t);
                     /*limit data printing */
-                    if (j<16 && i%2)
-                        pprintf("%04x ", aux[j]);
+    //                if (j<16 && i%2)
+    //                    pprintf("%04x ", aux[j]);
                 }
 
                 pprintf("\n");
@@ -223,7 +223,7 @@ uint8_t get_iop_data()
 }
 
 
-void run_partition(rtems_id task_id) 
+void run_partition(unsigned int task_id) 
 {
     rtems_status_code status = NO_ERROR;
     int ticks_per_sec;
@@ -344,24 +344,18 @@ int entry_func() {
     if(NO_ERROR != rc) {
         pprintf("GET_PARTITION_ID error %d\n", rc);
     }
-    pprintf("Initializing partition %d...\n", self_id);
-
     // init inter-partition ports
     setup_ports();
-
-    pprintf( "Time since boot up: %d ticks.\n", air_syscall_get_elapsed_ticks());
 
     // start rtems task
     pprintf("Set-up Rtems Task ...\n");
     rtems_id task_id;
     rtems_name rname = rtems_build_name( 'P', 'A', 'R', '1' );
-    if (RTEMS_SUCCESSFUL == rtems_task_create(rname, 1, RTEMS_MINIMUM_STACK_SIZE*3, RTEMS_PREEMPT, RTEMS_FLOATING_POINT, &task_id))
+    if (RTEMS_SUCCESSFUL == rtems_task_create(rname, 1, RTEMS_MINIMUM_STACK_SIZE*3, RTEMS_PREEMPT, RTEMS_LOCAL | RTEMS_FLOATING_POINT, &task_id))
     {
         rtems_task_start (task_id, run_partition, task_id);
     }
     pprintf("Rtems Task has been setup.\n");
-
-    pprintf( "Time since boot up: %d ticks.\n", air_syscall_get_elapsed_ticks());
 
     SET_PARTITION_MODE(NORMAL, &rc);
     if (NO_ERROR != rc)
