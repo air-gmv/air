@@ -53,8 +53,9 @@ void router_print_hwinfo(struct router_hw_info *hwinfo)
 
 uint32_t spw_router_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
-	
-	clock_gating_enable(&amba_confarea, GATE_SPWR);
+	amba_confarea_t * ptrarea = (amba_confarea_t *)air_syscall_get_ambaconf();
+
+	clock_gating_enable(ptrarea, GATE_SPWR);
 	int device_found = 0;
 	
 	amba_ahb_dev_t ahbspwrtr;
@@ -77,7 +78,7 @@ uint32_t spw_router_initialize(iop_device_driver_t *iop_dev, void *arg)
 	memset(&ahbspwrtr, 0, sizeof(amba_ahb_dev_t));
 	
 	/* Scan for MAC AHB slave interface */
-	device_found = amba_get_ahb_slave(&amba_confarea, VENDOR_GAISLER, GAISLER_SPWROUTER, 0, &ahbspwrtr);
+	device_found = amba_get_ahb_slave(ptrarea, VENDOR_GAISLER, GAISLER_SPWROUTER, 0, &ahbspwrtr);
 									
 	if (device_found != 1){
 	    ROUTER_DBG2("SPWRTR device not found...\n");
