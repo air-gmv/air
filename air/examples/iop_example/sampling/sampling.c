@@ -79,6 +79,7 @@ void error_message(RETURN_CODE_TYPE rc){
 		break;
 		case INVALID_MODE:
 			pprintf("WRITE_SAMPLING_MESSAGE error Invalid Mode\n");
+		default:
 		break;
 	}
 }
@@ -171,7 +172,7 @@ int entry_func() {
 	}
 #else
 	if (RTEMS_SUCCESSFUL == rtems_task_create (name, 15, 4096, mode, attribute_set, &id)) {
-		rtems_task_start (id, test, self_id);
+		rtems_task_start (id, (rtems_task_entry)test, self_id);
 	}
 #endif
 	SET_PARTITION_MODE(NORMAL, &rc);
