@@ -30,8 +30,10 @@
  *  request times out.
  */
 void
-eth_writer(iop_physical_device_t * pdev)
+eth_writer(air_uptr_t arg)
 {
+    iop_physical_device_t *pdev = (iop_physical_device_t *) arg;
+
     if (pdev == NULL)
     {
         iop_debug(" :: IOP - eth_writer parameter cannot be NULL!\n");
@@ -116,8 +118,10 @@ int packet_is_final(iop_wrapper_t *wrapper){
  *  
  */
 void
-eth_reader(iop_physical_device_t * pdev)
+eth_reader(air_uptr_t arg)
 {
+    iop_physical_device_t *pdev = (iop_physical_device_t *) arg;
+
     if (pdev == NULL)
     {
         iop_debug(" :: IOP - eth_reader parameter cannot be NULL!\n");

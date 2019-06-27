@@ -13,8 +13,9 @@
 #include <iop_mms.h>
 #include <iop_support.h>
 
-void can_writer(iop_physical_device_t *pdev)
+void can_writer(air_uptr_t arg)
 {
+	iop_physical_device_t *pdev = (iop_physical_device_t *) arg;
 
 	/* Initialize error chain (packets to be re-sent) */
 	iop_chain_control error;
@@ -44,8 +45,10 @@ void can_writer(iop_physical_device_t *pdev)
 	}
 }
 
-void can_reader(iop_physical_device_t *pdev)
+void can_reader(air_uptr_t arg)
 {
+	iop_physical_device_t *pdev = (iop_physical_device_t *) arg;
+
 	/* Initialize error control chain (packets to be resent) */
 	iop_chain_control error;
 	iop_chain_initialize_empty(&error);

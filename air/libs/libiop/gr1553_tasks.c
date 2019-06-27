@@ -1,12 +1,12 @@
 /** 
- * 	@file IOPgr1553_tasks.c
+ * 	@file gr1553_tasks.c
  * 
  *  COPYRIGHT (c) 2011\n
  *  GMV-SKYSOFT\n
  *
  *	@author Cl�udio Silva
  *
- * 	@brief Tasks that manage a gr1553b bus controller
+ * 	@brief Tasks that manage a MIL-STD-1553B
  */
 
 
@@ -19,7 +19,9 @@
  *  @brief Task reading new 1553 data
  *
  */
-void gr1553_read_task(iop_physical_device_t *pdev){
+void gr1553_read_task(air_uptr_t arg)
+{
+	iop_physical_device_t *pdev = (iop_physical_device_t *) arg;
 
 	/* return code of several operations */
 	air_status_code_e status = AIR_SUCCESSFUL;
@@ -95,7 +97,9 @@ void gr1553_read_task(iop_physical_device_t *pdev){
  *  @brief Task writing new 1553 data
  *
  */
-void gr1553_write_task(iop_physical_device_t *pdev){
+void gr1553_write_task(air_uptr_t arg)
+{
+	iop_physical_device_t *pdev = (iop_physical_device_t *) arg;
 
 	/* return code of several operations */
 	air_status_code_e status = AIR_NO_ACTION;
