@@ -158,21 +158,21 @@ uint32_t eth_fragment_packet(iop_wrapper_t *wrapper, uint8_t *buf);
         (((ethII_header_t *) get_header((buf)) )->type)
 
 /**
- *  @brief Task that writes pending write requests to ETH0
- *  @param [in] arg: not used
+ *  @brief Task that writes pending write requests to ETH
+ *  @param [in] arg: pointer to iop physical device struct
  *
- *  Obtains write requests from the sendqueue chain and writes them to ETH0.
+ *  Obtains write requests from the sendqueue chain and writes them to ETH.
  *  In case of a failed write, if the user requested a reply he is informed that
  *  the write failed and the write request is discarded immediately. Is then up
  *  to the user to take the necessary actions.\n
  *  If the user didn't request a reply then the write will be retried until the
  *  request times out.
  */
-void eth_writer();
+void eth_writer(air_uptr_t arg);
 
 /**
- *  @brief Task that polls eth0 for new data packets
- *  @param [in] arg: not used
+ *  @brief Task that polls ETH for new data packets
+ *  @param [in] arg: pointer to iop physical device struct
  *
  *  This tasks polls for new data and places it on a reply structure.
  *  Data is validated against acceptable values. Incoming packets other than
@@ -184,6 +184,6 @@ void eth_writer();
  *  Failed reads are reported to FDIR
  *
  */
-void eth_reader();
+void eth_reader(air_uptr_t arg);
 
 #endif /* __ETH_SUPPORT_H__ */
