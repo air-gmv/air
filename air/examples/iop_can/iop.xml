@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<IOPartition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="iop.xsd" version="1.0" date="2017-11-20" name="iop_example" request_number="64" time_to_live="5">
+<IOPartition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="iop.xsd" version="1.0" date="2017-11-20" name="iop_can" request_number="64" time_to_live="5">
 	
 	<RemotePorts>
 		<Port Name="iop_receiver" LogicalDeviceId="1"/>
@@ -7,7 +7,7 @@
 	</RemotePorts>	
 	
 	<LogicalDevices>
-		<Device Id="1" Name="PARSERVER" Extended="0" RTR="0" />
+		<Device Id="1" Name="DESTINATION_DEVICE_NAME"/>
 	</LogicalDevices>
 		
 	<PhysicalDevices>
