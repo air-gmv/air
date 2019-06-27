@@ -24,7 +24,7 @@ void gr1553_copy_header(
         iop_wrapper_t *wrapper,
         iop_header_t *header);
 
-void gr1553_read_task(iop_physical_device_t *pdev);
-void gr1553_write_task(iop_physical_device_t *pdev);
+void gr1553_read_task(air_uptr_t arg);
+void gr1553_write_task(air_uptr_t arg);
 
 #endif /* __GR1553_SUPPORT_H__ */

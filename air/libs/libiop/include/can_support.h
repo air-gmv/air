@@ -32,7 +32,7 @@ uint32_t can_compare_header(
 void can_prebuild_header(
 		can_header_t *header);
 
-void can_writer(iop_physical_device_t *pdev);
-void can_reader(iop_physical_device_t *pdev);
+void can_writer(air_uptr_t arg);
+void can_reader(air_uptr_t arg);
 
 #endif
