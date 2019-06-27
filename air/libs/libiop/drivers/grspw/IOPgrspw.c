@@ -396,7 +396,7 @@ uint32_t spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 	amba_apb_dev_t dev;
 	
 	/*Get amba bus configuration*/
-	amba_bus = &amba_confarea;
+	amba_bus = (amba_confarea_t *)air_syscall_get_ambaconf();
 	
 	/* get memory for the internal structure */
 	// spw_dev = get_spw_dev();
