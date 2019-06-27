@@ -1,11 +1,11 @@
 <%
     # device functions
     device_functions = dict(
-		reader_task='gr1553_read_task',
-		writer_task='gr1553_write_task',
-		header_prebuild='NULL',
-		header_compare='gr1553_compare_header',
-		header_copy='gr1553_copy_header')
+        reader_task='gr1553_read_task',
+        writer_task='gr1553_write_task',
+        header_prebuild='NULL',
+        header_compare='gr1553_compare_header',
+        header_copy='gr1553_copy_header')
 
     # Init and calculate dummy command(s) to obtain the desired MajorFrame period
     if device.setup.mode == "BC":
@@ -95,8 +95,7 @@ ${MILFuncs(device)}\
 static gr1553hwaddr gr1553hwlist[COMMAND_LIST_SIZE + 2];
 
 /**
- * @brief List of matching physical/virtual addresses used in the GR1553BC 
- * Need one for the async and sync register and one for each in Command List
+ * @brief Memory of shortcuts chain of write commands on the list
  */
 static write_cmd_shortcut_t shortcut_mem[${device.setup.lroutes}];
 
@@ -192,7 +191,7 @@ gr1553hwaddr *iop_get_gr1553hwlist(){
 
 
 <%def name="MILBCListStruct(cmd)">\
-	{
+    {
         .ccw = CCW_${cmd.type}_${cmd.bus} | ${int(cmd.wcmode)},
         .rtaddr[0] = ${int(cmd.addr)},
         .rtaddr[1] = ${int(cmd.addrtx)},
@@ -200,12 +199,12 @@ gr1553hwaddr *iop_get_gr1553hwlist(){
         .subaddr[1] = ${int(cmd.subaddrtx)},
         .branch_offset = 0,
         .time_slot = ${int(cmd.time)}
-	}\
+    }\
 </%def>
 
 
 <%def name="MILBCListStruct_management(mode, time)">\
-	{
+    {
         .ccw = CCW_${mode},
         .rtaddr[0] = 0,
         .rtaddr[1] = 0,
@@ -213,5 +212,5 @@ gr1553hwaddr *iop_get_gr1553hwlist(){
         .subaddr[1] = 0,
         .branch_offset = 0,
         .time_slot = ${time}
-	}\
+    }\
 </%def>
