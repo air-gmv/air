@@ -23,7 +23,6 @@
 #include <health_monitor.h>
 #include <schedule.h>
 #include <configurations.h>
-#include <amba.h>
 
 #define LOW_BITS_MASK           0x000003FF
 #define HIGH_BITS_MASK          0xFFFFFC00
