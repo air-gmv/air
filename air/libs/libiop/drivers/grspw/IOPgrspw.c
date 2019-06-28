@@ -179,7 +179,7 @@ void set_sys_freq(){
         struct gptimer_regs  *tregs;
 
         /*search for gaisler timer in the amba bus*/
-        if ( amba_get_apb_slave(&amba_confarea,VENDOR_GAISLER,GAISLER_GPTIMER,0,&gptimer) == 1 ){
+        if ( amba_get_apb_slave(amba_bus,VENDOR_GAISLER,GAISLER_GPTIMER,0,&gptimer) == 1 ){
 
             /*Timer memory mapped registers*/
             tregs = (struct gptimer_regs*)gptimer.start;
