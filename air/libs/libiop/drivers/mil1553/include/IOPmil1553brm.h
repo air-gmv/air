@@ -20,7 +20,6 @@
 #define __MIL1553BRM_H__
 
 #include <iop.h>
-#include <IOPlibio.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -169,6 +168,7 @@ struct irq_log_list {
  */
 typedef struct { 
     unsigned int memarea_base;
+    milstd_config_t * config;
     struct brm_reg *regs; /**< BRM core registers */
 
     /**
@@ -347,32 +347,29 @@ typedef struct {
  * Function set used to access the MilStd driver
  * @{
  */
-air_status_code_e brm_initialize(unsigned int major, unsigned int minor, void *arg);
-air_status_code_e brm_open(unsigned int major, unsigned int minor, void *arg);
-air_status_code_e brm_close(unsigned int major, unsigned int minor, void *arg);
-air_status_code_e brm_read(unsigned int major, unsigned int minor, void *arg);
-air_status_code_e brm_write(unsigned int major, unsigned int minor, void *arg);
-air_status_code_e brm_control(unsigned int major, unsigned int minor, void *arg);
+uint32_t brm_initialize(iop_device_driver_t *iop_dev, void *arg);
+uint32_t brm_open(brm_priv *brm);
+uint32_t brm_close(brm_priv *brm);
+uint32_t brm_read(iop_device_driver_t *iop_dev, void *arg);
+uint32_t brm_write(iop_device_driver_t *iop_dev, void *arg);
+air_status_code_e brm_control(brm_priv *brm, void *arg);
 
-unsigned int brm_get_operative_mode(int minor);
-air_status_code_e brm_do_list(int minor);
-air_status_code_e brm_list_done(int minor);
-void *brm_get_memarea(int minor);
-int brm_get_number_bc_blocks(int minor);
+unsigned int brm_get_operative_mode(brm_priv *brm);
+air_status_code_e brm_do_list(brm_priv *brm);
+air_status_code_e brm_list_done(brm_priv *brm);
+int brm_get_number_bc_blocks(brm_priv *brm);
 
 
-void brm_bc_start_list(unsigned int minor);
+void brm_bc_start_list(brm_priv *brm);
 
-void brm_bc_stop_list(unsigned int minor);
+void brm_bc_stop_list(brm_priv *brm);
 
-air_status_code_e brm_bc_init_user_list(unsigned int minor);
+air_status_code_e brm_bc_init_user_list(brm_priv *brm);
 
-air_status_code_e brm_bc_process_completed_list(unsigned int minor, 
-												libio_rw_args_t *rw_args);
+uint32_t brm_bc_process_completed_list(iop_device_driver_t *iop_dev, void *arg);
 												
-air_status_code_e brm_bc_insert_new_data(unsigned int minor, uint8_t *data,
+air_status_code_e brm_bc_insert_new_data(brm_priv *bDev, uint8_t *data,
 										 milstd_header_t *hdr, unsigned int size);
-										 
 
 
 /**@}*/
