@@ -45,8 +45,6 @@
 #include <iop.h>
 #include <IOPgr1553b.h>
 #include <IOPgr1553${device.setup.mode.lower()}.h>
-#include <IOPmilstd_config.h>
-#include <IOPdriverconfig_interface.h>
 #include <gr1553_support.h>
 
 ${MILAlloc(device)}\
@@ -69,11 +67,7 @@ static iop_1553_device_t device_configuration = ${'\\'}
 };
 
 ${iop_template.PhysicalDevice(iop_configuration, device, device_functions)}\
-
-
-${MILFuncs(device)}\
 <% return %>
-
 
 <%def name="MILAlloc(pdevice)">\
 
@@ -159,34 +153,13 @@ static grb_priv mildriver = \
     .mem_start      = gr1553bmem,
     .minor          = ${pdevice.setup.id},
     .user_config    = &userconf,
-    .shortcut_cmd   = (void *)shortcut_mem
+    .shortcut_cmd   = (void *)shortcut_mem,
+    .cl             = command_list,
+    .cl_size        = COMMAND_LIST_SIZE,
+    .a_cl_size      = ASYNCHRONOUS_COMMAND_LIST_SIZE,
+    .hwlist         = gr1553hwlist,
+    .data_buffer_size = DATA_BUFFERS
 };
-</%def>
-
-
-<%def name="MILFuncs(pdevice)">\
-/**
- * @brief Driver Interface Functions
- */
-bc_command_t *iop_milstd_get_command_list(){
-    return command_list;
-}
-
-int iop_milstd_get_command_list_size(){
-    return COMMAND_LIST_SIZE;
-}
-
-int iop_milstd_get_async_command_list_size(){
-    return ASYNCHRONOUS_COMMAND_LIST_SIZE;
-}
-
-int iop_milstd_get_data_buffers_size(){
-    return DATA_BUFFERS;
-}
-
-gr1553hwaddr *iop_get_gr1553hwlist(){
-    return gr1553hwlist;
-}
 </%def>
 
 
