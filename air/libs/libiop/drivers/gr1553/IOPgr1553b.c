@@ -17,7 +17,6 @@
 #include <IOPgr1553b.h>
 #include <IOPgr1553bc.h>
 #include <IOPgr1553rt.h>
-#include <IOPdriverconfig_interface.h>
 
 uint32_t gr1553b_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
@@ -59,8 +58,6 @@ uint32_t gr1553b_initialize(iop_device_driver_t *iop_dev, void *arg)
     }
 
     /* Clear pointers. These fields will be filled later*/
-    bdev->cl = NULL;
-    bdev->cl_size = 0;
     bdev->buf_mem_start = (milstd_data_buf *) NULL;
     bdev->sync = NULL;
     bdev->last_read = NULL;
@@ -104,13 +101,13 @@ uint32_t gr1553b_initialize(iop_device_driver_t *iop_dev, void *arg)
 
 uint32_t gr1553b_open(iop_device_driver_t *iop_dev, void *arg)
 {
-    /* Get driver priv struct */
-    iop_1553_device_t *device = (iop_1553_device_t *) iop_dev;
-    grb_priv *bdev = (grb_priv *) (device->dev.driver);
+	/* Get driver priv struct */
+	iop_1553_device_t *device = (iop_1553_device_t *) iop_dev;
+	grb_priv *bdev = (grb_priv *) (device->dev.driver);
 
 	/* return code */
 	air_status_code_e status = AIR_SUCCESSFUL;
-	
+
 	/* Initialize the device according to the selected operative mode */
 	switch (bdev->user_config->operating_mode) {
 		
@@ -145,9 +142,9 @@ uint32_t gr1553b_open(iop_device_driver_t *iop_dev, void *arg)
 
 uint32_t gr1553b_close(iop_device_driver_t *iop_dev, void *arg)
 {
-    /* Get driver priv struct */
-    iop_1553_device_t *device = (iop_1553_device_t *) iop_dev;
-    grb_priv *bdev = (grb_priv *) (device->dev.driver);
+	/* Get driver priv struct */
+	iop_1553_device_t *device = (iop_1553_device_t *) iop_dev;
+	grb_priv *bdev = (grb_priv *) (device->dev.driver);
 
 	/* return code */
 	air_status_code_e status = AIR_SUCCESSFUL;

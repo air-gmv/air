@@ -43,10 +43,7 @@
 #define __GR1553BC_H__
 
 #include <iop.h>
-#include <stdint.h>
 #include <IOPgr1553b.h>
-#include <IOPlibio.h>
-#include <IOPmilstd_config.h>
 
 /* A BC descriptor accessed as is */
 struct gr1553bc_bd_raw {
@@ -119,7 +116,5 @@ void gr1553bc_start_sync(grb_priv *priv);
 
 air_status_code_e gr1553bc_add_async_data(grb_priv *priv, uint8_t *data, milstd_header_t *hdr, uint32_t size);
 air_status_code_e gr1553bc_erase_async_data(grb_priv *priv);
-
-unsigned long get_virtual_addr(unsigned long p_addr);
 
 #endif

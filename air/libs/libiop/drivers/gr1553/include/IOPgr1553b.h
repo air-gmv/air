@@ -49,7 +49,6 @@ extern "C" {
 
 #include <iop.h>
 #include <gr1553_support.h>
-#include <IOPmilstd_config.h>
 
 /*grb_user_config_t operating modes*/
 #define GR1553B_MODE_BC 0x0		/**< Bus Controler Mode*/
@@ -143,6 +142,14 @@ typedef struct {
 typedef uint32_t milstd_data_buf[16];
 
 /**
+ * @brief Store matching physical/virtual addresses used in the GR1553BC
+ */
+typedef struct  {
+	uint32_t v_addr;
+	uint32_t p_addr;
+} gr1553hwaddr;
+
+/**
  * @brief Internal BC driver structure
  */
 typedef struct {
@@ -155,8 +162,10 @@ typedef struct {
 	void *mem_start;				/**< pointer to device's memory */
 	
 	/* bc specific */
-	bc_command_t *cl;					/**< pointer to user's list */
-	unsigned int cl_size;				/**< user command list size */
+	bc_command_t *cl;				/**< pointer to user's list */
+	unsigned int cl_size;			/**< user command list size */
+	unsigned int a_cl_size;			/**< user async command list size */
+
 	struct gr1553bc_bd_tr *sync; 		/**< current bc command list */
 	struct gr1553bc_bd_tr *last_read; 	/**< current bc command list */
 	struct gr1553bc_bd_tr *async; 		/**< current bc asynchronous command list */
@@ -165,6 +174,9 @@ typedef struct {
 	iop_chain_control shortcut[32];		/**< Used as a shortcut to map write requests to their respective command */
 	void *shortcut_cmd;					/**< pointer to write_cmd_shortcut_t allocated memory */
 	unsigned int shortcut_offset;		/**< index to where to put new shortcut */
+
+	gr1553hwaddr *hwlist;				/**< physical to virtual adresses struct */
+	unsigned int data_buffer_size;		/**< number of data commands */
 
 	/* rt specific */
 	struct gr1553rt_sa* sa_table;		/**< Subaddress table used for RT mode */
@@ -176,14 +188,6 @@ typedef struct {
 	struct gr1553b_regs *regs;			/**< Core register mapping */
 
 } grb_priv;
-
-/**
- * @brief Store matching physical/virtual addresses used in the GR1553BC
- */
-typedef struct  {
-	uint32_t v_addr;
-	uint32_t p_addr;
-} gr1553hwaddr;
 
 /* Available Modes */
 #define FEAT_BC 0x1

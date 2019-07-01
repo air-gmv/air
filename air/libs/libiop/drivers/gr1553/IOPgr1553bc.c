@@ -32,12 +32,29 @@
 #include <iop_error.h>
 #include <IOPgr1553b.h>
 #include <IOPgr1553bc.h>
-#include <IOPmilstd_config.h>
-#include <IOPdriverconfig_interface.h>
 #include <bsp.h>
 
 /** returns the first address found after p that is aligned with c  */
 #define MEM_ALIGN(p,c) ((((unsigned int)(p))+((c)-1)) & ~((c)-1))
+
+/**
+ * @brief Returns the virtual address of a physical address
+ *        which was already converted from a virtual address
+ */
+static unsigned long get_virtual_addr(grb_priv *priv, unsigned long p_addr)
+{
+	/* Iterator */
+	int i;
+
+	/* Go through all the addresses that were converted previously */
+	for(i = 0; i < (priv->cl_size + 2); i++){
+		/* Check if the physical address is matching and return the virtual address */
+		if(priv->hwlist[i].p_addr == p_addr){
+			return priv->hwlist[i].v_addr;
+		}
+	}
+	return 0;
+}
 
 /* Reset software and BC hardware into a known "unused/init" state */
 void gr1553bc_device_init(grb_priv *priv)
@@ -326,7 +343,7 @@ static inline void clear_acessed_bit(volatile uint32_t *sw)
 }
  
 
-static int update_command(struct gr1553bc_bd_tr *desc, iop_buffer_t *buf){
+static int update_command(grb_priv *priv, iop_buffer_t *buf){
 	
 	int rc = 0;
 	
@@ -344,6 +361,8 @@ static int update_command(struct gr1553bc_bd_tr *desc, iop_buffer_t *buf){
 	
 	/* milstd header */
 	milstd_header_t *hdr;
+
+	struct gr1553bc_bd_tr *desc = priv->last_read;
 
 	trbit = ((desc->settings[1] >> 10) & 0x1);
 	
@@ -378,7 +397,7 @@ static int update_command(struct gr1553bc_bd_tr *desc, iop_buffer_t *buf){
 				if((wcmc == 16) || (wcmc == 18) || (wcmc == 19)){
 					
 					/* copy received data to user buffer */
-					memcpy(get_payload(buf), (void *)get_virtual_addr(desc->dptr), 2);
+					memcpy(get_payload(buf), (void *)get_virtual_addr(priv, desc->dptr), 2);
 					
 					/* data length */
 					buf->payload_size = 2;
@@ -406,7 +425,7 @@ static int update_command(struct gr1553bc_bd_tr *desc, iop_buffer_t *buf){
 				}
 				
 				/* copy received data to user buffer */
-				memcpy(get_payload(buf), (void *)get_virtual_addr(desc->dptr), wcmc*2);
+				memcpy(get_payload(buf), (void *)get_virtual_addr(priv, desc->dptr), wcmc*2);
 				
 				/* data length */
 				buf->payload_size = wcmc*2;
@@ -493,7 +512,7 @@ uint32_t gr1553bc_read(iop_device_driver_t *iop_dev, void *arg)
 			} else{
 				
 				/* descriptor was acessed, so obtain any data and check for errors */
-				if(update_command(current, wrapper->buffer) == 1){
+				if(update_command(priv, wrapper->buffer) == 1){
 				
 					/* data was successfully read */
 					end = 1;
@@ -507,7 +526,7 @@ uint32_t gr1553bc_read(iop_device_driver_t *iop_dev, void *arg)
 		} else { /*< branch */
 		
 			/*follow branch and update last_read */
-			priv->last_read = (struct gr1553bc_bd_tr *) get_virtual_addr(current->settings[1]);
+			priv->last_read = (struct gr1553bc_bd_tr *) get_virtual_addr(priv, current->settings[1]);
 			
 		}
 		
@@ -556,7 +575,7 @@ uint32_t gr1553bc_write(iop_device_driver_t *iop_dev, void *arg)
 	if(desc != NULL){
 
 		/* lets copy the data */
-		memcpy((void *)get_virtual_addr(desc->dptr), (void *)get_payload(wrapper->buffer), get_payload_size(wrapper->buffer));
+		memcpy((void *)get_virtual_addr(priv, desc->dptr), (void *)get_payload(wrapper->buffer), get_payload_size(wrapper->buffer));
 		
 		/* and enable the descriptor. Clear dummy bit */
 		desc->settings[1] &= ~GR1553BC_TR_DUMMY_1;
@@ -607,8 +626,8 @@ air_status_code_e gr1553bc_erase_async_data(grb_priv *priv)
 	iop_debug("Erasing 1553 asynchronous list\n");
 
 	/* Erase the asynchronous blocks */
-	memset(priv->async, 0, (iop_milstd_get_async_command_list_size()-1) * 16);
-	memset(priv->async_buf_mem_start, 0, (iop_milstd_get_async_command_list_size()-1) * 2 * 32);
+	memset(priv->async, 0, (priv->a_cl_size-1) * 16);
+	memset(priv->async_buf_mem_start, 0, (priv->a_cl_size-1) * 2 * 32);
 
 	return AIR_SUCCESSFUL;
 }
@@ -649,7 +668,7 @@ air_status_code_e gr1553bc_add_async_data(grb_priv *priv, uint8_t *data, milstd_
 	wcmc = ((size + 1) / 2) % 32;
 
 	/* Find the next available slot in the asynchronous command list */
-	for(i = 0; i < iop_milstd_get_async_command_list_size()-1; i++){
+	for(i = 0; i < priv->a_cl_size-1; i++){
 		/* An empty list should have a null pointer*/
 		if(priv->async[i].dptr == 0){
 			break;
@@ -657,7 +676,7 @@ air_status_code_e gr1553bc_add_async_data(grb_priv *priv, uint8_t *data, milstd_
 	}
 
 	/* If the end of the list is reached then there is no available slot */
-	if(i == iop_milstd_get_async_command_list_size()-1){
+	if(i == priv->a_cl_size-1){
 		iop_raise_error(QUEUE_OVERFLOW);
 		return AIR_NOT_AVAILABLE;
 	}
@@ -702,9 +721,6 @@ static void translate_command(grb_priv *priv, unsigned int offset, unsigned int 
 	
 	/* Current bc descriptor */
 	struct gr1553bc_bd_tr *desc;
-	
-	/* Get list of matching physical/virtual addresses*/
-	gr1553hwaddr *gr1553hwlist = iop_get_gr1553hwlist();
 
 	/* user command list*/
 	user_list = &priv->cl[offset];
@@ -719,10 +735,9 @@ static void translate_command(grb_priv *priv, unsigned int offset, unsigned int 
 		word0 = GR1553BC_UNCOND_JMP;
 		
 		/* Calculate branch address */
-		gr1553hwlist[offset].v_addr = (uint32_t) (&priv->sync[0] + (user_list->branch_offset));
-		gr1553hwlist[offset].p_addr = (uint32_t) air_syscall_get_physical_addr((uintptr_t)gr1553hwlist[offset].v_addr);
-		word1 = gr1553hwlist[offset].p_addr;
-		
+		priv->hwlist[offset].v_addr = (uint32_t) (&priv->sync[0] + (user_list->branch_offset));
+		priv->hwlist[offset].p_addr = (uint32_t) air_syscall_get_physical_addr((uintptr_t)priv->hwlist[offset].v_addr);
+		word1 = priv->hwlist[offset].p_addr;
 		/* No data pointer */
 		dptr = (uint32_t) NULL;
 	
@@ -737,8 +752,8 @@ static void translate_command(grb_priv *priv, unsigned int offset, unsigned int 
 		/* No data pointer */
 		dptr = (uint32_t) NULL;
 		
-		gr1553hwlist[offset].v_addr = 0;
-		gr1553hwlist[offset].p_addr = 0;
+		priv->hwlist[offset].v_addr = 0;
+		priv->hwlist[offset].p_addr = 0;
 		
 	} else { /*< Transfer */
 	
@@ -775,14 +790,14 @@ static void translate_command(grb_priv *priv, unsigned int offset, unsigned int 
 		}
 		
 		/* Calculate data buffer position */
-		gr1553hwlist[offset].v_addr = (uint32_t) (&priv->buf_mem_start[(*data_offset)][0]);
-		gr1553hwlist[offset].p_addr = (uint32_t) air_syscall_get_physical_addr((uintptr_t)gr1553hwlist[offset].v_addr);
-		dptr = gr1553hwlist[offset].p_addr;
-		
+		priv->hwlist[offset].v_addr = (uint32_t) (&priv->buf_mem_start[(*data_offset)][0]);
+		priv->hwlist[offset].p_addr = (uint32_t) air_syscall_get_physical_addr((uintptr_t)priv->hwlist[offset].v_addr);
+		dptr = priv->hwlist[offset].p_addr;
+
 		/* increment data offset*/
 		(*data_offset)++;
 	}
-	
+
 	/* Store words in the final descriptors */
 	desc->settings[0] = word0;
 	desc->settings[1] = word1;
@@ -797,27 +812,11 @@ static void translate_command(grb_priv *priv, unsigned int offset, unsigned int 
 
 void gr1553bc_init_list(grb_priv *priv)
 {
-	/* User defined command list */
-	bc_command_t *cl;
-	
-	/* command list size */
-	int cl_size;
-	
 	/* Iterator */
 	int i;
 	
 	/* data offset used to split data memory in 64 bytes buffers */
 	unsigned int data_offset = 0;
-	
-	/* get user defined command list */
-	cl = iop_milstd_get_command_list();
-	
-	/* get user defined BC command list size */
-	cl_size = iop_milstd_get_command_list_size();
-	
-	/* store user command list information */
-	priv->cl = cl;
-	priv->cl_size = cl_size;
 	
 	/* Align memory to a 16 bytes boundary */
 	priv->mem_start = (void *) MEM_ALIGN(priv->mem_start, GR1553BC_BD_ALIGN);
@@ -827,18 +826,18 @@ void gr1553bc_init_list(grb_priv *priv)
 	
 	/* next block to be read */
 	priv->last_read = priv->mem_start;
-	
+
 	/* memory after the command list is used to store data buffers */
-	priv->buf_mem_start = (milstd_data_buf *)(((uint32_t *)priv->sync) + (cl_size*4));
+	priv->buf_mem_start = (milstd_data_buf *)(((uint32_t *)priv->sync) + (priv->cl_size*4));
 
 	/* memory after the data buffers used to store the asynchronous command list */
-	priv->async = (struct gr1553bc_bd_tr *)(((uint32_t *)priv->buf_mem_start) + (iop_milstd_get_data_buffers_size()*16));
+	priv->async = (struct gr1553bc_bd_tr *)(((uint32_t *)priv->buf_mem_start) + (priv->data_buffer_size*16));
 
 	/* memory after the async command list is used to store async data buffers */
-	priv->async_buf_mem_start = (milstd_data_buf *)(((uint32_t *)priv->async) + (iop_milstd_get_async_command_list_size()*4));
+	priv->async_buf_mem_start = (milstd_data_buf *)(((uint32_t *)priv->async) + (priv->a_cl_size*4));
 	
 	/* iterate over all user defined bc commands */
-	for(i = 0; i < cl_size; i++){
+	for(i = 0; i < priv->cl_size; i++){
 	
 		/* lets translate the bc command list to something the hw can understand */
 		translate_command(priv, i, &data_offset);
@@ -846,8 +845,8 @@ void gr1553bc_init_list(grb_priv *priv)
 	}
 
 	/* Last async command ends list */
-	if(iop_milstd_get_async_command_list_size())
-		priv->async[iop_milstd_get_async_command_list_size() - 1].settings[0] = 0x800000FF;
+	if(priv->a_cl_size)
+		priv->async[priv->a_cl_size - 1].settings[0] = 0x800000FF;
 }
 
 /**
@@ -857,9 +856,6 @@ void gr1553bc_init_list(grb_priv *priv)
 void gr1553bc_start_sync(grb_priv *priv)
 {
 	uint32_t ctrl;
-
-	/* Get list of matching physical/virtual addresses*/
-	gr1553hwaddr *gr1553hwlist = iop_get_gr1553hwlist();
 
 	/* BC control register is protected by a key */
 	ctrl = GR1553BC_KEY;
@@ -871,9 +867,9 @@ void gr1553bc_start_sync(grb_priv *priv)
 		ctrl |= GR1553B_BC_ACT_SCSRT;
 		
 		/* write transfer list pointer register */
-		gr1553hwlist[iop_milstd_get_command_list_size()].v_addr = (uint32_t) priv->sync;
-		gr1553hwlist[iop_milstd_get_command_list_size()].p_addr = (uint32_t)air_syscall_get_physical_addr((uintptr_t)priv->sync);
-		GR1553BC_WRITE_REG(&priv->regs->bc_bd, gr1553hwlist[iop_milstd_get_command_list_size()].p_addr);
+		priv->hwlist[priv->cl_size].v_addr = (uint32_t) priv->sync;
+		priv->hwlist[priv->cl_size].p_addr = (uint32_t)air_syscall_get_physical_addr((uintptr_t)priv->sync);
+		GR1553BC_WRITE_REG(&priv->regs->bc_bd, priv->hwlist[priv->cl_size].p_addr);
 	}
 
 	/* If not enabled before, we enable it now. */
@@ -900,9 +896,6 @@ void gr1553bc_start_async(grb_priv *priv)
 {
 	uint32_t ctrl;
 
-	/* Get list of matching physical/virtual addresses*/
-	gr1553hwaddr *gr1553hwlist = iop_get_gr1553hwlist();
-
 	/* Get device's internal structure */
 	ctrl = GR1553BC_KEY;
 
@@ -913,9 +906,9 @@ void gr1553bc_start_async(grb_priv *priv)
 		ctrl |= GR1553B_BC_ACT_ASSRT;
 
 		/* write transfer list pointer register */
-		gr1553hwlist[iop_milstd_get_command_list_size() + 1].v_addr = (uint32_t) priv->async;
-		gr1553hwlist[iop_milstd_get_command_list_size() + 1].p_addr = (uint32_t)air_syscall_get_physical_addr((uintptr_t)priv->async);
-		GR1553BC_WRITE_REG(&priv->regs->bc_abd, gr1553hwlist[iop_milstd_get_command_list_size() + 1].p_addr);
+		priv->hwlist[priv->cl_size + 1].v_addr = (uint32_t) priv->async;
+		priv->hwlist[priv->cl_size + 1].p_addr = (uint32_t)air_syscall_get_physical_addr((uintptr_t)priv->async);
+		GR1553BC_WRITE_REG(&priv->regs->bc_abd, priv->hwlist[priv->cl_size + 1].p_addr);
 	}
 
 	GR1553BC_WRITE_REG(&priv->regs->bc_ctrl, ctrl);
@@ -931,26 +924,4 @@ void gr1553bc_start_async(grb_priv *priv)
 	}
 
 	return;
-}
-
-/**
- * @brief Returns the virtual address of a physical address
- *        which was already converted from a virtual address
- */
-unsigned long get_virtual_addr(unsigned long p_addr)
-{
-	/* Iterator */
-	int i;
-
-	/* Get list of matching physical/virtual addresses*/
-	gr1553hwaddr *gr1553hwlist = iop_get_gr1553hwlist();
-
-	/* Go through all the addresses that were converted previously */
-	for(i = 0; i < (iop_milstd_get_command_list_size() + 2); i++){
-		/* Check if the physical address is matching and return the virtual address */
-		if(gr1553hwlist[i].p_addr == p_addr){
-			return gr1553hwlist[i].v_addr;
-		}
-	}
-	return 0;
 }
