@@ -51,7 +51,7 @@ static iop_wrapper_t requests_storage[${iop_configuration.requests}];
  * @brief IOP buffers
  */
 static iop_buffer_t iop_buffers[${iop_configuration.requests}];
-static uint8_t iop_buffers_storage[${iop_configuration.requests} * (${maxsize} + 94)];
+static uint8_t iop_buffers_storage[${iop_configuration.requests} * (${maxsize + 7})];
 static iop_fragment_t fragments[${iop_configuration.requests}];
 
 /**
