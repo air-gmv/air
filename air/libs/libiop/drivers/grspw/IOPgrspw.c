@@ -39,10 +39,8 @@
 
 #include <air.h>
 #include <bsp.h>
-#include <IOPlibio.h>
 #include <IOPgrspw.h>
 #include <spw_support.h>
-#include <IOPdriverconfig_interface.h>
 
 #define DBGSPW_IOCALLS 1
 #define DBGSPW_TX 2

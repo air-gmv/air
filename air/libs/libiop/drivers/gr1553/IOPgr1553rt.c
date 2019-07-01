@@ -29,12 +29,8 @@
 #include <IOPgr1553rt.h>
 
 #include <iop_error.h>
-#include <IOPlibio.h>
 #include <iop.h>
 #include <bsp.h>
-#include <IOPmilstd_config.h>
-#include <IOPdriverconfig_interface.h>
-
 
 
 #define GR1553RT_WRITE_MEM(adr, val) *(volatile uint32_t *)(adr) = (val)
@@ -201,7 +197,7 @@ uint32_t gr1553rt_read(iop_device_driver_t *iop_dev, void *arg){
 	grb_priv *priv = (grb_priv *) (device->dev.driver);
 	
 	/* user arguments*/
-	libio_rw_args_t *rw_args = (libio_rw_args_t *) arg;
+	iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
 	
 	/* block descriptor */
 	struct gr1553rt_bd *bd;
@@ -213,8 +209,8 @@ uint32_t gr1553rt_read(iop_device_driver_t *iop_dev, void *arg){
 	unsigned int buf_per_sub = priv->user_config->databufs_per_sub;
 	
 	
-	/* Verify if the user correctly provided data and header*/
-	if((rw_args->data == NULL) || (rw_args->hdr == NULL)){
+	/* Verify if the user correctly provided data*/
+	if(get_payload(wrapper->buffer) == NULL){
 		return AIR_INVALID_PARAM;
 	}
 	
@@ -248,16 +244,15 @@ uint32_t gr1553rt_read(iop_device_driver_t *iop_dev, void *arg){
 			if((wc > 0) /*&& (sw == 0)*/){
 			
 				/* Insert data size */
-				rw_args->bytes_moved = rw_args->data_len = wc*2;
+				wrapper->buffer->payload_size= wc*2;
 				
 				/* copy data to user's buffer */
-				memcpy(rw_args->data, (void *)bd->dptr, wc*2);
+				memcpy(get_payload(wrapper->buffer), (void *)bd->dptr, wc*2);
 			
+				milstd_header_t * hdr = (milstd_header_t *)get_header(wrapper->buffer);
+
 				/* copy subaddress */
-				rw_args->hdr[0] = i;
-			
-				/* header length is always 1*/
-				rw_args->hdr_len = 1;
+				hdr->address = i;
 				
 				/* re-enable the block descriptor (unset data valid bit)*/
 				bd->ctrl = 0;
@@ -310,9 +305,6 @@ uint32_t gr1553rt_write(iop_device_driver_t *iop_dev, void *arg){
 	iop_1553_device_t *device = (iop_1553_device_t *) iop_dev;
 	grb_priv *priv = (grb_priv *) (device->dev.driver);
 	
-	/* user arguments*/
-	libio_rw_args_t *rw_args = (libio_rw_args_t *) arg;
-	
 	/* subaddress table */
 	struct gr1553rt_sa *table = priv->sa_table;
 	
@@ -322,20 +314,21 @@ uint32_t gr1553rt_write(iop_device_driver_t *iop_dev, void *arg){
 	unsigned int suba;
 	unsigned int wc;
 	
-	
-	
+	iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
+	milstd_header_t * hdr = (milstd_header_t *)get_header(wrapper->buffer);
+
 	/* Verify if user request does not exceed the maximum data size for milstd*/
-	if(rw_args->data_len > 64){
+	if(get_payload_size(wrapper->buffer) > 64){
 		return AIR_INVALID_CONFIG;
 	}
 	
-	/* Verify if the user correctly provided data and header*/
-	if((rw_args->data == NULL) || (rw_args->hdr == NULL)){
+	/* Verify if the user correctly provided data*/
+	if(get_payload(wrapper->buffer) == NULL){
 		return AIR_INVALID_PARAM;
 	}
 	
 	/* Get target subaddress */
-	suba = *((unsigned char *)rw_args->hdr) & 0x7F;
+	suba = hdr->address;
 	
 	/* verify if we have a valid subaddress */
 	if((suba < 0) || (suba > 32)){
@@ -350,7 +343,7 @@ uint32_t gr1553rt_write(iop_device_driver_t *iop_dev, void *arg){
 	bd = (struct gr1553rt_bd *) table->txptr;
 	
 	/* get word count */
-	wc = rw_args->data_len/2;
+	wc = get_payload_size(wrapper->buffer)/2;
 	
 	/* word count zero means 32 words */
 	if(wc == 32){
@@ -370,13 +363,10 @@ uint32_t gr1553rt_write(iop_device_driver_t *iop_dev, void *arg){
 	}
 	
 	/* copy data buffer */
-	memcpy((void *)bd->dptr, (void *)rw_args->data, rw_args->data_len);
+	memcpy((void *)bd->dptr, get_payload(wrapper->buffer), get_payload_size(wrapper->buffer));
 	
 	/* insert word count in descriptor control word */
 	bd->ctrl = ((wc & 0x1F) << 3);
-	
-	/* inform user of how much data was written*/
-    rw_args->bytes_moved = wc+2;
 	
 	return AIR_SUCCESSFUL;
 }
