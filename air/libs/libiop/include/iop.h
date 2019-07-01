@@ -271,7 +271,14 @@ typedef struct {
 
 } iop_physical_route_t;
 
-
+/**
+ * @brief structure used as an ioctl interface with the drivers
+ */
+typedef struct {
+    unsigned int command; 		/**< ioctl command */
+    void *buffer;		  		/**< data needed for the ioctl command*/
+    unsigned int ioctl_return; 	/**< ioctl return code */
+} libio_ioctl_args_t;
 
 /**
  * @brief IOP user defined configuration
