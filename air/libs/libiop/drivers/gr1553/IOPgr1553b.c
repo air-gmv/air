@@ -55,6 +55,7 @@ uint32_t gr1553b_initialize(iop_device_driver_t *iop_dev, void *arg)
 
         /* kill this process */
         iop_raise_error(CONFIGURATION_ERROR);
+        return AIR_INVALID_CONFIG;
     }
 
     /* Clear pointers. These fields will be filled later*/
