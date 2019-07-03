@@ -732,36 +732,18 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev = (grcan_priv*) (device->dev.driver);
 	amba_apb_dev_t grcandev;
+	amba_apb_dev_t gptimer;
+	timer_regmap_t *tregs;
 //	int dev_count = 0;
-
-    struct amba_dev_id {
-        unsigned short      vendor;
-        unsigned short      device;
-                /* Version ? */
-    };
-
-    struct amba_dev_id grcan_ids[] =
-    {
-        {VENDOR_GAISLER, GAISLER_GRCAN},
-        {VENDOR_GAISLER, GAISLER_GRHCAN},
-        {0, 0}		/* Mark end of table */
-    };
 
 	FUNCDBG();
 
+	amba_confarea_t * ambabus = (amba_confarea_t *)air_syscall_get_ambaconf();
+
 	memset(&grcandev, 0, sizeof(amba_apb_dev_t));
-// 	dev_count = ambapp_find_apbslv(&amba_confarea,
-// 			VENDOR_GAISLER,
-// 			GAISLER_GRCAN,
-// 			&grcandev);
-    if(amba_get_apb_slave(&amba_confarea,
-            grcan_ids[0].vendor,
-            grcan_ids[0].device,
-            device->can_core,
-            &grcandev) != 1)
-    {
-        return AIR_DEVICE_NOT_FOUND;
-    }
+
+	if(!amba_get_apb_slave(ambabus, VENDOR_GAISLER, GAISLER_GRCAN,device->can_core, &grcandev))
+		return AIR_DEVICE_NOT_FOUND;
 
 #if 0
 	iop_debug("Start: 0x%04x - IRQ 0x%04x - bus_id 0x%04x\n",
@@ -776,16 +758,30 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 
     /* Get frequency in Hz */
  //   pDev->corefreq_hz = amba_confarea.ahbs[grcandev.ahbidx].freq_hz;
-	pDev->corefreq_hz = 250000000;
 
+	/*
+	 * Auto Detect the CAN core frequency by assuming that the system frequency is
+	 * is the same as the CAN core frequency.
+	 */
+	if (amba_get_apb_slave(ambabus,VENDOR_GAISLER,GAISLER_GPTIMER,0,&gptimer))
+	{
+		/*Timer memory mapped registers*/
+		tregs = (timer_regmap_t*)gptimer.start;
 
-	DBG("GRCAN frequency: %d Hz\n", pDev->corefreq_hz);
+		/*Calculate System frequency based on the timer register*/
+		pDev->corefreq_hz = (tregs->scaler_reload+1)*1000000;
+	}
+	else
+	{
+		pDev->corefreq_hz = 250000000;
+		iop_debug("GRCAN: Failed to detect system frequency\n\r");
+	}
 
 	/* Reset Hardware*/
 	grcan_hw_reset(pDev->regs);
 
-//	iop_debug("GRCAN: System frequency set at: %dHz\n", pDev->corefreq_hz);
-	DBG("Registers are set\n");
+	iop_debug("GRCAN: System frequency set at: %dHz\n", pDev->corefreq_hz);
+
 	/* TODO compute grcan_timing from clock frequency and configured baudrate
 	 * from iop config */
 #if 0
