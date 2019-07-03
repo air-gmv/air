@@ -151,22 +151,6 @@ void set_sys_freq(){
     /* Get System clock frequency */
     sys_freq_khz = 0;
 
-    /* GPTIMER Timer instance */
-    struct gptimer_timer_regs {
-        volatile unsigned int value;
-        volatile unsigned int reload;
-        volatile unsigned int ctrl;
-        volatile unsigned int notused;
-    };
-    /* GPTIMER common registers */
-    struct gptimer_regs {
-        volatile unsigned int scaler_value;   /* common timer registers */
-        volatile unsigned int scaler_reload;
-        volatile unsigned int cfg;
-        volatile unsigned int notused;
-        struct gptimer_timer_regs timer[7];
-    };
-
     /* 
      * Auto Detect the SPW core frequency by assuming that the system frequency is
      * is the same as the SPW core frequency.
@@ -174,13 +158,13 @@ void set_sys_freq(){
     #ifndef SYS_FREQ_KHZ
         /* LEON3: find timer address via AMBA Plug&Play info */	
         amba_apb_dev_t gptimer;
-        struct gptimer_regs  *tregs;
+        timer_regmap_t *tregs;
 
         /*search for gaisler timer in the amba bus*/
         if ( amba_get_apb_slave(amba_bus,VENDOR_GAISLER,GAISLER_GPTIMER,0,&gptimer) == 1 ){
 
             /*Timer memory mapped registers*/
-            tregs = (struct gptimer_regs*)gptimer.start;
+            tregs = (timer_regmap_t*)gptimer.start;
 
             /*Calculate System frequency based on the timer register*/
             sys_freq_khz = (tregs->scaler_reload+1)*1000;
