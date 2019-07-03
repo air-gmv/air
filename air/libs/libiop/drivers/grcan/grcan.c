@@ -760,7 +760,7 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
             device->can_core,
             &grcandev) != 1)
     {
-        return -1;
+        return AIR_DEVICE_NOT_FOUND;
     }
 
 #if 0
@@ -835,7 +835,7 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 	}
 	DBG("dev_sem created with ID: %d\n", (int) pDev->dev_sem);
 #endif
-	return 0;
+	return AIR_SUCCESSFUL;
 }
 
 /*
@@ -854,7 +854,7 @@ uint32_t iop_grcan_initialize(iop_device_driver_t *iop_dev, void *arg){
 	 /* Enable CAN Clock gate */
 	 clock_gating_enable(&amba_confarea, GATE_CAN);
 
-	if( iop_grcan_device_init(iop_dev) == AIR_INTERNAL_ERROR){
+	if(AIR_SUCCESSFUL != iop_grcan_device_init(iop_dev)){
 		// Couldn't initialize the device
 		DBG("Internal error on grcan_device_init\n");
 		return AIR_DEVICE_ERROR;
@@ -871,7 +871,6 @@ air_status_code_e iop_grcan_open_internal(iop_device_driver_t *iop_dev, void *ar
 {
 	iop_can_device_t *device = (iop_can_device_t *) iop_dev;
 	grcan_priv *pDev =  (grcan_priv *) (device->dev.driver);
-	air_status_code_e ret = AIR_SUCCESSFUL;
 
 	FUNCDBG();
 	DBG("CAN core %d\n", device->can_core);
@@ -886,15 +885,6 @@ air_status_code_e iop_grcan_open_internal(iop_device_driver_t *iop_dev, void *ar
 
 	DBG("Semaphore taken\n");
 #endif
-	/* is device busy/taken? */
-	if  ( pDev->open ) {
-		DBG("Device taken\n");
-		ret = AIR_DEVICE_ERROR;
-		goto out;
-	}
-
-	/* Mark device taken */
-	pDev->open = 1;
 
 	pDev->txblock = pDev->rxblock = 0;
 	pDev->txcomplete = pDev->rxcomplete = 0;
@@ -927,11 +917,10 @@ air_status_code_e iop_grcan_open_internal(iop_device_driver_t *iop_dev, void *ar
 
 	memset(&pDev->stats,0,sizeof(struct grcan_stats));
 
-	out:
 #if 0
 	rtems_semaphore_release(pDev->dev_sem);
 #endif
-	return ret;
+	return AIR_SUCCESSFUL;
 }
 
 /*
@@ -1003,9 +992,6 @@ uint32_t iop_grcan_close(iop_device_driver_t * iop_dev, void *arg)
 	grcan_hw_reset(pDev->regs);
 
 	//~ grcan_free_buffers(pDev,1,1);
-
-	/* Mark Device as closed */
-	pDev->open = 0;
 
 	return AIR_SUCCESSFUL;
 }

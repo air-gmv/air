@@ -85,6 +85,9 @@ void gr1553bc_device_init(grb_priv *priv)
 
 	/* start the list */
 	gr1553bc_start_sync(priv);
+
+	/* Device is ready */
+	priv->open = 1;
 }
 
 
@@ -313,19 +316,12 @@ static inline uint32_t create_descriptor_word1(bc_command_t *ul, int timeout, in
 }
 
 static inline air_status_code_e bc_verify_command_status(uint32_t sw)
-{	
-	air_status_code_e status = AIR_SUCCESSFUL;
-	
+{
 	/* verify transfer status */
-	if((sw & 0x7) != 0){
-		
-		status = AIR_INTERNAL_ERROR;
-		
-		/* something has gone wrong with the transfer */
-		iop_raise_error(HW_PROBLEM);
-	}
-	
-	return status;
+	if((sw & 0x7) != 0)
+		return AIR_INTERNAL_ERROR;
+
+	return AIR_SUCCESSFUL;
 }
 
 static inline void dummy_command(volatile uint32_t *cw)
@@ -462,6 +458,7 @@ static int update_command(grb_priv *priv, iop_buffer_t *buf){
  *
  * @return status of the operation:
  *  	- AIR_SUCCESSFUL: Data was successfully read.
+ * 		- AIR_INVALID_CONFIG: Device was not open
  * 		- AIR_TIMED_OUT: End of list.
  *
  * This function will obtain the list that is currently being processed by
@@ -481,7 +478,7 @@ uint32_t gr1553bc_read(iop_device_driver_t *iop_dev, void *arg)
 	iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
 
 	/* return code */
-	air_status_code_e status;
+	air_status_code_e status = AIR_SUCCESSFUL;
 	
 	/* indicates if data was sucessfully read or if the list has ended */
 	int end = 0;
@@ -489,7 +486,8 @@ uint32_t gr1553bc_read(iop_device_driver_t *iop_dev, void *arg)
 	/* current bc descriptor */
 	struct gr1553bc_bd_tr *current;
 
-	status = AIR_SUCCESSFUL;
+	if(!priv->open)
+		return AIR_INVALID_CONFIG;
 	
 	/* @todo place a limit in the number of reads... */
 	while(end == 0){
@@ -543,6 +541,7 @@ uint32_t gr1553bc_read(iop_device_driver_t *iop_dev, void *arg)
  *
  * @return air_status_code_e; status of the operation:
  *  	- AIR_SUCCESSFUL: Data was successfully written to the list
+ * 		- AIR_INVALID_CONFIG: Device not open
  * 		- AIR_NOT_AVAILABLE: this data is not linked to any command in the list
  *
  * This function inserts incoming user data in the bc command list. For that
@@ -559,6 +558,9 @@ uint32_t gr1553bc_write(iop_device_driver_t *iop_dev, void *arg)
 	grb_priv *priv = (grb_priv *) (device->dev.driver);
 
 	iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
+
+	if(!priv->open)
+		return AIR_INVALID_CONFIG;
 
 	/* return code */
 	air_status_code_e status;
