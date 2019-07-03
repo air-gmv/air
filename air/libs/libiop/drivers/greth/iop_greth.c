@@ -757,7 +757,7 @@ uint32_t greth_initialize(iop_device_driver_t *iop_dev, void *arg) {
     if (amba_get_apb_slave(ptrarea, VENDOR_GAISLER, GAISLER_ETHMAC,
                                     device->id, &apbgreth) != 1){
         iop_debug("    GRETH device not found...\n");
-        return AIR_INTERNAL_ERROR;
+        return AIR_DEVICE_NOT_FOUND;
     }
 
     /* Store configuration parameters */

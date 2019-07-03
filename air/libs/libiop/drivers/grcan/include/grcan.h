@@ -217,7 +217,6 @@ typedef struct grcan_priv_ {
 	struct grcan_regs *regs;
 	int irq;
 	int minor;
-	int open;
 	int started;
 	unsigned int channel;
 	int flushing;
