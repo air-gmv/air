@@ -1,8 +1,10 @@
 /* ============================================================================
- *  Copyright (C) GMVIS Skysoft S.A., 2018
+ *  Copyright (C) GMVIS Skysoft S.A., 2013-2014
  * ============================================================================
+ *  This file is part of the AIR - ARINC 653 Interface in RTEMS - Operating
+ *  system.
  *  The license and distribution terms for this file may be found in the file
- *  LICENSE in this distribution.
+ *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
  * ==========================================================================*/
 /**
  * @file bsp.h
@@ -10,17 +12,36 @@
  * @brief Bsp headers and inline assembly functions.
  */
 
- #include <arm.h>
+#ifndef ASM
 
-static inline uint32_t arm_cp15_get_sctlr(void) {
-    uint32_t val;
+#include <air_arch.h>
+#include <armv7.h>
 
-    __asm__ volatile (
-        THUMB_TO_ARM
-        "mrc p15, 0, %[val], c1, c0, 0\n"
-        ARM_TO_THUMB
-        : [val] "=&r" (val)
-    );
+#define SCU_BASE_MEMORY 0xf8f00000
+#define GT_BASE_MEMORY  0xf8f00200
 
-    return val;
+void bsp_start_hook(void);
+
+static inline clear_bss() {
+    memset(bsp_section_bss_start, 0, bsp_section_bss_size);
+//  air_i8_t *mem = (air_i8_t *)bsp_section_bss_start;
+//  for(air_u32_t i = 0; i < bsp_section_bss_size; i++) {
+//
+//      *mem = 0;
+//      mem++;
+//  }
 }
+
+static inline copy_vector_table() {
+    memcpy(bsp_vector_table_begin, vector_table_begin, 8);
+//  if (vector_table_begin != bsp_vector_table_begin) {
+//      air_i8_t *dst = (air_i8_t *) bsp_vector_table_begin;
+//      air_i8_t *src = (air_i8_t *) vector_table_begin;
+//
+//      for(air_u32_t i = 0; i < 8; i++) {
+//          *dst++ = *src++;
+//      }
+//  }
+}
+
+#endif /* ASM */
