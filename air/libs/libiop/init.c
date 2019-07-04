@@ -16,17 +16,17 @@
 /**
  * @todo
  *  - Error Handling. Lets assume that there are no configuration errors. 
- *	  We also need to now which capabilies are available to us (e.g. reboot partition)\n
- *	  The following recovery options are to be defined:\n
- *		o Can't Create Ports \n
- *		o Can't extract replies or requests \n
- *		o Can't send or receive queueing messages \n
+ *    We also need to now which capabilies are available to us (e.g. reboot partition)\n
+ *    The following recovery options are to be defined:\n
+ *      o Can't Create Ports \n
+ *      o Can't extract replies or requests \n
+ *      o Can't send or receive queueing messages \n
  *      o Error initializing HW \n
- *		o Errors when creating or using RTEMS objects (tasks, rate monotonics, etc) \n
+ *      o Errors when creating or using RTEMS objects (tasks, rate monotonics, etc) \n
  *      o Deadline miss.\n
  *      o HW errors that affect HW normal behavior \n
- *		o Incomming packet that has a greater size than the one of the a653 port
- *	- Internal Schedule. Find the best way to implement it, and then implement IT!\n
+ *      o Incomming packet that has a greater size than the one of the a653 port
+ *  - Internal Schedule. Find the best way to implement it, and then implement IT!\n
  *  - Think about the reply system in the 1:N case. Iff only one fails should we
  *    	reply with an error condition?\n
  *  - Isolate more properly the configuration files from the non configuration files. 
@@ -148,7 +148,7 @@ static void iop_init_devs() {
     iop_debug(" :: IOP - initializing physical devices (%i)\n",
               usr_configuration.physical_devices.length);
 
-	/* initialize the physical device queues */
+    /* initialize the physical device queues */
     for (i = 0; i < usr_configuration.physical_devices.length; ++i) {
 
         /* get physical device */
@@ -254,65 +254,64 @@ air_status_code_e IOPinit() {
 
     iop_debug("Initializing IOP\n");
 
-	/* initialize queues */
-	iop_init_queues();
+    /* initialize queues */
+    iop_init_queues();
 
-	/* initialize mms */
-	iop_init_mms();
+    /* initialize mms */
+    iop_init_mms();
 
-	/* initialize ports  */
-	if (iop_init_ports() != AIR_SUCCESSFUL) {
-		iop_raise_error(CANT_CREATE_PORT);
-	}
-	
-	/* initialize Devices and respective routes */
-	iop_init_devs();
+    /* initialize ports  */
+    if (iop_init_ports() != AIR_SUCCESSFUL) {
+        iop_raise_error(CANT_CREATE_PORT);
+    }
+
+    /* initialize Devices and respective routes */
+    iop_init_devs();
 
 #ifdef IOP_MAIN_DEBUG
 	/* Pointer to amba bus structure*/
 	amba_confarea_t *amba_bus;
-	
+
 	/*Get amba bus configuration*/
 	amba_bus = (amba_confarea_t *)air_syscall_get_ambaconf();;
 	iop_debug("amba_conf->ahbmst: %d\n", amba_bus->ahb_masters.count);
 	iop_debug("amba_conf->ahbslv: %d\n", amba_bus->ahb_slaves.count);
 	iop_debug("amba_conf->apbslv: %d\n", amba_bus->apb_slaves.count);
-	
+
 	unsigned int conf;
 	int k;
 	for(k = 0; k < amba_bus->ahb_masters.count; k++)
-    {
-        /* get the configuration area */
-        conf = *(amba_bus->ahb_masters.addr[k]);
+	{
+		/* get the configuration area */
+		conf = *(amba_bus->ahb_masters.addr[k]);
 
 		iop_debug("ahbmst:%d  AMBA VENDOR: 0x%x   AMBA DEV: 0x%x   conf: 0x%x\n",
 					k, ((conf >> 24) & 0xff), ((conf >> 12) & 0xfff), conf);
-    }
+	}
 	for(k = 0; k < amba_bus->ahb_slaves.count; k++)
-    {
-        /* get the configuration area */
-        conf = *(amba_bus->ahb_slaves.addr[k]);
+	{
+		/* get the configuration area */
+		conf = *(amba_bus->ahb_slaves.addr[k]);
 
 		iop_debug("ahbslv:%d  AMBA VENDOR: 0x%x   AMBA DEV: 0x%x   conf: 0x%x\n",
 					k, ((conf >> 24) & 0xff), ((conf >> 12) & 0xfff), conf);
     }
 	for(k = 0; k < amba_bus->apb_slaves.count; k++)
-    {
-        /* get the configuration area */
-        conf = *(amba_bus->apb_slaves.addr[k]);
+	{
+		/* get the configuration area */
+		conf = *(amba_bus->apb_slaves.addr[k]);
 
 		iop_debug("apbslv:%d  AMBA VENDOR: 0x%x   AMBA DEV: 0x%x   conf: 0x%x\n",
 					k, ((conf >> 24) & 0xff), ((conf >> 12) & 0xfff), conf);
-    }
+	}
 #endif
 
-	/* initialize Drivers*/
-	if (iop_init_drivers() != AIR_SUCCESSFUL){
-		iop_raise_error(HW_PROBLEM);
-                return AIR_DEVICE_ERROR;
-	}
-	
-	iop_main_loop();
+    /* initialize Drivers*/
+    if (iop_init_drivers() != AIR_SUCCESSFUL) {
+        iop_raise_error(HW_PROBLEM);
+    }
 
-	return AIR_SUCCESSFUL;
+    iop_main_loop();
+
+    return AIR_SUCCESSFUL;
 }
