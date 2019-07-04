@@ -15,12 +15,7 @@
 #ifndef ARM_ASM_H
 #define ARM_ASM_H
 
-/* Define we are in assembly file */
-#ifndef ASM
-#define ASM
-#endif
-
-#include <arm.h>
+#include <armv7.h>
 
 #ifdef ASM
 
