@@ -1,42 +1,41 @@
-/** 
+/**
  * @file IOPinit.c
- * 
+ *
  *  COPYRIGHT (c) 2011.
  *  GMV-SKYSOFT 
- * 
+ *
  * @author Cláudio Silva
  *
  * @brief IO Partition initialization procedures
  *
  * Initializes tasks, ports, memory and internal IOP structures based on user
  * configured options.
- * 
- */ 
+ *
+ */
 
 /**
  * @todo
- *  - Error Handling. Lets assume that there are no configuration errors. 
+ *  - Error Handling. Lets assume that there are no configuration errors.
  *    We also need to now which capabilies are available to us (e.g. reboot partition)\n
  *    The following recovery options are to be defined:\n
  *      o Can't Create Ports \n
  *      o Can't extract replies or requests \n
  *      o Can't send or receive queueing messages \n
  *      o Error initializing HW \n
- *      o Errors when creating or using RTEMS objects (tasks, rate monotonics, etc) \n
  *      o Deadline miss.\n
  *      o HW errors that affect HW normal behavior \n
  *      o Incomming packet that has a greater size than the one of the a653 port
  *  - Internal Schedule. Find the best way to implement it, and then implement IT!\n
  *  - Think about the reply system in the 1:N case. Iff only one fails should we
- *    	reply with an error condition?\n
- *  - Isolate more properly the configuration files from the non configuration files. 
+ *     reply with an error condition?\n
+ *  - Isolate more properly the configuration files from the non configuration files.
  *     Avoid compiling other files when only the configuration has changed\n
  *  - The extract_request and extract_reply need to be protected against preemption.
  *     Not protected by a semaphore but by a disable interrupt?\n
  *  - Add the cache disabled malloc \n
- *  - Reuse unused requests instead of being always extracting and appending 
+ *  - Reuse unused requests instead of being always extracting and appending
  */
- 
+
 #include <iop.h>
 #include <iop_mms.h>
 #include <iop_support.h>
@@ -45,6 +44,8 @@
 //#define IOP_MAIN_DEBUG
 
 /**
+ * @fn iop_init_devs(void)
+ * @return
  * @brief Initializes the free wrappers chain queues
  */
 static void iop_init_queues(void){
@@ -83,7 +84,7 @@ static void iop_init_queues(void){
     /* setup Remote Ports buffers */
     for (i = 0; i < usr_configuration.wrappers_count; ++i) {
         /* get virtual and physical addresses for this buffer, align to doubleword */
-        usr_configuration.iop_buffers[i].v_addr = (void *)(((air_uptr_t) &usr_configuration.iop_buffers_storage[i * (size+94+(0x08-1))] + (0x08-1)) & ~(0x08-1)); //add max //add max total space needed eth header (TCP) = 14+20+60 TODO remove 94 and use something proper
+        usr_configuration.iop_buffers[i].v_addr = (void *)(((air_uptr_t) &usr_configuration.iop_buffers_storage[i * (size+94+(0x08-1))] + (0x08-1)) & ~(0x08-1)); //add max total space needed eth header (TCP) = 14+20+60 TODO remove 94 and use something proper
 
         usr_configuration.iop_buffers[i].p_addr = (void *)air_syscall_get_physical_addr((air_uptr_t) usr_configuration.iop_buffers[i].v_addr);
     }
@@ -112,7 +113,9 @@ static void iop_init_queues(void){
 
  }
 
-/**l
+/**
+ * @fn iop_init_devs(void)
+ * @return
  * @brief Initializes physical and logical devices.
  */
 static void iop_init_devs() {
@@ -173,10 +176,9 @@ static void iop_init_devs() {
 }
 
 /**
- *	\fn iop_init_drivers(void)
- *  \return air_status_code_e 
- *  \brief Initializes drivers and HW cores
- *  
+ * @fn iop_init_drivers(void)
+ * @return status code !AIR_SUCCESSFUL if any init/open operation failed
+ * @brief Initializes drivers and HW cores
  */
 static air_status_code_e iop_init_drivers(void){
 
@@ -208,13 +210,13 @@ static air_status_code_e iop_init_drivers(void){
 }
 
 /**
- *	\fn iop_init_ports(void)
- *  \return air_status_code_e:
- *  \brief Initializes Queueing ports used for communication with other partitions
- *  
- *  Creates queueing ports with the paramaters obtained from the configuration.
- *  The order in which the configuration is obatined is relevant to the 
- *  behavior of the IOP. #iop_port_configuration
+ * @fn iop_init_ports(void)
+ * @return status code !AIR_SUCCESSFUL if any port was not successfully created
+ * @brief Initializes Queueing ports used for communication with other partitions
+ *
+ * Creates queueing ports with the paramaters obtained from the configuration.
+ * The order in which the configuration is obatined is relevant to the 
+ * behavior of the IOP. #iop_port_configuration
  */
 static air_status_code_e iop_init_ports() {
 
@@ -245,10 +247,9 @@ static air_status_code_e iop_init_ports() {
 }
 
 /**
+ * @fn IOPinit(void)
  * @brief IO partition entry point
- * @return air_status_code_e: Status of the operation. 
- *
- * Initializes the IOPartion components
+ * @return never
  */
 air_status_code_e IOPinit() {
 
