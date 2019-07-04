@@ -12,18 +12,83 @@
  * @brief Boot code for ARM.
  */
 
-/* Define we are in assembly file */
-#ifndef ASM
-#define ASM
-#endif
+/* Are we in assembly file */
+#ifdef ASM
 
 #include <asm.h>
+#include <bsp.h>
+
+    /* External symbols */
+    .extern stack_svc_end
+    .extern stack_fiq_end
+    .extern stack_irq_end
+    .extern stack_abt_end
+    .extern stack_und_end
+#ifdef PMK_SMP
+    .extern stack_total_size
+#endif
+    .extern bsp_start_hook
+    .extern pmk_init
+
+    .extern exception_undef
+    .extern exception_swi
+    .extern exception_pref_abort
+    .extern exception_data_abort
+    .extern exception_irq_interrupt
+    .extern exception_fiq_interrupt
+
+    .globl vector_table_begin
+    .globl vector_table_end
+    .globl vector_table_size
+    .globl start_hook_done
+
+    .section ".start_text", "ax"
+
+#if __ARM_ARCH >= 7
 
     .arm
+vector_table_begin:
+    ldr     pc, handler_addr_reset
+    ldr     pc, handler_addr_undef
+    ldr     pc, handler_addr_swi
+    ldr     pc, handler_addr_pref_abort
+    ldr     pc, handler_addr_data_abort
+
+    .word   0x0 /* unused. Seems important for LPC2106 */
+
+    ldr     pc, handler_addr_irq
+    ldr     pc, handler_addr_fiq
+
+handler_addr_undef:
+
+    .word   exception_undef
+
+handler_addr_swi:
+
+    .word   exception_swi
+
+handler_addr_pref_abort:
+
+    .word   exception_pref_abort
+
+handler_addr_data_abort:
+
+    .word   exception_data_abort
+
+handler_addr_irq:
+
+    .word   exception_irq_interrupt
+
+handler_addr_fiq:
+
+    .word   exception_fiq_interrupt
+
+bsp_start_vector_table_end:
+
+
     /**< Start entry */
 ENTRY(_start)
-
-    /* Some boards require register initialization */
+    /* TODO Some boards require register initialization */
 
     /* Save r1 and r2 to preserve bootloader params */
     mov     r5, r1
@@ -42,22 +107,22 @@ ENTRY(_start)
 //  bne     wait_for_event
 //#endif
 
-    /* Some boards might support fdt */
+    /* TODO Some boards might support fdt */
 
-    /* Some CPUs start in hypervisor mode */
+    /* TODO Some CPUs start in hypervisor mode */
 
     /**< Calculate stack offset */
-    ldr     r1, =bsp_stack_size /* TODO need to compute this somewhere */
+    ldr     r1, =stack_total_size
     mul     r1, r7
 #endif /* PMK_SMP */
 
-modes:
+set_processor_modes:
     mrs     r4, cpsr /* save original processor status value */
 
     /**< Set SVC mode */
     mov     r0, #(PSR_SVC | PSR_I | PSR_F)
     msr     cpsr, r0
-    ldr     sp, =bsp_stack_svc_end
+    ldr     sp, =stack_svc_end
 #ifdef PMK_SMP
     add     sp, r1
 #endif
@@ -65,17 +130,17 @@ modes:
     /**< Set FIQ mode */
     mov     r0, #(PSR_FIQ | PSR_I | PSR_F)
     msr     cpsr, r0
-    ldr     sp, =bsp_stack_fiq_end
+    ldr     sp, =stack_fiq_end
 #ifdef PMK_SMP
     add     sp, r1
 #endif
 
-    /* some boards require fiq registers initialization */
+    /* TODO some boards require fiq registers initialization */
 
     /**< Set IRQ mode */
     mov     r0, #(PSR_IRQ | PSR_I | PSR_F)
     msr     cpsr, r0
-    ldr     sp, =bsp_stack_irq_end
+    ldr     sp, =stack_irq_end
 #ifdef PMK_SMP
     add     sp, r1
 #endif
@@ -83,7 +148,7 @@ modes:
     /**< Set ABT mode */
     mov     r0, #(PSR_ABT | PSR_I | PSR_F)
     msr     cpsr, r0
-    ldr,    =bsp_stack_abt_end
+    ldr     sp, =stack_abt_end
 #ifdef PMK_SMP
     add     sp, r1
 #endif
@@ -91,12 +156,16 @@ modes:
     /**< Set UND mode */
     mov     r0, #(PSR_UND | PSR_I | PSR_F)
     msr     cpsr, r0
-    ldr,    =bsp_stack_abt_end
+    ldr     sp, =stack_und_end
 #ifdef PMK_SMP
     add     sp, r1
 #endif
 
-    /**< Enable VFPv3. Other versions might need additional setup */
+    /**< Change back to SVC mode */
+    mov     r0, #(PSR_SVC | PSR_I | PSR_F)
+    msr     cpsr, r0
+
+    /**< Enable VFPv3. TODO Other versions might need additional setup */
 #ifdef PMK_FPU_SUPPORT
     /* read CPACR */
     mrc     p15, 0, r0, c1, c0, 2
@@ -112,15 +181,34 @@ modes:
 
     isb
 
+    /* Enable FPU */
     mov     r0, #(1 << 30)
     vmsr    FPEXC, r0
 
-    /* some boards require vfp registers initialization */
+    /* TODO some boards require vfp registers initialization */
 #endif /* PMK_FPU_SUPPORT */
 
-    ldr     lr, =bsp_start_hook_0_done
-    mov     r0, r4 /* original cpsr */
-    mov     r1, r5 /* machine type number or ~0 for DT boot */
-    mov     r2, r6 /* physical address of ATAGs or DTB */
+    ldr     lr, =bsp_start_hook_done
 
-    b       bsp_start_hook_0
+#ifdef __thumb__
+    orr     lr, #1
+#endif
+
+    SWITCH_FROM_ARM_TO_THUMB    r0
+//  mov     r0, r4 /* original cpsr */
+//  mov     r1, r5 /* machine type number or ~0 for DT boot */
+//  mov     r2, r6 /* physical address of ATAGs or DTB */
+    mov     r0, =vector_table_begin
+
+    bl      bsp_start_hook
+
+bsp_start_hook_done:
+
+    SWITCH_FROM_ARM_TO_THUMB    r3
+    mov     r0, #0
+    bl      pmk_init
+
+    /* never returns here */
+
+#endif /* __ARM_ARCH >= 7 */
+#endif /* ASM */

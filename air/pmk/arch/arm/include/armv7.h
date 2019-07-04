@@ -12,8 +12,10 @@
  * @brief Arm macros and typedef definitions.
  */
 
- #ifndef ARM_ARM_H
- #define ARM_ARM_H
+#ifndef ARM_ARMv7_H
+#define ARM_ARMv7_H
+
+#ifdef ASM
 
 /**
  * @brief Program Status Register.
@@ -44,10 +46,10 @@
 
 
 /* @brief If the bit 0 of the bx reg is 0 it will remain in ARM, if 1 it will
- * change to Thumb. The .thumb directory is for the assembler to compile the
- * following instructions as Thumb. Same for .arm.
+ * change to Thumb. The .thumb directive is for the assembler to compile the
+ * following instructions as Thumb. Same way for .arm.
  */
-.macro ARM_TO_THUMB r
+.macro SWITCH_FROM_ARM_TO_THUMB r
 #if defined(__thumb__)
     add     \r, pc, #1
     bx      \r
@@ -55,7 +57,7 @@
 #endif
 .endm
 
-.macro THUMB_TO_ARM
+.macro SWITCH_FROM_THUMB_TO_ARM
 #if defined(__thumb__)
 .align 2
     bx      pc
@@ -63,4 +65,35 @@
 #endif
 .endm
 
-#endif /* ARM_ARM_H */
+#endif /* ASM */
+
+#ifndef ASM
+#if defined(__thumb__)
+    #define ARM_SWITCH_REGISTERS air_u32_t arm_switch_reg
+    #define ARM_SWITCH_BACK "add %[arm_switch_reg], pc, #1\nbx %[arm_switch_reg]\n.thumb\n"
+    #define ARM_SWITCH_TO_ARM ".align 2\nbx pc\n.arm\n"
+    #define ARM_SWITCH_OUTPUT [arm_switch_reg] "=&r" (arm_switch_reg)
+    #define ARM_SWITCH_ADDITIONAL_OUTPUT , ARM_SWITCH_OUTPUT
+#else
+    #define ARM_SWITCH_REGISTERS
+    #define ARM_SWITCH_BACK
+    #define ARM_SWITCH_TO_ARM
+    #define ARM_SWITCH_OUTPUT
+    #define ARM_SWITCH_ADDITIONAL_OUTPUT
+#endif /* defined(__thumb__) */
+
+inline static void instruction_synchronization_barrier(void) {
+    __isb(15);
+}
+
+inline static void data_synchronization_barrier(air_u32_t intrinsic) {
+    __dsb(intrinsic);
+}
+
+inline static void data_memory_barrier(air_u32_t intrinsic) {
+    __dmb(intrinsic);
+}
+
+#endif /* ASM */
+
+#endif /* ARM_ARMv7_H */
