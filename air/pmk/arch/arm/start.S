@@ -60,27 +60,21 @@ vector_table_begin:
     ldr     pc, handler_addr_fiq
 
 handler_addr_undef:
-
     .word   exception_undef
 
 handler_addr_swi:
-
     .word   exception_swi
 
 handler_addr_pref_abort:
-
     .word   exception_pref_abort
 
 handler_addr_data_abort:
-
     .word   exception_data_abort
 
 handler_addr_irq:
-
     .word   exception_irq_interrupt
 
 handler_addr_fiq:
-
     .word   exception_fiq_interrupt
 
 bsp_start_vector_table_end:
@@ -98,16 +92,10 @@ ENTRY(_start)
     /* Reading the MPIDR into r7. Not available before ARMv7 */
     mrc     p15, 0, r7, c0, c0, 5
     and     r7, #0xff
-//  cmp     r7, #0 /* 0 if single core */
-//
-//#if PMK_MAX_CORES > 1
-//  bne     stack_setup
-//#else
-//  /* Only continue for ID = 0 */
-//  bne     wait_for_event
-//#endif
 
-    /* TODO Some boards might support fdt */
+    /* TODO Save per cpu info */
+
+    /* TODO We might add fdt */
 
     /* TODO Some CPUs start in hypervisor mode */
 
@@ -116,11 +104,11 @@ ENTRY(_start)
     mul     r1, r7
 #endif /* PMK_SMP */
 
-set_processor_modes:
+setup_stack:
     mrs     r4, cpsr /* save original processor status value */
 
     /**< Set SVC mode */
-    mov     r0, #(PSR_SVC | PSR_I | PSR_F)
+    mov     r0, #(ARM_PSR_SVC | ARM_PSR_I | ARM_PSR_F)
     msr     cpsr, r0
     ldr     sp, =stack_svc_end
 #ifdef PMK_SMP
@@ -128,7 +116,7 @@ set_processor_modes:
 #endif
 
     /**< Set FIQ mode */
-    mov     r0, #(PSR_FIQ | PSR_I | PSR_F)
+    mov     r0, #(ARM_PSR_FIQ | ARM_PSR_I | ARM_PSR_F)
     msr     cpsr, r0
     ldr     sp, =stack_fiq_end
 #ifdef PMK_SMP
@@ -138,7 +126,7 @@ set_processor_modes:
     /* TODO some boards require fiq registers initialization */
 
     /**< Set IRQ mode */
-    mov     r0, #(PSR_IRQ | PSR_I | PSR_F)
+    mov     r0, #(ARM_PSR_IRQ | ARM_PSR_I | ARM_PSR_F)
     msr     cpsr, r0
     ldr     sp, =stack_irq_end
 #ifdef PMK_SMP
@@ -146,7 +134,7 @@ set_processor_modes:
 #endif
 
     /**< Set ABT mode */
-    mov     r0, #(PSR_ABT | PSR_I | PSR_F)
+    mov     r0, #(ARM_PSR_ABT | ARM_PSR_I | ARM_PSR_F)
     msr     cpsr, r0
     ldr     sp, =stack_abt_end
 #ifdef PMK_SMP
@@ -154,7 +142,7 @@ set_processor_modes:
 #endif
 
     /**< Set UND mode */
-    mov     r0, #(PSR_UND | PSR_I | PSR_F)
+    mov     r0, #(ARM_PSR_UND | ARM_PSR_I | ARM_PSR_F)
     msr     cpsr, r0
     ldr     sp, =stack_und_end
 #ifdef PMK_SMP
@@ -162,7 +150,7 @@ set_processor_modes:
 #endif
 
     /**< Change back to SVC mode */
-    mov     r0, #(PSR_SVC | PSR_I | PSR_F)
+    mov     r0, #(ARM_PSR_SVC | ARM_PSR_I | ARM_PSR_F)
     msr     cpsr, r0
 
     /**< Enable VFPv3. TODO Other versions might need additional setup */
