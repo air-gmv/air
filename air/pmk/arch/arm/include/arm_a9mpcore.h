@@ -102,7 +102,7 @@ static inline void scu_invalidate(volatile scu_t *scu, air_u32_t cpu_id) {
     scu->inv_reg_ss = ( (0xf) << ( (cpu_id & 0x3) * 4) )
 }
 
-static inline void a9mpcore_start_hook_0(void) {
+static inline void a9mpcore_start_hook(void) {
 
     volatile scu_t *scu = (volatile scu_t *)SCU_BASE_MEMORY;
 
@@ -113,8 +113,6 @@ static inline void a9mpcore_start_hook_0(void) {
         scu->ctrl |= CTRL_SCU_EN;
     }
 
-    scu_invalidate(scu, cpu_id);
-
 #ifdef PMK_SMP
     /* Enable cache coherency and cache/MMU maintenance broadcasts for
      * this processor.
@@ -124,6 +122,7 @@ static inline void a9mpcore_start_hook_0(void) {
     set_auxiliary_control(actlr);
 #endif
 
+    scu_invalidate(scu, cpu_id);
 }
 
 static inline void start_global_timer(void) {
@@ -151,10 +150,4 @@ static inline void set_vector_base(void) {
         ctrl &= ~CP15_CTRL_V;
         set_system_control(ctrl);
     }
-}
-
-static inline void a9mpcore_start_hook_1(void) {
-
-    start_global_timer();
-    set_vector_base();
 }

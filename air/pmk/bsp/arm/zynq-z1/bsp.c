@@ -57,21 +57,24 @@ void bsp_start_hook(void *vector_table_begin)
     /* If the vector table is already on the right memory position
     * then no copy needs to be done. Otherwise ...
     */
-    copy_vector_table()
+    copy_vector_table();
 
     clear_bss();
 }
 
 air_u32_t bsp_core_init() {
 
-    a9mpcore_start_hook_0();
-    a9mpcore_start_hook_1();
+    a9mpcore_start_hook();
+
+    air_u32_t cpu_id = get_multiprocessor_cpu_id();
+
+    if(cpu_id == 0) {
+        start_global_timer();
+        set_vector_base();
+    }
 
     //TODO Do I need to copy from LoadMA to VMA
     // bsp_start_copy_sections();
-
-    //TODO done in the pmk
-    // zynq_setup_mmu_and_cache();
 
     return 0;
 }

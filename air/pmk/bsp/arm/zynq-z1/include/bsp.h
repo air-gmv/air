@@ -9,7 +9,7 @@
 /**
  * @file bsp.h
  * @author lumm
- * @brief Bsp headers and inline assembly functions.
+ * @brief BSP headers and inline assembly functions.
  */
 
 #ifndef ASM
