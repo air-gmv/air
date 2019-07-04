@@ -564,7 +564,8 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper, iop_eth_d
 
 
                     /*set descriptor info to wrapper*/
-                    memcpy(wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, 1520); /*TODO define on 1520*/
+                    memcpy(wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, len);
+
                     frag->header_size = sizeof(eth_header_t);
                     frag->payload = wrapper->buffer->v_addr + frag->header_size;
                     frag->payload_size = len-frag->header_size; 
@@ -603,7 +604,7 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper, iop_eth_d
                             frag->payload_size = len - frag->header_size; 
 
                             /*set descriptor info to wrapper*/
-                            memcpy(frag->payload, sc->rx_iop_buffer[sc->rx_ptr]->v_addr+frag->header_size, frag->payload_size); /*TODO define on 1520*/
+                            memcpy(frag->payload, sc->rx_iop_buffer[sc->rx_ptr]->v_addr+frag->header_size, frag->payload_size);
                             wrapper->buffer->payload_size += frag->payload_size;
                             iop_chain_append(&wrapper->fragment_queue, &frag->node);
                             iop_debug("seq correct desc %d %d %d\n", sc->rx_ptr, wrapper->buffer->payload_size, pack_seq);
@@ -625,7 +626,7 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper, iop_eth_d
                     }
 
                     /*set descriptor info to wrapper*/
-                   memcpy(arp_wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, 1520); /*TODO define on 1520*/
+                   memcpy(arp_wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, len);
 
                     arp_wrapper->buffer->header_off=0;
                     arp_wrapper->buffer->header_size = sizeof(eth_header_t);
