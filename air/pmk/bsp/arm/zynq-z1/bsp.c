@@ -15,6 +15,7 @@
 #include <bsp.h>
 #include <arm_cp15.h>
 #include <arm_a9mpcore.h>
+#include <gic.h>
 
 void bsp_start_hook(void *vector_table_begin) {
     air_u32_t sctlr;
@@ -72,8 +73,11 @@ air_u32_t bsp_core_init() {
     air_u32_t cpu_id = cp15_get_multiprocessor_cpu_id();
 
     if(cpu_id == 0) {
-        start_global_timer();
+
         set_vector_base();
+        arm_svc_table_initialize();
+        arm_irq_table_initialize();
+        start_global_timer();
     }
 
     gic_init(cpu_id);

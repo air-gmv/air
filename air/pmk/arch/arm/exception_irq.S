@@ -18,14 +18,7 @@
 #include <asm.h>
 #include <armv7.h>
 
-    .extern exception_default
-
-    .globl exception_undef
-    .globl exception_swi
-    .globl exception_pref_abort
-    .globl exception_data_abort
-    .globl exception_irq_interrupt
-    .globl exception_fiq_interrupt
+    .extern irq_handler
 
 /* 13 global registers */
 #define ARM_EXCEPTION_FRAME_REGISTER_SP_OFFSET (13 * 4) //=52
@@ -34,66 +27,48 @@
     (ARM_EXCEPTION_FRAME_SIZE - ARM_EXCEPTION_FRAME_REGISTER_SP_OFFSET)
 
 /* Save global registers and branch to save context */
-exception_undef:
+
+ENTRY(exception_irq)
     sub     sp, #MORE_CONTEXT_SIZE
-    stmdb   sp!, {r0-r12}
-    mov     r4, #1
-    b       save_context
+    push    {r0-r12}
+    mov     r4, #6      /* IRQ id */
 
-exception_swi:
-    sub     sp, #MORE_CONTEXT_SIZE
-    stmdb   sp!, {r0-r12}
-    mov     r4, #2
-    b       save_context
-
-exception_pref_abort:
-    sub     sp, #MORE_CONTEXT_SIZE
-    stmdb   sp!, {r0-r12}
-    mov     r4, #3
-    b       save_context
-
-exception_data_abort:
-    sub     sp, #MORE_CONTEXT_SIZE
-    stmdb   sp!, {r0-r12}
-    mov     r4, #4
-    b       save_context
-
-exception_irq_interrupt:
-    sub     sp, #MORE_CONTEXT_SIZE
-    stmdb   sp!, {r0-r12}
-    mov     r4, #6
-    b       save_context
-
-exception_fiq_interrupt:
-    sub     sp, #MORE_CONTEXT_SIZE
-    stmdb   sp!, {r0-r12}
-    mov     r4, #7
-
-/*
- * Don't enable FIQs yet. Set the FIQ disable bit in the SPSR
- * (which we'll load into the CPSR in save_context).
- */
-    mrs     r2, spsr
-    orr     r2, #ARM_PSR_F
-    msr     spsr_c, r2
-
-save_context:
     /* Save more context */
     mov     r2, lr
     mrs     r3, spsr
     mrs     r7, cpsr
-    orr     r5, r3, #ARM_PSR_I
+    orr     r5, r3, #(ARM_PSR_I | ARM_PSR_F)
     bic     r5, #ARM_PSR_T
+
+    add     r6, sp, #ARM_EXCEPTION_FRAME_REGISTER_SP_OFFSET
+
+    /* if exception taken from user mode, can't go there and return */
+//  tst     r5, #0xf
+    and     r0, r5, #ARM_PSR_MODE_MASK
+    teq     r0, #ARM_PSR_USR
+    beq     user_mode   /* Z set if user */
+
+    b       more_context
+
+user_mode:
+    mov     r0, #ARM_PSR_SYS
+    bfi     r5, r0, #0, #5  /* Change to SYS mode */
+
+/*
+    stm     r6!, {sp,lr}^
+    stm     r6, {r2-r4}
+*/
+more_context:
+
     msr     cpsr, r5
     mov     r0, sp
     mov     r1, lr
     msr     cpsr, r7
-    mov     r5, #0
-    add     r6, sp, #ARM_EXCEPTION_FRAME_REGISTER_SP_OFFSET
-    stm     r6, {r0-r5}
+    stm     r6, {r0-r4}
 
     /* Argument for high level handler */
     mov     r0, sp
+
 
     /* Clear VFP context pointer */
     add     r3, sp, #ARM_EXCEPTION_FRAME_VFP_CONTEXT_OFFSET
@@ -128,8 +103,10 @@ save_context:
 1:
 #endif /* PMK_FPU_SUPPORT */
 
+
+
     /* Call high level handler */
     SWITCH_FROM_ARM_TO_THUMB    r1
-    bl      exception_default
+    bl      irq_handler
 
 #endif /* ASM */
