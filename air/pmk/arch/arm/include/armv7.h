@@ -203,7 +203,7 @@ typedef struct {
     air_u32_t orig_cpsr;                /**< pre-exception cpsr             */
     symbolic_exception_name exception_name;
     const arm_vfp_context_t *vfp_context;
-    air_u32_t reserved;
+    air_u32_t svc_imm; /* used in Supervisor Calls (SVC) */
 } arm_exception_frame_t;
 
 /**
@@ -253,6 +253,15 @@ typedef struct {
     air_u32_t mmu_l2_tables_entries;
     air_u32_t mmu_l3_tables_entries;
 } arm_mmu_configuration_t;
+
+/* SVC defines */
+#define MAX_SVC_A32 16777216            /**< number of svc calls in A32     */
+#define MAX_SVC_T32 256                 /**< number of svc calls in thumb   */
+#if defined(__thumb__)
+#define MAX_SVC MAX_SVC_T32
+#else
+#define MAX_SVC MAX_SVC_A32
+#endif
 
 #endif /* ASM */
 

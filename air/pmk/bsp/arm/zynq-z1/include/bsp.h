@@ -25,7 +25,7 @@
 #include <air_arch.h>
 #include <armv7.h>
 #include <arm_cp15.h>
-#include <ic.h>
+#include <gic.h>
 
 extern air_uptr_t bsp_section_bss_start;
 extern air_u32_t bsp_section_bss_size;

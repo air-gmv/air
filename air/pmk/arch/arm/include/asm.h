@@ -20,13 +20,13 @@
 #ifdef ASM
 
 /** @brief Macro for symbol definitions. */
-#define SYM(x)  _x
+#define SYM(x)      x
 
 /** @brief Macro for register definitions. */
-#define REG(x)  x
+#define REG(x)      x
 
 /** @brief Macro for global symbol definitions. */
-#define GLOBAL(x)   .globl SYM(x)
+#define GLOBAL(x)   .align 0x4; .globl SYM(x)
 
 /** @brief Define macros for all the registers. */
 #define r0      REG(r0)
