@@ -9,7 +9,7 @@
 /**
  * @file mmu.c
  * @author lumm
- * @brief MMU configuration. @TODO not finished
+ * @brief MMU configuration. TODO not finished
  */
 
 #include <bsp.h>

@@ -202,29 +202,28 @@ air_u32_t air_sparc_set_irq_force_register(air_u32_t core_id, air_u32_t force);
 #define AIR_IRQ_HM_EVENT                    AIR_SYSCALL_HM_TRAP
 
 
-#define AIR_SYSCALL_SPARC_DISABLE_INTERRUPTS            0
-#define AIR_SYSCALL_SPARC_ENABLE_INTERRUPTS             1
-#define AIR_SYSCALL_SPARC_DISABLE_TRAPS                 2
-#define AIR_SYSCALL_SPARC_ENABLE_TRAPS                  3
-#define AIR_SYSCALL_SPARC_DISABLE_FPU                   4
-#define AIR_SYSCALL_SPARC_ENABLE_FPU                    5
-#define AIR_SYSCALL_SPARC_GET_TBR                       6
-#define AIR_SYSCALL_SPARC_SET_TBR                       7
-#define AIR_SYSCALL_SPARC_GET_PSR                       8
-#define AIR_SYSCALL_SPARC_SET_PSR                       9
-#define AIR_SYSCALL_SPARC_RETT                         10
-#define AIR_SYSCALL_SPARC_GET_CACHE_REGISTER           11
-#define AIR_SYSCALL_SPARC_SET_CACHE_REGISTER           12
-#define AIR_SYSCALL_SPARC_RESTORE_CACHE_REGISTER       13
-#define AIR_SYSCALL_SPARC_GET_IRQ_MASK_REGISTER        14
-#define AIR_SYSCALL_SPARC_SET_IRQ_MASK_REGISTER        15
-#define AIR_SYSCALL_SPARC_SET_IRQ_FORCE_REGISTER       16
-#define AIR_SYSCALL_SPARC_COUNT                        16
+#define AIR_SYSCALL_ARM_DISABLE_INTERRUPTS              0
+#define AIR_SYSCALL_ARM_ENABLE_INTERRUPTS               1
+#define AIR_SYSCALL_ARM_DISABLE_TRAPS                   2
+#define AIR_SYSCALL_ARM_ENABLE_TRAPS                    3
+#define AIR_SYSCALL_ARM_DISABLE_FPU                     4
+#define AIR_SYSCALL_ARM_ENABLE_FPU                      5
+#define AIR_SYSCALL_ARM_GET_TBR                         6
+#define AIR_SYSCALL_ARM_SET_TBR                         7
+#define AIR_SYSCALL_ARM_GET_PSR                         8
+#define AIR_SYSCALL_ARM_SET_PSR                         9
+#define AIR_SYSCALL_ARM_RETT                            10
+#define AIR_SYSCALL_ARM_GET_CACHE_REGISTER              11
+#define AIR_SYSCALL_ARM_SET_CACHE_REGISTER              12
+#define AIR_SYSCALL_ARM_RESTORE_CACHE_REGISTER          13
+#define AIR_SYSCALL_ARM_GET_IRQ_MASK_REGISTER           14
+#define AIR_SYSCALL_ARM_SET_IRQ_MASK_REGISTER           15
+#define AIR_SYSCALL_ARM_SET_IRQ_FORCE_REGISTER          16
+#define AIR_SYSCALL_ARM_COUNT                           16
 
 /**
- * @brief Defined as 0, as the SPARC uses two traps (one for the OS, another for
- *        the architecture para-virtualization)
+ * @brief Defined as the number of ARM Syscalls, as ARM uses only one virtual syscall table
  */
-#define AIR_SYSCALL_ARCH_COUNT                          0
+#define AIR_SYSCALL_ARCH_COUNT                          17
 
 #endif /* ARM_AIR_ARCH_H */
