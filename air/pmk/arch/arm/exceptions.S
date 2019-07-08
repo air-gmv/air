@@ -28,7 +28,7 @@
     .globl exception_fiq_interrupt
 
 /* 13 global registers */
-#define ARM_EXCEPTION_FRAME_REGISTER_SP_OFFSET 52
+#define ARM_EXCEPTION_FRAME_REGISTER_SP_OFFSET (13 * 4) //=52
 /* 40 - 13 = 7 registers containing pre-exception registers */
 #define MORE_CONTEXT_SIZE \
     (ARM_EXCEPTION_FRAME_SIZE - ARM_EXCEPTION_FRAME_REGISTER_SP_OFFSET)
@@ -74,7 +74,7 @@ exception_fiq_interrupt:
  * (which we'll load into the CPSR in save_context).
  */
     mrs     r2, spsr
-    orr     r2, #PSR_F
+    orr     r2, #ARM_PSR_F
     msr     spsr_c, r2
 
 save_context:
@@ -82,8 +82,8 @@ save_context:
     mov     r2, lr
     mrs     r3, spsr
     mrs     r7, cpsr
-    orr     r5, r3, #PSR_I
-    bic     r5, #PSR_T
+    orr     r5, r3, #ARM_PSR_I
+    bic     r5, #ARM_PSR_T
     msr     cpsr, r5
     mov     r0, sp
     mov     r1, lr
