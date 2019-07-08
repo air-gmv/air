@@ -7,15 +7,19 @@
  *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
  * ==========================================================================*/
 /**
- * @file exception_handler.c
+ * @file svc_handler.c
  * @author lumm
  * @brief exception_handlers and default
  */
 
-#include <air_arch.h>
-#include <armv7.h>
+#include <svc.h>
 
-void exception_default(arm_exception_frame_t *frame) {
-    //TODO terminate
+air_uptr_t arm_svc_table[MAX_SVC];
+
+void arm_svc_handler(arm_exception_frame_t *frame) {
+
+
+
     return;
 }
+
