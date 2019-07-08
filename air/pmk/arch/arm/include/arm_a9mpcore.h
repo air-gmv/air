@@ -12,6 +12,9 @@
  * @brief A9MPCore specifics. Refer to the ARM® Cortex-A9 MPCore TRM
  */
 
+#ifndef ARM_A9MPCORE_H
+#define ARM_A9MPCORE_H
+
 #include <air_arch.h>
 #include <armv7.h>
 #include <bsp.h>
@@ -88,25 +91,25 @@ typedef struct {
 #define CTRL_PRESCALER              (0xff << 8)
 
 typedef struct {
-    air_u32_t counter_low;
-    air_u32_t counter_high;
+    air_u32_t counter_lower;
+    air_u32_t counter_higher;
     air_u32_t ctrl;
     air_u32_t irq_st;
     air_u32_t comp_value_low;
     air_u32_t comp_value_high;
     air_u32_t autoinc;
-} global_timer_t
+} global_timer_t;
 
 static inline void scu_invalidate(volatile scu_t *scu, air_u32_t cpu_id) {
 
-    scu->inv_reg_ss = ( (0xf) << ( (cpu_id & 0x3) * 4) )
+    scu->inv_reg_ss = ( (0xf) << ( (cpu_id & 0x3) * 4) );
 }
 
 static inline void a9mpcore_start_hook(void) {
 
     volatile scu_t *scu = (volatile scu_t *)SCU_BASE_MEMORY;
 
-    air_u32_t cpu_id = get_multiprocessor_cpu_id();
+    air_u32_t cpu_id = cp15_get_multiprocessor_cpu_id();
 
     if (cpu_id == 0) {
         /* Enable SCU */
@@ -117,9 +120,9 @@ static inline void a9mpcore_start_hook(void) {
     /* Enable cache coherency and cache/MMU maintenance broadcasts for
      * this processor.
      */
-    air_u32_t actlr = get_auxiliary_control();
-    actlr |= ACTLR_SMP | ACTLR_FW;
-    set_auxiliary_control(actlr);
+    air_u32_t actlr = cp15_get_auxiliary_control();
+    actlr |= CP15_ACTLR_SMP | CP15_ACTLR_FW;
+    cp15_set_auxiliary_control(actlr);
 #endif
 
     scu_invalidate(scu, cpu_id);
@@ -135,19 +138,4 @@ static inline void start_global_timer(void) {
     gt->ctrl = CTRL_TIMER_EN;
 }
 
-static inline void set_vector_base(void) {
-
-    /* Do not use bsp_vector_table_begin == 0, since this will get optimized
-    * away. Font: rtems source code
-    */
-    if (bsp_vector_table_end != bsp_vector_table_size) {
-        air_u32_t ctrl;
-
-        /* Assumes every core has Security Extensions */
-        set_vector_base_address(bsp_vector_table_begin);
-
-        ctrl = get_system_control();
-        ctrl &= ~CP15_CTRL_V;
-        set_system_control(ctrl);
-    }
-}
+#endif /* ARM_A9MPCORE_H */

@@ -15,7 +15,7 @@
 #include <air_arch.h>
 #include <armv7.h>
 
-void exception_default(exception_frame_t *frame) {
+void exception_default(arm_exception_frame_t *frame) {
     //TODO terminate
     return;
 }

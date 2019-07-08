@@ -80,7 +80,7 @@
 #define ARM_VFP_CONTEXT_SIZE 264
 
 #else /* ASM */
-#import <air_arch.h>
+#include <air_arch.h>
 
 #if defined(__thumb__)
     #define ARM_SWITCH_REGISTERS air_u32_t arm_switch_reg
@@ -97,18 +97,36 @@
 #endif /* defined(__thumb__) */
 
 
+// TODO
 inline static void instruction_synchronization_barrier(void) {
+#if defined(__CC_ARM)
     __isb(15);
+//#elif defined(__GNUC__)
+//  __ISB();
+#else
+    __asm__ volatile ("isb");
+#endif
 }
 
 inline static void data_synchronization_barrier(air_u32_t intrinsic) {
+#if defined(__CC_ARM)
     __dsb(intrinsic);
+//#elif defined(__GNUC__)
+//  __DSB();
+#else
+    __asm__ volatile ("dsb");
+#endif
 }
 
 inline static void data_memory_barrier(air_u32_t intrinsic) {
+#if defined(__CC_ARM)
     __dmb(intrinsic);
+//#elif defined(__GNUC__)
+//  __DMB();
+#else
+    __asm__ volatile ("dmb");
+#endif
 }
-
 
 typedef enum {
     ARM_EXCEPTION_RESET = 0,
@@ -122,6 +140,9 @@ typedef enum {
     MAX_EXCEPTIONS = 8,
 } symbolic_exception_name;
 
+/**
+ *  @brief Floating Point Unit (FPU) registers context
+ */
 typedef struct {
     air_u32_t register_fpexc;
     air_u32_t register_fpscr;
@@ -157,8 +178,11 @@ typedef struct {
     air_u64_t register_d29;
     air_u64_t register_d30;
     air_u64_t register_d31;
-} vfp_context_t;
+} arm_vfp_context_t;
 
+/**
+ *  @brief Context saved on stack for an interrupt.
+ */
 typedef struct {
     air_u32_t r0;
     air_u32_t r1;
@@ -176,11 +200,59 @@ typedef struct {
     air_uptr_t orig_sp;                 /**< pre-exception sp               */
     air_uptr_t orig_lr;                 /**< pre-exception lr               */
     air_uptr_t lr;                      /**< return addr after the exception*/
-    air_u32_t orig_cspr;                /**< pre-exception cpsr             */
+    air_u32_t orig_cpsr;                /**< pre-exception cpsr             */
     symbolic_exception_name exception_name;
-    const vfp_context_t *vfp_context;
+    const arm_vfp_context_t *vfp_context;
     air_u32_t reserved;
-} exception_frame_t;
+} arm_exception_frame_t;
+
+/**
+* @brief Virtual SPARC CPU
+*/
+typedef struct {
+    air_u32_t id;                       /**< virtual CPU id                 */
+    air_u32_t tbr;                      /**< virtual TBR                    */
+    air_u32_t psr;                      /**< virtual PSR                    */
+    air_u32_t imask;                    /**< interrupt mask                 */
+    air_u32_t ipend;                    /**< interrupts pending             */
+    air_u32_t cctrl;                    /**< cache control                  */
+    air_u32_t mmu_ctrl;                 /**< MMU control register           */
+    air_u32_t mmu_fsr;                  /**< MMU fault register             */
+} arm_virtual_cpu_t;
+
+/**
+ * @brief Structure to hold a CPU partition context
+ */
+typedef struct {
+    arm_virtual_cpu_t vcpu;             /**< virtual CPU control            */
+    air_u32_t trash;                    /**< trash flag                     */
+    void *entry_point;                  /**< core entry point               */
+    void *stack_pointer;                /**< core stack pointer             */
+    void *isf_stack_pointer;            /**< core ISF stack                 */
+    air_u32_t isr_nesting_level;        /**< core interrupt nesting level   */
+    arm_vfp_context_t *fpu_context;     /**< floating point                 */
+    air_u32_t ipc_event;                /**< IPC event                      */
+    air_u32_t state;                    /**< system state                   */
+    void *hm_event;                     /**< health-monitor event           */
+} arm_core_context_t;
+
+/**
+ * @brief ARM MMU control
+ */
+typedef struct {
+    air_u32_t context;                  /**< context id                     */
+    air_u32_t *l1_tables;               /**< pointer to the L1 tables       */
+} arm_mmu_context_t;
+
+/**
+ * @brief ARM MMU Configuration
+ */
+typedef struct {
+    air_u32_t mmu_context_entries;
+    air_u32_t mmu_l1_tables_entries;
+    air_u32_t mmu_l2_tables_entries;
+    air_u32_t mmu_l3_tables_entries;
+} arm_mmu_configuration_t;
 
 #endif /* ASM */
 
