@@ -58,8 +58,11 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     'arch/arm/start.S',                           # entry point must be the 1st on the list
     'arch/arm/exceptions.S',
     'arch/arm/exception_handler.S',
+    'arch/arm/cpu.c',
     # BSP files
     'bsp/arm/zynq-z1/bsp.c',
+    'bsp/arm/zynq-z1/mmu.c',
+    'bsp/arm/shared/ic.c',
     # Core files
     'core/error.c',
     'core/barrier.c',
@@ -99,6 +102,8 @@ kernel_headers = set(utils.flatten([
 libair_sources = set(utils.flatten([
     file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'core'), ['.c']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'arch', 'arm'), ['.c', '.S']),
+    file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'zynq-z1'), ['.c', '.S']),
+    file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'shared'), ['.c', '.S']),
 ]))
 
 # Lib AIR headers
@@ -116,16 +121,16 @@ mmap = MMAP(kernel_space=[0x00000000, 0x01000000],
             default_unit=1 << 18)
 
 # specific defines
-defines = ['PMK_FPU_SUPPORT=1', 'PMK_SMP=1']
+defines = ['PMK_FPU_SUPPORT=1', 'PMK_SMP=0']
 
 # Architecture dependent configuration
 arch_configure = air_arm.get_arm_configuration
 
 # IOP devices and definitions
 iop = IOP(defines=[],
-          devices=['greth0', 'greth1', 'gr1553b0', 'grspw0', 'grspw1', 'grspw2', 'grspw3', 'grspw4', 'spwrtr0', 'cpsw0', 'mil0', 'occan0', 'occan1'],
-          drivers=['amba', 'greth', 'gr1553', 'cpsw', 'mil1553', 'grspw', 'occan'],
-          alias=dict(eth0='greth0',eth1='greth1', spw0='grspw0', spw1='grspw1', spw2='grspw2', spw3='grspw3', spw4='grspw4', cpsw='cpsw0', spwrtr='spwrtr0', mil='mil0', can0 = 'occan0', can1 = 'occan1'),
+          devices=['greth0', 'greth1', 'gr1553b0', 'grspw0', 'grspw1', 'grspw2', 'grspw3', 'grspw4', 'spwrtr0', 'cpsw0', 'mil0', 'grcan0', 'grcan1'],
+          drivers=['amba', 'greth', 'gr1553', 'cpsw', 'mil1553', 'grspw', 'grcan'],
+          alias=dict(eth0='greth0',eth1='greth1', spw0='grspw0', spw1='grspw1', spw2='grspw2', spw3='grspw3', spw4='grspw4', cpsw='cpsw0', spwrtr='spwrtr0', mil='mil0', can0 = 'grcan0', can1 = 'grcan1'),
           arch=iop_arch)
 
 # AIR application arch config
