@@ -32,27 +32,27 @@
 void gic_init(air_u32_t cpu_id) {
 
     if (cpu_id == 0 && gic_is_enabled()) {
-        gic_disable();
+        arm_gic_disable();
     }
 
     /* SGIs cannot be disabled individually */
-    ppi_disable();
+    arm_ppi_disable();
     for (air_u32_t i = 0; i < 8; ++i) {
-        int_set_priority(i, DEFAULT_PRIORITY);
+        arm_int_set_priority(i, DEFAULT_PRIORITY);
     }
     /* Since AIR is running on core 0, all SGIs should go to it */
     for (air_u32_t i = 0; i < 4; ++i) {
-        int_set_target(i, DEFAULT_TARGET);
+        arm_int_set_target(i, DEFAULT_TARGET);
     }
     /* PPIs are targeted to their cpu */
 
     if (cpu_id == 0) {
-        air_u32_t int_count = get_int_count();
-        spi_disable(int_count);
+        air_u32_t int_count = arm_get_int_count();
+        arm_spi_disable(int_count);
         /* There are 4 interrupts per priority and target register */
         for (air_u32_t i = 8; i < int_count/4; ++i) {
-            int_set_priority(i, DEFAULT_PRIORITY);
-            int_set_target(i, DEFAULT_TARGET);
+            arm_int_set_priority(i, DEFAULT_PRIORITY);
+            arm_int_set_target(i, DEFAULT_TARGET);
         }
     }
 
@@ -64,8 +64,8 @@ void gic_init(air_u32_t cpu_id) {
     ic_cpu->iccicr = 0b1;
 
     if (cpu_id == 0) {
-        gic_enable();
+        arm_gic_enable();
     } else {
-        while(!is_gic_enabled){}
+        while(!arm_is_gic_enabled){}
     }
 }
