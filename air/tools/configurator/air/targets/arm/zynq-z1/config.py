@@ -56,13 +56,19 @@ kernel_compiler_no_fpu = dict(
 kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     # Arch files
     'arch/arm/start.S',                           # entry point must be the 1st on the list
-    'arch/arm/exceptions.S',
-    'arch/arm/exception_handler.S',
+    'arch/arm/exception_default.S',
+    'arch/arm/exception_default_handler.c',
     'arch/arm/cpu.c',
+    'arch/arm/exception_irq.S',
+    'arch/arm/exception_svc.S',
+    'arch/arm/isr.c',
+    'arch/arm/irq_handler.c',
+    'arch/arm/svc_handler.c',
+    'arch/arm/virtualization_syscall.c',
     # BSP files
     'bsp/arm/zynq-z1/bsp.c',
     'bsp/arm/zynq-z1/mmu.c',
-    'bsp/arm/shared/ic.c',
+    'bsp/arm/zynq-z1/gic.c',
     # Core files
     'core/error.c',
     'core/barrier.c',
