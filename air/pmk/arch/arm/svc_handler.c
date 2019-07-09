@@ -16,10 +16,16 @@
 
 air_uptr_t arm_svc_table[MAX_SVC];
 
+typedef air_u32_t (*syscall_function)(void);
+
 void arm_svc_handler(arm_exception_frame_t *frame) {
 
+    air_u32_t ret;
+    air_u32_t syscall_number = frame->svc_imm;
 
-
+    if (syscall_number < MAX_SVC) {
+        ret = ((syscall_function) arm_svc_table[syscall_number])();
+    }
     return;
 }
 
