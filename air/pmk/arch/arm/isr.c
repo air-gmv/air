@@ -26,10 +26,9 @@ void arm_irq_default_handler(arm_exception_frame_t *frame) {
 void arm_irq_table_initialize(void) {
 
     air_u32_t i = 0;
-//  arm_interrupt_handler_install(i++, )
 
     for (air_u32_t i = 0; i < get_int_count(); ++i) {
-        arm_interrupt_handler_install(i, irq_default_handler);
+        arm_interrupt_handler_install(i, arm_irq_default_handler);
     }
 }
 
