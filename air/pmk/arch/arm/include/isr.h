@@ -17,7 +17,7 @@
 
 void arm_irq_default_handler(arm_exception_frame_t *frame);
 void arm_irq_table_initialize(void);
-void arm_*irq_handler_install(air_u32_t vector, void *handler);
+air_uptr_t arm_irq_handler_install(air_u32_t vector, void *handler);
 void arm_irq_handler(arm_exception_frame_t *frame);
 
 #endif /* ARM_ISR_H */
