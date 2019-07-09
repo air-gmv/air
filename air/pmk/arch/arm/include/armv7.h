@@ -97,7 +97,9 @@
 #endif /* defined(__thumb__) */
 
 
-// TODO
+/* @brief Synchronization barries
+ * TODO specific compiler optimizations
+ */
 inline static void instruction_synchronization_barrier(void) {
 #if defined(__CC_ARM)
     __isb(15);
@@ -203,12 +205,12 @@ typedef struct {
     air_u32_t orig_cpsr;                /**< pre-exception cpsr             */
     symbolic_exception_name exception_name;
     const arm_vfp_context_t *vfp_context;
-    air_u32_t svc_imm; /* used in Supervisor Calls (SVC) */
+    air_u32_t svc_imm;                  /**< svc immediate. UND if other    */
 } arm_exception_frame_t;
 
 /**
-* @brief Virtual SPARC CPU
-*/
+ * @brief Virtual SPARC CPU
+ */
 typedef struct {
     air_u32_t id;                       /**< virtual CPU id                 */
     air_u32_t tbr;                      /**< virtual TBR                    */
@@ -240,12 +242,13 @@ typedef struct {
  * @brief ARM MMU control
  */
 typedef struct {
-    air_u32_t context;                  /**< context id                     */
-    air_u32_t *l1_tables;               /**< pointer to the L1 tables       */
+    air_u32_t ttbr0;                    /**< context id                     */
+    air_u32_t ttbr1;                    /**< context id                     */
 } arm_mmu_context_t;
 
 /**
  * @brief ARM MMU Configuration
+ * TODO COMPATIBILITY ONLY. NOT USED
  */
 typedef struct {
     air_u32_t mmu_context_entries;
@@ -253,6 +256,8 @@ typedef struct {
     air_u32_t mmu_l2_tables_entries;
     air_u32_t mmu_l3_tables_entries;
 } arm_mmu_configuration_t;
+
+void *arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr);
 
 /* SVC defines */
 #define MAX_SVC_A32 16777216            /**< number of svc calls in A32     */
@@ -263,6 +268,99 @@ typedef struct {
 #define MAX_SVC MAX_SVC_A32
 #endif
 
-#endif /* ASM */
+/** *************************** CPU Register Access ***************************
+ * @brief assembly inline functions to access cpu regs
+ */
+inline void arm_disable_fpu(void) {
+    ARM_SWITCH_REGISTERS;
+    air_u32_t reg;
+
+    __asm__ volatile (
+        ARM_SWITCH_TO_ARM
+        "vmrs %[reg], FPEXC\n\t"
+        "bic %[reg], %[reg], #30\n\t"
+        "vmsr FPEXC, %[reg]\n\t"
+        ARM_SWITCH_BACK
+        : ARM_SWITCH_OUTPUT
+        : [reg] "r" (reg)
+    );
+}
+
+inline void arm_enable_fpu(void) {
+    ARM_SWITCH_REGISTERS;
+    air_u32_t reg;
+
+    __asm__ volatile (
+        ARM_SWITCH_TO_ARM
+        "vmrs %[reg], FPEXC\n\t"
+        "orr %[reg], %[reg], #(1 << 30U)\n\t"
+        "vmsr FPEXC, %[reg]\n\t"
+        ARM_SWITCH_BACK
+        : ARM_SWITCH_OUTPUT
+        : [reg] "r" (reg)
+    );
+}
+
+inline air_u32_t arm_get_exception_base_address(void) {
+    ARM_SWITCH_REGISTERS;
+    air_u32_t reg;
+
+    __asm__ volatile (
+        ARM_SWITCH_TO_ARM
+        "mrc p15, 0, %[reg], c1, c0, 0\n\t"
+        "tst %[reg], #(1 << 13)\n\t"
+        "beq hyvecs\n\t"
+        "mrc p15, 0, %[reg], c12, c0, 0\n\t"
+        "hyvecs:\n\t"
+        "mov %[reg], #ffff0000\n\t"
+        ARM_SWITCH_BACK
+        : [reg] "=&r" (reg) ARM_SWITCH_ADDITIONAL_OUTPUT
+    );
+    return reg;
+}
+
+inline void arm_set_exception_base_address(air_u32_t val) {
+    ARM_SWITCH_REGISTERS;
+    air_u32_t reg;
+
+    __asm__ volatile (
+        ARM_SWITCH_TO_ARM
+        "mrc p15, 0, %[reg], c1, c0, 0\n\t"
+        "bic %[reg], %[reg], #13\n\t"
+        "mcr p15, 0, %[reg], c1, c0, 0\n\t"
+        "mcr p15, 0, %[val], c12, c0, 0\n\t"
+        ARM_SWITCH_BACK
+        : ARM_SWITCH_OUTPUT
+        : [val] "r" (val), [reg] "r" (reg)
+    );
+}
+
+inline air_u32_t arm_get_cpsr(void) {
+    ARM_SWITCH_REGISTERS;
+    air_u32_t reg;
+
+    __asm__ volatile (
+        ARM_SWITCH_TO_ARM
+        "mrs %[reg], cpsr\n\t"
+        ARM_SWITCH_BACK
+        : [reg] "=&r" (reg) ARM_SWITCH_ADDITIONAL_OUTPUT
+    );
+    return reg;
+}
+
+inline void arm_set_cpsr(air_u32_t val) {
+    ARM_SWITCH_REGISTERS;
+
+    __asm__ volatile (
+        ARM_SWITCH_TO_ARM
+        "msr cpsr, %[val]\n\t"
+        ARM_SWITCH_BACK
+        : ARM_SWITCH_OUTPUT
+        : [val] "r" (val)
+    );
+}
+
+/******************************************************************************/
+#endif /* not ASM */
 
 #endif /* ARM_ARMv7_H */
