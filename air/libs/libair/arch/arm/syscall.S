@@ -20,83 +20,83 @@
 #include <asm.h>
 #include <air.h>
 
-ENTRY(air_syscall_get_physical_addr)
+FUNC(air_syscall_get_physical_addr)
     svc     #(AIR_SYSCALL_GET_P_ADDR)
 
-ENTRY(air_syscall_get_core_id)
+FUNC(air_syscall_get_core_id)
     svc     #(AIR_SYSCALL_GET_CORE_ID)
 
-ENTRY(air_syscall_boot_core)
+FUNC(air_syscall_boot_core)
     svc     #(AIR_SYSCALL_BOOT_CORE)
 
-ENTRY(air_syscall_get_us_per_tick)
+FUNC(air_syscall_get_us_per_tick)
     svc     #(AIR_SYSCALL_GET_US_PER_TICK)
 
-ENTRY(air_syscall_get_elapsed_ticks)
+FUNC(air_syscall_get_elapsed_ticks)
     svc     #(AIR_SYSCALL_GET_ELAPSED_TICKS)
 
-ENTRY(air_syscall_get_partition_id)
+FUNC(air_syscall_get_partition_id)
     svc     #(AIR_SYSCALL_GET_PARTITION_ID)
 
-ENTRY(air_syscall_get_partition_status)
+FUNC(air_syscall_get_partition_status)
     svc     #(AIR_SYSCALL_GET_PARTITION_STATUS)
 
-ENTRY(air_syscall_set_partition_mode)
+FUNC(air_syscall_set_partition_mode)
     svc     #(AIR_SYSCALL_SET_PARTITION_MODE)
 
-ENTRY(air_syscall_get_schedule_id)
+FUNC(air_syscall_get_schedule_id)
     svc     #(AIR_SYSCALL_GET_SCHEDULE_ID)
 
-ENTRY(air_syscall_get_schedule_status)
+FUNC(air_syscall_get_schedule_status)
     svc     #(AIR_SYSCALL_GET_SCHEDULE_STATUS)
 
-ENTRY(air_syscall_set_schedule)
+FUNC(air_syscall_set_schedule)
     svc     #(AIR_SYSCALL_SET_SCHEDULE)
 
-ENTRY(air_syscall_get_tod)
+FUNC(air_syscall_get_tod)
     svc     #(AIR_SYSCALL_GET_TIME_OF_DAY)
 
-ENTRY(air_syscall_set_tod)
+FUNC(air_syscall_set_tod)
     svc     #(AIR_SYSCALL_SET_TIME_OF_DAY)
 
-ENTRY(air_syscall_get_port_id)
+FUNC(air_syscall_get_port_id)
     svc     #(AIR_SYSCALL_GET_PORT_ID)
 
-ENTRY(air_syscall_create_port)
+FUNC(air_syscall_create_port)
     svc     #(AIR_SYSCALL_CREATE_PORT)
 
-ENTRY(air_syscall_get_port_status)
+FUNC(air_syscall_get_port_status)
     svc     #(AIR_SYSCALL_GET_PORT_STATUS)
 
-ENTRY(air_syscall_read_port)
+FUNC(air_syscall_read_port)
     svc     #(AIR_SYSCALL_READ_PORT)
 
-ENTRY(air_syscall_write_port)
+FUNC(air_syscall_write_port)
     svc     #(AIR_SYSCALL_WRITE_PORT)
 
-ENTRY(air_syscall_get_sharedmemory)
+FUNC(air_syscall_get_sharedmemory)
     svc     #(AIR_SYSCALL_GET_SHARED_AREA)
 
-ENTRY(air_syscall_shutdown_module)
+FUNC(air_syscall_shutdown_module)
     svc     #(AIR_SYSCALL_SHUTDOWN_MODULE)
 
-ENTRY(air_syscall_get_event)
+FUNC(air_syscall_get_event)
     svc     #(AIR_SYSCALL_GET_EVENT)
 
-ENTRY(air_syscall_get_system_state)
+FUNC(air_syscall_get_system_state)
     svc     #(AIR_SYSCALL_GET_SYSTEM_STATE)
 
-ENTRY(air_syscall_set_system_state)
+FUNC(air_syscall_set_system_state)
     svc     #(AIR_SYSCALL_SET_SYSTEM_STATE)
 
-ENTRY(air_syscall_get_hm_event)
+FUNC(air_syscall_get_hm_event)
     svc     #(AIR_SYSCALL_GET_HM_EVENT)
 
-ENTRY(air_syscall_raise_hm_event)
+FUNC(air_syscall_raise_hm_event)
     svc     #(AIR_SYSCALL_RAISE_HM_EVENT)
 
-ENTRY(air_syscall_print)
+FUNC(air_syscall_print)
     svc     #(AIR_SYSCALL_PRINT)
 
-ENTRY(air_syscall_putchar)
+FUNC(air_syscall_putchar)
     svc     #(AIR_SYSCALL_PUTCHAR)
