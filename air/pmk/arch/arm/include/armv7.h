@@ -347,11 +347,11 @@ static inline void arm_set_cpsr(air_u32_t val) {
 }
 
 static inline void arm_disable_interrupts() {
-    __asm__ volatile ("cpsid if\n");
+    __asm__ volatile ("cpsid i\n");
 }
 
 static inline void arm_enable_interrupts() {
-    __asm__ volatile ("cpsie aif\n");
+    __asm__ volatile ("cpsie i\n");
 }
 
 static inline air_u32_t arm_is_vint_enabled(
