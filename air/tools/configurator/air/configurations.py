@@ -91,22 +91,22 @@ def get_available_libraries():
 def get_available_pos():
     pos = {}
     # Prompt to install RTOS
-    #opts = ['No', 'Yes']
-    #promptx = 'Install All RTOS ?'
-    #all_rtos = terminalutils.promptActions(promptx, opts)
+    opts = ['No', 'Yes']
+    promptx = 'Install All RTOS ?'
+    all_rtos = terminalutils.promptActions(promptx, opts)
     pos_names = [x for x in os.listdir(AIR_POS)
                  if os.path.isdir(os.path.join(AIR_POS, x)) and x != 'shared']
     for pos_name in pos_names:
         try:
-            #i = 0
-            #if all_rtos == 0:
-            #    promptx = 'Install '  + pos_name + '?'
-            #    i = terminalutils.promptActions(promptx, opts)
-            #if i == 1 or all_rtos == 1:
-            pos_path = os.path.join(AIR_POS, pos_name, 'config.py')
-            module = imp.load_source(pos_name, pos_path)
-            module.path = pos_path
-            pos[module.name.lower()] = module
+            i = 0
+            if all_rtos == 0:
+                promptx = 'Install '  + pos_name + '?'
+                i = terminalutils.promptActions(promptx, opts)
+            if i == 1 or all_rtos == 1:
+                pos_path = os.path.join(AIR_POS, pos_name, 'config.py')
+                module = imp.load_source(pos_name, pos_path)
+                module.path = pos_path
+                pos[module.name.lower()] = module
         except IOError:
             logging.warning ('Missing AIR POS : %s, name: %s', pos_path, pos_name)        
             pass
