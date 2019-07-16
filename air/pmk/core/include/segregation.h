@@ -30,7 +30,7 @@
  * @param addr Address to align
  * @param align Desired alignment
  */
-#define ADDR_ALIGN(addr, align)     (((addr) + ((align) - 1)) & ~((align) - 1))
+#define ADDR_ALIGN(addr, align)     (((air_u32_t)(addr) + ((align) - 1)) & ~((align) - 1))
 
 /**
  * @brief Memory access permissions enumeration

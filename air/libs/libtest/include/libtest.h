@@ -29,7 +29,7 @@
 /**
  * @brief Align address
  */
-#define ADDR_ALIGN(addr, align)     (((addr) + ((align) - 1)) & ~((align) - 1))
+#define ADDR_ALIGN(addr, align)     (((air_u32_t)(addr) + ((align) - 1)) & ~((align) - 1))
 
 #ifdef COLORS
 #define COLOR_KNRM                             "\x1B[0m"
