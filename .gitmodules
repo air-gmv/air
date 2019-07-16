@@ -1,0 +1,6 @@
+[submodule "air/pos/rtems48i"]
+	path = air/pos/rtems48i
+	url = $(AIR_GIT_REMOTE_URL)/AIR/rtems48i.git
+[submodule "air/pos/rtems5"]
+	path = air/pos/rtems5
+	url = $(AIR_GIT_REMOTE_URL)/AIR/rtems5.git
