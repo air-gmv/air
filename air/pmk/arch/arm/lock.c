@@ -15,19 +15,9 @@
 
 #include <lock.h>
 
-void arm_disable_preemption(void) {
-
-    __asm__ volatile("cpsid if\n");
-}
-
-void arm_enable_preemption(void) {
-
-//  __asm__ volatile("cpsie if\n");
-}
-
 void arm_lock(air_uptr_t hash) {
 
-    arm_disable_preemption();
+    arm_disable_preemption(0);
 
     air_u32_t token, lock;
 
@@ -45,8 +35,35 @@ void arm_lock(air_uptr_t hash) {
             : "memory");
 }
 
-void arm_unlock(air_uptr_t hash) {
+air_u32_t arm_unlock(air_uptr_t hash) {
 
     *hash = 0;
-    arm_enable_preemption();
+    return arm_enable_preemption();
+}
+
+void arm_disable_preemption(air_u32_t irq_mask) {
+
+    air_u32_t psr = arm_get_cpsr();
+
+    if ((psr & ARM_PSR_MODE_MASK) != ARM_PSR_USR) {
+
+        if (irq_mask && !(psr & ARM_PSR_I)) {
+            arm_disable_interrupts();
+        }
+    }
+}
+
+air_u32_t arm_enable_preemption(void) {
+
+    air_u32_t psr = arm_get_cpsr();
+    air_u32_t irq_mask = psr & ARM_PSR_I;
+
+    if ((psr & ARM_PSR_MODE_MASK) != ARM_PSR_USR) {
+
+        if (irq_mask) {
+            arm_enable_interrupts();
+        }
+    }
+
+    return irq_mask;
 }
