@@ -70,14 +70,14 @@ typedef arm_interrupt_stack_frame_t interrupt_stack_frame_t;
  * @param flags Preemption flags
  */
 #define cpu_enable_preemption(flags) \
-    arm_enable_preemption()
+    flags = arm_enable_preemption()
 
 /**
  * @brief CPU disable preemption
  * @param flags Preemption flags
  */
 #define cpu_disable_preemption(flags) \
-    arm_disable_preemption()
+    arm_disable_preemption(flags)
 
 /**
  * @brief CPU health-monitor initialization
