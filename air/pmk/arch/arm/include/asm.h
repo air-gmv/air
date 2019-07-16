@@ -15,8 +15,6 @@
 #ifndef ARM_ASM_H
 #define ARM_ASM_H
 
-#include <armv7.h>
-
 #ifdef ASM
 
 /** @brief Macro for symbol definitions. */
@@ -49,7 +47,7 @@
 #define cpsr    REG(CPSR)
 #define spsr    REG(SPSR)
 
-#define ENTRY(label) \
+#define FUNC(label) \
     .align 4; \
     .globl label; \
     label:

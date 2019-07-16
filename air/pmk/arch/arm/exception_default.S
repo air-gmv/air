@@ -27,25 +27,25 @@
     (ARM_EXCEPTION_FRAME_SIZE - ARM_EXCEPTION_FRAME_REGISTER_SP_OFFSET)
 
 /* Save global registers and branch to save context */
-ENTRY(exception_undef)
+FUNC(exception_undef)
     sub     sp, #MORE_CONTEXT_SIZE
     stmdb   sp!, {r0-r12}
     mov     r4, #1
     b       save_context
 
-ENTRY(exception_pref_abort)
+FUNC(exception_pref_abort)
     sub     sp, #MORE_CONTEXT_SIZE
     stmdb   sp!, {r0-r12}
     mov     r4, #3
     b       save_context
 
-ENTRY(exception_data_abort)
+FUNC(exception_data_abort)
     sub     sp, #MORE_CONTEXT_SIZE
     stmdb   sp!, {r0-r12}
     mov     r4, #4
     b       save_context
 
-ENTRY(exception_fiq_interrupt)
+FUNC(exception_fiq_interrupt)
     sub     sp, #MORE_CONTEXT_SIZE
     stmdb   sp!, {r0-r12}
     mov     r4, #7
