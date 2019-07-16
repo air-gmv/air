@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<ARINC_653_Module ModuleName="bare">
+  <!-- partition 0 -->
+  <Partition PartitionIdentifier="1" PartitionName="p0" 
+   Criticality="LEVEL_A" SystemPartition="true" EntryPoint="entry_point">
+    <PartitionConfiguration Personality="BARE" Cores="1">
+      <Libs>LIBAIR;</Libs>
+      <Cache>CODE; DATA</Cache>
+      <Memory Size="0x100000" />
+      <Permissions>
+       FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+      </Permissions>
+    </PartitionConfiguration>               
+  </Partition>
+  
+  <!-- schedule 0 -->
+  <Module_Schedule ScheduleIdentifier="1" ScheduleName="test_sched" MajorFrameSeconds="1.0">
+    <Partition_Schedule PartitionIdentifier="1" PartitionName="p0" 
+     PeriodSeconds="1" PeriodDurationSeconds="1">
+      <Window_Schedule WindowIdentifier="1" 
+       WindowStartSeconds="0.0" WindowDurationSeconds="1" PartitionPeriodStart="true"/>
+    </Partition_Schedule>
+  </Module_Schedule>
+  
+  <!-- module configuration -->
+  <AIR_Configuration TicksPerSecond="100" RequiredCores="1"/>
+</ARINC_653_Module>
