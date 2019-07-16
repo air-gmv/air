@@ -12,10 +12,13 @@
  * @brief Boot code for ARM.
  */
 
-/* Are we in assembly file */
-#ifdef ASM
+/* Are we in assembly file. yes we are */
+#ifndef ASM
+#define ASM
+#endif
 
 #include <asm.h>
+#include <armv7.h>
 #include <bsp.h>
 
     /* External symbols */
@@ -47,9 +50,9 @@
     .section exception_table, "ax"
 
     /**< Start entry */
-ENTRY(start)
-ENTRY(_start)
-ENTRY(exceptions)
+FUNC(start)
+FUNC(_start)
+FUNC(exceptions)
     b       reset
     b       exception_undef
     b       exception_svc
@@ -74,7 +77,7 @@ ENTRY(exceptions)
     .extern nonsecure_irq
     .extern nonsecure_fiq
 
-ENTRY(monitor_exceptions)
+FUNC(monitor_exceptions)
     nop
     nop
     b       monitor_smc
@@ -84,7 +87,7 @@ ENTRY(monitor_exceptions)
     b       monitor_irq
     b       monitor_fiq
 
-ENTRY(nonsecure_exceptions)
+FUNC(nonsecure_exceptions)
     nop
     b       nonsecure_undef
     b       nonsecure_svc
@@ -124,16 +127,14 @@ setup_stack:
     mrs     r4, cpsr /* save original processor status value */
 
     /**< Set SVC mode */
-    mov     r0, #(ARM_PSR_SVC | ARM_PSR_I | ARM_PSR_F)
-    msr     cpsr, r0
+    cpsid   aif, #(ARM_PSR_SVC)
     ldr     sp, =stack_svc_end
 #ifdef PMK_SMP
     add     sp, r1
 #endif
 
     /**< Set FIQ mode */
-    mov     r0, #(ARM_PSR_FIQ | ARM_PSR_I | ARM_PSR_F)
-    msr     cpsr, r0
+    cpsid   aif, #(ARM_PSR_FIQ)
     ldr     sp, =stack_fiq_end
 #ifdef PMK_SMP
     add     sp, r1
@@ -142,40 +143,35 @@ setup_stack:
     /* TODO some boards require fiq registers initialization */
 
     /**< Set IRQ mode */
-    mov     r0, #(ARM_PSR_IRQ | ARM_PSR_I | ARM_PSR_F)
-    msr     cpsr, r0
+    cpsid   aif, #(ARM_PSR_IRQ)
     ldr     sp, =stack_irq_end
 #ifdef PMK_SMP
     add     sp, r1
 #endif
 
     /**< Set ABT mode */
-    mov     r0, #(ARM_PSR_ABT | ARM_PSR_I | ARM_PSR_F)
-    msr     cpsr, r0
+    cpsid   aif, #(ARM_PSR_ABT)
     ldr     sp, =stack_abt_end
 #ifdef PMK_SMP
     add     sp, r1
 #endif
 
     /**< Set UND mode */
-    mov     r0, #(ARM_PSR_UND | ARM_PSR_I | ARM_PSR_F)
-    msr     cpsr, r0
+    cpsid   aif, #(ARM_PSR_UND)
     ldr     sp, =stack_und_end
 #ifdef PMK_SMP
     add     sp, r1
 #endif
 
     /**< Set SYS mode */
-    mov     r0, #(ARM_PSR_SYS | ARM_PSR_I | ARM_PSR_F)
-    msr     cpsr, r0
+    cpsid   aif, #(ARM_PSR_SYS)
     ldr     sp, =stack_sys_end
 #ifdef PMK_SMP
     add     sp, r1
 #endif
 
     /**< Set MON mode */
-    mov     r0, #(ARM_PSR_MON | ARM_PSR_I | ARM_PSR_F)
-    msr     cpsr, r0
+    cpsid   aif, #(ARM_PSR_MON)
     ldr     sp, =stack_mon_end
 #ifdef PMK_SMP
     add     sp, r1
@@ -237,11 +233,10 @@ bsp_start_hook_done:
     bl      pmk_init
 
     /**< Secondary cores init */
-secondary_core_init:
+FUNC(secondary_core_init)
 
     bl      pmk_core_initialize
 
     /* never returns here */
 
 #endif /* __ARM_ARCH >= 7 */
-#endif /* ASM */
