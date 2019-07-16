@@ -18,9 +18,10 @@
 #include <armv7.h>
 //#include <gic.h>
 
-void arm_disable_preemption(void);
-void arm_enable_preemption(void);
 void arm_lock(air_uptr_t hash);
-void arm_unlock(air_uptr_t hash);
+air_u32_t arm_unlock(air_uptr_t hash);
+
+void arm_disable_preemption(air_u32_t irq_mask);
+air_u32_t arm_enable_preemption(void);
 
 #endif /* ARM_LOCK_H */
