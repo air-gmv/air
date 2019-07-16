@@ -20,7 +20,7 @@ extern "C" {
 /**
  * @brief Base Size
  */
-typedef long unsigned int air_sz_t;
+typedef unsigned long air_sz_t;
 
 /**
  * @brief Struct member offset
@@ -70,12 +70,12 @@ typedef unsigned long long air_u64_t;
 /**
  * @brief Signed pointer
  **/
-typedef signed long air_iptr_t;
+typedef signed long *air_iptr_t;
 
 /**
  * @brief Unsigned pointer
  **/
-typedef unsigned long air_uptr_t;
+typedef unsigned long *air_uptr_t;
 
 /**
  * @brief Unsigned 32 bit integer
@@ -83,120 +83,15 @@ typedef unsigned long air_uptr_t;
 typedef unsigned long air_isr_level_t;
 
 /**
- * @brief SPARC system call: disable virtual interrupts
- * @return previous PIL
+ * @brief Boolean
  */
-air_u32_t air_sparc_disable_interrupts(void);
-/**
- * @brief SPARC system call: enable virtual interrupts
- * @param pil PIL level to apply
- */
-void air_sparc_enable_interrupts(air_u32_t pil);
-/**
- * @brief SPARC system call: disable virtual traps
- */
-void air_sparc_disable_traps(void);
-/**
- * @brief SPARC system call: enable virtual traps
- */
-void air_sparc_enable_traps(void);
-/**
- * @brief SPARC system call: disable FPU
- * @return NO_ERROR if the partition have permissions to control the FPU
- *         INVALID_CONFIG otherwise
- */
-air_u32_t air_sparc_disable_fpu(void);
-/**
- * @brief SPARC system call: enable FPU
- * @return NO_ERROR if the partition have permissions to control the FPU
- *         INVALID_CONFIG otherwise
- */
-air_u32_t air_sparc_enable_fpu(void);
-/**
- * @brief SPARC system call: get PSR
- * @return Core PSR
- */
-air_u32_t air_sparc_get_psr(void);
-/**
- * @brief SPARC system call: set PSR
- * @param psr PSR value
- */
-void air_sparc_set_psr(air_u32_t psr);
-/**
- * @brief SPARC system call: virtual RETT
- * @param pc program counter
- * @param n_npc next program counter
- */
-void air_sparc_virtual_rett(air_u32_t pc, air_u32_t n_pc);
-/**
- * @brief SPARC system call: get cache register
- * @returns current cache register value
- */
-air_u32_t air_sparc_get_cache_register(void);
-/**
- * @brief SPARC system call: set cache register
- * @param cache cache register new value
- *
- * @note This system call requires permission
- */
-air_u32_t air_sparc_set_cache_register(air_u32_t cache);
-/**
- * @brief SPARC system call: set TBR register
- * @param tbr pointer to the trap table
- */
-void air_sparc_set_tbr(air_u32_t tbr);
-/**
- * @brief SPARC system call: get TBR register
- * @return TBR register value
- */
-air_u32_t air_sparc_get_tbr(void);
-/**
- * @brief SPARC system call: get IRQ mask register
- * @param core identifier
- * @return value of in the core IRQ mask register
- */
-air_u32_t air_sparc_get_irq_mask_register(air_u32_t core_id);
-/**
- * @brief SPARC system call: get IRQ mask register
- * @param core identifier
- * @param to apply to the core IRQ mask register
- * @return INVALID_CONFIG if the core isn't available
- *         NO_ERROR otherwise
- */
-air_u32_t air_sparc_set_irq_mask_register(air_u32_t core_id, air_u32_t mask);
-/**
- * @brief SPARC system call: set IRQ force register
- * @param core identifier
- * @param to apply to the core IRQ force register
- * @return INVALID_CONFIG if the core isn't available
- *         NO_ERROR otherwise
- */
-air_u32_t air_sparc_set_irq_force_register(air_u32_t core_id, air_u32_t force);
-
-/**
- * @brief Disable Interrupts
- * @param level Interrupt level
- */
-#define air_syscall_disable_interrupts(level) \
-        level = air_sparc_disable_interrupts();
-
-/**
- * @brief Enable Interrupts
- * @param level Interrupt level
- */
-#define air_syscall_enable_interrupts(level) \
-        air_sparc_enable_interrupts(level);
+#define false   0
+#define true    1
 
 #ifdef  __cplusplus
 }
 #endif /* C++ */
 #endif /* !ASM */
-
-#define AIR_SYSCALL_OS_TRAP                             0x80
-#define AIR_SYSCALL_SPARC_TRAP                          0x82
-#define AIR_SYSCALL_FLUSH_TRAP                          0x83
-#define AIR_SYSCALL_HM_TRAP                             0x84
-#define AIR_SYSCALL_PS_TRAP                             0x89
 
 /** @todo this is hack, these defines must be normalized across ARCHs */
 #define AIR_IRQ_HM_EVENT                    AIR_SYSCALL_HM_TRAP
