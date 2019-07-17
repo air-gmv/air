@@ -9,7 +9,7 @@
 /**
  * @file cpu.h
  * @author lumm
- * @brief Just for backward compatibility
+ * @brief bsp headers and inline assembly functions
  */
 
 #ifndef ARM_CPU_H
@@ -18,6 +18,7 @@
 #ifndef ASM
 
 #include <armv7.h>
+#include <mmu.h>
 #include <health_monitor.h>
 
 /* Double-word alignment */
@@ -41,12 +42,59 @@ typedef arm_mmu_configuration_t arch_configuration_t;
 /**
  * @brief CPU Interrupt stack frame
  */
-typedef arm_exception_frame_t interrupt_stack_frame_t;
+typedef arm_interrupt_stack_frame_t interrupt_stack_frame_t;
+
 
 /**
  * @brief CPU Preemption flags
  */
 #define cpu_preemption_flags_t air_u32_t
+
+/**
+ * @brief CPU enable preemption
+ * @param flags Preemption flags
+ */
+#define cpu_enable_preemption(flags) \
+    arm_enable_preemption()
+
+/**
+ * @brief CPU disable preemption
+ * @param flags Preemption flags
+ */
+#define cpu_disable_preemption(flags) \
+    arm_disable_preemption()
+
+/**
+ * @brief CPU health-monitor initialization
+ */
+#define cpu_hm_init() \
+    arm_healthmonitor_init()
+
+/**
+ * @brief CPU segregation initialization
+ */
+#define cpu_segregation_init() \
+    arm_segregation_init()
+
+/**
+ * @brief CPU segregation map memory
+ */
+#define cpu_segregation_map_memory(ctrl, paddr, vaddr, size, unit, perms) \
+    arm_map_memory((ctrl), (paddr), (vaddr), (size), (unit), (air_u32_t)(perms))
+
+/**
+ * @brief CPU segregation copy to user-land
+ */
+#define cpu_copy_to_user(ctx, dst, src, size) \
+    arm_copy_to_user((ctx), (dst), (src), (size))
+
+/**
+ * @brief CPU segregation copy from user-land
+ */
+#define cpu_copy_from_user(ctx, dst, src, size) \
+    arm_copy_from_user((ctx), (dst), (src), (size))
+
+
 
 /**
  * @brief Initializes the core context
@@ -101,6 +149,51 @@ void core_context_setup_idle(core_context_t *context);
  */
 #define core_context_set_system_state(context, state) \
         (context)->state = (air_u32_t)(state)
+/**
+ * @brief Inits the HM events
+ */
+void arm_healthmonitor_init(void);
+/**
+ * @brief Flag an HM event on a core context
+ * @param context core context
+ * @param state_id current system state
+ * @param error_id current error Id
+ */
+void core_context_add_hm_event(core_context_t *context,
+                               air_state_e state_id, air_error_e error_id);
+/**
+ * @brief Removes an HM event from the core context
+ * @param context Context of the core
+ */
+void core_context_remove_hm_event(core_context_t *context);
+
+/**
+ * @brief Saves the core context
+ * @param core_ctrl control control pointer
+ */
+#define core_context_save(core) \
+        arm_core_context_save(core)
+/**
+ * @brief Restores the core context
+ * @param core_ctrl control control pointer
+ */
+#define core_context_restore(core) \
+        arm_core_context_restore(core)
+/**
+ * @brief Get the core context virtual core Id
+ * @param context core context
+ * @return Virtual core Id of the context
+ */
+#define core_context_id(context) \
+        (context)->vcpu.id
+/**
+ * @brief Check if the context is flagged as trashed
+ * @param context Context to check
+ * @return true if trashed, false otherwise
+ */
+#define core_context_trashed(context) \
+        (context)->trash
+
 
 #endif /* ASM */
 #endif /* ARM_CPU_H */

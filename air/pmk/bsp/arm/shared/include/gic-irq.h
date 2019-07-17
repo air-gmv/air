@@ -32,12 +32,17 @@
 #define ARM_GIC_IRQ_SGI_14          14
 #define ARM_GIC_IRQ_SGI_15          15
 
-/* Private CPU Interrupts (PPI) (for A9MPCORE) */
+#define ARM_SGI_TARGET(target)      (target << 24)
+#define ARM_SGI_TARGET_LIST         0x0
+#define ARM_SGI_TARGET_OTHERS       0x1
+#define ARM_SGI_TARGET_SELF         0x2
+#define ARM_SGI_TARGET_MASK(mask)   (mask << 16)
 
-#define A9MPCORE_IRQ_GT             27
-#define A9MPCORE_IRQ_NFIQ           28
-#define A9MPCORE_IRQ_PT             29
-#define A9MPCORE_IRQ_PW             30
-#define A9MPCORE_IRQ_NIRQ           31
+/* Private CPU Interrupts (PPI) (for A9MPCORE) */
+#define ARM_A9MPCORE_IRQ_GT         27
+#define ARM_A9MPCORE_IRQ_NFIQ       28
+#define ARM_A9MPCORE_IRQ_PT         29
+#define ARM_A9MPCORE_IRQ_PW         30
+#define ARM_A9MPCORE_IRQ_NIRQ       31
 
 #endif /* ARM_SHARED_GIC_IRQ_H */

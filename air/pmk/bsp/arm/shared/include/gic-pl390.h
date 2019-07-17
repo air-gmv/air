@@ -7,7 +7,7 @@
  *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
  * ==========================================================================*/
 /**
- * @file ic.h
+ * @file gic-pl390.h
  * @author lumm
  * @brief Interrupt Controller (IC) available to the CPU. Based on ARM® Generic
   Interrupt Controller Architecture version 2.0 Architecture Specification and
@@ -18,7 +18,6 @@
 #define ARM_SHARED_GIC_PL390_H
 
 #include <air_arch.h>
-#include <bsp.h>
                                     /* OFFSETS */
 
 typedef struct {                    /* 0xf8f0 0100 */
@@ -46,13 +45,13 @@ typedef struct {                    /* 0xf8f0 1000*/
     air_u32_t icdicpr[32];          /* 0x280 - 0x2fc */
     air_u32_t icdabr[32];           /* 0x300 - 0x37c */
     air_u32_t reserved1[32];        /* 0x380 - 0x3fc */
-    air_u32_t icdipr[255];          /* 0x400 - 0x7f8 */
+    air_u8_t icdipr[1020];          /* 0x400 - 0x7fb */
     air_u32_t reserved2;            /* 0x7fc */
-    air_u32_t icdiptr[255];         /* 0x800 - 0xbf8 */
+    air_u8_t icdiptr[1020];         /* 0x800 - 0xbfb */
     air_u32_t reserved3;            /* 0xbfc */
     air_u32_t icdicfr[64];          /* 0xc00 - 0xcfc */
-    air_u32_t reserved4[64];        /* 0xd00 - 0xdfc */
-    air_u32_t icdsgir;              /* 0xe00 */
+    air_u32_t reserved4[128];       /* 0xd00 - 0xefc */
+    air_u32_t icdsgir;              /* 0xf00 */
 } ic_distributor_t;
 
 #endif /* ARM_SHARED_GIC_PL390_H */
