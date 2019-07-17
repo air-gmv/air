@@ -16,12 +16,7 @@
 #include <bsp.h>
 #include <pmk.h>
 #include <ipc.h>
-
-/**
- * @brief Stack size allocated for each core context
- * @ingroup cpu_sparc
- */
-#define CONTEXT_STACK_SIZE                                  (8 * (0x60 + 0x58))
+#define N 1 // nesting level
 
 /**
  * @brief Initializes the core context
@@ -40,11 +35,8 @@ void core_context_init(core_context_t *context, air_u32_t id) {
     context->isr_nesting_level = 1;
 
     /* allocate context stack */
-    air_uptr_t stack_space = (air_uptr_t)pmk_workspace_alloc(CONTEXT_STACK_SIZE);
-    context->isf_stack_pointer =
-            (void *)(stack_space +
-                     CONTEXT_STACK_SIZE -
-                     sizeof(arm_exception_frame_t));
+    context->idle_isf_pointer =
+            (void *)pmk_workspace_alloc(N*sizeof(arm_interrupt_stack_frame_t));
 
 #if PMK_FPU_SUPPORT
     /* allocate space to hold an FPU context */
@@ -75,4 +67,39 @@ void core_context_init(core_context_t *context, air_u32_t id) {
             sizeof(arm_vfp_context_t));
 
 #endif
+}
+
+/**
+ * @brief Setups an idle context
+ * @param context the core context to be set as idle
+ *
+ * This function setups a core context the architecture dependent part of
+ * an idle context
+ */
+void core_context_setup_idle(core_context_t *context) {
+
+    /* initialize the virtual core */
+    context->vcpu.psr = 0;
+    context->vcpu.tbr = 0;
+    context->vcpu.ipend = 0;
+    context->vcpu.imask = 0;
+    context->vcpu.mmu_ctrl = 1;
+    context->vcpu.mmu_fsr = 0;
+
+    /* initial stack frame */
+    arm_interrupt_stack_frame_t *isf =
+            (arm_interrupt_stack_frame_t *)(context->idle_isf_pointer);
+
+    /* setup the space for the 1st window and the restore point */
+    context->isf_pointer = (void *)isf;
+
+    /* this context doesn't need to be saved */
+    context->trash = 1;
+    context->isr_nesting_level = 1;
+
+    /* setup the context return PSR */
+    isf->orig_cpsr = ARM_PSR_USR;
+
+    /* setup the context entry point */
+    isf->lr = (air_uptr_t)bsp_idle_loop;
 }
