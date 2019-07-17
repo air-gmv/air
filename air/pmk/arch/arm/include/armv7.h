@@ -15,8 +15,6 @@
 #ifndef ARM_ARMv7_H
 #define ARM_ARMv7_H
 
-#ifdef ASM
-
 /**
  * @brief Program Status Register.
  * Each program mode has its own Saved PSR (SPSR). usr and sys shared theirs.
@@ -45,6 +43,8 @@
 #define ARM_PSR_UND         0x1b        /**< Undefined                      */
 #define ARM_PSR_SYS         0x1f        /**< System                         */
 
+#ifdef ASM
+
 /* @brief If the bit 0 of the bx reg is 0 it will remain in ARM, if 1 it will
  * change to Thumb. The .thumb directive is for the assembler to compile the
  * following instructions as Thumb. Same way for .arm.
@@ -59,6 +59,7 @@
 
 .macro SWITCH_FROM_THUMB_TO_ARM
 #if defined(__thumb__)
+.thumb
 .align 2
     bx      pc
 .arm
@@ -79,7 +80,13 @@
 #define ARM_EXCEPTION_FRAME_VFP_CONTEXT_OFFSET 72
 #define ARM_VFP_CONTEXT_SIZE 264
 
+
+#define ARM_CORE_CONTEXT_TRASHED    1
+
+
 #else /* ASM */
+
+
 #include <air_arch.h>
 
 #if defined(__thumb__)
@@ -100,7 +107,7 @@
 /* @brief Synchronization barries
  * TODO specific compiler optimizations
  */
-inline static void instruction_synchronization_barrier(void) {
+inline static void arm_instruction_synchronization_barrier(void) {
 #if defined(__CC_ARM)
     __isb(15);
 //#elif defined(__GNUC__)
@@ -110,7 +117,7 @@ inline static void instruction_synchronization_barrier(void) {
 #endif
 }
 
-inline static void data_synchronization_barrier(air_u32_t intrinsic) {
+inline static void arm_data_synchronization_barrier(air_u32_t intrinsic) {
 #if defined(__CC_ARM)
     __dsb(intrinsic);
 //#elif defined(__GNUC__)
@@ -120,7 +127,7 @@ inline static void data_synchronization_barrier(air_u32_t intrinsic) {
 #endif
 }
 
-inline static void data_memory_barrier(air_u32_t intrinsic) {
+inline static void arm_data_memory_barrier(air_u32_t intrinsic) {
 #if defined(__CC_ARM)
     __dmb(intrinsic);
 //#elif defined(__GNUC__)
@@ -205,8 +212,8 @@ typedef struct {
     air_u32_t orig_cpsr;                /**< pre-exception cpsr             */
     symbolic_exception_name exception_name;
     const arm_vfp_context_t *vfp_context;
-    air_u32_t svc_imm;                  /**< svc immediate. UND if other    */
-} arm_exception_frame_t;
+    air_u32_t reserved;                 /**< svc immediate. UND if other    */
+} arm_interrupt_stack_frame_t;
 
 /**
  * @brief Virtual SPARC CPU
@@ -229,8 +236,8 @@ typedef struct {
     arm_virtual_cpu_t vcpu;             /**< virtual CPU control            */
     air_u32_t trash;                    /**< trash flag                     */
     void *entry_point;                  /**< core entry point               */
-    void *stack_pointer;                /**< core stack pointer             */
-    void *isf_stack_pointer;            /**< core ISF stack                 */
+    void *isf_pointer;                  /**< core stack pointer             */
+    void *idle_isf_pointer;             /**< core ISF stack                 */
     air_u32_t isr_nesting_level;        /**< core interrupt nesting level   */
     arm_vfp_context_t *fpu_context;     /**< floating point                 */
     air_u32_t ipc_event;                /**< IPC event                      */
@@ -242,8 +249,9 @@ typedef struct {
  * @brief ARM MMU control
  */
 typedef struct {
-    air_u32_t ttbr0;                    /**< context id                     */
-    air_u32_t ttbr1;                    /**< context id                     */
+    air_uptr_t ttbr0;                   /**< context id                     */
+    air_uptr_t ttbr1;                   /**< context id                     */
+    air_u32_t ttbcr;
 } arm_mmu_context_t;
 
 /**
@@ -257,8 +265,6 @@ typedef struct {
     air_u32_t mmu_l3_tables_entries;
 } arm_mmu_configuration_t;
 
-void *arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr);
-
 /* SVC defines */
 #define MAX_SVC_A32 16777216            /**< number of svc calls in A32     */
 #define MAX_SVC_T32 256                 /**< number of svc calls in thumb   */
@@ -268,12 +274,12 @@ void *arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr);
 #define MAX_SVC MAX_SVC_A32
 #endif
 
-/** *************************** CPU Register Access ***************************
+/****************************** CPU Register Access ***************************
  * @brief assembly inline functions to access cpu regs
  */
-inline void arm_disable_fpu(void) {
+static inline void arm_disable_fpu(void) {
     ARM_SWITCH_REGISTERS;
-    air_u32_t reg;
+    air_u32_t reg = 0;
 
     __asm__ volatile (
         ARM_SWITCH_TO_ARM
@@ -286,9 +292,9 @@ inline void arm_disable_fpu(void) {
     );
 }
 
-inline void arm_enable_fpu(void) {
+static inline void arm_enable_fpu(void) {
     ARM_SWITCH_REGISTERS;
-    air_u32_t reg;
+    air_u32_t reg = 0;
 
     __asm__ volatile (
         ARM_SWITCH_TO_ARM
@@ -301,7 +307,7 @@ inline void arm_enable_fpu(void) {
     );
 }
 
-inline air_u32_t arm_get_exception_base_address(void) {
+static inline air_u32_t arm_get_exception_base_address(void) {
     ARM_SWITCH_REGISTERS;
     air_u32_t reg;
 
@@ -312,16 +318,17 @@ inline air_u32_t arm_get_exception_base_address(void) {
         "beq hyvecs\n\t"
         "mrc p15, 0, %[reg], c12, c0, 0\n\t"
         "hyvecs:\n\t"
-        "mov %[reg], #ffff0000\n\t"
+        "mov %[reg], #0x0000\n\t"
+        "movt %[reg], #0xffff\n\t"
         ARM_SWITCH_BACK
         : [reg] "=&r" (reg) ARM_SWITCH_ADDITIONAL_OUTPUT
     );
     return reg;
 }
 
-inline void arm_set_exception_base_address(air_u32_t val) {
+static inline void arm_set_exception_base_address(air_u32_t val) {
     ARM_SWITCH_REGISTERS;
-    air_u32_t reg;
+    air_u32_t reg = 0;
 
     __asm__ volatile (
         ARM_SWITCH_TO_ARM
@@ -335,7 +342,7 @@ inline void arm_set_exception_base_address(air_u32_t val) {
     );
 }
 
-inline air_u32_t arm_get_cpsr(void) {
+static inline air_u32_t arm_get_cpsr(void) {
     ARM_SWITCH_REGISTERS;
     air_u32_t reg;
 
@@ -348,7 +355,7 @@ inline air_u32_t arm_get_cpsr(void) {
     return reg;
 }
 
-inline void arm_set_cpsr(air_u32_t val) {
+static inline void arm_set_cpsr(air_u32_t val) {
     ARM_SWITCH_REGISTERS;
 
     __asm__ volatile (
@@ -360,7 +367,32 @@ inline void arm_set_cpsr(air_u32_t val) {
     );
 }
 
-/******************************************************************************/
-#endif /* not ASM */
+static inline void arm_disable_preemption(void) {
+    ARM_SWITCH_REGISTERS;
 
+    __asm__ volatile (
+        ARM_SWITCH_TO_ARM
+        "cpsid aif\n\t"
+        ARM_SWITCH_BACK
+        : ARM_SWITCH_OUTPUT
+    );
+}
+
+static inline void arm_enable_preemption(void) {
+    ARM_SWITCH_REGISTERS;
+
+    __asm__ volatile (
+        ARM_SWITCH_TO_ARM
+        "cpsie aif\n\t"
+        ARM_SWITCH_BACK
+        : ARM_SWITCH_OUTPUT
+    );
+}
+
+/******************************************************************************/
+/*********************** Assembly functions declaration ***********************/
+void arm_core_context_save(void *core);
+void arm_core_context_restore(void *core);
+
+#endif /* not ASM */
 #endif /* ARM_ARMv7_H */
