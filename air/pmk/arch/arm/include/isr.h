@@ -15,9 +15,17 @@
 #ifndef ARM_ISR_H
 #define ARM_ISR_H
 
-void arm_irq_default_handler(arm_exception_frame_t *frame);
+#include <air_arch.h>
+#include <armv7.h>
+#include <gic.h>
+#include <pmk.h>
+#include <workspace.h>
+
+void arm_exception_default_handler(arm_interrupt_stack_frame_t *frame,
+        pmk_core_ctrl_t *core);
+air_uptr_t arm_irq_install_handler(air_u32_t vector, void *handler);
 void arm_irq_table_initialize(void);
-air_uptr_t arm_irq_handler_install(air_u32_t vector, void *handler);
-void arm_irq_handler(arm_exception_frame_t *frame);
+void arm_irq_handler(arm_interrupt_stack_frame_t *frame,
+        pmk_core_ctrl_t* core);
 
 #endif /* ARM_ISR_H */

@@ -12,29 +12,61 @@
  * @brief Interrupt Service Routines (ISR)
  */
 
-#include <air_arch.h>
-#include <armv7.h>
-#include <gic.h>
 #include <isr.h>
 
-air_uptr_t arm_isr_handler_table[MAX_INT];
+typedef void (*isr)(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core);
 
-void arm_irq_default_handler(arm_exception_frame_t *frame) {
+air_uptr_t arm_isr_handler_table[ZYNQ_MAX_INT];
+
+void arm_irq_default_handler(arm_interrupt_stack_frame_t *frame,
+        pmk_core_ctrl_t *core) {
     return;
+}
+
+air_uptr_t arm_irq_install_handler(air_u32_t vector, void *handler) {
+
+    air_uptr_t old_handler = (air_uptr_t)arm_isr_handler_table[vector];
+    arm_isr_handler_table[vector] = (air_uptr_t)handler;
+    return old_handler;
 }
 
 void arm_irq_table_initialize(void) {
 
-    air_u32_t i = 0;
-
-    for (air_u32_t i = 0; i < get_int_count(); ++i) {
-        arm_interrupt_handler_install(i, arm_irq_default_handler);
+    for (air_u32_t i = 0; i < arm_get_int_count(); ++i) {
+        arm_irq_install_handler(i, arm_irq_default_handler);
     }
 }
 
-air_uptr_t arm_irq_handler_install(air_u32_t vector, void *handler) {
+void arm_irq_handler(arm_interrupt_stack_frame_t *frame,
+        pmk_core_ctrl_t* core) {
 
-    air_uptr_t old_handler = arm_isr_handler_table[vector];
-    arm_isr_handler_table[vector] = handler;
-    return old_handler;
+    /* Acknowledge Interrupt */
+    air_u32_t ack = arm_acknowledge_int();
+
+    air_u16_t id = (ack & 0x3ff);
+    // not used    air_u8_t cpu = ((ack << 10U) & 0x7);
+
+    /* Spurious interrupt */
+    if(id == 1023) {
+        return;
+    }
+
+    if (arm_isr_handler_table[id] != (air_uptr_t)NULL) {
+        ((isr)arm_isr_handler_table[id])(frame, core);
+    }
+
+    /* core point may change if the execution was preempted */
+    core = pmk_get_current_core_ctrl();
+
+    /* check if context switch was performed */
+    if (core->partition_switch == 1) {
+        /* in sparc they reassign the *frame, but it is loaded again in asm
+         * so dunno.
+         */
+        core->partition_switch = 0;
+    }
+
+    /* TODO ROUTE THE IRQ TO THE PARTITION IF REQUIRED */
+
+    arm_end_of_int(ack);
 }

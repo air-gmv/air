@@ -12,10 +12,9 @@
  * @brief exception_handlers and default
  */
 
-#include <air_arch.h>
-#include <armv7.h>
+#include <isr.h>
 
-void exception_default_handler(arm_exception_frame_t *frame) {
+void arm_exception_default_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t* core) {
     //TODO terminate
     return;
 }

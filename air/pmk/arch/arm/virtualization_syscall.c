@@ -13,6 +13,8 @@
  */
 
 #include <air_arch.h>
+#include <armv7.h>
+#include <svc.h>
 #include <gic.h>
 
 void arm_syscall_disable_interrupts(void) {
@@ -51,7 +53,7 @@ air_u32_t arm_syscall_get_psr(void) {
     return arm_get_cpsr();
 }
 void arm_syscall_set_psr(air_u32_t val) {
-    arm_set_cspr(val);
+    arm_set_cpsr(val);
 }
 
 //air_u32_t AIR_SYSCALL_ARM_RETT
@@ -60,8 +62,9 @@ void arm_syscall_set_psr(air_u32_t val) {
 //air_u32_t arm_syscall_set_cache_register(void);
 //air_u32_t AIR_SYSCALL_ARM_RESTORE_CACHE_REGISTER
 air_u32_t arm_syscall_get_irq_mask_register(void) {
-    return arm_get_int_mask;
+    return arm_get_int_mask();
 }
+
 void arm_syscall_set_irq_mask_register(air_u32_t val) {
     arm_set_int_mask(val);
 }

@@ -7,18 +7,21 @@
  *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
  * ==========================================================================*/
 /**
- * @file exceptions.S
+ * @file exception_fiq.S
  * @author lumm
- * @brief Exception handlers
+ * @brief FIQ exception handler
  */
 
 /* Are we in assembly file */
-#ifdef ASM
+#ifndef ASM
+#define ASM
+#endif
 
 #include <asm.h>
 #include <armv7.h>
+#include <asm_offsets.h>
 
-    .extern irq_handler
+    .extern arm_irq_handler
 
 /* 13 global registers */
 #define ARM_EXCEPTION_FRAME_REGISTER_SP_OFFSET (13 * 4) //=52
@@ -28,10 +31,42 @@
 
 /* Save global registers and branch to save context */
 
-ENTRY(exception_irq)
+FUNC(exception_irq)
+    /* TODO IM NOT SURE IF THE IRQ AND FIQ ARE DISABLED WHEN ENTERING ONE */
+    cpsid   if
+
+    /* Get current core */
+    mrc     p15, 0, r3, c0, c0, 5
+
+    /* Get core control struct from shared area */
+    mov     r4, #sizeof_pmk_core_ctrl_t
+    mul     r3, r4
+    ldr     r4, =air_shared_area
+    ldr     r4, [r4, #offsetof_pmk_sharedarea_t_core]
+    add     r8, r3 /* pmk_core_ctrl_t */
+
+    /* Get core context from core control */
+    ldr     r9, [r8, #offsetof_pmk_core_ctrl_t_context] /* arm_core_context_t */
+    ldr     r4, [r9, #offsetof_arm_core_context_t_trash]
+    cmp     r4, #(ARM_CORE_CONTEXT_TRASHED)
+    bne     arm_exception_irq_save_context
+
+
+arm_exception_irq_trashed_context:
+    /* should be coming from idle. reset to hypervisor isr */
+    mov     r5, #1
+    str     r5, [r9, #offsetof_arm_core_context_t_isr_nesting_level]
+
+    /* to guarantee no access to unwanted memory happens */
+    sub     sp, #(ARM_EXCEPTION_FRAME_SIZE)
+
+    b       arm_exception_irq_isr_handler
+
+
+arm_exception_irq_save_context:
     sub     sp, #MORE_CONTEXT_SIZE
     push    {r0-r12}
-    mov     r4, #6      /* IRQ id */
+    mov     r4, #6 /* IRQ id */
 
     /* Save more context */
     mov     r2, lr
@@ -46,9 +81,8 @@ ENTRY(exception_irq)
 //  tst     r5, #0xf
     and     r0, r5, #ARM_PSR_MODE_MASK
     teq     r0, #ARM_PSR_USR
-    beq     user_mode   /* Z set if user */
+    bne     more_context /* Z set if user */
 
-    b       more_context
 
 user_mode:
     mov     r0, #ARM_PSR_SYS
@@ -58,16 +92,13 @@ user_mode:
     stm     r6!, {sp,lr}^
     stm     r6, {r2-r4}
 */
-more_context:
 
+more_context:
     msr     cpsr, r5
     mov     r0, sp
     mov     r1, lr
     msr     cpsr, r7
     stm     r6, {r0-r4}
-
-    /* Argument for high level handler */
-    mov     r0, sp
 
 
     /* Clear VFP context pointer */
@@ -99,14 +130,23 @@ more_context:
     stmia   r4!, {r1-r2}
     cmp     r4, r3
     bne     2b
-#endif
+#endif /* VFP_D32 */
 1:
 #endif /* PMK_FPU_SUPPORT */
 
 
+arm_exception_irq_handler:
+    /* Save current sp for nested irqs */
+    str     sp, [r9, #offsetof_arm_core_context_t_isf_pointer]
+
+    /* Argument for high level handler */
+    mov     r0, sp
+    mov     r1, r8 /* pmk_core_ctrl_t */
 
     /* Call high level handler */
     SWITCH_FROM_ARM_TO_THUMB    r1
-    bl      irq_handler
+    bl      arm_irq_handler
 
-#endif /* ASM */
+
+    /******************* TODO DO REST **********************/
+
