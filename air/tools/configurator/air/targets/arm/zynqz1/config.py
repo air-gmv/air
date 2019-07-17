@@ -66,9 +66,9 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     'arch/arm/svc_handler.c',
     'arch/arm/virtualization_syscall.c',
     # BSP files
-    'bsp/arm/zynq-z1/bsp.c',
-    'bsp/arm/zynq-z1/mmu.c',
-    'bsp/arm/zynq-z1/gic.c',
+    'bsp/arm/zynqz1/bsp.c',
+    'bsp/arm/zynqz1/mmu.c',
+    'bsp/arm/zynqz1/gic.c',
     # Core files
     'core/error.c',
     'core/barrier.c',
@@ -100,7 +100,7 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
 kernel_headers = set(utils.flatten([
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'core'), ['.h', '.ld']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'arch', 'arm'), ['.h', '.ld']),
-    file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'zynq-z1'), ['.h', '.ld']),
+    file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'zynqz1'), ['.h', '.ld']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'shared'), ['.h', '.ld']),
 ]))
 
@@ -108,7 +108,7 @@ kernel_headers = set(utils.flatten([
 libair_sources = set(utils.flatten([
     file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'core'), ['.c']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'arch', 'arm'), ['.c', '.S']),
-    file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'zynq-z1'), ['.c', '.S']),
+    file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'zynqz1'), ['.c', '.S']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'shared'), ['.c', '.S']),
 ]))
 
