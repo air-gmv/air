@@ -19,31 +19,31 @@
 #include <armv7.h>
 
 /* System Control Register on CP15 definitions */
-#define CP15_CTRL_TE        (1U << 30)
-#define CP15_CTRL_AFE       (1U << 29)
-#define CP15_CTRL_TRE       (1U << 28)
-#define CP15_CTRL_NMFI      (1U << 27)
-#define CP15_CTRL_EE        (1U << 25)
-#define CP15_CTRL_VE        (1U << 24)
-#define CP15_CTRL_XP        (1U << 23)
-#define CP15_CTRL_U         (1U << 22)
-#define CP15_CTRL_FI        (1U << 21)
-#define CP15_CTRL_UWXN      (1U << 20)
-#define CP15_CTRL_WXN       (1U << 19)
-#define CP15_CTRL_HA        (1U << 17)
-#define CP15_CTRL_L4        (1U << 15)
-#define CP15_CTRL_RR        (1U << 14)
-#define CP15_CTRL_V         (1U << 13)
-#define CP15_CTRL_I         (1U << 12)
-#define CP15_CTRL_Z         (1U << 11)
-#define CP15_CTRL_SW        (1U << 10)
-#define CP15_CTRL_R         (1U << 9)
-#define CP15_CTRL_S         (1U << 8)
-#define CP15_CTRL_B         (1U << 7)
-#define CP15_CTRL_CP15BEN   (1U << 5)
-#define CP15_CTRL_C         (1U << 2)
-#define CP15_CTRL_A         (1U << 1)
-#define CP15_CTRL_M         (1U << 0)
+#define ARM_SCTLR_TE        (1U << 30)
+#define ARM_SCTLR_AFE       (1U << 29)
+#define ARM_SCTLR_TRE       (1U << 28)
+#define ARM_SCTLR_NMFI      (1U << 27)
+#define ARM_SCTLR_EE        (1U << 25)
+#define ARM_SCTLR_VE        (1U << 24)
+#define ARM_SCTLR_XP        (1U << 23)
+#define ARM_SCTLR_U         (1U << 22)
+#define ARM_SCTLR_FI        (1U << 21)
+#define ARM_SCTLR_UWXN      (1U << 20)
+#define ARM_SCTLR_WXN       (1U << 19)
+#define ARM_SCTLR_HA        (1U << 17)
+#define ARM_SCTLR_L4        (1U << 15) //todo wut???
+#define ARM_SCTLR_RR        (1U << 14)
+#define ARM_SCTLR_V         (1U << 13)
+#define ARM_SCTLR_I         (1U << 12)
+#define ARM_SCTLR_Z         (1U << 11)
+#define ARM_SCTLR_SW        (1U << 10)
+#define ARM_SCTLR_R         (1U << 9)
+#define ARM_SCTLR_S         (1U << 8)
+#define ARM_SCTLR_B         (1U << 7)
+#define ARM_SCTLR_CP15BEN   (1U << 5)
+#define ARM_SCTLR_C         (1U << 2)
+#define ARM_SCTLR_A         (1U << 1)
+#define ARM_SCTLR_M         (1U << 0)
 
 
 static inline air_u32_t arm_cp15_get_system_control(void) {
@@ -155,7 +155,7 @@ static inline air_u32_t arm_cp15_get_cache_size_id_for_level(air_u32_t level) {
     air_u32_t ccsidr;
 
     arm_cp15_set_cache_size_selection(level);
-    instruction_synchronization_barrier();
+    arm_instruction_synchronization_barrier();
     ccsidr = arm_cp15_get_cache_size_id();
 
     return ccsidr;
@@ -314,8 +314,8 @@ static inline void arm_cp15_tlb_invalidate(void) {
         : [sbz] "r" (sbz)
     );
 
-    data_synchronization_barrier(15);
-    instruction_synchronization_barrier();
+    arm_data_synchronization_barrier(15);
+    arm_instruction_synchronization_barrier();
 }
 
 /* MPIDR, Multiprocessor Affinity Register */
@@ -375,6 +375,71 @@ static inline void arm_cp15_set_vector_base_address(void *base) {
     __asm__ volatile (
         ARM_SWITCH_TO_ARM
         "mcr p15, 0, %[base], c12, c0, 0\n"
+        ARM_SWITCH_BACK
+        : ARM_SWITCH_OUTPUT
+        : [base] "r" (base)
+    );
+}
+
+
+
+static inline void arm_cp15_set_translation_table_control(air_u32_t val) {
+    ARM_SWITCH_REGISTERS;
+
+    __asm__ volatile (
+        ARM_SWITCH_TO_ARM
+        "mcr p15, 0, %[val], c2, c0, 2\n\t"
+        ARM_SWITCH_BACK
+        : ARM_SWITCH_OUTPUT
+        : [val] "r" (val)
+    );
+}
+
+
+static inline air_u32_t arm_cp15_get_translation_table_control() {
+    ARM_SWITCH_REGISTERS;
+    air_u32_t val;
+
+    __asm__ volatile (
+        ARM_SWITCH_TO_ARM
+        "mrc p15, 0, %[val], c2, c0, 2\n\t"
+        ARM_SWITCH_BACK
+        : [val] "=&r" (val) ARM_SWITCH_ADDITIONAL_OUTPUT
+    );
+
+    return val;
+}
+
+static inline void arm_cp15_set_domain_access_control(air_u32_t val) {
+    ARM_SWITCH_REGISTERS;
+
+    __asm__ volatile (
+        ARM_SWITCH_TO_ARM
+        "mcr p15, 0, %[val], c3, c0, 0\n"
+        ARM_SWITCH_BACK
+        : ARM_SWITCH_OUTPUT
+        : [val] "r" (val)
+    );
+}
+
+static inline void arm_cp15_set_translation_table0_base(air_uptr_t base) {
+    ARM_SWITCH_REGISTERS;
+
+    __asm__ volatile (
+        ARM_SWITCH_TO_ARM
+        "mcr p15, 0, %[base], c2, c0, 0\n"
+        ARM_SWITCH_BACK
+        : ARM_SWITCH_OUTPUT
+        : [base] "r" (base)
+    );
+}
+
+static inline void arm_cp15_set_translation_table1_base(air_uptr_t base) {
+    ARM_SWITCH_REGISTERS;
+
+    __asm__ volatile (
+        ARM_SWITCH_TO_ARM
+        "mcr p15, 0, %[base], c2, c0, 1\n"
         ARM_SWITCH_BACK
         : ARM_SWITCH_OUTPUT
         : [base] "r" (base)
