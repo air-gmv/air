@@ -17,8 +17,8 @@
 
 #include <air_arch.h>
 #include <armv7.h>
-#include <bsp.h>
 #include <arm_cp15.h>
+#include <bsp.h>
 
 #define CTRL_SCU_EN                 (1U << 0)
 #define CTRL_ADDR_FILTER_EN         (1U << 1)
@@ -84,32 +84,15 @@ typedef struct {
     air_u32_t snsac;
 } scu_t;
 
-#define CTRL_TIMER_EN               (1U << 0)
-#define CTRL_COMP_EN                (1U << 1)
-#define CTRL_IRQ_EN                 (1U << 2)
-#define CTRL_AUTOINC_EN             (1U << 3)
-#define CTRL_PRESCALER              (0xff << 8)
+static volatile scu_t *scu = (volatile scu_t *)SCU_BASE_MEMORY;
 
-typedef struct {
-    air_u32_t counter_lower;
-    air_u32_t counter_higher;
-    air_u32_t ctrl;
-    air_u32_t irq_st;
-    air_u32_t comp_value_low;
-    air_u32_t comp_value_high;
-    air_u32_t autoinc;
-} global_timer_t;
-
-static inline void scu_invalidate(volatile scu_t *scu, air_u32_t cpu_id) {
-
+static inline void scu_invalidate(air_u32_t cpu_id) {
     scu->inv_reg_ss = ( (0xf) << ( (cpu_id & 0x3) * 4) );
 }
 
-static inline void a9mpcore_start_hook(void) {
+static inline void arm_a9mpcore_start_hook(void) {
 
-    volatile scu_t *scu = (volatile scu_t *)SCU_BASE_MEMORY;
-
-    air_u32_t cpu_id = cp15_get_multiprocessor_cpu_id();
+    air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
 
     if (cpu_id == 0) {
         /* Enable SCU */
@@ -120,22 +103,13 @@ static inline void a9mpcore_start_hook(void) {
     /* Enable cache coherency and cache/MMU maintenance broadcasts for
      * this processor.
      */
-    air_u32_t actlr = cp15_get_auxiliary_control();
+    air_u32_t actlr = arm_cp15_get_auxiliary_control();
     actlr |= CP15_ACTLR_SMP | CP15_ACTLR_FW;
-    cp15_set_auxiliary_control(actlr);
+    arm_cp15_set_auxiliary_control(actlr);
 #endif
 
-    scu_invalidate(scu, cpu_id);
+    scu_invalidate(cpu_id);
 }
 
-static inline void start_global_timer(void) {
-
-    volatile global_timer_t *gt = (global_timer_t *)GT_BASE_MEMORY;
-
-    gt->ctrl = 0;
-    gt->counter_lower = 0;
-    gt->counter_higher = 0;
-    gt->ctrl = CTRL_TIMER_EN;
-}
 
 #endif /* ARM_A9MPCORE_H */
