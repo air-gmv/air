@@ -273,7 +273,7 @@ air_u32_t arm_segregation_memcpy(
     return 0;
 }
 
-inline air_u32_t arm_segregation_access_valid(void *addr) {
+air_u32_t arm_segregation_access_valid(void *addr) {
 
     if ((air_u32_t)addr < PMK_PARTITION_BASE_ADDR)
         return 0;
