@@ -56,11 +56,16 @@ kernel_compiler_no_fpu = dict(
 kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     # Arch files
     'arch/arm/start.S',                           # entry point must be the 1st on the list
+    'arch/arm/atomic.c',
+    'arch/arm/context_switch.S',
+    'arch/arm/cpu.c',
+    'arch/arm/exception_default_handler.c',
     'arch/arm/exception_default.S',
     'arch/arm/exception_default_handler.c',
     'arch/arm/cpu.c',
     'arch/arm/exception_irq.S',
     'arch/arm/exception_svc.S',
+    'arch/arm/health_monitor.c',
     'arch/arm/isr.c',
     'arch/arm/irq_handler.c',
     'arch/arm/svc_handler.c',
@@ -121,8 +126,8 @@ permissions = [PERMISSION_SUPERVISOR, PERMISSION_FPU, PERMISSION_CACHE,PERMISSIO
                PERMISSION_SET_PARTITION, PERMISSION_GLOBAL_TIME, PERMISSION_MODULE]
 
 # memory map
-mmap = MMAP(kernel_space=[0x00000000, 0x01000000],
-            partition_space=[0x01000000, 0x10000000],
+mmap = MMAP(kernel_space=[0x00000000, 0x00100000],
+            partition_space=[0x00100000, 0x00100000],
             units=[1 << 12, 1 << 18, 1 << 24],
             default_unit=1 << 18)
 
