@@ -34,12 +34,10 @@
 #include <timer.h>
 #include <uart.h>
 
-extern air_uptr_t bsp_section_bss_start;
-extern air_u32_t bsp_section_bss_size;
-extern air_uptr_t bsp_vector_table_begin;
-extern air_uptr_t bsp_vector_table_end;
-extern air_u32_t bsp_vector_table_size;
-extern air_uptr_t vector_table_begin;
+extern air_uptr_t air_kernel_bss_start;
+extern air_uptr_t air_kernel_bss_end;
+extern air_uptr_t vector_table_start;
+extern air_uptr_t vector_table_end;
 
 #define BSP_IPC_IRQ     ARM_GIC_IRQ_SGI_14
 #define BSP_IPC_PCS     ARM_GIC_IRQ_SGI_15
@@ -78,34 +76,31 @@ static inline void bsp_send_event(void) {
 }
 
 static inline void clear_bss() {
-//  memset(bsp_section_bss_start, 0, bsp_section_bss_size);
-    air_i8_t *mem = (air_i8_t *)bsp_section_bss_start;
-    for(air_u32_t i = 0; i < bsp_section_bss_size; ++i) {
+    air_u8_t *mem = (air_u8_t *)air_kernel_bss_start;
+    while((air_u32_t)mem <= (air_u32_t)air_kernel_bss_end) {
         *mem++ = 0;
     }
 }
-
-static inline void copy_vector_table() {
-//  memcpy(bsp_vector_table_begin, vector_table_begin, 8);
-    if (vector_table_begin != bsp_vector_table_begin) {
-        air_i8_t *dst = (air_i8_t *) bsp_vector_table_begin;
-        air_i8_t *src = (air_i8_t *) vector_table_begin;
-
-        for(air_u32_t i = 0; i < 8*4; i++) {
-            *dst++ = *src++;
-        }
-    }
-}
+//
+//static inline void copy_vector_table() {
+//  // memcpy(bsp_vector_table_begin, vector_table_begin, 8);
+//  if (vector_table_begin != vector_table_start) {
+//      air_i8_t *dst = (air_i8_t *) bsp_vector_table_begin;
+//      air_i8_t *src = (air_i8_t *) vector_table_begin;
+//
+//      for(air_u32_t i = 0; i < 8*4; i++) {
+//          *dst++ = *src++;
+//      }
+//  }
+//}
 
 static inline void arm_set_vector_base(void) {
-    /* Do not use bsp_vector_table_begin == 0, since this will get optimized
-    * away. source: rtems source code
-    */
-    if ((air_u32_t)bsp_vector_table_end != bsp_vector_table_size) {
+
+    if ((air_u32_t)vector_table_start != 0) {
         air_u32_t ctrl;
 
         /* Assumes every core has Security Extensions */
-        arm_cp15_set_vector_base_address((void *)bsp_vector_table_begin);
+        arm_cp15_set_vector_base_address((void *)vector_table_start);
 
         ctrl = arm_cp15_get_system_control();
         ctrl &= ~ARM_SCTLR_V;

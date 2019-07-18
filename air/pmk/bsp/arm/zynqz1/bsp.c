@@ -14,7 +14,7 @@
 
 #include <bsp.h>
 
-void bsp_start_hook(void *vector_table_begin) {
+void bsp_start_hook(void *vector_table_start) {
 
     air_u32_t sctlr = arm_cp15_get_system_control();
 
@@ -57,7 +57,7 @@ void bsp_start_hook(void *vector_table_begin) {
         /* If the vector table is already on the right memory position
         * then no copy needs to be done. Otherwise ...
         */
-        copy_vector_table();
+//      copy_vector_table();
         clear_bss();
     }
 }
@@ -71,9 +71,9 @@ air_u32_t bsp_core_init(void) {
     if(cpu_id == 0) {
 
         arm_set_vector_base();
-        arm_svc_table_initialize();
         arm_irq_table_initialize();
         arm_init_global_timer();
+        arm_start_uart();
     }
 
     gic_init(cpu_id);
