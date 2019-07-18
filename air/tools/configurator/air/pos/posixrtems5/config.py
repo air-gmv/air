@@ -17,7 +17,7 @@ name = "posixrtems5"
 description = "POSIXRTEMS-5"
 
 # @brief OS alias
-alias = ['rtems5']
+alias = ['posixrtems5']
 
 # @brief Supported git checkout id
 git_id = "6bb9b3df7b5ea97e151d39654092c060d2175045"
