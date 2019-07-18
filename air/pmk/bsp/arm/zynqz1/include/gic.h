@@ -15,6 +15,7 @@
 #ifndef ARM_ZYNQ_Z1_GIC_H
 #define ARM_ZYNQ_Z1_GIC_H
 
+#include <air_arch.h>
 #include <gic-irq.h>
 #include <gic-pl390.h>
 #include <gic-zynq.h>

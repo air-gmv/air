@@ -16,7 +16,7 @@
 
 static volatile uart_t *uart0 = (uart_t *)UART0_BASE_MEMORY;
 
-inline void arm_reset_uart(void) {
+void arm_reset_uart(void) {
     volatile air_uptr_t uart_rst_ctrl = (air_uptr_t)(SLCR_BASE_MEMORY + 0x228);
     *uart_rst_ctrl = 0xf;
 }
@@ -63,8 +63,8 @@ void arm_start_uart(void) {
             ARM_UART_CTRL_TX_DIS) &
             ~ARM_UART_CTRL_RX_EN &
             ~ARM_UART_CTRL_TX_EN);
-    /* Baud Rate of 230400. Values on page 594 of zynq-7000-trm */
-    uart0->baud_rate_gen = 31;
+    /* Baud Rate of 115200. Values on page 594 of zynq-7000-trm */
+    uart0->baud_rate_gen = 62;
     uart0->baud_rate_div = 6;
     uart0->ctrl = ((ARM_UART_CTRL_RXRST |
             ARM_UART_CTRL_TXRST |
