@@ -20,8 +20,8 @@ def InputArgs(arg_parser, logger):
 
     arg_parser.add_argument('-i', '--info', dest='info', action='store_const', const=True,
                             default=False, help='Installation information')
-    arg_parser.add_argument('-t', '--target', dest='target', default=None,
-                            help='Deployment target')
+    arg_parser.add_argument('-f', '--cfg', dest='config', default=None,
+                            help='Insert .air_config file')
     arg_parser.add_argument('-d', '--dev', dest='dev', action='store_const',
                             const=True, default=False, help='Development symbols')
     return arg_parser.parse_args()
@@ -53,16 +53,15 @@ def Run(args, logger):
     fileutils.setHardcodedFiles()
 
     # parse input args or prompt the user for configuration
-    if args.target is None:
-        arch, bsp, fpu_enabled, cache_init = prompt_configuration(logger)
+    if args.config is None:
+        arch, bsp, fpu_enabled, cache_init, pos = prompt_configuration(logger)
+        # create the OS configuration object
+        os_configuration = air_configuration.Configuration(arch, bsp, fpu_enabled, cache_init, pos)
     else:
-        arch, bsp, fpu_enabled, cache_init = input_configuration(args.target, logger)
-
-    # create the OS configuration object
-    os_configuration = air_configuration.Configuration(arch, bsp, fpu_enabled, cache_init)
+        os_configuration = input_configuration(logger, args.config)
 
     logger.event(0, 'Configuring AIR OS:')
-    logger.information(1, 'Target: {0} - {1}\n'.format(arch.upper(), bsp))
+    logger.information(1, 'Target: {0} - {1}\n'.format(os_configuration.arch.upper(), os_configuration.bsp))
 
     # template lookup directories
     template_includes = \
@@ -191,39 +190,36 @@ def prompt_configuration(logger):
     else:
         cache_init = 0
 
-    return arch, bsp, fpu_enabled, cache_init
+    pos = []
+    # Prompt to install RTOS
+    opts = ['No', 'Yes']
+    promptx = 'Install All RTOS ?'
+    all_rtos = terminalutils.promptActions(promptx, opts)
+    pos_names = [x for x in os.listdir(air.POS_DIRECTORY)
+                 if os.path.isdir(os.path.join(air.POS_DIRECTORY, x)) and x != 'shared']
+    for pos_name in pos_names:
+        try:
+            i = 0
+            if all_rtos == 0:
+                promptx = 'Install '  + pos_name + '?'
+                i = terminalutils.promptActions(promptx, opts)
+            if i == 1 or all_rtos == 1:
+                pos.append(pos_name)
+        except IOError:
+            logging.warning ('Missing AIR POS : %s, name: %s', pos_path, pos_name)
+            pass
+
+    return arch, bsp, fpu_enabled, cache_init, pos
 
 
-def input_configuration(target, logger):
+def input_configuration(logger, config):
 
-    try:
+    __CONFIG_FILE__ = os.path.join(air.ROOT_DIRECTORY, config)
 
-        # get the current target
-        args = target.split('-', 1)
-        arch = args[0]; bsp  = args[1]; fpu_flag = args[2];
-
-        # check if target is supported
-        if arch not in air_configuration.supported_architectures.keys() or \
-           bsp not in air_configuration.supported_architectures[arch].keys():
-            logger.error("Unsupported target: '{0}'", target)
-            arch = bsp = None
-
-    except:
-        logger.logger.exception("Exception, See details below")
-
-        # error
-        logger.error("Unsupported target: '{0}'", target)
-        arch = bsp = None
-
-    # present list of supported targets if an error occurred
-    if arch is None or bsp is None:
-
-        # check if arch is supported
-        logger.event(0, "Supported targets:")
-        for arch in air_configuration.supported_architectures.keys():
-            for bsp in air_configuration.supported_architectures[arch].keys():
-                logger.information(1, '{0}-{1}', arch, bsp)
-
+    if not os.path.isfile(__CONFIG_FILE__):
+        logger.error("Error config file is missing ", __CONFIG_FILE__)
         sys.exit(-1)
 
-    return arch, bsp, fpu_flag
+    os_configuration = air_configuration.load_configuration(logger, __CONFIG_FILE__)
+
+    return os_configuration
