@@ -80,7 +80,7 @@ FUNC(arm_core_context_save)
     stm     r1!, {r2-r8}
 
     pop     {r1-r12}
-    b       lr
+    bx      lr
 
 
 
@@ -124,4 +124,4 @@ FUNC(arm_core_context_restore)
     // TODO SOMETHING ABOUT IRQs
 
     pop     {r1-r12}
-    b       lr
+    bx      lr

@@ -21,7 +21,7 @@
 #include <armv7.h>
 #include <asm_offsets.h>
 
-    .extern arm_irq_handler
+    .extern arm_irq_default_handler
 
 /* 13 global registers */
 #define ARM_EXCEPTION_FRAME_REGISTER_SP_OFFSET (13 * 4) //=52
@@ -60,7 +60,7 @@ arm_exception_irq_trashed_context:
     /* to guarantee no access to unwanted memory happens */
     sub     sp, #(ARM_EXCEPTION_FRAME_SIZE)
 
-    b       arm_exception_irq_isr_handler
+    b       arm_exception_irq_handler
 
 
 arm_exception_irq_save_context:
@@ -145,8 +145,10 @@ arm_exception_irq_handler:
 
     /* Call high level handler */
     SWITCH_FROM_ARM_TO_THUMB    r1
-    bl      arm_irq_handler
-
+    bl      arm_irq_default_handler
+    SWITCH_FROM_THUMB_TO_ARM
 
     /******************* TODO DO REST **********************/
+    bx      lr
+
 
