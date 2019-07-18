@@ -20,10 +20,6 @@
 #include <mmu.h>
 #include <syscall.h>
 
-extern air_uptr_t arm_svc_table[MAX_SVC];
-
-typedef air_uptr_t (*svc)(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core);
-
 /**************************** syscalls declarations ***************************/
 void arm_syscall_disable_interrupts(void);
 void arm_syscall_enable_interrupts(void);
@@ -43,9 +39,10 @@ air_u32_t arm_syscall_get_irq_mask_register(void);
 void arm_syscall_set_irq_mask_register(air_u32_t val);
 //air_u32_t arm_syscall_set_irq_force_register(void);
 
+air_u32_t arm_syscall_get_core_id(void);
+
 /**************************** function declarations ***************************/
-air_uptr_t arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core);
-air_uptr_t arm_svc_install_handler(air_u32_t vector, void *handler);
-void arm_svc_table_initialize(void);
+void arm_svc_handler(air_u32_t svc_id, arm_supervisor_stack_frame_t *frame,
+        pmk_core_ctrl_t *core);
 
 #endif /* ARM_SVC_H */
