@@ -17,6 +17,8 @@
 #include <svc.h>
 #include <gic.h>
 
+extern pmk_sharedarea_t air_shared_area;
+
 void arm_syscall_disable_interrupts(void) {
 
     arm_disable_interrupts();
@@ -26,8 +28,15 @@ void arm_syscall_enable_interrupts(void) {
     arm_enable_interrupts();
 }
 
-#define arm_syscall_disable_traps arm_syscall_disable_interrupts
-#define arm_syscall_enable_traps arm_syscall_enable_interrupts
+void arm_syscall_disable_traps(void) {
+
+    arm_disable_interrupts();
+}
+
+void arm_syscall_enable_traps(void) {
+
+    arm_enable_interrupts();
+}
 
 void arm_syscall_disable_fpu(void) {
 #ifdef PMK_FPU_SUPPORT
@@ -57,7 +66,6 @@ void arm_syscall_set_psr(air_u32_t val) {
 }
 
 //air_u32_t AIR_SYSCALL_ARM_RETT
-
 //air_u32_t arm_syscall_get_cache_register(void);
 //air_u32_t arm_syscall_set_cache_register(void);
 //air_u32_t AIR_SYSCALL_ARM_RESTORE_CACHE_REGISTER
@@ -69,3 +77,19 @@ void arm_syscall_set_irq_mask_register(air_u32_t val) {
     arm_set_int_mask(val);
 }
 //air_u32_t arm_syscall_set_irq_force_register(void);
+
+air_u32_t arm_syscall_get_core_id(void) {
+    ARM_SWITCH_REGISTERS;
+    air_u32_t core_id;
+
+    __asm__ volatile (
+        ARM_SWITCH_TO_ARM
+        "mrc p15, 0, %[core_id], c0, c0, 5\n"
+        ARM_SWITCH_BACK
+        : [core_id] "=&r" (core_id) ARM_SWITCH_ADDITIONAL_OUTPUT
+    );
+
+    pmk_core_ctrl_t core = air_shared_area.core[core_id];
+
+    return core.context->vcpu.id;
+}

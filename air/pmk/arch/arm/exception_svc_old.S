@@ -23,12 +23,6 @@
 
     .extern svc_handler
 
-/* 13 global registers */
-#define ARM_EXCEPTION_FRAME_REGISTER_SP_OFFSET (13 * 4) /* =52 */
-/* 40 - 13 = 7 registers containing pre-exception registers */
-#define MORE_CONTEXT_SIZE \
-    (ARM_EXCEPTION_FRAME_SIZE - ARM_EXCEPTION_FRAME_REGISTER_SP_OFFSET)
-
 #define offsetof_arm_interrupt_stack_frame_t_ctx \
         (sizeof_arm_interrupt_stack_frame_t - \
         offsetof_arm_interrupt_stack_frame_t_orig_sp)

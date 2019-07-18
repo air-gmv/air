@@ -52,7 +52,8 @@
     /**< Start entry */
 FUNC(start)
 FUNC(_start)
-FUNC(exceptions)
+FUNC(pmk_trap_table)
+FUNC(vector_table_start)
     b       reset
     b       exception_undef
     b       exception_svc
@@ -61,6 +62,7 @@ FUNC(exceptions)
     nop
     b       exception_irq
     b       exception_fiq
+FUNC(vector_table_end)
 
 #ifdef SECURITY_EXTENSIONS
     .extern stack_mon_end
@@ -106,6 +108,9 @@ reset:
     mov     r5, r1
     mov     r6, r2
 
+    /* Calculate stack offset */
+    ldr     r1, =total_stack_size
+
 #ifdef PMK_SMP
     /* Reading the MPIDR into r7. Not available before ARMv7 */
     mrc     p15, 0, r7, c0, c0, 5
@@ -116,11 +121,12 @@ reset:
     /* TODO We might add fdt */
 
     /* TODO Some CPUs start in hypervisor mode */
-
-    /**< Calculate stack offset */
-    ldr     r1, =stack_total_size
+    add     r7, #1
     mul     r1, r7
 #endif /* PMK_SMP */
+
+    ldr     r2, =air_stack
+    add     r7, r1, r2
 
     /**< Setup processor modes */
 setup_stack:
@@ -128,54 +134,47 @@ setup_stack:
 
     /**< Set SVC mode */
     cpsid   aif, #(ARM_PSR_SVC)
-    ldr     sp, =stack_svc_end
-#ifdef PMK_SMP
-    add     sp, r1
-#endif
+    ldr     r2, =svc_stack_size
+    mov     sp, r7
+    sub     r7, r2
 
     /**< Set FIQ mode */
     cpsid   aif, #(ARM_PSR_FIQ)
-    ldr     sp, =stack_fiq_end
-#ifdef PMK_SMP
-    add     sp, r1
-#endif
+    ldr     r2, =fiq_stack_size
+    mov     sp, r7
+    sub     r7, r2
 
     /* TODO some boards require fiq registers initialization */
 
     /**< Set IRQ mode */
     cpsid   aif, #(ARM_PSR_IRQ)
-    ldr     sp, =stack_irq_end
-#ifdef PMK_SMP
-    add     sp, r1
-#endif
+    ldr     r2, =irq_stack_size
+    mov     sp, r7
+    sub     r7, r2
 
     /**< Set ABT mode */
     cpsid   aif, #(ARM_PSR_ABT)
-    ldr     sp, =stack_abt_end
-#ifdef PMK_SMP
-    add     sp, r1
-#endif
+    ldr     r2, =abt_stack_size
+    mov     sp, r7
+    sub     r7, r2
 
     /**< Set UND mode */
     cpsid   aif, #(ARM_PSR_UND)
-    ldr     sp, =stack_und_end
-#ifdef PMK_SMP
-    add     sp, r1
-#endif
+    ldr     r2, =und_stack_size
+    mov     sp, r7
+    sub     r7, r2
 
     /**< Set SYS mode */
     cpsid   aif, #(ARM_PSR_SYS)
-    ldr     sp, =stack_sys_end
-#ifdef PMK_SMP
-    add     sp, r1
-#endif
+    ldr     r2, =sys_stack_size
+    mov     sp, r7
+    sub     r7, r2
 
     /**< Set MON mode */
     cpsid   aif, #(ARM_PSR_MON)
-    ldr     sp, =stack_mon_end
-#ifdef PMK_SMP
-    add     sp, r1
-#endif
+    ldr     r2, =mon_stack_size
+    mov     sp, r7
+    sub     r7, r2
 
     /**< Change back to SVC mode */
     cps     #(ARM_PSR_SVC)
@@ -213,7 +212,7 @@ setup_stack:
 //  mov     r0, r4 /* original cpsr */
 //  mov     r1, r5 /* machine type number or ~0 for DT boot */
 //  mov     r2, r6 /* physical address of ATAGs or DTB */
-    ldr     r0, =exceptions
+    ldr     r0, =vector_table_start
 
     bl      bsp_start_hook
 

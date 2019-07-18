@@ -216,6 +216,20 @@ typedef struct {
 } arm_interrupt_stack_frame_t;
 
 /**
+ *  @brief Context saved on stack for a supervisor call.
+ */
+typedef struct {
+    air_u32_t r0;
+    air_u32_t r1;
+    air_u32_t r2;
+    air_u32_t r3;
+    air_u32_t r4;
+    air_u32_t r5;
+    air_u32_t reserved;
+    air_u32_t orig_lr;
+} arm_supervisor_stack_frame_t;
+
+/**
  * @brief Virtual SPARC CPU
  */
 typedef struct {
@@ -367,7 +381,7 @@ static inline void arm_set_cpsr(air_u32_t val) {
     );
 }
 
-static inline void arm_disable_preemption(void) {
+static inline void arm_disable_preemption(air_u32_t flags) {
     ARM_SWITCH_REGISTERS;
 
     __asm__ volatile (
@@ -378,7 +392,7 @@ static inline void arm_disable_preemption(void) {
     );
 }
 
-static inline void arm_enable_preemption(void) {
+static inline void arm_enable_preemption(air_u32_t flags) {
     ARM_SWITCH_REGISTERS;
 
     __asm__ volatile (
