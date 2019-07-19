@@ -19,18 +19,11 @@
 
 #include <asm.h>
 #include <armv7.h>
+#include <cpu.h>
 #include <bsp.h>
 
     /* External symbols */
-    .extern svc_stack_size
-    .extern fiq_stack_size
-    .extern irq_stack_size
-    .extern abt_stack_size
-    .extern und_stack_size
-    .extern sys_stack_size
-    .extern mon_stack_size
-    .extern total_stack_size
-
+    .extern air_stack
     .extern bsp_start_hook
     .extern pmk_init
 
@@ -108,12 +101,13 @@ FUNC(nonsecure_exceptions)
 reset:
     /* TODO Some boards require register initialization */
 
+#ifdef LUMM_MONOCORE
     /* Save r1 and r2 to preserve bootloader params */
     mov     r5, r1
     mov     r6, r2
 
     /* Calculate stack offset */
-    ldr     r1, =total_stack_size
+    mov     r1, #total_stack_size
 
 #ifdef PMK_SMP
     /* Reading the MPIDR into r7. Not available before ARMv7 */
@@ -131,6 +125,7 @@ reset:
 
     ldr     r2, =air_stack
     add     r7, r1, r2
+#endif
 
     /**< Setup processor modes */
 setup_stack:
@@ -138,13 +133,13 @@ setup_stack:
 
     /**< Set SVC mode */
     cpsid   if, #(ARM_PSR_SVC)
-    ldr     r2, =svc_stack_size
+    mov     r2, #svc_stack_size
     mov     sp, r7
     sub     r7, r2
 
     /**< Set FIQ mode */
     cpsid   aif, #(ARM_PSR_FIQ)
-    ldr     r2, =fiq_stack_size
+    mov     r2, #fiq_stack_size
     mov     sp, r7
     sub     r7, r2
 
@@ -152,31 +147,31 @@ setup_stack:
 
     /**< Set IRQ mode */
     cpsid   aif, #(ARM_PSR_IRQ)
-    ldr     r2, =irq_stack_size
+    mov     r2, #irq_stack_size
     mov     sp, r7
     sub     r7, r2
 
     /**< Set ABT mode */
     cpsid   aif, #(ARM_PSR_ABT)
-    ldr     r2, =abt_stack_size
+    mov     r2, #abt_stack_size
     mov     sp, r7
     sub     r7, r2
 
     /**< Set UND mode */
     cpsid   aif, #(ARM_PSR_UND)
-    ldr     r2, =und_stack_size
+    mov     r2, #und_stack_size
     mov     sp, r7
     sub     r7, r2
 
     /**< Set SYS mode */
     cpsie   aif, #(ARM_PSR_SYS)
-    ldr     r2, =sys_stack_size
+    mov     r2, #sys_stack_size
     mov     sp, r7
     sub     r7, r2
 
     /**< Set MON mode */
     cpsid   aif, #(ARM_PSR_MON)
-    ldr     r2, =mon_stack_size
+    mov     r2, #mon_stack_size
     mov     sp, r7
     sub     r7, r2
 
