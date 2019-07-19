@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # =============================================================================
-#  Copyright (C) GMVIS Skysoft S.A., 2014
+#  Copyright (C) GMVIS Skysoft S.A., 2014-2019
 # =============================================================================
 #   This file is part of the AIR Operating System configuration sub-system.
 #   The license and distribution terms for this file may be found in the file
@@ -22,8 +22,7 @@ from utils.logger import Logger
 from localization.common import *
 from argparse import  ArgumentParser,  RawTextHelpFormatter
 
-__version__ 	= '4.1'
-__copyright__ 	= 'Copyright (C) GMVIS Skysoft S.A., 2018'
+__version__ 	= '4.2'
 __author__ 		= '$(AIR_RUNNER_USER), llgg, gmvs, lumm, pfnf'
 __app__			= os.path.basename(__file__)
 
@@ -48,7 +47,6 @@ if __name__ == "__main__":
     # get available architectures
     air_configuration.supported_architectures = air_configuration.get_available_targets()
     air_configuration.available_libraries = air_configuration.get_available_libraries()
-    air_configuration.available_pos = air_configuration.get_available_pos()
 
     # check if we are configuring AIR or a partition
     if air.WORKING_DIRECTORY == air.ROOT_DIRECTORY:

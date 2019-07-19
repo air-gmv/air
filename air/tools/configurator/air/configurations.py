@@ -19,7 +19,6 @@ import subprocess
 
 __OS_CONFIG_FILE__ = os.path.join(air.ROOT_DIRECTORY, '.air_config')
 
-AIR_POS = os.path.join(air.CONFIGURATOR_DIRECTORY, 'air', 'pos')
 AIR_TARGETS = os.path.join(air.CONFIGURATOR_DIRECTORY, 'air', 'targets')
 AIR_LIBRARIES = os.path.join(air.CONFIGURATOR_DIRECTORY, 'air', 'libraries')
 
@@ -88,35 +87,8 @@ def get_available_libraries():
     return libs
 
 
-def get_available_pos():
-    pos = {}
-    # Prompt to install RTOS
-    #opts = ['No', 'Yes']
-    #promptx = 'Install All RTOS ?'
-    #all_rtos = terminalutils.promptActions(promptx, opts)
-    pos_names = [x for x in os.listdir(AIR_POS)
-                 if os.path.isdir(os.path.join(AIR_POS, x)) and x != 'shared']
-    for pos_name in pos_names:
-        try:
-            #i = 0
-            #if all_rtos == 0:
-            #    promptx = 'Install '  + pos_name + '?'
-            #    i = terminalutils.promptActions(promptx, opts)
-            #if i == 1 or all_rtos == 1:
-            pos_path = os.path.join(AIR_POS, pos_name, 'config.py')
-            module = imp.load_source(pos_name, pos_path)
-            module.path = pos_path
-            pos[module.name.lower()] = module
-        except IOError:
-            logging.warning ('Missing AIR POS : %s, name: %s', pos_path, pos_name)        
-            pass
-    return pos
-
-
 supported_architectures = {}
 available_libraries = {}
-available_pos = {}
-
 
 ##
 # @brief Class to hold the AIR OS current configuration
@@ -127,7 +99,7 @@ class Configuration(object):
     # @param self object pointer
     # @param arch target architecture
     # @param bsp target board support package
-    def __init__(self, arch, bsp, fpu_enabled, cache_init):
+    def __init__(self, arch, bsp, fpu_enabled, cache_init, pos_select):
 
         self.arch = arch.lower()
         self.bsp = bsp.lower()
@@ -138,16 +110,17 @@ class Configuration(object):
 
         # get supported pos
         self.supported_pos = {}
-        for pos in available_pos:
-            pos = available_pos[pos]
-            if not hasattr(pos, 'supported_libraries'):
-                pos.supported_libraries = []
-            if self.arch in pos.source_files and \
-               self.arch in pos.private_header_files and self.arch in pos.public_header_files:
-                self.supported_pos[pos.name.lower()] = pos
-                if pos.alias is not None:
-                    for alias in pos.alias:
-                        self.supported_pos[alias.lower()] = pos
+        for pos in pos_select:
+            pos_path = os.path.join(air.POS_DIRECTORY, pos, 'config.py')
+            module = imp.load_source(pos, pos_path)
+            if not hasattr(module, 'supported_libraries'):
+                module.supported_libraries = []
+            if self.arch in module.source_files and \
+               self.arch in module.private_header_files and self.arch in module.public_header_files:
+                self.supported_pos[pos] = module
+                if module.alias is not None:
+                    for alias in module.alias:
+                        self.supported_pos[alias.lower()] = module
 
         # get supported libraries
         self.supported_libraries = {}
@@ -157,16 +130,16 @@ class Configuration(object):
             if lib.requires_pos is not None:
                 for pos_name in lib.requires_pos:
                     try:
-                        pos = self.supported_pos[pos_name]
-                        pos.supported_libraries.append(lib.name)
+                        module = self.supported_pos[pos_name]
+                        module.supported_libraries.append(lib.name)
                         supported = True
                     except Exception:
                         logging.warning ('the library: %s is not installed because %s is missing', lib.name, pos_name)  
                         pass
             else:
                 for pos_name in self.supported_pos:
-                    pos = self.supported_pos[pos_name]
-                    self.supported_pos[pos_name].supported_libraries.append(lib.name)
+                    module = self.supported_pos[pos_name]
+                    module.supported_libraries.append(lib.name)
                     supported = True
 
             if supported:
@@ -174,9 +147,9 @@ class Configuration(object):
 
         # clear duplicates in partition library list
         for pos_name in self.supported_pos:
-            pos = self.supported_pos[pos_name]
-            if pos.alias is None or pos_name not in pos.alias:
-                pos.supported_libraries = list(set(pos.supported_libraries))
+            module = self.supported_pos[pos_name]
+            if module.alias is None or pos_name not in module.alias:
+                module.supported_libraries = list(set(module.supported_libraries))
 
     ##
     # @brief Check if a POS is supported
@@ -563,10 +536,14 @@ class Configuration(object):
 # @param os_configuration OS configuration object pointer
 # @param logger logger to report errors
 def save_configuration(os_configuration, logger):
+    #save only the pos names
+    savepos = []
+    for pos in os_configuration.supported_pos:
+        savepos.append(os_configuration.supported_pos[pos].name.lower())
 
     try:
         fd = open(__OS_CONFIG_FILE__, 'w+')
-        pickle.dump((os_configuration.arch, os_configuration.bsp, os_configuration.fpu_enabled, os_configuration.cache_init), fd)
+        pickle.dump((os_configuration.arch, os_configuration.bsp, os_configuration.fpu_enabled, os_configuration.cache_init, savepos), fd)
         fd.close()
 
     except Exception, why:
@@ -576,17 +553,17 @@ def save_configuration(os_configuration, logger):
 # @brief Loads the OS configuration from the build directory
 # @param logger logger to report errors
 # @return OS configuration object pointer
-def load_configuration(logger):
+def load_configuration(logger, config=__OS_CONFIG_FILE__):
     # sanity check
-    if not os.path.isfile(__OS_CONFIG_FILE__):
-        logger.error("Error POS config file is missing ", __OS_CONFIG_FILE__)
+    if not os.path.isfile(config):
+        logger.error("Error POS config file is missing ", config)
         return None
 
     # try to load the configuration
     try:
-        fd = open(__OS_CONFIG_FILE__, 'r')
-        arch, bsp, fpu_enabled, cache_init = pickle.load(fd)
-        os_configuration = Configuration(arch, bsp, fpu_enabled, cache_init) 
+        fd = open(config, 'r')
+        arch, bsp, fpu_enabled, cache_init, pos_select = pickle.load(fd)
+        os_configuration = Configuration(arch, bsp, fpu_enabled, cache_init, pos_select)
         fd.close()
         return os_configuration
     except: 
