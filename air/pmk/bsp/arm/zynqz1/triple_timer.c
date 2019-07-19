@@ -34,12 +34,12 @@ void arm_init_ttc(air_u32_t timer_id) {
 
         ttc->clk_ctrl_1 = ARM_TTC_CLK_CTRL_PS_EN | ARM_TTC_CLK_CTRL_PS(0xf);
         ttc->cnt_ctrl_1 |= ARM_TTC_CNT_CTRL_DIS;
-        ttc->intv_cnt_1 = ARM_TTC_INTV_CNT(0x8ff);
+        ttc->intv_cnt_1 = ARM_TTC_INTV_CNT(0x1000);
         ttc->int_en_1 = ARM_TTC_INT_EN_INTV;
     }
 
 #ifdef PMK_DEBUG
-    printk("\n :: triple_timer_cnt_t\n"
+    printk(" :: triple_timer_cnt_t\n"
             "    ttc = 0x%x\n"
             "    ttc->clk_ctrl_1 = 0x%x\n"
             "    ttc->cnt_ctrl_1 = 0x%x\n"
@@ -56,7 +56,7 @@ void arm_start_ttc(air_u32_t timer_id) {
     }
 
 #ifdef PMK_DEBUG
-    printk("\n    :: before ttc enable");
+    printk("      :: before ttc enable");
     arm_read_ttc();
 #endif
 
@@ -65,8 +65,7 @@ void arm_start_ttc(air_u32_t timer_id) {
     }
 
 #ifdef PMK_DEBUG
-    arm_read_ttc();
-    for (air_u32_t i = 0; i < 0xfffff; ++i) {}
+    printk("      :: after ttc enable");
     arm_read_ttc();
 #endif
 }
@@ -79,7 +78,7 @@ air_u32_t arm_read_ttc(void) {
     cnt = ttc->cnt_val_1;
 
 #ifdef PMK_DEBUG
-    printk("\n    :: ttc->cnt_val_1 = 0x%x\n\n", cnt);
+    printk("  :: ttc->cnt_val_1 = 0x%x\n", cnt);
 #endif
     return cnt;
 }
