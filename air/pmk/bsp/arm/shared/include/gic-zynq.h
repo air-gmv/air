@@ -26,8 +26,8 @@
 #define ZYNQ_IRQ_DVI                40
 #define ZYNQ_IRQ_SWDT               41
 #define ZYNQ_IRQ_TTC_0_0            42
-#define ZYNQ_IRQ_TTC_1_0            43
-#define ZYNQ_IRQ_TTC_2_0            44
+#define ZYNQ_IRQ_TTC_0_1            43
+#define ZYNQ_IRQ_TTC_0_2            44
 #define ZYNQ_IRQ_DMAC_ABORT         45
 #define ZYNQ_IRQ_DMAC_0             46
 #define ZYNQ_IRQ_DMAC_1             47
@@ -52,9 +52,9 @@
 #define ZYNQ_IRQ_FPGA_5             66
 #define ZYNQ_IRQ_FPGA_6             67
 #define ZYNQ_IRQ_FPGA_7             68
-#define ZYNQ_IRQ_TTC_0_1            69
+#define ZYNQ_IRQ_TTC_1_0            69
 #define ZYNQ_IRQ_TTC_1_1            70
-#define ZYNQ_IRQ_TTC_2_1            71
+#define ZYNQ_IRQ_TTC_1_2            71
 #define ZYNQ_IRQ_DMAC_4             72
 #define ZYNQ_IRQ_DMAC_5             73
 #define ZYNQ_IRQ_DMAC_6             74

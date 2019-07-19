@@ -57,10 +57,12 @@ void gic_init(air_u32_t cpu_id) {
 
     arm_set_ic_cpu_preemption(PREEMPTION(0));
 
-    air_u32_t iccicr = ICCICR_FIQ_EN;
-    arm_set_ic_cpu_ctrl(iccicr);
+//  air_u32_t iccicr = ICCICR_FIQ_EN;
+//  arm_set_ic_cpu_ctrl(iccicr);
 
     if (cpu_id == 0) {
+        arm_disable_interrupts();
+        arm_clear_pending(int_count);
         arm_gic_enable();
     } else {
         while(!arm_is_gic_enabled()){}

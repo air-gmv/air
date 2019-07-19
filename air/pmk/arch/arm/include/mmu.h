@@ -24,7 +24,7 @@
 #define TTBR_N              0 /* 0 <= N < 8 */
 
 #define TTBR0_SIZE          (1U << (12 - TTBR_N)) * sizeof(air_u32_t)
-#ifdef TTBR_N
+#if TTBR_N
 #define TTBR1_SIZE          (1U << 12) * sizeof(air_u32_t)
 #else
 #define TTBR1_SIZE          0

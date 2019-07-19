@@ -408,5 +408,12 @@ static inline void arm_enable_preemption(air_u32_t flags) {
 void arm_core_context_save(void *core);
 void arm_core_context_restore(void *core);
 
+void exception_undef(void);
+void exception_svc(void);
+void exception_pref_abort(void);
+void exception_data_abort(void);
+void exception_irq(void);
+void exception_fiq(void);
+
 #endif /* not ASM */
 #endif /* ARM_ARMv7_H */

@@ -16,6 +16,10 @@
 #include <bsp.h>
 #include <pmk.h>
 #include <ipc.h>
+#ifdef PMK_DEBUG
+#include <printk.h>
+#endif
+
 #define N 1 // nesting level
 
 #define DEFAULT_STACK_SIZE  0x1000
@@ -75,7 +79,7 @@ void core_context_init(core_context_t *context, air_u32_t id) {
     printk("    :: context: %02i (0x%08x)\n",
             id, context);
     printk("       stack: [0x%08x : 0x%08x]\n",
-            stack_space, context->isf_stack_pointer);
+            context->idle_isf_pointer, (context->idle_isf_pointer + N*sizeof(arm_interrupt_stack_frame_t)));
     printk("         fpu: [0x%08x : 0x%08x]\n",
             context->fpu_context, context->fpu_context +
             sizeof(arm_vfp_context_t));
@@ -114,6 +118,7 @@ void core_context_setup_idle(core_context_t *context) {
 
     /* setup the context entry point */
     isf->lr = (air_uptr_t)bsp_idle_loop;
+    isf->orig_lr = (air_uptr_t)bsp_idle_loop;
 }
 
 /**
@@ -125,7 +130,7 @@ void core_context_setup_partition(
         core_context_t *context, pmk_partition_t *partition){
 
     /* initialize the virtual core */
-    context->vcpu.psr = 0;
+    context->vcpu.psr = ARM_PSR_USR;
     context->vcpu.tbr = 0;
     context->vcpu.ipend = 0;
     context->vcpu.imask = 0;
@@ -142,9 +147,6 @@ void core_context_setup_partition(
                 (arm_interrupt_stack_frame_t *)(context->isf_pointer);
 
         context->trash = 0;
-
-        /* mark the partition context as the ISF */
-        context->isf_pointer = isf;
 
         /* at start ISR level is one */
         context->isr_nesting_level = 1;
