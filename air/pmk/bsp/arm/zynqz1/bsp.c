@@ -13,6 +13,9 @@
  */
 
 #include <bsp.h>
+#ifdef PMK_DEBUG
+#include <printk.h>
+#endif
 
 void bsp_start_hook(void *vector_table_start) {
 
@@ -72,8 +75,8 @@ air_u32_t bsp_core_init(void) {
 
         arm_set_vector_base();
         arm_irq_table_initialize();
-        arm_init_global_timer();
-        arm_start_uart();
+        arm_init_ttc(1);
+        //arm_start_uart();
     }
 
     gic_init(cpu_id);
@@ -97,7 +100,7 @@ void bsp_core_ready(void) {
         // something about smp. not implement for now
 
         //CLOCK
-        arm_start_global_timer();
+        arm_start_ttc(1);
     }
 
     //MMU
@@ -135,4 +138,16 @@ void bsp_shutdown_core(pmk_core_ctrl_t *core_ctx) {
 
 void bsp_interrupt_broadcast(air_u32_t dummy) {
     arm_generate_swi(ARM_SGI_TARGET_OTHERS, 0, 0, BSP_IPC_PCS);
+}
+
+
+void bsp_idle_loop(void) {
+
+#ifdef PMK_DEBUG
+    printk("    :: wfi\n");
+#endif
+    arm_data_synchronization_barrier(15);
+    while(true) {
+        __asm__ volatile ("wfi" ::: "memory");
+    }
 }
