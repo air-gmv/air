@@ -22,18 +22,7 @@
 
 #define N 1 // nesting level
 
-#define DEFAULT_STACK_SIZE  0x1000
-#define TOTAL_STACK_SIZE    7*DEFAULT_STACK_SIZE
-
 /* stacks for the various modes */
-air_u32_t svc_stack_size = DEFAULT_STACK_SIZE;
-air_u32_t fiq_stack_size = DEFAULT_STACK_SIZE;
-air_u32_t irq_stack_size = DEFAULT_STACK_SIZE;
-air_u32_t abt_stack_size = DEFAULT_STACK_SIZE;
-air_u32_t und_stack_size = DEFAULT_STACK_SIZE;
-air_u32_t sys_stack_size = DEFAULT_STACK_SIZE;
-air_u32_t mon_stack_size = DEFAULT_STACK_SIZE;
-air_u32_t total_stack_size = TOTAL_STACK_SIZE;
 air_u8_t air_stack[TOTAL_STACK_SIZE * PMK_MAX_CORES];
 
 /**
@@ -56,6 +45,8 @@ void core_context_init(core_context_t *context, air_u32_t id) {
     context->idle_isf_pointer =
             (void *)pmk_workspace_alloc(N*sizeof(arm_interrupt_stack_frame_t));
 
+    context->isf_pointer = context->idle_isf_pointer;
+
 #if PMK_FPU_SUPPORT
     /* allocate space to hold an FPU context */
     context->fpu_context = (arm_vfp_context_t *) \
@@ -76,13 +67,21 @@ void core_context_init(core_context_t *context, air_u32_t id) {
 
 #ifdef PMK_DEBUG
 
-    printk("    :: context: %02i (0x%08x)\n",
+    printk("    context %i at         "
+            "0x%08x\n",
             id, context);
-    printk("       stack: [0x%08x : 0x%08x]\n",
-            context->idle_isf_pointer, (context->idle_isf_pointer + N*sizeof(arm_interrupt_stack_frame_t)));
-    printk("         fpu: [0x%08x : 0x%08x]\n",
-            context->fpu_context, context->fpu_context +
-            sizeof(arm_vfp_context_t));
+    printk("    idle_isf_pointer at  "
+            "0x%08x to 0x%08x\n",
+            context->idle_isf_pointer,
+            (context->idle_isf_pointer + N*sizeof(arm_interrupt_stack_frame_t)));
+    printk("    fpu_context at       "
+            "0x%08x to 0x%08x\n",
+            context->fpu_context,
+            context->fpu_context + sizeof(arm_vfp_context_t));
+    printk("    stack at             "
+            "0x%08x to 0x%08x\n",
+            &air_stack,
+            &air_stack + sizeof(air_stack));
 
 #endif
 }
@@ -107,18 +106,18 @@ void core_context_setup_idle(core_context_t *context) {
             (arm_interrupt_stack_frame_t *)(context->idle_isf_pointer);
 
     /* setup the space for the 1st window and the restore point */
-    context->isf_pointer = (void *)isf;
+    context->isf_pointer = context->idle_isf_pointer;
 
     /* this context doesn't need to be saved */
     context->trash = 1;
     context->isr_nesting_level = 1;
 
     /* setup the context return PSR */
-    isf->orig_cpsr = ARM_PSR_USR;
+    isf->orig_cpsr = (ARM_PSR_T | ARM_PSR_USR);
 
     /* setup the context entry point */
-    isf->lr = (air_uptr_t)bsp_idle_loop;
-    isf->orig_lr = (air_uptr_t)bsp_idle_loop;
+    isf->lr = (air_u32_t)bsp_idle_loop;
+    isf->orig_lr = (air_u32_t)bsp_idle_loop;
 }
 
 /**
@@ -130,7 +129,7 @@ void core_context_setup_partition(
         core_context_t *context, pmk_partition_t *partition){
 
     /* initialize the virtual core */
-    context->vcpu.psr = ARM_PSR_USR;
+    context->vcpu.psr = (ARM_PSR_T | ARM_PSR_USR);
     context->vcpu.tbr = 0;
     context->vcpu.ipend = 0;
     context->vcpu.imask = 0;
@@ -154,18 +153,18 @@ void core_context_setup_partition(
         /* setup partition real PSR */
         /* check if the partition have supervisor permissions */
         if ((partition->permissions & AIR_PERMISSION_SUPERVISOR) != 0) {
-            isf->orig_cpsr = ARM_PSR_SYS;
+            isf->orig_cpsr = (ARM_PSR_T | ARM_PSR_SYS);
         } else {
-            isf->orig_cpsr = ARM_PSR_USR;
+            isf->orig_cpsr = (ARM_PSR_T | ARM_PSR_USR);
         }
 
         /* setup the partition entry point */
-        isf->lr   = (air_uptr_t)context->entry_point;
+        isf->lr = (air_u32_t)context->entry_point;
 
         /* setup the stack pointer of the partition */
-        air_uptr_t stack =
-                (air_uptr_t)partition->mmap->v_addr + partition->mmap->size;
-        stack = (air_uptr_t)((air_u32_t)stack & ~(32 - 1));
+        air_u32_t stack =
+                (air_u32_t)partition->mmap->v_addr + partition->mmap->size;
+        stack = (stack & ~(32 - 1));
         isf->orig_sp = stack;
 
         // TODO something about cache

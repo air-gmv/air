@@ -26,7 +26,6 @@
     /* Save global registers and branch to save context */
 
     .arm
-
 FUNC(exception_irq)
     push    {r8-r12}
 
@@ -165,4 +164,8 @@ restore_non_user_mode:
     msr     spsr, r11
 
     ldm     r7, {r0-r12}
+
+#ifdef __thumb__
+    orr     lr, #1
+#endif
     subs    pc, lr, #4

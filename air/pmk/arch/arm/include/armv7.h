@@ -62,6 +62,7 @@
 .thumb
 .align 2
     bx      pc
+    nop
 .arm
 #endif
 .endm
