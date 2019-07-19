@@ -13,8 +13,14 @@
  */
 
 #include <isr.h>
+#ifdef PMK_DEBUG
+#include <printk.h>
+#endif
 
-void arm_exception_default_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t* core) {
-    //TODO terminate
+void arm_exception_default_handler(void) {
+
+#ifdef PMK_DEBUG
+    printk("\n :: either undef, abort\n\n");
+#endif
     return;
 }

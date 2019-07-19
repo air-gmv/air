@@ -17,6 +17,9 @@
 #include <mmu.h>
 #include <bsp.h>
 #include <configurations.h>
+#ifdef PMK_DEBUG
+#include <printk.h>
+#endif
 
 void arm_mmu_init(void) {
 
@@ -45,14 +48,21 @@ void arm_mmu_enable(void) {
     pmk_partition_t *partition = &((pmk_partition_t *)list->elements)[0];
     arm_mmu_context_t *mmu_ctrl = partition->mmu_ctrl;
 
+
     arm_cp15_set_translation_table0_base(mmu_ctrl->ttbr0);
-#ifdef TTBR_N
+#if TTBR_N
     arm_cp15_set_translation_table1_base(mmu_ctrl->ttbr1);
 #endif
 
     air_u32_t sctlr = arm_cp15_get_system_control();
-    sctlr |= (ARM_SCTLR_I | ARM_SCTLR_C | ARM_SCTLR_M);
-    arm_cp15_set_system_control(sctlr);
+    sctlr |= (ARM_SCTLR_M);
+
+#ifdef PMK_DEBUG
+    printk("    :: arm_mmu_enable , mmu not enabled\n");
+#endif
+
+//  arm_cp15_set_system_control(sctlr);
+
 }
 
 void arm_segregation_init(void) {
@@ -70,7 +80,7 @@ void arm_segregation_init(void) {
         for (i = 0; i < TTBR0_ENTRIES; ++i) {
             ctrl->ttbr0[i] = 0;
         }
-#ifdef TTBR_N
+#if TTBR_N
         ctrl->ttbr1 = pmk_workspace_aligned_alloc(TTBR1_SIZE, TTBR1_SIZE);
         for (i = 0; i < TTBR1_ENTRIES; ++i) {
             ctrl->ttbr1[i] = 0;

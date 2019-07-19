@@ -31,7 +31,7 @@ static inline void arm_gic_disable(void) {
 }
 
 static inline void arm_gic_enable(void) {
-    ic_dist->icddcr |= (1U << 0);
+    ic_dist->icddcr |= (3U << 0);
 }
 
 static inline air_u32_t arm_is_gic_enabled(void) {
@@ -61,6 +61,13 @@ static inline void arm_sgi_ppi_disable(void) {
 static inline void arm_spi_disable(air_u32_t int_count) {
     for(air_u32_t i = 32; i < int_count; i += 32) {
         ic_dist->icdicer[i/32] = 0xffffffff;
+    }
+}
+
+/**< ICDICPR */
+static inline void arm_clear_pending(air_u32_t int_count) {
+    for(air_u32_t i = 32; i < int_count; i += 32) {
+        ic_dist->icdicpr[i/32] = 0xffffffff;
     }
 }
 
@@ -104,7 +111,7 @@ static inline void arm_disable_interrupts(void) {
 }
 
 static inline void arm_enable_interrupts(void) {
-    ic_cpu->iccicr |= 0x1;
+    ic_cpu->iccicr |= 0x3;
 }
 
 /**< ICCPMR (GICC_PMR) */

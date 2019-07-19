@@ -25,14 +25,14 @@ FUNC(exception_undef)
 FUNC(exception_pref_abort)
 FUNC(exception_data_abort)
 
-    push    {r0-r3}
+    push    {r0-r2, lr}
 
     /* Call high level handler */
     SWITCH_FROM_ARM_TO_THUMB    r1
     bl      arm_exception_default_handler
     SWITCH_FROM_THUMB_TO_ARM
 
-    pop     {r0-r3}
-    bx      lr
+    pop     {r0-r2, lr}
+    subs    pc, lr, #4
 
 #endif /* ASM */

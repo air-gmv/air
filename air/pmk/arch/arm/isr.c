@@ -13,6 +13,9 @@
  */
 
 #include <isr.h>
+#ifdef PMK_DEBUG
+#include <printk.h>
+#endif
 
 typedef void (*isr)(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core);
 
@@ -20,6 +23,20 @@ air_uptr_t arm_isr_handler_table[ZYNQ_MAX_INT];
 
 void arm_irq_default_handler(arm_interrupt_stack_frame_t *frame,
         pmk_core_ctrl_t *core) {
+
+    air_u32_t ack = arm_acknowledge_int();
+
+    air_u16_t id = (ack & 0x3ff);
+
+#ifdef PMK_DEBUG
+    printk("\n :: IRQ #%d acknowledge\n\n", id);
+    triple_timer_cnt_t *ttc = (triple_timer_cnt_t *)0xf8001000;
+    ic_distributor_t *ic_dist = (ic_distributor_t *)IC_DIST_BASE_MEMORY;
+
+    printk("\n\n    ttc->cnt_val_1 = 0x%x\n", ttc->cnt_val_1);
+    printk("  * ic_dist->icdiser[1] = 0x%x\n", ic_dist->icdiser[1]);
+    printk("  * ic_dist->icdispr[1] = 0x%x\n\n", ic_dist->icdispr[1]);
+#endif
     return;
 }
 
@@ -45,6 +62,16 @@ void arm_irq_handler(arm_interrupt_stack_frame_t *frame,
 
     air_u16_t id = (ack & 0x3ff);
     // not used    air_u8_t cpu = ((ack << 10U) & 0x7);
+
+#ifdef PMK_DEBUG
+    printk("\n :: IRQ #%d acknowledge\n\n", id);
+    triple_timer_cnt_t *ttc = (triple_timer_cnt_t *)0xf8001000;
+    ic_distributor_t *ic_dist = (ic_distributor_t *)IC_DIST_BASE_MEMORY;
+
+    printk("\n\n    ttc->cnt_val_1 = 0x%x\n", ttc->cnt_val_1);
+    printk("  * ic_dist->icdiser[1] = 0x%x\n", ic_dist->icdiser[1]);
+    printk("  * ic_dist->icdispr[1] = 0x%x\n\n", ic_dist->icdispr[1]);
+#endif
 
     /* Spurious interrupt */
     if(id == 1023) {

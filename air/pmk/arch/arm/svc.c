@@ -13,9 +13,16 @@
  */
 
 #include <svc.h>
+#ifdef PMK_DEBUG
+#include <printk.h>
+#endif
 
 void arm_svc_handler(air_u32_t svc_id, arm_supervisor_stack_frame_t *frame,
         pmk_core_ctrl_t *core) {
+
+#ifdef PMK_DEBUG_SVC
+    printk("    :: svc #%d\n", svc_id);
+#endif
 
     switch (svc_id) {
     case AIR_SYSCALL_ARM_DISABLE_INTERRUPTS:

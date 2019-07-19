@@ -22,47 +22,52 @@
 #include <bsp.h>
 
     /* External symbols */
-    .extern stack_svc_end
-    .extern stack_fiq_end
-    .extern stack_irq_end
-    .extern stack_abt_end
-    .extern stack_und_end
-    .extern stack_sys_end
-#ifdef PMK_SMP
-    .extern stack_total_size
-#endif
+    .extern svc_stack_size
+    .extern fiq_stack_size
+    .extern irq_stack_size
+    .extern abt_stack_size
+    .extern und_stack_size
+    .extern sys_stack_size
+    .extern mon_stack_size
+    .extern total_stack_size
+
     .extern bsp_start_hook
     .extern pmk_init
 
-    .extern exception_undef
-    .extern exception_svc
-    .extern exception_pref_abort
-    .extern exception_data_abort
-    .extern exception_irq
-    .extern exception_fiq
-
     .globl vector_table_end
-    .globl vector_table_size
-    .globl start_hook_done
-
 #if __ARM_ARCH >= 7
     .arm
-    .section exception_table, "ax"
+    .section .text, "ax"
 
     /**< Start entry */
 FUNC(start)
 FUNC(_start)
 FUNC(pmk_trap_table)
 FUNC(vector_table_start)
-    b       reset
-    b       exception_undef
-    b       exception_svc
-    b       exception_pref_abort
-    b       exception_data_abort
+    ldr     pc, handler_reset
+    ldr     pc, handler_exception_undef
+    ldr     pc, handler_exception_svc
+    ldr     pc, handler_exception_pref_abort
+    ldr     pc, handler_exception_data_abort
     nop
-    b       exception_irq
-    b       exception_fiq
+    ldr     pc, handler_exception_irq
+    ldr     pc, handler_exception_fiq
 FUNC(vector_table_end)
+
+handler_reset:
+    .word reset
+handler_exception_undef:
+    .word exception_undef
+handler_exception_svc:
+    .word exception_svc
+handler_exception_pref_abort:
+    .word exception_pref_abort
+handler_exception_data_abort:
+    .word exception_data_abort
+handler_exception_irq:
+    .word exception_irq
+handler_exception_fiq:
+    .word exception_fiq
 
 #ifdef SECURITY_EXTENSIONS
     .extern stack_mon_end
@@ -100,7 +105,6 @@ FUNC(nonsecure_exceptions)
     b       nonsecure_fiq
 #endif /* SECURITY_EXTENSIONS */
 
-    .section .text, "ax"
 reset:
     /* TODO Some boards require register initialization */
 
@@ -133,7 +137,7 @@ setup_stack:
     mrs     r4, cpsr /* save original processor status value */
 
     /**< Set SVC mode */
-    cpsid   aif, #(ARM_PSR_SVC)
+    cpsid   if, #(ARM_PSR_SVC)
     ldr     r2, =svc_stack_size
     mov     sp, r7
     sub     r7, r2
@@ -165,7 +169,7 @@ setup_stack:
     sub     r7, r2
 
     /**< Set SYS mode */
-    cpsid   aif, #(ARM_PSR_SYS)
+    cpsie   aif, #(ARM_PSR_SYS)
     ldr     r2, =sys_stack_size
     mov     sp, r7
     sub     r7, r2
@@ -177,7 +181,7 @@ setup_stack:
     sub     r7, r2
 
     /**< Change back to SVC mode */
-    cps     #(ARM_PSR_SVC)
+    cpsie   aif, #(ARM_PSR_SVC)
 
     /**< Enable VFPv3. TODO Other versions might need additional setup */
 #ifdef PMK_FPU_SUPPORT
