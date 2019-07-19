@@ -405,8 +405,8 @@ static inline void arm_enable_preemption(air_u32_t flags) {
 
 /******************************************************************************/
 /*********************** Assembly functions declaration ***********************/
-void arm_core_context_save(void *core);
-void arm_core_context_restore(void *core);
+//void arm_core_context_save(void *core);
+//void arm_core_context_restore(void *core);
 
 void exception_undef(void);
 void exception_svc(void);
