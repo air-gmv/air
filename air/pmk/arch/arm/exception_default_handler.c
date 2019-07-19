@@ -17,10 +17,17 @@
 #include <printk.h>
 #endif
 
-void arm_exception_default_handler(void) {
+void arm_exception_default_handler(air_u32_t instr, air_u32_t id) {
 
 #ifdef PMK_DEBUG
-    printk("\n :: either undef, abort\n\n");
+    if (id == 3) {
+        printk("\n $$$ Prefetch abort at 0x%x $$$\n\n", instr);
+    } else if (id == 4) {
+        printk("\n $$$ Data abort at 0x%x $$$\n\n", instr);
+    } else {
+        printk("\n $$$ HOW? $$$\n\n");
+    }
 #endif
+
     return;
 }
