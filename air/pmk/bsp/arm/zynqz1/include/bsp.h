@@ -33,11 +33,15 @@
 #include <slcr.h>
 #include <timer.h>
 #include <uart.h>
+#ifdef PMK_DEBUG
+#include <printk.h>
+#endif
 
-extern air_uptr_t air_kernel_bss_start;
-extern air_uptr_t air_kernel_bss_end;
-extern air_uptr_t vector_table_start;
-extern air_uptr_t vector_table_end;
+void air_kernel_bss_start(void);
+void vector_table_start(void);
+void air_kernel_bss_end(void);
+void vector_table_end(void);
+void pmk_trap_table(void);
 
 #define BSP_IPC_IRQ     ARM_GIC_IRQ_SGI_14
 #define BSP_IPC_PCS     ARM_GIC_IRQ_SGI_15
@@ -59,12 +63,8 @@ static inline void bsp_interrupt_core(air_u32_t core, air_u32_t dummy) {
     }
 }
 
-static inline void bsp_idle_loop(void) {
-    arm_data_synchronization_barrier(15);
-    while(true) {
-        __asm__ volatile ("wfi");
-    }
-}
+void bsp_idle_loop(void);
+
 
 static inline void bsp_wait_for_event(void) {
     arm_data_synchronization_barrier(15);
@@ -101,6 +101,15 @@ static inline void arm_set_vector_base(void) {
 
         /* Assumes every core has Security Extensions */
         arm_cp15_set_vector_base_address((void *)vector_table_start);
+
+#ifdef PMK_DEBUG
+        printk("\n vector_table_start   = 0x%x\n", vector_table_start);
+        printk(" vector_table_end     = 0x%x\n", vector_table_end);
+        printk(" air_kernel_bss_start = 0x%x\n", air_kernel_bss_start);
+        printk(" air_kernel_bss_end   = 0x%x\n", air_kernel_bss_end);
+        printk(" pmk_trap_table       = 0x%x\n\n", pmk_trap_table);
+        printk(" exception_svc        = 0x%x\n\n", exception_svc);
+#endif
 
         ctrl = arm_cp15_get_system_control();
         ctrl &= ~ARM_SCTLR_V;

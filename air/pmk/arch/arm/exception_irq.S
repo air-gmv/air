@@ -23,132 +23,146 @@
 
     .extern arm_irq_default_handler
 
-/* 13 global registers */
-#define ARM_EXCEPTION_FRAME_REGISTER_SP_OFFSET (13 * 4) //=52
-/* 40 - 13 = 7 registers containing pre-exception registers */
-#define MORE_CONTEXT_SIZE \
-    (ARM_EXCEPTION_FRAME_SIZE - ARM_EXCEPTION_FRAME_REGISTER_SP_OFFSET)
+    /* Save global registers and branch to save context */
 
-/* Save global registers and branch to save context */
+    .arm
 
 FUNC(exception_irq)
-    /* TODO IM NOT SURE IF THE IRQ AND FIQ ARE DISABLED WHEN ENTERING ONE */
-    cpsid   if
+    push    {r8-r12}
 
     /* Get current core */
-    mrc     p15, 0, r3, c0, c0, 5
+    mrc     p15, 0, r8, c0, c0, 5
 
     /* Get core control struct from shared area */
-    mov     r4, #sizeof_pmk_core_ctrl_t
-    mul     r3, r4
-    ldr     r4, =air_shared_area
-    ldr     r4, [r4, #offsetof_pmk_sharedarea_t_core]
-    add     r8, r3 /* pmk_core_ctrl_t */
+    mov     r9, #(sizeof_pmk_core_ctrl_t)
+    mul     r8, r9
+    ldr     r9, =air_shared_area
+    ldr     r9, [r9, #(offsetof_pmk_sharedarea_t_core)]
+    add     r10, r9, r8 //pmk_core_ctrl_t
 
     /* Get core context from core control */
-    ldr     r9, [r8, #offsetof_pmk_core_ctrl_t_context] /* arm_core_context_t */
-    ldr     r4, [r9, #offsetof_arm_core_context_t_trash]
-    cmp     r4, #(ARM_CORE_CONTEXT_TRASHED)
-    bne     arm_exception_irq_save_context
+    ldr     r11, [r10, #(offsetof_pmk_core_ctrl_t_context)] //arm_core_context_t
+
+    /* Get the ISF pointer */
+    ldr     r12, [r11, #(offsetof_arm_core_context_t_isf_pointer)]
+
+    /* Check if context trashed (idle) */
+    ldr     r8, [r11, #(offsetof_arm_core_context_t_trash)]
+    cmp     r8, #(ARM_CORE_CONTEXT_TRASHED)
+    bne     arm_irq_save_context
 
 
-arm_exception_irq_trashed_context:
-    /* should be coming from idle. reset to hypervisor isr */
-    mov     r5, #1
-    str     r5, [r9, #offsetof_arm_core_context_t_isr_nesting_level]
+arm_irq_trashed_context:
+    /* reset to hypervisor isr nesting level */
+    mov     r8, #1
+    str     r8, [r11, #(offsetof_arm_core_context_t_isr_nesting_level)]
 
-    /* to guarantee no access to unwanted memory happens */
-    sub     sp, #(ARM_EXCEPTION_FRAME_SIZE)
-
-    b       arm_exception_irq_handler
+    b       arm_irq_isr_handler_from_trashed
 
 
-arm_exception_irq_save_context:
-    sub     sp, #MORE_CONTEXT_SIZE
-    push    {r0-r12}
-    mov     r4, #6 /* IRQ id */
+arm_irq_save_context:
+    stm     r12!, {r0-r7}
+    mov     r0, r12
+    pop     {r8-r12}
+    stm     r0!, {r8-r12}
+    mov     r12, r0
 
-    /* Save more context */
     mov     r2, lr
     mrs     r3, spsr
+    mov     r4, #7 /* FIQ id */
+    mov     r5, #0 /* Clear vfp_ptr */
+
+    orr     r6, r3, #(ARM_PSR_I | ARM_PSR_F)
+    bic     r6, #ARM_PSR_T
+
+    /* test if previous mode was user */
+    and     r7, r3, #(ARM_PSR_MODE_MASK)
+    teq     r7, #(ARM_PSR_USR)
+    bne     save_non_user_mode
+
+save_change_to_sys:
+    mov     r7, #ARM_PSR_SYS
+    bfi     r6, r7, #0, #5 /* Change to SYS mode */
+
+save_non_user_mode:
     mrs     r7, cpsr
-    orr     r5, r3, #(ARM_PSR_I | ARM_PSR_F)
-    bic     r5, #ARM_PSR_T
 
-    add     r6, sp, #ARM_EXCEPTION_FRAME_REGISTER_SP_OFFSET
-
-    /* if exception taken from user mode, can't go there and return */
-//  tst     r5, #0xf
-    and     r0, r5, #ARM_PSR_MODE_MASK
-    teq     r0, #ARM_PSR_USR
-    bne     more_context /* Z set if user */
-
-
-user_mode:
-    mov     r0, #ARM_PSR_SYS
-    bfi     r5, r0, #0, #5  /* Change to SYS mode */
-
-/*
-    stm     r6!, {sp,lr}^
-    stm     r6, {r2-r4}
-*/
-
-more_context:
-    msr     cpsr, r5
+    msr     cpsr, r6
     mov     r0, sp
     mov     r1, lr
     msr     cpsr, r7
-    stm     r6, {r0-r4}
+
+    mov     r6, #0
+    stm     r12!, {r0-r6}
+
+arm_irq_isr_handler:
+    /* Save current isf for nested irqs */
+    sub     r12, r12, #(sizeof_arm_interrupt_stack_frame_t)
+    str     r12, [r11, #(offsetof_arm_core_context_t_isf_pointer)]
+
+arm_irq_isr_handler_from_trashed:
+    /* Arguments for high level handler */
+    mov     r0, r12 /* isf_pointer */
+    mov     r1, r10 /* pmk_core_ctrl_t */
 
 
-    /* Clear VFP context pointer */
-    add     r3, sp, #ARM_EXCEPTION_FRAME_VFP_CONTEXT_OFFSET
-    mov     r1, #0
-    str     r1, [r3]
-
-#ifdef PMK_FPU_SUPPORT
-    /* Ensure that the FPU is enabled */
-    vmrs    r1, FPEXC
-    tst     r1, #(1 << 30)
-    beq     1f
-
-    /* Save VFP context */
-    sub     sp, #(ARM_VFP_CONTEXT_SIZE + 4)
-    add     r4, sp, #4
-    bic     r4, r4, #7
-    str     r4, [r3]
-    vmrs    r2, FPSCR
-    stmia   r4!, {r1-r2}
-    vstmia  r4!, {d0-d15}
-#ifdef VFP_D32
-    vstmia  r4!, {d16-d31}
-#else
-    mov     r1, #0
-    mov     r2, #0
-    adds    r3, r4, #128
-2:
-    stmia   r4!, {r1-r2}
-    cmp     r4, r3
-    bne     2b
-#endif /* VFP_D32 */
-1:
-#endif /* PMK_FPU_SUPPORT */
-
-
-arm_exception_irq_handler:
-    /* Save current sp for nested irqs */
-    str     sp, [r9, #offsetof_arm_core_context_t_isf_pointer]
-
-    /* Argument for high level handler */
-    mov     r0, sp
-    mov     r1, r8 /* pmk_core_ctrl_t */
-
-    /* Call high level handler */
-    SWITCH_FROM_ARM_TO_THUMB    r1
-    bl      arm_irq_default_handler
+    /************************ Call high level handler  ************************/
+    SWITCH_FROM_ARM_TO_THUMB    r2
+    bl      arm_irq_handler
     SWITCH_FROM_THUMB_TO_ARM
+    /********************* Return from high level handler *********************/
 
-    /******************* TODO DO REST **********************/
-    bx      lr
+    /* Get current core */
+    mrc     p15, 0, r8, c0, c0, 5
 
+    /* Get core control struct from shared area */
+    mov     r9, #(sizeof_pmk_core_ctrl_t)
+    mul     r8, r9
+    ldr     r9, =air_shared_area
+    ldr     r9, [r9, #(offsetof_pmk_sharedarea_t_core)]
+    add     r10, r9, r8 //pmk_core_ctrl_t
 
+    /* Get core context from core control */
+    ldr     r11, [r10, #(offsetof_pmk_core_ctrl_t_context)] //arm_core_context_t
+
+    /* Check if context trashed (idle) */
+    ldr     r8, [r11, #(offsetof_arm_core_context_t_trash)]
+    cmp     r8, #(ARM_CORE_CONTEXT_TRASHED)
+    bne     arm_irq_restore_context
+
+arm_irq_restore_trashed_context:
+    /* Get the idle ISF pointer */
+    ldr     r12, [r11, #(offsetof_arm_core_context_t_idle_isf_pointer)]
+    b       arm_irq_restore_trashed_context
+
+arm_irq_restore_context:
+    /* Get the ISF pointer */
+    ldr     r7, [r11, #(offsetof_arm_core_context_t_isf_pointer)]
+
+arm_irq_restore_context_from_trashed:
+    add     r12, r7, #(offsetof_arm_interrupt_stack_frame_t_orig_sp)
+
+    ldm     r12, {r8-r11}
+    mov     lr, r10
+    orr     r10, r11, #(ARM_PSR_I | ARM_PSR_F)
+    bic     r10, #ARM_PSR_T
+    and     r12, r11, #(ARM_PSR_MODE_MASK)
+    teq     r12, #(ARM_PSR_USR)
+    bne     restore_non_user_mode
+
+restore_change_to_sys:
+    mov     r12, #ARM_PSR_SYS
+    bfi     r10, r12, #0, #5
+
+restore_non_user_mode:
+    mrs     r12, cpsr
+
+    msr     cpsr, r10
+    mov     sp, r8
+    mov     lr, r9
+    msr     cpsr, r12
+
+    msr     spsr, r11
+
+    ldm     r7, {r0-r12}
+    subs    pc, lr, #4

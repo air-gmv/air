@@ -20,7 +20,7 @@ StackSize = DEFINED(StackSize) ? StackSize : 0x4000;
 
 MEMORY {
     rom : ORIGIN = 0x00000000, LENGTH = 0x00000000
-    ram : ORIGIN = 0x04000000, LENGTH = 0x04000000
+    ram : ORIGIN = 0x10000000, LENGTH = 0x10000000
 }
 
 ENTRY(bare_start)

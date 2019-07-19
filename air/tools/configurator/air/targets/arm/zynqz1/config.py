@@ -61,19 +61,22 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     'arch/arm/cpu.c',
     'arch/arm/exception_default_handler.c',
     'arch/arm/exception_default.S',
-    'arch/arm/exception_default_handler.c',
-    'arch/arm/cpu.c',
+    'arch/arm/exception_fiq.S',
     'arch/arm/exception_irq.S',
     'arch/arm/exception_svc.S',
     'arch/arm/health_monitor.c',
-    'arch/arm/isr.c',
     'arch/arm/irq_handler.c',
-    'arch/arm/svc_handler.c',
+    'arch/arm/isr.c',
+    'arch/arm/mmu.c',
+    'arch/arm/svc.c',
     'arch/arm/virtualization_syscall.c',
     # BSP files
     'bsp/arm/zynqz1/bsp.c',
-    'bsp/arm/zynqz1/mmu.c',
     'bsp/arm/zynqz1/gic.c',
+    'bsp/arm/zynqz1/global_timer.c',
+    'bsp/arm/zynqz1/mmu.c',
+    'bsp/arm/zynqz1/triple_timer.c',
+    'bsp/arm/zynqz1/uart.c',
     # Core files
     'core/error.c',
     'core/barrier.c',
@@ -126,8 +129,8 @@ permissions = [PERMISSION_SUPERVISOR, PERMISSION_FPU, PERMISSION_CACHE,PERMISSIO
                PERMISSION_SET_PARTITION, PERMISSION_GLOBAL_TIME, PERMISSION_MODULE]
 
 # memory map
-mmap = MMAP(kernel_space=[0x00000000, 0x00100000],
-            partition_space=[0x00100000, 0x00100000],
+mmap = MMAP(kernel_space=[0x00100000, 0x0ff00000],
+            partition_space=[0x10000000, 0x10000000],
             units=[1 << 12, 1 << 18, 1 << 24],
             default_unit=1 << 18)
 
