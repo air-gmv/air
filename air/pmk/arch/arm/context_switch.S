@@ -19,6 +19,7 @@
 
 #include <asm.h>
 #include <asm_offsets.h>
+#include <armv7.h>
 
 /**
  * @brief Partition context save
@@ -30,6 +31,7 @@
  */
 
 FUNC(arm_core_context_save)
+    bx      pc
     push    {r1-r12}
 
     ldr     r1, [r0, #(offsetof_pmk_core_ctrl_t_context)]
@@ -83,8 +85,8 @@ FUNC(arm_core_context_save)
     bx      lr
 
 
-
 FUNC(arm_core_context_restore)
+    bx      pc
     push    {r1-r12}
 
     ldr     r1, [r0, #(offsetof_pmk_core_ctrl_t_context)]
@@ -93,24 +95,6 @@ FUNC(arm_core_context_restore)
 
     // TODO SOMETHING ABOUT MMUs
 
-#ifdef PMK_FPU_SUPPORT
-    /* Load VFP context */
-    ldr     r0, [r3, #(offsetof_arm_core_context_t_fpu_context)]
-
-    ldm     r0!, {r4-r5}
-
-    /* Ensure that the FPU is enabled */
-    vmsr    FPEXC, r4
-    vmsr    FPSCR, r5
-    tst     r4, #(1 << 30)
-    beq     1f
-
-    vldmia  r0!, {d0-d15}
-#ifdef VFP_D32
-    vldmia  r0!, {d16-d31}
-#endif /* VFP_D32 */
-1:
-#endif /* PMK_FPU_SUPPORT */
 
     /* Change what is in the core context to the partition context */
     ldr     r0, [r1, #(offsetof_arm_core_context_t_isf_pointer)]
