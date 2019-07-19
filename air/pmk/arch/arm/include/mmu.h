@@ -106,7 +106,7 @@
 /* mmu region attributes */
 #define MMU_ATTR_B          0x4     /* bufferable */
 #define MMU_ATTR_C          0x8     /* cacheable */
-#define MMU_ATTR_S_L1       0x1000  /* shareable */
+#define MMU_ATTR_S_L1       0x10000 /* shareable */
 #define MMU_ATTR_S_L2       0x400   /* shareable */
 #define MMU_ATTR_S(level, type) \
     ((level == MMU_L1) ? MMU_ATTR_S_L1: MMU_ATTR_S_L2)
@@ -123,12 +123,12 @@ void arm_mmu_enable(void);
 void arm_segregation_init(void);
 air_u32_t arm_get_mmu_permissions(
         air_u32_t permissions, air_u32_t level, air_u32_t type);
-void arm_mmu_level1(
-        air_uptr_t ttbr, void *p_addr, void *v_addr,
-        air_u32_t unit, air_sz_t size, air_u32_t permissions);
-air_sz_t arm_mmu_level2(
-        air_uptr_t ptd, void *p_addr, void *v_addr,
-        air_u32_t unit, air_sz_t size, air_u32_t permissions);
+//void arm_mmu_level1(
+//      air_uptr_t ttbr, air_u32_t p_addr, air_u32_t v_addr,
+//      air_u32_t unit, air_sz_t size, air_u32_t permissions);
+//air_sz_t arm_mmu_level2(
+//      air_uptr_t ptd, air_u32_t p_addr, air_u32_t v_addr,
+//      air_u32_t unit, air_sz_t size, air_u32_t permissions);
 void arm_map_memory(
         arm_mmu_context_t *ctrl, void *p_addr, void *v_addr,
         air_sz_t size, air_sz_t unit, air_u32_t permissions);
