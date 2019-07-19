@@ -29,6 +29,9 @@ PGM=$(EXEC)
 #     IO Manager = io
 MANAGERS=sem rtmon msg timer io
 
+MODULES   := $(sort $(dir $(wildcard ./*/*.c)))
+BUILD_DIR := $(addprefix o-optimize/,$(MODULES))
+
 # C source code and headers filenames used in the example
 CSRCS=$(shell find ./ -type f -name '*.c')
 CHDRS=$(shell find ./ -type f -name '*.h')
@@ -55,7 +58,7 @@ $(AIR_PMK)/pmk.a
 # The RTEMS_MAKEFILE_PATH is defined by the user for the specific CPU and BSP
 RTEMS_MAKEFILE_PATH=$(AIR_POS)/${os.path.join('rtems5', 'rtems5-install', 'sparc-rtems5', 'leon3')}
 
-# These includes should not be modified by the user.  
+# These includes should not be modified by the user.
 include $(RTEMS_MAKEFILE_PATH)/Makefile.inc 
 include $(RTEMS_CUSTOM) 
 include $(PROJECT_ROOT)/make/leaf.cfg
@@ -79,7 +82,10 @@ LDFLAGS += -Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putcha
 
 OBJS = $(COBJS) $(ASOBJS)
  
-all:    $(ARCH) $(PGM)  
+all:    $(ARCH) $(BUILD_DIR) $(PGM)
     
 $(PGM): $(OBJS) $(CHDRS)
 ${'\t'}$(make-exe)
+
+$(BUILD_DIR):
+${'\t'}@mkdir -p $@
