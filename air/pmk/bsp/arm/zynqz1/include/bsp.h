@@ -108,7 +108,6 @@ static inline void arm_set_vector_base(void) {
         printk(" air_kernel_bss_start = 0x%x\n", air_kernel_bss_start);
         printk(" air_kernel_bss_end   = 0x%x\n", air_kernel_bss_end);
         printk(" pmk_trap_table       = 0x%x\n\n", pmk_trap_table);
-        printk(" exception_svc        = 0x%x\n\n", exception_svc);
 #endif
 
         ctrl = arm_cp15_get_system_control();
