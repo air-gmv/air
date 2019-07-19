@@ -61,7 +61,7 @@ void bsp_start_hook(void *vector_table_start) {
         * then no copy needs to be done. Otherwise ...
         */
 //      copy_vector_table();
-        clear_bss();
+//      clear_bss();
     }
 }
 
