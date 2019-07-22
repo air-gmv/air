@@ -6,7 +6,7 @@
     <PartitionConfiguration Personality="BARE" Cores="1">
       <Libs>LIBAIR;</Libs>
       <Cache>CODE; DATA</Cache>
-      <Memory Size="0x100000" />
+      <Memory Size="0x1000000" />
       <Permissions>
        FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
       </Permissions>

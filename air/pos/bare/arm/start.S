@@ -24,7 +24,7 @@
 FUNC(bare_start)
 
     /* get core id */
-//  svc     #(AIR_SYSCALL_GET_CORE_ID)
+    svc     #(AIR_SYSCALL_GET_CORE_ID)
 
     /* clear BSS if id 0 */
     tst     r0, #0
@@ -41,11 +41,11 @@ FUNC(bare_start)
     bls     1b
 
     /* todo SMP */
-
+    bl      arm_smp_init
 
 2:
     /* setup stack */
-    ldr     sp, =stack_start
+//  ldr     sp, =stack_start
 
     /* exception vector table ?*/
 
@@ -55,13 +55,13 @@ FUNC(bare_start)
     /* enable fpu */
     svc     #(AIR_SYSCALL_ARM_ENABLE_FPU)
 
-    cpsie   aif, #ARM_PSR_USR
+//  cpsie   aif, #ARM_PSR_USR
 
-    bl      entry_point
+    bl      main
 
     mov     r1, #(AIR_MODE_IDLE)
     mov     r0, #(0xffffffff)
     svc     #(AIR_SYSCALL_SET_PARTITION_MODE)
 
     /* idle */
-    wfe
+    wfi

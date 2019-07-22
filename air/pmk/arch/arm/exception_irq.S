@@ -61,10 +61,14 @@ arm_irq_trashed_context:
 
 arm_irq_save_context:
     stm     r12!, {r0-r7}
-    mov     r0, r12
+    mov     r0, r10
+    mov     r1, r11
+    mov     r2, r12
     pop     {r8-r12}
-    stm     r0!, {r8-r12}
-    mov     r12, r0
+    stm     r2!, {r8-r12}
+    mov     r12, r2
+    mov     r11, r1
+    mov     r10, r0
 
     mov     r2, lr
     mrs     r3, spsr
@@ -168,4 +172,4 @@ restore_non_user_mode:
 #ifdef __thumb__
     orr     lr, #1
 #endif
-    subs    pc, lr, #4
+    subs    pc, lr, #0
