@@ -93,7 +93,10 @@ void core_context_setup_idle(core_context_t *context) {
 
     /* initialize the virtual core */
     context->vcpu.psr = (ARM_PSR_T | ARM_PSR_SYS);
-    context->vcpu.vbar = 0;
+    context->vcpu.vbar = (air_u32_t **)pmk_workspace_alloc(8*sizeof(air_uptr_t));
+    for (air_u32_t i = 0; i < 8; ++i) {
+        context->vcpu.vbar[i] = NULL;
+    }
 
     /* initial stack frame */
     arm_interrupt_stack_frame_t *isf =

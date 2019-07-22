@@ -83,15 +83,11 @@ void arm_start_ttc(air_u32_t timer_id) {
         return;
     }
 
-#ifdef PMK_DEBUG_TIMER
-    printk("b4 TTC->CNT_VAL_1 = 0x%x\n", arm_read_ttc);
-#endif
     if (timer_id == 1) {
         ttc->cnt_ctrl_1 = ARM_TTC_CNT_CTRL_INTV; //since no 1 in dis, it is en
     }
-#ifdef PMK_DEBUG_TIMER
-    printk("af TTC->CNT_VAL_1 = 0x%x\n", arm_read_ttc);
 
+#ifdef PMK_DEBUG_TIMER
     printk(" :: triple_timer_cnt_t\n"
             "    ttc = 0x%x\n"
             "    ttc->clk_ctrl_1 = 0x%x\n"

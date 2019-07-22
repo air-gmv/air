@@ -7,9 +7,9 @@
  *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
  * ==========================================================================*/
 /**
- * @file smp.c
+ * @file init.c
  * @author lumm
- * @brief Basic SMP support. not really :p, just for symbols xD
+ * @brief Initialization functions, SMP support
  */
 
 #include <air.h>
@@ -19,6 +19,8 @@
 extern int main();
 extern void bare_start();
 
-void arm_smp_init(void) {
+void arm_pos_init(void) {
+
+
     return;
 }
