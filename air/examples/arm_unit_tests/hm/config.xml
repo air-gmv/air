@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<ARINC_653_Module ModuleName="bare">
+  <!-- partition 0 -->
+  <Partition PartitionIdentifier="1" PartitionName="p0" 
+   Criticality="LEVEL_A" SystemPartition="false" EntryPoint="entry_point">
+    <PartitionConfiguration Personality="BARE" Cores="1">
+      <Libs>LIBAIR;LIBPRINTF</Libs>
+      <Cache>CODE; DATA</Cache>
+      <Memory Size="0x1000000" />
+      <Permissions>
+       FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+      </Permissions>
+    </PartitionConfiguration>               
+  </Partition>
+  
+  <!-- schedule 0 -->
+  <Module_Schedule ScheduleIdentifier="1" ScheduleName="test_sched" MajorFrameSeconds="1.0">
+    <Partition_Schedule PartitionIdentifier="1" PartitionName="p0" 
+     PeriodSeconds="1.0" PeriodDurationSeconds="1.0">
+      <Window_Schedule WindowIdentifier="1" 
+       WindowStartSeconds="0.0" WindowDurationSeconds="1.0" PartitionPeriodStart="true"/>
+    </Partition_Schedule>
+    </Module_Schedule>
+  
+  <!-- module configuration -->
+  <AIR_Configuration TicksPerSecond="10" RequiredCores="1"/>
+  
+  <!-- HM configuration -->
+  <System_HM_Table>
+    <System_State_Entry Description="Module Initialization" SystemState="0">
+      <Error_ID_Level Description="Configuration Error" ErrorIdentifier="1" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Module Config Error" ErrorIdentifier="2" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="5" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="7" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="8" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="9" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="10" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Stack error" ErrorIdentifier="12" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="14" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Debug Error" ErrorIdentifier="15" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="I/O Error" ErrorIdentifier="16" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Double Fault" ErrorIdentifier="17" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Violation Error" ErrorIdentifier="18" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Device Error" ErrorIdentifier="19" ErrorLevel="MODULE"/>
+    </System_State_Entry>
+    <System_State_Entry Description="PMK Execution" SystemState="1">
+      <Error_ID_Level Description="Configuration Error" ErrorIdentifier="1" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Module Config Error" ErrorIdentifier="2" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="5" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="7" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="8" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="9" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="10" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Stack error" ErrorIdentifier="12" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="14" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Debug Error" ErrorIdentifier="15" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="I/O Error" ErrorIdentifier="16" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Double Fault" ErrorIdentifier="17" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Violation Error" ErrorIdentifier="18" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Device Error" ErrorIdentifier="19" ErrorLevel="MODULE"/>
+    </System_State_Entry>
+    <System_State_Entry Description="Partition Initialization" SystemState="2">
+      <Error_ID_Level Description="Partition Conf Error" ErrorIdentifier="3" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Partition Init Error" ErrorIdentifier="4" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="5" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="7" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="8" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="9" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="10" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Stack error" ErrorIdentifier="12" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="14" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Debug Error" ErrorIdentifier="15" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="I/O Error" ErrorIdentifier="16" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Double Fault" ErrorIdentifier="17" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Violation Error" ErrorIdentifier="18" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Device Error" ErrorIdentifier="19" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="APEX Error" ErrorIdentifier="20" ErrorLevel="PARTITION"/>
+    </System_State_Entry>
+    <System_State_Entry Description="Partition Operating System" SystemState="3">
+      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="5" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Deadline Miss" ErrorIdentifier="6" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="7" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="8" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="9" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="10" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Stack error" ErrorIdentifier="12" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="App Hardware Error" ErrorIdentifier="13" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="14" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Debug Error" ErrorIdentifier="15" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="I/O Error" ErrorIdentifier="16" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Double Fault" ErrorIdentifier="17" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Violation Error" ErrorIdentifier="18" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Device Error" ErrorIdentifier="19" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="APEX Error" ErrorIdentifier="20" ErrorLevel="PARTITION"/>
+    </System_State_Entry>
+    <System_State_Entry Description="Partition Application" SystemState="4">
+      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="5" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Deadline Miss" ErrorIdentifier="6" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="7" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="8" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="9" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="10" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Application Error" ErrorIdentifier="11" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Stack error" ErrorIdentifier="12" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="App Hardware Error" ErrorIdentifier="13" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="14" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Debug Error" ErrorIdentifier="15" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="I/O Error" ErrorIdentifier="16" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Double Fault" ErrorIdentifier="17" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Violation Error" ErrorIdentifier="18" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="Device Error" ErrorIdentifier="19" ErrorLevel="PARTITION"/>
+      <Error_ID_Level Description="APEX Error" ErrorIdentifier="20" ErrorLevel="PARTITION"/>
+    </System_State_Entry>
+    <System_State_Entry Description="Health Monitor Processing" SystemState="6">
+      <Error_ID_Level Description="Segmentation Error" ErrorIdentifier="5" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Illegal Instruction" ErrorIdentifier="7" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Divide by zero" ErrorIdentifier="8" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Overflow Error" ErrorIdentifier="9" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Floating Point Error" ErrorIdentifier="10" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Stack error" ErrorIdentifier="12" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Power Interrupt" ErrorIdentifier="14" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Debug Error" ErrorIdentifier="15" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="I/O Error" ErrorIdentifier="16" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Double Fault" ErrorIdentifier="17" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Violation Error" ErrorIdentifier="18" ErrorLevel="MODULE"/>
+      <Error_ID_Level Description="Device Error" ErrorIdentifier="19" ErrorLevel="MODULE"/>
+    </System_State_Entry>
+  </System_HM_Table>
+</ARINC_653_Module>

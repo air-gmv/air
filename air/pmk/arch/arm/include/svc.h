@@ -19,6 +19,7 @@
 #include <armv7.h>
 #include <mmu.h>
 #include <syscall.h>
+#include <configurations.h>
 
 /**************************** syscalls declarations ***************************/
 void arm_syscall_disable_interrupts(void);
@@ -40,6 +41,7 @@ void arm_syscall_set_irq_mask_register(air_u32_t val);
 //air_u32_t arm_syscall_set_irq_force_register(void);
 
 air_u32_t arm_syscall_get_core_id(void);
+air_u64_t arm_syscall_get_elapsed_ticks(void);
 
 /**************************** function declarations ***************************/
 void arm_svc_handler(air_u32_t svc_id, arm_supervisor_stack_frame_t *frame,

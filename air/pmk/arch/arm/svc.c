@@ -21,9 +21,10 @@ void arm_svc_handler(air_u32_t svc_id, arm_supervisor_stack_frame_t *frame,
         pmk_core_ctrl_t *core) {
 
 #ifdef PMK_DEBUG_SVC
-    printk(" ** svc #%i **\n", svc_id);
+    printk("\n ** svc #%i **\n", svc_id);
     printk("       with ret_addr: 0x%08x\n", frame->lr);
 #endif
+    air_u32_t elapsed = 0;
 
     switch (svc_id) {
     case AIR_SYSCALL_ARM_DISABLE_INTERRUPTS:
@@ -73,8 +74,14 @@ void arm_svc_handler(air_u32_t svc_id, arm_supervisor_stack_frame_t *frame,
         frame->r0 = arm_syscall_get_core_id();
         break;
 //  arm_svc_install_handler(AIR_SYSCALL_BOOT_CORE, );
-//  arm_svc_install_handler(AIR_SYSCALL_GET_US_PER_TICK, );
-//  arm_svc_install_handler(AIR_SYSCALL_GET_ELAPSED_TICKS, );
+    case AIR_SYSCALL_GET_US_PER_TICK:
+        frame->r0 = pmk_get_usr_us_per_tick();
+        break;
+    case AIR_SYSCALL_GET_ELAPSED_TICKS:
+        elapsed = arm_syscall_get_elapsed_ticks();
+        frame->r0 = (air_u32_t)(elapsed & 0xffffffff);
+        frame->r1 = (air_u32_t)((elapsed & 0xffffffff00000000) >> 32);
+        break;
     case AIR_SYSCALL_GET_PARTITION_ID:
         pmk_syscall_get_partition_id(core,
                 (air_name_ptr_t)frame->r0,

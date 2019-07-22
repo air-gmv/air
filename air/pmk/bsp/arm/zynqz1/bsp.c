@@ -69,7 +69,7 @@ air_u32_t bsp_core_init(void) {
 
         arm_set_vector_base();
         arm_isr_table_init();
-        arm_healthmonitor_init();
+        arm_hm_init();
         //arm_start_uart(); TODO screws up in qemu
     }
 
