@@ -12,24 +12,49 @@
  * @brief exception_handlers and default
  */
 
+#include <armv7.h>
 #include <isr.h>
+#include <pmk.h>
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif
 
-void arm_exception_default_handler(air_u32_t instr, air_u32_t id) {
+void arm_healthmonitor_init(void) {}
+
+void arm_hm_handler(air_u32_t id, air_u32_t instr, air_u32_t status) {
+
+    air_error_e error_id;
+    if (id == ARM_EXCEPTION_UNDEF) {
 
 #ifdef PMK_DEBUG
-    if (id == 1) {
         printk("\n $$$ Undefined instr at 0x%x $$$\n\n", instr - 4);
-    } else if (id == 3) {
-        printk("\n $$$ Prefetch abort at 0x%x $$$\n\n", instr);
-    } else if (id == 4) {
-        printk("\n $$$ Data abort at 0x%x $$$\n\n", instr);
-    } else {
-        printk("\n $$$ HOW? $$$\n\n");
-    }
 #endif
+        error_id = AIR_UNIMPLEMENTED_ERROR;
+    } else if (id == ARM_EXCEPTION_PREF_ABORT) {
 
-    return;
+#ifdef PMK_DEBUG
+        printk("\n $$$ Prefetch abort at 0x%x $$$\n\n", instr);
+#endif
+        error_id = AIR_VIOLATION_ERROR;
+    } else if (id == ARM_EXCEPTION_DATA_ABORT) {
+
+#ifdef PMK_DEBUG
+        printk("\n $$$ Data abort at 0x%x $$$\n\n", instr);
+#endif
+        error_id = AIR_SEGMENTATION_ERROR;
+    } else if (id == ARM_EXCEPTION_FIQ){
+
+#ifdef PMK_DEBUG
+        printk("\n $$$ FIIIIIIIIIIQ? $$$\n\n");
+#endif
+        error_id = AIR_IO_ERROR;
+    } else {
+
+#ifdef PMK_DEBUG
+        printk("\n $$$ HOW? $$$\n\n");
+#endif
+        error_id = AIR_UNIMPLEMENTED_ERROR;
+    }
+
+    pmk_hm_isr_handler(error_id);
 }
