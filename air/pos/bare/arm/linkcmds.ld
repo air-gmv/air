@@ -15,12 +15,12 @@
 OUTPUT_FORMAT("elf32-littlearm")
 OUTPUT_ARCH(arm)
 
-HeapSize = DEFINED(HeapSize) ? HeapSize : 0x40000;
+HeapSize = DEFINED(HeapSize) ? HeapSize : 0x20000;
 StackSize = DEFINED(StackSize) ? StackSize : 0x4000;
 
 MEMORY {
     rom : ORIGIN = 0x00000000, LENGTH = 0x00000000
-    ram : ORIGIN = 0x10000000, LENGTH = 0x10000000
+    ram : ORIGIN = 0x10000000, LENGTH = 0x01000000
 }
 
 ENTRY(bare_start)
@@ -29,13 +29,13 @@ SECTIONS {
     .text : {
         CREATE_OBJECT_SYMBOLS
         *(.text)
-        . = ALIGN(32);
+        . = ALIGN(4);
         etext = .;
     } >ram
     
     .data : {
         *(.data)
-        . = ALIGN(32);
+        . = ALIGN(4);
         edata = .;
     } >ram
     
@@ -43,14 +43,7 @@ SECTIONS {
         bss_start = .;
         *(.bss)
         *(COMMON)
-        . = ALIGN(32);
+        . = ALIGN(4);
         bss_end = .;
-        
-        _HeapStart = .;
-        . += HeapSize;
-        
-        . += StackSize;
-        . += ALIGN(32);
-        stack_start = .;
-    }>ram
+    } >ram
 }
