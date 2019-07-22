@@ -25,6 +25,9 @@
 #define INT_TARGET_CPU1     0x2
 #define TARGET_DEFAULT      INT_TARGET_CPU0
 
+air_u32_t protected_isr_mask = 0;
+air_u32_t pmk_isr_mask = 0;
+
 
 void gic_init(air_u32_t cpu_id) {
 
@@ -57,8 +60,8 @@ void gic_init(air_u32_t cpu_id) {
 
     arm_set_ic_cpu_preemption(PREEMPTION(PREEMPTION_LEVEL));
 
-//  air_u32_t iccicr = ICCICR_FIQ_EN;
-//  arm_set_ic_cpu_ctrl(iccicr);
+    air_u32_t iccicr = (ICCICR_ENABLE_GRP1 | ICCICR_ENABLE_GRP0);
+    arm_set_ic_cpu_ctrl(iccicr);
 
     if (cpu_id == 0) {
         arm_disable_interrupts();

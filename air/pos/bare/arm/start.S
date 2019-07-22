@@ -63,4 +63,7 @@ global(bare_start)
     svc     #(AIR_SYSCALL_SET_PARTITION_MODE)
 
     /* idle */
+twiddle:
     wfi
+    b       twiddle
+

@@ -7,9 +7,9 @@
  *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
  * ==========================================================================*/
 /**
- * @file exception_fiq.S
+ * @file exception_irq.S
  * @author lumm
- * @brief FIQ exception handler
+ * @brief IRQ exception handler
  */
 
 /* Are we in assembly file */
@@ -23,8 +23,12 @@
 
     .extern arm_irq_default_handler
 
-    /* Save global registers and branch to save context */
-
+/* Save global registers and branch to save context
+*  r10: isf_pointer as sp
+*  r11: isf_pointer
+*  r12: context
+*  lr:  core_ctrl
+*/
     .arm
 global(exception_irq)
     push    {r10-r12, lr}
@@ -33,34 +37,27 @@ global(exception_irq)
     mrc     p15, 0, lr, c13, c0, 4
 
     ldr     r12, [lr, #offsetof_pmk_core_ctrl_t_context]
-    ldr     r11, [r12, #offsetof_arm_core_context_t_trash]
-    ldr     r12, [r12, #offsetof_arm_core_context_t_isf_pointer]
-    teq     r11, #1
+    ldr     r11, [r12, #offsetof_arm_core_context_t_isf_pointer]
+    ldr     r10, [r12, #offsetof_arm_core_context_t_trash]
+    teq     r10, #1
     bne     arm_save_context
 
 arm_save_trashed:
-    mov     r0, r12 /* isf_pointer */
-    mov     r1, lr  /* pmk_core_ctrl_t */
+    mov     r0, r11 /* isf_pointer */
+    mov     r1, lr /* pmk_core_ctrl_t */
+
     pop     {r10-r12, lr}
-//  add     lr, #4
-    b       arm_isr_handler
+    b       arm_irq_isr_handler
 
 arm_save_context:
-    mov     r10, r12
-    mov     r11, lr
+    mov     r10, r11
+    stmia   r10!, {r0-r9}
+    pop     {r0-r3}
+    stmia   r10!, {r0, r1}
 
-    stmia   r12!, {r0-r9}
-    mov     r0, r10 /* isf_pointer */
-    mov     r1, r11 /* pmk_core_ctrl_t */
-    pop     {r10, r11}
-    stmia   r12!, {r10, r11}
-    mov     r10, r12
-    pop     {r12, lr}
-
-    mov     r2, r12
-    mov     r5, lr
-    mrs     r6, spsr
-    mov     r7, #0
+    mov     r5, r3 /* ret_addr */
+    mrs     r6, spsr /* ret_psr */
+    mov     r7, #6 /* exception_name */
 
     orr     r8, r6, #(ARM_PSR_I | ARM_PSR_F)
     bic     r8, #ARM_PSR_T
@@ -72,31 +69,34 @@ arm_save_context:
 
 arm_save_change_to_sys:
     mov     r9, #ARM_PSR_SYS
-    bfi     r8, r9, #0, #5    /* Change to SYS mode */
+    bfi     r8, r9, #0, #5 /* Change to SYS mode */
 
 arm_save_non_user_mode:
     mrs     r9, cpsr
 
     msr     cpsr, r8
-    mov     r3, sp
-    mov     r4, lr
+    mov     r3, sp /* usr_sp */
+    mov     r4, lr /* usr_lr */
     msr     cpsr, r9
 
-    stmia   r10, {r2-r7}
+    stmia   r10, {r2-r7} /* includes r12 - exception_name */
 
 #ifdef PMK_FPU_SUPPORT
     vmrs    r2, fpexc
     vmrs    r3, fpscr
-    ldr     r4, [r0, #(offsetof_arm_interrupt_stack_frame_t_vfp_context)]
+    ldr     r4, [r11, #(offsetof_arm_interrupt_stack_frame_t_vfp_context)]
     stm     r4!, {r2, r3}
     vstmia  r4!, {d0-d15}
     vstmia  r4, {d16-d31}
 #endif /* PMK_FPU_SUPPORT */
 
-arm_isr_handler:
+    mov     r0, r11 /* isf_pointer */
+    mov     r1, lr /* pmk_core_ctrl_t */
+
+arm_irq_isr_handler:
     /************************ Call high level handler  ************************/
     SWITCH_FROM_ARM_TO_THUMB    r2
-    bl      arm_irq_handler
+    bl      arm_isr_handler
     SWITCH_FROM_THUMB_TO_ARM
     /********************* Return from high level handler *********************/
 
@@ -117,7 +117,6 @@ arm_restore_not_trashed:
     /* Get the ISF pointer */
     ldr     r7, [r11, #(offsetof_arm_core_context_t_isf_pointer)]
 
-arm_restore_context:
 #ifdef PMK_FPU_SUPPORT
     ldr     r1, [r7, #(offsetof_arm_interrupt_stack_frame_t_vfp_context)]
     ldm     r1!, {r2-r3}
@@ -130,7 +129,9 @@ arm_restore_context:
     vmsr    fpscr, r3
 1:
 #endif
-    add     r12, r7, #(offsetof_arm_interrupt_stack_frame_t_orig_sp)
+
+arm_restore_context:
+    add     r12, r7, #(offsetof_arm_interrupt_stack_frame_t_usr_sp)
 
     ldmia   r12, {r8-r11}
     mov     lr, r10

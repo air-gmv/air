@@ -194,13 +194,13 @@ typedef struct {
     air_u32_t r10;
     air_u32_t r11;
     air_u32_t r12;
-    air_u32_t orig_sp;                  /**< pre-exception sp               */
-    air_u32_t orig_lr;                  /**< pre-exception lr               */
-    air_u32_t lr;                       /**< return addr after the exception*/
-    air_u32_t orig_cpsr;                /**< pre-exception cpsr             */
+    air_u32_t usr_sp;                   /**< pre-exception sp               */
+    air_u32_t usr_lr;                   /**< pre-exception lr               */
+    air_u32_t ret_addr;                 /**< return addr after the exception*/
+    air_u32_t ret_psr;                  /**< pre-exception cpsr             */
     symbolic_exception_name exception_name;
     arm_vfp_context_t *vfp_context;
-    air_u32_t reserved;                 /**< svc immediate. UND if other    */
+    air_u32_t reserved;
 } arm_interrupt_stack_frame_t;
 
 /**
@@ -212,9 +212,7 @@ typedef struct {
     air_u32_t r2;
     air_u32_t r3;
     air_u32_t r4;
-    air_u32_t r5;
-    air_u32_t reserved;
-    air_u32_t lr;
+    air_u32_t lr;                       /**< reserved                       */
 } arm_supervisor_stack_frame_t;
 
 /**
@@ -222,12 +220,25 @@ typedef struct {
  */
 typedef struct {
     air_u32_t id;                       /**< virtual CPU id                 */
-    air_u32_t tbr;                      /**< virtual TBR                    */
     air_u32_t psr;                      /**< virtual PSR                    */
-    air_u32_t imask;                    /**< interrupt mask                 */
-    air_u32_t ipend;                    /**< interrupts pending             */
+    air_u32_t **vbar;                   /**< virtual vector base address    */
     air_u32_t cctrl;                    /**< cache control                  */
 } arm_virtual_cpu_t;
+
+typedef struct {
+    air_u32_t iccicr;                   /**< icc control                    */
+    air_u32_t iccpmr;                   /**< icc priority mask              */
+    air_u32_t iccbpr;                   /**< icc binary point               */
+    air_u32_t icciar;                   /**< icc interrupt accept           */
+//  air_u32_t eoi;                      /**< end of interrupt               */
+//  air_u32_t rp;                       /**< running priority               */
+//  air_u32_t hppi;                     /**< highest pending priority       */
+//  air_u32_t abp;                      /**< icc control                    */
+//  air_u32_t iid;                      /**< interface id                   */
+    air_u32_t icdiser[32];              /**< icd set-enable                 */
+    air_u32_t icdispr[32];              /**< icd set-pending                */
+    air_u32_t icdipr[1020];             /**< icd priority                   */
+} arm_virtual_gic_t;
 
 /**
  * @brief Structure to hold a CPU partition context
@@ -242,7 +253,8 @@ typedef struct {
     air_u32_t ipc_event;                /**< IPC event                      */
     air_u32_t state;                    /**< system state                   */
     void *hm_event;                     /**< health-monitor event           */
-} arm_core_context_t;
+    arm_virtual_gic_t vgic;             /**< virtual GIC CPU control        */
+} arm_core_context_t;                   /*  vGIC MUST BE LAST DUE TO SIZE   */
 
 /**
  * @brief ARM MMU control
@@ -306,12 +318,33 @@ static inline void arm_set_cpsr(air_u32_t val) {
     __asm__ volatile ("msr cpsr, %0\n"::"r" (val));
 }
 
-static inline void arm_disable_preemption(air_u32_t flags) {
+static inline void arm_disable_interrupts() {
     __asm__ volatile ("cpsid if\n");
 }
 
-static inline void arm_enable_preemption(air_u32_t flags) {
-    __asm__ volatile ("cpsie if\n");
+static inline void arm_enable_interrupts() {
+    __asm__ volatile ("cpsie aif\n");
+}
+
+static inline air_u32_t arm_is_vint_enabled(
+        air_u32_t *icdiser,
+        air_u32_t id) {
+
+    return (icdiser[id/32] & (id & 0x1f));
+}
+
+static inline air_u32_t arm_get_vint_priority(
+        air_u32_t *icdipr,
+        air_u32_t id) {
+
+    return icdipr[id];
+}
+
+static inline void arm_set_vint_pending(
+        air_u32_t *icdispr,
+        air_u32_t id) {
+
+    icdispr[id/32] |= (1U << (id & 0x1f));
 }
 
 /******************************************************************************/

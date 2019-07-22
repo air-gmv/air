@@ -63,7 +63,7 @@ air_u32_t bsp_core_init(void) {
     if(cpu_id == 0) {
 
         arm_set_vector_base();
-        arm_irq_table_initialize();
+        arm_isr_table_initialize();
         //arm_start_uart(); TODO screws up in qemu
     }
 
@@ -84,7 +84,7 @@ void bsp_core_ready(void) {
     arm_cp15_setup_Per_CPU(cpu_id);
 
     //MMU
-    //arm_mmu_enable(pmk_core_idle_context);
+    //arm_mmu_enable(partition->mmu_ctrl);
 
     if(cpu_id == 0) {
 
@@ -133,8 +133,8 @@ void bsp_interrupt_broadcast(air_u32_t dummy) {
 
 void bsp_idle_loop(void) {
 
-#ifdef PMK_DEBUG
-    printk("    :: wfi\n");
+#ifdef PMK_DEBUG_IDLE
+    printk("\n    wfi: 0x%x\n\n", arm_cp15_get_exception_base_address());
 #endif
     arm_data_synchronization_barrier(15);
     while(true) {

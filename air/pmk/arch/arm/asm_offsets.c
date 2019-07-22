@@ -26,7 +26,7 @@ int main(void) {
     OFFSETOF(arm_core_context_t, idle_isf_pointer);
     OFFSETOF(arm_core_context_t, isr_nesting_level);
 
-    OFFSETOF(arm_interrupt_stack_frame_t, orig_sp);
+    OFFSETOF(arm_interrupt_stack_frame_t, usr_sp);
     OFFSETOF(arm_interrupt_stack_frame_t, vfp_context);
     SIZEOF(arm_interrupt_stack_frame_t);
 

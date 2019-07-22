@@ -81,9 +81,9 @@ air_u64_t arm_read_global_timer(void) {
 //void arm_setup_interprocessor_irq(air_u32_t cpu_id) {
 //
 //  if (cpu_id == 0) {
-//      arm_irq_install_handler(ARM_A9MPCORE_IRQ_GT, pmk_partition_scheduler);
-//      arm_irq_install_handler(BSP_IPC_IRQ, pmk_partition_scheduler);
-//      arm_irq_install_handler(BSP_IPC_PCS, pmk_ipc_handler);
+//      arm_isr_install_handler(ARM_A9MPCORE_IRQ_GT, pmk_partition_scheduler);
+//      arm_isr_install_handler(BSP_IPC_IRQ, pmk_partition_scheduler);
+//      arm_isr_install_handler(BSP_IPC_PCS, pmk_ipc_handler);
 //  }
 //
 //  arm_int_set_priority(ARM_A9MPCORE_IRQ_GT, 0);
