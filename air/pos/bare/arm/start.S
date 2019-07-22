@@ -20,8 +20,7 @@
 #include <asm.h>
 #include <armv7.h>
 
-
-FUNC(bare_start)
+global(bare_start)
 
     /* get core id */
     svc     #(AIR_SYSCALL_GET_CORE_ID)

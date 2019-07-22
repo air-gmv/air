@@ -26,8 +26,7 @@
     /* Save global registers and branch to save context */
 
     .arm
-FUNC(exception_irq)
-    push    {r8-r12}
+global(exception_irq)
 
     /* Get current core */
     mrc     p15, 0, r8, c0, c0, 5
@@ -136,7 +135,7 @@ arm_irq_isr_handler_from_trashed:
 arm_irq_restore_trashed_context:
     /* Get the idle ISF pointer */
     ldr     r12, [r11, #(offsetof_arm_core_context_t_idle_isf_pointer)]
-    b       arm_irq_restore_trashed_context
+    b       arm_irq_restore_context_from_trashed
 
 arm_irq_restore_context:
     /* Get the ISF pointer */
