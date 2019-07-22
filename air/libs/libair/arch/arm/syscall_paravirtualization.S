@@ -20,53 +20,66 @@
 #include <asm.h>
 #include <air.h>
 
-	.thumb
-FUNC(air_disable_interrupts)
+    .thumb
+global(air_disable_interrupts)
     svc     #(AIR_SYSCALL_ARM_DISABLE_INTERRUPTS)
+    bx      lr
 
-FUNC(air_enable_interrupts)
+global(air_enable_interrupts)
     svc     #(AIR_SYSCALL_ARM_ENABLE_INTERRUPTS)
+    bx      lr
 
-FUNC(air_disable_traps)
+global(air_disable_traps)
     svc     #(AIR_SYSCALL_ARM_DISABLE_TRAPS)
+    bx      lr
 
-FUNC(air_enable_traps)
+global(air_enable_traps)
     svc     #(AIR_SYSCALL_ARM_ENABLE_TRAPS)
+    bx      lr
 
-FUNC(air_disable_fpu)
+global(air_disable_fpu)
     svc     #(AIR_SYSCALL_ARM_DISABLE_FPU)
+    bx      lr
 
-FUNC(air_enable_fpu)
+global(air_enable_fpu)
     svc     #(AIR_SYSCALL_ARM_ENABLE_FPU)
+    bx      lr
 
-FUNC(air_get_tbr)
+global(air_get_tbr)
     svc     #(AIR_SYSCALL_ARM_GET_TBR)
+    bx      lr
 
-FUNC(air_set_tbr)
+global(air_set_tbr)
     svc     #(AIR_SYSCALL_ARM_SET_TBR)
+    bx      lr
 
-FUNC(air_get_psr)
+global(air_get_psr)
     svc     #(AIR_SYSCALL_ARM_GET_PSR)
+    bx      lr
 
-FUNC(air_set_psr)
+global(air_set_psr)
     svc     #(AIR_SYSCALL_ARM_SET_PSR)
+    bx      lr
 
-//FUNC(????)
-//  svc     #(AIR_SYSCALL_ARM_RETT)
+/* global(????)
+    svc     #(AIR_SYSCALL_ARM_RETT)
+    bx      lr */
 
-//FUNC(air_get_cache_register)
+//global(air_get_cache_register)
 //  svc     #(AIR_SYSCALL_ARM_GET_CACHE_REGISTER)
 
-//FUNC(air_set_cache_register)
+//global(air_set_cache_register)
 //  svc     #(AIR_SYSCALL_ARM_SET_CACHE_REGISTER)
 
-//FUNC(????)
-//  svc     #(AIR_SYSCALL_ARM_RESTORE_CACHE_REGISTER)
+/*global(????)
+    svc     #(AIR_SYSCALL_ARM_RESTORE_CACHE_REGISTER)
+    bx      lr */
 
-FUNC(air_get_irq_mask_register)
+global(air_get_irq_mask_register)
     svc     #(AIR_SYSCALL_ARM_GET_IRQ_MASK_REGISTER)
+    bx      lr
 
-FUNC(air_set_irq_mask_register)
+global(air_set_irq_mask_register)
     svc     #(AIR_SYSCALL_ARM_SET_IRQ_MASK_REGISTER)
 
 //FUNC(air_set_irq_force_register)

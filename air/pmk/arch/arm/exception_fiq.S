@@ -30,7 +30,7 @@
  *  r12: arm_core_context_t
  */
     .arm
-FUNC(exception_fiq)
+global(exception_fiq)
 
     /* Get current core */
     mrc     p15, 0, r8, c0, c0, 5

@@ -23,13 +23,13 @@
 
     .arm
 /* Save global registers and branch to save context */
-FUNC(exception_pref_abort)
+global(exception_pref_abort)
     push    {r0-r2, lr}
     mrc     p15, 0, r0, c6, c0, 2
     mov     r1, #3
     b       1f
 
-FUNC(exception_data_abort)
+global(exception_data_abort)
     push    {r0-r2, lr}
     sub     r0, lr, #8
     mov     r1, #4
@@ -48,7 +48,7 @@ FUNC(exception_data_abort)
     subs    pc, lr, #4
 
 
-FUNC(exception_undef)
+global(exception_undef)
 
     push    {r0-r2, lr}
     mov     r1, #1
