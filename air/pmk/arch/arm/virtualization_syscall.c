@@ -51,11 +51,11 @@ void arm_syscall_enable_fpu(void) {
 }
 
 air_u32_t arm_syscall_get_tbr(void) {
-    return arm_get_exception_base_address();
+    return arm_cp15_get_exception_base_address();
 }
 
 void arm_syscall_set_tbr(air_u32_t val) {
-    arm_set_exception_base_address(val);
+    arm_cp15_set_exception_base_address(val);
 }
 
 air_u32_t arm_syscall_get_psr(void) {
@@ -79,17 +79,7 @@ void arm_syscall_set_irq_mask_register(air_u32_t val) {
 //air_u32_t arm_syscall_set_irq_force_register(void);
 
 air_u32_t arm_syscall_get_core_id(void) {
-    ARM_SWITCH_REGISTERS;
-    air_u32_t core_id;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mrc p15, 0, %[core_id], c0, c0, 5\n"
-        ARM_SWITCH_BACK
-        : [core_id] "=&r" (core_id) ARM_SWITCH_ADDITIONAL_OUTPUT
-    );
-
-    pmk_core_ctrl_t core = air_shared_area.core[core_id];
-
-    return core.context->vcpu.id;
+    pmk_core_ctrl_t *core;
+    __asm__ volatile ("mrc p15, 0, %0, c13, c0, 4\n":"=r" (core));
+    return core->context->vcpu.id;
 }
