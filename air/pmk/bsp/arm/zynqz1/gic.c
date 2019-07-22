@@ -52,10 +52,10 @@ void gic_init(air_u32_t cpu_id) {
     }
 
     /* See the gicv2 for an indepth explanation of the following fields */
-    air_u32_t int_mask = 0xff;  /* all interrupts accepted */
+    air_u32_t int_mask = 0xff; /* all interrupts accepted */
     arm_set_int_mask(int_mask);
 
-    arm_set_ic_cpu_preemption(PREEMPTION(0));
+    arm_set_ic_cpu_preemption(PREEMPTION(PREEMPTION_LEVEL));
 
 //  air_u32_t iccicr = ICCICR_FIQ_EN;
 //  arm_set_ic_cpu_ctrl(iccicr);

@@ -40,6 +40,7 @@ typedef struct {
 void arm_init_global_timer(void);
 void arm_start_global_timer(void);
 air_u64_t arm_read_global_timer(void);
+air_u32_t arm_acknowledge_ttc(void);
 void arm_setup_interprocessor_irq(air_u32_t cpu_id);
 
 /**************************** Triple Timer Counter ***************************/

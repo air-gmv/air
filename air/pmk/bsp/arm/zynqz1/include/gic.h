@@ -72,7 +72,7 @@ static inline void arm_clear_pending(air_u32_t int_count) {
 }
 
 /**< ICDIPR */
-static inline void arm_int_set_priority(air_u32_t id, air_u32_t priority) {
+static inline void arm_int_set_priority(air_u32_t id, air_u8_t priority) {
     ic_dist->icdipr[id] = priority;
 }
 

@@ -40,5 +40,5 @@
     </Module_Schedule>
   
   <!-- module configuration -->
-  <AIR_Configuration TicksPerSecond="2" RequiredCores="1"/>
+  <AIR_Configuration TicksPerSecond="10" RequiredCores="1"/>
 </ARINC_653_Module>
