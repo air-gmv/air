@@ -13,13 +13,16 @@
  */
 
 #include <air.h>
-#include <armv7.h>
-#include <cpu.h>
+#include <bare.h>
+#include <pprintf.h>
 
 extern int main();
 extern void bare_start();
 
 void arm_pos_init(void) {
+
+    pprintf("POS init :: pos_exceptions: 0x%08x\n", pos_exceptions);
+    air_set_tbr((int)pos_exceptions);
 
     return;
 }

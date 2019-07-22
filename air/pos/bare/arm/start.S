@@ -80,10 +80,39 @@ global(pos_exceptions)
     nop
     nop
 
+pos_undef:
+    push    {r0-r4, lr}
+
+    SWITCH_FROM_ARM_TO_THUMB    r4
+    bl      pos_hm_undef
+    SWITCH_FROM_THUMB_TO_ARM
+
+    pop     {r0-r4, lr}
+    svc     #(AIR_SYSCALL_ARM_RETT)
+
+pos_pref_abort:
+    push    {r0-r4, lr}
+
+    SWITCH_FROM_ARM_TO_THUMB    r4
+    bl      pos_hm_pref_abort
+    SWITCH_FROM_THUMB_TO_ARM
+
+    pop     {r0-r4, lr}
+    svc     #(AIR_SYSCALL_ARM_RETT)
+
+pos_data_abort:
+    push    {r0-r4, lr}
+
+    SWITCH_FROM_ARM_TO_THUMB    r4
+    bl      pos_hm_data_abort
+    SWITCH_FROM_THUMB_TO_ARM
+
+    pop     {r0-r4, lr}
+    svc     #(AIR_SYSCALL_ARM_RETT)
+
+
 
     /* idle */
 twiddle:
     wfi
     b       twiddle
-
-pos_undef:

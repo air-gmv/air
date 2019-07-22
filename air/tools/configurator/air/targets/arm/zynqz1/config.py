@@ -62,6 +62,7 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     'arch/arm/exception_hm.S',
     'arch/arm/exception_irq.S',
     'arch/arm/exception_svc.S',
+    'arch/arm/fpu.S',
     'arch/arm/hm.c',
     'arch/arm/isr.c',
     'arch/arm/lock.c',

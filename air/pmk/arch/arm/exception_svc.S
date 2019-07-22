@@ -20,6 +20,7 @@
 #include <asm.h>
 #include <asm_offsets.h>
 #include <armv7.h>
+#include <air.h>
 
     .arm
     .extern arm_svc_handler
@@ -29,24 +30,38 @@ global(exception_svc)
     push    {r0-r3, r12, lr}
 
     /* get pmk_core_ctrl_t */
-    mrc     p15, 0, r2, c13, c0, 4
+    mrc     p15, 0, r0, c13, c0, 4
 
-    mov     r1, sp
-    mrs     r0, spsr
+    mov     r2, sp
+    mrs     r1, spsr
 
-    push    {r0, r3}
+    push    {r1, r3}
 
-    tst     r0, #ARM_PSR_T
-    ldrneh  r0, [lr, #-2]
-    bicne   r0, r0, #0xff00
-    ldreq   r0, [lr, #-4]
-    biceq   r0, r0, #0xff000000
+    tst     r1, #ARM_PSR_T
+    ldrneh  r1, [lr, #-2]
+    bicne   r1, r1, #0xff00
+    ldreq   r1, [lr, #-4]
+    biceq   r1, r1, #0xff000000
+
+    /* if return from trap, just exit peacefully, all is already taken care of */
+    teq     r1, #(AIR_SYSCALL_ARM_RETT)
+    beq     arm_rett
 
     SWITCH_FROM_ARM_TO_THUMB    r3
     bl      arm_svc_handler
     SWITCH_FROM_THUMB_TO_ARM
 
-    pop     {r0, r3}
-    msr     spsr, r0
+    pop     {r1, r3}
+    msr     spsr, r1
 
     ldmfd   sp!, {r0-r3, r12, pc}^
+
+
+arm_rett:
+    SWITCH_FROM_ARM_TO_THUMB    r3
+    bl      arm_syscall_rett
+    SWITCH_FROM_THUMB_TO_ARM
+
+    add     sp, #32
+    cpsid   aif, #ARM_PSR_SYS
+    rfefd   sp!
