@@ -34,7 +34,7 @@
 #include <health_monitor.h>
 #include <context_switch.h>
 
-#define PREEMPTION_LEVEL 1
+#define PREEMPTION_LEVEL 0
 
 /* Double-word alignment */
 #define CPU_CRITICAL_ALIGN  8
@@ -70,14 +70,14 @@ typedef arm_interrupt_stack_frame_t interrupt_stack_frame_t;
  * @param flags Preemption flags
  */
 #define cpu_enable_preemption(flags) \
-    arm_enable_preemption((air_u32_t)flags)
+    arm_enable_preemption()
 
 /**
  * @brief CPU disable preemption
  * @param flags Preemption flags
  */
 #define cpu_disable_preemption(flags) \
-    arm_disable_preemption((air_u32_t)flags)
+    arm_disable_preemption()
 
 /**
  * @brief CPU health-monitor initialization

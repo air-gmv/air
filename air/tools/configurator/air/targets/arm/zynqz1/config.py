@@ -67,6 +67,7 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     'arch/arm/health_monitor.c',
     'arch/arm/irq_handler.c',
     'arch/arm/isr.c',
+    'arch/arm/lock.c',
     'arch/arm/mmu.c',
     'arch/arm/svc.c',
     'arch/arm/virtualization_syscall.c',
