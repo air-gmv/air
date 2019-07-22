@@ -23,9 +23,9 @@
 /* Division between the two Translation Tables (N == 0 means only one tt) */
 #define TTBR_N              0 /* 0 <= N < 8 */
 
-#define TTBR0_SIZE          (1U << (12 - TTBR_N)) * sizeof(air_u32_t)
+#define TTBR0_SIZE          (1U << (14 - TTBR_N))
 #if TTBR_N
-#define TTBR1_SIZE          (1U << 12) * sizeof(air_u32_t)
+#define TTBR1_SIZE          (1U << 14)
 #else
 #define TTBR1_SIZE          0
 #endif
@@ -33,7 +33,7 @@
 #define TTBR1_ENTRIES       (1U << 12)
 
 #define TTL1_SECT_SIZE      (1U << 20)
-#define TTL2_SIZE           (1U << 8) * sizeof(air_u32_t)
+#define TTL2_SIZE           (1U << 10)
 #define TTL2_ENTRIES        (1U << 8)
 #define TTL2_MEM            (1U << 20)
 #define TTL2_LPAGE_SIZE     (1U << 16)
@@ -119,7 +119,8 @@
 
 /**************************** function declarations ***************************/
 void arm_mmu_init(void);
-void arm_mmu_enable(void);
+void arm_mmu_disable(void);
+void arm_mmu_enable(arm_mmu_context_t *ctx);
 void arm_segregation_init(void);
 air_u32_t arm_get_mmu_permissions(
         air_u32_t permissions, air_u32_t level, air_u32_t type);

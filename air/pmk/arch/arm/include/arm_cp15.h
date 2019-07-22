@@ -272,11 +272,17 @@ static inline void arm_cp15_set_domain_access_control(air_u32_t val) {
     __asm__ volatile ("mcr p15, 0, %0, c3, c0, 0\n"::"r" (val):"memory");
 }
 
-static inline void arm_cp15_set_translation_table0_base(air_uptr_t base) {
+static inline void arm_cp15_set_translation_table0_base(air_u32_t base) {
     __asm__ volatile ("mcr p15, 0, %0, c2, c0, 0\n"::"r" (base):"memory");
 }
 
-static inline void arm_cp15_set_translation_table1_base(air_uptr_t base) {
+static inline air_u32_t arm_cp15_get_translation_table0_base(void) {
+    air_u32_t base;
+    __asm__ volatile ("mrc p15, 0, %0, c2, c0, 0\n":"=r" (base)::"memory");
+    return base;
+}
+
+static inline void arm_cp15_set_translation_table1_base(air_u32_t base) {
     __asm__ volatile ("mcr p15, 0, %0, c2, c0, 1\n"::"r" (base):"memory");
 }
 
@@ -303,7 +309,7 @@ static inline void arm_enable_hivecs(void) {
 
 // TODO arm_get_monitor_exception_base_address
 
-static inline air_u32_t arm_get_exception_base_address(void) {
+static inline air_u32_t arm_cp15_get_exception_base_address(void) {
 
     if (arm_is_hivecs()) {
         return 0xffff0000;
@@ -311,14 +317,33 @@ static inline air_u32_t arm_get_exception_base_address(void) {
 
 // if () TODO no security extensions
 
-    air_u32_t reg;
-    __asm__ volatile ("mrc p15, 0, %0, c12, c0, 0\n":"=r" (reg)::"memory");
-    return reg;
+    air_u32_t val;
+    __asm__ volatile ("mrc p15, 0, %0, c12, c0, 0\n":"=r" (val)::"memory");
+    return val;
 }
 
-static inline void arm_set_exception_base_address(air_u32_t val) {
+static inline void arm_cp15_set_exception_base_address(air_u32_t val) {
     arm_disable_hivecs();
     __asm__ volatile ("mcr p15, 0, %0, c12, c0, 0\n"::"r" (val):"memory");
+}
+
+static inline void arm_cp15_setup_Per_CPU(air_u32_t cpu_id) {
+    air_u32_t val;
+    air_u32_t offset = 4;
+    __asm__ volatile (
+            "ldr %0, =air_shared_area\n"
+            "ldr %0, [%0, %[offset]]\n"
+            "add %0, %0, %[id], asl #5\n"
+            "mcr p15, 0, %0, c13, c0, 4\n"
+            : "=&r" (val)
+            : [id] "r" (cpu_id), [offset] "r" (offset)
+            : "memory");
+}
+
+static inline air_u32_t arm_cp15_get_Per_CPU(void) {
+    air_u32_t val;
+    __asm__ volatile ("mrc p15, 0, %0, c13, c0, 4\n":"=r" (val));
+    return val;
 }
 
 static inline air_u32_t arm_cp15_get_CPACR(void) {
