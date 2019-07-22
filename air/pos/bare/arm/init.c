@@ -21,6 +21,5 @@ extern void bare_start();
 
 void arm_pos_init(void) {
 
-
     return;
 }

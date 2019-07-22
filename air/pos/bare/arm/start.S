@@ -51,8 +51,6 @@ global(bare_start)
 
     /* exception vector table ?*/
 
-
-    mov     r0, #200
     /* enable irqs */
     svc     #(AIR_SYSCALL_ARM_ENABLE_TRAPS)
 

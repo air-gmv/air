@@ -83,7 +83,7 @@ typedef arm_interrupt_stack_frame_t interrupt_stack_frame_t;
  * @brief CPU health-monitor initialization
  */
 #define cpu_hm_init() \
-    arm_healthmonitor_init()
+    arm_hm_init()
 
 /**
  * @brief CPU segregation initialization

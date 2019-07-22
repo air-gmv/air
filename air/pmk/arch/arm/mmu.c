@@ -24,7 +24,7 @@
 extern air_u32_t L1_tables;
 
 void arm_mmu_init(void) {
-#ifdef PMK_DEBUG
+#ifdef PMK_DEBUG_ISR
     printk("\n\t\t\t\t---> MMU initialization <---\n\n");
 #endif
 
@@ -44,7 +44,7 @@ void arm_mmu_init(void) {
 }
 
 void arm_mmu_disable(void) {
-#ifdef PMK_DEBUG
+#ifdef PMK_DEBUG_ISR
     printk("\n\t\t\t\t---> MMU disable <---\n");
 #endif
 
@@ -54,7 +54,7 @@ void arm_mmu_disable(void) {
 }
 
 void arm_mmu_enable(arm_mmu_context_t *ctx) {
-#ifdef PMK_DEBUG
+#ifdef PMK_DEBUG_ISR
     printk("\n\t\t    ---> MMU enable with ttbr = 0x%08x <---\n\n", (air_u32_t)ctx->ttbr0);
 #endif
 

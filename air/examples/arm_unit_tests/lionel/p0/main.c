@@ -137,7 +137,7 @@ char msg2[] = {
 void entry_point() {
 
     air_syscall_print(message, sizeof(message));
-    for(int i = 0; i < 0x1fffffff; ++i);
+    for(int i = 0; i < 0x1ffffff; ++i);
     air_syscall_print(msg2, sizeof(msg2));
     for(;;);
 }

@@ -21,10 +21,10 @@
 #include <pmk.h>
 #include <workspace.h>
 
-void arm_healthmonitor_init(void);
-air_uptr_t arm_hm_handler(
-        air_u32_t id, air_u32_t instr, air_u32_t status,
-        pmk_core_ctrl_t *core);
+void arm_hm_init(void);
+void arm_hm_handler(
+        air_u32_t id, air_u32_t instr,
+        air_u32_t status, pmk_core_ctrl_t *core);
 air_uptr_t arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core);
 
 void arm_isr_table_init(void);
