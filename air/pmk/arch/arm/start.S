@@ -133,47 +133,33 @@ setup_stack:
 
     /**< Set SVC mode */
     cpsid   if, #(ARM_PSR_SVC)
-    mov     r2, #svc_stack_size
-    mov     sp, r7
-    sub     r7, r2
+    ldr     sp, =svc_stack
 
     /**< Set FIQ mode */
     cpsid   aif, #(ARM_PSR_FIQ)
-    mov     r2, #fiq_stack_size
-    mov     sp, r7
-    sub     r7, r2
+    ldr     sp, =fiq_stack
 
     /* TODO some boards require fiq registers initialization */
 
     /**< Set IRQ mode */
     cpsid   aif, #(ARM_PSR_IRQ)
-    mov     r2, #irq_stack_size
-    mov     sp, r7
-    sub     r7, r2
+    ldr     sp, =irq_stack
 
     /**< Set ABT mode */
     cpsid   aif, #(ARM_PSR_ABT)
-    mov     r2, #abt_stack_size
-    mov     sp, r7
-    sub     r7, r2
+    ldr     sp, =abt_stack
 
     /**< Set UND mode */
     cpsid   aif, #(ARM_PSR_UND)
-    mov     r2, #und_stack_size
-    mov     sp, r7
-    sub     r7, r2
+    ldr     sp, =und_stack
 
     /**< Set SYS mode */
     cpsie   aif, #(ARM_PSR_SYS)
-    mov     r2, #sys_stack_size
-    mov     sp, r7
-    sub     r7, r2
+    ldr     sp, =sys_stack
 
     /**< Set MON mode */
     cpsid   aif, #(ARM_PSR_MON)
-    mov     r2, #mon_stack_size
-    mov     sp, r7
-    sub     r7, r2
+    ldr     sp, =mon_stack
 
     /**< Change back to SVC mode */
     cpsie   aif, #(ARM_PSR_SVC)
