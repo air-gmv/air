@@ -61,9 +61,9 @@ global(air_set_psr)
     svc     #(AIR_SYSCALL_ARM_SET_PSR)
     bx      lr
 
-/* global(????)
+global(air_rett)
     svc     #(AIR_SYSCALL_ARM_RETT)
-    bx      lr */
+    bx      lr
 
 //global(air_get_cache_register)
 //  svc     #(AIR_SYSCALL_ARM_GET_CACHE_REGISTER)
