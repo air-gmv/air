@@ -55,7 +55,7 @@ void arm_irq_table_initialize(void) {
 }
 
 void arm_irq_handler(arm_interrupt_stack_frame_t *frame,
-        pmk_core_ctrl_t* core) {
+        pmk_core_ctrl_t *core) {
 
     /* Acknowledge Interrupt */
     air_u32_t ack = arm_acknowledge_int();
@@ -65,17 +65,23 @@ void arm_irq_handler(arm_interrupt_stack_frame_t *frame,
 
 #ifdef PMK_DEBUG
     printk("\n :: IRQ #%d acknowledge\n\n", id);
-    triple_timer_cnt_t *ttc = (triple_timer_cnt_t *)0xf8001000;
-    ic_distributor_t *ic_dist = (ic_distributor_t *)IC_DIST_BASE_MEMORY;
-
-    air_u32_t ttc_ack_1 = (ttc->int_cnt_1 & 0x3f);
-
-    printk("    ttc_ack_1 = 0x%x\n", ttc_ack_1);
-
-    printk("    ttc->cnt_val_1 = 0x%x\n", ttc->cnt_val_1);
-    printk("  * ic_dist->icdiser[1] = 0x%x\n", ic_dist->icdiser[1]);
-    printk("  * ic_dist->icdispr[1] = 0x%x\n\n", ic_dist->icdispr[1]);
 #endif
+
+    /* TTC interrupt */
+    if (id >= 42 && id <= 44) {
+        triple_timer_cnt_t *ttc = (triple_timer_cnt_t *)0xf8001000;
+        air_u32_t ttc_ack_1 = (ttc->int_cnt_1 & 0x3f);
+
+#ifdef PMK_DEBUG
+        ic_distributor_t *ic_dist = (ic_distributor_t *)IC_DIST_BASE_MEMORY;
+
+        printk("    ttc_ack_1 = 0x%x\n", ttc_ack_1);
+
+        printk("    ttc->cnt_val_1 = 0x%x\n", ttc->cnt_val_1);
+        printk("  * ic_dist->icdiser[1] = 0x%x\n", ic_dist->icdiser[1]);
+        printk("  * ic_dist->icdispr[1] = 0x%x\n\n", ic_dist->icdispr[1]);
+#endif
+    }
 
     /* Spurious interrupt */
     if(id == 1023) {
@@ -94,6 +100,39 @@ void arm_irq_handler(arm_interrupt_stack_frame_t *frame,
         /* in sparc they reassign the *frame, but it is loaded again in asm
          * so dunno.
          */
+#ifdef PMK_DEBUG
+        frame = core->context->isf_pointer;
+        printk("      Partition Switch Happening\n");
+        printk("\n        arm_interrupt_stack_frame_t contents\n"
+                "         r0   = 0x%08x"
+                "         r1   = 0x%08x\n"
+                "         r2   = 0x%08x"
+                "         r3   = 0x%08x\n"
+                "         r4   = 0x%08x"
+                "         r5   = 0x%08x\n"
+                "         r6   = 0x%08x"
+                "         r7   = 0x%08x\n"
+                "         r8   = 0x%08x"
+                "         r9   = 0x%08x\n"
+                "         r10  = 0x%08x"
+                "         r11  = 0x%08x\n"
+                "         r12  = 0x%08x"
+                "         sp   = 0x%08x\n"
+                "         lr   = 0x%08x"
+                "         p_lr = 0x%08x\n"
+                "         cspr = 0x%08x\n",
+                frame->r0, frame->r1, frame->r2, frame->r3, frame->r4,
+                frame->r5, frame->r6, frame->r7, frame->r8, frame->r9,
+                frame->r10, frame->r11, frame->r12, frame->orig_sp,
+                frame->orig_lr, frame->lr, frame->orig_cpsr);
+        printk("\n        partition memory contents\n");
+        for (air_u32_t i = 0; i < 0x400; i += 4) {
+            if (!(i%16))
+                printk("\n");
+            printk("0x%08x: 0x%08x   ", (0x10000000+i), *((air_uptr_t)(0x10000000+i)));
+        }
+        printk("\n");
+#endif
         core->partition_switch = 0;
     }
 

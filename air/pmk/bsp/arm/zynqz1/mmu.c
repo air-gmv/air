@@ -26,11 +26,11 @@ extern air_u32_t air_kernel_memory_end;
 void bsp_segregation(pmk_partition_t *partition) {
 
 #ifdef PMK_DEBUG
-    printk("     :: BSP segregation\n"
-            "        air_kernel_memory_start = 0x%08x\n"
-            "        air_kernel_memory_end   = 0x%08x\n"
-            "        kernel size (end-start) = 0x%08x\n"
-            "        air_workspace           = 0x%08x\n",
+    printk("   :: BSP segregation\n"
+            "      air_kernel_memory_start = 0x%08x\n"
+            "      air_kernel_memory_end   = 0x%08x\n"
+            "      kernel size (end-start) = 0x%08x\n"
+            "      air_workspace           = 0x%08x\n",
             (air_uptr_t)&air_kernel_memory_start,
             (air_uptr_t)&air_kernel_memory_end,
             (air_u32_t)&air_kernel_memory_end - (air_u32_t)&air_kernel_memory_start,
