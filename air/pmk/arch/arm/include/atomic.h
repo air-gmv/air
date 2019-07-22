@@ -10,25 +10,24 @@
  * @file atomic.h
  * @author lumm
  * @brief Atomic type and atomic operations definitions
- *
- * @note Based on asm-parisc/atomic.h Copyright (C) 2000 Philipp Rumpf
  */
 
 #ifndef ARM_ATOMIC_H
 #define ARM_ATOMIC_H
 
 #include <air_arch.h>
+#include <lock.h>
 
 /**
  * @brief ARM atomic integer
  */
 typedef struct { volatile int value; } atomic_t;
 
-extern air_i32_t arm_atomic_add(air_i32_t i, atomic_t *v);
-extern air_i32_t arm_atomic_swap(air_i32_t i, atomic_t *v);
-extern air_i32_t arm_atomic_or(air_i32_t i, atomic_t *v);
-extern air_i32_t arm_atomic_and(air_i32_t i, atomic_t *v);
-extern air_i32_t arm_atomic_xor(air_i32_t i, atomic_t *v);
+air_i32_t arm_atomic_add(air_i32_t i, atomic_t *v);
+air_i32_t arm_atomic_swap(air_i32_t i, atomic_t *v);
+air_i32_t arm_atomic_or(air_i32_t i, atomic_t *v);
+air_i32_t arm_atomic_and(air_i32_t i, atomic_t *v);
+air_i32_t arm_atomic_xor(air_i32_t i, atomic_t *v);
 
 #define atomic_set(i, v)                ((void)arm_atomic_swap((int)(i), (v)))
 #define atomic_swap(i, v)               (arm_atomic_swap((int)(i), (v)))
