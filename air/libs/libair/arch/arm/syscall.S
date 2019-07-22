@@ -20,6 +20,7 @@
 #include <asm.h>
 #include <air.h>
 
+    .thumb
 FUNC(air_syscall_get_physical_addr)
     svc     #(AIR_SYSCALL_GET_P_ADDR)
 
@@ -95,8 +96,9 @@ FUNC(air_syscall_get_hm_event)
 FUNC(air_syscall_raise_hm_event)
     svc     #(AIR_SYSCALL_RAISE_HM_EVENT)
 
-FUNC(air_syscall_print)
-    svc     #(AIR_SYSCALL_PRINT)
-
 FUNC(air_syscall_putchar)
     svc     #(AIR_SYSCALL_PUTCHAR)
+
+FUNC(air_syscall_print)
+    svc     #(AIR_SYSCALL_PRINT)
+    bx      lr

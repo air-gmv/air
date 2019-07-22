@@ -10,6 +10,7 @@
  * @file exceptions.S
  * @author lumm
  * @brief Exception handlers
+ * TODO Need to see if it is entering in ARM of Thumb mode
  */
 
 /* Are we in assembly file */
@@ -24,13 +25,13 @@
 /* Save global registers and branch to save context */
 FUNC(exception_pref_abort)
     push    {r0-r2, lr}
-    mov     r0, lr
+    mrc     p15, 0, r0, c6, c0, 2
     mov     r1, #3
     b       1f
 
 FUNC(exception_data_abort)
     push    {r0-r2, lr}
-    mov     r0, lr
+    sub     r0, lr, #8
     mov     r1, #4
 
 1:
@@ -50,14 +51,13 @@ FUNC(exception_data_abort)
 FUNC(exception_undef)
 
     push    {r0-r2, lr}
+    mov     r1, #1
 
     /* Call high level handler */
     mov     r0, lr
-    SWITCH_FROM_ARM_TO_THUMB    r1
+    SWITCH_FROM_ARM_TO_THUMB    r2
     bl      arm_exception_default_handler
     SWITCH_FROM_THUMB_TO_ARM
-
-    wfi
 
     pop     {r0-r2, lr}
 

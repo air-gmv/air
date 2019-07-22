@@ -227,7 +227,7 @@ typedef struct {
     air_u32_t r4;
     air_u32_t r5;
     air_u32_t reserved;
-    air_u32_t orig_lr;
+    air_u32_t lr;
 } arm_supervisor_stack_frame_t;
 
 /**
