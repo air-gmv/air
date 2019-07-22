@@ -23,6 +23,7 @@
 
     .arm
 /* Save global registers and branch to save context */
+global(exception_fiq)
 global(exception_pref_abort)
     push    {r0-r2, lr}
     mrc     p15, 0, r0, c6, c0, 2
