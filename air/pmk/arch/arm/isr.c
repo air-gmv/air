@@ -18,6 +18,7 @@
 air_u32_t counter = 0;
 #endif
 
+
 typedef void (*isr)(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core);
 
 air_uptr_t arm_isr_handler_table[ZYNQ_MAX_INT];
@@ -54,6 +55,8 @@ void arm_isr_table_init(void) {
 
 air_uptr_t arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
 
+    air_uptr_t ret = NULL;
+
     arm_virtual_cpu_t *vcpu = &core->context->vcpu;
     arm_virtual_gic_t *vgic = &core->context->vgic;
 
@@ -68,43 +71,54 @@ air_uptr_t arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
     air_uptr_t icdipr = vgic->icdipr;
 
     if (vbar == NULL)
-        return NULL;
+        return ret;
 
-    if (!psr_i) {
+    /* abort have higher priority than IRQ, soo if any pending and cpu is accepting they go 1st */
+    if (!psr_a) {
 
-        if (!psr_a) {
+        pmk_hm_event_t *hm_event = (pmk_hm_event_t *)core->context->hm_event;
+        if (hm_event->nesting > 0) {
 
-            pmk_hm_event_t *hm_event = (pmk_hm_event_t *)core->context->hm_event;
-            if (hm_event->nesting > 0) {
+            vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
+            vgic->icciar = ((core->idx << 10) & id);
+            switch (hm_event->error_id) {
+            case AIR_UNIMPLEMENTED_ERROR:
+                ret = vbar + 1;
+                break;
 
-                vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
-                vgic->icciar = ((core->idx << 10) & id);
-                switch (hm_event->error_id) {
-                case AIR_UNIMPLEMENTED_ERROR:
-                    return vbar[1];
+            case AIR_VIOLATION_ERROR:
+                ret = vbar + 3;
+                break;
 
-                case AIR_VIOLATION_ERROR:
-                    return vbar[3];
+            case AIR_SEGMENTATION_ERROR:
+                ret = vbar + 4;
+                break;
 
-                case AIR_SEGMENTATION_ERROR:
-                    return vbar[4];
+            case AIR_IO_ERROR:
+                // TODO not sure in this case
+                ret = vbar + 6;
+                break;
 
-                case AIR_IO_ERROR:
-                    // TODO not sure in this case
-                    return vbar[6];
-
-                default:
-                    return NULL;
-                }
+            default:
+                ret = NULL;
+                break;
             }
         }
+
+        if (ret != NULL) {
+            arm_set_vint_pending(icdispr, id);
+            return ret;
+        }
+    }
+
+    if (!psr_i) {
 
         if (arm_is_vint_enabled(icdiser, id)) {
 
             if (arm_get_vint_priority(icdipr, id) < iccpmr) {
 
                 vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
-                return vbar[6];
+                ret = vbar + 6;
             } else {
                 arm_set_vint_pending(icdispr, id);
             }
@@ -114,7 +128,7 @@ air_uptr_t arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
         arm_set_vint_pending(icdispr, id);
     }
 
-    return NULL;
+    return ret;
 }
 
 #ifdef PMK_DEBUG_ISR
