@@ -21,18 +21,20 @@
 #include <asm_offsets.h>
 #include <armv7.h>
 
+    .arm
     .extern arm_svc_handler
 
 /* Save global registers and branch to save context */
-
 global(exception_svc)
-    push    {r0-r4, lr}
+    push    {r0-r3, r12, lr}
 
     /* get pmk_core_ctrl_t */
     mrc     p15, 0, r2, c13, c0, 4
 
     mov     r1, sp
     mrs     r0, spsr
+
+    push    {r0, r3}
 
     tst     r0, #ARM_PSR_T
     ldrneh  r0, [lr, #-2]
@@ -44,4 +46,7 @@ global(exception_svc)
     bl      arm_svc_handler
     SWITCH_FROM_THUMB_TO_ARM
 
-    ldmia   sp!, {r0-r4, pc}^
+    pop     {r0, r3}
+    msr     spsr, r0
+
+    ldmfd   sp!, {r0-r3, r12, pc}^

@@ -123,10 +123,10 @@ arm_restore_not_trashed:
     tst     r2, #(ARM_VFP_FPEXC_ENABLE)
     beq     1f
 
-    vldmia  r1!, {d0-d15}
-    vldmia  r1, {d16-d31}
     vmsr    fpexc, r2
     vmsr    fpscr, r3
+    vldmia  r1!, {d0-d15}
+    vldmia  r1, {d16-d31}
 1:
 #endif
 

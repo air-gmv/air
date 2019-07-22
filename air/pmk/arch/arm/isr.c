@@ -41,54 +41,57 @@ air_uptr_t arm_isr_install_handler(air_u32_t vector, void *handler) {
     return old_handler;
 }
 
-void arm_isr_table_initialize(void) {
+void arm_isr_table_init(void) {
 
     for (air_u32_t i = 0; i < arm_get_int_count(); ++i) {
         arm_isr_install_handler(i, arm_isr_default_handler);
     }
 }
 
-air_uptr_t arm_partition_isr_handler(
-        arm_interrupt_stack_frame_t *frame,
-        pmk_core_ctrl_t *core,
-        air_u32_t id) {
+air_uptr_t arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
 
     arm_virtual_cpu_t *vcpu = &core->context->vcpu;
     arm_virtual_gic_t *vgic = &core->context->vgic;
 
     air_u32_t psr = vcpu->psr;
-    air_u32_t psr_i = (psr & ARM_PSR_I);
+    air_u32_t psr_i = ((psr & ARM_PSR_I) >> 7);
+    air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
     air_u32_t **vbar = vcpu->vbar;
 
-    air_u32_t iccicr = vgic->iccicr;
     air_u32_t iccpmr = vgic->iccpmr;
     air_uptr_t icdiser = vgic->icdiser;
     air_uptr_t icdispr = vgic->icdispr;
     air_uptr_t icdipr = vgic->icdipr;
 
-    if (psr_i && (iccicr & 0x1) && (vbar != NULL)) {
+    if (vbar == NULL)
+        return NULL;
 
-        pmk_hm_event_t *hm_event = (pmk_hm_event_t *)core->context->hm_event;
-        if (hm_event->nesting > 0 && vbar[1] && vbar[3] && vbar[4]) {
+    if (!psr_i) {
 
-            vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
-            vgic->icciar = ((core->idx << 10) & id);
-            switch (hm_event->error_id) {
-            case AIR_UNIMPLEMENTED_ERROR:
-                return vbar[1];
+        if (!psr_a) {
 
-            case AIR_VIOLATION_ERROR:
-                return vbar[3];
+            pmk_hm_event_t *hm_event = (pmk_hm_event_t *)core->context->hm_event;
+            if (hm_event->nesting > 0) {
 
-            case AIR_SEGMENTATION_ERROR:
-                return vbar[4];
+                vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
+                vgic->icciar = ((core->idx << 10) & id);
+                switch (hm_event->error_id) {
+                case AIR_UNIMPLEMENTED_ERROR:
+                    return vbar[1];
 
-            case AIR_IO_ERROR:
-                // TODO not sure in this case
-                return vbar[6];
+                case AIR_VIOLATION_ERROR:
+                    return vbar[3];
 
-            default:
-                return NULL;
+                case AIR_SEGMENTATION_ERROR:
+                    return vbar[4];
+
+                case AIR_IO_ERROR:
+                    // TODO not sure in this case
+                    return vbar[6];
+
+                default:
+                    return NULL;
+                }
             }
         }
 
@@ -129,7 +132,7 @@ void arm_isr_handler_print_frame(arm_interrupt_stack_frame_t *frame, const char 
     for (air_u32_t i = 0; i < 0x400; i += 4) {
         if (!(i%16))
             printk("\n");
-        printk("0x%08x: 0x%08x   ", (0x10000000+i), *((air_uptr_t)(0x10000000+i)));
+        printk("0x%08x: 0x%08x   ", (0x10000000+i), *((air_u32_t *)(0x10000000+i)));
     }
     printk("\n");
 #endif
@@ -147,8 +150,8 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
     air_u16_t id = (ack & 0x3ff);
     // not used    air_u8_t cpu = ((ack << 10U) & 0x7);
 
-#ifdef PMK_DEBUG_ISR
-    printk("\n :: IRQ #%d acknowledge\n\n", id);
+#ifdef PMK_DEBUG
+    printk(" ** IRQ #%d acknowledge **\n\n", id);
 #endif
     /* TTC interrupt */
     if (id >= 42 && id <= 44) {
@@ -185,7 +188,7 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
     /* check if context switch was performed */
     if (core->partition_switch == 1) {
 #ifdef PMK_DEBUG
-        printk("      Switching Partitions\n");
+        printk("       ISR :: Switching Partitions\n\n");
 #endif /* PMK_DEBUG */
 
         frame = core->context->isf_pointer;
@@ -200,7 +203,7 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
     if (core->partition != NULL &&
             (id < 42 && id > 44)) {
 
-        ret = arm_partition_isr_handler(frame, core, id);
+        ret = arm_partition_isr_handler(id, core);
     }
 
     arm_end_of_int(ack);
