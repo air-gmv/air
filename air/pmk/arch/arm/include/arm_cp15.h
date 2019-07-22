@@ -31,7 +31,7 @@
 #define ARM_SCTLR_UWXN      (1U << 20)
 #define ARM_SCTLR_WXN       (1U << 19)
 #define ARM_SCTLR_HA        (1U << 17)
-#define ARM_SCTLR_L4        (1U << 15) //todo wut???
+#define ARM_SCTLR_L4        (1U << 15)
 #define ARM_SCTLR_RR        (1U << 14)
 #define ARM_SCTLR_V         (1U << 13)
 #define ARM_SCTLR_I         (1U << 12)
@@ -47,32 +47,13 @@
 
 
 static inline air_u32_t arm_cp15_get_system_control(void) {
-    ARM_SWITCH_REGISTERS;
     air_u32_t val;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mrc p15, 0, %[val], c1, c0, 0\n"
-        ARM_SWITCH_BACK
-        : [val] "=&r" (val) ARM_SWITCH_ADDITIONAL_OUTPUT
-    );
-
+    __asm__ volatile ("mrc p15, 0, %0, c1, c0, 0\n":"=r" (val)::"memory");
     return val;
 }
 
 static inline void arm_cp15_set_system_control(air_u32_t val) {
-    ARM_SWITCH_REGISTERS;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mcr p15, 0, %[val], c1, c0, 0\n"
-        "nop\n"
-        "nop\n"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [val] "r" (val)
-        : "memory"
-    );
+    __asm__ volatile ("mcr p15, 0, %0, c1, c0, 0\n"::"r" (val):"memory");
 }
 
 static inline air_u32_t arm_cp15_get_level_of_coherency(air_u32_t clidr) {
@@ -80,73 +61,29 @@ static inline air_u32_t arm_cp15_get_level_of_coherency(air_u32_t clidr) {
 }
 
 static inline void arm_cp15_instruction_cache_invalidate(void) {
-    ARM_SWITCH_REGISTERS;
-    air_u32_t sbz = 0;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mcr p15, 0, %[sbz], c7, c5, 0\n"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [sbz] "r" (sbz)
-        : "memory"
-    );
+    __asm__ volatile ("mcr p15, 0, r4, c7, c5, 0\n");
 }
 
 static inline air_u32_t arm_cp15_get_cache_level_id(void) {
-    ARM_SWITCH_REGISTERS;
     air_u32_t val;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mrc p15, 1, %[val], c0, c0, 1\n"
-        ARM_SWITCH_BACK
-        : [val] "=&r" (val) ARM_SWITCH_ADDITIONAL_OUTPUT
-    );
-
+    __asm__ volatile ("mrc p15, 1, %0, c0, c0, 1\n":"=r" (val));
     return val;
 }
 
 static inline air_u32_t arm_cp15_get_cache_size_id(void) {
-    ARM_SWITCH_REGISTERS;
     air_u32_t val;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mrc p15, 1, %[val], c0, c0, 0\n"
-        ARM_SWITCH_BACK
-        : [val] "=&r" (val) ARM_SWITCH_ADDITIONAL_OUTPUT
-    );
-
+    __asm__ volatile ("mrc p15, 1, %0, c0, c0, 0\n":"=r" (val));
     return val;
 }
 
 /* CSSELR */
 static inline void arm_cp15_set_cache_size_selection(air_u32_t val) {
-    ARM_SWITCH_REGISTERS;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mcr p15, 2, %[val], c0, c0, 0\n"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [val] "r" (val)
-        : "memory"
-    );
+    __asm__ volatile ("mcr p15, 2, %0, c0, c0, 0\n"::"r" (val):"memory");
 }
 
 /* Cache Clean by Set/Way DCCSW */
 static inline void arm_cp15_data_cache_clean_line_by_set_and_way(air_u32_t set_way) {
-    ARM_SWITCH_REGISTERS;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mcr p15, 0, %[set_way], c7, c10, 2\n"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [set_way] "r" (set_way)
-        : "memory"
-    );
+    __asm__ volatile ("mcr p15, 0, %0, c7, c10, 2\n"::"r" (set_way));
 }
 
 static inline air_u32_t arm_cp15_get_cache_size_id_for_level(air_u32_t level) {
@@ -165,7 +102,7 @@ static inline air_u32_t arm_cp15_get_cache_size_id_for_level(air_u32_t level) {
     LineSize = log(#words) - 2
     => L = log2(2^(LineSize + 2) * 4) */
 static inline air_u32_t arm_cp15_get_line_shift(air_u32_t ccsidr) {
-    return (ccsidr &0x7) + 4;
+    return (ccsidr & 0x7) + 4;
 }
 
 /* Associativity + 1 */
@@ -228,16 +165,7 @@ static inline void arm_cp15_data_cache_clean_all_levels(void) {
 }
 
 static inline void arm_cp15_data_cache_invalidate_line_by_set_and_way(air_u32_t set_way) {
-    ARM_SWITCH_REGISTERS;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mcr p15, 0, %[set_way], c7, c6, 2\n"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [set_way] "r" (set_way)
-        : "memory"
-    );
+    __asm__ volatile ("mcr p15, 0, %0, c7, c6, 2\n"::"r" (set_way));
 }
 
 #define CP15_CSSELR_DATA 0
@@ -288,31 +216,12 @@ static inline void arm_cp15_data_cache_invalidate_all_levels(void) {
 
 /* BPIALL, Branch Predictor Invalidate All */
 static inline void arm_cp15_branch_predictor_invalidate_all(void) {
-    ARM_SWITCH_REGISTERS;
-    air_u32_t sbz = 0;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mcr p15, 0, %[sbz], c7, c5, 6\n"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [sbz] "r" (sbz)
-        : "memory"
-    );
+    __asm__ volatile ("mcr p15, 0, r4, c7, c5, 6\n");
 }
 
 /* TLBIALL, TLB Invalidate All */
 static inline void arm_cp15_tlb_invalidate(void) {
-    ARM_SWITCH_REGISTERS;
-    air_u32_t sbz = 0;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mcr p15, 0, %[sbz], c8, c7, 0\n"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [sbz] "r" (sbz)
-    );
+    __asm__ volatile ("mcr p15, 0, r4, c8, c7, 0\n");
 
     arm_data_synchronization_barrier(15);
     arm_instruction_synchronization_barrier();
@@ -320,16 +229,8 @@ static inline void arm_cp15_tlb_invalidate(void) {
 
 /* MPIDR, Multiprocessor Affinity Register */
 static inline air_u32_t arm_cp15_get_multiprocessor_cpu_id(void) {
-    ARM_SWITCH_REGISTERS;
     air_u32_t mpidr;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mrc p15, 0, %[mpidr], c0, c0, 5\n"
-        ARM_SWITCH_BACK
-        : [mpidr] "=&r" (mpidr) ARM_SWITCH_ADDITIONAL_OUTPUT
-    );
-
+    __asm__ volatile ("mrc p15, 0, %0, c0, c0, 5\n":"=r" (mpidr));
     return (mpidr & 0xff);
 }
 
@@ -343,107 +244,90 @@ static inline air_u32_t arm_cp15_get_multiprocessor_cpu_id(void) {
 #define CP15_ACTLR_PARITY_ON (1U << 0)
 
 static inline air_u32_t arm_cp15_get_auxiliary_control(void) {
-    ARM_SWITCH_REGISTERS;
     air_u32_t val;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mrc p15, 0, %[val], c1, c0, 1\n"
-        ARM_SWITCH_BACK
-        : [val] "=&r" (val) ARM_SWITCH_ADDITIONAL_OUTPUT
-    );
-
+    __asm__ volatile ("mrc p15, 0, %0, c1, c0, 1\n":"=r" (val)::"memory");
     return val;
 }
 
 static inline void arm_cp15_set_auxiliary_control(air_u32_t val) {
-    ARM_SWITCH_REGISTERS;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mcr p15, 0, %[val], c1, c0, 1\n"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [val] "r" (val)
-    );
+    __asm__ volatile ("mcr p15, 0, %0, c1, c0, 1\n"::"r" (val):"memory");
 }
 
 /* VBAR, Vector Base Address Register */
-static inline void arm_cp15_set_vector_base_address(void *base) {
-    ARM_SWITCH_REGISTERS;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mcr p15, 0, %[base], c12, c0, 0\n"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [base] "r" (base)
-    );
+static inline void arm_cp15_set_vector_base_address(void *start) {
+    __asm__ volatile ("mcr p15, 0, %0, c12, c0, 0\n"::"r" (start):"memory");
 }
-
-
 
 static inline void arm_cp15_set_translation_table_control(air_u32_t val) {
-    ARM_SWITCH_REGISTERS;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mcr p15, 0, %[val], c2, c0, 2\n\t"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [val] "r" (val)
-    );
+    __asm__ volatile ("mcr p15, 0, %0, c2, c0, 2\n"::"r" (val):"memory");
 }
 
-
-static inline air_u32_t arm_cp15_get_translation_table_control() {
-    ARM_SWITCH_REGISTERS;
+static inline air_u32_t arm_cp15_get_translation_table_control(void) {
     air_u32_t val;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mrc p15, 0, %[val], c2, c0, 2\n\t"
-        ARM_SWITCH_BACK
-        : [val] "=&r" (val) ARM_SWITCH_ADDITIONAL_OUTPUT
-    );
-
+    __asm__ volatile ("mrc p15, 0, %0, c2, c0, 2\n":"=r" (val)::"memory");
     return val;
 }
 
 static inline void arm_cp15_set_domain_access_control(air_u32_t val) {
-    ARM_SWITCH_REGISTERS;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mcr p15, 0, %[val], c3, c0, 0\n"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [val] "r" (val)
-    );
+    __asm__ volatile ("mcr p15, 0, %0, c3, c0, 0\n"::"r" (val):"memory");
 }
 
 static inline void arm_cp15_set_translation_table0_base(air_uptr_t base) {
-    ARM_SWITCH_REGISTERS;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mcr p15, 0, %[base], c2, c0, 0\n"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [base] "r" (base)
-    );
+    __asm__ volatile ("mcr p15, 0, %0, c2, c0, 0\n"::"r" (base):"memory");
 }
 
 static inline void arm_cp15_set_translation_table1_base(air_uptr_t base) {
-    ARM_SWITCH_REGISTERS;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mcr p15, 0, %[base], c2, c0, 1\n"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [base] "r" (base)
-    );
+    __asm__ volatile ("mcr p15, 0, %0, c2, c0, 1\n"::"r" (base):"memory");
 }
 
+static inline air_u32_t arm_is_hivecs(void) {
+    air_u32_t sctlr = arm_cp15_get_system_control();
+    return (sctlr & ARM_SCTLR_V);
+}
+
+static inline void arm_disable_hivecs(void) {
+    air_u32_t sctlr = arm_cp15_get_system_control();
+    if (sctlr & ARM_SCTLR_V) {
+        sctlr &= ~(ARM_SCTLR_V);
+        arm_cp15_set_system_control(sctlr);
+    }
+}
+
+static inline void arm_enable_hivecs(void) {
+    air_u32_t sctlr = arm_cp15_get_system_control();
+    if (!(sctlr & ARM_SCTLR_V)) {
+        sctlr |= ARM_SCTLR_V;
+        arm_cp15_set_system_control(sctlr);
+    }
+}
+
+// TODO arm_get_monitor_exception_base_address
+
+static inline air_u32_t arm_get_exception_base_address(void) {
+
+    if (arm_is_hivecs()) {
+        return 0xffff0000;
+    }
+
+// if () TODO no security extensions
+
+    air_u32_t reg;
+    __asm__ volatile ("mrc p15, 0, %0, c12, c0, 0\n":"=r" (reg)::"memory");
+    return reg;
+}
+
+static inline void arm_set_exception_base_address(air_u32_t val) {
+    arm_disable_hivecs();
+    __asm__ volatile ("mcr p15, 0, %0, c12, c0, 0\n"::"r" (val):"memory");
+}
+
+static inline air_u32_t arm_cp15_get_CPACR(void) {
+    air_u32_t val;
+    __asm__ volatile ("mrc p15, 0, %0, c1, c0, 2\n":"=r" (val));
+    return val;
+}
+
+static inline void arm_cp15_set_CPACR(air_u32_t val) {
+    __asm__ volatile ("mcr p15, 0, %0, c1, c0, 2\n"::"r" (val):"memory");
+}
 #endif /* ARM_CP15_H */

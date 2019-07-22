@@ -12,7 +12,7 @@
  * @brief Exception handlers
  */
 
-/* Are we in assembly file */
+/* Are we in assembly file. Yes we are */
 #ifndef ASM
 #define ASM
 #endif
@@ -25,7 +25,7 @@
 
 /* Save global registers and branch to save context */
 
-FUNC(exception_svc)
+global(exception_svc)
     push    {r0-r5, r12, lr}
 
     /* get pmk_core_ctrl_t */

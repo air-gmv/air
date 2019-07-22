@@ -22,62 +22,22 @@
 #include <cpu.h>
 #include <bsp.h>
 
-    /* External symbols */
-    .extern air_stack
-    .extern bsp_start_hook
-    .extern pmk_init
-
-    .globl vector_table_end
 #if __ARM_ARCH >= 7
     .arm
-    .section .text, "ax"
 
     /**< Start entry */
-FUNC(start)
-FUNC(_start)
-FUNC(pmk_trap_table)
-FUNC(vector_table_start)
-    ldr     pc, handler_reset
-    ldr     pc, handler_exception_undef
-    ldr     pc, handler_exception_svc
-    ldr     pc, handler_exception_pref_abort
-    ldr     pc, handler_exception_data_abort
+global(pmk_trap_table)
+    b       reset
+    b       exception_undef
+    b       exception_svc
+    b       exception_pref_abort
+    b       exception_data_abort
     nop
-    ldr     pc, handler_exception_irq
-    ldr     pc, handler_exception_fiq
-FUNC(vector_table_end)
+    b       exception_irq
+    b       exception_fiq
 
-handler_reset:
-    .word reset
-handler_exception_undef:
-    .word exception_undef
-handler_exception_svc:
-    .word exception_svc
-handler_exception_pref_abort:
-    .word exception_pref_abort
-handler_exception_data_abort:
-    .word exception_data_abort
-handler_exception_irq:
-    .word exception_irq
-handler_exception_fiq:
-    .word exception_fiq
-
-#ifdef SECURITY_EXTENSIONS
-    .extern stack_mon_end
-
-    .extern monitor_smc
-    .extern monitor_pref_abort
-    .extern monitor_data_abort
-    .extern monitor_irq
-    .extern monitor_fiq
-    .extern nonsecure_undef
-    .extern nonsecure_svc
-    .extern nonsecure_pref_abort
-    .extern nonsecure_data_abort
-    .extern nonsecure_irq
-    .extern nonsecure_fiq
-
-FUNC(monitor_exceptions)
+#ifdef __security_extensions__
+global(monitor_exceptions)
     nop
     nop
     b       monitor_smc
@@ -87,7 +47,7 @@ FUNC(monitor_exceptions)
     b       monitor_irq
     b       monitor_fiq
 
-FUNC(nonsecure_exceptions)
+global(nonsecure_exceptions)
     nop
     b       nonsecure_undef
     b       nonsecure_svc
@@ -96,12 +56,25 @@ FUNC(nonsecure_exceptions)
     nop
     b       nonsecure_irq
     b       nonsecure_fiq
-#endif /* SECURITY_EXTENSIONS */
 
+#ifdef __virtualization_extensions__
+global(hyp_exceptions)
+    nop
+    b       hyp_undef
+    b       hyp_hvc
+    b       hyp_pref_abort
+    b       hyp_data_abort
+    b       hyp_trap
+    b       hyp_irq
+    b       hyp_fiq
+#endif /* __virtualization_extensions__ */
+#endif /* __security_extensions__ */
+
+global(start)
+global(_start)
 reset:
     /* TODO Some boards require register initialization */
 
-#ifdef LUMM_MONOCORE
     /* Save r1 and r2 to preserve bootloader params */
     mov     r5, r1
     mov     r6, r2
@@ -125,7 +98,6 @@ reset:
 
     ldr     r2, =air_stack
     add     r7, r1, r2
-#endif
 
     /**< Setup processor modes */
 setup_stack:
@@ -188,7 +160,6 @@ setup_stack:
 #endif /* PMK_FPU_SUPPORT */
 
     ldr     lr, =bsp_start_hook_done
-
 #ifdef __thumb__
     orr     lr, #1
 #endif
@@ -197,7 +168,6 @@ setup_stack:
 //  mov     r0, r4 /* original cpsr */
 //  mov     r1, r5 /* machine type number or ~0 for DT boot */
 //  mov     r2, r6 /* physical address of ATAGs or DTB */
-    ldr     r0, =vector_table_start
 
     bl      bsp_start_hook
 
@@ -217,7 +187,7 @@ bsp_start_hook_done:
     bl      pmk_init
 
     /**< Secondary cores init */
-FUNC(secondary_core_init)
+global(secondary_core_init)
 
     bl      pmk_core_initialize
 
