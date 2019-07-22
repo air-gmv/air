@@ -113,11 +113,19 @@ void core_context_setup_idle(core_context_t *context) {
     context->isr_nesting_level = 1;
 
     /* setup the context return PSR */
-    isf->orig_cpsr = (ARM_PSR_USR);
+    isf->orig_cpsr = (ARM_PSR_T | ARM_PSR_SYS);
 
     /* setup the context entry point */
-    isf->lr = (air_u32_t)bsp_idle_loop;
-    isf->orig_lr = (air_u32_t)bsp_idle_loop;
+#ifdef PMK_DEBUG
+    printk("\n    isf at               "
+            "0x%08x\n",
+            isf);
+    printk("    bsp_idle_loop at     "
+            "0x%08x\n",
+            bsp_idle_loop);
+#endif
+    isf->lr = (air_u32_t)bsp_idle_loop + 4;
+    isf->orig_lr = (air_u32_t)bsp_idle_loop + 4;
 }
 
 /**
@@ -159,7 +167,7 @@ void core_context_setup_partition(
         }
 
         /* setup the partition entry point */
-        isf->lr = (air_u32_t)context->entry_point;
+        isf->lr = (air_u32_t)context->entry_point + 4;
 
         /* setup the stack pointer of the partition */
         air_u32_t stack =
