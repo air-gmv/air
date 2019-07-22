@@ -83,11 +83,18 @@ arm_save_non_user_mode:
 
 #if PMK_FPU_SUPPORT
     vmrs    r2, fpexc
+    tst     r2, #(1 << 30)
+    beq     1f
     vmrs    r3, fpscr
     ldr     r4, [r11, #(offsetof_arm_interrupt_stack_frame_t_vfp_context)]
     stm     r4!, {r2, r3}
     vstmia  r4!, {d0-d15}
     vstmia  r4, {d16-d31}
+
+1:
+    mrc     p15, 0, r8, c1, c0, 2
+    bic     r8, #(0b1010 << 20)
+    mcr     p15, 0, r8, c1, c0, 2
 #endif /* PMK_FPU_SUPPORT */
 
     mov     r0, r11 /* isf_pointer */
@@ -117,14 +124,14 @@ arm_restore_not_trashed:
     /* Get the ISF pointer */
     ldr     r7, [r11, #(offsetof_arm_core_context_t_isf_pointer)]
 
-#if PMK_FPU_SUPPORT
+/*
     ldr     r1, [r7, #(offsetof_arm_interrupt_stack_frame_t_vfp_context)]
     ldm     r1!, {r2-r3}
     vmsr    fpexc, r2
     vmsr    fpscr, r3
     vldmia  r1!, {d0-d15}
     vldmia  r1, {d16-d31}
-#endif
+*/
 
 arm_restore_context:
     add     r12, r7, #(offsetof_arm_interrupt_stack_frame_t_usr_sp)
