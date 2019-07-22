@@ -159,12 +159,13 @@ setup_stack:
     cpsid   aif, #(ARM_PSR_SVC)
 
     /**< Enable VFPv3. TODO Other versions might need additional setup */
-#ifdef PMK_FPU_SUPPORT
+#if PMK_FPU_SUPPORT
     /* read CPACR */
     mrc     p15, 0, r8, c1, c0, 2
     /* enable CP10 and CP11 */
-    orr     r8, #(1 << 20)
-    orr     r8, #(1 << 22)
+//  orr     r8, #(1 << 20)
+//  orr     r8, #(1 << 22)
+    orr     r8, #(0b0101 << 20)
     /* clear ASEDIS and D32DIS. writes to D32DIS ignored for VFP-D16 */
     bic     r8, #(3 << 30)
     /* write CPACR */

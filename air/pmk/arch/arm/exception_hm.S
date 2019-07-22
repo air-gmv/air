@@ -98,11 +98,12 @@ global(exception_data_abort)
 
 
 global(exception_undef)
-#ifdef __thumb__
-    sub     lr, #2
-#else
-    sub     lr, #4
-#endif
+    push    {r0, r1}
+    mrs     r0, spsr
+    tst     r0, #(ARM_PSR_T)
+    subeq   lr, #4 //ARM
+    subne   lr, #2 //Thumb
+    pop     {r0, r1}
     srsfd   sp!, #ARM_PSR_SYS
     cpsid   aif, #ARM_PSR_SYS
 
@@ -110,7 +111,7 @@ global(exception_undef)
 
     mov     r0, #1
     ldr     r1, [sp, #16]
-    mov     r2, #0
+    ldr     r2, [sp, #20]
 
     /* Call high level handler */
     SWITCH_FROM_ARM_TO_THUMB    r3

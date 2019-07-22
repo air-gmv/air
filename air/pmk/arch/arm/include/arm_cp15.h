@@ -340,8 +340,8 @@ static inline void arm_cp15_setup_Per_CPU(air_u32_t cpu_id) {
             : "memory");
 }
 
-static inline air_u32_t arm_cp15_get_Per_CPU(void) {
-    air_u32_t val;
+static inline air_uptr_t arm_cp15_get_Per_CPU(void) {
+    air_uptr_t val;
     __asm__ volatile ("mrc p15, 0, %0, c13, c0, 4\n":"=r" (val));
     return val;
 }

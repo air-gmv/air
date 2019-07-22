@@ -39,13 +39,13 @@ void arm_syscall_enable_traps(void) {
 }
 
 void arm_syscall_disable_fpu(void) {
-#ifdef PMK_FPU_SUPPORT
+#if PMK_FPU_SUPPORT
     arm_disable_fpu();
 #endif
 }
 
 void arm_syscall_enable_fpu(void) {
-#ifdef PMK_FPU_SUPPORT
+#if PMK_FPU_SUPPORT
     arm_enable_fpu();
 #endif
 }
@@ -82,4 +82,9 @@ air_u32_t arm_syscall_get_core_id(void) {
     pmk_core_ctrl_t *core;
     __asm__ volatile ("mrc p15, 0, %0, c13, c0, 4\n":"=r" (core));
     return core->context->vcpu.id;
+}
+
+air_u64_t arm_syscall_get_elapsed_ticks(void) {
+    pmk_core_ctrl_t *core = (pmk_core_ctrl_t *)arm_cp15_get_Per_CPU();
+    return core->partition->elapsed_ticks;
 }

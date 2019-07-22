@@ -69,7 +69,7 @@
 #endif
 .endm
 
-#if defined(PMK_FPU_SUPPORT)
+#if PMK_FPU_SUPPORT
     #if defined(__ARM_NEON)
         #define VFP_D32
     #else
@@ -295,10 +295,19 @@ static inline void arm_disable_fpu(void) {
     air_u32_t reg = 0;
     __asm__ volatile (
             "vmrs %0, FPEXC\n"
-            "bic %0, #30\n"
+            "bic %0, #(1 << 30)\n"
             "vmsr FPEXC, %0\n"
             :
-            : "r" (reg));
+            : "r" (reg)
+            : "memory");
+/*  __asm__ volatile (
+            "mrc p15, 0, %0, c1, c0, 2\n"
+            "bic %0, %0, #(0xf << 20)\n"
+            "mcr p15, 0, %0, c1, c0, 2\n"
+            :
+            : "r" (reg)
+            : "memory"); */
+
 }
 
 static inline void arm_enable_fpu(void) {
@@ -309,6 +318,14 @@ static inline void arm_enable_fpu(void) {
             "vmsr FPEXC, %0\n"
             :
             : "r" (reg));
+
+/*  __asm__ volatile (
+            "mrc p15, 0, %0, c1, c0, 2\n"
+            "bic %0, %0, #(0xf << 20)\n"
+            "mcr p15, 0, %0, c1, c0, 2\n"
+            :
+            : "r" (reg)
+            : "memory"); */
 }
 
 static inline air_u32_t arm_get_cpsr(void) {
