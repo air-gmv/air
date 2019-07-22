@@ -17,8 +17,7 @@
 #include <printk.h>
 #endif
 
-void arm_svc_handler(air_u32_t svc_id, arm_supervisor_stack_frame_t *frame,
-        pmk_core_ctrl_t *core) {
+void arm_svc_handler(pmk_core_ctrl_t *core, air_u32_t svc_id, arm_supervisor_stack_frame_t *frame) {
 
 #ifdef PMK_DEBUG_SVC
     printk("\n ** svc #%i **\n", svc_id);
@@ -28,39 +27,38 @@ void arm_svc_handler(air_u32_t svc_id, arm_supervisor_stack_frame_t *frame,
 
     switch (svc_id) {
     case AIR_SYSCALL_ARM_DISABLE_INTERRUPTS:
-        arm_syscall_disable_interrupts();
+        arm_syscall_disable_interrupts(core);
         break;
     case AIR_SYSCALL_ARM_ENABLE_INTERRUPTS:
-        arm_syscall_enable_interrupts();
+        arm_syscall_enable_interrupts(core);
         break;
     case AIR_SYSCALL_ARM_DISABLE_TRAPS:
-        arm_syscall_disable_traps();
+        arm_syscall_disable_traps(core);
         break;
     case AIR_SYSCALL_ARM_ENABLE_TRAPS:
-        arm_syscall_enable_traps();
+        arm_syscall_enable_traps(core);
         break;
     case AIR_SYSCALL_ARM_DISABLE_FPU:
-        arm_syscall_disable_fpu();
+        arm_syscall_disable_fpu(core);
         break;
     case AIR_SYSCALL_ARM_ENABLE_FPU:
-        arm_syscall_enable_fpu();
+        arm_syscall_enable_fpu(core);
         break;
     case AIR_SYSCALL_ARM_GET_TBR:
-        frame->r0 = arm_syscall_get_tbr();
+        frame->r0 = arm_syscall_get_tbr(core);
         break;
     case AIR_SYSCALL_ARM_GET_PSR:
-        frame->r0 = arm_syscall_get_psr();
+        frame->r0 = arm_syscall_get_psr(core);
         break;
     case AIR_SYSCALL_ARM_GET_IRQ_MASK_REGISTER:
         frame->r0 = arm_syscall_get_irq_mask_register();
         break;
 
-
     case AIR_SYSCALL_ARM_SET_TBR:
-        arm_syscall_set_tbr(frame->r0);
+        arm_syscall_set_tbr(core, frame->r0);
         break;
     case AIR_SYSCALL_ARM_SET_PSR:
-        arm_syscall_set_psr(frame->r0);
+        arm_syscall_set_psr(core, frame->r0);
         break;
     case AIR_SYSCALL_ARM_SET_IRQ_MASK_REGISTER:
         arm_syscall_set_irq_mask_register(frame->r0);
@@ -71,14 +69,14 @@ void arm_svc_handler(air_u32_t svc_id, arm_supervisor_stack_frame_t *frame,
                 (void *)frame->r0);
         break;
     case AIR_SYSCALL_GET_CORE_ID:
-        frame->r0 = arm_syscall_get_core_id();
+        frame->r0 = arm_syscall_get_core_id(core);
         break;
 //  arm_svc_install_handler(AIR_SYSCALL_BOOT_CORE, );
     case AIR_SYSCALL_GET_US_PER_TICK:
         frame->r0 = pmk_get_usr_us_per_tick();
         break;
     case AIR_SYSCALL_GET_ELAPSED_TICKS:
-        elapsed = arm_syscall_get_elapsed_ticks();
+        elapsed = arm_syscall_get_elapsed_ticks(core);
         frame->r0 = (air_u32_t)(elapsed & 0xffffffff);
         frame->r1 = (air_u32_t)((elapsed & 0xffffffff00000000) >> 32);
         break;
