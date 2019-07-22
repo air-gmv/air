@@ -106,11 +106,13 @@ static inline void arm_set_ic_cpu_ctrl(air_u32_t iccicr) {
     ic_cpu->iccicr = iccicr;
 }
 
-static inline void arm_disable_interrupts(void) {
+static inline void arm_gic_disable_interrupts(void) {
+    /* not used. masking irq in psr is the way to go */
     ic_cpu->iccicr &= ~0x1;
 }
 
-static inline void arm_enable_interrupts(void) {
+static inline void arm_gic_enable_interrupts(void) {
+    /* not used. masking irq in psr is the way to go */
     ic_cpu->iccicr |= 0x3;
 }
 
