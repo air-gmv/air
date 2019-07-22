@@ -29,7 +29,7 @@ global(exception_fiq)
     srsfd   sp!, #ARM_PSR_SYS
     cpsid   aif, #ARM_PSR_SYS
 
-    push    {r0-r3}
+    push    {r0-r4, lr}
     mov     r0, #7
     mov     r1, #0
     mov     r2, #0
@@ -45,21 +45,25 @@ global(exception_fiq)
 
     ldr     r2, [r1, #offsetof_pmk_core_ctrl_t_context]
     ldr     r3, [r2, #offsetof_arm_core_context_t_trash]
-
-    teq     r3, #1
     /* context is trashed */
+    teq     r3, #1
     beq     restore_trashed_context
 
-    pop     {r0-r3}
+    /* return to hm exception */
+    teq     r0, #0
+    streq   r0, [sp, #24] // lr location
+
+    pop     {r0-r4, lr}
     rfefd   sp!
 
 
 global(exception_pref_abort)
     sub     lr, #8
     srsfd   sp!, #ARM_PSR_SYS
+    srsfd   sp!, #ARM_PSR_SYS // duplicate for pos hm
     cpsid   aif, #ARM_PSR_SYS
 
-    push    {r0-r3}
+    push    {r0-r4, lr}
     mov     r0, #3
     mrc     p15, 0, r1, c6, c0, 2
     mrc     p15, 0, r2, c5, c0, 1
@@ -69,17 +73,19 @@ global(exception_pref_abort)
 global(exception_data_abort)
     sub     lr, #8
     srsfd   sp!, #ARM_PSR_SYS
+    srsfd   sp!, #ARM_PSR_SYS // duplicate for pos hm
     cpsid   aif, #ARM_PSR_SYS
 
-    push    {r0-r3}
+    push    {r0-r4, lr}
     mov     r0, #4
     mrc     p15, 0, r1, c6, c0, 0
     mrc     p15, 0, r2, c5, c0, 0
 
 1:
+    ldr     r3, [sp, #24] // preferred return addr
+
     /* Call high level handler */
-    SWITCH_FROM_ARM_TO_THUMB    r3
-    mrc     p15, 0, r3, c13, c0, 4
+    SWITCH_FROM_ARM_TO_THUMB    r4
     bl      arm_hm_handler
     SWITCH_FROM_THUMB_TO_ARM
 
@@ -89,11 +95,23 @@ global(exception_data_abort)
     ldr     r2, [r1, #offsetof_pmk_core_ctrl_t_context]
     ldr     r3, [r2, #offsetof_arm_core_context_t_trash]
 
-    teq     r3, #1
     /* context is trashed */
+    teq     r3, #1
     beq     restore_trashed_context
 
-    pop     {r0-r3}
+    /* return to hm exception */
+    teq     r0, #0
+    beq     2f
+    str     r0, [sp, #24] // lr location
+    ldr     r0, [sp, #28] // toggle thumb->ARM
+    bic     r0, #ARM_PSR_T
+    str     r0, [sp, #28]
+    pop     {r0-r4, lr}
+    rfefd   sp!
+
+2:
+    pop     {r0-r4, lr}
+    add     sp, #8 // due to the duplication
     rfefd   sp!
 
 
@@ -104,18 +122,20 @@ global(exception_undef)
     subeq   lr, #4 //ARM
     subne   lr, #2 //Thumb
     pop     {r0, r1}
+
     srsfd   sp!, #ARM_PSR_SYS
+    srsfd   sp!, #ARM_PSR_SYS // duplicate for pos hm
     cpsid   aif, #ARM_PSR_SYS
 
-    push    {r0-r3}
+    push    {r0-r4,lr}
 
     mov     r0, #1
-    ldr     r1, [sp, #16]
-    ldr     r2, [sp, #20]
+    ldr     r3, [sp, #24] // preferred return addr
+    ldr     r2, [sp, #28] // spsr
+    mov     r1, #0
 
     /* Call high level handler */
-    SWITCH_FROM_ARM_TO_THUMB    r3
-    mrc     p15, 0, r3, c13, c0, 4
+    SWITCH_FROM_ARM_TO_THUMB    r4
     bl      arm_hm_handler
     SWITCH_FROM_THUMB_TO_ARM
 
@@ -125,15 +145,27 @@ global(exception_undef)
     ldr     r2, [r1, #offsetof_pmk_core_ctrl_t_context]
     ldr     r3, [r2, #offsetof_arm_core_context_t_trash]
 
-    teq     r3, #1
     /* context is trashed */
+    teq     r3, #1
     beq     restore_trashed_context
 
-    pop     {r0-r3}
+    /* return to hm exception */
+    teq     r0, #0
+    beq     2f
+    str     r0, [sp, #24] // lr location
+    ldr     r0, [sp, #28] // toggle thumb->ARM
+    bic     r0, #ARM_PSR_T
+    str     r0, [sp, #28]
+    pop     {r0-r4, lr}
+    rfefd   sp!
+
+2:
+    pop     {r0-r4, lr}
+    add     sp, #8 // due to the duplication
     rfefd   sp!
 
 
-
+/* if the partition halts or restarts, it returns as idle */
 restore_trashed_context:
     /* Get the idle ISF pointer */
     ldr     r3, [r2, #(offsetof_arm_core_context_t_idle_isf_pointer)]
