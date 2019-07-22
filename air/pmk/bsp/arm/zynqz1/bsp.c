@@ -52,16 +52,6 @@ void bsp_start_hook(void) {
     arm_cp15_data_cache_invalidate_all_levels();
     arm_cp15_branch_predictor_invalidate_all();
     arm_cp15_tlb_invalidate();
-
-    air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
-
-    if(cpu_id == 0) {
-        /* If the vector table is already on the right memory position
-        * then no copy needs to be done. Otherwise ...
-        */
-//      copy_vector_table();
-        bsp_clear_bss();
-    }
 }
 
 air_u32_t bsp_core_init(void) {
@@ -74,14 +64,13 @@ air_u32_t bsp_core_init(void) {
 
         arm_set_vector_base();
         arm_irq_table_initialize();
-        arm_init_ttc(1);
-        //arm_start_uart();
+        //arm_start_uart(); TODO screws up in qemu
     }
 
     gic_init(cpu_id);
     arm_mmu_init();
 
-    //TODO Do I need to copy from LoadMA to VMA
+    //TODO Do I need to copy from LoadMA to VMA???
     // bsp_start_copy_sections();
 
     return 0;
@@ -92,18 +81,20 @@ void bsp_core_ready(void) {
     air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
 
     arm_setup_interprocessor_irq(cpu_id);
+    arm_cp15_setup_Per_CPU(cpu_id);
+
+    //MMU
+    //arm_mmu_enable(pmk_core_idle_context);
 
     if(cpu_id == 0) {
 
         //CACHE
         // something about smp. not implement for now
 
+        arm_init_ttc(1);
         //CLOCK
         arm_start_ttc(1);
     }
-
-    //MMU
-    arm_mmu_enable();
 
     arm_enable_interrupts();
 }

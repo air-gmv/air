@@ -25,6 +25,7 @@ extern air_u32_t air_kernel_memory_end;
  */
 void bsp_segregation(pmk_partition_t *partition) {
 
+/*
 #ifdef PMK_DEBUG
     printk("   :: BSP segregation\n"
             "      air_kernel_memory_start = 0x%08x\n"
@@ -36,6 +37,7 @@ void bsp_segregation(pmk_partition_t *partition) {
             (air_u32_t)&air_kernel_memory_end - (air_u32_t)&air_kernel_memory_start,
             (air_uptr_t)&air_workspace);
 #endif
+*/
 
     /* Map PMK into partition mmu with supervisor access */
     cpu_segregation_map_memory(
