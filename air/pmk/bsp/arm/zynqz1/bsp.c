@@ -39,6 +39,11 @@ void bsp_start_hook(void) {
         arm_cp15_set_system_control(sctlr);
     }
 
+    /* Low interrupt latency configuration */
+    sctlr |= ARM_SCTLR_FI;
+    arm_cp15_set_system_control(sctlr);
+
+
     arm_cp15_instruction_cache_invalidate();
 
     /*
@@ -63,7 +68,8 @@ air_u32_t bsp_core_init(void) {
     if(cpu_id == 0) {
 
         arm_set_vector_base();
-        arm_isr_table_initialize();
+        arm_isr_table_init();
+        arm_healthmonitor_init();
         //arm_start_uart(); TODO screws up in qemu
     }
 
@@ -134,7 +140,7 @@ void bsp_interrupt_broadcast(air_u32_t dummy) {
 void bsp_idle_loop(void) {
 
 #ifdef PMK_DEBUG_IDLE
-    printk("\n    wfi: 0x%x\n\n", arm_cp15_get_exception_base_address());
+    printk("\n    wfi: 0x%x\n\n", arm_cp15_get_translation_table0_base());
 #endif
     arm_data_synchronization_barrier(15);
     while(true) {

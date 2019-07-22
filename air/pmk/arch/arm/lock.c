@@ -22,7 +22,7 @@ void arm_disable_preemption(void) {
 
 void arm_enable_preemption(void) {
 
-    __asm__ volatile("cpsie if\n");
+//  __asm__ volatile("cpsie if\n");
 }
 
 void arm_lock(air_uptr_t hash) {

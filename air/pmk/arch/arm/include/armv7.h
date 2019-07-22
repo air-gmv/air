@@ -225,8 +225,11 @@ typedef struct {
     air_u32_t cctrl;                    /**< cache control                  */
 } arm_virtual_cpu_t;
 
+#define ARM_ISR_ABT_PENDING (1 << 8)
+#define ARM_ISR_IRQ_PENDING (1 << 7)
+#define ARM_ISR_FIQ_PENDING (1 << 6)
 typedef struct {
-    air_u32_t iccicr;                   /**< icc control                    */
+    air_u32_t isr;                      /**< Interrupt Status Register(cp15)*/
     air_u32_t iccpmr;                   /**< icc priority mask              */
     air_u32_t iccbpr;                   /**< icc binary point               */
     air_u32_t icciar;                   /**< icc interrupt accept           */
