@@ -12,4 +12,6 @@
  * @brief POS exception handlers
  */
 
-void pos_undef
+void pos_undef(void){}
+void pos_pref_abort(void){}
+void pos_data_abort(void){}

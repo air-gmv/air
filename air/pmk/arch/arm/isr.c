@@ -15,6 +15,7 @@
 #include <isr.h>
 #ifdef PMK_DEBUG
 #include <printk.h>
+air_u32_t counter = 0;
 #endif
 
 typedef void (*isr)(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core);
@@ -37,7 +38,10 @@ void arm_isr_default_handler(arm_interrupt_stack_frame_t *frame,
 air_uptr_t arm_isr_install_handler(air_u32_t vector, void *handler) {
 
     air_uptr_t old_handler = (air_uptr_t)arm_isr_handler_table[vector];
-    arm_isr_handler_table[vector] = (air_uptr_t)handler;
+
+    if (handler != old_handler) {
+        arm_isr_handler_table[vector] = (air_uptr_t)handler;
+    }
     return old_handler;
 }
 
@@ -148,10 +152,15 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
     air_u32_t ack = arm_acknowledge_int();
 
     air_u16_t id = (ack & 0x3ff);
-    // not used    air_u8_t cpu = ((ack << 10U) & 0x7);
+    air_u8_t cpu = ((ack << 10U) & 0x7);
 
-#ifdef PMK_DEBUG
+#ifdef PMK_DEBUG_ISR
     printk(" ** IRQ #%d acknowledge **\n\n", id);
+#endif
+#ifdef PMK_DEBUG_TICKS
+    printk("|");
+    if(!(++counter % 20))
+        printk("\n");
 #endif
     /* TTC interrupt */
     if (id >= 42 && id <= 44) {
@@ -171,9 +180,10 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
     }
 
     /* Spurious interrupt */
-    if(id == 1023) {
+    if (id == 1023) {
         return ret;
     }
+
 #ifdef PMK_DEBUG_ISR
     arm_isr_handler_print_frame(frame, "ENTRY");
 #endif
@@ -199,9 +209,8 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
     arm_isr_handler_print_frame(frame, "EXIT ");
 #endif
 
-    /* route to the partition */
-    if (core->partition != NULL &&
-            (id < 42 && id > 44)) {
+    /* will it route to the partition */
+    if (core->partition != NULL && (id < 42 && id > 44)) {
 
         ret = arm_partition_isr_handler(id, core);
     }
