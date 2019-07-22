@@ -21,7 +21,7 @@ void arm_exception_default_handler(air_u32_t instr, air_u32_t id) {
 
 #ifdef PMK_DEBUG
     if (id == 1) {
-        printk("\n $$$ Undefined instr at 0x%x $$$\n\n", instr);
+        printk("\n $$$ Undefined instr at 0x%x $$$\n\n", instr - 4);
     } else if (id == 3) {
         printk("\n $$$ Prefetch abort at 0x%x $$$\n\n", instr);
     } else if (id == 4) {

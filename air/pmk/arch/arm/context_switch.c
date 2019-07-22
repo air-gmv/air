@@ -9,8 +9,10 @@
 /**
  * @file context_switch.c
  * @author lumm
- * @brief Contains the routines to peform a partition core context save
+ * @brief Contains the routines to perform a partition core context save
  *        and partition core context restore on a ARMv7
+ *        The context is handled in schedule.c, so in here the mmu and irq
+ *        switch happens
  */
 
 #include <context_switch.h>
@@ -20,50 +22,40 @@
 #endif
 
 void arm_core_context_save(void *core) {
-#ifdef PMK_DEBUG
-    printk("   :: Saving Context\n");
+#ifdef PMK_DEBUG_SCHED
+    printk("\n       CS :: Saving Context\n");
 #endif
-    pmk_core_ctrl_t *_core = (pmk_core_ctrl_t *)core;
-    core_context_t *context = _core->context;
-    pmk_partition_t *partition = _core->partition;
-    core_context_t *partition_context = partition->context;
 
-    // FPU_CONTEXT
+    if (((pmk_core_ctrl_t *)core)->context->trash) {
+#ifdef PMK_DEBUG_SCHED
+        printk("             CS :: TRASHED save context\n");
+#endif
+        return;
+    }
 
-    /* memcpy(dest, src, size) */
-    memcpy(partition_context, context, sizeof(core_context_t));
+    pmk_partition_t *partition = ((pmk_core_ctrl_t *)core)->partition;
 
-    return;
+#ifdef PMK_DEBUG_SCHED
+    printk("       CS :: Done Saving\n");
+#endif
 }
 
 void arm_core_context_restore(void *core) {
-#ifdef PMK_DEBUG
-    printk("   :: Restoring Context\n");
+#ifdef PMK_DEBUG_SCHED
+    printk("\n       CS :: Restoring Context\n");
 #endif
-//  pmk_core_ctrl_t *_core = (pmk_core_ctrl_t *)core;
-    core_context_t *context = ((pmk_core_ctrl_t *)core)->context;
-    if (context->trash) {
+    if (((pmk_core_ctrl_t *)core)->context->trash) {
+#ifdef PMK_DEBUG_SCHED
+        printk("       CS :: TRASHED restore context\n");
+#endif
         return;
     }
     pmk_partition_t *partition = ((pmk_core_ctrl_t *)core)->partition;
-    core_context_t *partition_context = partition->context;
 
-    // FPU_CONTEXT ?
-#ifdef PMK_DEBUG
-    printk("\npre context restore\n"
-            "context->isf_pointer->lr      = 0x%08x\n"
-            "context->idle_isf_pointer->lr = 0x%08x\n\n",
-            ((arm_interrupt_stack_frame_t *)context->isf_pointer)->lr,
-            ((arm_interrupt_stack_frame_t *)context->idle_isf_pointer)->lr);
+    arm_mmu_disable();
+    arm_mmu_enable(partition->mmu_ctrl);
+
+#ifdef PMK_DEBUG_SCHED
+    printk("       CS :: Done Restoring\n");
 #endif
-    /* memcpy(dest, src, size) */
-    memcpy(context, partition_context, sizeof(core_context_t));
-#ifdef PMK_DEBUG
-    printk("aft context restore\n"
-            "context->isf_pointer->lr      = 0x%08x\n"
-            "context->idle_isf_pointer->lr = 0x%08x\n\n",
-            ((arm_interrupt_stack_frame_t *)context->isf_pointer)->lr,
-            ((arm_interrupt_stack_frame_t *)context->idle_isf_pointer)->lr);
-#endif
-    return;
 }

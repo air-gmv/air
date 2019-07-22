@@ -43,6 +43,8 @@
 #define ARM_PSR_UND         0x1b        /**< Undefined                      */
 #define ARM_PSR_SYS         0x1f        /**< System                         */
 
+#define ARM_VFP_FPEXC_ENABLE (1 << 30)
+
 #ifdef ASM
 
 /* @brief If the bit 0 of the bx reg is 0 it will remain in ARM, if 1 it will
@@ -89,21 +91,6 @@
 
 
 #include <air_arch.h>
-
-#if defined(__thumb__)
-    #define ARM_SWITCH_REGISTERS air_u32_t arm_switch_reg
-    #define ARM_SWITCH_BACK "add %[arm_switch_reg], pc, #1\nbx %[arm_switch_reg]\n.thumb\n"
-    #define ARM_SWITCH_TO_ARM ".align 2\nbx pc\n.arm\n"
-    #define ARM_SWITCH_OUTPUT [arm_switch_reg] "=&r" (arm_switch_reg)
-    #define ARM_SWITCH_ADDITIONAL_OUTPUT , ARM_SWITCH_OUTPUT
-#else
-    #define ARM_SWITCH_REGISTERS
-    #define ARM_SWITCH_BACK
-    #define ARM_SWITCH_TO_ARM
-    #define ARM_SWITCH_OUTPUT
-    #define ARM_SWITCH_ADDITIONAL_OUTPUT
-#endif /* defined(__thumb__) */
-
 
 /* @brief Synchronization barries
  * TODO specific compiler optimizations
@@ -154,40 +141,40 @@ typedef enum {
  *  @brief Floating Point Unit (FPU) registers context
  */
 typedef struct {
-    air_u32_t register_fpexc;
-    air_u32_t register_fpscr;
-    air_u64_t register_d0;
-    air_u64_t register_d1;
-    air_u64_t register_d2;
-    air_u64_t register_d3;
-    air_u64_t register_d4;
-    air_u64_t register_d5;
-    air_u64_t register_d6;
-    air_u64_t register_d7;
-    air_u64_t register_d8;
-    air_u64_t register_d9;
-    air_u64_t register_d10;
-    air_u64_t register_d11;
-    air_u64_t register_d12;
-    air_u64_t register_d13;
-    air_u64_t register_d14;
-    air_u64_t register_d15;
-    air_u64_t register_d16;
-    air_u64_t register_d17;
-    air_u64_t register_d18;
-    air_u64_t register_d19;
-    air_u64_t register_d20;
-    air_u64_t register_d21;
-    air_u64_t register_d22;
-    air_u64_t register_d23;
-    air_u64_t register_d24;
-    air_u64_t register_d25;
-    air_u64_t register_d26;
-    air_u64_t register_d27;
-    air_u64_t register_d28;
-    air_u64_t register_d29;
-    air_u64_t register_d30;
-    air_u64_t register_d31;
+    air_u32_t fpexc;
+    air_u32_t fpscr;
+    air_u64_t d0;
+    air_u64_t d1;
+    air_u64_t d2;
+    air_u64_t d3;
+    air_u64_t d4;
+    air_u64_t d5;
+    air_u64_t d6;
+    air_u64_t d7;
+    air_u64_t d8;
+    air_u64_t d9;
+    air_u64_t d10;
+    air_u64_t d11;
+    air_u64_t d12;
+    air_u64_t d13;
+    air_u64_t d14;
+    air_u64_t d15;
+    air_u64_t d16;
+    air_u64_t d17;
+    air_u64_t d18;
+    air_u64_t d19;
+    air_u64_t d20;
+    air_u64_t d21;
+    air_u64_t d22;
+    air_u64_t d23;
+    air_u64_t d24;
+    air_u64_t d25;
+    air_u64_t d26;
+    air_u64_t d27;
+    air_u64_t d28;
+    air_u64_t d29;
+    air_u64_t d30;
+    air_u64_t d31;
 } arm_vfp_context_t;
 
 /**
@@ -207,12 +194,12 @@ typedef struct {
     air_u32_t r10;
     air_u32_t r11;
     air_u32_t r12;
-    air_uptr_t orig_sp;                 /**< pre-exception sp               */
-    air_uptr_t orig_lr;                 /**< pre-exception lr               */
-    air_uptr_t lr;                      /**< return addr after the exception*/
+    air_u32_t orig_sp;                  /**< pre-exception sp               */
+    air_u32_t orig_lr;                  /**< pre-exception lr               */
+    air_u32_t lr;                       /**< return addr after the exception*/
     air_u32_t orig_cpsr;                /**< pre-exception cpsr             */
     symbolic_exception_name exception_name;
-    const arm_vfp_context_t *vfp_context;
+    arm_vfp_context_t *vfp_context;
     air_u32_t reserved;                 /**< svc immediate. UND if other    */
 } arm_interrupt_stack_frame_t;
 
@@ -240,8 +227,6 @@ typedef struct {
     air_u32_t imask;                    /**< interrupt mask                 */
     air_u32_t ipend;                    /**< interrupts pending             */
     air_u32_t cctrl;                    /**< cache control                  */
-    air_u32_t mmu_ctrl;                 /**< MMU control register           */
-    air_u32_t mmu_fsr;                  /**< MMU fault register             */
 } arm_virtual_cpu_t;
 
 /**
@@ -254,7 +239,6 @@ typedef struct {
     void *isf_pointer;                  /**< core stack pointer             */
     void *idle_isf_pointer;             /**< core ISF stack                 */
     air_u32_t isr_nesting_level;        /**< core interrupt nesting level   */
-    arm_vfp_context_t *fpu_context;     /**< floating point                 */
     air_u32_t ipc_event;                /**< IPC event                      */
     air_u32_t state;                    /**< system state                   */
     void *hm_event;                     /**< health-monitor event           */
@@ -299,19 +283,17 @@ static inline void arm_disable_fpu(void) {
             "bic %0, #30\n"
             "vmsr FPEXC, %0\n"
             :
-            :"r" (reg)
-    );
+            : "r" (reg));
 }
 
 static inline void arm_enable_fpu(void) {
     air_u32_t reg = 0;
     __asm__ volatile (
             "vmrs %0, FPEXC\n"
-            "orr %0, (1 << 30U)\n"
+            "orr %0, #(1 << 30U)\n"
             "vmsr FPEXC, %0\n"
             :
-            :"r" (reg)
-    );
+            : "r" (reg));
 }
 
 static inline air_u32_t arm_get_cpsr(void) {
@@ -325,25 +307,11 @@ static inline void arm_set_cpsr(air_u32_t val) {
 }
 
 static inline void arm_disable_preemption(air_u32_t flags) {
-    ARM_SWITCH_REGISTERS;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "cpsid aif\n\t"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-    );
+    __asm__ volatile ("cpsid if\n");
 }
 
 static inline void arm_enable_preemption(air_u32_t flags) {
-    ARM_SWITCH_REGISTERS;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "cpsie aif\n\t"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-    );
+    __asm__ volatile ("cpsie if\n");
 }
 
 /******************************************************************************/
@@ -351,6 +319,7 @@ static inline void arm_enable_preemption(air_u32_t flags) {
 //void arm_core_context_save(void *core);
 //void arm_core_context_restore(void *core);
 
+//void arm_cp15_setup_Per_CPU(air_u32_t cpu_id);
 void exception_undef(void);
 void exception_svc(void);
 void exception_pref_abort(void);
