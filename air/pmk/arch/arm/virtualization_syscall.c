@@ -16,56 +16,70 @@
 #include <armv7.h>
 #include <svc.h>
 #include <gic.h>
+#include <workspace.h>
 
 extern pmk_sharedarea_t air_shared_area;
 
-void arm_syscall_disable_interrupts(void) {
+void arm_syscall_disable_interrupts(pmk_core_ctrl_t *core) {
 
-    arm_disable_interrupts();
+    core->context->vcpu.psr |= ARM_PSR_I;
 }
-void arm_syscall_enable_interrupts(void) {
+void arm_syscall_enable_interrupts(pmk_core_ctrl_t *core) {
 
-    arm_enable_interrupts();
-}
-
-void arm_syscall_disable_traps(void) {
-
-    arm_disable_interrupts();
+    core->context->vcpu.psr &= ~ARM_PSR_I;
 }
 
-void arm_syscall_enable_traps(void) {
+void arm_syscall_disable_traps(pmk_core_ctrl_t *core) {
 
-    arm_enable_interrupts();
+    core->context->vcpu.psr |= (ARM_PSR_A | ARM_PSR_I);
 }
 
-void arm_syscall_disable_fpu(void) {
-#if PMK_FPU_SUPPORT
-    arm_disable_fpu();
-#endif
+void arm_syscall_enable_traps(pmk_core_ctrl_t *core) {
+
+    core->context->vcpu.psr &= ~(ARM_PSR_A | ARM_PSR_I);
 }
 
-void arm_syscall_enable_fpu(void) {
-#if PMK_FPU_SUPPORT
-    arm_enable_fpu();
-#endif
+void arm_syscall_disable_fpu(pmk_core_ctrl_t *core) {
+
+    arm_interrupt_stack_frame_t *isf = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
+    isf->vfp_context->fpexc &= ~ARM_VFP_FPEXC_ENABLE;
 }
 
-air_u32_t arm_syscall_get_tbr(void) {
-    return arm_cp15_get_exception_base_address();
+void arm_syscall_enable_fpu(pmk_core_ctrl_t *core) {
+
+    arm_interrupt_stack_frame_t *isf = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
+    isf->vfp_context->fpexc |= ARM_VFP_FPEXC_ENABLE;
 }
 
-void arm_syscall_set_tbr(air_u32_t val) {
-    arm_cp15_set_exception_base_address(val);
+air_u32_t arm_syscall_get_tbr(pmk_core_ctrl_t *core) {
+
+    air_u32_t **vbar = core->context->vcpu.vbar;
+    return (air_u32_t)vbar;
 }
 
-air_u32_t arm_syscall_get_psr(void) {
-    return arm_get_cpsr();
-}
-void arm_syscall_set_psr(air_u32_t val) {
-    arm_set_cpsr(val);
+void arm_syscall_set_tbr(pmk_core_ctrl_t *core, air_u32_t val) {
+
+    air_u32_t **vbar = (air_u32_t **)val;
+    core->context->vcpu.vbar = vbar;
 }
 
-//air_u32_t AIR_SYSCALL_ARM_RETT
+air_u32_t arm_syscall_get_psr(pmk_core_ctrl_t *core) {
+
+    air_u32_t psr = core->context->vcpu.psr;
+    return psr;
+}
+
+void arm_syscall_set_psr(pmk_core_ctrl_t *core, air_u32_t val) {
+
+    core->context->vcpu.psr = val;
+}
+
+void arm_syscall_rett(pmk_core_ctrl_t *core) {
+
+    core->context->vcpu.psr &= ~(ARM_PSR_A | ARM_PSR_I);
+    core->context->state = AIR_STATE_PARTITION_EXEC;
+}
+
 //air_u32_t arm_syscall_get_cache_register(void);
 //air_u32_t arm_syscall_set_cache_register(void);
 //air_u32_t AIR_SYSCALL_ARM_RESTORE_CACHE_REGISTER
@@ -78,13 +92,12 @@ void arm_syscall_set_irq_mask_register(air_u32_t val) {
 }
 //air_u32_t arm_syscall_set_irq_force_register(void);
 
-air_u32_t arm_syscall_get_core_id(void) {
-    pmk_core_ctrl_t *core;
-    __asm__ volatile ("mrc p15, 0, %0, c13, c0, 4\n":"=r" (core));
+air_u32_t arm_syscall_get_core_id(pmk_core_ctrl_t *core) {
+
     return core->context->vcpu.id;
 }
 
-air_u64_t arm_syscall_get_elapsed_ticks(void) {
-    pmk_core_ctrl_t *core = (pmk_core_ctrl_t *)arm_cp15_get_Per_CPU();
+air_u64_t arm_syscall_get_elapsed_ticks(pmk_core_ctrl_t *core) {
+
     return core->partition->elapsed_ticks;
 }
