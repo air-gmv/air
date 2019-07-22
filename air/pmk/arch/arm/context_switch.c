@@ -20,7 +20,9 @@
 #endif
 
 void arm_core_context_save(void *core) {
-
+#ifdef PMK_DEBUG
+    printk("   :: Saving Context\n");
+#endif
     pmk_core_ctrl_t *_core = (pmk_core_ctrl_t *)core;
     core_context_t *context = _core->context;
     pmk_partition_t *partition = _core->partition;
@@ -35,10 +37,15 @@ void arm_core_context_save(void *core) {
 }
 
 void arm_core_context_restore(void *core) {
-
-    pmk_core_ctrl_t *_core = (pmk_core_ctrl_t *)core;
-    core_context_t *context = _core->context;
-    pmk_partition_t *partition = _core->partition;
+#ifdef PMK_DEBUG
+    printk("   :: Restoring Context\n");
+#endif
+//  pmk_core_ctrl_t *_core = (pmk_core_ctrl_t *)core;
+    core_context_t *context = ((pmk_core_ctrl_t *)core)->context;
+    if (context->trash) {
+        return;
+    }
+    pmk_partition_t *partition = ((pmk_core_ctrl_t *)core)->partition;
     core_context_t *partition_context = partition->context;
 
     // FPU_CONTEXT ?

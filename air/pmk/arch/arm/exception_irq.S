@@ -134,7 +134,7 @@ arm_irq_isr_handler_from_trashed:
 
 arm_irq_restore_trashed_context:
     /* Get the idle ISF pointer */
-    ldr     r12, [r11, #(offsetof_arm_core_context_t_idle_isf_pointer)]
+    ldr     r7, [r11, #(offsetof_arm_core_context_t_idle_isf_pointer)]
     b       arm_irq_restore_context_from_trashed
 
 arm_irq_restore_context:
@@ -171,4 +171,4 @@ restore_non_user_mode:
 #ifdef __thumb__
     orr     lr, #1
 #endif
-    subs    pc, lr, #0
+    subs    pc, lr, #4

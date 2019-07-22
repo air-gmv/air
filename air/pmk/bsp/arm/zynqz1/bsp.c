@@ -11,13 +11,12 @@
  * @author lumm
  * @brief Bsp core routines.
  */
-
 #include <bsp.h>
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif
 
-void bsp_start_hook(void *vector_table_start) {
+void bsp_start_hook(void) {
 
     air_u32_t sctlr = arm_cp15_get_system_control();
 
@@ -61,7 +60,7 @@ void bsp_start_hook(void *vector_table_start) {
         * then no copy needs to be done. Otherwise ...
         */
 //      copy_vector_table();
-//      clear_bss();
+        bsp_clear_bss();
     }
 }
 
