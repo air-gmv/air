@@ -68,7 +68,7 @@
 .endm
 
 #if defined(PMK_FPU_SUPPORT)
-    #if defined(ARM_NEON)
+    #if defined(__ARM_NEON)
         #define VFP_D32
     #else
         #define VFP_D16
@@ -293,93 +293,35 @@ typedef struct {
  * @brief assembly inline functions to access cpu regs
  */
 static inline void arm_disable_fpu(void) {
-    ARM_SWITCH_REGISTERS;
     air_u32_t reg = 0;
-
     __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "vmrs %[reg], FPEXC\n\t"
-        "bic %[reg], %[reg], #30\n\t"
-        "vmsr FPEXC, %[reg]\n\t"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [reg] "r" (reg)
+            "vmrs %0, FPEXC\n"
+            "bic %0, #30\n"
+            "vmsr FPEXC, %0\n"
+            :
+            :"r" (reg)
     );
 }
 
 static inline void arm_enable_fpu(void) {
-    ARM_SWITCH_REGISTERS;
     air_u32_t reg = 0;
-
     __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "vmrs %[reg], FPEXC\n\t"
-        "orr %[reg], %[reg], #(1 << 30U)\n\t"
-        "vmsr FPEXC, %[reg]\n\t"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [reg] "r" (reg)
-    );
-}
-
-static inline air_u32_t arm_get_exception_base_address(void) {
-    ARM_SWITCH_REGISTERS;
-    air_u32_t reg;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mrc p15, 0, %[reg], c1, c0, 0\n\t"
-        "tst %[reg], #(1 << 13)\n\t"
-        "beq hyvecs\n\t"
-        "mrc p15, 0, %[reg], c12, c0, 0\n\t"
-        "hyvecs:\n\t"
-        "mov %[reg], #0x0000\n\t"
-        "movt %[reg], #0xffff\n\t"
-        ARM_SWITCH_BACK
-        : [reg] "=&r" (reg) ARM_SWITCH_ADDITIONAL_OUTPUT
-    );
-    return reg;
-}
-
-static inline void arm_set_exception_base_address(air_u32_t val) {
-    ARM_SWITCH_REGISTERS;
-    air_u32_t reg = 0;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mrc p15, 0, %[reg], c1, c0, 0\n\t"
-        "bic %[reg], %[reg], #13\n\t"
-        "mcr p15, 0, %[reg], c1, c0, 0\n\t"
-        "mcr p15, 0, %[val], c12, c0, 0\n\t"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [val] "r" (val), [reg] "r" (reg)
+            "vmrs %0, FPEXC\n"
+            "orr %0, (1 << 30U)\n"
+            "vmsr FPEXC, %0\n"
+            :
+            :"r" (reg)
     );
 }
 
 static inline air_u32_t arm_get_cpsr(void) {
-    ARM_SWITCH_REGISTERS;
     air_u32_t reg;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "mrs %[reg], cpsr\n\t"
-        ARM_SWITCH_BACK
-        : [reg] "=&r" (reg) ARM_SWITCH_ADDITIONAL_OUTPUT
-    );
+    __asm__ volatile ("mrs %0, cpsr\n":"=r" (reg));
     return reg;
 }
 
 static inline void arm_set_cpsr(air_u32_t val) {
-    ARM_SWITCH_REGISTERS;
-
-    __asm__ volatile (
-        ARM_SWITCH_TO_ARM
-        "msr cpsr, %[val]\n\t"
-        ARM_SWITCH_BACK
-        : ARM_SWITCH_OUTPUT
-        : [val] "r" (val)
-    );
+    __asm__ volatile ("msr cpsr, %0\n"::"r" (val));
 }
 
 static inline void arm_disable_preemption(air_u32_t flags) {
