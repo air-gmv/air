@@ -61,7 +61,7 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     'arch/arm/cpu.c',
     'arch/arm/exception_default_handler.c',
     'arch/arm/exception_default.S',
-    'arch/arm/exception_fiq.S',
+#    'arch/arm/exception_fiq.S',
     'arch/arm/exception_irq.S',
     'arch/arm/exception_svc.S',
     'arch/arm/health_monitor.c',
