@@ -92,10 +92,8 @@ void core_context_init(core_context_t *context, air_u32_t id) {
 void core_context_setup_idle(core_context_t *context) {
 
     /* initialize the virtual core */
-    context->vcpu.psr = 0;
-    context->vcpu.tbr = 0;
-    context->vcpu.ipend = 0;
-    context->vcpu.imask = 0;
+    context->vcpu.psr = (ARM_PSR_T | ARM_PSR_SYS);
+    context->vcpu.vbar = 0;
 
     /* initial stack frame */
     arm_interrupt_stack_frame_t *isf =
@@ -109,7 +107,7 @@ void core_context_setup_idle(core_context_t *context) {
     context->isr_nesting_level = 1;
 
     /* setup the context return PSR */
-    isf->orig_cpsr = (ARM_PSR_T | ARM_PSR_SYS);
+    isf->ret_psr = (ARM_PSR_T | ARM_PSR_SYS);
 
     /* setup the context entry point */
 #ifdef PMK_DEBUG
@@ -120,8 +118,8 @@ void core_context_setup_idle(core_context_t *context) {
             "0x%08x\n",
             bsp_idle_loop);
 #endif
-    isf->lr = (air_u32_t)bsp_idle_loop + 4;
-    isf->orig_lr = (air_u32_t)bsp_idle_loop + 4;
+    isf->ret_addr = (air_u32_t)bsp_idle_loop + 4;
+    isf->usr_lr = (air_u32_t)bsp_idle_loop + 4;
 }
 
 /**
@@ -134,9 +132,7 @@ void core_context_setup_partition(
 
     /* initialize the virtual core */
     context->vcpu.psr = (ARM_PSR_USR);
-    context->vcpu.tbr = 0;
-    context->vcpu.ipend = 0;
-    context->vcpu.imask = 0;
+    context->vcpu.vbar = 0;
 
     /* initialize the System State and HM event */
     context->state = AIR_STATE_PARTITION_INIT;
@@ -157,9 +153,9 @@ void core_context_setup_partition(
         /* setup partition real PSR */
         /* check if the partition have supervisor permissions */
         if ((partition->permissions & AIR_PERMISSION_SUPERVISOR) != 0) {
-            isf->orig_cpsr = (ARM_PSR_SYS);
+            isf->ret_psr = (ARM_PSR_SYS);
         } else {
-            isf->orig_cpsr = (ARM_PSR_USR);
+            isf->ret_psr = (ARM_PSR_USR);
         }
 
         if ((partition->permissions & AIR_PERMISSION_FPU_CONTROL) != 0) {
@@ -169,25 +165,24 @@ void core_context_setup_partition(
         }
 
         /* setup the partition entry point */
-        isf->lr = (air_u32_t)context->entry_point + 4;
+        isf->ret_addr = (air_u32_t)context->entry_point + 4;
 
 #ifdef PMK_DEBUG
         printk("       cpu::setup::context->entry_point   = 0x%x\n"
-                "       cpu::setup::isf->lr                = 0x%x\n",
+                "       cpu::setup::isf->ret_addr          = 0x%x\n",
                 context->entry_point,
-                isf->lr);
+                isf->ret_addr);
 #endif
 
         /* setup the stack pointer of the partition */
         air_u32_t stack =
                 (air_u32_t)partition->mmap->v_addr + partition->mmap->size;
         stack = (stack & ~(32 - 1));
-        isf->orig_sp = stack;
-
+        isf->usr_sp = stack;
 #ifdef PMK_DEBUG
         printk("       cpu::setup::stack                  = 0x%x\n"
-                "       cpu::setup::isf->orig_sp           = 0x%x\n",
-                stack, isf->orig_sp);
+                "       cpu::setup::isf->usr_sp            = 0x%x\n",
+                stack, isf->usr_sp);
 #endif
 
         // TODO something about cache
