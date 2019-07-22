@@ -36,6 +36,7 @@ global(exception_fiq)
 
     /* Call high level handler */
     SWITCH_FROM_ARM_TO_THUMB    r3
+    mrc     p15, 0, r3, c13, c0, 4
     bl      arm_hm_handler
     SWITCH_FROM_THUMB_TO_ARM
 
@@ -78,6 +79,7 @@ global(exception_data_abort)
 1:
     /* Call high level handler */
     SWITCH_FROM_ARM_TO_THUMB    r3
+    mrc     p15, 0, r3, c13, c0, 4
     bl      arm_hm_handler
     SWITCH_FROM_THUMB_TO_ARM
 
@@ -105,12 +107,14 @@ global(exception_undef)
     cpsid   aif, #ARM_PSR_SYS
 
     push    {r0-r3}
+
     mov     r0, #1
-    mov     r1, lr
+    ldr     r1, [sp, #16]
     mov     r2, #0
 
     /* Call high level handler */
     SWITCH_FROM_ARM_TO_THUMB    r3
+    mrc     p15, 0, r3, c13, c0, 4
     bl      arm_hm_handler
     SWITCH_FROM_THUMB_TO_ARM
 

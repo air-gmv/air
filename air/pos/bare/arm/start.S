@@ -20,6 +20,7 @@
 #include <asm.h>
 #include <armv7.h>
 
+    .arm
 global(bare_start)
 
     /* get core id */
@@ -40,14 +41,18 @@ global(bare_start)
     bls     1b
 
     /* todo SMP */
-    bl      arm_smp_init
+    SWITCH_FROM_ARM_TO_THUMB    r4
+    bl      arm_pos_init
+    SWITCH_FROM_THUMB_TO_ARM
 
 2:
-    /* setup stack */
+    /* setup stack. already done in AIR */
 //  ldr     sp, =stack_start
 
     /* exception vector table ?*/
 
+
+    mov     r0, #200
     /* enable irqs */
     svc     #(AIR_SYSCALL_ARM_ENABLE_TRAPS)
 
@@ -56,14 +61,31 @@ global(bare_start)
 
 //  cpsie   aif, #ARM_PSR_USR
 
+    SWITCH_FROM_ARM_TO_THUMB    r4
     bl      main
+    SWITCH_FROM_THUMB_TO_ARM
 
     mov     r1, #(AIR_MODE_IDLE)
     mov     r0, #(0xffffffff)
     svc     #(AIR_SYSCALL_SET_PARTITION_MODE)
+
+    b       twiddle
+
+
+global(pos_exceptions)
+    b       bare_start
+    b       pos_undef
+    nop
+    b       pos_pref_abort
+    b       pos_data_abort
+    nop
+    nop
+    nop
+
 
     /* idle */
 twiddle:
     wfi
     b       twiddle
 
+pos_undef:

@@ -165,10 +165,6 @@ void core_context_setup_idle(core_context_t *context);
 #define core_context_set_system_state(context, state) \
         (context)->state = (air_u32_t)(state)
 /**
- * @brief Inits the HM events
- */
-void arm_healthmonitor_init(void);
-/**
  * @brief Flag an HM event on a core context
  * @param context core context
  * @param state_id current system state
