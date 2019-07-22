@@ -26,15 +26,10 @@
 /* Save global registers and branch to save context */
 
 global(exception_svc)
-    push    {r0-r5, r12, lr}
+    push    {r0-r4, lr}
 
     /* get pmk_core_ctrl_t */
-    mrc     p15, 0, r3, c0, c0, 5
-    mov     r2, #(sizeof_pmk_core_ctrl_t)
-    mul     r2, r2, r3
-    ldr     r3, =air_shared_area
-    ldr     r3, [r3, #(offsetof_pmk_sharedarea_t_core)]
-    add     r2, r2, r3
+    mrc     p15, 0, r2, c13, c0, 4
 
     mov     r1, sp
     mrs     r0, spsr
@@ -45,7 +40,8 @@ global(exception_svc)
     ldreq   r0, [lr, #-4]
     biceq   r0, r0, #0xff000000
 
+    SWITCH_FROM_ARM_TO_THUMB    r3
     bl      arm_svc_handler
+    SWITCH_FROM_THUMB_TO_ARM
 
-    pop     {r0-r5, r12, lr}
-    subs    pc, lr, #0
+    ldmia   sp!, {r0-r4, pc}^

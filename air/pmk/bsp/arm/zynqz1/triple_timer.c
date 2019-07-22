@@ -59,7 +59,8 @@ void arm_init_ttc(air_u32_t timer_id) {
     if (timer_id == 1) {
 
         ttc->clk_ctrl_1 = ARM_TTC_CLK_CTRL_PS_EN | ARM_TTC_CLK_CTRL_PS(PRESCALER_N);
-        ttc->cnt_ctrl_1 |= ARM_TTC_CNT_CTRL_DIS;
+        ttc->cnt_ctrl_1 = ARM_TTC_CNT_CTRL_DIS;
+        arm_data_synchronization_barrier(15);
         ttc->intv_cnt_1 = ARM_TTC_INTV_CNT(counter);
         ttc->int_en_1 = ARM_TTC_INT_EN_INTV;
     }
@@ -75,17 +76,31 @@ void arm_init_ttc(air_u32_t timer_id) {
 #endif
 }
 
+#define arm_read_ttc ttc->cnt_val_1
+
 void arm_start_ttc(air_u32_t timer_id) {
     if(timer_id < 0 || timer_id > 3) {
         return;
     }
 
+#ifdef PMK_DEBUG_TIMER
+    printk("b4 TTC->CNT_VAL_1 = 0x%x\n", arm_read_ttc);
+#endif
     if (timer_id == 1) {
         ttc->cnt_ctrl_1 = ARM_TTC_CNT_CTRL_INTV; //since no 1 in dis, it is en
     }
-}
+#ifdef PMK_DEBUG_TIMER
+    printk("af TTC->CNT_VAL_1 = 0x%x\n", arm_read_ttc);
 
-#define arm_read_ttc() ttc->cnt_val_1
+    printk(" :: triple_timer_cnt_t\n"
+            "    ttc = 0x%x\n"
+            "    ttc->clk_ctrl_1 = 0x%x\n"
+            "    ttc->cnt_ctrl_1 = 0x%x\n"
+            "    ttc->intv_cnt_1 = 0x%x\n"
+            "    ttc->int_en_1   = 0x%x\n\n",
+            ttc, ttc->clk_ctrl_1, ttc->cnt_ctrl_1, ttc->intv_cnt_1, ttc->int_en_1);
+#endif
+}
 
 air_u32_t arm_acknowledge_ttc(void) {
     return (ttc->int_cnt_1 & 0x3f);
@@ -94,11 +109,11 @@ air_u32_t arm_acknowledge_ttc(void) {
 void arm_setup_interprocessor_irq(air_u32_t cpu_id) {
 
     if (cpu_id == 0) {
-        arm_irq_install_handler(ZYNQ_IRQ_TTC_0_0, pmk_partition_scheduler);
-        arm_irq_install_handler(ZYNQ_IRQ_TTC_0_1, pmk_partition_scheduler);
-        arm_irq_install_handler(ZYNQ_IRQ_TTC_0_2, pmk_partition_scheduler);
-        arm_irq_install_handler(BSP_IPC_IRQ, pmk_partition_scheduler);
-        arm_irq_install_handler(BSP_IPC_PCS, pmk_ipc_handler);
+        arm_isr_install_handler(ZYNQ_IRQ_TTC_0_0, pmk_partition_scheduler);
+        arm_isr_install_handler(ZYNQ_IRQ_TTC_0_1, pmk_partition_scheduler);
+        arm_isr_install_handler(ZYNQ_IRQ_TTC_0_2, pmk_partition_scheduler);
+        arm_isr_install_handler(BSP_IPC_IRQ, pmk_partition_scheduler);
+        arm_isr_install_handler(BSP_IPC_PCS, pmk_ipc_handler);
     }
 
     arm_int_set_priority(ZYNQ_IRQ_TTC_0_0, 0);
