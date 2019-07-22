@@ -17,7 +17,7 @@
 
 /* ARM Stack spaces */
 #define DEFAULT_STACK_SIZE  0x10000
-#define TOTAL_STACK_SIZE    7*DEFAULT_STACK_SIZE
+#define STACK_SIZE          7*DEFAULT_STACK_SIZE
 #define svc_stack_size      DEFAULT_STACK_SIZE
 #define fiq_stack_size      DEFAULT_STACK_SIZE
 #define irq_stack_size      DEFAULT_STACK_SIZE
@@ -25,7 +25,7 @@
 #define und_stack_size      DEFAULT_STACK_SIZE
 #define sys_stack_size      DEFAULT_STACK_SIZE
 #define mon_stack_size      DEFAULT_STACK_SIZE
-#define total_stack_size    TOTAL_STACK_SIZE
+#define stack_size          STACK_SIZE
 
 #ifndef ASM
 
@@ -33,6 +33,8 @@
 #include <mmu.h>
 #include <health_monitor.h>
 #include <context_switch.h>
+
+#define PREEMPTION_LEVEL 1
 
 /* Double-word alignment */
 #define CPU_CRITICAL_ALIGN  8
