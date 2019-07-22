@@ -113,7 +113,7 @@ void core_context_setup_idle(core_context_t *context) {
     context->isr_nesting_level = 1;
 
     /* setup the context return PSR */
-    isf->orig_cpsr = (ARM_PSR_T | ARM_PSR_USR);
+    isf->orig_cpsr = (ARM_PSR_USR);
 
     /* setup the context entry point */
     isf->lr = (air_u32_t)bsp_idle_loop;
@@ -129,7 +129,7 @@ void core_context_setup_partition(
         core_context_t *context, pmk_partition_t *partition){
 
     /* initialize the virtual core */
-    context->vcpu.psr = (ARM_PSR_T | ARM_PSR_USR);
+    context->vcpu.psr = (ARM_PSR_USR);
     context->vcpu.tbr = 0;
     context->vcpu.ipend = 0;
     context->vcpu.imask = 0;
@@ -153,9 +153,9 @@ void core_context_setup_partition(
         /* setup partition real PSR */
         /* check if the partition have supervisor permissions */
         if ((partition->permissions & AIR_PERMISSION_SUPERVISOR) != 0) {
-            isf->orig_cpsr = (ARM_PSR_T | ARM_PSR_SYS);
+            isf->orig_cpsr = (ARM_PSR_SYS);
         } else {
-            isf->orig_cpsr = (ARM_PSR_T | ARM_PSR_USR);
+            isf->orig_cpsr = (ARM_PSR_USR);
         }
 
         /* setup the partition entry point */
@@ -163,7 +163,7 @@ void core_context_setup_partition(
 
         /* setup the stack pointer of the partition */
         air_u32_t stack =
-                (air_u32_t)partition->mmap->v_addr + partition->mmap->size;
+                (air_u32_t)partition->mmap->v_addr + partition->mmap->size - 4;
         stack = (stack & ~(32 - 1));
         isf->orig_sp = stack;
 

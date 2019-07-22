@@ -26,7 +26,7 @@
 /* Save global registers and branch to save context */
 
 FUNC(exception_svc)
-    stmfd   sp!, {r0-r5, r12, lr}
+    push    {r0-r5, r12, lr}
 
     /* get pmk_core_ctrl_t */
     mrc     p15, 0, r3, c0, c0, 5
@@ -38,7 +38,6 @@ FUNC(exception_svc)
 
     mov     r1, sp
     mrs     r0, spsr
-    push    {r0, r12}   /* store 2 regs to maintain 8-byte-alignment */
 
     tst     r0, #ARM_PSR_T
     ldrneh  r0, [lr, #-2]
@@ -48,6 +47,5 @@ FUNC(exception_svc)
 
     bl      arm_svc_handler
 
-    pop     {r0, r3}
-    msr     spsr, r0
-    ldmfd   sp!, {r0-r5, r12, pc}^
+    pop     {r0-r5, r12, lr}
+    subs    pc, lr, #0
