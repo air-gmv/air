@@ -24,7 +24,7 @@
 #define REG(x)      x
 
 /** @brief Macro for global symbol definitions. */
-#define GLOBAL(x)   .align 0x4; .globl SYM(x)
+#define GLOBAL(x)   .align 4; .globl SYM(x)
 
 /** @brief Define macros for all the registers. */
 #define r0      REG(r0)

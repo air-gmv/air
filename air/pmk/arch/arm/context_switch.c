@@ -15,6 +15,9 @@
 
 #include <context_switch.h>
 #include <workspace.h>
+#ifdef PMK_DEBUG
+#include <printk.h>
+#endif
 
 void arm_core_context_save(void *core) {
 
@@ -39,9 +42,21 @@ void arm_core_context_restore(void *core) {
     core_context_t *partition_context = partition->context;
 
     // FPU_CONTEXT ?
-
+#ifdef PMK_DEBUG
+    printk("\npre context restore\n"
+            "context->isf_pointer->lr      = 0x%08x\n"
+            "context->idle_isf_pointer->lr = 0x%08x\n\n",
+            ((arm_interrupt_stack_frame_t *)context->isf_pointer)->lr,
+            ((arm_interrupt_stack_frame_t *)context->idle_isf_pointer)->lr);
+#endif
     /* memcpy(dest, src, size) */
     memcpy(context, partition_context, sizeof(core_context_t));
-
+#ifdef PMK_DEBUG
+    printk("aft context restore\n"
+            "context->isf_pointer->lr      = 0x%08x\n"
+            "context->idle_isf_pointer->lr = 0x%08x\n\n",
+            ((arm_interrupt_stack_frame_t *)context->isf_pointer)->lr,
+            ((arm_interrupt_stack_frame_t *)context->idle_isf_pointer)->lr);
+#endif
     return;
 }

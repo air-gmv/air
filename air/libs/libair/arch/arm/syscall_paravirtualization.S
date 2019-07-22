@@ -20,6 +20,7 @@
 #include <asm.h>
 #include <air.h>
 
+	.thumb
 FUNC(air_disable_interrupts)
     svc     #(AIR_SYSCALL_ARM_DISABLE_INTERRUPTS)
 

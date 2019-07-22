@@ -23,7 +23,7 @@
 
 void arm_mmu_init(void) {
 #ifdef PMK_DEBUG
-    printk("    ---> MMU initialization <---\n");
+    printk("\n    ---> MMU initialization <---\n\n");
 #endif
 
     air_u32_t ttbcr = arm_cp15_get_translation_table_control();
@@ -43,7 +43,7 @@ void arm_mmu_init(void) {
 
 void arm_mmu_enable(void) {
 #ifdef PMK_DEBUG
-    printk("    ---> MMU enable <---\n");
+    printk("\n    ---> MMU enable <---\n\n");
 #endif
 
     /* THE 1st MMU CTRL IS TAKEN FROM THE 1ST PARTITION. THIS MEANS PARTITION
@@ -95,7 +95,7 @@ void arm_segregation_init(void) {
 #endif
 
 #ifdef PMK_DEBUG
-        printk("        ctrl->ttbr0                   = 0x%08x\n"
+        printk("        ctrl->ttbr0                  = 0x%08x\n"
                 "        ctrl->ttbr[0]                = 0x%08x\n"
                 "        ctrl->ttbr[TTBR0_ENTRIES/2]  = 0x%08x\n"
                 "        ctrl->ttbr[TTBR0_ENTRIES-1]  = 0x%08x\n\n",
@@ -183,10 +183,10 @@ air_sz_t arm_mmu_level2(
         air_uptr_t pt_ptr, air_u32_t *p_addr, air_u32_t *v_addr,
         air_u32_t unit, air_sz_t size, air_u32_t permissions) {
 #ifdef PMK_DEBUG
-    printk("         ** ARM Segregation L2\n");
+    printk("       ** ARM Segregation L2\n");
 #endif
 
-    air_u32_t idx = 0;
+    air_u32_t idx = ((*v_addr >> 12) & 0xff);;
     air_u32_t used_entries = 0;
     air_u32_t lpage_idx = 0;
     air_u32_t arm_permissions;
@@ -194,7 +194,7 @@ air_sz_t arm_mmu_level2(
     air_sz_t delta = 0;
 
 #ifdef PMK_DEBUG
-    printk("            L2 idx       = 0x%08x\n",
+    printk("            L2 start idx       = 0x%08x\n",
             idx);
 #endif
 
@@ -231,11 +231,9 @@ air_sz_t arm_mmu_level2(
         }
     }
 #ifdef PMK_DEBUG
-    printk("            l2_pd_ptr                 = 0x%08x\n"
-            "            l2_pd_ptr[0]              = 0x%08x\n"
+    printk("            l2_pd_ptr[0]              = 0x%08x\n"
             "            l2_pd_ptr[TTL2_ENTRIES/2] = 0x%08x\n"
             "            l2_pd_ptr[TTL2_ENTRIES-1] = 0x%08x\n\n",
-            pt_ptr,
             pt_ptr[0],
             pt_ptr[TTL2_ENTRIES/2],
             pt_ptr[TTL2_ENTRIES-1]);
@@ -247,25 +245,25 @@ air_sz_t arm_mmu_level2(
 void arm_mmu_level1(
         air_uptr_t ttbr, air_u32_t p_addr, air_u32_t v_addr,
         air_u32_t unit, air_sz_t size, air_u32_t permissions) {
-#ifdef PMK_DEBUG
-    printk("         ** ARM Segregation L1\n");
-#endif
     air_u32_t idx = 0;
     air_uptr_t pt_ptr = 0;
     air_sz_t consumed = 0;
 
 #ifdef PMK_DEBUG
-    printk("            v_addr       = 0x%08x\n"
-            "            unit         = 0x%08x\n"
+    printk("            unit         = 0x%08x\n"
             "            SECTION_SIZE = 0x%08x\n"
             "            LPAGE_SIZE   = 0x%08x\n"
             "            PAGE_SIZE    = 0x%08x\n",
-            v_addr, unit, SECTION_SIZE, LPAGE_SIZE, PAGE_SIZE);
+            unit, SECTION_SIZE, LPAGE_SIZE, PAGE_SIZE);
 #endif
 
     while (size > 0) {
 
         idx = (v_addr >> 20);
+#ifdef PMK_DEBUG
+        if (idx < 0xe00)
+            printk("       ** ARM Segregation L1\n");
+#endif
 /*#ifdef PMK_DEBUG
         printk("            v_addr       = 0x%08x\n"
                 "            L1 idx       = 0x%08x\n"
@@ -275,21 +273,22 @@ void arm_mmu_level1(
 
         if (unit < SECTION_SIZE) {
 #ifdef PMK_DEBUG
-            printk("            ttbr[%i]    = 0x%08x\n",
-                    idx, (air_u32_t)ttbr[idx]);
+            if (idx < 0xe00)
+                printk("          ttbr[%i]    = 0x%08x",
+                        idx, (air_u32_t)ttbr[idx]);
 #endif
             /* check if entry already exists */
             switch((air_u32_t)ttbr[idx] & MMU_D_TYPE_MASK) {
             case MMU_PTD:
 #ifdef PMK_DEBUG
-                printk("             PTD\n");
+                printk("          used PTD\n");
 #endif
                 pt_ptr = (air_uptr_t)((air_u32_t)ttbr[idx] & 0xfffffc00);
                 break;
 
             case MMU_SECTION:
 #ifdef PMK_DEBUG
-                printk("             SECTION\n");
+                printk("          used section\n");
 #endif
                 /* entry already in use TODO what to do???*/
                 break;
@@ -300,21 +299,26 @@ void arm_mmu_level1(
             default:
                 /* unused */
 #ifdef PMK_DEBUG
-                printk("             unused\n");
+                printk("          new PTD\n");
 #endif
                 pt_ptr = pmk_workspace_aligned_alloc(TTL2_SIZE, TTL2_SIZE);
                 ttbr[idx] = ( ((air_u32_t)pt_ptr & 0xfffffc00)
                         | (DEFAULT_DOMAIN << 5)
                         | MMU_PTD );
+#ifdef PMK_DEBUG
+                printk("            ttbr[%i] = 0x%08x\n"
+                        "            L2 PTD   = 0x%08x\n",
+                        idx, (air_u32_t)ttbr[idx], pt_ptr);
+#endif
                 break;
             }
-#ifdef PMK_DEBUG
-            printk("            ttbr[%i]    = 0x%08x\n",
-                    idx, (air_u32_t)ttbr[idx]);
-#endif
             consumed = arm_mmu_level2(pt_ptr, &p_addr, &v_addr, unit, size, permissions);
 
         } else {
+#ifdef PMK_DEBUG
+            if (idx < 0xe00)
+                printk("          new section\n");
+#endif
 
             air_u32_t arm_permissions = arm_get_mmu_permissions(permissions, MMU_L1, MMU_SECTION);
             ttbr[idx] = ( (p_addr & 0xfff00000)
@@ -324,6 +328,11 @@ void arm_mmu_level1(
             consumed = TTL1_SECT_SIZE;
             v_addr += consumed;
             p_addr += consumed;
+#ifdef PMK_DEBUG
+            if (idx < 0xe00)
+                printk("            ttbr[%i] = 0x%08x\n",
+                        idx, (air_u32_t)ttbr[idx]);
+#endif
         }
 
         size -= consumed;
@@ -331,10 +340,14 @@ void arm_mmu_level1(
 #ifdef PMK_DEBUG
     printk("            ttbr        = 0x%08x\n"
             "            ttbr[0]     = 0x%08x\n"
+            "            ttbr[0x100] = 0x%08x\n"
+            "            ttbr[0x101] = 0x%08x\n"
             "            ttbr[0xe00] = 0x%08x\n"
             "            ttbr[0xfff] = 0x%08x\n\n",
             ttbr,
             ttbr[0],
+            ttbr[0x100],
+            ttbr[0x101],
             ttbr[0xe00],
             ttbr[0xfff]);
 #endif
@@ -344,12 +357,12 @@ void arm_map_memory(
         arm_mmu_context_t *ctrl, void *p_addr, void *v_addr,
         air_sz_t size, air_sz_t unit, air_u32_t permissions) {
 #ifdef PMK_DEBUG
-    printk("\n $$ Mapping memory ttbr0 = 0x%08x\n"
-            "    Start PHY address:  0x%08x\n"
-            "    Start VIRT address: 0x%08x\n"
-            "    End VIRT address:   0x%08x\n"
-            "    Size:               0x%08x\n"
-            "    Unit:               0x%08x\n",
+    printk("\n $$ Mapping memory ttbr0: 0x%08x\n"
+            "    Start PHY address:   0x%08x\n"
+            "    Start VIRT address:  0x%08x\n"
+            "    End VIRT address:    0x%08x\n"
+            "    Size:                0x%08x\n"
+            "    Unit:                0x%08x\n",
             ctrl->ttbr0, (air_u32_t)p_addr, (air_u32_t)v_addr,
             (air_u32_t)v_addr + (air_u32_t)size, size, unit);
 #endif
@@ -363,7 +376,7 @@ void arm_map_memory(
         /* size must aligned to the memory unit */
         size = ((size) + ((unit) - 1)) & ~((unit) - 1);
 #ifdef PMK_DEBUG
-        printk("      size after unit = 0x%08x\n", size);
+        printk("    size after unit =   0x%08x\n", size);
 #endif
 
         arm_mmu_level1(ctrl->ttbr0, (air_u32_t)p_addr, (air_u32_t)v_addr, unit, size, permissions);
