@@ -46,7 +46,7 @@ static inline air_u32_t arm_get_int_count(void) {
 }
 
 static inline air_u32_t arm_ic_processor_count(void) {
-    return ((ic_dist->icdictr << 5U) & 0x7) + 1;
+    return ((ic_dist->icdictr >> 5U) & 0x7) + 1;
 }
 
 static inline void arm_int_enable(air_u32_t id) {
