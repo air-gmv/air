@@ -65,12 +65,16 @@ air_u32_t bsp_core_init(void) {
 
     air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
 
+#ifdef PMK_DEBUG
+    printk("bsp_core_init::cpu_id = %d\n", cpu_id);
+#endif
+
+    arm_set_vector_base();
     if(cpu_id == 0) {
 
-        arm_set_vector_base();
         arm_isr_table_init();
         arm_hm_init();
-        //arm_start_uart(); TODO screws up in qemu
+//      arm_start_uart(); //TODO screws up in qemu. and everywhere else it seems
     }
 
     gic_init(cpu_id);
@@ -111,7 +115,7 @@ void bsp_boot_core(air_u32_t cpu_id, void *entry_point) {
         volatile air_uptr_t start_addr = (air_uptr_t)0xfffffff0;
         arm_data_synchronization_barrier(15);
         arm_instruction_synchronization_barrier();
-        *start_addr = (air_u32_t)entry_point;
+        *start_addr = (air_u32_t)0x00100020;
         arm_data_synchronization_barrier(15);
         arm_instruction_synchronization_barrier();
         bsp_send_event();
