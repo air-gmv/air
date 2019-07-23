@@ -44,8 +44,6 @@ SPWRTR_PRESCALER        = 'Prescaler'
 
 CANBUS_CORE             = 'CanCore'
 CANBUS_BAUD	            = 'Baud'
-CANBUS_TXD              = 'TXD'
-CANBUS_RXD              = 'RXD'
 CANBUS_READS            = 'Reads'
 CANBUS_CODE             = 'Code'
 CANBUS_MASK             = 'Mask'
@@ -359,8 +357,6 @@ def phy_grcan(iop_parser, xml, pdevice):
     setup                   = GRCANPhySetup()
     setup.can_core          = pdevice.minor
     setup.baud              = xml.parse_attr(CANBUS_BAUD, VALID_READS, True, iop_parser.logger)
-    setup.txd_count         = xml.parse_attr(CANBUS_TXD, VALID_XD, True, iop_parser.logger)
-    setup.rxd_count         = xml.parse_attr(CANBUS_RXD, VALID_XD, True, iop_parser.logger)
     setup.code              = xml.parse_attr(CANBUS_CODE, VALID_MASK_CODE, True, iop_parser.logger)
     setup.mask              = xml.parse_attr(CANBUS_MASK, VALID_MASK_CODE, True, iop_parser.logger)
     setup.selection         = xml.parse_attr(CANBUS_SELECTION, VALID_EN, True, iop_parser.logger)
