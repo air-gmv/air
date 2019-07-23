@@ -81,7 +81,7 @@ reset:
     mov     r5, r1
     mov     r6, r2
 
-#ifdef PMK_SMP
+#if PMK_SMP
     /* Reading the MPIDR into r7. Not available before ARMv7 */
     mrc     p15, 0, r7, c0, c0, 5
     and     r7, #0xff
@@ -94,10 +94,12 @@ reset:
     /* TODO We might add fdt */
 
     /* TODO Some CPUs start in hypervisor mode */
-
 #else
     mov     r7, #0
 #endif /* PMK_SMP */
+
+    cmp     r7, #0
+    bne     setup_stack
 
 clear_bss:
     ldr     r1, =air_kernel_bss_start
@@ -189,21 +191,21 @@ setup_stack:
     bl      bsp_start_hook
     SWITCH_FROM_THUMB_TO_ARM
 
-
     /* Reading the MPIDR into r8. Not available before ARMv7 */
     mrc     p15, 0, r8, c0, c0, 5
     and     r8, #0xff
     cmp     r8, #0
 
-    mov     r0, #0
-    SWITCH_FROM_ARM_TO_THUMB    r4
-
     bne     secondary_core_init
 
+    SWITCH_FROM_ARM_TO_THUMB    r4
+    mov     r0, #0
     bl      pmk_init
 
     /**< Secondary cores init */
 global(secondary_core_init)
+    SWITCH_FROM_ARM_TO_THUMB    r4
+    mov     r0, #0
     bl      pmk_core_initialize
 
     /* never returns here */

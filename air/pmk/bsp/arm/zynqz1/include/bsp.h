@@ -33,9 +33,6 @@
 #include <slcr.h>
 #include <timer.h>
 #include <uart.h>
-#ifdef PMK_DEBUG
-#include <printk.h>
-#endif
 
 void pmk_trap_table(void);
 void air_kernel_bss_start(void);
@@ -76,15 +73,6 @@ static inline void bsp_send_event(void) {
 static inline void bsp_clear_bss(void) {
     air_u32_t bss_size = (air_u32_t)air_kernel_bss_end - (air_u32_t)air_kernel_bss_start;
 
-#ifdef PMK_DEBUG
-    printk(" :: Clearing BSS\n"
-            "     air_kernel_bss_start = 0x%08x\n"
-            "     air_kernel_bss_end   = 0x%08x\n"
-            "     bss_size             = 0x%08x\n",
-            (air_u32_t)air_kernel_bss_start,
-            (air_u32_t)air_kernel_bss_end,
-            bss_size);
-#endif
     memset(air_kernel_bss_start, 0, bss_size);
 
     return;
@@ -108,14 +96,8 @@ static inline void arm_set_vector_base(void) {
     if ((air_u32_t)pmk_trap_table != 0) {
         air_u32_t ctrl;
 
-        /* Assumes every core has Security Extensions */
+        /* TODO Assumes every core has Security Extensions */
         arm_cp15_set_vector_base_address((void *)pmk_trap_table);
-
-#ifdef PMK_DEBUG
-        printk(" pmk_trap_table       = 0x%x\n", pmk_trap_table);
-        printk(" air_kernel_bss_start = 0x%x\n", air_kernel_bss_start);
-        printk(" air_kernel_bss_en    = 0x%x\n", air_kernel_bss_end);
-#endif
 
         ctrl = arm_cp15_get_system_control();
         ctrl &= ~ARM_SCTLR_V;
