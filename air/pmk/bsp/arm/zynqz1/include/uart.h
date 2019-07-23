@@ -16,6 +16,7 @@
 #define ARM_UART_H
 
 #include <air_arch.h>
+#include <armv7.h>
 #include <slcr.h>
 
 #define UART0_BASE_MEMORY               0xe0000000

@@ -63,34 +63,37 @@ void arm_start_uart(void) {
             ARM_UART_CTRL_TX_DIS) &
             ~ARM_UART_CTRL_RX_EN &
             ~ARM_UART_CTRL_TX_EN);
-    /* Baud Rate of 115200. Values on page 594 of zynq-7000-trm */
-    uart0->baud_rate_gen = 62;
-    uart0->baud_rate_div = 6;
-    uart0->ctrl = ((ARM_UART_CTRL_RXRST |
-            ARM_UART_CTRL_TXRST |
-            ARM_UART_CTRL_RX_EN |
-            ARM_UART_CTRL_TX_EN) &
-            ~ARM_UART_CTRL_RX_DIS &
-            ~ARM_UART_CTRL_TX_DIS);
+    arm_instruction_synchronization_barrier();
+    /* Baud Rate of 921,600. Values on page 594 of ug585-zynq-7000-trm */
+    uart0->baud_rate_gen = 9;
+    uart0->baud_rate_div = 5;
+    arm_data_synchronization_barrier(15);
+    uart0->ctrl = (ARM_UART_CTRL_RXRST |
+            ARM_UART_CTRL_TXRST);
+    arm_data_synchronization_barrier(15);
+    uart0->ctrl = ((ARM_UART_CTRL_RX_EN |
+                ARM_UART_CTRL_TX_EN) &
+                ~ARM_UART_CTRL_RX_DIS &
+                ~ARM_UART_CTRL_TX_DIS);
 
     uart0->tx_fifo_trigger = 0; // no trigger
 
-    uart0->ctrl = ((ARM_UART_CTRL_RXRST |
-            ARM_UART_CTRL_TXRST |
-            ARM_UART_CTRL_RX_EN |
-            ARM_UART_CTRL_TX_EN |
-            ARM_UART_CTRL_RSTTO |
-            ARM_UART_CTRL_STPBRK) &
-            ~ARM_UART_CTRL_RX_DIS &
-            ~ARM_UART_CTRL_TX_DIS &
-            ~ARM_UART_CTRL_STTBRK);
-
-    uart0->rx_timeout = 0; //timeout disabled
-
-    /* 5. Configure interrupts (none for now) */
-    do {
-        uart0->int_disable = ARM_UART_INT_DIS_RTRIG;
-    } while ((uart0->int_status && ARM_UART_INT_RTRIG) != 0);
+//    uart0->ctrl = ((ARM_UART_CTRL_RXRST |
+//            ARM_UART_CTRL_TXRST |
+//            ARM_UART_CTRL_RX_EN |
+//            ARM_UART_CTRL_TX_EN |
+//            ARM_UART_CTRL_RSTTO |
+//            ARM_UART_CTRL_STPBRK) &
+//            ~ARM_UART_CTRL_RX_DIS &
+//            ~ARM_UART_CTRL_TX_DIS &
+//            ~ARM_UART_CTRL_STTBRK);
+//
+//    uart0->rx_timeout = 0; //timeout disabled
+//
+//    /* 5. Configure interrupts (none for now) */
+//    do {
+//        uart0->int_disable = ARM_UART_INT_DIS_RTRIG;
+//    } while ((uart0->int_status && ARM_UART_INT_RTRIG) != 0);
 
     /* 6. Configure modem controls (optional) */
 }
