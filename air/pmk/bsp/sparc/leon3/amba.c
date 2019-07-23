@@ -403,21 +403,23 @@ int clock_gating_enable(amba_confarea_t* clk_amba_bus, clock_gating_device core_
     /* Copy pointer to device's memory mapped registers */
     clkgate_regs *gate_regs = (void *)ambadev.start;
 
-    /* 1. Unlock the GR1553 gate to allow enabling it */
-    SET_BIT_REG(&gate_regs->unlock, core_to_enable);
+    if(!(gate_regs->clock_enable & (1<<core_to_enable)))
+    {
+        /* 1. Unlock gate to allow enabling it */
+        SET_BIT_REG(&gate_regs->unlock, core_to_enable);
 
-    /* 2. Reset the GR1553 gate */
-    SET_BIT_REG(&gate_regs->core_reset, core_to_enable);
+        /* 2. Reset gate */
+        SET_BIT_REG(&gate_regs->core_reset, core_to_enable);
 
-    /* 3. Enable the GR1553 gate */
-    SET_BIT_REG(&gate_regs->clock_enable, core_to_enable);
+        /* 3. Enable gate */
+        SET_BIT_REG(&gate_regs->clock_enable, core_to_enable);
 
-    /* 4. Clear the GR1553 gate reset*/
-    CLEAR_BIT_REG(&gate_regs->core_reset, core_to_enable);
+        /* 4. Clear gate reset*/
+        CLEAR_BIT_REG(&gate_regs->core_reset, core_to_enable);
 
-    /* 5. Lock the GR1553 gate */
-    CLEAR_BIT_REG(&gate_regs->unlock, core_to_enable);
-
+        /* 5. Lock gate */
+        CLEAR_BIT_REG(&gate_regs->unlock, core_to_enable);
+    }
     return 1;
 }
 
