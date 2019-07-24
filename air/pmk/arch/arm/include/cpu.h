@@ -198,6 +198,13 @@ void core_context_remove_hm_event(core_context_t *context);
 #define core_context_id(context) \
         (context)->vcpu.id
 /**
+ * @brief Get the core context Table Base register
+ * @param context core context
+ * @return Table Base register of the context
+ */
+#define core_context_tbr(context) \
+        (context)->vcpu.vbar
+/**
  * @brief Check if the context is flagged as trashed
  * @param context Context to check
  * @return true if trashed, false otherwise
