@@ -28,13 +28,9 @@
  ${iop_template.RemotePortList(iop_configuration)}\
 
 /**
- *@brief Allocation of the receiver memory
+ *@brief CAN data buffer allocation
  */
-static uint8_t rx_msg_fifo[CAN_RX_SIZE*16*4+1024];
-/**
- *@brief Allocation of the transmiter memory
- */
-static uint8_t tx_msg_fifo[CAN_TX_SIZE*16*4+1024];
+static uint8_t can_msg_buffer[CAN_RX_SIZE*16*4+CAN_TX_SIZE*16*4+1024];
 
 /** @brief GRCAN control structure*/
 static grcan_priv grcan_driver = ${'\\'}
@@ -70,8 +66,8 @@ static grcan_priv grcan_driver = ${'\\'}
 		},
 	},
 	
-	._tx = tx_msg_fifo,
-	._rx = rx_msg_fifo,
+	._tx = can_msg_buffer,
+	._rx = can_msg_buffer,
 };
 
 /**  @brief GRCAN control strucutre */

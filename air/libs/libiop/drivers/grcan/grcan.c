@@ -797,12 +797,13 @@ air_status_code_e iop_grcan_open_internal(iop_device_driver_t *iop_dev, void *ar
 	}
 
 	/* Convert the unaligned buffers into aligned buffers */
+	/* AIR message _rx and _tx initialy point to same memory address*/
 	pDev->tx = (grcan_msg *) (((unsigned int) pDev->_tx +
 			(BUFFER_ALIGNMENT_NEEDS-1)) &
 			~(BUFFER_ALIGNMENT_NEEDS-1));
-	pDev->rx = (grcan_msg *) (((unsigned int) pDev->_rx +
+	pDev->rx = (grcan_msg *) ((((unsigned int) pDev->_rx +
 			(BUFFER_ALIGNMENT_NEEDS-1)) &
-			~(BUFFER_ALIGNMENT_NEEDS-1));
+			~(BUFFER_ALIGNMENT_NEEDS-1)) + pDev->txbuf_size);
 
 	iop_grcan_set_afilter(iop_dev, &(pDev->afilter));
 	iop_grcan_set_sfilter(iop_dev, &(pDev->sfilter));
