@@ -19,26 +19,6 @@
 #include <multicore.h>
 
 /**
- * @brief Copy main Core virtual tbr
- * @param core Executing core control structure
- * @ingroup pmk_multicore
- */
-static void pmk_ipc_set_tbr(pmk_core_ctrl_t *core) {
-
-    /*Get actual core vcpu*/
-    core_context_t *core_ctx = core->context;
-    sparc_virtual_cpu_t *core_vcpu = &core_ctx->vcpu;
-
-    /*Extract partition's main vcpu*/
-    pmk_partition_t *core_partition = core->partition;
-    core_context_t *partition_ctx = &core_partition->context[0];
-    sparc_virtual_cpu_t *partition_vcpu = &partition_ctx->vcpu;
-
-    /*Set actual core context with partition's main core tbr*/
-    core_vcpu->tbr = partition_vcpu->tbr;
-}
-
-/**
  * @brief Core boot
  * @param core Executing core control structure
  * @ingroup pmk_multicore
@@ -52,7 +32,7 @@ static void pmk_ipc_boot_partition_core(pmk_core_ctrl_t *core) {
     core_context_restore(core);
 
     /*Heir VCPU trap table*/
-    pmk_ipc_set_tbr(core);
+    core_context_tbr(core->context) = core_context_tbr(core->partition->context);
 }
 
 /**
@@ -101,7 +81,7 @@ void pmk_ipc_handler(void *isf, pmk_core_ctrl_t *core) {
             break;
 
         case PMK_IPC_SET_TBR:
-            pmk_ipc_set_tbr(core);
+            core_context_tbr(core->context) = core_context_tbr(core->partition->context);
             break;
 
         /* no action */
