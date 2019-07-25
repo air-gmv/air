@@ -79,6 +79,7 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     'bsp/arm/zynqz1/mmu.c',
     'bsp/arm/zynqz1/triple_timer.c',
     'bsp/arm/zynqz1/uart.c',
+    'bsp/arm/zynqz1/slcr.c',
     # Core files
     'core/error.c',
     'core/barrier.c',

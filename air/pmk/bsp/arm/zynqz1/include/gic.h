@@ -25,7 +25,7 @@ static volatile ic_distributor_t *ic_dist = (ic_distributor_t *)IC_DIST_BASE_MEM
 static volatile ic_cpu_interface_t *ic_cpu = (ic_cpu_interface_t *)IC_CPU_BASE_MEMORY;
 
 /**< ************************ ICD Register Access ****************************/
-/**< ICDDCR */
+/**< ICDDCR - Distributor Control Register */
 static inline void arm_gic_disable(void) {
     ic_dist->icddcr &= ~(1U << 0);
 }
@@ -38,7 +38,7 @@ static inline air_u32_t arm_is_gic_enabled(void) {
     return (ic_dist->icddcr & 0x1);
 }
 
-/**< ICDICTR */
+/**< ICDICTR - Interrupt Controller Type Register */
 #define ZYNQ_MAX_INT 256
 static inline air_u32_t arm_get_int_count(void) {
     air_u32_t int_count = ((ic_dist->icdictr & 0x1f) + 1) * 32;
@@ -53,7 +53,7 @@ static inline void arm_int_enable(air_u32_t id) {
     ic_dist->icdiser[id/32] = (1U << (id & 0x1f));
 }
 
-/**< ICDICER */
+/**< ICDICER - Interrupt Clear-Enable Register */
 static inline void arm_sgi_ppi_disable(void) {
     ic_dist->icdicer[0] = 0xffffffff;
 }
@@ -64,14 +64,14 @@ static inline void arm_spi_disable(air_u32_t int_count) {
     }
 }
 
-/**< ICDICPR */
+/**< ICDICPR  - Interrupt Clear-Pending Register*/
 static inline void arm_clear_pending(air_u32_t int_count) {
     for(air_u32_t i = 32; i < int_count; i += 32) {
         ic_dist->icdicpr[i/32] = 0xffffffff;
     }
 }
 
-/**< ICDIPR */
+/**< ICDIPR - Interrupt Priority Register */
 static inline void arm_int_set_priority(air_u32_t id, air_u8_t priority) {
     ic_dist->icdipr[id] = priority;
 }
@@ -116,7 +116,7 @@ static inline void arm_gic_enable_interrupts(void) {
     ic_cpu->iccicr |= 0x3;
 }
 
-/**< ICCPMR (GICC_PMR) */
+/**< ICCPMR (GICC_PMR) - Interrupt Priority Mask Register  */
 static inline air_u32_t arm_get_int_mask(void) {
     return (ic_cpu->iccpmr & 0xff);
 }
@@ -125,13 +125,13 @@ static inline void arm_set_int_mask(air_u32_t mask) {
     ic_cpu->iccpmr = (mask & 0xff);
 }
 
-//*< ICCBPR (GICC_BPR) */
+//*< ICCBPR (GICC_BPR) - Binary Point Register */
 #define PREEMPTION(n_bits) ( 7 - n_bits ? (n_bits >= 0 && n_bits < 8) : 0)
 static inline void arm_set_ic_cpu_preemption(air_u32_t iccbpr) {
     ic_cpu->iccbpr = iccbpr;
 }
 
-/**< ICCIAR (GICC_IAR) */
+/**< ICCIAR (GICC_IAR) - Interrupt Acknowledge Register */
 static inline air_u32_t arm_acknowledge_int(void) {
     return (ic_cpu->icciar & 0x1fff);
 }
