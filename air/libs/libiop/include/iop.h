@@ -13,7 +13,6 @@
 #define __IOP_H__
 
 #include <air.h>
-#include <rtems.h>
 #include <iop_chain.h>
 #include <iop_headers.h>
 
@@ -74,7 +73,23 @@ typedef struct {
     uint32_t timer;                 /**< Number of periods after which this request will be discarded*/
     iop_buffer_t *buffer;           /**< reply header   */
 
+    iop_chain_control fragment_queue;   /** Chain of fragments for this packet **/
+
 } iop_wrapper_t;
+
+/**
+ * @brief Packet fragment
+ */
+typedef struct{
+    iop_chain_node node;
+    
+    iop_header_t header;
+    void *payload;
+
+    uint32_t header_size;
+    uint32_t payload_size;
+    
+} iop_fragment_t;
 
 /**
  * @brief List of elements
@@ -103,7 +118,7 @@ typedef struct {
  * @param arg Input argument (device structure pointer)
  * @return return type of an RTEMS task
  */
-typedef rtems_task (*iop_device_driver_task)(rtems_task_argument arg);
+typedef void (*iop_device_driver_task)(air_uptr_t arg);
 
 
 typedef void (*iop_header_prebuild_f)(iop_header_t *header);
@@ -159,6 +174,8 @@ typedef struct {
     iop_buffer_t *iop_buffers;
     uint8_t *iop_buffers_storage;
     uint32_t wrappers_count;
+    iop_fragment_t *fragments;
+    uint32_t fragment_count;
 
     /* devices and ports */
     iop_list_t remote_ports;
@@ -171,6 +188,7 @@ typedef struct {
 
     /* requests chains */
     iop_chain_control free_wrappers;        /**< Chain of empty requests */
+    iop_chain_control free_fragments;
 
 } iop_configuration_t;
 
@@ -199,8 +217,8 @@ struct __iop_physical_device_t {
     iop_chain_control sendqueue;            /**< type: service_request_t    */
 
     /* device tasks */
-    rtems_id reader_id;
-    rtems_id writer_id;
+    air_u32_t reader_id;
+    air_u32_t writer_id;
     iop_device_driver_task reader_task;     /**< device reader task         */
     iop_device_driver_task writer_task;     /**< device writer task         */
 
@@ -253,7 +271,14 @@ typedef struct {
 
 } iop_physical_route_t;
 
-
+/**
+ * @brief structure used as an ioctl interface with the drivers
+ */
+typedef struct {
+    unsigned int command; 		/**< ioctl command */
+    void *buffer;		  		/**< data needed for the ioctl command*/
+    unsigned int ioctl_return; 	/**< ioctl return code */
+} libio_ioctl_args_t;
 
 /**
  * @brief IOP user defined configuration

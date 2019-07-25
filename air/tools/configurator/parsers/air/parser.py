@@ -443,13 +443,9 @@ class airParser(a653parser):
                                                            self.os_configuration.validate_personalities(), True,
                                                            self.logger)
 
-
-        self.logger.event(0, "   PARSING iop file attr")
         # get IOP configuration if available
         partition.iop_file = xml_config_node.parse_attr(PARTITION_EXTENSION_IOP,
                                                         VALID_AIR_FILE, False, self.logger, '')
-
-        self.logger.event(0, "   done PARSING iop file attr")
 
         # check IOP is supported
         if not self.os_configuration.is_iop_supported() and partition.iop_file != '':
@@ -684,22 +680,20 @@ class airParser(a653parser):
 
     def parse_other(self, xml):
 
-        self.logger.event(0, "   PARSING sm")
         # parse shared memory areas
-        self.logger.event(0, LOG_EVENT_SHARED_MEMORY)
+        self.logger.event(1, LOG_EVENT_SHARED_MEMORY)
         xml_partitions = xml.parse_tag(SHM_EXTENSION, 0, sys.maxint, self.logger)
         for xml_node in xml_partitions: self.parse_shared_memory(xml_node)
         self.compute_shared_memory_addresses()
 
-        self.logger.event(0, "   PARSING scheduling")
         # set schedule indexes
         for i, schedule in enumerate(self.schedules): schedule.index = i
 
-        self.logger.event(0, "   PARSING partitions")
         # parse IOP configurations
         for partition in self.partitions:
             partition.iop = None
             if len(partition.iop_file):
+                self.logger.event(1, "PARSING IOP")
                 partition.iop = IOParser(self.os_configuration, partition, self, self.logger)
                 partition.iop.parse(partition.iop_file)
 

@@ -1,4 +1,16 @@
+/**
+ *  @file gr1553_support.c
+ *
+ *  COPYRIGHT (c) 2012.
+ *  GMV-SKYSOFT
+ *
+ *  @author Claudio Silva
+ *
+ *  @brief IOP STD-MIL-1553B Support Functions
+ */
+
 #include <gr1553_support.h>
+#include <bsp.h>
 
 void gr1553_copy_header(
         iop_physical_device_t *iop_dev,

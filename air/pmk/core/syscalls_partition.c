@@ -35,8 +35,7 @@ air_status_code_e pmk_syscall_get_partition_id(
     if (NULL != name) {
 
         /* check partition permissions */
-        if ((partition->permissions & AIR_PERMISSION_ARINC_SYSTEM) == 0 &&
-            (partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0) {
+        if ((partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0) {
 
             /* disable preemption and return */
             cpu_disable_preemption(flags);
@@ -94,8 +93,7 @@ air_status_code_e pmk_syscall_get_partition_status(
     if (pid >= 0 && partition->id != pid) {
 
         /* check partition permissions */
-        if ((partition->permissions & AIR_PERMISSION_ARINC_SYSTEM) == 0 &&
-            (partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0) {
+        if ((partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0) {
 
             /* disable preemption and return */
             cpu_disable_preemption(flags);
@@ -123,13 +121,7 @@ air_status_code_e pmk_syscall_get_partition_status(
     local_status.permissions = partition->permissions;
     local_status.operating_mode = partition->mode;
     local_status.start_condition = partition->start_condition;
-
-    /* check if the partition was already executed */
-    if (partition->state != PMK_PARTITION_STATE_NOT_RUN) {
-        local_status.restart_count = partition->restart_count;
-    } else {
-        local_status.restart_count = 0;
-    }
+    local_status.restart_count = partition->restart_count;
 
     /* copy status to partition */
     if (pmk_segregation_put_user(context, local_status, status) != 0) {
@@ -155,8 +147,7 @@ air_status_code_e pmk_syscall_set_partition_mode(
     if (partition->id != pid && pid != -1) {
 
         /* check for valid permissions */
-        if ((partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0 &&
-            (partition->permissions & AIR_PERMISSION_ARINC_SYSTEM) == 0) {
+        if ((partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0){
 
             return AIR_INVALID_CONFIG;
         }
@@ -191,7 +182,7 @@ air_status_code_e pmk_syscall_set_partition_mode(
     /* check if the mode is valid */
     if (AIR_MODE_WARM_START == mode && AIR_MODE_COLD_START == partition->mode) {
 
-       //return AIR_INVALID_MODE;
+       return AIR_INVALID_MODE;
     }
 
     /* apply state to the partition */
@@ -201,6 +192,8 @@ air_status_code_e pmk_syscall_set_partition_mode(
         /* restart partition */
         case AIR_MODE_COLD_START:
         case AIR_MODE_WARM_START:
+            if(partition->state == PMK_PARTITION_STATE_RESTARTING)
+                break;
             pmk_partition_restart(partition);
             partition->start_condition = AIR_START_CONDITION_PARTITION_RESTART;
             break;

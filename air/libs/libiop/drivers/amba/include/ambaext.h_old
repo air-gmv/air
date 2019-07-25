@@ -17,9 +17,8 @@
 #ifndef __AMBAEXT_H__
 #define __AMBAEXT_H__
 
-#include <ambapp.h>
 #include <iop.h>
-
+#if 0
 struct amba_dev_id {
     unsigned short      vendor;
     unsigned short      device;
@@ -39,5 +38,5 @@ int amba_find_next_apbslv (struct ambapp_bus * amba_conf, int vendor, int device
 
 int amba_find_next_ahbmst(struct ambapp_bus * amba_conf, int vendor, int device,
                           struct ambapp_ahb_info * dev, int index);
-
+#endif
 #endif

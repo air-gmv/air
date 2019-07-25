@@ -3,18 +3,18 @@
 
   <!-- Partition 3  -->  
   <Partition PartitionIdentifier="3" PartitionName="iop" 
-    Criticality="LEVEL_A" EntryPoint="empty" SystemPartition="false">
+    Criticality="LEVEL_A" EntryPoint="empty" SystemPartition="true">
     <Sampling_Port Name="dsampling"
       Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
     <Queuing_Port Name="squeuing" 
       Direction="SOURCE" MaxMessageSize="1024" MaxNbMessages="32" />
-    <PartitionConfiguration Personality="RTEMS5" IOP="iop.xml" Cores="1">
-        <Libs>LIBAIR; LIBIOP; LIBPRINTF</Libs>
+    <PartitionConfiguration Personality="Bare" IOP="iop.xml" Cores="1">
+        <Libs>LIBIOP</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x400000" />
         <Permissions>
-          FPU_CONTROL; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
+          SUPERVISOR;
         </Permissions>
     </PartitionConfiguration>     
   </Partition>

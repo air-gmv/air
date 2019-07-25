@@ -16,11 +16,9 @@
  *  their devices. 
  */ 
  
-#include <bsp.h>
-#include <ambapp.h>
-#include <pprintf.h>
 #include <ambaext.h>
 
+#if 0
 struct ambapp_bus amba_conf;
 
 struct ambapp_dev_find_match_arg {
@@ -329,4 +327,5 @@ void amba_debug_scan(unsigned int ioarea)
         }
     }
 }
+#endif
 #endif

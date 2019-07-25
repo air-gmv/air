@@ -23,23 +23,24 @@ QUEUING_PORT_ID_TYPE qpid;
 
 
 /*---------------------------------------------------------	
- *		function: test																				*
- *			prints a simple string 															* 
+ *		function: test										*
+ *			prints a simple string 							*
 ------------------------------------------------------------*/
 
 
 void test(PARTITION_ID_TYPE self_id) {
-	char msg[1024]="empty\0";
+	unsigned char msg[1024]="empty\0";
 	RETURN_CODE_TYPE rc;
 	MESSAGE_SIZE_TYPE len;
     pprintf ("Ready to receive\n", self_id, msg);
 	while(1) {
 
 		RECEIVE_QUEUING_MESSAGE(qpid, INFINITE_TIME_VALUE, msg, &len, &rc );
-		if (rc == NO_ERROR) {
+		if (rc == NO_ERROR)
 		    pprintf ("Partition %d: %s\n", self_id, msg);
-		}
-//                pprintf(".");
+		else
+			if(rc == INVALID_CONFIG)
+				pprintf ("Partition %d Overflow: %s\n", self_id, msg);
 	}
 }
 
