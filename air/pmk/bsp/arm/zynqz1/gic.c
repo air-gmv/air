@@ -34,6 +34,9 @@ void gic_init(air_u32_t cpu_id) {
     air_u32_t int_count = arm_get_int_count();
     air_u32_t id = 0;
 
+    //reset PERI_RST
+    //arm_peripheral_soft_reset();
+
     if (cpu_id == 0 && arm_is_gic_enabled()) {
         arm_gic_disable();
     }

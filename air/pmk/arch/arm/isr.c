@@ -187,18 +187,33 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
     if(!(++counter % 20))
         printk("\n");
 #endif
-    /* TTC interrupt */
-    if (id >= 42 && id <= 44) {
 
-        air_u32_t ttc_ack_1 = arm_acknowledge_ttc();
+//    /* TTC interrupt */
+//    if (id >= 42 && id <= 44) {
+//
+//        air_u32_t ttc_ack_1 = arm_acknowledge_ttc();
+//
+//#ifdef PMK_DEBUG_TIMER
+//        printk("    ttc_ack_1 = 0x%x\n", ttc_ack_1);
+//
+//        triple_timer_cnt_t *ttc = (triple_timer_cnt_t *)0xf8001000;
+//        ic_distributor_t *ic_dist = (ic_distributor_t *)IC_DIST_BASE_MEMORY;
+//
+//        printk("    ttc->cnt_val_1 = 0x%x\n", ttc->cnt_val_1);
+//        printk("  * ic_dist->icdiser[1] = 0x%x\n", ic_dist->icdiser[1]);
+//        printk("  * ic_dist->icdispr[1] = 0x%x\n\n", ic_dist->icdispr[1]);
+//#endif
+//    }
+
+    /* GT Interrupt*/
+    if (id == 27) {
 
 #ifdef PMK_DEBUG_TIMER
-        printk("    ttc_ack_1 = 0x%x\n", ttc_ack_1);
-
-        triple_timer_cnt_t *ttc = (triple_timer_cnt_t *)0xf8001000;
+        global_timer_t *gt = (global_timer_t *)GT_BASE_MEMORY;
         ic_distributor_t *ic_dist = (ic_distributor_t *)IC_DIST_BASE_MEMORY;
 
-        printk("    ttc->cnt_val_1 = 0x%x\n", ttc->cnt_val_1);
+        printk("\n\n    gt->cnt_upper = 0x%x\n", gt->cnt_upper);
+        printk("\n\n    gt->cnt_lower = 0x%x\n\n", gt->cnt_lower);
         printk("  * ic_dist->icdiser[1] = 0x%x\n", ic_dist->icdiser[1]);
         printk("  * ic_dist->icdispr[1] = 0x%x\n\n", ic_dist->icdispr[1]);
 #endif
@@ -241,7 +256,7 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
 
 
     /* will it route to the partition */
-    if (core->partition != NULL && (id < 42 && id > 44)) {
+    if (core->partition != NULL && (id < 42 && id > 44) && ( id != 27 )) {
 
         ret = arm_partition_isr_handler(id, core);
     }
