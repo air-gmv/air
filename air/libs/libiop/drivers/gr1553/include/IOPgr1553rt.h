@@ -58,8 +58,8 @@ struct gr1553rt_sa {
  */
 void gr1553rt_device_init(grb_priv *priv);
 
-rtems_status_code gr1553rt_write(rtems_device_minor_number minor, void *arg);
+uint32_t gr1553rt_write(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_status_code gr1553rt_read(rtems_device_minor_number minor, void *arg);
+uint32_t gr1553rt_read(iop_device_driver_t *iop_dev, void *arg);
 
 #endif 

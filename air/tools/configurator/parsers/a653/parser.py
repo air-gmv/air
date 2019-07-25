@@ -594,8 +594,6 @@ class a653parser(object):
         # complete HM tables
         self.complete_hm_tables()
 
-        self.logger.event(0, "  PARSING connection table")
-
         # parse connection table
         self.logger.event(0, LOG_EVENT_CONNECTION_TABLE)
         xml_connection_table = xml.parse_tag(CONNECTION_TABLE, 0, 1, self.logger)
@@ -604,7 +602,6 @@ class a653parser(object):
             xml_channels = xml_connection_table.parse_tag(CHANNEL, 0, sys.maxint, self.logger)
             for xml_node in xml_channels: self.parse_channel(xml_node)
 
-        self.logger.event(0, "  PARSING ports table")
         # assign global index to the ports and check for unused ports
         index = 0
         self.logger.clear_errors(0)
@@ -615,10 +612,10 @@ class a653parser(object):
                     self.logger.error(LOG_UNUSED_PORT, port.xml_line, port)
 
 
-        self.logger.event(0, "  PARSING others")
+        self.logger.event(0, "PARSING others")
         # parse other extensions
         self.parse_other(xml)
-        self.logger.event(0, "  done PARSING others")
+        self.logger.event(0, "done PARSING others")
 
     def parse_hm_table(self, xml, target): pass
     def complete_hm_tables(self): pass

@@ -21,7 +21,7 @@
 #include <irqmp.h>
 #include <console.h>
 #include <workspace.h>
-
+#include <amba.h>
 
 extern void leon_idle_loop();
 

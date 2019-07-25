@@ -25,7 +25,9 @@ typedef air_i32_t air_identifier_t;
 /**
  * @brief Name type
  */
+
 typedef char air_name_t[256];
+
 /**
  * @brief Name type pointer
  */
@@ -78,15 +80,15 @@ typedef enum {
 #define AIR_MODE_WARM_START                             2
 #define AIR_MODE_NORMAL                                 3
 
-#define AIR_PERMISSION_SUPERVISOR           0x00000001
-#define AIR_PERMISSION_FPU_CONTROL          0x00000002
-#define AIR_PERMISSION_CACHE_CONTROL        0x00000004
-#define AIR_PERMISSION_GLOBAL_TIME          0x00000008
-#define AIR_PERMISSION_SET_TOD              0x00000010
-#define AIR_PERMISSION_SET_PARTITION_MODE   0x00000020
-#define AIR_PERMISSION_SET_SCHEDULE         0x00000040
-#define AIR_PERMISSION_ARINC_SYSTEM         0x00000080
-#define AIR_PERMISSION_MODULE_CONTROL       0x00000100
+#define AIR_PERMISSION_FPU_CONTROL          0x00000001
+#define AIR_PERMISSION_CACHE_CONTROL        0x00000002
+#define AIR_PERMISSION_GLOBAL_TIME          0x00000004
+#define AIR_PERMISSION_SET_TOD              0x00000008
+#define AIR_PERMISSION_SET_PARTITION_MODE   0x00000010
+#define AIR_PERMISSION_SET_SCHEDULE         0x00000020
+#define AIR_PERMISSION_MODULE_CONTROL       0x00000040
+#define AIR_PERMISSION_SUPERVISOR           0x0000007F
+
 #else
 
 
@@ -137,24 +139,23 @@ typedef enum {
  */
 typedef enum {
 
-    /** Supervisor access                                                   */
-    AIR_PERMISSION_SUPERVISOR             = 0x00000001,
+
     /** Floating Point unit control                                         */
-    AIR_PERMISSION_FPU_CONTROL            = 0x00000002,
+    AIR_PERMISSION_FPU_CONTROL            = 1,
     /** Cache control                                                       */
-    AIR_PERMISSION_CACHE_CONTROL          = 0x00000004,
+    AIR_PERMISSION_CACHE_CONTROL          = 1 << 1,
     /** Global monotonic timer                                              */
-    AIR_PERMISSION_GLOBAL_TIME            = 0x00000008,
+    AIR_PERMISSION_GLOBAL_TIME            = 1 << 2,
     /** Can set system time of Day                                          */
-    AIR_PERMISSION_SET_TOD                = 0x00000010,
+    AIR_PERMISSION_SET_TOD                = 1 << 3,
     /** Can set other partitions operation mode                             */
-    AIR_PERMISSION_SET_PARTITION_MODE     = 0x00000020,
+    AIR_PERMISSION_SET_PARTITION_MODE     = 1 << 4,
     /** Can set change the module schedule                                  */
-    AIR_PERMISSION_SET_SCHEDULE           = 0x00000040,
-    /** Act as ARINC system partition                                       */
-    AIR_PERMISSION_ARINC_SYSTEM           = 0x00000080,
+    AIR_PERMISSION_SET_SCHEDULE           = 1 << 5,
     /** Can control the module (without supervisor)                         */
-    AIR_PERMISSION_MODULE_CONTROL         = 0x00000100,
+    AIR_PERMISSION_MODULE_CONTROL         = 1 << 6,
+    /** Supervisor access                                                   */
+    AIR_PERMISSION_SUPERVISOR             = (1 << 7) - 1
 
 } air_permissions_e;
 
@@ -797,6 +798,12 @@ air_u32_t air_syscall_print(char *str, air_sz_t len);
 void air_syscall_shutdown_module(void);
 
 /**
+ * @brief Extract AMBA Plug & Play configuration area
+ * @param ambaptr pointer to amba config area
+ */
+air_uptr_t air_syscall_get_ambaconf(void);
+
+/**
  * @}
  */
 
@@ -842,6 +849,7 @@ void air_syscall_shutdown_module(void);
 #define AIR_SYSCALL_DISABLE_CACHE                  (AIR_SYSCALL_ARCH_COUNT + 34)
 #define AIR_SYSCALL_FREEZE_CACHE                   (AIR_SYSCALL_ARCH_COUNT + 35)
 #define AIR_SYSCALL_FLUSH_CACHE                    (AIR_SYSCALL_ARCH_COUNT + 36)
-#define AIR_SYSCALL_COUNT                          (AIR_SYSCALL_ARCH_COUNT + 37)
+#define AIR_SYSCALL_GET_AMBACONF                   (AIR_SYSCALL_ARCH_COUNT + 37)
+#define AIR_SYSCALL_COUNT                          (AIR_SYSCALL_ARCH_COUNT + 38)
 
 #endif /* __AIR_H__ */
