@@ -206,7 +206,7 @@ static inline void iop_chain_initialize(
         current = next;
 
         /* update the next node */
-        next = (iop_chain_node *)((air_uptr_t)next + node_size);
+        next = (iop_chain_node *)((air_u32_t)next + node_size);
     }
 
     /* the last node next is the tail of the chain */

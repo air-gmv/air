@@ -393,8 +393,8 @@ auto_neg_done:
     sc->rx_ptr = 0;
 
     /* align the TX and RX descriptor tables */
-    sc->txdesc = (greth_rxtxdesc *)(((air_uptr_t)sc->txdesc + 1024) & ~(1024 - 1));
-    sc->rxdesc = (greth_rxtxdesc *)((((air_uptr_t)sc->rxdesc + 1024) & ~(1024 - 1)) + 1024);
+    sc->txdesc = (greth_rxtxdesc *)(((air_u32_t)sc->txdesc + 1024) & ~(1024 - 1));
+    sc->rxdesc = (greth_rxtxdesc *)((((air_u32_t)sc->rxdesc + 1024) & ~(1024 - 1)) + 1024);
 
 	/* insert the descriptor table address in the HW register*/
     regs->txdesc = (uint32_t)air_syscall_get_physical_addr((air_uptr_t)sc->txdesc);
