@@ -74,9 +74,11 @@ air_u32_t bsp_core_init(void) {
 
         arm_isr_table_init();
         arm_hm_init();
+        arm_setup_uart(38400);
 //      arm_start_uart(); //TODO screws up in qemu. and everywhere else it seems
     }
 
+    arm_peripheral_soft_reset();
     gic_init(cpu_id);
     arm_mmu_init();
 
@@ -101,12 +103,17 @@ void bsp_core_ready(void) {
         //CACHE
         // something about smp. not implement for now
 
-        arm_init_ttc(1);
+        //arm_init_ttc(1);
+
+        arm_init_global_timer();
+
         //CLOCK
-        arm_start_ttc(1);
+        //arm_start_ttc(1);
     }
 
     arm_enable_interrupts();
+
+    arm_start_global_timer();
 }
 
 void bsp_boot_core(air_u32_t cpu_id, void *entry_point) {
@@ -146,6 +153,37 @@ void bsp_idle_loop(void) {
 #ifdef PMK_DEBUG_IDLE
     printk("\n    wfi: 0x%x\n\n", arm_cp15_get_translation_table0_base());
 #endif
+
+//#ifdef PMK_DEBUG_TIMER
+//    //triple_timer_cnt_t *ttc = (triple_timer_cnt_t *)0xf8001000;
+//    global_timer_t *gt = (global_timer_t *)GT_BASE_MEMORY;
+//
+//    ic_distributor_t *ic_dist = (ic_distributor_t *)IC_DIST_BASE_MEMORY;
+//    ic_cpu_interface_t *ic_cpu = (ic_cpu_interface_t *)IC_CPU_BASE_MEMORY;
+//
+//    //printk("\n\n    ttc->cnt_val_1 = 0x%x\n", ttc->cnt_val_1);
+//    printk("\n\n    gt->cnt_ = 0x%x\n", gt->cnt_upper);
+//    printk("\n\n    gt->cnt_lower = 0x%x\n", gt->cnt_lower);
+//
+//    printk("    ic_cpu->iccicr = 0x%x\n", ic_cpu->iccicr);
+//    printk("    ic_cpu->iccpmr = 0x%x\n", ic_cpu->iccpmr);
+//    printk("    ic_cpu->iccrpr = 0x%x\n", ic_cpu->iccrpr);
+//    printk("    ic_cpu->icchpir = 0x%x\n", ic_cpu->icchpir);
+//    printk("    ic_dist->icddcr = 0x%x\n", ic_dist->icddcr);
+//    printk("    ic_dist->icdisr[0] = 0x%x\n", ic_dist->icdisr[0]);
+//    printk("    ic_dist->icdisr[1] = 0x%x\n", ic_dist->icdisr[1]);
+//    printk("    ic_dist->icdisr[2] = 0x%x\n", ic_dist->icdisr[2]);
+//    printk("    ic_dist->icdiser[0] = 0x%x\n", ic_dist->icdiser[0]);
+//    printk("  * ic_dist->icdiser[1] = 0x%x\n", ic_dist->icdiser[1]);
+//    printk("    ic_dist->icdiser[2] = 0x%x\n", ic_dist->icdiser[2]);
+//    printk("    ic_dist->icdispr[0] = 0x%x\n", ic_dist->icdispr[0]);
+//    printk("  * ic_dist->icdispr[1] = 0x%x\n", ic_dist->icdispr[1]);
+//    printk("    ic_dist->icdispr[2] = 0x%x\n", ic_dist->icdispr[2]);
+//    printk("    ic_dist->icdabr[0] = 0x%x\n", ic_dist->icdabr[0]);
+//    printk("    ic_dist->icdabr[1] = 0x%x\n", ic_dist->icdabr[1]);
+//    printk("    ic_dist->icdabr[2] = 0x%x\n\n", ic_dist->icdabr[2]);
+//#endif
+
     arm_data_synchronization_barrier(15);
     while(true) {
         __asm__ volatile ("wfi" ::: "memory");

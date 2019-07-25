@@ -73,24 +73,25 @@ air_u64_t arm_read_global_timer(void) {
     air_u64_t result = (air_u64_t) upper_2 << 32 | lower;
 
 #ifdef PMK_DEBUG
-    printk("\n    :: gt->cnt = 0x%x\n", result);
+    printk("\n    :: gt->cnt = 0x%x\n", upper_2);
+    printk("\n    :: gt->cnt = 0x%x\n", lower);
 #endif
     return result;
 }
 
-//void arm_setup_interprocessor_irq(air_u32_t cpu_id) {
-//
-//  if (cpu_id == 0) {
-//      arm_isr_install_handler(ARM_A9MPCORE_IRQ_GT, pmk_partition_scheduler);
-//      arm_isr_install_handler(BSP_IPC_IRQ, pmk_partition_scheduler);
-//      arm_isr_install_handler(BSP_IPC_PCS, pmk_ipc_handler);
-//  }
-//
-//  arm_int_set_priority(ARM_A9MPCORE_IRQ_GT, 0);
-//  arm_int_set_priority(BSP_IPC_IRQ, 0);
-//  arm_int_set_priority(BSP_IPC_PCS, 0);
-//
-//  arm_int_enable(ARM_A9MPCORE_IRQ_GT);
-//  arm_int_enable(BSP_IPC_IRQ);
-//  arm_int_enable(BSP_IPC_PCS);
-//}
+void arm_setup_interprocessor_irq(air_u32_t cpu_id) {
+
+    if (cpu_id == 0) {
+        arm_isr_install_handler(ARM_A9MPCORE_IRQ_GT, pmk_partition_scheduler);
+        arm_isr_install_handler(BSP_IPC_IRQ, pmk_partition_scheduler);
+        arm_isr_install_handler(BSP_IPC_PCS, pmk_ipc_handler);
+    }
+
+    arm_int_set_priority(ARM_A9MPCORE_IRQ_GT, 0);
+    arm_int_set_priority(BSP_IPC_IRQ, 0);
+    arm_int_set_priority(BSP_IPC_PCS, 0);
+
+    arm_int_enable(ARM_A9MPCORE_IRQ_GT);
+    arm_int_enable(BSP_IPC_IRQ);
+    arm_int_enable(BSP_IPC_PCS);
+}
