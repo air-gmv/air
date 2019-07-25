@@ -50,7 +50,7 @@ void pmk_partitions_init(void) {
         partition->start_condition = AIR_START_CONDITION_NORMAL;
 
         /* initialize the partition reset count */
-        partition->restart_count = ~0;
+        partition->restart_count = 0;
 
         /* initialize PMK internal partition state*/
         partition->state = PMK_PARTITION_STATE_NOT_RUN;
@@ -96,9 +96,6 @@ void pmk_partition_start(pmk_partition_t *partition, core_context_t *context) {
    /* reset elapsed ticks and last tick */
    partition->elapsed_ticks = 0;
    partition->last_clock_tick = 0;
-
-   /* increment the number of restarts */
-   ++partition->restart_count;
 
    /* reset entry point */
    core_context_set_entry_point(context, NULL);
@@ -155,12 +152,75 @@ void pmk_partition_halt(pmk_partition_t *partition) {
  */
 void pmk_partition_restart(pmk_partition_t *partition) {
 
-    /* halt the partition */
-    pmk_partition_halt(partition);
+    air_u32_t i;
+    air_u32_t vcpus = 0x00000000;
+
+    partition->state = PMK_PARTITION_STATE_RESTARTING;
+
+    /*Identify all running vcpu*/
+    for (i = 0; i < partition->cores; ++i)
+        if (partition->core_mapping[i] < PMK_MAX_CORES)
+            vcpus |= 1 << i;
+
+    if(!vcpus)
+    {   /*No vcpu running. Assign vcpu 0 for partition reload*/
+        core_context_setup_reload_partition(&partition->context[0], partition);
+        for (i = 1; i < partition->cores; ++i)
+            core_context_setup_idle(&partition->context[i]);
+    }
+    else
+    {   /*Theres vcpu running. Assign the first we find to go partition reload right away*/
+        for(i = 0; i < partition->cores; i++){
+            if(vcpus & (1 << i))
+            {
+                if (partition->core_mapping[i] != bsp_get_core_id())
+                {
+                    if(1 << i  & (vcpus & (-vcpus)))
+                        core_context_set_ipc_message(&partition->context[i],
+                            PMK_IPC_PARTITION_RESTART);
+                    else
+                        core_context_set_ipc_message(&partition->context[i],
+                            PMK_IPC_TRASH_PARTITION_CORE);
+
+                    bsp_interrupt_core(partition->core_mapping[i], BSP_IPC_IRQ);
+                }
+                else
+                {
+                    if(1 << i  & (vcpus & (-vcpus)))
+                        core_context_setup_reload_partition(&partition->context[i], partition);
+                    else
+                        core_context_setup_idle(&partition->context[i]);
+                }
+            }
+            else
+                core_context_setup_idle(&partition->context[i]);
+        }
+    }
+    return;
+}
+
+/**
+ * @brief Reload ELF into partition's memory
+ * @param partition partition control structure
+ */
+void pmk_partition_reload(pmk_partition_t *partition) {
+
+    cpu_preemption_flags_t flags = (0x0F << 8);
+
+    /* reload partition */
+    pmk_partition_load(partition->elf, cpu_get_physical_addr(partition->mmu_ctrl, partition->mmap->v_addr), partition->mmap->v_addr);
+
+    cpu_disable_preemption(flags);
+
+    /* increment the number of restarts */
+    ++partition->restart_count;
 
     /* flag it to initialize on the next scheduling point */
     partition->state = PMK_PARTITION_STATE_INIT;
-    return;
+
+    cpu_enable_preemption(flags);
+
+    bsp_idle_loop();
 }
 
 /**
@@ -182,6 +242,11 @@ pmk_partition_t *pmk_get_partition_by_id(air_identifier_t pid) {
     return found;
 }
 
+/**
+ * @brief Get partition configuration by name
+ * @param name partition name
+ * @return partition configuration pointer if name is valid, NULL otherwise
+ */
 pmk_partition_t *pmk_get_partition_by_name(air_name_ptr_t name) {
 
     air_u32_t i;

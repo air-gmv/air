@@ -56,11 +56,11 @@ void pmk_init(void) {
     printk(
 "\033[0m"
 "-------------------------------------------------------------------------------\n" \
-" ** AIR OS v5.1.0 \n" \
+" ** AIR OS v5.3.0 \n" \
 "-------------------------------------------------------------------------------\n");
 
-	/* USR configuration initialization */
-	pmk_configurations_int();
+    /* USR configuration initialization */
+    pmk_configurations_int();
 
     /* Workspace initialization */
     pmk_workspace_init();
@@ -71,8 +71,8 @@ void pmk_init(void) {
     /* initialize other cores */
     pmk_multicore_init();
 
-	/* Initialize user health monitor tables */
-	pmk_hm_init();
+    /* Initialize user health monitor tables */
+    pmk_hm_init();
 
     /* Partition initialization */
     pmk_partitions_init();
@@ -82,7 +82,7 @@ void pmk_init(void) {
 
     /* communication channels initialization */
     pmk_channels_init();
-	
+
     /* Initialize Time of Day */
     pmk_tod_initialization();
 
@@ -91,10 +91,10 @@ void pmk_init(void) {
 
     printk("    :: Initialization complete!\n");
 
-	/* enable preemption */
+    /* enable preemption */
     bsp_core_ready();
 
-	/* Idle loop */
-	bsp_idle_loop();
-	return;
+    /* Idle loop */
+    bsp_idle_loop();
+    return;
 }

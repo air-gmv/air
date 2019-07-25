@@ -47,10 +47,8 @@
 extern "C" {
 #endif
 
-#include <rtems.h>
-#include <stdint.h>
 #include <iop.h>
-#include <IOPmilstd_config.h>
+#include <gr1553_support.h>
 
 /*grb_user_config_t operating modes*/
 #define GR1553B_MODE_BC 0x0		/**< Bus Controler Mode*/
@@ -144,6 +142,14 @@ typedef struct {
 typedef uint32_t milstd_data_buf[16];
 
 /**
+ * @brief Store matching physical/virtual addresses used in the GR1553BC
+ */
+typedef struct  {
+	uint32_t v_addr;
+	uint32_t p_addr;
+} gr1553hwaddr;
+
+/**
  * @brief Internal BC driver structure
  */
 typedef struct {
@@ -156,15 +162,22 @@ typedef struct {
 	void *mem_start;				/**< pointer to device's memory */
 	
 	/* bc specific */
-	bc_command_t *cl;					/**< pointer to user's list */
-	unsigned int cl_size;				/**< user command list size */
+	bc_command_t *cl;				/**< pointer to user's list */
+	unsigned int cl_size;			/**< user command list size */
+	unsigned int a_cl_size;			/**< user async command list size */
+
 	struct gr1553bc_bd_tr *sync; 		/**< current bc command list */
 	struct gr1553bc_bd_tr *last_read; 	/**< current bc command list */
 	struct gr1553bc_bd_tr *async; 		/**< current bc asynchronous command list */
 	milstd_data_buf *buf_mem_start;		/**< pointer to device's buffer memory */
 	milstd_data_buf *async_buf_mem_start; /**< pointer to device's asynchronous buffer memory */
-	iop_chain_control shortcut[32];			/**< Used as a shortcut to map write requests to their respective command */
-	
+	iop_chain_control shortcut[32];		/**< Used as a shortcut to map write requests to their respective command */
+	void *shortcut_cmd;					/**< pointer to write_cmd_shortcut_t allocated memory */
+	unsigned int shortcut_offset;		/**< index to where to put new shortcut */
+
+	gr1553hwaddr *hwlist;				/**< physical to virtual adresses struct */
+	unsigned int data_buffer_size;		/**< number of data commands */
+
 	/* rt specific */
 	struct gr1553rt_sa* sa_table;		/**< Subaddress table used for RT mode */
 	struct gr1553rt_bd* bds_start;		/**< Start Address for buffer descriptors */
@@ -175,14 +188,6 @@ typedef struct {
 	struct gr1553b_regs *regs;			/**< Core register mapping */
 
 } grb_priv;
-
-/**
- * @brief Store matching physical/virtual addresses used in the GR1553BC
- */
-typedef struct  {
-	uint32_t v_addr;
-	uint32_t p_addr;
-} gr1553hwaddr;
 
 /* Available Modes */
 #define FEAT_BC 0x1
@@ -450,19 +455,15 @@ typedef struct  {
 #define GR1553BC_READ_REG(adr) (*(volatile uint32_t *)(adr))
 
 
-/* General */
+uint32_t gr1553b_initialize(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver gr1553b_initialize(rtems_device_major_number major,
-								   rtems_device_minor_number minor,
-								   void *arg);
-								   
-rtems_device_driver gr1553b_open(rtems_device_major_number major,
-						     rtems_device_minor_number minor,
-						     void *arg);
+uint32_t gr1553b_open(iop_device_driver_t *iop_dev, void *arg);
 
-rtems_device_driver gr1553b_close(rtems_device_major_number major,
-						     rtems_device_minor_number minor,
-						     void *arg);
+uint32_t gr1553b_close(iop_device_driver_t *iop_dev, void *arg);
+
+uint32_t gr1553bc_write(iop_device_driver_t *iop_dev, void *arg);
+
+uint32_t gr1553bc_read(iop_device_driver_t *iop_dev, void *arg);
 
 #ifdef __cplusplus
 }

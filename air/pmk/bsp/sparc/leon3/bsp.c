@@ -7,21 +7,10 @@
  *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
  * ==========================================================================*/
 
-#include <pmk.h>
 #include <bsp.h>
-#include <amba.h>
-#include <clock.h>
 #include <irqmp.h>
 #include <l2cache.h>
-#include <console.h>
 #include <segregation.h>
-
-/**
- * @brief AMBA Plug & Play configuration area
- * @ingroup bsp_leon_amba
- */
-amba_confarea_t amba_confarea;
-
 
 extern void leon_restart_core();
 extern void leon_shutdown_core();
@@ -88,7 +77,8 @@ void bsp_core_ready(void) {
         /* initialize & configure L2 cache */
         if (l2cache_init() == 0) {
             l2cache_set_replacement_policy(MASTER_INDEX_0);
-            l2cache_set_write_policy(WRITE_THROUGH);
+//            l2cache_set_write_policy(WRITE_THROUGH);
+            l2cache_set_write_policy(COPY_BACK);
             l2cache_set_bus_usage_mode(WRAPPING_MODE);
             l2cache_hit_rate_mode(WRAPPING_MODE);
             l2cache_enable_core();

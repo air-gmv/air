@@ -16,11 +16,9 @@
 #ifndef apx_a653_decl
 #define apx_a653_decl
 
+#include <air.h>
 
 #define MAX_NUMBER_OF_PARTITIONS SYSTEM_LIMIT_NUMBER_OF_PARTITIONS
-
-#define ERROR_HANDLER_PRIO MAX_PRIORITY_VALUE
-#define PARTITION_ERROR_HANDLER_PRIO 6
 
 #define SYSTEM_LIMIT_NUMBER_OF_PARTITIONS 32         /* module scope       */
 #define SYSTEM_LIMIT_NUMBER_OF_MESSAGES 512          /* module scope       */
@@ -82,10 +80,10 @@ typedef enum {
 
 typedef enum {
 
-	IDLE                    = AIR_MODE_IDLE,
-	COLD_START              = AIR_MODE_COLD_START,
-	WARM_START              = AIR_MODE_WARM_START,
-	NORMAL                  = AIR_MODE_NORMAL
+	IDLE              = AIR_MODE_IDLE,
+	COLD_START        = AIR_MODE_COLD_START,
+	WARM_START        = AIR_MODE_WARM_START,
+	NORMAL            = AIR_MODE_NORMAL
 
 } OPERATING_MODE_TYPE;
 
@@ -129,8 +127,8 @@ typedef NAME_TYPE SAMPLING_PORT_NAME_TYPE;
 typedef APEX_INTEGER SAMPLING_PORT_ID_TYPE;
 
 typedef enum {
-    INVALID         = AIR_MESSAGE_INVALID,
-    VALID           = AIR_MESSAGE_VALID
+    INVALID    = AIR_MESSAGE_INVALID,
+    VALID      = AIR_MESSAGE_VALID
 } VALIDITY_TYPE;
 
 typedef struct {
@@ -258,13 +256,6 @@ extern void RAISE_APPLICATION_ERROR (
 	/*in */ MESSAGE_ADDR_TYPE 		MESSAGE_ADDR,
 	/*in */ ERROR_MESSAGE_SIZE_TYPE LENGTH,
 	/*out*/ RETURN_CODE_TYPE  		*RETURN_CODE );
-
-
-typedef enum{
-    partition_init = 4,
-	partition_error_handler = 6,
-	process_execution = 7
-}system_state_type;
 
 
 /* MMS types and definitions ------------------------------- */

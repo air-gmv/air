@@ -13,8 +13,9 @@
 #include <iop_mms.h>
 #include <iop_support.h>
 
-void can_writer(iop_physical_device_t *pdev)
+void can_writer(air_uptr_t arg)
 {
+	iop_physical_device_t *pdev = (iop_physical_device_t *) arg;
 
 	/* Initialize error chain (packets to be re-sent) */
 	iop_chain_control error;
@@ -30,7 +31,7 @@ void can_writer(iop_physical_device_t *pdev)
 
 		/* Write to the device */
 		if(can_driver->dev.write((iop_device_driver_t *) can_driver,
-				wrapper) == RTEMS_SUCCESSFUL){
+				wrapper) == AIR_SUCCESSFUL){
 			release_wrapper(wrapper);
 		} else {
 			iop_chain_append(&error, &wrapper->node);
@@ -44,8 +45,10 @@ void can_writer(iop_physical_device_t *pdev)
 	}
 }
 
-void can_reader(iop_physical_device_t *pdev)
+void can_reader(air_uptr_t arg)
 {
+	iop_physical_device_t *pdev = (iop_physical_device_t *) arg;
+
 	/* Initialize error control chain (packets to be resent) */
 	iop_chain_control error;
 	iop_chain_initialize_empty(&error);
@@ -66,7 +69,7 @@ void can_reader(iop_physical_device_t *pdev)
 		}
 
 		if(driver->dev.read((iop_device_driver_t *) driver,
-				wrapper) == RTEMS_SUCCESSFUL){
+				wrapper) == AIR_SUCCESSFUL){
 			/* We received something lets make it
 			 * available to higher level */
 			iop_debug("can_reader: message received");

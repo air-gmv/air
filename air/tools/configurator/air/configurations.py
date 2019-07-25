@@ -283,8 +283,10 @@ class Configuration(object):
     def get_library_private_headers(self, lib_name):
         if lib_name == 'libair':
             return self.get_kernel_headers()
-        lib_air = self.get_libair_headers()
         dependencies = self.get_library_list_of_dependencies(lib_name)
+        if lib_name == 'libiop':
+            return set(utils.flatten([[self.supported_libraries[n].header_files for n in dependencies], self.get_kernel_headers()]))
+        lib_air = self.get_libair_headers()
         return set(utils.flatten([[self.supported_libraries[n].header_files for n in dependencies], lib_air]))
 
     ##

@@ -265,3 +265,11 @@ SYM(air_syscall_putchar):
     ta      AIR_SYSCALL_OS_TRAP - 0x80
     retl
     nop; nop
+
+    GLOBAL(air_syscall_get_ambaconf)
+SYM(air_syscall_get_ambaconf):
+
+    set     AIR_SYSCALL_GET_AMBACONF, %o5
+    ta      AIR_SYSCALL_OS_TRAP - 0x80
+    retl
+    nop; nop

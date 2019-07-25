@@ -70,7 +70,7 @@ void l2cache_set_replacement_policy(l2cache_reppol_e repol) {
     }
 
     /* change the replacement policy */
-    l2cache_ctrl.regs->ctrl = (l2cache_ctrl.regs->ctrl & ~(0x07 << 28)) | (repol << 28);
+    l2cache_ctrl.regs->ctrl = (l2cache_ctrl.regs->ctrl & ~(0x03 << 28)) | (repol << 28);
     return;
 }
 

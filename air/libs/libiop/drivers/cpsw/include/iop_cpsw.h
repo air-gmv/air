@@ -145,10 +145,10 @@ typedef struct {
 } cpsw_device_t;
 
 
-rtems_status_code cpsw_initialize(iop_device_driver_t *iop_dev, void *arg);
-rtems_status_code cpsw_open(iop_device_driver_t *iop_dev, void *arg);
-rtems_status_code cpsw_close(iop_device_driver_t *iop_dev, void *arg);
-rtems_status_code cpsw_read(iop_device_driver_t *iop_dev, void *arg);
-rtems_status_code cpsw_write(iop_device_driver_t *iop_dev, void *arg);
+air_status_code_e cpsw_initialize(iop_device_driver_t *iop_dev, void *arg);
+air_status_code_e cpsw_open(iop_device_driver_t *iop_dev, void *arg);
+air_status_code_e cpsw_close(iop_device_driver_t *iop_dev, void *arg);
+air_status_code_e cpsw_read(iop_device_driver_t *iop_dev, void *arg);
+air_status_code_e cpsw_write(iop_device_driver_t *iop_dev, void *arg);
 
 #endif  /* __IOP_CPSW_H__ */

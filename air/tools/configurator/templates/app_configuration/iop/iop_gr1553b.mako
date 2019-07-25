@@ -1,12 +1,11 @@
 <%
     # device functions
     device_functions = dict(
-		reader_task='gr1553{0}_read_task'.format(device.setup.mode.lower()),
-		writer_task='gr1553{0}_write_task'.format(device.setup.mode.lower()),
-		
-		header_prebuild='NULL',
-		header_compare='gr1553_compare_header',
-		header_copy='gr1553_copy_header')
+        reader_task='gr1553_read_task',
+        writer_task='gr1553_write_task',
+        header_prebuild='NULL',
+        header_compare='gr1553_compare_header',
+        header_copy='gr1553_copy_header')
 
     # Init and calculate dummy command(s) to obtain the desired MajorFrame period
     if device.setup.mode == "BC":
@@ -24,7 +23,7 @@
         else:
             init_nb_cmd = len(device.setup.millist[0].slot) + 1
 
-        init_nb_cmd_async = device.setup.lroutes
+        init_nb_cmd_async = device.setup.lroutes + 1
         init_data_buf = len(device.setup.millist[0].slot)
         if (device.setup.lroutes > len(device.setup.millist[0].slot)):
             init_data_buf = device.setup.lroutes;
@@ -44,82 +43,55 @@
  */
  
 #include <iop.h>
-#include <stdint.h>
 #include <IOPgr1553b.h>
-#include <IOPmilstd_config.h>
-#include <IOPdriverconfig_interface.h>
+#include <IOPgr1553${device.setup.mode.lower()}.h>
 #include <gr1553_support.h>
- 
-${MILDefs(device)}\
 
 ${MILAlloc(device)}\
 
 ${iop_template.RemotePortList(iop_configuration)}\
 
 /** @brief GR1553B driver configuration */
-static iop_device_driver_t device_configuration = ${'\\'}
+static iop_1553_device_t device_configuration = ${'\\'}
 {
     /* device configuration */
-        .driver         = NULL,
+    .dev        = {
+
+        .driver         = (void *)&mildriver,
         .init           = gr1553b_initialize,
         .open           = gr1553b_open,
-        .read           = NULL,
-        .write          = NULL,
+        .read           = gr1553${device.setup.mode.lower()}_read,
+        .write          = gr1553${device.setup.mode.lower()}_write,
         .close          = gr1553b_close,
+    }
 };
 
 ${iop_template.PhysicalDevice(iop_configuration, device, device_functions)}\
-
-
-${MILFuncs(device)}\
 <% return %>
 
-
-<%def name="MILDefs(pdevice)">\
-#define GR1553B_DEVICES 1
+<%def name="MILAlloc(pdevice)">\
 
 #define COMMAND_LIST_SIZE ${init_nb_cmd}
 #define ASYNCHRONOUS_COMMAND_LIST_SIZE ${init_nb_cmd_async}
 #define DATA_BUFFERS ${init_data_buf}
 
-/**
- * The memory is structured as follows:
- * COMMAND_LIST | DATA_BUFFERS | ASYNCHRONOUS_COMMAND_LIST | DATA_BUFFERS
- */
-#define BC_MEMORY_SIZE ((COMMAND_LIST_SIZE*4) + 2*(DATA_BUFFERS*16) + (ASYNCHRONOUS_COMMAND_LIST_SIZE*4))
-
-/**
- * SA_TABLE_SIZE*2 + WORDS_PER_DESC(20)*DESC_PER_SUBADRESSES(12)*ENABLED_SUBADDRESSES(32)*2(RX and TX)
- */
-#define RT_MEMORY_SIZE (256+(16+3+1)*32*12*2)
-</%def>
-
-
-<%def name="MILAlloc(pdevice)">\
-/**
- * @brief Device Internal Struture
- */
-static grb_priv bdevs[GR1553B_DEVICES];
-
-/**
- * @brief MIL-STD-1553 user configurations
- */
-static grb_user_config_t userconf[GR1553B_DEVICES] = ${'\\'}
-{
-${MILConfigStruct(pdevice)}
-};
-
 % if pdevice.setup.mode == 'BC':
 /**
- * @brief Device Internal Memory. This memory will be 16 bytes aligned (+4)
+ * The memory is structured as follows:
+ * COMMAND_LIST | DATA_BUFFERS | ASYNCHRONOUS_COMMAND_LIST | DATA_BUFFERS | 16 BYTE ALIGNMENT
  */
-static uint32_t gr1553bmem[BC_MEMORY_SIZE+4];
+#define GR1553_MEMORY_SIZE ((COMMAND_LIST_SIZE*4) + 2*(DATA_BUFFERS*16) + (ASYNCHRONOUS_COMMAND_LIST_SIZE*4) + 4)
 
 /**
  * @brief List of matching physical/virtual addresses used in the GR1553BC 
  * Need one for the async and sync register and one for each in Command List
  */
 static gr1553hwaddr gr1553hwlist[COMMAND_LIST_SIZE + 2];
+
+/**
+ * @brief Memory of shortcuts chain of write commands on the list
+ */
+static write_cmd_shortcut_t shortcut_mem[${device.setup.lroutes}];
 
 /**
  * @brief BC Transfer List
@@ -141,95 +113,58 @@ ${MILBCListStruct_management('LOOP', 0)}
 };
 % else:
 /**
- * @brief Device Internal Memory
+ * SA_TABLE_SIZE*2 + WORDS_PER_DESC(20)*DESC_PER_SUBADRESSES(12)*ENABLED_SUBADDRESSES(32)*2(RX and TX) + 16 BYTE ALIGNMENT
  */
-static uint32_t gr1553bmem[RT_MEMORY_SIZE];
+#define GR1553_MEMORY_SIZE (256+(16+3+1)*32*12*2+4)
 
 /**
  * @brief BC related
  */
-static gr1553hwaddr *gr1553hwlist = NULL;
-static bc_command_t *command_list = NULL;
+#define gr1553hwlist (void*)NULL
+#define command_list (void*)NULL
+#define shortcut_mem (void*)NULL
 % endif
-</%def>
 
-
-
-
-<%def name="MILFuncs(pdevice)">\
 /**
- * @brief Driver Interface Functions
+ * @brief Device Internal Memory
  */
-bc_command_t *iop_milstd_get_command_list(){
-    return &command_list[0];
-}
+static uint32_t gr1553bmem[GR1553_MEMORY_SIZE];
 
-int iop_milstd_get_command_list_size(){
-    return COMMAND_LIST_SIZE;
-}
+/**
+ * @brief MIL-STD-1553 user configurations
+ */
+static grb_user_config_t userconf = ${'\\'}
+{
+    .operating_mode = GR1553B_MODE_${pdevice.setup.mode},
+    .msg_timeout = 0,
+    .retry_mode = 1,
+    .rtaddress = 10,
+    .modecode = 0x55555555,  	/* legalize ALL mode codes */
+    .enabled_subs = 0xFFFFFFFF, /* legalize ALL subaddresses*/
+    .databufs_per_sub = 12,
+    .time_res = 10
+};
 
-int iop_milstd_get_async_command_list_size(){
-    return ASYNCHRONOUS_COMMAND_LIST_SIZE;
-}
-
-int iop_milstd_get_data_buffers_size(){
-    return DATA_BUFFERS;
-}
-
-gr1553hwaddr *iop_get_gr1553hwlist(){
-    return &gr1553hwlist[0];
-}
-
-void *iop_get_grb_mem(void){
-    return (void *)&gr1553bmem[0];
-}
-
-grb_user_config_t *iop_grb_get_user_config(unsigned int minor){
-
-    /* Return value */
-    grb_user_config_t *rc;
-
-    /* Verify if the requested minor is available */
-    if(minor > GR1553B_DEVICES){
-
-        /* There is no such device */
-        rc = NULL;
-	
-    } else{
-
-        /* return user config */
-        rc = &userconf[minor];
-    }
-
-    return rc;
-}
-
-grb_priv *iop_grb_get_priv_mem(void){
-    return &bdevs[0];
-}
-
-int iop_get_number_grb_cores(void){
-    return GR1553B_DEVICES;
-}
-</%def>
-
-
-<%def name="MILConfigStruct(pdevice)">\
-    {
-        .operating_mode = GR1553B_MODE_${pdevice.setup.mode},
-        .msg_timeout = 0,
-        .retry_mode = 1,
-        .rtaddress = 10,
-        .modecode = 0x55555555,  	/* legalize ALL mode codes */
-        .enabled_subs = 0xFFFFFFFF, /* legalize ALL subaddresses*/
-        .databufs_per_sub = 12,
-        .time_res = 10
-    }\
+/**
+ * @brief Device Internal Struture
+ */
+static grb_priv mildriver = \
+{
+    .mem_start      = gr1553bmem,
+    .minor          = ${pdevice.setup.id},
+    .user_config    = &userconf,
+    .shortcut_cmd   = (void *)shortcut_mem,
+    .cl             = command_list,
+    .cl_size        = COMMAND_LIST_SIZE,
+    .a_cl_size      = ASYNCHRONOUS_COMMAND_LIST_SIZE,
+    .hwlist         = gr1553hwlist,
+    .data_buffer_size = DATA_BUFFERS
+};
 </%def>
 
 
 <%def name="MILBCListStruct(cmd)">\
-	{
+    {
         .ccw = CCW_${cmd.type}_${cmd.bus} | ${int(cmd.wcmode)},
         .rtaddr[0] = ${int(cmd.addr)},
         .rtaddr[1] = ${int(cmd.addrtx)},
@@ -237,12 +172,12 @@ int iop_get_number_grb_cores(void){
         .subaddr[1] = ${int(cmd.subaddrtx)},
         .branch_offset = 0,
         .time_slot = ${int(cmd.time)}
-	}\
+    }\
 </%def>
 
 
 <%def name="MILBCListStruct_management(mode, time)">\
-	{
+    {
         .ccw = CCW_${mode},
         .rtaddr[0] = 0,
         .rtaddr[1] = 0,
@@ -250,5 +185,5 @@ int iop_get_number_grb_cores(void){
         .subaddr[1] = 0,
         .branch_offset = 0,
         .time_slot = ${time}
-	}\
+    }\
 </%def>

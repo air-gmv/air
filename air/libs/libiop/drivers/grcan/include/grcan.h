@@ -19,9 +19,6 @@
  * Modified by gmvs @ GMV 2018
  * gmvs@gmv.com
  */
-
-#include <ambapp.h>
-
 #include <air.h>
 #include <iop.h>
 #include <can_support.h>
@@ -214,13 +211,9 @@ struct grcan_config {
 };
 
 typedef struct grcan_priv_ {
-	//~ struct drvmgr_dev *dev;	/* Driver manager devi_busce */
-	//~ char devName[32];	/* Device Name */
-	unsigned int baseaddr, ram_base;
 	struct grcan_regs *regs;
 	int irq;
 	int minor;
-	int open;
 	int started;
 	unsigned int channel;
 	int flushing;
@@ -245,27 +238,13 @@ typedef struct grcan_priv_ {
 	struct grcan_config config;
 	struct grcan_stats stats;
 
-	rtems_id rx_sem, tx_sem, txempty_sem, dev_sem;
-
-	/* AIR Memory */
-	iop_buffer_t *iop_buffers;
-	uint8_t *iop_buffers_storage;
-	iop_buffer_t **tx_iop_buffer; /* mapping of TX descriptor and IOP buffers */
-	iop_buffer_t **rx_iop_buffer; /* mapping of RX descriptor and IOP buffers */
-
 } grcan_priv;
 
-
-
-/*
- * Return number of GRCAN devices available to driver
- */
-int grcan_dev_count(void);
 
 /*
  * Initialize GRCAN
  * */
-iop_device_operation iop_grcan_initialize(
+uint32_t iop_grcan_initialize(
 		iop_device_driver_t *iop_dev,
 		void *arg);
 
@@ -277,26 +256,16 @@ iop_device_operation iop_grcan_initialize(
  * return:	Device handle to use with all other grcan_ API functions. The
  *		function returns NULL if device can not be opened.
  */
-iop_device_operation iop_grcan_open(iop_device_driver_t *iop_dev,
+uint32_t iop_grcan_open(iop_device_driver_t *iop_dev,
 		void *arg);
-
-/*
- * Open a GRCAN device by name. Finds device index then calls
- * grcan_open(index).
- *
- * name:	Device name to open
- * dev_no:	Device number matching name. Will be set if device found.
- * return:	Device handle to use with all other grcan_ API functions. The
- *		function returns NULL if device can not be opened or not found.
- */
-//void *grcan_open_by_name(char *name, int *dev_no);
 
 /*
  * Close a GRCAN device
  *
  * return: This function always returns 0 (success)
  */
-iop_device_operation iop_grcan_close(iop_device_driver_t *iop_dev);
+uint32_t iop_grcan_close(iop_device_driver_t *iop_dev,
+        void *args);
 
 /*
  * Receive CAN messages
@@ -304,20 +273,21 @@ iop_device_operation iop_grcan_close(iop_device_driver_t *iop_dev);
  * Multiple CAN messages can be received in one call.
  *
  * d: Device handle
- * msg: Pointer to receive messages
- * count: Number of CAN messages to receive
+ * arg: iop wrapper
  *
  * return:
  *   >=0:                       Number of CAN messages received. This can be
  *                              less than the count parameter.
- *   GRCAN_RET_INVARG:          count parameter less than one or NULL msg.
- *   GRCAN_RET_NOTSTARTED:      Device not in started mode
+ *   AIR_INVALID_PARAM:         Invalid argument
+ *   AIR_INVALID_SIZE           Invalid iop buffer
+ *   AIR_INVALID_MODE:          Device not in started mode
+ *   AIR_TIMED_OUT              Nothing read
  *   GRCAN_RET_TIMEOUT:         Timeout in non-blocking mode
  *   GRCAN_RET_BUSOFF:          A read was interrupted by a bus-off error.
  *                              Device has left started mode.
  *   GRCAN_RET_AHBERR:          Similar to BUSOFF, but was caused by AHB Error.
  */
-iop_device_operation iop_grcan_read(
+uint32_t iop_grcan_read(
 	iop_device_driver_t *iop_dev,
 	void *arg
 );
@@ -328,20 +298,21 @@ iop_device_operation iop_grcan_read(
  * Multiple CAN messages can be transmit in one call.
  *
  * d: Device handle
- * msg: Pointer to messages to transmit
- * count: Number of CAN messages to transmit
+ * arg: iop wrapper
  *
  * return:
  *   >=0:                       Number of CAN messages transmitted. This can be
  *                              less than the count parameter.
- *   GRCAN_RET_INVARG:          count parameter less than one.
- *   GRCAN_RET_NOTSTARTED:      Device not in started mode
+ *   AIR_INVALID_PARAM:         Invalid argument
+ *   AIR_INVALID_SIZE           Invalid iop buffer
+ *   AIR_INVALID_MODE:          Device not in started mode
+ *   AIR_TIMED_OUT              Nothing written
  *   GRCAN_RET_TIMEOUT:         Timeout in non-blocking mode
  *   GRCAN_RET_BUSOFF:          A write was interrupted by a Bus-off error.
  *                              Device has left started mode
  *   GRCAN_RET_AHBERR:          Similar to BUSOFF, but was caused by AHB Error.
  */
-iop_device_operation iop_grcan_write(
+uint32_t iop_grcan_write(
 	iop_device_driver_t *iop_dev,
 	void *arg
 );
@@ -370,12 +341,7 @@ int iop_grcan_get_state(iop_device_driver_t *iop_dev);
 //int grcan_start(iop_device_driver_t *iop_dev);
 /* stop to change baud rate/config or closing down */
 int iop_grcan_stop(iop_device_driver_t *iop_dev);
-/* Wait until all TX messages have been sent */
-int iop_grcan_flush(iop_device_driver_t *iop_dev);
 
-/*
- * gmvs */
-int iop_grcan_device_init(iop_device_driver_t *iop_dev);
 
 /* Functions that require connection
  * to be stopped
@@ -389,7 +355,7 @@ int iop_grcan_set_selection(iop_device_driver_t *iop_dev, const struct grcan_sel
 /* Set baudrate by using driver's baud rate timing calculation routines */
 int iop_grcan_set_speed(iop_device_driver_t *iop_dev, unsigned int hz);
 /* Set baudrate by specifying the timing registers manually */
-//int grcan_set_btrs(iop_device_driver_t *iop_dev, const struct grcan_timing *timing);
+int iop_grcan_set_btrs(iop_device_driver_t *iop_dev, const struct grcan_timing *timing);
 
 /* Functions can be called whenever */
 /* Enable/disable Blocking on reception (until at least one message has been received) */
@@ -410,8 +376,6 @@ int iop_grcan_set_afilter(iop_device_driver_t *iop_dev, const struct grcan_filte
  int iop_grcan_set_sfilter(iop_device_driver_t *iop_dev, const struct grcan_filter *filter);
 /* Get status register of GRCAN core */
 int iop_grcan_get_status(iop_device_driver_t *iop_dev, unsigned int *status);
-
-//void grcan_register_drv(void);
 
 #ifdef __cplusplus
 }

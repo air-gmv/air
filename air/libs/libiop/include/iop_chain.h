@@ -9,8 +9,6 @@
 
 #include <air.h>
 #include <stddef.h>
-#include <rtems/score/isrlevel.h>
-#include <rtems/score/address.h>
 
 typedef struct __chain_node  {
 
@@ -85,10 +83,10 @@ static inline void iop_chain_extract_unprotected(iop_chain_node *node) {
 
 static inline void iop_chain_extract(iop_chain_node *node) {
 
-    ISR_Level level;
-    _ISR_Local_disable(level);
+ //   ISR_Level level;
+ //   _ISR_Local_disable(level);
     iop_chain_extract_unprotected(node);
-    _ISR_Local_enable(level);
+ //   _ISR_Local_enable(level);
 }
 
 
@@ -117,10 +115,10 @@ static inline iop_chain_node *iop_chain_get_unprotected(iop_chain_control *chain
 
 static inline iop_chain_node *iop_chain_get(iop_chain_control *chain){
 
-    ISR_Level level;
-    _ISR_Local_disable(level);
+//    ISR_Level level;
+ //   _ISR_Local_disable(level);
     iop_chain_node *node = iop_chain_get_unprotected(chain);
-    _ISR_Local_enable(level);
+ //   _ISR_Local_enable(level);
     return node;
 }
 
@@ -152,13 +150,22 @@ static inline void iop_chain_prepend_unprotected(
    iop_chain_insert_unprotected(iop_chain_head(chain), node);
 }
 
+static inline void iop_chain_prepend (
+        iop_chain_control *chain, iop_chain_node *node) {
+  //  ISR_Level level;
+  //  _ISR_Local_disable(level);
+    iop_chain_prepend_unprotected(chain , node);
+ //   _ISR_Local_enable(level);
+
+}
+
 static inline void iop_chain_append(
         iop_chain_control *chain, iop_chain_node *node){
 
-    ISR_Level level;
-    _ISR_Local_disable(level);
+  //  ISR_Level level;
+ //   _ISR_Local_disable(level);
     iop_chain_append_unprotected(chain , node);
-    _ISR_Local_enable(level);
+ //   _ISR_Local_enable(level);
 }
 
 static inline void iop_chain_initialize(
@@ -169,16 +176,16 @@ static inline void iop_chain_initialize(
     size_t count;
 
     /* iterator node */
-    Chain_Node *current;
+    iop_chain_node *current;
 
     /* next node on the chain */
-    Chain_Node *next;
+    iop_chain_node *next;
 
     /* get the initial number of nodes */
     count = number_nodes;
 
     /* start at the chain head */
-    current = (Chain_Node *)iop_chain_head(chain);
+    current = (iop_chain_node *)iop_chain_head(chain);
 
     /* initialize the permanent null field of the chain */
     chain->permanent_null = NULL;
@@ -199,12 +206,11 @@ static inline void iop_chain_initialize(
         current = next;
 
         /* update the next node */
-        next = (Chain_Node *)
-        _Addresses_Add_offset((void *)next , node_size);
+        next = (iop_chain_node *)((air_u32_t)next + node_size);
     }
 
     /* the last node next is the tail of the chain */
-    current->next = (Chain_Node *)iop_chain_tail(chain);
+    current->next = (iop_chain_node *)iop_chain_tail(chain);
 
     /* set the last element of the chain */
     chain->last = current;
