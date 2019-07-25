@@ -6,19 +6,19 @@ __author__ = 'pfnf'
 
 import utils.parser as parserutils
 
-MODULE_EXTENSION_OLD				= "air_module_ext"
-MODULE_EXTENSION_TICKS_OLD			= "air_ticks_per_second"
-MODULE_EXTENSION_CORES_OLD			= "air_cores"
+MODULE_EXTENSION_OLD                = "air_module_ext"
+MODULE_EXTENSION_TICKS_OLD          = "air_ticks_per_second"
+MODULE_EXTENSION_CORES_OLD          = "air_cores"
 
-MODULE_EXTENSION				    = "AIR_Configuration"
-MODULE_EXTENSION_TICKS			    = "TicksPerSecond"
-MODULE_EXTENSION_CORES			    = "RequiredCores"
-MODULE_EXTENSION_MEMORY			    = "RequiredMemory"
+MODULE_EXTENSION                    = "AIR_Configuration"
+MODULE_EXTENSION_TICKS              = "TicksPerSecond"
+MODULE_EXTENSION_CORES              = "RequiredCores"
+MODULE_EXTENSION_MEMORY             = "RequiredMemory"
 MODULE_EXTENSION_TARGET             = "Target"
 
-PARTITION_EXTENSION					= "PartitionConfiguration"
+PARTITION_EXTENSION                 = "PartitionConfiguration"
 PARTITION_EXTENSION_CORES           = "Cores"
-PARTITION_EXTENSION_PERSONALITY		= "Personality"
+PARTITION_EXTENSION_PERSONALITY     = "Personality"
 PARTITION_EXTENSION_IOP             = "IOP"
 PARTITION_EXTENSION_LIBS            = "Libs"
 PARTITION_EXTENSION_DEVICES         = "Devices"
@@ -31,9 +31,9 @@ PARTITION_EXTENSION_MEMORY_SIZE     = "Size"
 PARTITION_EXTENSION_MEMORY_UNIT     = "Unit"
 PARTITION_EXTENSION_PERMISSIONS     = "Permissions"
 
-WINDOW_EXTENSION					= "WindowConfiguration"
-WINDOW_EXTENSION_ID					= "WindowIdentifier"
-WINDOW_EXTENSION_CORES				= "Cores"
+WINDOW_EXTENSION                    = "WindowConfiguration"
+WINDOW_EXTENSION_ID                 = "WindowIdentifier"
+WINDOW_EXTENSION_CORES              = "Cores"
 
 SHM_EXTENSION                       = "SharedMemory"
 SHM_EXTENSION_ID                    = "Id"
@@ -48,13 +48,7 @@ SHM_EXTENSION_STR                   = "Shared Memory Area (Id: {0}, Name: {1})"
 SHM_EXTENSION_PARTITION_STR         = "{0} Access Type : {1}"
 
 
-AIR_PERMISSION_FPU_CONTROL			= 'FPU_CONTROL'
-AIR_PERMISSION_CACHE_CONTROL		= 'CACHE_CONTROL'
-AIR_PERMISSION_GLOBAL_TIME			= 'GLOBAL_TIME'
-AIR_PERMISSION_SET_TOD				= 'SET_TOD'
-AIR_PERMISSION_MODULE_CONTROL       = 'MODULE_CONTROL'
-
-VALID_AIR_FILE      				= [ str, lambda x : len(x) > 0 ]
+VALID_AIR_FILE                      = [ str, lambda x : len(x) > 0 ]
 VALID_AIR_CACHE                     = [ parserutils.str2strList,
                                         lambda x: all(c.upper() in
                                                       [

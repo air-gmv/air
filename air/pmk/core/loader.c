@@ -14,6 +14,7 @@
 
 #include <pmk.h>
 #include <error.h>
+#include <atomic.h>
 #include <loader.h>
 
 /**
@@ -174,6 +175,11 @@ static int lzss_decompress(
 void pmk_partition_load(pmk_elf_t *elf, void *p_addr, void *v_addr) {
 
     int i;
+    static atomic_t loading;
+
+    /* wait until other processor finishes loading */
+    while (atomic_swap(1, &loading) == 1);
+
     for (i = 0; i < elf->count; ++i) {
 
         /* de-compress partition */
@@ -188,5 +194,8 @@ void pmk_partition_load(pmk_elf_t *elf, void *p_addr, void *v_addr) {
                     PMK_INTERNAL_ERROR_CONFIG, __func__, __FILE__, __LINE__);
         }
     }
+
+    /* release resources */
+    atomic_set(0, &loading);
     return;
 }

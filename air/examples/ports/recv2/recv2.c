@@ -12,16 +12,15 @@
 #include <rtems/rtems/tasks.h> 
 #include <rtems/rtems/sem.h> 
 #include <rtems/rtems/clock.h> 
- 
-#include <a653.h>
-#include <air.h>
+
+#include <imaspex.h>
 
 #ifdef RTEMS48I
 	#include <pprintf.h>
 #endif
 
 
-#define TPS 100 /*ticks per second specified in the XML*/
+#define TPS 200 /*ticks per second specified in the XML*/
 
 
 SAMPLING_PORT_ID_TYPE RECV_PORT2;
@@ -48,9 +47,9 @@ UPDATED : UPDATED_TYPE;
 end record;
 -----------------------------------------------------------*/
 
-void test(PARTITION_ID_TYPE self_id) {
+void test(uintptr_t self_id) {
 
-	char message[1024];
+	unsigned char message[1024];
 	RETURN_CODE_TYPE rc;
 	MESSAGE_SIZE_TYPE SIZE;
 	UPDATED_TYPE UPDATED;

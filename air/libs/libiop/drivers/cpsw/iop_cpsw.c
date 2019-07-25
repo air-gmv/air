@@ -443,7 +443,8 @@ static int32_t cpsw_autoneg_config(
             &adv_val, &gig_adv_val) == 1) {
 
         while (aut_neg_cnt) {
-            rtems_task_wake_after(50);
+            /*TODO add wait routine to substitute the following func*/
+//            rtems_task_wake_after(50);
             if (PhyAutoNegStatusGet(cpsw_config->mdio_base,
                                     cpsw_config->port[port -1].phy_addr) == 1) {
                 break;
@@ -727,48 +728,48 @@ static int16_t cpsw_receive(cpsw_device_t *cpswinst, iop_wrapper_t *wrapper) {
 }
 
 
-rtems_status_code cpsw_initialize(iop_device_driver_t *iop_dev, void *arg) {
+air_status_code_e cpsw_initialize(iop_device_driver_t *iop_dev, void *arg) {
 
     cpsw_device_init((iop_eth_device_t *)iop_dev);
-    return RTEMS_SUCCESSFUL;
+    return AIR_SUCCESSFUL;
 }
 
-rtems_status_code cpsw_open(iop_device_driver_t *iop_dev, void *arg) {
+air_status_code_e cpsw_open(iop_device_driver_t *iop_dev, void *arg) {
 
-    return RTEMS_SUCCESSFUL;
-}
-
-
-rtems_status_code cpsw_close(iop_device_driver_t *iop_dev, void *arg) {
-
-    return RTEMS_SUCCESSFUL;
+    return AIR_SUCCESSFUL;
 }
 
 
-rtems_status_code cpsw_read(iop_device_driver_t *iop_dev, void *arg) {
+air_status_code_e cpsw_close(iop_device_driver_t *iop_dev, void *arg) {
 
-    rtems_status_code rc = RTEMS_SUCCESSFUL;
+    return AIR_SUCCESSFUL;
+}
+
+
+air_status_code_e cpsw_read(iop_device_driver_t *iop_dev, void *arg) {
+
+    air_status_code_e rc = AIR_SUCCESSFUL;
     iop_wrapper_t *wrapper = (iop_wrapper_t *)arg;
     iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
     cpsw_device_t *cpswinst = (cpsw_device_t *)device->dev.driver;
 
     /* check if driver was initialized */
     if(!cpswinst->started) {
-        rc =  RTEMS_NOT_CONFIGURED;
+        rc =  AIR_DEVICE_NOT_FOUND;
     }
 
     /* sanity check */
     if (wrapper == NULL || wrapper->buffer == NULL){
-        rc =  RTEMS_INVALID_NAME;
+        rc =  AIR_INVALID_PARAM;
     }
 
     /* read packet */
-    if (rc == RTEMS_SUCCESSFUL && cpsw_receive(cpswinst, wrapper) == 0) {
-        rc = RTEMS_UNSATISFIED;
+    if (rc == AIR_SUCCESSFUL && cpsw_receive(cpswinst, wrapper) == 0) {
+        rc = AIR_NO_ACTION;
     }
 
     /* free RX descriptors */
-    if (rc != RTEMS_NOT_CONFIGURED) {
+    if (rc != AIR_DEVICE_NOT_FOUND) {
         cpsw_reclaim_rx_bd(device);
     }
 
@@ -776,31 +777,31 @@ rtems_status_code cpsw_read(iop_device_driver_t *iop_dev, void *arg) {
 }
 
 
-rtems_status_code cpsw_write(iop_device_driver_t *iop_dev, void *arg) {
+air_status_code_e cpsw_write(iop_device_driver_t *iop_dev, void *arg) {
 
-    rtems_status_code rc = RTEMS_SUCCESSFUL;
+    air_status_code_e rc = AIR_SUCCESSFUL;
     iop_wrapper_t *wrapper = (iop_wrapper_t *)arg;
     iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
     cpsw_device_t *cpswinst = (cpsw_device_t *)device->dev.driver;
 
     if(!cpswinst->started) {
-        rc = RTEMS_NOT_CONFIGURED;
+        rc = AIR_DEVICE_NOT_FOUND;
     }
 
     /* Verify user arguments consistency*/
     if (wrapper == NULL ||
         wrapper->buffer == NULL ||
         wrapper->buffer->payload_size == 0){
-        rc = RTEMS_INVALID_NAME;
+        rc = AIR_INVALID_PARAM;
     }
 
     /* send packet */
-    if (rc == RTEMS_SUCCESSFUL && cpsw_transmit(cpswinst, wrapper) == 0) {
-        rc = RTEMS_UNSATISFIED;
+    if (rc == AIR_SUCCESSFUL && cpsw_transmit(cpswinst, wrapper) == 0) {
+        rc = AIR_NO_ACTION;
     }
 
     /* free TX descriptors */
-    if (rc != RTEMS_NOT_CONFIGURED) {
+    if (rc != AIR_DEVICE_NOT_FOUND) {
         cpsw_reclaim_tx_bd(device);
     }
 

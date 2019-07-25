@@ -140,45 +140,51 @@ void pmk_apply_next_schedule(pmk_core_ctrl_t *core) {
         partition->events |= AIR_EVENT_SCHEDULE_CHANGE;
 
         /* apply schedule change action */
-        if (partition_schedule->action > PMK_SCHED_CHANGE_ACTION_IGNORE) {
+        if (partition_schedule->action > PMK_SCHED_CHANGE_ACTION_IGNORE)
+        {
+            /* Only apply action for previously started partition in NORMAL mode*/
+            if(AIR_MODE_NORMAL == partition->mode && partition->state == PMK_PARTITION_STATE_RUNNING)
+            {
+                /* clear contexts */
+                for (j = 0; j < partition->cores; ++j) {
 
-            /* clear contexts */
-            for (j = 0; j < partition->cores; ++j) {
+                    core_context_setup_idle(&partition->context[j]);
+                }
 
-                core_context_setup_idle(&partition->context[j]);
-            }
+                switch (partition_schedule->action) {
 
-            switch (partition_schedule->action) {
+                    /* change partition to IDLE */
+                    case PMK_SCHED_CHANGE_ACTION_IDLE:
+                        partition->start_condition = AIR_START_CONDITION_NORMAL;
+                        partition->state = PMK_PARTITION_STATE_HALTED;
+                        partition->mode = AIR_MODE_IDLE;
+                        break;
 
-                /* change partition to IDLE */
-                case PMK_SCHED_CHANGE_ACTION_IDLE:
-                    partition->start_condition = AIR_START_CONDITION_NORMAL;
-                    partition->state = PMK_PARTITION_STATE_HALTED;
-                    partition->mode = AIR_MODE_IDLE;
-                    break;
+                    /* change partition to cold start */
+                    case PMK_SCHED_CHANGE_ACTION_COLD_START:
+                        partition->start_condition = AIR_START_CONDITION_NORMAL;
+                        partition->state = PMK_PARTITION_STATE_RESTARTING;
+                        partition->mode = AIR_MODE_COLD_START;
+                        core_context_setup_reload_partition(&partition->context[0], partition);
+                        break;
 
-                /* change partition to cold start */
-                case PMK_SCHED_CHANGE_ACTION_COLD_START:
-                    partition->start_condition = AIR_START_CONDITION_NORMAL;
-                    partition->state = PMK_PARTITION_STATE_INIT;
-                    partition->mode = AIR_MODE_COLD_START;
-                    break;
+                    /* change partition to warm start */
+                    case PMK_SCHED_CHANGE_ACTION_WARM_START:
+                        partition->start_condition = AIR_START_CONDITION_NORMAL;
+                        partition->state = PMK_PARTITION_STATE_RESTARTING;
+                        partition->mode = AIR_MODE_WARM_START;
+                        core_context_setup_reload_partition(&partition->context[0], partition);
+                        break;
 
-                /* change partition to warm start */
-                case PMK_SCHED_CHANGE_ACTION_WARM_START:
-                    partition->start_condition = AIR_START_CONDITION_NORMAL;
-                    partition->state = PMK_PARTITION_STATE_INIT;
-                    partition->mode = AIR_MODE_WARM_START;
-                    break;
-
-                /* default case, no action */
-                default:
-                    break;
+                    /* default case, no action */
+                    default:
+                        break;
+                }
             }
         }
 
         /* apply schedule change permission */
-        if (1 == partition_schedule->set_schedule) {
+        if (1 == partition_schedule->set_schedule || AIR_PERMISSION_SUPERVISOR == partition->permissions) {
 
             partition_schedule->partition->permissions |=
                     AIR_PERMISSION_SET_SCHEDULE;

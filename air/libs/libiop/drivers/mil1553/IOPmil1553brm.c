@@ -40,22 +40,12 @@
  #define DMA_MEM_128K
 #endif
 
-#include <bsp.h>
-#include <rtems/io.h>
-#include <string.h>
-
-#include <amba.h>
-#include <ambapp.h>
-
-#include <ambaext.h>
-#include <pprintf.h>
-#include <iop_error.h>
-#include <IOPlibio.h>
 #include <iop.h>
+#include <bsp.h>
+#include <iop_error.h>
+#include <iop_support.h>
+#include <gr1553_support.h>
 #include <IOPmil1553brm.h>
-#include <IOPmilstd_config.h>
-#include <IOPdriverconfig_interface.h>
-
 
 /* Uncomment for debug output */
 /*#define DEBUG 1
@@ -94,18 +84,6 @@ static __inline__ unsigned short _BRM_REG_READ16(unsigned int addr) {
 	return tmp;
 }
 
-/** Number of BRM cores */
-static int brm_cores = 0;
-static unsigned int allbrm_memarea;
-
-/* Per device structure */
-static brm_priv *brms;
-
-/* Pointer to amba configuration */
-static struct ambapp_bus *amba_bus;
-
-/* Configuration for the MILSTD device*/
-milstd_config_t *config;
 static void check_errors(brm_priv *brm);
 
 void create_write_cmd_shortcut(iop_chain_control *rtaddress_chain, bc_command_t *ul, void *desc);
@@ -147,12 +125,10 @@ static void start_operation(brm_priv *brm) {
 /**
  * @brief Start BC list processing
  *
- * @param [in] minor number of the device
+ * @param [in] brm internal device structure
  */
-void brm_bc_start_list(unsigned int minor)
+void brm_bc_start_list(brm_priv *brm)
 {
-	brm_priv *brm = &brms[minor];
-	
 	unsigned int ctrl = READ_REG(&brm->regs->ctrl);
 	brm->regs->ctrl = ctrl | 0x8000;
 }
@@ -170,11 +146,10 @@ static void stop_operation(brm_priv *brm) {
 /**
  * @brief Stops BC list processing 
  *
- * @param [in] minor number of the device
+ * @param [in] brm internal device structure
  */
-void brm_bc_stop_list(unsigned int minor) 
+void brm_bc_stop_list(brm_priv *brm) 
 {
-	brm_priv *brm = &brms[minor];
 	unsigned int ctrl = READ_REG(&brm->regs->ctrl);
 	
 	brm->regs->ctrl = ctrl & ~0x8000;
@@ -362,13 +337,13 @@ static void clr_int_logs(struct irq_log_list *logs){
  *
  * @param [in] brm internal structure of the device to be initialized 
  */
-static rtems_device_driver rt_init(brm_priv *brm) {
+static air_status_code_e rt_init(brm_priv *brm) {
 	unsigned int i, base , buf_count, offset = 0;
 	unsigned short ctrl, oper;
 	
 	/*Configure blocking behavior*/
-	brm->rx_blocking = config->rx_blocking;
-	brm->tx_blocking = config->tx_blocking;
+	brm->rx_blocking = brm->config->rx_blocking;
+	brm->tx_blocking = brm->config->tx_blocking;
 	
 	/*Null memory pointer from other modes*/
 	brm->bcmem = NULL;
@@ -406,10 +381,10 @@ static rtems_device_driver rt_init(brm_priv *brm) {
 	brm->regs->ipoint	 = offset;
 	
 	/* BRM clocked with freq = 12,16,20 or 24MHz */
-	brm->regs->enhanced  = 0x0000 | config->brm_freq;  
+	brm->regs->enhanced  = 0x0000 | brm->config->brm_freq;  
 	
 	/*Write CLKSEL and CLKDIV*/
-	brm->regs->w_ctrl	 = (config->clksel << 9) | (config->clkdiv << 5) | 1;
+	brm->regs->w_ctrl	 = (brm->config->clksel << 9) | (brm->config->clkdiv << 5) | 1;
 	
 	 /*Disable all interrupts*/
 	brm->regs->w_irqctrl = 0;
@@ -436,10 +411,10 @@ static rtems_device_driver rt_init(brm_priv *brm) {
     ctrl &= 0xE7EF;
 
 	/* ... OR in new broad cast enable*/
-	ctrl |= ((config->broadcast)&1)<<4;
+	ctrl |= ((brm->config->broadcast)&1)<<4;
 	
 	/* ... OR in new bus status */
-    ctrl |= ((config->bus)&0x3)<<11;   
+    ctrl |= ((brm->config->bus)&0x3)<<11;   
 
 	/*write control register*/
 	brm->regs->ctrl = ctrl;
@@ -452,17 +427,17 @@ static rtems_device_driver rt_init(brm_priv *brm) {
 	oper &= 0x03FF; 
 
 	/* ... OR in new rt address    */
-	oper |= ((config->rt_address)&0x1f)<<11; 
+	oper |= ((brm->config->rt_address)&0x1f)<<11; 
 
 	/* ... OR in parity  */
-	oper |= odd_parity((config->rt_address)&0x1f)<<10;
+	oper |= odd_parity((brm->config->rt_address)&0x1f)<<10;
 	
 	/*... Write oper register*/
 	brm->regs->oper = oper;
 
 	
 	/*Obtain buf count from configuration*/
-	buf_count = config->rt_buf_number;
+	buf_count = brm->config->rt_buf_number;
 	
 	/*There are 128 descritors, thus the desc table ends at offset (128*4 words each) = 512*/
 	base = 512; 
@@ -522,7 +497,7 @@ static rtems_device_driver rt_init(brm_priv *brm) {
 	}
 	
 	/*If ignore_mode_data is activated we focused all memory on previous buffers*/
-	if(config->ignore_mode_data == 1)
+	if(brm->config->ignore_mode_data == 1)
 		buf_count = 1;
 		
 	/*New base. This is where the previous buffer area ends (i=32)*/
@@ -578,7 +553,7 @@ static rtems_device_driver rt_init(brm_priv *brm) {
 	/*Store current operating mode*/
 	brm->mode = BRM_MODE_RT;
 	
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
 /**
@@ -586,7 +561,7 @@ static rtems_device_driver rt_init(brm_priv *brm) {
  *
  * @param [in] brm internal structure of the device to be initialized 
  */
-static rtems_device_driver bc_init(brm_priv *brm){
+static air_status_code_e bc_init(brm_priv *brm){
 	
 	/*Control Register Contents*/
 	unsigned short ctrl;
@@ -604,7 +579,7 @@ static rtems_device_driver bc_init(brm_priv *brm){
 	brm->bcmem->descs = (struct cb *)brm->mem;
 	
 	/*Copy configuration defined block number*/
-	brm->bc_block_number = config->bc_block_number;
+	brm->bc_block_number = brm->config->bc_block_number;
 	
 	/*Null memory pointer from other modes*/
 	brm->rtmem = NULL;
@@ -629,8 +604,8 @@ static rtems_device_driver bc_init(brm_priv *brm){
 	brm->irq_log = (struct irq_log_list *)&brm->mem[offset];
 	
 	/*Blocking options*/
-	brm->rx_blocking = config->rx_blocking;
-	brm->tx_blocking = config->tx_blocking;
+	brm->rx_blocking = brm->config->rx_blocking;
+	brm->tx_blocking = brm->config->tx_blocking;
 	
 	/* Let's setup the device's hardware for operating has a BM!
 	 * In this section we setup the device's registers
@@ -650,10 +625,10 @@ static rtems_device_driver bc_init(brm_priv *brm){
 	brm->regs->ipoint  	 = OFS(brm->mem[offset]);
 	
 	/* select freq based on configuration option */
-	brm->regs->enhanced  = 0x0000 | (config->brm_freq & 0x3); 
+	brm->regs->enhanced  = 0x0000 | (brm->config->brm_freq & 0x3); 
 	
 	/*Write CLKSEL and CLKDIV*/
-	brm->regs->w_ctrl	 = (config->clksel << 9) | (config->clkdiv << 5) | 1;
+	brm->regs->w_ctrl	 = (brm->config->clksel << 9) | (brm->config->clkdiv << 5) | 1;
 	
 	/*Disable Interrupts*/
 	brm->regs->w_irqctrl = 0; 
@@ -670,10 +645,10 @@ static rtems_device_driver bc_init(brm_priv *brm){
 	ctrl &= 0xFDEF;                  
 	
 	/* ... OR in new Broadcast enable*/
-	ctrl |= ((config->broadcast)&1)<<4; 
+	ctrl |= ((brm->config->broadcast)&1)<<4; 
 
 	/* ... OR in new MSG timeout     */	
-	ctrl |= ((config->msg_timeout)&1)<<9;
+	ctrl |= ((brm->config->msg_timeout)&1)<<9;
 
 	/*... write control register with new data*/	
 	brm->regs->ctrl = ctrl;
@@ -691,7 +666,7 @@ static rtems_device_driver bc_init(brm_priv *brm){
 	/*Store new operative mode*/
 	brm->mode = BRM_MODE_BC;
 	
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
 /**
@@ -699,18 +674,18 @@ static rtems_device_driver bc_init(brm_priv *brm){
  *
  * @param [in] *brm internal structure of the device to be initialized 
  */
-static rtems_device_driver bm_init(brm_priv *brm) {
+static air_status_code_e bm_init(brm_priv *brm) {
 	unsigned short ctrl;
 	unsigned int offset;
 	
 	/*Rx blocking behavior*/
-	brm->rx_blocking = config->rx_blocking;
+	brm->rx_blocking = brm->config->rx_blocking;
 	
 	/*Tx blocking behavior*/
-	brm->tx_blocking = config->tx_blocking;
+	brm->tx_blocking = brm->config->tx_blocking;
 	
 	/*Copy number of BM command blocks*/
-	brm->bm_block_number = config->bm_block_number;
+	brm->bm_block_number = brm->config->bm_block_number;
 	
 	/*NULL other modes memory pointers*/
 	brm->bcmem = NULL;
@@ -765,10 +740,10 @@ static rtems_device_driver bm_init(brm_priv *brm) {
 	brm->regs->mbc	     = (brm->bm_block_number - 1);
 	
 	/* select freq based on configuration option */
-	brm->regs->enhanced  = 0x0000 | (config->brm_freq & 0x3);
+	brm->regs->enhanced  = 0x0000 | (brm->config->brm_freq & 0x3);
 	
 	/*Write CLKSEL and CLKDIV*/
-	brm->regs->w_ctrl	 = (config->clksel << 9) | (config->clkdiv << 5) | 1;
+	brm->regs->w_ctrl	 = (brm->config->clksel << 9) | (brm->config->clkdiv << 5) | 1;
 	
 	/*Disable Interrupts*/
 	brm->regs->w_irqctrl = 0;
@@ -788,10 +763,10 @@ static rtems_device_driver bm_init(brm_priv *brm) {
 	ctrl &= 0xFDEF;
 
 	/* ... OR in new BroadCast Enable*/	
-	ctrl |= ((config->broadcast)&1)<<4;
+	ctrl |= ((brm->config->broadcast)&1)<<4;
 
 	/* ... OR in new MSG TimeOut*/
-	ctrl |= ((config->msg_timeout)&1)<<9;
+	ctrl |= ((brm->config->msg_timeout)&1)<<9;
 
 	/*.. Write control register*/
 	brm->regs->ctrl = ctrl;
@@ -802,37 +777,36 @@ static rtems_device_driver bm_init(brm_priv *brm) {
 	/*Store current mode on private*/
 	brm->mode = BRM_MODE_BM;
 	
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
 
 /** 
  *  \brief Initializes the BRM cores
  *
- *  \param [in]  major : not used
- *  \param [in]  minor : not used
- *  \param [in]  arg : not used. 
+ *  \param [in]  iop_dev : pointer to iop device driver
+ *  \param [in]  arg : 
  *
  *  \return Status of the operation:
- *	   - RTEMS_NOT_DEFINED BRM device not found
- *     - RTEMS_INTERNAL_ERROR not possible to allocate a RTEMS resource
- *     - RTEMS_SUCESSFULL operation completed successfully
+ *	   - AIR_INVALID_PARAM BRM device not found
+ *     - AIR_INTERNAL_ERROR not possible to allocate resource
+ *     - AIR_SUCCESSFUL operation completed successfully
  *	
  **/
-rtems_device_driver brm_initialize(rtems_device_major_number major, rtems_device_minor_number minor, void *arg){
-	
-	/* Number of MILSTD devices*/
-	int dev_cnt;
-	
-	/* current device private structure*/
-	brm_priv *brm;
+uint32_t brm_initialize(iop_device_driver_t *iop_dev, void *arg){
+
+	/* Get driver priv struct */
+	iop_1553_device_t *device = (iop_1553_device_t *) iop_dev;
+	brm_priv *brm = (brm_priv *) (device->dev.driver);
 	
 	/* AMBA AHB device*/
-	struct ambapp_ahb_info ambadev;
-	
+	amba_ahb_dev_t ambadev;
+
+	unsigned int allbrm_memarea;
+
 	/* Device's memory area*/
 	char *mem;
-   
+
 	FUNCDBG("brm_initialize\n");
 	
 	/* This is here for compatibility with PCI_RASTA*/
@@ -843,25 +817,10 @@ rtems_device_driver brm_initialize(rtems_device_major_number major, rtems_device
 	#endif
 	
 	/* Amba bus defining structure*/
-	amba_bus = &ambapp_plb;
-	
-	/* get number of brm cores present */
-	brm_cores = get_number_milstd_cores();
-	
-	/* Get memory reserved for driver's private structure */
-	brms = get_milstd_brm_priv();
-	
-	/* Get user configuration options*/
-	config = get_milstd_config();
+	amba_confarea_t *amba_bus = (amba_confarea_t *)air_syscall_get_ambaconf();;
 	
 	/* Validate user configuration*/
-	validate_config(config);
-	
-	/* Number of BRM devices are configuration defined. We do not search for them*/
-	dev_cnt = brm_cores;
-	
-	/* Zero the internal device structure*/
-	memset(brms, 0, sizeof(brm_priv)*dev_cnt);	
+	validate_config(brm->config);
 	
 	/* Allocate memory for all device's descriptors*/
 	if (allbrm_memarea){
@@ -872,107 +831,95 @@ rtems_device_driver brm_initialize(rtems_device_major_number major, rtems_device
 	} else{
 	
 		/*get driver memory.128k per core + 128k for alignment*/
-		mem = (char *)get_milstd_mem(); 
+		mem = (char*)brm->mem; 
 		
 		/* align memory to 128k boundary */
 		mem = (char *)(((unsigned int)mem+0x1ffff) & ~0x1ffff);
 	}
 
 	/* clear the used memory */
-	memset(mem, 0, (128*1024) * dev_cnt);
+	memset(mem, 0, (128*1024));
 
-	/* initialize each brm device, one at a time */
-	for(minor=0; minor<dev_cnt; minor++){
+	/* Get AMBA AHB device info from Plug&Play */
+	if(amba_get_ahb_slave(amba_bus,VENDOR_GAISLER,GAISLER_B1553BRM ,0, &ambadev) == 0){
 	
-		/* Current Device*/
-		brm = &brms[minor];
+		/* Device not found */
+		return AIR_INVALID_PARAM;
+	}
 		
-		/* Get AMBA AHB device info from Plug&Play */
-		if(amba_find_next_ahbslv(amba_bus,VENDOR_GAISLER,GAISLER_B1553BRM ,&ambadev,minor) == 0){
-			
-			/* Device not found */
-			return RTEMS_NOT_DEFINED;
-		}
 		
-		pprintf("found\n");
+	/* Copy pointer to device's memory mapped registers */
+	brm->regs = (void *)ambadev.start[0];
 		
-		/* Copy pointer to device's memory mapped registers */
-		brm->regs = (void *)ambadev.start[0];
+	/* Copy IRQ*/
+	brm->irqno = ambadev.irq;
 		
-		/* Copy IRQ*/
-		brm->irqno = ambadev.irq;
+	/* Copy device's minor*/
+	brm->minor = 0;
 		
-		/* Copy device's minor*/
-		brm->minor = minor;
+	/* Clear IRQ since it is not used*/
+	brm->irq = 0;
 		
-		/* Clear IRQ since it is not used*/
-		brm->irq = 0;
-		
-		DBG("Registering BRM core at [0x%x] irq %d, minor %d\n",brm->regs,brm->irqno,minor);
-		
-		/* Device Semaphore created with count = 1 */
-		if ( rtems_semaphore_create(rtems_build_name('B', 'M', 'D', '0'+minor),
-		         1,
-		         RTEMS_FIFO|RTEMS_SIMPLE_BINARY_SEMAPHORE|RTEMS_NO_INHERIT_PRIORITY|RTEMS_LOCAL|RTEMS_NO_PRIORITY_CEILING, 
-		         0,
-		         &brm->dev_sem) != RTEMS_SUCCESSFUL ){
-			pprintf("BRM: Failed to create device semaphore\n");
-			return RTEMS_INTERNAL_ERROR;
-		}
+	DBG("Registering BRM core at [0x%x] irq %d, minor %d\n",brm->regs,brm->irqno,minor);
+#if 0
+	/* Device Semaphore created with count = 1 */
+	if ( rtems_semaphore_create(rtems_build_name('B', 'M', 'D', '0'+minor),
+				1,
+				RTEMS_FIFO|RTEMS_SIMPLE_BINARY_SEMAPHORE|RTEMS_NO_INHERIT_PRIORITY|RTEMS_LOCAL|RTEMS_NO_PRIORITY_CEILING, 
+				0,
+				&brm->dev_sem) != AIR_SUCCESSFUL ){
+		pprintf("BRM: Failed to create device semaphore\n");
+		return AIR_INTERNAL_ERROR;
+	}
+#endif
 
-	
-		/* Set base address of the device's memory */
-		brm->memarea_base = (unsigned int)&mem[(128*1024) * minor];
-		
-		/* descriptor table's base address*/
-		brm->desc = (struct desc_table *) brm->memarea_base;
-		
-		/* Another pointer for the memory area*/
-		brm->mem = (volatile unsigned short *) brm->memarea_base;
-		
-		/* last 64byte of the memory area for the IRQ log */
-		brm->irq_log	= (struct irq_log_list *)(brm->memarea_base + (0xFFE0<<1)); 
-		
-		/* Sel HW clock so that we can write to BRM's registers */
-		brm->regs->w_ctrl = (config->clksel<<9) | (config->clkdiv<<5);
-		
-		/* Reset BRM core */
-		brm->regs->w_ctrl = 1<<10 | READ_REG(&brm->regs->w_ctrl);
-		
-		/* Init device based on choosen mode*/
-		switch(config->mode){
+	/* Set base address of the device's memory */
+	brm->memarea_base = (unsigned int)&mem[(128*1024)];
+
+	/* descriptor table's base address*/
+	brm->desc = (struct desc_table *) brm->memarea_base;
+
+	/* Another pointer for the memory area*/
+	brm->mem = (volatile unsigned short *) brm->memarea_base;
+
+	/* last 64byte of the memory area for the IRQ log */
+	brm->irq_log	= (struct irq_log_list *)(brm->memarea_base + (0xFFE0<<1)); 
+
+	/* Sel HW clock so that we can write to BRM's registers */
+	brm->regs->w_ctrl = (brm->config->clksel<<9) | (brm->config->clkdiv<<5);
+
+	/* Reset BRM core */
+	brm->regs->w_ctrl = 1<<10 | READ_REG(&brm->regs->w_ctrl);
+
+	/* Init device based on choosen mode*/
+	switch(brm->config->mode){
 			
-			/*Bus Controler*/
-			case BRM_MODE_BC:
-				bc_init(brm);
-				break;
-			
-			/*Remote Terminal*/
-			case BRM_MODE_RT:
-				rt_init(brm);
-				break;
-				
-			/*Bus Monitor*/
-			case BRM_MODE_BM:
-				bm_init(brm);
-				break;
-				
-			/*Default to remote terminal*/
-			default:
-				rt_init(brm);
-				break;
-		}
-		
+		/*Bus Controler*/
+		case BRM_MODE_BC:
+			bc_init(brm);
+			break;
+
+		/*Remote Terminal*/
+		case BRM_MODE_RT:
+			rt_init(brm);
+			break;
+
+		/*Bus Monitor*/
+		case BRM_MODE_BM:
+			bm_init(brm);
+			break;
+
+		/*Default to remote terminal*/
+		default:
+			rt_init(brm);
+			break;
 		
 		DBG("BRM: LOG: 0x%lx, 0x%lx\n\r",brm->log,brm);
 	}
 	
-	/* save number of BRM cores found */
-	brm_cores = dev_cnt;
-	
 	DBG("BRM initialisation done.\n");
 	
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
 
@@ -980,112 +927,96 @@ rtems_device_driver brm_initialize(rtems_device_major_number major, rtems_device
 /** 
  *  \brief prepares the device for communication
  *
- *  \param [in]  major : not used
- *  \param [in]  minor : minor number of the device to open
- *  \param [in]  arg : not used. 
+ *  \param [in]  brm : driver internal struct
  *
  *  \return Status of the operation:
- *		- RTEMS_UNSATISFIED if minor is invalid
- *		- RTEMS_RESOURCE_IN_USE if the device is already open
- *		- RTEMS_SUCCESSFUL if the operation completed sucessfully
+ *		- AIR_UNSUCCESSFUL if minor is invalid
+ *		- AIR_NOT_AVAILABLE if the device is already open
+ *		- AIR_SUCCESSFUL if the operation completed sucessfully
  *	
  **/	
-rtems_device_driver brm_open(rtems_device_major_number major, rtems_device_minor_number minor, void *arg) {
-	/*Current milstd device*/
-	brm_priv *brm;
-	
+uint32_t brm_open(brm_priv *brm) {
+
     FUNCDBG("brm_open\n");
-	
-	/*Verify if minor is acceptable*/
-    if (minor >= brm_cores) {
-        DBG("Wrong minor %d\n", minor);
-        return RTEMS_UNSATISFIED; /* ENODEV */
-    }
-	
-	/*get current milstd device*/	
-	brm = &brms[minor];
-	
+
+#if 0
 	/*obtain device semaphore*/
-    if (rtems_semaphore_obtain(brm->dev_sem, RTEMS_NO_WAIT, RTEMS_NO_TIMEOUT) != RTEMS_SUCCESSFUL) {
+    if (rtems_semaphore_obtain(brm->dev_sem, RTEMS_NO_WAIT, RTEMS_NO_TIMEOUT) != AIR_SUCCESSFUL) {
         DBG("brm_open: resource in use\n");
 		
 		/* EBUSY */
-        return RTEMS_RESOURCE_IN_USE; 
+        return AIR_NOT_AVAILABLE; 
     }
-		
+#endif
 	/* Set defaults */
-	brm->event_id = config->event_id;
+	brm->event_id = brm->config->event_id;
     
 	/*start core operation*/
     start_operation(brm);
  
-    return RTEMS_SUCCESSFUL;
+    return AIR_SUCCESSFUL;
 }
  
 /** 
  *  \brief stops the device from communicating
  *
- *  \param [in]  major : not used
- *  \param [in]  minor : minor number of the device to close
- *  \param [in]  arg : not used. 
+ *  \param [in]  brm : driver internal struct
  *
  *  \return Status of the operation:
- *		- RTEMS_SUCCESSFUL if the operation completed sucessfully
+ *		- AIR_SUCCESSFUL if the operation completed sucessfully
  *
  **/		
-rtems_device_driver brm_close(rtems_device_major_number major, rtems_device_minor_number minor, void *arg){
-	
-	/*current milstd device*/
-	brm_priv *brm = &brms[minor];
-	
+uint32_t brm_close(brm_priv *brm){
+
 	FUNCDBG("brm_close");
 	
 	/*stop operation*/
 	stop_operation(brm);
 	
 	/*release device's semaphore*/
-	rtems_semaphore_release(brm->dev_sem);
+//	rtems_semaphore_release(brm->dev_sem);
 
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
 /** 
- *  \brief reads data from the BRM core with a specific minor
+ *  \brief reads data from the BRM core
  *
- *  \param [in]  major : not used
- *  \param [in]  minor : minor number of the device to read from
- *  \param [in]  arg : not used. 
+ * @param [in] iop_dev iop 1553 support struct
+ * @param [out] arg pointer to iop wrapper
  *
  *  \return Status of the operation:
- *		- RTEMS_SUCCESSFUL if the operation completed sucessfully
- *		- RTEMS_INVALID_NAME: Operation not permited in BC mode
- *		- RTEMS_RESOURCE_IN_USE: There is no data to be read and we can't block
+ *		- AIR_SUCCESSFUL if the operation completed sucessfully
+ *		- AIR_INVALID_CONFIG: Operation not permited in BC mode
+ *		- AIR_NOT_AVAILABLE: There is no data to be read and we can't block
  *
  **/		
-rtems_device_driver brm_read(rtems_device_major_number major, rtems_device_minor_number minor, void *arg){
-    libio_rw_args_t *rw_args;
+uint32_t brm_read(iop_device_driver_t *iop_dev, void *arg){
+
 	unsigned short descriptor, current, miw, tmp, offset;
 	unsigned short wc = 0;
 	unsigned short msgadr = 0;
 	unsigned short *data = NULL;
-	rtems_status_code status = RTEMS_SUCCESSFUL;
+	air_status_code_e status = AIR_SUCCESSFUL;
 	int len;
     int count = 0, read = 0;
-	brm_priv *brm = &brms[minor];
+
+	iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
+
+	/* Get driver priv struct */
+	iop_1553_device_t *device = (iop_1553_device_t *) iop_dev;
+	brm_priv *brm = (brm_priv *) (device->dev.driver);
 	
 	/*We can only "read" in RT or BM mode*/	
 	if ( ! (brm->mode & (BRM_MODE_RT | BRM_MODE_BM)) ){
-		return RTEMS_INVALID_NAME;
+		return AIR_INVALID_CONFIG;
 	}
 	
-	/*user arguments*/
-    rw_args = (libio_rw_args_t *) arg;
-	
 	/* Cast to unsigned short so we can index the array */
-	data = (unsigned short *)rw_args->data;
+	data = (unsigned short *)get_payload(wrapper->buffer);
 	
 	/* user buffer where to copy the data in BM mode*/
-	struct bm_msg *bm_block = (struct bm_msg *) rw_args->data;
+	struct bm_msg *bm_block = (struct bm_msg *) get_payload(wrapper->buffer);
 	
 	/* Check for any errors*/
 	check_errors(brm);
@@ -1151,7 +1082,7 @@ rtems_device_driver brm_read(rtems_device_major_number major, rtems_device_minor
 					
 					/*Copy msg to user buffer
 					 * copy MIW */
-					rw_args->data_len = wc*2+2;
+					wrapper->buffer->payload_size = wc*2+2;
 					
 					/* Copy Time Tag*/
 					data[wc] = READ_DMA(&brm->mem[msgadr+1]);
@@ -1165,20 +1096,22 @@ rtems_device_driver brm_read(rtems_device_major_number major, rtems_device_minor
 						data[len] = READ_DMA(&brm->mem[msgadr+2+len]);
 					}
 					
+					milstd_header_t *hdr = (milstd_header_t *)get_header(wrapper->buffer);
+					
 					/* Store descriptor from where the data originates */
 					if(descriptor < 32){
 					
 						/* RX data */
-						rw_args->hdr[0] = descriptor;
+						hdr->address = descriptor;
 						
 					} else if((descriptor >= 64) && (descriptor < 96)){
 						
 						/* RX mode code  */
-						rw_args->hdr[0] = descriptor-64;
+						hdr->address = descriptor-64;
 					}
 					
 					/* Header length is always 1 byte*/
-					rw_args->hdr_len = 1;
+					//rw_args->hdr_len = 1;
 					
 					/* Next message position in buffer*/
 					msgadr += (2+wc);
@@ -1218,17 +1151,17 @@ rtems_device_driver brm_read(rtems_device_major_number major, rtems_device_minor
 			if((brm->rx_blocking) && (wc == 0)){
 			
 				/*We can block and we have no data: sleep for a while. TODO:*/
-				rtems_task_wake_after(1);
+//				rtems_task_wake_after(1);
 				
 			} else if (wc > 0){ /*< Do we have some data?*/
 			
 				/*Tell the user how much did we read*/
-				rw_args->bytes_moved = wc*2+2;
+				wrapper->buffer->payload_size = wc*2+2;
 				
 				/*Now we can exit the read cycle*/
 				read = 1;
 				
-				status = RTEMS_SUCCESSFUL;
+				status = AIR_SUCCESSFUL;
 						
 			} else { /*< we cannot block*/
 			
@@ -1236,7 +1169,7 @@ rtems_device_driver brm_read(rtems_device_major_number major, rtems_device_minor
 				read = 1;
 				
 				/* EWOULDBLOCK */
-				status = RTEMS_RESOURCE_IN_USE;
+				status = AIR_NOT_AVAILABLE;
 			}
 			
 		} 
@@ -1267,7 +1200,8 @@ rtems_device_driver brm_read(rtems_device_major_number major, rtems_device_minor
 			}
 			
 			/*while the user buffer has space and we have data to read*/
-			while((count < rw_args->data_len) && (count < wc)){
+			/*TODO:Extract correct buffer size accordingly with what is allocated*/
+			while((count < IOP_BUFFER_SIZE) && (count < wc)){
 				
 				/*calculate memory offset based on table offset*/
 				offset = brm->bm_last_read * 8;
@@ -1294,20 +1228,20 @@ rtems_device_driver brm_read(rtems_device_major_number major, rtems_device_minor
 			if((brm->rx_blocking) && (count == 0)){
 			
 				/*We can block and we have no data: sleep for a while. TODO:*/
-				rtems_task_wake_after(50);
+//				rtems_task_wake_after(50);
 			
 			/*Do we have some data?*/			
 			} else if (count > 0){
 			
 				/*Tell the user how much did we read*/
-				rw_args->bytes_moved = count;
+				wrapper->buffer->payload_size= count;
 				
 				/*we have read, so we can now exit */
 				read = 1;
 			
 			/*we can't block*/
 			} else {
-				return RTEMS_RESOURCE_IN_USE;
+				return AIR_NOT_AVAILABLE;
 			}
 		}
     }
@@ -1316,65 +1250,63 @@ rtems_device_driver brm_read(rtems_device_major_number major, rtems_device_minor
 }
 
 /** 
- *  \brief writes data to a BRM device with a specific minor number
+ *  \brief writes data to a BRM device
  *
- *  \param [in]  major : not used
- *  \param [in]  minor : minor number of the device to write to
- *  \param [in]  arg : not used. 
+ * @param [in] iop_dev iop 1553 support struct
+ * @param [out] arg pointer to iop wrapper
  *
  *  \return Status of the operation:
- *		- RTEMS_SUCCESSFUL if the operation completed sucessfully
- *		- RTEMS_INVALID_NAME: Operation not permited in BM mode or the requested
+ *		- AIR_SUCCESSFUL if the operation completed sucessfully
+ *		- AIR_INVALID_CONFIG: Operation not permited in BM mode or the requested
  *        descriptor is invalid
- * 		- RTEMS_INVALID_SIZE: User data exceeds the maximum allowed by MilStd (64 bytes)
- * 		- RTEMS_INVALID_ADDRESS: Invalid header or data pointer
- *		- RTEMS_RESOURCE_IN_USE: Write buffers are full and we can't block waiting
- *		- RTEMS_UNSATISFIED: Try Again Later
+ * 		- AIR_INVALID_SIZE: User data exceeds the maximum allowed by MilStd (64 bytes)
+ * 		- AIR_INVALID_ADDRESS: Invalid header or data pointer
+ *		- AIR_NOT_AVAILABLE: Write buffers are full and we can't block waiting
+ *		- AIR_UNSUCCESSFUL: Try Again Later
  *
  **/	
-rtems_device_driver brm_write(rtems_device_major_number major, rtems_device_minor_number minor, void *arg){
-    libio_rw_args_t *rw_args;
-    unsigned int current, next, descriptor, wc, suba;
+uint32_t brm_write(iop_device_driver_t *iop_dev, void *arg){
+
+	unsigned int current, next, descriptor, wc, suba;
 	unsigned short miw = 0;
-	brm_priv *brm = &brms[minor];
-	
-	/*user arguments*/
-    rw_args = (libio_rw_args_t *) arg;
+
+	iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
+
+	/* Get driver priv struct */
+	iop_1553_device_t *device = (iop_1553_device_t *) iop_dev;
+	brm_priv *brm = (brm_priv *) (device->dev.driver);
+
+	milstd_header_t * hdr = (milstd_header_t *)get_header(wrapper->buffer);
 
 	/*Write can only be used in RT mode*/
 	if ( !(brm->mode & BRM_MODE_RT) ){
-		return RTEMS_INVALID_NAME;
+		return AIR_INVALID_CONFIG;
 	}
 	
 	/* Verify if user request does not exceed the maximum data size for milstd*/
-	if(rw_args->data_len > 64){
-		return RTEMS_INVALID_SIZE;
+	if(get_payload_size(wrapper->buffer) > 64){
+		return AIR_INVALID_SIZE;
 	}
 	
 	/* Verify if the user correctly provided data and header*/
-	if((rw_args->data == NULL) || (rw_args->hdr == NULL)){
-		return RTEMS_INVALID_ADDRESS;
+	if((get_payload(wrapper->buffer) == NULL) || (hdr == NULL)){
+		return AIR_INVALID_ADDRESS;
 	}
-	
-	/* user io arguments*/
-    rw_args = (libio_rw_args_t *) arg;
-
-    FUNCDBG("brm_write [%i,%i]: buf: 0x%x len: %i\n",major, minor, (unsigned int)rw_args->data,rw_args->data_len);
 	
 	/* check for any io errors*/
 	check_errors(brm);
 		
 	/* Get target descriptor*/
-	descriptor = *((unsigned char *)rw_args->hdr) & 0x7F;
+	descriptor = hdr->desc;
 	
 	/* obtain corresponding subaddress*/
-	suba = descriptor;
+	suba = hdr->address;
 	
 	/* offset to obtain tx subaddress*/
 	descriptor += 32;
 	
 	/* get word count to write*/
-	wc = rw_args->data_len/2;
+	wc = get_payload_size(wrapper->buffer)/2;
 	
 	/* A word count of 0 corresponds to 32 words*/
 	if(wc == 32){
@@ -1389,7 +1321,7 @@ rtems_device_driver brm_write(rtems_device_major_number major, rtems_device_mino
 
 	/* Only subaddress transmission is allowed with write */
 	if (descriptor < 32 || descriptor >= 64)
-		return RTEMS_INVALID_NAME;
+		return AIR_INVALID_CONFIG;
 	
 	/* get first place available to write in the descriptor buffer*/
 	current = brm->desc[descriptor].cur; 
@@ -1410,12 +1342,12 @@ rtems_device_driver brm_write(rtems_device_major_number major, rtems_device_mino
 				while(brm->desc[descriptor].cur < next){
 					
 					/*wait a while*/
-					rtems_task_wake_after(1);
+//					rtems_task_wake_after(1);
 				}
 			} else { /*< we can't block*/
 			
 				/* Translates to posix EBUSY */
-				return RTEMS_RESOURCE_IN_USE;
+				return AIR_NOT_AVAILABLE;
 			}
 		}
 	}
@@ -1428,7 +1360,7 @@ rtems_device_driver brm_write(rtems_device_major_number major, rtems_device_mino
 	
 	/* Copy data from user buffer to DMA buffer*/
 	memcpy((void *)&brm->mem[brm->written[suba]+2], 
-		   (void *)rw_args->data, (wc)*2);
+		   (void *)get_payload(wrapper->buffer), (wc)*2);
 	
 	/* If next message exceeds the buffer limits*/
 	if (next >= brm->desc[descriptor].bot) {
@@ -1440,28 +1372,22 @@ rtems_device_driver brm_write(rtems_device_major_number major, rtems_device_mino
 	/* update next place to write*/
 	brm->written[suba] = next;
 	
-	/* inform user of how much data was written*/
-    rw_args->bytes_moved = wc+2; 
-	
 	/*If we have written something*/
-    return RTEMS_SUCCESSFUL;
+    return AIR_SUCCESSFUL;
 }
 
-rtems_device_driver brm_control(rtems_device_major_number major, rtems_device_minor_number minor, void *arg){
-    
+air_status_code_e brm_control(brm_priv *brm, void *arg){
+
     unsigned int i=0;
     unsigned short ctrl, oper;
     libio_ioctl_args_t *ioarg = (libio_ioctl_args_t *) arg;
     unsigned int *data = ioarg->buffer;
     struct bc_msg *cmd_list = (struct bc_msg *) ioarg->buffer;
-	brm_priv *brm = &brms[minor];
-	rtems_device_driver ret;
-    
-    FUNCDBG("brm_control[%d]: [%i,%i]\n",minor,major, minor);
-  
+	air_status_code_e ret;
+
     if (!ioarg) {
         DBG("brm_control: invalid argument\n");
-        return RTEMS_INVALID_NAME;
+        return AIR_INVALID_PARAM;
     }
 
     ioarg->ioctl_return = 0;
@@ -1469,7 +1395,7 @@ rtems_device_driver brm_control(rtems_device_major_number major, rtems_device_mi
 
     case BRM_SET_MODE:
 		if ( data[0] > 2 )
-			return RTEMS_INVALID_NAME;
+			return AIR_INVALID_PARAM;
 		stop_operation(brm);
         if (data[0] == 0) {
             ret = bc_init(brm);
@@ -1480,9 +1406,9 @@ rtems_device_driver brm_control(rtems_device_major_number major, rtems_device_mi
         else if (data[0] == 2) { 
             ret = bm_init(brm);						
         }else
-			ret = RTEMS_INVALID_NAME;
+			ret = AIR_INVALID_PARAM;
 
-		if ( ret != RTEMS_SUCCESSFUL)
+		if ( ret != AIR_SUCCESSFUL)
 			return ret;
 				
         if ( brm->mode & (BRM_MODE_RT | BRM_MODE_BM ))
@@ -1547,17 +1473,17 @@ rtems_device_driver brm_control(rtems_device_major_number major, rtems_device_mi
 		
 		// /*This operation is reserved for BC mode*/
         // if ( brm->mode != BRM_MODE_BC ){
-          // return RTEMS_INVALID_NAME;
+          // return AIR_INVALID_PARAM;
 		// }
 
         // /* Check if we are bus controller */
         // if ( ((READ_REG(&brm->regs->oper)>>8) & 3) != 0 ) {
-            // return RTEMS_INVALID_NAME;
+            // return AIR_INVALID_PARAM;
         // }
 
         // /* Already processing list? */
         // if (is_executing(brm)) {
-            // return RTEMS_RESOURCE_IN_USE;
+            // return AIR_NOT_AVAILABLE;
         // }
 		
 		// /*No errors yet*/
@@ -1628,12 +1554,12 @@ rtems_device_driver brm_control(rtems_device_major_number major, rtems_device_mi
 		
 		/*This operation is reserved for BC mode*/
         if ( brm->mode != BRM_MODE_BC ){
-          return RTEMS_INVALID_NAME;
+          return AIR_INVALID_CONFIG;
 		}
 				
 		/* Check if we are bus controller */
         if (((READ_REG(&brm->regs->oper) >> 8) & 3) != 0 ) {
-            return RTEMS_INVALID_NAME;
+            return AIR_INVALID_CONFIG;
         }
 		
 		// data[0] = 0;
@@ -1649,15 +1575,15 @@ rtems_device_driver brm_control(rtems_device_major_number major, rtems_device_mi
 				
 				/*did we find any error?*/
 				if ( brm->bc_list_fail ){
-					return RTEMS_INVALID_NAME;
+					return AIR_UNSUCCESSFUL;
 				}
 				
 				/*wait a while to see if the list has been completed*/
-				rtems_task_wake_after(10);
+//				rtems_task_wake_after(10);
 				
             } else{
 				/*we cannot block so return*/
-				return RTEMS_RESOURCE_IN_USE;
+				return AIR_NOT_AVAILABLE;
 			}
         }
      
@@ -1707,19 +1633,19 @@ rtems_device_driver brm_control(rtems_device_major_number major, rtems_device_mi
     case BRM_GET_STATUS: /* copy status */
 
 		if ( !ioarg->buffer )
-			return RTEMS_INVALID_NAME;
+			return AIR_INVALID_PARAM;
 		
 		*(unsigned int *)ioarg->buffer = brm->status;
 		break;
     
 	case BRM_SET_EVENTID:
-		brm->event_id = (rtems_id)ioarg->buffer;
+		brm->event_id = (unsigned int)ioarg->buffer;
 		break;
 
     default:
-        return RTEMS_NOT_DEFINED;
+        return AIR_INVALID_PARAM;
     }
-    return RTEMS_SUCCESSFUL;
+    return AIR_SUCCESSFUL;
 }
 
 /**
@@ -1771,7 +1697,7 @@ static void check_hw_errors(brm_priv *brm, unsigned int event_status, int signal
 	if ( signal_event && (brm->event_id!=0) ){
 	
 		/*send event to error handler with event_status has an argument*/
-		rtems_event_send(brm->event_id, event_status);
+//		rtems_event_send(brm->event_id, event_status);
 	}
 
 	return;
@@ -1899,40 +1825,38 @@ static void check_errors(brm_priv *brm){
 
 /**
  * @brief Obtains the mode that a milstd device is configured to work on
- * @param [in] minor Minor number of the device whose mode we want to know
+ * @param [in] brm driver private struct
  * @return Operative mode of a milstd device
  */
-unsigned int brm_get_operative_mode(int minor){
+unsigned int brm_get_operative_mode(brm_priv *brm){
 
-	return config[minor].mode;
+	return brm->config->mode;
 
 }
 
 /**
  * @brief brm_do_list inititates the execution of a BC command list
  * @param [in] minor minor number of the target device
- * @return rtems_status_code, Status of the operation:
- *  	- RTEMS_INVALID_NAME if current mode is not BC
- * 		- RTEMS_RESOURCE_IN_USE if the core is still executing
- * 		- RTEMS_SUCCESSFUL if the list started being executed
+ * @return air_status_code_e, Status of the operation:
+ *  	- AIR_INVALID_CONFIG if current mode is not BC
+ * 		- AIR_NOT_AVAILABLE if the core is still executing
+ * 		- AIR_SUCCESSFUL if the list started being executed
  */
-rtems_status_code brm_do_list(int minor){
-	
-	brm_priv *brm = &brms[minor];
+air_status_code_e brm_do_list(brm_priv *brm){
 	
 	/* This operation is reserved for BC mode*/
 	if ( brm->mode != BRM_MODE_BC ){
-		return RTEMS_INVALID_NAME;
+		return AIR_INVALID_CONFIG;
 	}
 
 	/* Check if we are bus controller */
 	if (((READ_REG(&brm->regs->oper) >> 8) & 3) != 0 ) {
-		return RTEMS_INVALID_NAME;
+		return AIR_INVALID_CONFIG;
 	}
 
 	/* Already processing list? */
 	if (is_executing(brm)) {
-		return RTEMS_RESOURCE_IN_USE;
+		return AIR_NOT_AVAILABLE;
 	}
 	
 	/* No errors yet*/
@@ -1944,16 +1868,14 @@ rtems_status_code brm_do_list(int minor){
 	/*Start operating*/
 	start_operation(brm);  
 	
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
 /**
  * @brief returns a pointer to the core's DMA memory area
  * @param [in] minor minor number of the core to select
  */
-void *brm_get_memarea(int minor){
-
-	brm_priv *brm = &brms[minor];
+void *brm_get_memarea(brm_priv *brm){
 	
 	return (void *)brm->mem;
 }
@@ -1962,9 +1884,7 @@ void *brm_get_memarea(int minor){
  * @brief returns the number of BC command blocks
  * @param [in] minor minor number of the core to select
  */
-int brm_get_number_bc_blocks(int minor){
-
-	brm_priv *brm = &brms[minor];
+int brm_get_number_bc_blocks(brm_priv *brm){
 	
 	return brm->bc_block_number;
 
@@ -1974,26 +1894,24 @@ int brm_get_number_bc_blocks(int minor){
  * @brief Verifies if a BC command list was completed
  * @param [in] minor minor number of the core to select
  */
-rtems_status_code brm_list_done(int minor){
-
-	brm_priv *brm = &brms[minor];
+air_status_code_e brm_list_done(brm_priv *brm){
 	
 	/*This operation is reserved for BC mode*/
     if ( brm->mode != BRM_MODE_BC ){
-		return RTEMS_INVALID_NAME;
+		return AIR_INVALID_CONFIG;
 	}
 				
 	/* Check if we are bus controller */
 	if (((READ_REG(&brm->regs->oper) >> 8) & 3) != 0 ) {
-		return RTEMS_INVALID_NAME;
+		return AIR_INVALID_CONFIG;
 	}
 	
 	/* Is list still being processed*/
 	if (is_executing(brm)) {
-		return RTEMS_RESOURCE_IN_USE;
+		return AIR_NOT_AVAILABLE;
 	}
 	
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
 static uint32_t detect_bc_to_rt(bc_command_t *ul)
@@ -2031,7 +1949,7 @@ static uint32_t detect_rt_to_rt(bc_command_t *ul)
 static void brm_translate_user_commands(brm_priv *brm)
 {	
 	uint8_t nret = 0;
-	uint8_t excl = 0;
+//	uint8_t excl = 0;
 	uint8_t ch_ab = 0;
 	iop_chain_control *aux = NULL;
 	int bc_to_rt = 0;
@@ -2111,7 +2029,7 @@ static void brm_translate_user_commands(brm_priv *brm)
 			}
 
 			/* Exclusive time slot */
-			excl = (((user_list[i].ccw) & EXCL_BIT) >> 16);
+//			excl = (((user_list[i].ccw) & EXCL_BIT) >> 16);
 
 			/* Channel A or B */
 			ch_ab = (((user_list[i].ccw) & AB_BIT) >> 13);
@@ -2196,60 +2114,38 @@ static void brm_translate_user_commands(brm_priv *brm)
 
 }
 
-rtems_status_code brm_bc_init_user_list(unsigned int minor)
+air_status_code_e brm_bc_init_user_list(brm_priv *brm)
 {
-	/* device's internal structure */
-	brm_priv *brm = &brms[minor];
-	
-	/* User defined command list */
-	bc_command_t *cl;
-	
-	/* command list size */
-	unsigned int cl_size;
-	
 	/*This operation is reserved for BC mode*/
     if (brm->mode != BRM_MODE_BC){
-		return RTEMS_INVALID_NAME;
+		return AIR_INVALID_CONFIG;
 	}
 	
 	/* Check if we are bus controller */
 	if (((READ_REG(&brm->regs->oper) >> 8) & 3) != 0 ) {
-		return RTEMS_INVALID_NAME;
+		return AIR_INVALID_CONFIG;
 	}
-	
-	/* get user defined command list */
-	cl = iop_milstd_get_command_list();
-	
-	/* get user defined BC command list size */
-	cl_size = iop_milstd_get_command_list_size();
 	
 	/* 128kb memory constrain limits command list size */
-	if(cl_size > 1630){
-		return RTEMS_INVALID_NAME;
+	if(brm->bc_user_list_size > 1630){
+		return AIR_INVALID_CONFIG;
 	}
-	
-	/* store user list */
-	brm->bc_user_list = (void *) cl;
-	
-	/* user list size */
-	brm->bc_user_list_size = cl_size;
 	
 	/* translate the user list to a specific device interface */
 	brm_translate_user_commands(brm);
 
-	
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 
 }
 
-static rtems_status_code brm_bc_verify_command_status(uint32_t cw, uint32_t sw)
+static air_status_code_e brm_bc_verify_command_status(uint32_t cw, uint32_t sw)
 {	
-	rtems_status_code status = RTEMS_SUCCESSFUL;
+	air_status_code_e status = AIR_SUCCESSFUL;
 	
 	/* verify transfer status:  for now detect only ME bit */
 	if((((sw >> 10) & 0x3) != 0) || (cw & 0x1)){
 		
-		status = RTEMS_INTERNAL_ERROR;
+		status = AIR_INTERNAL_ERROR;
 		
 		/* something has gone wrong with the transfer */
 		iop_raise_error(HW_PROBLEM);
@@ -2258,7 +2154,7 @@ static rtems_status_code brm_bc_verify_command_status(uint32_t cw, uint32_t sw)
 	return status;
 }
 
-static int brm_bc_process_command(volatile unsigned short *mem, struct bc_desc *desc, libio_rw_args_t *rw_args)
+static int brm_bc_process_command(volatile unsigned short *mem, struct bc_desc *desc, iop_buffer_t *buf)
 {
 	/* return code */
 	int rc = 0;
@@ -2283,7 +2179,7 @@ static int brm_bc_process_command(volatile unsigned short *mem, struct bc_desc *
 	  (subaddress1 == 0) || (subaddress1 == 31))){
 
 		/* this is a BC-RT command. Verify if data was sent correctly  */
-		if(brm_bc_verify_command_status(desc->ctrl, desc->tsw[0]) == RTEMS_SUCCESSFUL){
+		if(brm_bc_verify_command_status(desc->ctrl, desc->tsw[0]) == AIR_SUCCESSFUL){
 
 			/* we shall wait for new data from the user. dummy this command */
 			desc->ctrl &= 0x0FFF;
@@ -2303,7 +2199,7 @@ static int brm_bc_process_command(volatile unsigned short *mem, struct bc_desc *
 	} else{ /*< there is data to be read */
 
 		/*  Verify if data was received correctly  */
-		if(brm_bc_verify_command_status(desc->ctrl, desc->tsw[0]) == RTEMS_SUCCESSFUL){
+		if(brm_bc_verify_command_status(desc->ctrl, desc->tsw[0]) == AIR_SUCCESSFUL){
 
 			/* detect mode code */
 			if((subaddress1 == 0) || (subaddress1 == 31)){
@@ -2312,19 +2208,13 @@ static int brm_bc_process_command(volatile unsigned short *mem, struct bc_desc *
 				if((wcmc == 16) || (wcmc == 18) || (wcmc == 19)){
 
 					/* copy received data to user buffer */
-					memcpy((void *)rw_args->data, (void *)&mem[desc->dptr], 2);
-
-					/* header length */
-					rw_args->hdr_len = 1;
+					memcpy(get_payload(buf), (void *)&mem[desc->dptr], 2);
 
 					/* data length */
-					rw_args->data_len = 2;
-
-					/* data length */
-					rw_args->bytes_moved = 2;
+					buf->payload_size = 2;
 
 					/* copy milstd header */
-					hdr = (milstd_header_t *)rw_args->hdr;
+					hdr = (milstd_header_t *)get_header(buf);
 
 					/* RT address 1 */
 					hdr->desc = subaddress1;
@@ -2346,19 +2236,13 @@ static int brm_bc_process_command(volatile unsigned short *mem, struct bc_desc *
 				}
 				
 				/* copy received data to user buffer */
-				memcpy((void *)rw_args->data, (void *)&mem[desc->dptr], wcmc*2);
-				
-				/* header length */
-				rw_args->hdr_len = 1;
+				memcpy(get_payload(buf), (void *)&mem[desc->dptr], wcmc*2);
 				
 				/* data length */
-				rw_args->data_len = wcmc*2;
-				
-				/* data length */
-				rw_args->bytes_moved = wcmc*2;
+				buf->payload_size = wcmc*2;
 				
 				/* copy milstd header */
-				hdr = (milstd_header_t *)rw_args->hdr;
+				hdr = (milstd_header_t *)get_header(buf);
 				
 				/* RT address 1 */
 				hdr->desc = subaddress1;
@@ -2388,12 +2272,12 @@ static int brm_bc_process_command(volatile unsigned short *mem, struct bc_desc *
 /**
  * @brief Iterates through a BC command list, extracts any data a does maintenance operations
  *
- * @param [in] minor minor device number whose list is to be processed
- * @param [in,out] rw_args Input/Output buffer and respective sizes
+ * @param [in] iop_dev iop 1553 support struct
+ * @param [out] arg pointer to iop wrapper
  *
  * @return status of the operation:
- *  	- RTEMS_SUCESSFULL: Data was sucessfully read.
- * 		- RTEMS_TIMEOUT: End of list.
+ *  	- AIR_SUCCESSFUL: Data was sucessfully read.
+ * 		- AIR_TIMED_OUT: End of list.
  *
  * This function will obtain the list that is currently being processed by
  * the bc core and will process the already completed commands. Each command is
@@ -2403,13 +2287,16 @@ static int brm_bc_process_command(volatile unsigned short *mem, struct bc_desc *
  * reached its end. The function starts processing the list in a previously read 
  * position. It then follows the branching structure of the list. 
  */
-rtems_status_code brm_bc_process_completed_list(unsigned int minor, libio_rw_args_t *rw_args)
+uint32_t brm_bc_process_completed_list(iop_device_driver_t *iop_dev, void *arg)
 {
 	/* return code */
-	rtems_status_code status;
+	air_status_code_e status;
 	
-	/* Current device */
-	brm_priv *bDev;
+	iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
+
+	/* Get driver priv struct */
+	iop_1553_device_t *device = (iop_1553_device_t *) iop_dev;
+	brm_priv *bDev = (brm_priv *) (device->dev.driver);
 	
 	/* indicates if data was sucessfully read or if the list has ended */
 	int end = 0;
@@ -2420,10 +2307,7 @@ rtems_status_code brm_bc_process_completed_list(unsigned int minor, libio_rw_arg
 	/* Command opcode */
 	uint8_t opcode;
 	
-	/* current minor device internal data structure */
-	bDev = &brms[minor];
-	
-	status = RTEMS_SUCCESSFUL;
+	status = AIR_SUCCESSFUL;
 	
 	/* @todo place a limit in the number of reads... */
 	while(end == 0){
@@ -2447,7 +2331,7 @@ rtems_status_code brm_bc_process_completed_list(unsigned int minor, libio_rw_arg
 				if((0 == current->tsw[0]) && !(current->ctrl & 0x1)){
 				
 					/* this descriptor was not acessed. try again later */
-					status = RTEMS_TIMEOUT; 
+					status = AIR_TIMED_OUT; 
 					
 					/* we reached the end of the processed command list */
 					end = 1;
@@ -2455,7 +2339,7 @@ rtems_status_code brm_bc_process_completed_list(unsigned int minor, libio_rw_arg
 				} else{
 					
 					/* descriptor was acessed, so obtain any data and check for errors */
-					if(brm_bc_process_command(bDev->mem, current, rw_args) == 1){
+					if(brm_bc_process_command(bDev->mem, current, wrapper->buffer) == 1){
 					
 						/* data was successfully read */
 						end = 1;
@@ -2503,7 +2387,7 @@ rtems_status_code brm_bc_process_completed_list(unsigned int minor, libio_rw_arg
  * @param [in] hdr Mil-std header comprising a RT address and a subaddress
  * @param [in] size data buffer length in bytes
  *
- * @return rtems_status_code; status of the operation:
+ * @return air_status_code_e; status of the operation:
  *  	- RTEMS_SUCESSFULL: Data was sucessfully written to the list
  * 		- RTEMS_NOT_DEFINED: this data is not linked to any command in the list
  *
@@ -2514,15 +2398,12 @@ rtems_status_code brm_bc_process_completed_list(unsigned int minor, libio_rw_arg
  * This header is composed by one RT address and one subaddress.
  *
  */
-rtems_status_code brm_bc_insert_new_data(unsigned int minor, uint8_t *data,
+air_status_code_e brm_bc_insert_new_data(brm_priv *bDev, uint8_t *data,
 										 milstd_header_t *hdr, unsigned int size)
 {
 	
 	/* return code */
-	rtems_status_code status;
-	
-	/* Current device */
-	brm_priv *bDev = &brms[minor];
+	air_status_code_e status;
 	
 	/* Current descriptor */
 	struct bc_desc *desc;
@@ -2536,7 +2417,7 @@ rtems_status_code brm_bc_insert_new_data(unsigned int minor, uint8_t *data,
 	if(desc == NULL){
 		
 		/* no descriptor was obtained */
-		status = RTEMS_NOT_DEFINED;
+		status = AIR_NOT_AVAILABLE;
 	
 	} else{
 	
@@ -2554,7 +2435,7 @@ rtems_status_code brm_bc_insert_new_data(unsigned int minor, uint8_t *data,
 		desc->tsw[1] = 0;
 		
 		/* data was appended sucessfully */
-		status = RTEMS_SUCCESSFUL;
+		status = AIR_SUCCESSFUL;
 	}
 	
 	return status;

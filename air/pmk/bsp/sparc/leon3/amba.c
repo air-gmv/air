@@ -55,6 +55,20 @@
  * @ingroup bsp_leon_amba
  */
 #define get_irq(x)                              ((x) & 0x1F)
+/**
+ * @brief Set address bit
+ * @param adr register address
+ * @param bit bit position
+ * @ingroup bsp_leon_amba
+ */
+#define SET_BIT_REG(adr, bit)               *(volatile unsigned int *)(adr) |= (1<<bit);
+/**
+ * @brief Clear address bit
+ * @param adr register address
+ * @param bit bit position
+ * @ingroup bsp_leon_amba
+ */
+#define CLEAR_BIT_REG(adr, bit)             *(volatile unsigned int *)(adr) &= ~(1<<bit);
 
 /**
  * @brief Search an AMBA I/O area for AHP Slaves
@@ -62,7 +76,7 @@
  * @param io_area I/O area to be searched
  * @ingroup bsp_leon_amba
  */
-static void amba_search_ahp_slaves(
+static void amba_search_ahb_slaves(
         amba_confarea_t *amba_conf, air_uptr_t io_area) {
 
     int i;
@@ -70,7 +84,7 @@ static void amba_search_ahp_slaves(
     for (i = 0; i < SCAN_DEPTH && amba_conf->ahb_slaves.count < AHB_SLAVES; ++i) {
 
         /* check if the device configuration is valid */
-        if (get_vendor(dev_config[0]) != 0 && dev_config[4] != 0) {
+        if (get_vendor(dev_config[0]) != 0) {
             amba_conf->ahb_slaves.addr[amba_conf->ahb_slaves.count] = dev_config;
             ++amba_conf->ahb_slaves.count;
         }
@@ -91,9 +105,9 @@ static void amba_search_apb_slaves(
 
     int i;
     unsigned int *dev_config = (unsigned int *)(io_area | MASTER_AREA);
-    for (i = 0; i < SCAN_DEPTH && amba_conf->apb_slaves.count < APB_SLAVES; ++i){
+    for (i = 0; i < APB_SLAVES/2 && amba_conf->apb_slaves.count < APB_SLAVES; ++i){
 
-        if (dev_config != NULL) {
+        if (get_vendor(dev_config[0]) != 0) {
             amba_conf->apb_slaves.addr[amba_conf->apb_slaves.count] = dev_config;
             amba_conf->apb_slaves.apb_masters[amba_conf->apb_slaves.count] = io_area;
             ++amba_conf->apb_slaves.count;
@@ -103,6 +117,39 @@ static void amba_search_apb_slaves(
         dev_config += APB_SIZE;
     }
 
+}
+
+/**
+ * @brief Search over bridge for more AHB masters
+ * @param amba_conf Pointer to the AMBA configuration area
+ * @param io_area I/O area to be searched
+ * @ingroup 
+ */
+static void amba_search_bridge(
+        amba_confarea_t *amba_conf, air_uptr_t io_area){
+
+    int i;
+    unsigned int *dev_config;
+
+    /* plug and play area is ussually the last 4 Kb */
+    dev_config = (unsigned int *)(io_area | MASTER_AREA);
+
+    /* look for master devices */
+    for(i = 0; (i < SCAN_DEPTH && amba_conf->ahb_masters.count < AHB_MASTERS); i++){
+
+        /* check if the device configuration is valid */
+        if (get_vendor(dev_config[0]) != 0) {
+
+            amba_conf->ahb_masters.addr[amba_conf->ahb_masters.count] = dev_config;
+            ++amba_conf->ahb_masters.count;
+        }
+
+        /* advance to the next device */
+        dev_config += AHB_SIZE;
+    }
+
+    /* look for AHB slave devices */
+    amba_search_ahb_slaves(amba_conf, io_area);
 }
 
 /**
@@ -122,11 +169,10 @@ static void amba_search_ahb_masters(
 
     /* look for master devices */
     dev_config = (unsigned int *)(io_area | MASTER_AREA);
-    for (i = 0; i < SCAN_DEPTH && amba_conf->ahb_masters.count < AHB_MASTERS; ++i) {
+    for (i = 0; i < SCAN_DEPTH; ++i) {
 
         /* check if the device configuration is valid */
-        if (get_vendor(dev_config[0]) != 0 &&
-            dev_config[4] != (air_uptr_t)NULL) {
+        if (get_vendor(dev_config[0]) != 0) {
 
             amba_conf->ahb_masters.addr[amba_conf->ahb_masters.count] = dev_config;
             ++amba_conf->ahb_masters.count;
@@ -137,7 +183,7 @@ static void amba_search_ahb_masters(
     }
 
     /* look for AHB slave devices */
-    amba_search_ahp_slaves(amba_conf, io_area);
+    amba_search_ahb_slaves(amba_conf, io_area);
 
     /* scan bridges in the newly found AHB salves */
     for (i = scanned_devices; i < amba_conf->ahb_slaves.count; ++i) {
@@ -152,7 +198,7 @@ static void amba_search_ahb_masters(
             /* get bridge IO area */
             io_area = *(amba_conf->ahb_slaves.addr[i] + 2);
             if (get_version(conf) != 0 && io_area != (air_uptr_t)NULL){
-                amba_search_ahb_masters(amba_conf, io_area);
+                amba_search_bridge(amba_conf, io_area);
             }
             continue;
         }
@@ -319,4 +365,85 @@ int amba_get_apb_slave(
 
     /* device not found */
     return 0;
+}
+
+int amba_get_number_apbslv_devices (
+        amba_confarea_t * amba_conf, int vendor, int device){
+
+    /* look for the specified device */
+    int i, count = 0;
+    for (i = 0; i < amba_conf->apb_slaves.count; ++i){
+
+        /* get configuration word */
+        air_u32_t conf = *amba_conf->apb_slaves.addr[i];
+        if (get_vendor(conf) == vendor && get_device(conf) == device)
+            ++count;
+    }
+    return count;
+}
+
+int clock_gating_enable(amba_confarea_t* clk_amba_bus, clock_gating_device core_to_enable)
+{
+    /* Amba APB device */
+    amba_apb_dev_t ambadev;
+
+    /* Get AMBA AHB device info from Plug&Play */
+    if(amba_get_apb_slave(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE, 0, &ambadev) == 0)
+        return 0;
+
+    /* From LEON4 UM:
+     * To enable the clock for a core, the following procedure should be applied
+     * 1. Write a 1 to the corresponding bit in the unlock register
+     * 2. Write a 1 to the corresponding bit in the core reset register
+     * 3. Write a 1 to the corresponding bit in the clock enable register
+     * 4. Write a 0 to the corresponding bit in the core reset register
+     * 5. Write a 0 to the corresponding bit in the unlock register
+     */
+
+    /* Copy pointer to device's memory mapped registers */
+    clkgate_regs *gate_regs = (void *)ambadev.start;
+
+    if(!(gate_regs->clock_enable & (1<<core_to_enable)))
+    {
+        /* 1. Unlock gate to allow enabling it */
+        SET_BIT_REG(&gate_regs->unlock, core_to_enable);
+
+        /* 2. Reset gate */
+        SET_BIT_REG(&gate_regs->core_reset, core_to_enable);
+
+        /* 3. Enable gate */
+        SET_BIT_REG(&gate_regs->clock_enable, core_to_enable);
+
+        /* 4. Clear gate reset*/
+        CLEAR_BIT_REG(&gate_regs->core_reset, core_to_enable);
+
+        /* 5. Lock gate */
+        CLEAR_BIT_REG(&gate_regs->unlock, core_to_enable);
+    }
+    return 1;
+}
+
+
+int clock_gating_disable(amba_confarea_t* clk_amba_bus, clock_gating_device core_to_disable)
+{
+    /* Amba APB device */
+    amba_apb_dev_t ambadev;
+
+    /* Get AMBA AHB device info from Plug&Play */
+    if(amba_get_apb_slave(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE, 0, &ambadev) == 0)
+        return 0;
+
+    /* Copy pointer to device's memory mapped registers */
+    clkgate_regs *gate_regs = (void *)ambadev.start;
+
+    /* From LEON4 UM:
+     * 1. Write a 1 to the corresponding bit in the unlock register
+     * 2. Write a 0 to the corresponding bit in the clock enable register
+     * 3. Write a 0 to the corresponding bit in the unlock register
+     */
+    SET_BIT_REG(&gate_regs->unlock, core_to_disable);
+    CLEAR_BIT_REG(&gate_regs->clock_enable, core_to_disable);
+    CLEAR_BIT_REG(&gate_regs->unlock, core_to_disable);
+
+    return 1;
 }

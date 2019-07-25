@@ -37,18 +37,10 @@
 
 #define GRSPW_SUPPORTED
 
-#include <bsp.h>
 #include <air.h>
-#include <rtems.h>
-#include <string.h>
-#include <amba.h>
-#include <ambapp.h>
-#include <ambaext.h>
-
-#include <IOPlibio.h>
+#include <bsp.h>
 #include <IOPgrspw.h>
 #include <spw_support.h>
-#include <IOPdriverconfig_interface.h>
 
 #define DBGSPW_IOCALLS 1
 #define DBGSPW_TX 2
@@ -103,7 +95,7 @@ spw_user_config *user_config;
 spw_user_config *defconf;
 
 /* Pointer to amba bus structure*/
-struct ambapp_bus *amba_bus;
+amba_confarea_t *amba_bus;
 
 /* Global var for debuging purposes */
 void *MURTA;
@@ -157,42 +149,35 @@ int spw_get_conf_size(void);
 void set_sys_freq(){
 
     /* Get System clock frequency */
-	sys_freq_khz = 0;
-		
-	/* 
-	 * Auto Detect the SPW core frequency by assuming that the system frequency is
-	 * is the same as the SPW core frequency.
-	 */
-	#ifndef SYS_FREQ_KHZ
-	#ifdef LEON3
-		/* LEON3: find timer address via AMBA Plug&Play info */	
-		{
-			struct ambapp_apb_info gptimer;
-			struct gptimer_regs  *tregs;
-			
-			/*search for gaisler timer in the amba bus*/
-			if ( ambapp_find_apbslv(&ambapp_plb,VENDOR_GAISLER,GAISLER_GPTIMER,&gptimer) == 1 ){
-				
-				/*Timer memory mapped registers*/
-				tregs = (struct gptimer_regs*)gptimer.start;
-				
-				/*Calculate System frequency based on the timer register*/
-				sys_freq_khz = (tregs->scaler_reload+1)*1000;
-				
-			}else{
-				/*Use default frequency:40Mhz*/
-				sys_freq_khz = 40000; 
-				iop_debug("SPW: Failed to detect system frequency\n\r");
-			}
-			
-		}
-	#else
-		#error CPU not supported by SPW driver
-	#endif
-	#else
-		/* Use hardcoded frequency */
-		sys_freq_khz = SYS_FREQ_KHZ;
-	#endif        
+    sys_freq_khz = 0;
+
+    /* 
+     * Auto Detect the SPW core frequency by assuming that the system frequency is
+     * is the same as the SPW core frequency.
+     */
+    #ifndef SYS_FREQ_KHZ
+        /* LEON3: find timer address via AMBA Plug&Play info */	
+        amba_apb_dev_t gptimer;
+        timer_regmap_t *tregs;
+
+        /*search for gaisler timer in the amba bus*/
+        if ( amba_get_apb_slave(amba_bus,VENDOR_GAISLER,GAISLER_GPTIMER,0,&gptimer) == 1 ){
+
+            /*Timer memory mapped registers*/
+            tregs = (timer_regmap_t*)gptimer.start;
+
+            /*Calculate System frequency based on the timer register*/
+            sys_freq_khz = (tregs->scaler_reload+1)*1000;
+
+        }else{
+            /*Use default frequency:40Mhz*/
+            sys_freq_khz = 40000; 
+            iop_debug("SPW: Failed to detect system frequency\n\r");
+        }
+    #else
+        /* Use hardcoded frequency */
+        sys_freq_khz = SYS_FREQ_KHZ;
+    #endif
 
 }
 
@@ -306,7 +291,7 @@ void spw_hw_handle_errors(SPW_DEV *pDev){
  */
 void spw_check_tx(SPW_DEV *pDev){
 	/*Control Register Contents*/
-	int ctrl;
+	unsigned int ctrl;
 	
 	/*DMA Control Register Contents*/
     unsigned int dmactrl;
@@ -380,7 +365,7 @@ void spw_check_tx(SPW_DEV *pDev){
  *     - RTEMS_SUCESSFULL operation completed successfully
  *	
  **/
-rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
+uint32_t spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 {
 	
 	iop_spw_device_t *device = (iop_spw_device_t *)iop_dev;
@@ -390,10 +375,10 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 	spw_user_config *config;
 	
 	/*Amba APB device*/
-	struct ambapp_apb_info dev;
+	amba_apb_dev_t dev;
 	
 	/*Get amba bus configuration*/
-	amba_bus = &ambapp_plb;
+	amba_bus = (amba_confarea_t *)air_syscall_get_ambaconf();
 	
 	/* get memory for the internal structure */
 	// spw_dev = get_spw_dev();
@@ -412,21 +397,21 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 	/*get default configuration*/
 	defconf = user_config;
 	
-	if (amba_find_next_apbslv(amba_bus,VENDOR_GAISLER,GAISLER_SPW,&dev,cores_init)) {
+	if (amba_get_apb_slave(amba_bus,VENDOR_GAISLER,GAISLER_SPW,cores_init,&dev)) {
 			
 		/*store core version in device's structure*/
 		pDev->core_ver = 1;
-	} else if (amba_find_next_apbslv(amba_bus,VENDOR_GAISLER,GAISLER_SPW2,&dev,cores_init)) {
+	} else if (amba_get_apb_slave(amba_bus,VENDOR_GAISLER,GAISLER_SPW2,cores_init,&dev)) {
 		
 		/*store core version in device's structure*/
 		pDev->core_ver = 2;
-	} else if (amba_find_next_apbslv(amba_bus,VENDOR_GAISLER,GAISLER_SPW2_DMA,&dev,cores_init)) {
+	} else if (amba_get_apb_slave(amba_bus,VENDOR_GAISLER,GAISLER_SPW2_DMA,cores_init,&dev)) {
 		
 		/*store core version in device's structure*/
 		pDev->core_ver = 3;
 	} else {
 		SPACEWIRE_DBG2("GRSPW device not found...\n");
-		return RTEMS_INTERNAL_ERROR;
+		return AIR_DEVICE_NOT_FOUND;
 	}
 	/* Pointer to device's memory mapped registers*/
 	pDev->regs = (LEON3_SPACEWIRE_Regs_Map *)dev.start;
@@ -511,6 +496,7 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 	
 	/**** Initialize Hardware and semaphores ****/
 	/*Create TX semaphore*/
+#if 0
 	rtems_semaphore_create(
 			rtems_build_name('T', 'x', 'S', c), 
 			0, 
@@ -527,6 +513,7 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 			RTEMS_NO_PRIORITY_CEILING, 
 			0, 
 			&(pDev->rxsp));
+#endif
 	c++;
 	
 	/*Initialize Hardware*/
@@ -535,7 +522,7 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
 	/*Startup Hardware*/
 	//spw_hw_startup(pDev,-1);
 	
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
 
@@ -547,12 +534,12 @@ rtems_device_driver spw_initialize(iop_device_driver_t *iop_dev, void *arg)
  *  \param [in]  arg : not used. 
  *
  *  \return Status of the operation:
- *		- RTEMS_INVALID_NUMBER if minor is invalid
- *		- RTEMS_RESOURCE_IN_USE if the device is already open
- *		- RTEMS_SUCCESSFUL if the operation completed sucessfully
+ *		- AIR_DEVICE_NOT_FOUND if minor is invalid
+ *		- AIR_NO_ACTION if the device is already open
+ *		- AIR_SUCCESSFUL if the operation completed sucessfully
  *	
  **/
-rtems_device_driver spw_open(iop_device_driver_t *iop_dev, void *arg)
+uint32_t spw_open(iop_device_driver_t *iop_dev, void *arg)
 {
 	
 	/*Current SpW device*/
@@ -563,12 +550,12 @@ rtems_device_driver spw_open(iop_device_driver_t *iop_dev, void *arg)
 	/*Check if device exists*/
 	if ( pDev->minor >= (spw_cores+spw_cores2+spw_cores2_dma) ) {
 			SPACEWIRE_DBG("minor %i too big\n", pDev->minor);
-			return RTEMS_INVALID_NUMBER;
+			return AIR_DEVICE_NOT_FOUND;
 	}
 	
 	/*Check if device was already opened*/
 	if ( pDev->open )
-			return RTEMS_RESOURCE_IN_USE;
+			return AIR_NO_ACTION;
 	
 	/* Mark device as open */
 	pDev->open = 1; 
@@ -603,7 +590,7 @@ rtems_device_driver spw_open(iop_device_driver_t *iop_dev, void *arg)
 	
 	pDev->running = 1;
 	
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
 
@@ -615,10 +602,10 @@ rtems_device_driver spw_open(iop_device_driver_t *iop_dev, void *arg)
  *  \param [in]  arg : not used
  *
  *  \return Status of the operation:
- *		- RTEMS_SUCCESSFUL if the operation completed sucessfully
+ *		- AIR_SUCCESSFUL if the operation completed sucessfully
  *
  **/	
-rtems_device_driver spw_close(iop_device_driver_t *iop_dev, void *arg)
+uint32_t spw_close(iop_device_driver_t *iop_dev, void *arg)
 {   
 	/*Current SpW device*/
 	iop_spw_device_t *device = (iop_spw_device_t *)iop_dev;
@@ -639,7 +626,7 @@ rtems_device_driver spw_close(iop_device_driver_t *iop_dev, void *arg)
 	/* Mark device closed - not open */
 	pDev->open = 0;
 	
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
 
@@ -651,12 +638,12 @@ rtems_device_driver spw_close(iop_device_driver_t *iop_dev, void *arg)
  *  \param [in]  arg  #libio_rw_args_t with data buffer and data length
  *
  *  \return Status of the operation:
- *		- RTEMS_SUCCESSFUL if the operation completed sucessfully
- *		- RTEMS_INVALID_NAME: Device is stopped or the user arguments are invalid
- *		- RTEMS_RESOURCE_IN_USE: There is no data to be read and we can't block
+ *		- AIR_SUCCESSFUL if the operation completed sucessfully
+ *		- AIR_INVALID_PARAM: Device is stopped or the user arguments are invalid
+ *		- AIR_NOT_AVAILABLE: There is no data to be read and we can't block
  *
  **/	
-rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg)
+uint32_t spw_read(iop_device_driver_t *iop_dev, void *arg)
 {
 	/*Current SpW device*/
 	iop_spw_device_t *device = (iop_spw_device_t *)iop_dev;
@@ -671,12 +658,12 @@ rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg)
 	
 	/* is link up? */
 	if ( !pDev->running ) {
-		return RTEMS_INVALID_NAME;
+		return AIR_INVALID_PARAM;
 	}
 	
 	/* Verify user arguments consistency*/
 	if (iop_buffer->v_addr == NULL) {
-		return RTEMS_INVALID_NAME;
+		return AIR_INVALID_PARAM;
 	}
 	
 	//SPACEWIRE_DBGC(DBGSPW_IOCALLS, "read  [%i,%i]: buf:0x%x len:%i \n", major, minor, (unsigned int)rw_args->data, rw_args->data_len);
@@ -692,11 +679,11 @@ rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg)
 			SPACEWIRE_DBG2("Rx blocking\n");
 			
 			/* wait a moment for any RX descriptors to get available */
-			rtems_task_wake_after(pDev->config.wait_ticks);
+//			rtems_task_wake_after(pDev->config.wait_ticks);
 		} else {
 			SPACEWIRE_DBG2("Rx non blocking\n");
 			/*We can't block waiting, so we return*/
-			return RTEMS_RESOURCE_IN_USE;
+			return AIR_NOT_AVAILABLE;
 		}
 	}
 
@@ -718,7 +705,7 @@ rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg)
 //	rw_args->bytes_moved = count;
 	
 	/*We were able to read something, return success*/
-	return RTEMS_SUCCESSFUL;    
+	return AIR_SUCCESSFUL;    
 }
 /** 
  *  \brief writes data to a SpW device with a specific minor number
@@ -728,12 +715,12 @@ rtems_device_driver spw_read(iop_device_driver_t *iop_dev, void *arg)
  *  \param [in]  arg : #iop_wrapper_t with data buffer and data length
  *
  *  \return Status of the operation:
- *		- RTEMS_SUCCESSFUL if the operation completed sucessfully
- *		- RTEMS_INVALID_NAME: Device is stopped or the user arguments are invalid
- *		- RTEMS_RESOURCE_IN_USE: Write buffers are full and we can't block waiting
+ *		- AIR_SUCCESSFUL if the operation completed sucessfully
+ *		- AIR_INVALID_PARAM: Device is stopped or the user arguments are invalid
+ *		- AIR_NOT_AVAILABLE: Write buffers are full and we can't block waiting
  *
  **/	
-rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
+uint32_t spw_write(iop_device_driver_t *iop_dev, void *arg)
 {   
 	/*Current SpW device*/
 	iop_spw_device_t *device = (iop_spw_device_t *)iop_dev;
@@ -748,14 +735,14 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 	/* is link up? */
 	if ( !pDev->running ) {
 		iop_debug("dev not running?\n");
-		return RTEMS_INVALID_NAME;
+		return AIR_INVALID_PARAM;
 	}
 	
 	/* Check if the request size is feasible and if the buffer has data*/
 	if ((iop_buffer->payload_size > pDev->txdbufsize) || (iop_buffer->payload_size < 1) || (iop_buffer->v_addr == NULL)) {
 		iop_debug("the buffer hasnt data or its not feasible (too big).    ");
 		iop_debug("len: %ld, data: %s, bufsize: %ld\n",	iop_buffer->payload_size, (char *)iop_buffer->v_addr, pDev->txdbufsize);
-		return RTEMS_INVALID_NAME;
+		return AIR_INVALID_PARAM;
 	}
 	
 	/* Check For errors*/
@@ -773,20 +760,20 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 			SPACEWIRE_DBG2("Tx Block on full \n");
 			
 			/* Sleep for a while*/
-			rtems_task_wake_after(pDev->config.wait_ticks);
+//			rtems_task_wake_after(pDev->config.wait_ticks);
 		} else {
 			SPACEWIRE_DBG2("Tx non blocking return when full \n");
 			
 			/* we cannot block and all descriptors are used, so we have to return*/
-			return RTEMS_RESOURCE_IN_USE;
+			return AIR_NOT_AVAILABLE;
 		}
 	}
 	
 	/* We were able to write*/
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
-//rtems_device_driver spw_control(
+//air_status_code_e spw_control(
 //        rtems_device_major_number major,
 //        rtems_device_minor_number minor,
 //        void                    * arg
@@ -796,12 +783,12 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //        spw_ioctl_pkt_send *args;
 //        unsigned int tmp,nodeaddr,nodemask;
 //        int timeout;
-//        rtems_device_driver ret;
+//        air_status_code_e ret;
 //        libio_ioctl_args_t	*ioarg = (libio_ioctl_args_t *) arg;
 //        SPACEWIRE_DBGC(DBGSPW_IOCALLS, "ctrl [%i,%i]\n", major, minor);
 //        
 //        if (!ioarg)
-//                return RTEMS_INVALID_NAME;
+//                return AIR_INVALID_PARAM;
 //
 //		
 //        ioarg->ioctl_return = 0;
@@ -810,7 +797,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                        /*set node address*/
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL, "SPACEWIRE_IOCTRL_SET_NODEADDR %i\n",(unsigned int)ioarg->buffer);
 //                        if ((unsigned int)ioarg->buffer > 255) {
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        nodeaddr = ((unsigned int)ioarg->buffer) & 0xff;
 //                        tmp = SPW_READ(&pDev->regs->nodeaddr);
@@ -818,7 +805,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                        tmp |= nodeaddr;
 //                        SPW_WRITE(&pDev->regs->nodeaddr, tmp);
 //                        if ((SPW_READ(&pDev->regs->nodeaddr)&0xff) != nodeaddr) {
-//                                return RTEMS_IO_ERROR;
+//                                return AIR_DEVICE_ERROR;
 //                        }
 //                        pDev->config.nodeaddr = nodeaddr;
 //                        break;
@@ -827,7 +814,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL, "SPACEWIRE_IOCTRL_SET_NODEMASK %i\n",(unsigned int)ioarg->buffer);
 //                        if ( pDev->core_ver > 1 ){
 //                          if ((unsigned int)ioarg->buffer > 255) {
-//                                  return RTEMS_INVALID_NAME;
+//                                  return AIR_INVALID_PARAM;
 //                          }
 //                          nodemask = ((unsigned int)ioarg->buffer) & 0xff;
 //                          tmp = SPW_READ(&pDev->regs->nodeaddr);
@@ -835,7 +822,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                          tmp |= nodemask<<8;
 //                          SPW_WRITE(&pDev->regs->nodeaddr, tmp);
 //                          if (((SPW_READ(&pDev->regs->nodeaddr)>>8)&0xff) != nodemask) {
-//                                  return RTEMS_IO_ERROR;
+//                                  return AIR_DEVICE_ERROR;
 //                          }
 //                          pDev->config.nodemask = nodemask;
 //                        }else{
@@ -845,7 +832,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                case SPACEWIRE_IOCTRL_SET_RXBLOCK:
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL, "SPACEWIRE_IOCTRL_SET_RXBLOCK %i \n", (unsigned int)ioarg->buffer);
 //                        if ((unsigned int)ioarg->buffer > 1) {
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        pDev->config.rx_blocking = (unsigned int)ioarg->buffer;
 //                        break;
@@ -855,39 +842,39 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                                return RTEMS_NOT_IMPLEMENTED;
 //                        }
 //                        if ((unsigned int)ioarg->buffer > 255) {
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        SPW_WRITE(&pDev->regs->destkey, (unsigned int)ioarg->buffer);
 //                        if (SPW_READ(&pDev->regs->destkey) != (unsigned int)ioarg->buffer) {
-//                                return RTEMS_IO_ERROR;
+//                                return AIR_DEVICE_ERROR;
 //                        }
 //                        pDev->config.destkey = (unsigned int)ioarg->buffer;
 //                        break;
 //                case SPACEWIRE_IOCTRL_SET_CLKDIV:
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL,"SPACEWIRE_IOCTRL_SET_CLKDIV %i\n", (unsigned int)ioarg->buffer);
 //                        if ((unsigned int)ioarg->buffer > 255) {
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        tmp = SPW_READ(&pDev->regs->clkdiv);
 //                        tmp &= ~0xff; /* Remove old Clockdiv Setting */
 //                        tmp |= ((unsigned int)ioarg->buffer) & 0xff; /* add new clockdiv setting */
 //                        SPW_WRITE(&pDev->regs->clkdiv, tmp);
 //                        if (SPW_READ(&pDev->regs->clkdiv) != tmp) {
-//                                return RTEMS_IO_ERROR;
+//                                return AIR_DEVICE_ERROR;
 //                        }
 //                        pDev->config.clkdiv = tmp;
 //                        break;
 //                case SPACEWIRE_IOCTRL_SET_CLKDIVSTART:
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL,"SPACEWIRE_IOCTRL_SET_CLKDIVSTART %i\n", (unsigned int)ioarg->buffer);
 //                        if ((unsigned int)ioarg->buffer > 255) {
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        tmp = SPW_READ(&pDev->regs->clkdiv);
 //                        tmp &= ~0xff00; /* Remove old Clockdiv Start Setting */
 //                        tmp |= (((unsigned int)ioarg->buffer) & 0xff)<<8; /* add new clockdiv start setting */
 //                        SPW_WRITE(&pDev->regs->clkdiv, tmp);
 //                        if (SPW_READ(&pDev->regs->clkdiv) != tmp) {
-//                                return RTEMS_IO_ERROR;
+//                                return AIR_DEVICE_ERROR;
 //                        }
 //                        pDev->config.clkdiv = tmp;
 //                        break;                        
@@ -895,11 +882,11 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL,"SPACEWIRE_IOCTRL_SET_TIMER %i\n", (unsigned int)ioarg->buffer);
 //                        if ( pDev->core_ver <= 1 ) {
 //                          if ((unsigned int)ioarg->buffer > 4095) {
-//                                  return RTEMS_INVALID_NAME;
+//                                  return AIR_INVALID_PARAM;
 //                          }
 //                          SPW_WRITE(&pDev->regs->timer, (SPW_READ(&pDev->regs->timer) & 0xFFFFF000) | ((unsigned int)ioarg->buffer & 0xFFF));
 //                          if ((SPW_READ(&pDev->regs->timer) & 0xFFF) != (unsigned int)ioarg->buffer) {
-//                                  return RTEMS_IO_ERROR;
+//                                  return AIR_DEVICE_ERROR;
 //                          }
 //                          pDev->config.timer = (unsigned int)ioarg->buffer;
 //                        }else{
@@ -910,11 +897,11 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL,"SPACEWIRE_IOCTRL_SET_DISCONNECT %i\n", (unsigned int)ioarg->buffer);
 //                        if ( pDev->core_ver <= 1 ) {
 //                          if ((unsigned int)ioarg->buffer > 1023) {
-//                                  return RTEMS_INVALID_NAME;
+//                                  return AIR_INVALID_PARAM;
 //                          }
 //                          SPW_WRITE(&pDev->regs->timer, (SPW_READ(&pDev->regs->timer) & 0xFFC00FFF) | (((unsigned int)ioarg->buffer & 0x3FF) << 12));
 //                          if (((SPW_READ(&pDev->regs->timer) >> 12) & 0x3FF) != (unsigned int)ioarg->buffer) {
-//                                  return RTEMS_IO_ERROR;
+//                                  return AIR_DEVICE_ERROR;
 //                          }
 //                          pDev->config.disconnect = (unsigned int)ioarg->buffer;
 //                        }else{
@@ -924,68 +911,68 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                case SPACEWIRE_IOCTRL_SET_PROMISCUOUS:        
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL,"SPACEWIRE_IOCTRL_SET_PROMISCUOUS %i \n", (unsigned int)ioarg->buffer);
 //                        if ((unsigned int)ioarg->buffer > 1) {
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        SPW_CTRL_WRITE(pDev, SPW_CTRL_READ(pDev) | ((unsigned int)ioarg->buffer << 5));
 //                        if (((SPW_CTRL_READ(pDev) >> 5) & 1) != (unsigned int)ioarg->buffer) {
-//                                return RTEMS_IO_ERROR;
+//                                return AIR_DEVICE_ERROR;
 //                        }
 //                        pDev->config.promiscuous = (unsigned int)ioarg->buffer;
 //                        break;
 //                case SPACEWIRE_IOCTRL_SET_RMAPEN:
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL,"SPACEWIRE_IOCTRL_SET_RMAPEN %i \n", (unsigned int)ioarg->buffer);
 //                        if ((unsigned int)ioarg->buffer > 1) {
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        SPW_CTRL_WRITE(pDev, (SPW_STATUS_READ(pDev) & 0xFFFEFFFF) | ((unsigned int)ioarg->buffer << 16));
 //                        if (((SPW_CTRL_READ(pDev) >> 16) & 1) != (unsigned int)ioarg->buffer) {
-//                                return RTEMS_IO_ERROR;
+//                                return AIR_DEVICE_ERROR;
 //                        }
 //                        pDev->config.rmapen = (unsigned int)ioarg->buffer;
 //                        break;
 //                case SPACEWIRE_IOCTRL_SET_RMAPBUFDIS: 
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL,"SPACEWIRE_IOCTRL_SET_RMAPBUFDIS %i \n", (unsigned int)ioarg->buffer);
 //                        if ((unsigned int)ioarg->buffer > 1) {
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        SPW_CTRL_WRITE(pDev, (SPW_STATUS_READ(pDev) & 0xFFFDFFFF) | ((unsigned int)ioarg->buffer << 17));
 //                        if (((SPW_CTRL_READ(pDev) >> 17) & 1) != (unsigned int)ioarg->buffer) {
-//                                return RTEMS_IO_ERROR;
+//                                return AIR_DEVICE_ERROR;
 //                        }
 //                        pDev->config.rmapbufdis = (unsigned int)ioarg->buffer;
 //                        break;
 //                case SPACEWIRE_IOCTRL_SET_CHECK_RMAP: 
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL,"SPACEWIRE_IOCTRL_SET_CHECK_RMAP %i \n", (unsigned int)ioarg->buffer);
 //                        if ((unsigned int)ioarg->buffer > 1) {
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        pDev->config.check_rmap_err = (unsigned int)ioarg->buffer;
 //                        break;
 //                case SPACEWIRE_IOCTRL_SET_RM_PROT_ID: 
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL, "SPACEWIRE_IOCTRL_SET_RM_PROT_ID %i \n", (unsigned int)ioarg->buffer);
 //                        if ((unsigned int)ioarg->buffer > 1) {
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        pDev->config.rm_prot_id = (unsigned int)ioarg->buffer;
 //                        break;
 //                case SPACEWIRE_IOCTRL_SET_TXBLOCK: 
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL, "SPACEWIRE_IOCTRL_SET_TXBLOCK %i \n", (unsigned int)ioarg->buffer);
 //                        if ((unsigned int)ioarg->buffer > 1) {
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        pDev->config.tx_blocking = (unsigned int)ioarg->buffer;
 //                        break;
 //                case SPACEWIRE_IOCTRL_SET_TXBLOCK_ON_FULL: 
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL, "SPACEWIRE_IOCTRL_SET_TXBLOCK_ON_FULL %i \n", (unsigned int)ioarg->buffer);
 //                        if ((unsigned int)ioarg->buffer > 1) {
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        pDev->config.tx_block_on_full = (unsigned int)ioarg->buffer;
 //                        break;        
 //                case SPACEWIRE_IOCTRL_SET_DISABLE_ERR: 
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL, "SPACEWIRE_IOCTRL_SET_DISABLE_ERR %i \n", (unsigned int)ioarg->buffer);
 //                        if ((unsigned int)ioarg->buffer > 1) {
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        pDev->config.disable_err = (unsigned int)ioarg->buffer;
 //                        break;
@@ -993,23 +980,23 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL, "SPACEWIRE_IOCTRL_SET_LINK_ERR_IRQ %i \n", (unsigned int)ioarg->buffer);
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL, "CTRL REG: %x\n", SPW_CTRL_READ(pDev));
 //                        if ((unsigned int)ioarg->buffer > 1) {
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        SPW_CTRL_WRITE(pDev, (SPW_CTRL_READ(pDev) & 0xFFFFFDF7) | ((unsigned int)ioarg->buffer << 9) | ((unsigned int)ioarg->buffer << 3));
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL, "CTRL REG: %x\n", SPW_CTRL_READ(pDev));
 //                        if (((SPW_CTRL_READ(pDev) >> 9) & 1) != (unsigned int)ioarg->buffer) {
-//                                return RTEMS_IO_ERROR;
+//                                return AIR_DEVICE_ERROR;
 //                        }
 //                        pDev->config.link_err_irq = (unsigned int)ioarg->buffer;
 //                        break;
 //                case SPACEWIRE_IOCTRL_SET_EVENT_ID:
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL, "SPACEWIRE_IOCTRL_SET_EVENT_ID %i \n", (unsigned int)ioarg->buffer);
-//                        pDev->config.event_id = (rtems_id)ioarg->buffer;
+//                        pDev->config.event_id = (unsigned int)ioarg->buffer;
 //                        SPACEWIRE_DBGC(DBGSPW_IOCTRL, "Event id: %i\n", pDev->config.event_id);
 //                        break;
 //                case SPACEWIRE_IOCTRL_GET_CONFIG:
 //                        if (ioarg->buffer == NULL)
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        SPACEWIRE_DBG2("SPACEWIRE_IOCTRL_GET_CONFIG \n");
 //                        (*(spw_config *)ioarg->buffer).nodeaddr = pDev->config.nodeaddr;
 //                        (*(spw_config *)ioarg->buffer).nodemask = pDev->config.nodemask;
@@ -1041,7 +1028,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                        break;
 //                case SPACEWIRE_IOCTRL_GET_STATISTICS: 
 //                        if (ioarg->buffer == NULL)
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        SPACEWIRE_DBG2("SPACEWIRE_IOCTRL_GET_STATISTICS \n");
 //                        (*(spw_stats *)ioarg->buffer).tx_link_err = pDev->stat.tx_link_err;
 //                        (*(spw_stats *)ioarg->buffer).rx_rmap_header_crc_err = pDev->stat.rx_rmap_header_crc_err;
@@ -1077,13 +1064,13 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                        break;
 //                case SPACEWIRE_IOCTRL_SEND:
 //                        if (ioarg->buffer == NULL)
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        args = (spw_ioctl_pkt_send *)ioarg->buffer;
 //                        args->sent = 0;
 //                        
 //                        /* is link up? */
 //                        if ( !pDev->running ) {
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //					
 //                        SPACEWIRE_DBGC(DBGSPW_IOCALLS, "write [%i,%i]: hlen: %i hbuf:0x%x dlen:%i dbuf:0x%x\n", major, minor, 
@@ -1097,7 +1084,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //						if ((args->hlen > pDev->txhbufsize) || (args->dlen > pDev->txdbufsize) || 
 //                            ((args->hlen+args->dlen) < 1) || 
 //                            ((args->hdr == NULL) && (args->hlen != 0)) || ((args->data == NULL) && (args->dlen != 0))) {
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        while ((args->sent = spw_hw_send(pDev, args->hlen, args->hdr, args->dlen, args->data)) == 0) {
 //                                if (pDev->config.tx_block_on_full == 1) { 
@@ -1105,7 +1092,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                                        rtems_task_wake_after(pDev->config.wait_ticks);
 //                                } else {
 //                                        SPACEWIRE_DBG2("Tx non blocking return when full \n");
-//                                        return RTEMS_RESOURCE_IN_USE;
+//                                        return AIR_NOT_AVAILABLE;
 //                                }
 //                        }
 //                        SPACEWIRE_DBGC(DBGSPW_IOCALLS, "Tx ioctl return: %i  \n", args->sent);
@@ -1116,7 +1103,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                        pDev->config.linkstart = 0;
 //                        SPW_CTRL_WRITE(pDev, (SPW_CTRL_READ(pDev) & 0xFFFFFFFC) | 1);
 //                        if ((SPW_CTRL_READ(pDev) & 3) != 1) {
-//                                return RTEMS_IO_ERROR;
+//                                return AIR_DEVICE_ERROR;
 //                        }
 //                        break;
 //
@@ -1125,7 +1112,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                        pDev->config.linkstart = 1;
 //                        SPW_CTRL_WRITE(pDev, (SPW_CTRL_READ(pDev) & 0xFFFFFFFC) | 2);
 //                        if ((SPW_CTRL_READ(pDev) & 3) != 2) {
-//                                return RTEMS_IO_ERROR;
+//                                return AIR_DEVICE_ERROR;
 //                        }
 //                        break;
 //                
@@ -1162,14 +1149,14 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                          tmp = SPW_READ(&pDev->regs->timer) & 0x003fffff;
 //                          if ( ((tmp & 0xFFF) != pDev->config.timer) ||
 //                               (((tmp >> 12) & 0x3FF) != pDev->config.disconnect) ) {
-//                                  return RTEMS_IO_ERROR;
+//                                  return AIR_DEVICE_ERROR;
 //                          }
 //                        }
 //                        break;
 //                        
 //                case SPACEWIRE_IOCTRL_START:
 //                        if ( pDev->running ){
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        
 //                        /* Get timeout from userspace
@@ -1182,7 +1169,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                         */
 //                        timeout = (int)ioarg->buffer;
 //                        
-//                        if ( (ret=spw_hw_startup(pDev,timeout)) != RTEMS_SUCCESSFUL ) {
+//                        if ( (ret=spw_hw_startup(pDev,timeout)) != AIR_SUCCESSFUL ) {
 //                                return ret;
 //                        }
 //                        pDev->running = 1;
@@ -1190,7 +1177,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //                
 //                case SPACEWIRE_IOCTRL_STOP:
 //                        if ( !pDev->running ){
-//                                return RTEMS_INVALID_NAME;
+//                                return AIR_INVALID_PARAM;
 //                        }
 //                        pDev->running = 0;
 //                        
@@ -1203,7 +1190,7 @@ rtems_device_driver spw_write(iop_device_driver_t *iop_dev, void *arg)
 //        }
 //                   
 //        SPACEWIRE_DBGC(DBGSPW_IOCALLS, "SPW_IOCTRL Return\n");
-//        return RTEMS_SUCCESSFUL;
+//        return AIR_SUCCESSFUL;
 //}
 
 /* ============================================================================== */
@@ -1259,8 +1246,8 @@ int spw_hw_init(SPW_DEV *pDev)
     pDev->tx = (SPACEWIRE_TXBD *) ( (((unsigned int)pDev->bdtable + 1024) & ~(1024-1)) + 1024 );
 
 	SPACEWIRE_DBG("pDev->rx : 0x%x = (physical)0x%x\n   pDev->tx : 0x%x = (physical)0x%x\n",
-			pDev->rx, (unsigned int)air_syscall_get_physical_addr((uintptr_t)pDev->rx),
-			pDev->tx, (unsigned int)air_syscall_get_physical_addr((uintptr_t)pDev->tx));
+			pDev->rx, (unsigned int)air_syscall_get_physical_addr((air_uptr_t )pDev->rx),
+			pDev->tx, (unsigned int)air_syscall_get_physical_addr((air_uptr_t )pDev->tx));
 				
 	/*Check if the RMAP sub core is present*/
 	pDev->config.is_rmap = ctrl & SPW_CTRL_RA;
@@ -1323,7 +1310,7 @@ int spw_hw_waitlink (SPW_DEV *pDev, int timeout) {
 		}
 		
 		/* Sleep for 10 ticks */
-		rtems_task_wake_after(10);
+//		rtems_task_wake_after(10);
 		
 		/*Increment ticks counter */
 		j+=10;
@@ -1525,9 +1512,9 @@ void spw_hw_sync_config(SPW_DEV *pDev){
  * @param [in] pDev device's internal structure
  * @param [in] timeout Maximum duration of the wait
  * @return 
- * 	- RTEMS_SUCCESSFUL if the operation was successful.
- * 	- RTEMS_IO_ERROR Error while writing a register
- *  - RTEMS_TIMEOUT Link was not ready in time
+ * 	- AIR_SUCCESSFUL if the operation was successful.
+ * 	- AIR_DEVICE_ERROR Error while writing a register
+ *  - AIR_TIMED_OUT Link was not ready in time
  *
  *  This fucntion clears the status registers, distrubtes the buffer memory
  *  through all descriptors and enables transmission and reception
@@ -1550,7 +1537,7 @@ int spw_hw_startup (SPW_DEV *pDev, int timeout){
 		SPACEWIRE_DBG2("Device open. Link is not up\n");
 		
 		/*We have an error: link was not ready inside timeout*/
-		return RTEMS_TIMEOUT;
+		return AIR_TIMED_OUT;
 	}
 	
 	/*Clear DMA Control/Status (values are cleared when set)*/
@@ -1561,7 +1548,7 @@ int spw_hw_startup (SPW_DEV *pDev, int timeout){
 		SPACEWIRE_DBG2("DMACtrl is not cleared\n");
 		
 		/*There were problems writing to SpW regsiters*/
-		return RTEMS_IO_ERROR;
+		return AIR_DEVICE_ERROR;
 	}
 
 	/* prepare transmit buffers. Iterate through all descriptors */
@@ -1614,10 +1601,10 @@ int spw_hw_startup (SPW_DEV *pDev, int timeout){
 	spw_set_rxmaxlen(pDev);
 	
 	/*write pointer to the beginning of TX descritor table in respective register*/
-	SPW_WRITE(&pDev->regs->dma0txdesc, (uint8_t *)air_syscall_get_physical_addr((uintptr_t) pDev->tx));
+	SPW_WRITE(&pDev->regs->dma0txdesc, air_syscall_get_physical_addr((air_uptr_t ) pDev->tx));
 	
 	/*write pointer to the beginning of RX descritor table in respective register*/
-	SPW_WRITE(&pDev->regs->dma0rxdesc, (uint8_t *)air_syscall_get_physical_addr((uintptr_t) pDev->rx));
+	SPW_WRITE(&pDev->regs->dma0rxdesc, air_syscall_get_physical_addr((air_uptr_t ) pDev->rx));
 	
 	/*Read DMA Control register*/
 	dmactrl = SPW_READ(&pDev->regs->dma0ctrl);
@@ -1630,13 +1617,13 @@ int spw_hw_startup (SPW_DEV *pDev, int timeout){
 	SPACEWIRE_DBGC(DBGSPW_TX,"0x%x: setup complete\n", (unsigned int)pDev->regs);
 	
 	/*Hardware has successfully setup*/
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
 /**
  * @brief Stop the rx or/and tx by disabling the receiver/transmitter
  * @param [in] pDev device's internal structure
- * @return RTEMS_SUCCESSFUL
+ * @return AIR_SUCCESSFUL
  */
 int spw_hw_stop (SPW_DEV *pDev, int rx, int tx) {
 	/*DMA control register contents*/
@@ -1657,7 +1644,7 @@ int spw_hw_stop (SPW_DEV *pDev, int rx, int tx) {
 	dmactrl &= ~(SPW_DMACTRL_RA|SPW_DMACTRL_PR|SPW_DMACTRL_AI);
 	SPW_WRITE(&pDev->regs->dma0ctrl, dmactrl);
 	
-	return RTEMS_SUCCESSFUL;
+	return AIR_SUCCESSFUL;
 }
 
 
@@ -1729,13 +1716,13 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, uint8_t *hdr, unsigned int dle
 #endif
 	
 	/* Setup header address on descriptor*/
-	pDev->tx[cur].addr_header = (uint8_t *)air_syscall_get_physical_addr((uintptr_t)txh);
+	pDev->tx[cur].addr_header = (unsigned int *)air_syscall_get_physical_addr((air_uptr_t )txh);
 
 	/* insert data size*/
 	pDev->tx[cur].len = dlen;
 	
 	/* setup data address in descriptor*/
-	pDev->tx[cur].addr_data = (uint8_t *)air_syscall_get_physical_addr((uintptr_t)txd);
+	pDev->tx[cur].addr_data = (unsigned int *)air_syscall_get_physical_addr((air_uptr_t )txd);
 
 #ifdef DEBUG_SPACEWIRE_ONOFF	
 	iop_debug("\n Descriptor virtual addresses\n");
@@ -1790,7 +1777,7 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, uint8_t *hdr, unsigned int dle
 			SPACEWIRE_DBGC(DBGSPW_TX, "Tx blocking\n");
 			
 			/*Sleep for a while*/
-			rtems_task_wake_after(pDev->config.wait_ticks);
+//			rtems_task_wake_after(pDev->config.wait_ticks);
 			
 			/*TODO: This is assuming that the TX is disabled because data
 			 * was sent. This may also be due to an error. If it is an error

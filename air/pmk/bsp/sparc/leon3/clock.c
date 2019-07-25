@@ -48,31 +48,6 @@ void pmk_ipc_handler(void *isf, pmk_core_ctrl_t *core);
 #define TIMER_IRQEN                             (0x00000008u)
 
 /**
- * @brief LEON registers per timer
- */
-typedef struct {
-
-   volatile air_u32_t value;
-   volatile air_u32_t reload;
-   volatile air_u32_t conf;
-   volatile air_u32_t dummy;
-
-} timer_subtype_t;
-
-/**
- * @brief LEON timer register map
- */
-typedef struct {
-
-   volatile air_u32_t scaler_value;
-   volatile air_u32_t scaler_reload;
-   volatile air_u32_t status;
-   volatile air_u32_t dummy;
-   timer_subtype_t timer[8];
-
-} timer_regmap_t;
-
-/**
  * @brief Timer control
  */
 timer_ctrl_t timer_ctrl;
