@@ -55,7 +55,7 @@ static void pmk_ipc_trash_partition_core(pmk_core_ctrl_t *core) {
  */
 static void pmk_ipc_reload_core(pmk_core_ctrl_t *core) {
 
-    core_context_setup_reload_partition(core->context, core->partition);
+//     core_context_setup_reload_partition(core->context, core->partition);
 }
 
 void pmk_ipc_handler(void *isf, pmk_core_ctrl_t *core) {
