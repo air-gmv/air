@@ -15,6 +15,8 @@
 #ifndef ARM_ARMv7_H
 #define ARM_ARMv7_H
 
+#define ARM_IRQ_COUNT       1024        /**< Maximum number of IRQs         */
+
 /**
  * @brief Program Status Register.
  * Each program mode has its own Saved PSR (SPSR). usr and sys shared theirs.
