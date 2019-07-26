@@ -62,6 +62,7 @@ void bsp_start_hook(void) {
 air_u32_t bsp_core_init(void) {
 
     arm_a9mpcore_start_hook();
+    arm_define_uart(1);
 
     air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
 
@@ -74,7 +75,7 @@ air_u32_t bsp_core_init(void) {
 
         arm_isr_table_init();
         arm_hm_init();
-        arm_setup_uart(38400);
+        arm_setup_uart(115200);
 //      arm_start_uart(); //TODO screws up in qemu. and everywhere else it seems
     }
 

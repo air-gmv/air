@@ -21,6 +21,7 @@
 
 #define UART0_BASE_MEMORY               0xe0000000
 #define UART1_BASE_MEMORY               0xe0001000
+#define UART1_OFFSET                    0x00001000
 
 typedef struct {
     air_u32_t ctrl;
@@ -107,7 +108,9 @@ typedef struct {
 #define ARM_UART_STATUS_TXFULL          (1U << 4)
 /* more...  (unused) */
 
-void arm_start_uart(void);
+void arm_define_uart(air_u32_t port);
+//void arm_start_uart(void);
+void arm_setup_uart(air_u32_t BaudRate);
 void arm_uart_transmit(char ch);
 
 #endif /* ARM_UART_H */
