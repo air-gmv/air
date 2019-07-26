@@ -107,9 +107,10 @@ clear_bss:
     mov     r3, #0
     mov     r4, #0
 1:
-    stmia   r1!, {r3, r4}
     cmp     r2, r1
-    bpl     1b
+    bhi     setup_stack
+    stmia   r1!, {r3, r4}
+    b       1b
 
     /**< Setup processor modes */
 setup_stack:
