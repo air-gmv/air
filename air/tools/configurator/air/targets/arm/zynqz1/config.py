@@ -129,7 +129,7 @@ permissions = [PERMISSION_SUPERVISOR, PERMISSION_FPU, PERMISSION_CACHE,PERMISSIO
 
 # memory map
 mmap = MMAP(kernel_space=[0x00100000, 0x0ff00000],
-            partition_space=[0x00000000, 0x10000000],
+            partition_space=[0x10000000, 0x02000000],
             units=[1 << 12, 1 << 20],
             default_unit=1 << 12)
 
@@ -141,8 +141,8 @@ arch_configure = air_arm.get_arm_configuration
 
 # IOP devices and definitions
 iop = IOP(defines=[],
-          devices=['greth0', 'greth1', 'gr1553b0', 'grspw0', 'grspw1', 'grspw2', 'grspw3', 'grspw4', 'spwrtr0', 'cpsw0', 'mil0', 'grcan0', 'grcan1'],
-          drivers=['amba', 'greth', 'gr1553', 'cpsw', 'mil1553', 'grspw', 'grcan'],
+          devices=[],
+          drivers=[],
           alias=dict(eth0='greth0',eth1='greth1', spw0='grspw0', spw1='grspw1', spw2='grspw2', spw3='grspw3', spw4='grspw4', cpsw='cpsw0', spwrtr='spwrtr0', mil='mil0', can0 = 'grcan0', can1 = 'grcan1'),
           arch=iop_arch)
 
