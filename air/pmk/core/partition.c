@@ -163,7 +163,7 @@ void pmk_partition_restart(pmk_partition_t *partition) {
 
     if(!vcpus)
     {   /*No vcpu running. Assign vcpu 0 for partition reload*/
-        core_context_setup_reload_partition(&partition->context[0], partition);
+        //core_context_setup_reload_partition(&partition->context[0], partition);
         for (i = 1; i < partition->cores; ++i)
             core_context_setup_idle(&partition->context[i]);
     }
@@ -185,9 +185,9 @@ void pmk_partition_restart(pmk_partition_t *partition) {
                 }
                 else
                 {
-                    if(1 << i  & (vcpus & (-vcpus)))
-                        core_context_setup_reload_partition(&partition->context[i], partition);
-                    else
+//                     if(1 << i  & (vcpus & (-vcpus)))
+//                         core_context_setup_reload_partition(&partition->context[i], partition);
+//                     else
                         core_context_setup_idle(&partition->context[i]);
                 }
             }
@@ -207,7 +207,7 @@ void pmk_partition_reload(pmk_partition_t *partition) {
     cpu_preemption_flags_t flags = (0x0F << 8);
 
     /* reload partition */
-    pmk_partition_load(partition->elf, cpu_get_physical_addr(partition->mmu_ctrl, partition->mmap->v_addr), partition->mmap->v_addr);
+//     pmk_partition_load(partition->elf, cpu_get_physical_addr(partition->mmu_ctrl, partition->mmap->v_addr), partition->mmap->v_addr);
 
     cpu_disable_preemption(flags);
 
