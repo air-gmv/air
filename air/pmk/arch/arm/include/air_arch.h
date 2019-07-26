@@ -199,8 +199,11 @@ air_u32_t air_set_irq_force_register(air_u32_t core_id, air_u32_t force);
 #endif /* C++ */
 #endif /* !ASM */
 
-/** @todo this is hack, these defines must be normalized across ARCHs */
-#define AIR_IRQ_HM_EVENT                    AIR_SYSCALL_HM_TRAP
+/**
+ * @brief This define contains the emulated HM event passed to the application
+ *  It is coded as the 14th SGI */
+#define AIR_SYSCALL_HM_TRAP                             14
+#define AIR_IRQ_HM_EVENT                                AIR_SYSCALL_HM_TRAP
 
 
 #define AIR_SYSCALL_ARM_DISABLE_INTERRUPTS              0
@@ -223,7 +226,9 @@ air_u32_t air_set_irq_force_register(air_u32_t core_id, air_u32_t force);
 #define AIR_SYSCALL_ARM_COUNT                           16
 
 /**
- * @brief Defined as the number of ARM Syscalls, as ARM uses only one virtual syscall table
+ * @brief Defined as the number of ARM paravirtualization system calls,
+ *  as ARM uses only one virtual syscall table, the syscalls ids defined in
+ *  air.h are a continuation of these
  */
 #define AIR_SYSCALL_ARCH_COUNT                          17
 

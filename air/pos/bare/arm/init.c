@@ -14,15 +14,25 @@
 
 #include <air.h>
 #include <bare.h>
+#ifdef POS_DEBUG
 #include <pprintf.h>
+#endif
 
-extern int main();
-extern void bare_start();
+/**
+ * @brief POS exception table
+ */
+extern air_uptr_t arm_pos_exceptions;
+extern volatile air_uptr_t isr_table[PMK_MAX_CORES];
 
 void arm_pos_init(void) {
 
-    pprintf("POS init :: pos_exceptions: 0x%08x\n", pos_exceptions);
-    air_set_tbr((int)pos_exceptions);
+#ifdef POS_DEBUG
+    pprintf("POS init :: pos_exceptions: 0x%08x\n", arm_pos_exceptions);
+    pprintf("POS init :: isr_table: 0x%08x\n", arm_pos_exceptions);
+#endif
+    air_set_tbr((air_u32_t)arm_pos_exceptions);
+
+    arm_pos_smp_init();
 
     return;
 }
