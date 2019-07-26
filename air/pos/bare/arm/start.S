@@ -16,9 +16,10 @@
 #define ASM
 #endif
 
-#include <air.h>
 #include <asm.h>
 #include <armv7.h>
+#include <air.h>
+#include <bare.h>
 
     .arm
 global(bare_start)
@@ -66,7 +67,7 @@ global(bare_start)
     b       twiddle
 
 
-global(pos_exceptions)
+global(arm_pos_exceptions)
     b       bare_start
     b       pos_undef
     nop

@@ -162,6 +162,7 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
 
     /* Return Value */
     air_uptr_t ret = NULL;
+
     /* Acknowledge Interrupt */
     air_u32_t ack = arm_acknowledge_int();
 

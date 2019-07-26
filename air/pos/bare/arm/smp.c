@@ -7,32 +7,29 @@
  *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
  * ==========================================================================*/
 /**
- * @file init.c
+ * @file smp.c
  * @author lumm
- * @brief Initialization functions, SMP support
+ * @brief SMP support
  */
 
 #include <air.h>
+#include <armv7.h>
 #include <bare.h>
-#ifdef POS_DEBUG
-#include <pprintf.h>
-#endif
-
 /**
- * @brief POS exception table
+ * @brief Core exception ISR tables
  */
-extern air_uptr_t arm_pos_exceptions;
-extern volatile air_uptr_t isr_table[PMK_MAX_CORES];
+volatile air_uptr_t isr_table[PMK_MAX_CORES];
 
-void arm_pos_init(void) {
+air_u32_t __isr_table[PMK_MAX_CORES * ARM_IRQ_COUNT];
 
-#ifdef POS_DEBUG
-    pprintf("POS init :: pos_exceptions: 0x%08x\n", arm_pos_exceptions);
-    pprintf("POS init :: isr_table: 0x%08x\n", arm_pos_exceptions);
-#endif
-    air_set_tbr((air_u32_t)arm_pos_exceptions);
+void arm_pos_smp_init(void) {
 
-    arm_pos_smp_init();
+    air_u32_t i;
+
+    for (i = 0; 0 < PMK_MAX_CORES; ++i) {
+
+        isr_table[i] = (&__isr_table[i*ARM_IRQ_COUNT]);
+    }
 
     return;
 }
