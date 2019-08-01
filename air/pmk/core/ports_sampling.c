@@ -127,6 +127,10 @@ air_status_code_e pmk_sampling_port_read(
         return AIR_INVALID_POINTER;
     }
 
+    /* check if port is being written */
+    if (atomic_fetch(&config->writing))
+        return AIR_NOT_AVAILABLE;
+
     /* get current slot */
     air_u32_t slot_idx = atomic_fetch(&config->current_slot);
     pmk_message_slot_t *slot = &config->buffer[slot_idx];
@@ -207,7 +211,6 @@ air_status_code_e pmk_sampling_port_read(
         return AIR_INVALID_POINTER;
     }
 
-
     /* clear updated flag */
     atomic_set(0, &port->updated);
 
@@ -247,23 +250,18 @@ air_status_code_e pmk_sampling_port_write(
         atomic_set(0, &config->writing);
         return AIR_INVALID_POINTER;
     }
-    
+
     slot->timestamp = air_shared_area.schedule_ctrl->total_ticks;
     slot->length = length;
 
-     /* 4 calls to ensure bus contention therefore share to 4 cores the information */
-	 for (i = 0; i < 4; i++)
-	 {
+    /* store new slot index */
+    atomic_set(slot_idx, &config->current_slot);
 
-		/* store new slot index */
-		atomic_set(slot_idx, &config->current_slot);
+    /* update all destination ports on the channel */
+    pmk_channel_update_ports(port->channel, AIR_NEW_MESSAGE);
 
-		/* finish writing operation */
-		atomic_set(0, &config->writing);
-		
-		/* update all destination ports on the channel */
-		pmk_channel_update_ports(port->channel, AIR_NEW_MESSAGE);
-	 }
-	 
+    /* finish writing operation */
+    atomic_set(0, &config->writing);
+
     return AIR_NO_ERROR;
 }
