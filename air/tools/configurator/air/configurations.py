@@ -279,6 +279,10 @@ class Configuration(object):
     def get_library_public_headers(self, lib_name):
         if lib_name == 'libair':
             return self.get_libair_headers()
+        if lib_name == 'libiop':
+            headers = set(utils.flatten(self.supported_libraries[lib_name].header_files))
+            headers.update(self.supported_libraries['libiop'].iop_get_drivers_headers(self.get_iop_configuration().drivers))
+            return headers
         return set(utils.flatten(self.supported_libraries[lib_name].header_files))
 
     ##
