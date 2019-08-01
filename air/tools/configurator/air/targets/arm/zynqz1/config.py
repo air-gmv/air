@@ -24,31 +24,34 @@ cores = 2
 
 # Kernel Compiler with FPU
 kernel_compiler = dict(
-    CC="arm-rtems5-gcc --pipe",
-    CXX="arm-rtems5-g++ --pipe",
-    LD="arm-rtems5-gcc --pipe",
-    AR="arm-rtems5-ar",
-    RANLIB="arm-rtems5-ranlib",
+    CC="arm-none-eabi-gcc --pipe",
+    CXX="arm-none-eabi-g++ --pipe",
+    LD="arm-none-eabi-gcc --pipe",
+    AR="arm-none-eabi-ar",
+    RANLIB="arm-none-eabi-ranlib",
     CFLAGS="",
     CPPFLAGS="-g -c -fno-builtin -nodefaultlibs -Wall -march=armv7-a -mthumb \
 -mfpu=neon -mfloat-abi=hard -mtune=cortex-a9",
     CXXFLAGS="",
-    LDFLAGS="-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar",
+    LDFLAGS="-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts \
+-Wl,--wrap=putchar -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard \
+-mtune=cortex-a9",
     ARFLAGS="ruv"
 )
 
 # Kernel Compiler with NO FPU
 kernel_compiler_no_fpu = dict(
-    CC="arm-rtems5-gcc --pipe",
-    CXX="arm-rtems5-g++ --pipe",
-    LD="arm-rtems5-gcc --pipe",
-    AR="arm-rtems5-ar",
-    RANLIB="arm-rtems5-ranlib",
+    CC="arm-none-eabi-gcc --pipe",
+    CXX="arm-none-eabi-g++ --pipe",
+    LD="arm-none-eabi-gcc --pipe",
+    AR="arm-none-eabi-ar",
+    RANLIB="arm-none-eabi-ranlib",
     CFLAGS="",
     CPPFLAGS="-g -c -fno-builtin -nodefaultlibs -Wall -march=armv7-a -mthumb \
 -mtune=cortex-a9",
     CXXFLAGS="",
-    LDFLAGS="-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar",
+    LDFLAGS="-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts \
+-Wl,--wrap=putchar -march=armv7-a -mthumb -mtune=cortex-a9",
     ARFLAGS="ruv"
 )
 
@@ -143,7 +146,7 @@ arch_configure = air_arm.get_arm_configuration
 iop = IOP(defines=[],
           devices=[],
           drivers=[],
-          alias=dict(eth0='greth0',eth1='greth1', spw0='grspw0', spw1='grspw1', spw2='grspw2', spw3='grspw3', spw4='grspw4', cpsw='cpsw0', spwrtr='spwrtr0', mil='mil0', can0 = 'grcan0', can1 = 'grcan1'),
+          alias=dict(),
           arch=iop_arch)
 
 # AIR application arch config
