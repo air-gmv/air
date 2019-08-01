@@ -109,11 +109,16 @@ void test(PARTITION_ID_TYPE self_id) {
 //		append_to_message(message, " ", offset + 3 + 8);
 
 		pprintf ("Partition %d at time %d sending: %s\n", self_id, time, sample);
-		WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )sample, 3, &rc );
-		if (NO_ERROR != rc) {
-			//pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
-			error_message(rc);
-		}
+
+		do
+		{
+			WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )sample, 3, &rc );
+			if (NO_ERROR != rc) {
+				//pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
+				error_message(rc);
+			}
+		}while(NO_ERROR != rc);
+
 		offset += 12;
 		/*identify the string with an integer index*/
 		i++;
