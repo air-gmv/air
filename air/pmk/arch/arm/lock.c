@@ -17,7 +17,7 @@
 
 void arm_lock(air_uptr_t hash) {
 
-    arm_disable_preemption(0);
+//    arm_disable_preemption(0);
 
     air_u32_t token, lock;
 
@@ -38,7 +38,8 @@ void arm_lock(air_uptr_t hash) {
 air_u32_t arm_unlock(air_uptr_t hash) {
 
     *hash = 0;
-    return arm_enable_preemption();
+//    air_u32_t flag = arm_enable_preemption();
+    return 0;
 }
 
 void arm_disable_preemption(air_u32_t irq_mask) {
