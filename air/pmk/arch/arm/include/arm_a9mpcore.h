@@ -99,7 +99,7 @@ static inline void arm_a9mpcore_start_hook(void) {
         scu->ctrl |= CTRL_SCU_EN;
     }
 
-#ifdef PMK_SMP
+#if PMK_SMP
     /* Enable cache coherency and cache/MMU maintenance broadcasts for
      * this processor.
      */

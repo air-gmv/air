@@ -331,17 +331,17 @@ static inline void arm_cp15_setup_Per_CPU(air_u32_t cpu_id) {
     air_u32_t val;
     air_u32_t offset = 4;
     __asm__ volatile (
-            "ldr %0, =air_shared_area\n"
-            "ldr %0, [%0, %[offset]]\n"
-            "add %0, %0, %[id], asl #5\n"
-            "mcr p15, 0, %0, c13, c0, 4\n"
-            : "=&r" (val)
+            "ldr %[rx], =air_shared_area\n"
+            "ldr %[rx], [%[rx], %[offset]]\n"
+            "add %[rx], %[rx], %[id], asl #5\n"
+            "mcr p15, 0, %[rx], c13, c0, 4\n"
+            : [rx] "=&r" (val)
             : [id] "r" (cpu_id), [offset] "r" (offset)
             : "memory");
 }
 
-static inline air_uptr_t arm_cp15_get_Per_CPU(void) {
-    air_uptr_t val;
+static inline air_u32_t arm_cp15_get_Per_CPU(void) {
+	air_u32_t val;
     __asm__ volatile ("mrc p15, 0, %0, c13, c0, 4\n":"=r" (val));
     return val;
 }
