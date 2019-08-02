@@ -53,24 +53,6 @@
  * change to Thumb. The .thumb directive is for the assembler to compile the
  * following instructions as Thumb. Same way for .arm.
  */
-.macro SWITCH_FROM_ARM_TO_THUMB r
-#if defined(__thumb__)
-    add     \r, pc, #1
-    bx      \r
-.thumb
-#endif
-.endm
-
-.macro SWITCH_FROM_THUMB_TO_ARM
-#if defined(__thumb__)
-.thumb
-.align 2
-    bx      pc
-    nop
-.arm
-#endif
-.endm
-
 .macro BL2C label
 #if defined(__thumb__)
     blx     \label
@@ -108,8 +90,6 @@
 inline static void arm_instruction_synchronization_barrier(void) {
 #if defined(__CC_ARM)
     __isb(15);
-//#elif defined(__GNUC__)
-//  __ISB();
 #else
     __asm__ volatile ("isb");
 #endif
@@ -118,8 +98,6 @@ inline static void arm_instruction_synchronization_barrier(void) {
 inline static void arm_data_synchronization_barrier(air_u32_t intrinsic) {
 #if defined(__CC_ARM)
     __dsb(intrinsic);
-//#elif defined(__GNUC__)
-//  __DSB();
 #else
     __asm__ volatile ("dsb");
 #endif
@@ -128,8 +106,6 @@ inline static void arm_data_synchronization_barrier(air_u32_t intrinsic) {
 inline static void arm_data_memory_barrier(air_u32_t intrinsic) {
 #if defined(__CC_ARM)
     __dmb(intrinsic);
-//#elif defined(__GNUC__)
-//  __DMB();
 #else
     __asm__ volatile ("dmb");
 #endif
@@ -226,31 +202,29 @@ typedef struct {
 } arm_supervisor_stack_frame_t;
 
 /**
- * @brief Virtual SPARC CPU
+ * @brief Virtual ARM CPU
  */
 typedef struct {
     air_u32_t id;                       /**< virtual CPU id                 */
     air_u32_t psr;                      /**< virtual PSR                    */
     air_uptr_t vbar;                    /**< virtual vector base address    */
-    air_u32_t cctrl;                    /**< cache control                  */
+    air_u32_t reserved;                 /**< alignment                      */
 } arm_virtual_cpu_t;
 
-#define ARM_ISR_ABT_PENDING (1 << 8)
-#define ARM_ISR_IRQ_PENDING (1 << 7)
-#define ARM_ISR_FIQ_PENDING (1 << 6)
+/**
+ *  @brief Virtual Interrupt Controller registers
+ *  these are based on the version 2 of the GIC
+ */
 typedef struct {
-    air_u32_t isr;                      /**< Interrupt Status Register(cp15)*/
-    air_u32_t iccpmr;                   /**< icc priority mask              */
-    air_u32_t iccbpr;                   /**< icc binary point               */
-    air_u32_t icciar;                   /**< icc interrupt accept           */
-//  air_u32_t eoi;                      /**< end of interrupt               */
-//  air_u32_t rp;                       /**< running priority               */
-//  air_u32_t hppi;                     /**< highest pending priority       */
-//  air_u32_t abp;                      /**< icc control                    */
-//  air_u32_t iid;                      /**< interface id                   */
-    air_u32_t icdiser[16];              /**< icd set-enable                 */
-    air_u32_t icdispr[16];              /**< icd set-pending                */
-    air_u32_t icdipr[516];              /**< icd priority                   */
+    air_u32_t vm_ctrl;                  /**< VM interrupt control           */
+    air_u32_t ilist[16];                /**< 32 virtual interrupts          */
+    air_u32_t apr;                      /**< active priority                */
+    air_u32_t pmr;                      /**< priority mask                  */
+    air_u32_t bpr;                      /**< binary point                   */
+    air_u32_t iar;                      /**< interrupt acknowledge          */
+    air_u32_t eoir;                     /**< end of interrupt               */
+    air_u32_t rpr;                      /**< running priority               */
+    air_u32_t hppir;                    /**< highest priority pending       */
 } arm_virtual_gic_t;
 
 /**
@@ -258,6 +232,7 @@ typedef struct {
  */
 typedef struct {
     arm_virtual_cpu_t vcpu;             /**< virtual CPU control            */
+    arm_virtual_gic_t vgic;             /**< virtual GIC CPU control        */
     air_u32_t trash;                    /**< trash flag                     */
     void *entry_point;                  /**< core entry point               */
     void *isf_pointer;                  /**< core stack pointer             */
@@ -266,22 +241,20 @@ typedef struct {
     air_u32_t ipc_event;                /**< IPC event                      */
     air_u32_t state;                    /**< system state                   */
     void *hm_event;                     /**< health-monitor event           */
-    arm_virtual_gic_t vgic;             /**< virtual GIC CPU control        */
-} arm_core_context_t;                   /*  vGIC MUST BE LAST DUE TO SIZE   */
+} arm_core_context_t;
 
 /**
  * @brief ARM MMU control
  */
 typedef struct {
-    air_uptr_t ttbr0;                   /**< context id                     */
-    air_uptr_t ttbr1;                   /**< context id                     */
-    air_u32_t ttbcr;
-    air_u32_t reserved;                 /**< alignment                      */
+    air_u32_t context;                  /**< context id for CONTEXTIDR      */
+    air_uptr_t ttbr0;                   /**< translation table base reg 0   */
+    air_uptr_t ttbr1;                   /**< translation table base reg 1   */
+    air_u32_t ttbcr;                    /**< translation table control reg  */
 } arm_mmu_context_t;
 
 /**
  * @brief ARM MMU Configuration
- * TODO COMPATIBILITY ONLY. NOT USED
  */
 typedef struct {
     air_u32_t mmu_context_entries;

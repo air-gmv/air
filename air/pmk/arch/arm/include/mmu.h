@@ -122,17 +122,10 @@ void arm_mmu_init(void);
 void arm_mmu_disable(void);
 void arm_mmu_enable(arm_mmu_context_t *ctx);
 void arm_segregation_init(void);
-air_u32_t arm_get_mmu_permissions(
-        air_u32_t permissions, air_u32_t level, air_u32_t type);
-//void arm_mmu_level1(
-//      air_uptr_t ttbr, air_u32_t p_addr, air_u32_t v_addr,
-//      air_u32_t unit, air_sz_t size, air_u32_t permissions);
-//air_sz_t arm_mmu_level2(
-//      air_uptr_t ptd, air_u32_t p_addr, air_u32_t v_addr,
-//      air_u32_t unit, air_sz_t size, air_u32_t permissions);
 void arm_map_memory(
         arm_mmu_context_t *ctrl, void *p_addr, void *v_addr,
         air_sz_t size, air_sz_t unit, air_u32_t permissions);
+
 air_u32_t arm_segregation_memcpy(
         arm_core_context_t *core_ctx, void *dst, void *src, air_sz_t size);
 air_u32_t arm_copy_to_user(
