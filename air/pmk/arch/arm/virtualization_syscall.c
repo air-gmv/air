@@ -57,7 +57,7 @@ air_u32_t arm_syscall_get_tbr(pmk_core_ctrl_t *core) {
     return (air_u32_t)vbar;
 }
 
-void arm_syscall_set_tbr(pmk_core_ctrl_t *core, air_u32_t val) {
+void arm_syscall_set_tbr(pmk_core_ctrl_t *core, void *val) {
 
     core->context->vcpu.vbar = (air_uptr_t)val;
 }
