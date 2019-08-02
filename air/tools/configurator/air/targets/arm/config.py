@@ -22,41 +22,45 @@ class ARMConfiguration(object):
 
 MAX_CORES                  = 2
 
-CPU_CORE_CONTROL           = [        0x8,        0x24]
-CPU_CORE_CONTEXT           = [        0x8,       0x44C]
-CPU_CORE_CONTEXT_STACK     = [        0x8,        0x50]
-CPU_CORE_CONTEXT_FPU       = [        0x8,       0x108]
-CPU_CORE_CONTEXT_HM        = [        0x8,        0x10]
-CPU_MMU_CONTEXT            = [        0x8,        0x10]
-CPU_MMU_L1_TABLES          = [     0x4000,      0x4000]
-CPU_MMU_L2_TABLES          = [      0x400,       0x400]
-CPU_PORT_MSG               = [        0x8,         0x1]
-CPU_PORT_MSG_SLOT          = [        0x8,        0x10]
+CPU_CORE_CONTROL            = [       0x8,      0x24]
+CPU_CORE_CONTEXT            = [       0x8,      0x90]
+CPU_CORE_CONTEXT_STACK      = [       0x8,      0x50]
+CPU_CORE_CONTEXT_FPU        = [       0x8,     0x108]
+CPU_CORE_CONTEXT_HM         = [       0x8,      0x10]
+
+CPU_MMU_CONTEXT             = [       0x8,      0x10]
+CPU_MMU_L1_TABLES           = [    0x4000,    0x4000]
+CPU_MMU_L2_TABLES           = [     0x400,     0x400]
+
+CPU_PORT_MSG                = [       0x8,       0x1]
+CPU_PORT_MSG_SLOT           = [       0x8,      0x10]
+
+MMU_LEVEL_ENTRIES           = [      4096,       256]
+MMU_LEVEL_UNIT              = [   1 << 20,   1 << 12]
 
 
-def partition_mmu_get_index(n, v_addr):
+def partition_mmu_get_index(v_addr, n):
 
     if n == 0:
         return v_addr / (1 << 20)
     elif n == 1:
         return (v_addr & ((1 << 20) - (1 << 12))) >> 12
 
-
 def partition_mmu_tables(table, v_addr, n, size, unit):
 
     i = 0
     consumed = 0
-    level_entries = [4096, 256][n]
-    level_unit = [1 << 20, 1 << 12][n]
+    level_entries = MMU_LEVEL_ENTRIES[n]
+    level_unit = MMU_LEVEL_UNIT[n]
 
     while size > 0 and i < level_entries - 1:
 
-        i = partition_mmu_get_index(n, v_addr)
+        i = partition_mmu_get_index(v_addr, n)
 
-        if table[i] is None:
-            table[i] = 256 * [None]
+        if unit < level_unit:
 
-        if unit < level_unit and n == 0:
+            if table[i] is None:
+                table[i] = level_entries[i+1] * [None]
 
             l_consumed = partition_mmu_tables(table[i], v_addr, n + 1, size, unit)
 
@@ -70,12 +74,11 @@ def partition_mmu_tables(table, v_addr, n, size, unit):
 
     return consumed
 
-
+def align(addr, unit):
+    return ((addr + (unit - 1)) & ~(unit - 1))
 
 def align_space(space, spec):
-
-    space = ((space + (spec[0] - 1)) & ~(spec[0] - 1))
-    return space + spec[1]
+    return align(space, spec[0]) + spec[1]
 
 def get_arm_configuration(a653configuration):
 
@@ -91,22 +94,24 @@ def get_arm_configuration(a653configuration):
 
     for partition in a653configuration.partitions:
 
-        mmu_table = 4096 * [None]
+        mmu_table = MMU_LEVEL_ENTRIES[0] * [None]
 
         # main partition memory
-        partition_mmu_tables(
-            mmu_table,
-            partition.memory_vaddr, 0, partition.memory_size, partition.memory_unit)
+        partition_mmu_tables(mmu_table, partition.memory_vaddr, 0, 
+                            align(partition.memory_size, 
+                                  partition.memory_unit), 
+                            partition.memory_unit)
 
         # shared area partition memory
         for shared_memory in a653configuration.shared_memory:
             for permission in shared_memory.permissions:
                 if permission.partition == partition:
-                    partition_mmu_tables(
-                        mmu_table,
-                        shared_memory.addr, 0, shared_memory.size, shared_memory.unit)
+                    partition_mmu_tables(mmu_table, shared_memory.addr, 0, 
+                                        align(shared_memory.size, 
+                                              shared_memory.unit),
+                                        shared_memory.unit)
 
-        for i in range(0, 4096):
+        for i in range(0, MMU_LEVEL_ENTRIES[0]):
             if mmu_table[i] is not None:
                 arm_configuration.mmu_l2_tables_entries += 1
 
@@ -116,9 +121,9 @@ def get_arm_configuration(a653configuration):
     mmu_l2_tables = [CPU_MMU_L2_TABLES[0], arm_configuration.mmu_l2_tables_entries * CPU_MMU_L2_TABLES[1]]
 
     # space for the MMU tables
-    arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, mmu_context)
     arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, mmu_l1_tables)
     arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, mmu_l2_tables)
+    arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, mmu_context)
 
     # space for the core context IDLE
     core_context = [ CPU_CORE_CONTEXT[0], a653configuration.core_count * CPU_CORE_CONTEXT[1]]

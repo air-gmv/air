@@ -133,8 +133,8 @@ permissions = [PERMISSION_SUPERVISOR, PERMISSION_FPU, PERMISSION_CACHE,PERMISSIO
 # memory map
 mmap = MMAP(kernel_space=[0x00100000, 0x0ff00000],
             partition_space=[0x10000000, 0x02000000],
-            units=[1 << 12, 1 << 20],
-            default_unit=1 << 12)
+            units=[1 << 12, 1 << 16, 1 << 20],
+            default_unit=1 << 20)
 
 # specific defines
 defines = ['PMK_FPU_SUPPORT=1', 'PMK_SMP=1']
