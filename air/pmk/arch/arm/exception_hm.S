@@ -143,9 +143,9 @@ global(exception_undef)
     teq     r3, #1
     beq     restore_trashed_context
 
-    /* return to hm exception */
     teq     r0, #0
     beq     2f
+    /* return to hm exception */
     str     r0, [sp, #24] // lr location
     ldr     r0, [sp, #28] // toggle thumb->ARM
     bic     r0, #ARM_PSR_T
@@ -161,12 +161,20 @@ global(exception_undef)
 
 /* if the partition halts or restarts, it returns as idle */
 restore_trashed_context:
+    pop     {r5-r10}
+
     /* Get the idle ISF pointer */
     ldr     r3, [r2, #(offsetof_arm_core_context_t_idle_isf_pointer)]
 
-    add     r4, r3, #(offsetof_arm_interrupt_stack_frame_t_usr_sp)
+    add     r4, r3, #(offsetof_arm_interrupt_stack_frame_t_ret_addr)
+    ldm     r4, {r0, r1}
 
-    ldmia   r4, {r8-r11}
+    add     sp, #8
+    stmia   sp, {r0, r1}
+    rfefd   sp!
+
+
+/*    ldmia   r4, {r8-r11}
     mov     lr, r10
     orr     r10, r11, #(ARM_PSR_I | ARM_PSR_F)
     bic     r10, #ARM_PSR_T
@@ -188,7 +196,7 @@ arm_restore_non_user_mode:
 
     msr     spsr, r11
 
-    ldm     r4, {r0-r12}
+    ldm     r3, {r0-r12} */
 
 #ifdef __thumb__
     orr     lr, #1
