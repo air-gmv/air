@@ -224,7 +224,6 @@ air_status_code_e pmk_sampling_port_write(
         pmk_port_t *port,air_message_ptr_t msg,
         air_sz_t length, air_sampling_port_status_t *status) {
 
-	 int i = 0;
     /* get sampling channel configuration */
     pmk_sampling_config_t *config =
             (pmk_sampling_config_t *)port->channel->configuration;
