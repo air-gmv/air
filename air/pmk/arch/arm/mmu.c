@@ -17,100 +17,47 @@
 #include <mmu.h>
 #include <bsp.h>
 #include <configurations.h>
+#include <error.h>
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif
 
-extern air_u32_t L1_tables;
+static air_uptr_t arm_ln_table[2];
+static air_u32_t arm_ln_index[2] = {0, 0};
+const air_u32_t ln_entries[2] = {TTBR0_ENTRIES, TTL2_ENTRIES};
+const air_u32_t ln_unit[2] = {SECTION_SIZE, PAGE_SIZE};
 
-void arm_mmu_init(void) {
-#ifdef PMK_DEBUG_ISR
-    printk("\n\t\t\t\t---> MMU initialization <---\n\n");
-#endif
+static air_u32_t arm_mmu_get_index(void *addr, air_u32_t n) {
 
-    air_u32_t ttbcr = arm_cp15_get_translation_table_control();
-    ttbcr = (ttbcr & ~0b110111) | TTBR_N;
-    arm_cp15_set_translation_table_control(ttbcr);
+    air_u32_t id = 0;
 
-    air_u32_t dac = ((DAC_CLIENT) << (2 * DEFAULT_DOMAIN));
-    arm_cp15_set_domain_access_control(dac);
+    switch (n) {
+    case 0:
+        id = ((air_u32_t)addr >> 20);
+        break;
 
-    air_u32_t sctlr = arm_cp15_get_system_control();
-    sctlr &= ~(ARM_SCTLR_TRE | ARM_SCTLR_A);
-    sctlr |= (ARM_SCTLR_AFE | ARM_SCTLR_Z);
-    arm_cp15_set_system_control(sctlr);
-
-    arm_cp15_tlb_invalidate();
-}
-
-void arm_mmu_disable(void) {
-#ifdef PMK_DEBUG_ISR
-    printk("\n\t\t\t\t---> MMU disable <---\n");
-#endif
-
-    air_u32_t sctlr = arm_cp15_get_system_control();
-    sctlr &= ~(ARM_SCTLR_M);
-    arm_cp15_set_system_control(sctlr);
-}
-
-void arm_mmu_enable(arm_mmu_context_t *ctx) {
-#ifdef PMK_DEBUG_ISR
-    printk("\n\t\t    ---> MMU enable with ttbr = 0x%08x <---\n\n", (air_u32_t)ctx->ttbr0);
-#endif
-
-    air_u32_t ttbr0 = ((air_u32_t)ctx->ttbr0 & ~(TTBR0_SIZE - 1)) | (0b0010011);
-    arm_cp15_set_translation_table0_base(ttbr0);
-#if TTBR_N
-    arm_cp15_set_translation_table1_base((air_u32_t)ctx->ttbr1 & ~(TTBR1_SIZE - 1) | (0b0010011));
-#endif
-
-    air_u32_t sctlr = arm_cp15_get_system_control();
-    sctlr |= (ARM_SCTLR_M);
-    arm_cp15_set_system_control(sctlr);
-}
-
-void arm_segregation_init(void) {
-
-    /* setup partition MMU control structure for each partition */
-    pmk_list_t *list = pmk_get_usr_partitions();
-    for (air_u32_t i = 0; i < list->length; ++i) {
-
-        pmk_partition_t *partition = &((pmk_partition_t *)list->elements)[i];
-
-        air_u32_t e = 0;
-        /* get a MMU control structure for the partition */
-        arm_mmu_context_t *ctrl = pmk_workspace_alloc(sizeof(arm_mmu_context_t));
-        ctrl->ttbr0 = pmk_workspace_aligned_alloc(TTBR0_SIZE, TTBR0_SIZE);
-        for (e = 0; e < TTBR0_ENTRIES; ++e) {
-            ctrl->ttbr0[e] = 0;
-        }
-#if TTBR_N
-        ctrl->ttbr1 = pmk_workspace_aligned_alloc(TTBR1_SIZE, TTBR1_SIZE);
-        for (e = 0; e < TTBR1_ENTRIES; ++e) {
-            ctrl->ttbr1[e] = 0;
-        }
-#else
-        ctrl->ttbr1 = NULL;
-#endif
-        partition->mmu_ctrl = ctrl;
-
-#ifdef PMK_DEBUG_MMU
-        printk("    Partition %i %s\n"
-                "    ttbr0       = 0x%08x\n"
-                "    ttbr[0000]  = 0x%08x\n"
-                "    ttbr[%04i]  = 0x%08x\n"
-                "    ttbr1       = 0x%08x\n\n",
-                partition->id, partition->name,
-                ctrl->ttbr0,
-                ctrl->ttbr0[0],
-                TTBR0_ENTRIES-1,
-                ctrl->ttbr0[TTBR0_ENTRIES-1],
-                ctrl->ttbr1);
-#endif
+    case 1:
+        id = (((air_u32_t)addr >> 12) & 0xff);
+        break;
     }
+
+    return id;
 }
 
-air_u32_t arm_get_mmu_permissions(
+static air_uptr_t arm_mmu_get_table(air_u32_t n) {
+
+    air_u32_t e;
+    air_uptr_t table = arm_ln_table[n] + arm_ln_index[n];
+
+    for (e = 0; e < ln_entries[n]; ++e)
+        table[e] = 0;
+
+    arm_ln_index[n] += ln_entries[n];
+
+    return table;
+}
+
+static air_u32_t arm_get_mmu_permissions(
         air_u32_t permissions, air_u32_t level, air_u32_t type) {
 
     /* when an entry is initialized, the access flag must be set to 1.
@@ -180,51 +127,44 @@ air_u32_t arm_get_mmu_permissions(
     return access_mask;
 }
 
-air_sz_t arm_mmu_level2(
-        air_uptr_t pt_ptr, air_u32_t *p_addr, air_u32_t *v_addr,
-        air_u32_t unit, air_sz_t size, air_u32_t permissions) {
+static air_sz_t arm_mmu_map_l2(
+        air_uptr_t pt_ptr, void *p_addr, void *v_addr, air_u32_t unit,
+        air_sz_t size, air_u32_t permissions, air_u32_t n) {
 
     air_u32_t idx = 0;
-    air_u32_t used_entries = 0;
-    air_u32_t lpage_idx = 0;
-    air_u32_t arm_permissions;
     air_sz_t consumed = 0;
-    air_sz_t delta = 0;
+    air_sz_t _consumed = 0;
+
 #ifdef PMK_DEBUG_MMU
-    air_u32_t initial_idx = ((*v_addr >> 12) & 0xff);
+    air_u32_t initial_idx = arm_mmu_get_index(v_addr, n);
 #endif
 
-    while (used_entries < TTL2_ENTRIES) {
+    while (size > 0 && idx < ln_entries[n] - 1) {
 
-        idx = ((*v_addr >> 12) & 0xff);
+        idx = arm_mmu_get_index(v_addr, n);
 
+        /* Small Page */
         if (unit < LPAGE_SIZE) {
-            /* Small Page */
-            arm_permissions = arm_get_mmu_permissions(permissions, MMU_L2, MMU_PAGE1);
 
-            pt_ptr[idx] = (((air_u32_t)*p_addr & 0xfffff000) | arm_permissions | MMU_PAGE1);
-            used_entries += 1;
-            delta = TTL2_PAGE_SIZE;
+            air_u32_t arm_permissions = arm_get_mmu_permissions(permissions, MMU_L2, MMU_PAGE1);
 
+            pt_ptr[idx] = (((air_u32_t)p_addr & 0xfffff000) | arm_permissions | MMU_PAGE1);
+            _consumed = TTL2_PAGE_SIZE;
+
+        /* Large Page */
         } else {
 
-            arm_permissions = arm_get_mmu_permissions(permissions, MMU_L2, MMU_LPAGE);
-            for (lpage_idx = 0; lpage_idx < 16; ++lpage_idx) {
-                pt_ptr[idx + lpage_idx] = (((air_u32_t)*p_addr & 0xffff0000) | arm_permissions | MMU_LPAGE);
+            air_u32_t arm_permissions = arm_get_mmu_permissions(permissions, MMU_L2, MMU_LPAGE);
+            for (air_u32_t lpage_idx = 0; lpage_idx < 16; ++lpage_idx) {
+                pt_ptr[idx + lpage_idx] = (((air_u32_t)p_addr & 0xffff0000) | arm_permissions | MMU_LPAGE);
             }
-            used_entries += 16;
-            delta = TTL2_LPAGE_SIZE;
+            _consumed = TTL2_LPAGE_SIZE;
         }
 
-        *v_addr += delta;
-        *p_addr += delta;
-        consumed += delta;
-        size -= delta;
-
-        /* last memory mapped -> was last page needed */
-        if (size < 0) {
-            break;
-        }
+        v_addr += _consumed;
+        p_addr += _consumed;
+        consumed += _consumed;
+        size -= _consumed;
     }
 #ifdef PMK_DEBUG_MMU
     printk("\n        Level 2\n"
@@ -233,25 +173,25 @@ air_sz_t arm_mmu_level2(
             "          ptd[%03i]        = 0x%08x\n\n",
             pt_ptr,
             initial_idx, pt_ptr[initial_idx],
-            initial_idx + used_entries - 1,
-            pt_ptr[initial_idx + used_entries - 1]);
+            idx,
+            pt_ptr[idx]);
 #endif
 
     return consumed;
 }
 
-void arm_mmu_level1(
-        air_uptr_t ttbr, air_u32_t p_addr, air_u32_t v_addr,
-        air_u32_t unit, air_sz_t size, air_u32_t permissions) {
+static void arm_mmu_map_l1(
+        air_uptr_t ttbr, void *p_addr, void *v_addr, air_sz_t unit,
+        air_sz_t size, air_u32_t permissions, air_u32_t n) {
+
     air_u32_t idx = 0;
-    air_u32_t entries = 0;
-    air_uptr_t pt_ptr = 0;
     air_sz_t consumed = 0;
-#ifdef PMK_DEBUG_MMU
-    air_u32_t initial_idx = (v_addr >> 20);
-#endif
+    air_sz_t _consumed = 0;
+    air_uptr_t pt_ptr = 0;
 
 #ifdef PMK_DEBUG_MMU
+    air_u32_t initial_idx = arm_mmu_get_index(v_addr, n);
+
     printk("\n         unit             = 0x%08x\n"
             "         SECTION_SIZE     = 0x%08x\n"
             "         LPAGE_SIZE       = 0x%08x\n"
@@ -259,48 +199,55 @@ void arm_mmu_level1(
             unit, SECTION_SIZE, LPAGE_SIZE, PAGE_SIZE);
 #endif
 
-    while (size > 0) {
+    while (size > 0 && idx < ln_entries[n] - 1) {
 
-        idx = (v_addr >> 20);
+        idx = arm_mmu_get_index(v_addr, n);
 
-        if (unit < SECTION_SIZE) {
+        if (unit < ln_unit[n]) {
+
             /* check if entry already exists */
-            switch((air_u32_t)ttbr[idx] & MMU_D_TYPE_MASK) {
+            switch(ttbr[idx] & MMU_D_TYPE_MASK) {
+
             case MMU_PTD:
-                pt_ptr = (air_uptr_t)((air_u32_t)ttbr[idx] & 0xfffffc00);
+                pt_ptr = (air_uptr_t)(ttbr[idx] & 0xfffffc00);
                 break;
 
             case MMU_SECTION:
                 /* entry already in use TODO what to do???*/
+                pmk_fatal_error(PMK_INTERNAL_ERROR_BSP, __func__, __FILE__, __LINE__);
                 break;
 
             case MMU_SUPERSECTION:
-                /* TODO shouldnt exist */
+                /* TODO shouldn't exist */
+                pmk_fatal_error(PMK_INTERNAL_ERROR_BSP, __func__, __FILE__, __LINE__);
+                break;
 
             default:
                 /* unused */
-                pt_ptr = pmk_workspace_aligned_alloc(TTL2_SIZE, TTL2_SIZE);
+                pt_ptr = arm_mmu_get_table(n + 1);
                 ttbr[idx] = ( ((air_u32_t)pt_ptr & 0xfffffc00)
                         | (DEFAULT_DOMAIN << 5)
                         | MMU_PTD );
                 break;
             }
-            consumed = arm_mmu_level2(pt_ptr, &p_addr, &v_addr, unit, size, permissions);
+
+            _consumed = arm_mmu_map_l2(pt_ptr, p_addr, v_addr, unit, size, permissions, 1);
 
         } else {
 
             air_u32_t arm_permissions = arm_get_mmu_permissions(permissions, MMU_L1, MMU_SECTION);
-            ttbr[idx] = ( (p_addr & 0xfff00000)
+            ttbr[idx] = ( ((air_u32_t)p_addr & 0xfff00000)
                     | arm_permissions
                     | (DEFAULT_DOMAIN << 5)
                     | MMU_SECTION );
-            consumed = TTL1_SECT_SIZE;
-            v_addr += consumed;
-            p_addr += consumed;
+
+            _consumed = TTL1_SECT_SIZE;
         }
 
-        size -= consumed;
-        ++entries;
+        v_addr += _consumed;
+        p_addr += _consumed;
+        consumed += _consumed;
+        size -= _consumed;
     }
 #ifdef PMK_DEBUG_MMU
     printk("\n        Level 1\n"
@@ -309,9 +256,90 @@ void arm_mmu_level1(
             "          ttbr[%04i]      = 0x%08x\n\n",
             ttbr,
             initial_idx, ttbr[initial_idx],
-            initial_idx + entries - 1,
-            ttbr[initial_idx + entries - 1]);
+            idx,
+            ttbr[idx]);
 #endif
+}
+
+void arm_mmu_init(void) {
+#ifdef PMK_DEBUG_ISR
+    printk("\n\t\t\t\t---> MMU initialization <---\n\n");
+#endif
+
+    air_u32_t ttbcr = arm_cp15_get_translation_table_control();
+    ttbcr = (ttbcr & ~0b110111) | TTBR_N;
+    arm_cp15_set_translation_table_control(ttbcr);
+
+    air_u32_t dac = ((DAC_CLIENT) << (2 * DEFAULT_DOMAIN));
+    arm_cp15_set_domain_access_control(dac);
+
+    air_u32_t sctlr = arm_cp15_get_system_control();
+    sctlr &= ~(ARM_SCTLR_TRE | ARM_SCTLR_A);
+    sctlr |= (ARM_SCTLR_AFE | ARM_SCTLR_Z);
+    arm_cp15_set_system_control(sctlr);
+
+    arm_cp15_tlb_invalidate();
+}
+
+void arm_mmu_disable(void) {
+#ifdef PMK_DEBUG_ISR
+    printk("\n\t\t\t\t---> MMU disable <---\n");
+#endif
+
+    air_u32_t sctlr = arm_cp15_get_system_control();
+    sctlr &= ~(ARM_SCTLR_M);
+    arm_cp15_set_system_control(sctlr);
+}
+
+void arm_mmu_enable(arm_mmu_context_t *ctx) {
+#ifdef PMK_DEBUG_ISR
+    printk("\n\t\t    ---> MMU enable with ttbr = 0x%08x <---\n\n", (air_u32_t)ctx->ttbr0);
+#endif
+
+    air_u32_t ttbr0 = ((air_u32_t)ctx->ttbr0 & ~(TTBR0_SIZE - 1)) | (0b0010011);
+    arm_cp15_set_translation_table0_base(ttbr0);
+#if TTBR_N
+    arm_cp15_set_translation_table1_base((air_u32_t)ctx->ttbr1 & ~(TTBR1_SIZE - 1) | (0b0010011));
+#endif
+
+    air_u32_t sctlr = arm_cp15_get_system_control();
+    sctlr |= (ARM_SCTLR_M);
+    arm_cp15_set_system_control(sctlr);
+}
+
+void arm_segregation_init(void) {
+
+    arch_configuration_t *configuration =
+            (arch_configuration_t *)pmk_get_arch_configuration();
+
+//  air_u32_t arm_mmu_context_size = configuration->mmu_context_entries * sizeof(arm_mmu_context_t);
+    air_u32_t arm_l1_table_size = configuration->mmu_l1_tables_entries * TTBR0_SIZE;
+    air_u32_t arm_l2_table_size = configuration->mmu_l2_tables_entries * TTL2_SIZE;
+
+    arm_ln_table[0] = pmk_workspace_aligned_alloc(arm_l1_table_size, TTBR0_SIZE);
+    arm_ln_table[1] = pmk_workspace_aligned_alloc(arm_l2_table_size, TTL2_SIZE);
+
+    /* setup partition MMU control structure for each partition */
+    pmk_list_t *list = pmk_get_usr_partitions();
+
+    for (air_u32_t i = 0; i < list->length; ++i) {
+
+        pmk_partition_t *partition = &((pmk_partition_t *)list->elements)[i];
+
+        /* get a MMU control structure for the partition */
+        arm_mmu_context_t *ctrl = pmk_workspace_alloc(sizeof(arm_mmu_context_t));
+
+        ctrl->context = i;
+
+        ctrl->ttbr0 = arm_mmu_get_table(0);
+#if TTBR_N
+//      ctrl->ttbr1 = arm_mmu_get_table(X);
+#else
+        ctrl->ttbr1 = NULL;
+#endif
+
+        partition->mmu_ctrl = ctrl;
+    }
 }
 
 void arm_map_memory(
@@ -339,7 +367,10 @@ void arm_map_memory(
         printk("       size after unit    = 0x%08x\n", size);
 #endif
 
-        arm_mmu_level1(ctrl->ttbr0, (air_u32_t)p_addr, (air_u32_t)v_addr, unit, size, permissions);
+        if (size % unit != 0)
+            pmk_fatal_error(PMK_INTERNAL_ERROR_BSP, __func__, __FILE__, __LINE__);
+
+        arm_mmu_map_l1(ctrl->ttbr0, p_addr, v_addr, unit, size, permissions, 0);
     }
 }
 
@@ -381,7 +412,7 @@ air_uptr_t arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr) {
 
     air_uptr_t ttbr = context->ttbr0;
 
-    air_u32_t idx = ((air_u32_t)v_addr >> 20);
+    air_u32_t idx = arm_mmu_get_index(v_addr, 0);
     air_uptr_t p_addr = NULL;
     air_uptr_t pt_ptr = NULL;
 
@@ -393,7 +424,7 @@ air_uptr_t arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr) {
 
     case MMU_PTD:
         pt_ptr = (air_uptr_t)((air_u32_t)ttbr[idx] & 0xfffffc00);
-        idx = (((air_u32_t)v_addr >> 12) & 0xff);
+        idx = arm_mmu_get_index(v_addr, 1);
 
         switch((air_u32_t)pt_ptr[idx] & MMU_D_TYPE_MASK) {
         case MMU_INVALID_PAGE:
@@ -422,6 +453,7 @@ air_uptr_t arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr) {
 
     case MMU_SUPERSECTION:
         // todo not implemented. also, these bits not checked correctly
+        pmk_fatal_error(PMK_INTERNAL_ERROR_BSP, __func__, __FILE__, __LINE__);
         break;
     }
 
