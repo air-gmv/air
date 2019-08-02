@@ -28,6 +28,7 @@ int main(void) {
     OFFSETOF(arm_core_context_t, state);
 
     OFFSETOF(arm_interrupt_stack_frame_t, usr_sp);
+    OFFSETOF(arm_interrupt_stack_frame_t, ret_addr);
     OFFSETOF(arm_interrupt_stack_frame_t, vfp_context);
     SIZEOF(arm_interrupt_stack_frame_t);
 

@@ -86,11 +86,6 @@ reset:
     mrc     p15, 0, r7, c0, c0, 5
     and     r7, #0xff
 
-    ldr     r3, =air_shared_area
-    ldr     r4, [r3, #(offsetof_pmk_sharedarea_t_core)]
-    add     r4, r4, r7, asl #log2_pmk_core_ctrl_t_size
-    mcr     p15, 0, r4, c13, c0, 4
-
     /* TODO We might add fdt */
 
     /* TODO Some CPUs start in hypervisor mode */
@@ -108,7 +103,7 @@ clear_bss:
     mov     r4, #0
 1:
     cmp     r2, r1
-    bhi     setup_stack
+    bls     setup_stack
     stmia   r1!, {r3, r4}
     b       1b
 
