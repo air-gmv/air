@@ -65,11 +65,6 @@ air_uptr_t arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
     air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
     air_uptr_t vbar = vcpu->vbar;
 
-    air_u32_t iccpmr = vgic->iccpmr;
-    air_uptr_t icdiser = vgic->icdiser;
-    air_uptr_t icdispr = vgic->icdispr;
-    air_uptr_t icdipr = vgic->icdipr;
-
     if (vbar == NULL)
         return ret;
 
@@ -80,7 +75,7 @@ air_uptr_t arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
         if (hm_event->nesting > 0) {
 
             vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
-            vgic->icciar = ((core->idx << 10) & id);
+
             switch (hm_event->error_id) {
             case AIR_UNIMPLEMENTED_ERROR:
                 ret = vbar + 1;
@@ -106,26 +101,41 @@ air_uptr_t arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
         }
 
         if (ret != NULL) {
-            arm_set_vint_pending(icdispr, id);
+            vgic->ilist[id] |= (1U << 28);
             return ret;
         }
     }
 
     if (!psr_i) {
 
-        if (arm_is_vint_enabled(icdiser, id)) {
+        if ((vgic->vm_ctrl & 0x1)) {
 
-            if (arm_get_vint_priority(icdipr, id) < iccpmr) {
+            if (((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) {
+
+                vgic->hppir = vgic->rpr;
+                vgic->ilist[(vgic->iar & 0x3ff)] &= ~(1U << 29);
+                vgic->ilist[(vgic->iar & 0x3ff)] |= (1U << 28);
+
+                vgic->iar = ((core->idx << 10) & id);
+                vgic->rpr = ((vgic->ilist[id] >> 23) & 0x1f);
 
                 vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
+
                 ret = vbar + 6;
             } else {
-                arm_set_vint_pending(icdispr, id);
+
+                vgic->ilist[id] |= (1U << 28);
+                if (((vgic->ilist[id] >> 23) & 0x1f) < ((vgic->ilist[(vgic->hppir & 0x3ff)] >> 23) & 0x1f)) {
+                    vgic->hppir = ((vgic->ilist[id] >> 23) & 0x1f);
+                }
             }
         }
     } else {
 
-        arm_set_vint_pending(icdispr, id);
+        vgic->ilist[id] |= (1U << 28);
+        if (((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) {
+            vgic->hppir = ((vgic->ilist[id] >> 23) & 0x1f);
+        }
     }
 
     return ret;
@@ -139,7 +149,7 @@ void arm_isr_handler_print_frame(arm_interrupt_stack_frame_t *frame, const char 
             "\tr6   = 0x%08x\tr7   = 0x%08x\tr8   = 0x%08x\n"
             "\tr9   = 0x%08x\tr10  = 0x%08x\tr11  = 0x%08x\n"
             "\tr12  = 0x%08x\tsp   = 0x%08x\tlr   = 0x%08x\n"
-            "\tp_lr = 0x%08x\tcspr = 0x%08x\tttbr = 0x%08x\n\n",
+            "\tp_lr = 0x%08x\tcpsr = 0x%08x\tttbr = 0x%08x\n\n",
             txt, frame->r0, frame->r1, frame->r2, frame->r3, frame->r4,
             frame->r5, frame->r6, frame->r7, frame->r8, frame->r9,
             frame->r10, frame->r11, frame->r12, frame->usr_sp,
@@ -212,12 +222,18 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
 
     /* check if context switch was performed */
     if (core->partition_switch == 1) {
-#ifdef PMK_DEBUG
-        printk("       ISR :: Switching Partitions\n\n");
-#endif /* PMK_DEBUG */
 
         frame = core->context->isf_pointer;
         core->partition_switch = 0;
+
+#ifdef PMK_DEBUG
+        if (core->partition != NULL) {
+            printk("       ISR :: Switching to Partition %d\n\n", core->partition->idx);
+        } else {
+            printk("       ISR :: Switching to Partition IDLE\n\n");
+        }
+
+#endif /* PMK_DEBUG */
     }
 
 #ifdef PMK_DEBUG_ISR
