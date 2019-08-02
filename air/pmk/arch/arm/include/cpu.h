@@ -109,7 +109,11 @@ typedef arm_interrupt_stack_frame_t interrupt_stack_frame_t;
 #define cpu_copy_from_user(ctx, dst, src, size) \
     arm_copy_from_user((ctx), (dst), (src), (size))
 
-
+/**
+ * @brief CPU get physical address
+ */
+#define cpu_get_physical_addr(ctrl, v_addr) \
+    arm_get_physical_addr((ctrl), (v_addr))
 
 /**
  * @brief Initializes the core context
