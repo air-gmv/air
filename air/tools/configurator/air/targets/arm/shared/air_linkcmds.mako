@@ -62,7 +62,7 @@ SECTIONS
      * --------------------------------------------------------------------- */
     .air_workspace :
     {
-        . = ALIGN(0x1000);
+        . = ALIGN(0x4000);
         air_workspace = .;
         . += ${hex(configuration.arch.workspace_size)};
     } >ram
