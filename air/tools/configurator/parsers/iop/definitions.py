@@ -136,7 +136,6 @@ ROUTE_LOGICAL_STR       = 'Logical Route (Id: {0})'
 class LogicalDevice(object):
 
     def __init__(self):
-        self.idx            = 0
         self.id             = 0
         self.name           = ''
         self.routes         = []
@@ -161,7 +160,6 @@ class LogicalDevice(object):
 class PhysicalDevice(object):
 
     def __init__(self):
-        self.idx            = 0
         self.id             = 0
         self.device         = ''
         self.type           = ''

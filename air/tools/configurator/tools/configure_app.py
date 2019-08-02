@@ -223,7 +223,7 @@ def configure_iop(os_configuration, app_configuration, partition, temp_directory
     for i, device in enumerate(iop_configuration.physical_devices):
         makoutils.applyMAKOTemplate(
             os.path.join(air.APP_TEMPLATES_DIRECTORY, 'iop', device.parser[3]),
-            os.path.join(temp_directory, partition.directory, 'iop_physical_device_{0}.c'.format(i)),
+            os.path.join(temp_directory, partition.directory, 'iop_physical_device_{0}.c'.format(device.id)),
             dict(app_configuration=app_configuration, os_configuration=os_configuration,
                  iop_configuration=iop_configuration, device=device),
             logger, template_includes)
@@ -232,7 +232,7 @@ def configure_iop(os_configuration, app_configuration, partition, temp_directory
     for i, device in enumerate(iop_configuration.logical_devices):
         makoutils.applyMAKOTemplate(
             os.path.join(air.APP_TEMPLATES_DIRECTORY, 'iop', 'iop_logical_device.mako'),
-            os.path.join(temp_directory, partition.directory, 'iop_logical_device_{0}.c'.format(i)),
+            os.path.join(temp_directory, partition.directory, 'iop_logical_device_{0}.c'.format(device.id)),
             dict(app_configuration=app_configuration, os_configuration=os_configuration,
                  iop_configuration=iop_configuration, device=device),
             logger, template_includes)
