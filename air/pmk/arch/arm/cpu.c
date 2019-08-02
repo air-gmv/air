@@ -193,6 +193,20 @@ void core_context_setup_partition(
 }
 
 /**
+ * @brief Setups a reload partition context
+ * @param partition the partition to be reloaded
+ * @param context the core context responsible for the reload
+ *
+ * This function setups a core context the architecture dependent part of
+ * an reload context
+ */
+void core_context_setup_reload_partition(
+        core_context_t *context, pmk_partition_t *partition) {
+
+
+}
+
+/**
  * @brief Flag an HM event on a core context
  * @param context core context
  * @param state_id current system state
