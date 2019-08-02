@@ -67,7 +67,7 @@ static iop_physical_route_t physical_routes[${len(pdevice.routes)}] =${'\\'}
 /**
  * @brief Pysical Device configuration
  */
-iop_physical_device_t physical_device_${pdevice.idx} =${'\\'}
+iop_physical_device_t physical_device_${pdevice.id} =${'\\'}
 {
     .driver             = (iop_device_driver_t *)&device_configuration,
     .routes             = {
@@ -89,7 +89,7 @@ iop_physical_device_t physical_device_${pdevice.idx} =${'\\'}
  * @brief Physical devices
  */
 % for i, device in enumerate(iop_configuration.physical_devices):
-extern iop_physical_device_t physical_device_${device.idx};
+extern iop_physical_device_t physical_device_${device.id};
 % endfor
 </%def>
 
@@ -98,7 +98,7 @@ extern iop_physical_device_t physical_device_${device.idx};
  * @brief Logical devices
  */
 % for i, device in enumerate(iop_configuration.logical_devices):
-extern iop_logical_device_t logical_device_${device.idx};
+extern iop_logical_device_t logical_device_${device.id};
 % endfor
 </%def>
 

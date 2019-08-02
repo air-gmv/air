@@ -87,7 +87,7 @@ iop_port_t remote_ports[${len(iop_configuration.ports)}] = {
                                 '&queuing_ports[{0}]'.format(port.iop_queuing_port_idx)},
         .device             = ${'NULL' \
                                 if port.logical_device is None else \
-                                '&logical_device_{0}'.format(port.logical_device.idx)}
+                                '&logical_device_{0}'.format(port.logical_device.id)}
     },
 % endfor
 };
