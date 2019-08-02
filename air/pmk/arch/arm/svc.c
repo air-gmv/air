@@ -55,7 +55,7 @@ void arm_svc_handler(pmk_core_ctrl_t *core, air_u32_t svc_id, arm_supervisor_sta
         break;
 
     case AIR_SYSCALL_ARM_SET_TBR:
-        arm_syscall_set_tbr(core, frame->r0);
+        arm_syscall_set_tbr(core, (void *)frame->r0);
         break;
     case AIR_SYSCALL_ARM_SET_PSR:
         arm_syscall_set_psr(core, frame->r0);
