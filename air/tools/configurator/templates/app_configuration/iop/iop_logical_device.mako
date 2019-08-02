@@ -46,7 +46,7 @@ static iop_logical_route_t logical_routes[${len(device.routes)}] = ${'\\'}
     {
         .schedule   = route_schedule_${i},
         .header     = &route_header[${i}],
-        .device     = &physical_device_${route.device.idx}
+        .device     = &physical_device_${route.device.id}
     }${',' if i < len(device.routes) - 1 else ''}
 % endfor
 };
@@ -54,7 +54,7 @@ static iop_logical_route_t logical_routes[${len(device.routes)}] = ${'\\'}
 /**
  * @brief Logical Device configuration
  */
-iop_logical_device_t logical_device_${device.idx} = ${'\\'}
+iop_logical_device_t logical_device_${device.id} = ${'\\'}
 {
     .routes = {
         .length     = ${len(device.routes)},
