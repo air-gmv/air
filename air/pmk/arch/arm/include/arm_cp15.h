@@ -355,4 +355,15 @@ static inline air_u32_t arm_cp15_get_CPACR(void) {
 static inline void arm_cp15_set_CPACR(air_u32_t val) {
     __asm__ volatile ("mcr p15, 0, %0, c1, c0, 2\n"::"r" (val):"memory");
 }
+
+static inline air_u32_t arm_cp15_get_CONTEXTIDR(void) {
+    air_u32_t val;
+    __asm__ volatile ("mrc p15, 0, %0, c13, c0, 1\n":"=r" (val));
+    return val;
+}
+
+static inline void arm_cp15_set_CONTEXTIDR(air_u32_t val) {
+    __asm__ volatile ("mcr p15, 0, %0, c13, c0, 1\n"::"r" (val):"memory");
+}
+
 #endif /* ARM_CP15_H */

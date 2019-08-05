@@ -41,11 +41,10 @@
 
 #define TTBCR_PD            0 /* if tbl miss performs a table walk. 0 -> performs walk */
 
-/**************************** page related functions ***************************
+/*************************** page related functions ***************************
  * @brief Paging functions
  *      Small page will have 4K and be on the level 2 page
  *      Big page (section) will be on 1st level and has 1MB
- *
  */
 #define PAGE_SIZE           (4*1024)    /* 4KB */
 #define LPAGE_SIZE          (64*1024)   /* 64KB */
@@ -84,12 +83,14 @@
 #define MMU_ACCESS_UP_SECT  0x800   /* AP[1]: enable unprivileged */
 #define MMU_ACCESS_A_SECT   0x400   /* AP[0]: access flag */
 #define MMU_ACCESS_XN_SECT  0x10    /* XN: execute never */
+#define MMU_ACCESS_NG_SECT  0x20000 /* nG: non global */
 
 #define MMU_ACCESS_RO_PAGE  0x200   /* AP[2]: disable write */
 #define MMU_ACCESS_UP_PAGE  0x20    /* AP[1]: enable unprivileged */
 #define MMU_ACCESS_A_PAGE   0x10    /* AP[0]: access flag */
-#define MMU_ACCESS_XN_LPAGE 0x8000  /* XN: execute never */
-#define MMU_ACCESS_XN_PAGE  0x1
+#define MMU_ACCESS_XN_LPAGE 0x8000  /* XN: execute never for large page*/
+#define MMU_ACCESS_XN_PAGE  0x1     /* XN: execute never for small page*/
+#define MMU_ACCESS_NG_PAGE  0x800   /* nG: non global */
 
 /* functions for code clarity */
 #define MMU_ACCESS_RO(level, type) \
@@ -101,6 +102,8 @@
 #define MMU_ACCESS_XN(level, type) \
     ( (level == MMU_L1) ? MMU_ACCESS_XN_SECT: \
     ( (type == MMU_LPAGE) ? MMU_ACCESS_XN_LPAGE: MMU_ACCESS_XN_PAGE ) )
+#define MMU_ACCESS_NG(level, type) \
+    ( (level == MMU_L1) ? MMU_ACCESS_NG_SECT: MMU_ACCESS_NG_PAGE )
 
 
 /* mmu region attributes */
@@ -117,10 +120,12 @@
     ? MMU_TEX_OFFSET_PAGE: MMU_TEX_OFFSET_)
 
 
-/**************************** function declarations ***************************/
+/*************************** function declarations ***************************/
 void arm_mmu_init(void);
 void arm_mmu_disable(void);
 void arm_mmu_enable(arm_mmu_context_t *ctx);
+air_u32_t arm_is_mmu_enabled(void);
+void arm_mmu_change_context(arm_mmu_context_t *ctx);
 void arm_segregation_init(void);
 void arm_map_memory(
         arm_mmu_context_t *ctrl, void *p_addr, void *v_addr,
