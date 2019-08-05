@@ -50,10 +50,14 @@ void arm_core_context_restore(void *core) {
 #endif
         return;
     }
+
     pmk_partition_t *partition = ((pmk_core_ctrl_t *)core)->partition;
 
-    arm_mmu_disable();
-    arm_mmu_enable(partition->mmu_ctrl);
+    if (arm_is_mmu_enabled()) {
+        arm_mmu_change_context(partition->mmu_ctrl);
+    } else {
+        arm_mmu_enable(partition->mmu_ctrl);
+    }
 
 #ifdef PMK_DEBUG_SCHED
     printk("       CS :: Done Restoring\n");
