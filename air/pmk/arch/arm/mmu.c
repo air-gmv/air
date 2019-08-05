@@ -86,26 +86,31 @@ static air_u32_t arm_get_mmu_permissions(
     case PMK_MMU_R:
         access_mask |= MMU_ACCESS_RO(level, type)
                     | MMU_ACCESS_UP(level, type)
-                    | MMU_ACCESS_XN(level, type);
+                    | MMU_ACCESS_XN(level, type)
+                    | MMU_ACCESS_NG(level, type);
         break;
 
     case PMK_MMU_R | PMK_MMU_W:
         access_mask |= MMU_ACCESS_UP(level, type)
-                    | MMU_ACCESS_XN(level, type);
+                    | MMU_ACCESS_XN(level, type)
+                    | MMU_ACCESS_NG(level, type);
         break;
 
     case PMK_MMU_R | PMK_MMU_E:
         access_mask |= MMU_ACCESS_RO(level, type)
-                    | MMU_ACCESS_UP(level, type);
+                    | MMU_ACCESS_UP(level, type)
+                    | MMU_ACCESS_NG(level, type);
         break;
 
     case PMK_MMU_R | PMK_MMU_W | PMK_MMU_E:
-        access_mask |= MMU_ACCESS_UP(level, type);
+        access_mask |= MMU_ACCESS_UP(level, type)
+                    | MMU_ACCESS_NG(level, type);
         break;
 
     case PMK_MMU_E:
         access_mask |= MMU_ACCESS_RO(level, type)
-                    | MMU_ACCESS_UP(level, type);
+                    | MMU_ACCESS_UP(level, type)
+                    | MMU_ACCESS_NG(level, type);
         break;
 
     case PMK_MMU_SR:
@@ -123,6 +128,10 @@ static air_u32_t arm_get_mmu_permissions(
 
     case PMK_MMU_SR | PMK_MMU_SW | PMK_MMU_SE:
         break;
+
+    default:
+        pmk_fatal_error(PMK_INTERNAL_ERROR_BSP, __func__, __FILE__, __LINE__);
+
     }
     return access_mask;
 }
@@ -233,6 +242,7 @@ static void arm_mmu_map_l1(
 
             _consumed = arm_mmu_map_l2(pt_ptr, p_addr, v_addr, unit, size, permissions, 1);
 
+        /* Section */
         } else {
 
             air_u32_t arm_permissions = arm_get_mmu_permissions(permissions, MMU_L1, MMU_SECTION);
@@ -301,10 +311,31 @@ void arm_mmu_enable(arm_mmu_context_t *ctx) {
 #if TTBR_N
     arm_cp15_set_translation_table1_base((air_u32_t)ctx->ttbr1 & ~(TTBR1_SIZE - 1) | (0b0010011));
 #endif
+    arm_instruction_synchronization_barrier();
 
     air_u32_t sctlr = arm_cp15_get_system_control();
     sctlr |= (ARM_SCTLR_M);
     arm_cp15_set_system_control(sctlr);
+    arm_instruction_synchronization_barrier();
+}
+
+air_u32_t arm_is_mmu_enabled(void) {
+
+    air_u32_t sctlr = arm_cp15_get_system_control();
+    return sctlr & ARM_SCTLR_M;
+}
+
+void arm_mmu_change_context(arm_mmu_context_t *ctx) {
+#ifdef PMK_DEBUG_ISR
+    printk("\n\t\t    ---> MMU change context with ttbr = 0x%08x <---\n\n", (air_u32_t)ctx->ttbr0);
+#endif
+
+    arm_cp15_set_CONTEXTIDR(0);
+    arm_instruction_synchronization_barrier();
+    air_u32_t ttbr0 = ((air_u32_t)ctx->ttbr0 & ~(TTBR0_SIZE - 1)) | (0b0010011);
+    arm_cp15_set_translation_table0_base(ttbr0);
+    arm_instruction_synchronization_barrier();
+    arm_cp15_set_CONTEXTIDR(ctx->context);
 }
 
 void arm_segregation_init(void) {
@@ -312,7 +343,6 @@ void arm_segregation_init(void) {
     arch_configuration_t *configuration =
             (arch_configuration_t *)pmk_get_arch_configuration();
 
-//  air_u32_t arm_mmu_context_size = configuration->mmu_context_entries * sizeof(arm_mmu_context_t);
     air_u32_t arm_l1_table_size = configuration->mmu_l1_tables_entries * TTBR0_SIZE;
     air_u32_t arm_l2_table_size = configuration->mmu_l2_tables_entries * TTL2_SIZE;
 
@@ -329,7 +359,7 @@ void arm_segregation_init(void) {
         /* get a MMU control structure for the partition */
         arm_mmu_context_t *ctrl = pmk_workspace_alloc(sizeof(arm_mmu_context_t));
 
-        ctrl->context = i;
+        ctrl->context = partition->idx + 1;
 
         ctrl->ttbr0 = arm_mmu_get_table(0);
 #if TTBR_N
