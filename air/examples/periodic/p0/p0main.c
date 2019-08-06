@@ -15,10 +15,6 @@
 #include <rtems/cpuuse.h>  
 #include <a653.h>
 #include <imaspex.h>
- 
-#include <pprintf.h>
-
-
 
 
 SAMPLING_PORT_ID_TYPE SEND_PORT;
@@ -39,7 +35,7 @@ void test2(PARTITION_ID_TYPE self_id) {
   status=  rtems_rate_monotonic_create( name_1, &period_1 );
   status=  rtems_rate_monotonic_create( name_2, &period_2 );
   	    if( RTEMS_SUCCESSFUL != status ) {
-			pprintf("create failed with status: %d\n", status);
+			printf("create failed with status: %d\n", status);
 
       }
 
@@ -48,25 +44,25 @@ void test2(PARTITION_ID_TYPE self_id) {
 
       status = rtems_rate_monotonic_period( period_1, 100 );
 	    if( RTEMS_SUCCESSFUL != status ) {
-			pprintf("RM failed with status: %d\n", status);
+			printf("RM failed with status: %d\n", status);
 
       }
 
 	  status = rtems_rate_monotonic_period( period_2, 40 );
 	    if( RTEMS_SUCCESSFUL != status ) {
-			pprintf("RM failed with status: %d\n", status);
+			printf("RM failed with status: %d\n", status);
 
       }
       
 
-	 pprintf("  *  Perform first set of actions between clock     *  ticks 0 and 39 of every 100 ticks.     \n");
+	 printf("  *  Perform first set of actions between clock     *  ticks 0 and 39 of every 100 ticks.     \n");
 
     status = rtems_rate_monotonic_period( period_2, 30 );
 	    if( RTEMS_SUCCESSFUL != status ) {
-			pprintf("RM2 failed with status: %d\n", status);
+			printf("RM2 failed with status: %d\n", status);
       }
 
-    pprintf("  Perform second set of actions between clock 40 and 69 iss the period_2 period.     \n");
+    printf("  Perform second set of actions between clock 40 and 69 iss the period_2 period.     \n");
 
 
     (void) rtems_rate_monotonic_cancel( period_2 );
@@ -95,14 +91,14 @@ int producer() {
 	/*Getting my own partition id*/
 	GET_PARTITION_ID(&self_id, &rc);
 	if(NO_ERROR != rc) {
-		//pprintf("GET_PARTITION_ID error %d\n", rc);
+		//printf("GET_PARTITION_ID error %d\n", rc);
 	}
 	
 	//for (;;)
 	//{
-	  pprintf("In partition PO loop t20\n");
+	  printf("In partition PO loop t20\n");
 	  rtems_task_wake_after(20);
-  	  pprintf("P0 : Waking up\n");
+  	  printf("P0 : Waking up\n");
 	//}
 	
 	/*Creating Source sampling Port */
@@ -112,7 +108,7 @@ int producer() {
 	
 	CREATE_SAMPLING_PORT (NAME, SIZE, SOURCE, PERIOD, &SEND_PORT, &rc);
 	if (NO_ERROR != rc) {
-		pprintf("CREATE_SAMPLING_PORT error %d\n", rc);
+		printf("CREATE_SAMPLING_PORT error %d\n", rc);
 	}
 	
 	
@@ -122,7 +118,7 @@ int producer() {
 	
 	SET_PARTITION_MODE(NORMAL, &rc);
 	if (NO_ERROR != rc) {
-		pprintf("SET_PARTITION_MODE error %d\n", rc);
+		printf("SET_PARTITION_MODE error %d\n", rc);
 	}
 	
 	return RTEMS_SUCCESSFUL;

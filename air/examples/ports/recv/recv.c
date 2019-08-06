@@ -17,7 +17,7 @@
 #include <air.h>
 
 #ifdef RTEMS48I
-	#include <pprintf.h>
+	#include <printf.h>
 #endif
 
 
@@ -47,24 +47,24 @@ void test(PARTITION_ID_TYPE self_id) {
 	while(1) {
 		
 		
-		pprintf ("Partition %d receiving message..\n", self_id);
+		printf ("Partition %d receiving message..\n", self_id);
 		
 		/*if (TIME_STAMP > REF_TIME_STAMP), receive from sampling port*/
 		READ_SAMPLING_MESSAGE_CONDITIONAL(RECV_PORT, REF_TIME_STAMP, (MESSAGE_ADDR_TYPE)message, &SIZE, &TIME_STAMP, &rc);
 		if(INVALID_PARAM == rc) {
-			pprintf("READ_SAMPLING_MESSAGE_CONDITIONAL error %d\n", rc);
+			printf("READ_SAMPLING_MESSAGE_CONDITIONAL error %d\n", rc);
 		}
 		else if((NO_ACTION == rc) && (0 == TIME_STAMP) && (0 == SIZE)) {
-			pprintf("Empty Sampling Port\n");
+			printf("Empty Sampling Port\n");
 		}
 		else if((TIME_STAMP <= REF_TIME_STAMP) && (NO_ACTION == rc) && (0 == SIZE)) {
-			pprintf("Timestamp not yet reached\n");
+			printf("Timestamp not yet reached\n");
 		}
 		else if(TIME_STAMP > REF_TIME_STAMP) {
-			pprintf("Message: %s, timestamp=%ldms\n", message, (long int)(TIME_STAMP/1000000) );
+			printf("Message: %s, timestamp=%ldms\n", message, (long int)(TIME_STAMP/1000000) );
 		}
 		else {
-			pprintf("Unexpected READ_SAMPLING_MESSAGE_CONDITIONAL behavior\n");
+			printf("Unexpected READ_SAMPLING_MESSAGE_CONDITIONAL behavior\n");
 		}
 			
 			
@@ -91,10 +91,10 @@ int entry_func() {
 	/*Getting my own ID*/
 	GET_PARTITION_ID(&self_id, &rc);
 	if(NO_ERROR != rc) {
-		pprintf("GET_PARTITION_ID error %d\n", rc);
+		printf("GET_PARTITION_ID error %d\n", rc);
 	}
 	
-	pprintf("Initializing partition %d...\n", self_id);
+	printf("Initializing partition %d...\n", self_id);
 	
 	/*creating Destination sampling Port*/
 	SAMPLING_PORT_NAME_TYPE NAME = "RECV_SAMP";
@@ -104,7 +104,7 @@ int entry_func() {
 	
 	CREATE_SAMPLING_PORT (NAME, SIZE, DESTINATION, PERIOD, &RECV_PORT, &rc);
 	if (NO_ERROR != rc) {
-		pprintf("CREATE_SAMPLING_PORT error %d\n", rc);
+		printf("CREATE_SAMPLING_PORT error %d\n", rc);
 	}
 	
 	
@@ -115,7 +115,7 @@ int entry_func() {
 	
 	SET_PARTITION_MODE(NORMAL, &rc);
 	if (NO_ERROR != rc) {
-		pprintf("SET_PARTITION_MODE error %d\n", rc);
+		printf("SET_PARTITION_MODE error %d\n", rc);
 	}
 	
 	return RTEMS_SUCCESSFUL;
