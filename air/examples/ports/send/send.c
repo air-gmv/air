@@ -17,7 +17,7 @@
 #include <air.h>
 
 #ifdef RTEMS48I
-	#include <pprintf.h>
+	#include <printf.h>
 #endif
 
 
@@ -41,10 +41,10 @@ void test(PARTITION_ID_TYPE self_id) {
 	RETURN_CODE_TYPE rc;
 	
 	while(1) {
-		pprintf ("Partition %d sending: %s..\n", self_id, message);
+		printf ("Partition %d sending: %s..\n", self_id, message);
 		WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )message, 16, &rc );
 		if (NO_ERROR != rc) {
-			pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
+			printf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
 		}
 		
 				/*identify the string with an integer index*/
@@ -54,10 +54,10 @@ void test(PARTITION_ID_TYPE self_id) {
 		}
 		message[15] = 0x30 + i;
 		
-    pprintf ("Partition %d sending queuing: %s..\n", self_id, message);
+    printf ("Partition %d sending queuing: %s..\n", self_id, message);
     SEND_QUEUING_MESSAGE(qpid, (MESSAGE_ADDR_TYPE )message, 16, INFINITE_TIME_VALUE, &rc );
 		if (rc != NO_ERROR) {
-		    pprintf ("SEND_QUEUING_MESSAGE error %d\n", rc);
+		    printf ("SEND_QUEUING_MESSAGE error %d\n", rc);
 		}
 		
 		/*identify the string with an integer index*/
@@ -89,10 +89,10 @@ int entry_func() {
 	/*Getting my own partition id*/
 	GET_PARTITION_ID(&self_id, &rc);
 	if(NO_ERROR != rc) {
-		pprintf("GET_PARTITION_ID error %d\n", rc);
+		printf("GET_PARTITION_ID error %d\n", rc);
 	}
 	
-	pprintf("Initializing partition %d...\n", self_id);
+	printf("Initializing partition %d...\n", self_id);
 	
 	
 	/*Creating Source sampling Port*/
@@ -102,13 +102,13 @@ int entry_func() {
 	
 	CREATE_SAMPLING_PORT (NAME, SIZE, SOURCE, PERIOD, &SEND_PORT, &rc);
 	if (NO_ERROR != rc) {
-		pprintf("CREATE_SAMPLING_PORT error %d\n", rc);
+		printf("CREATE_SAMPLING_PORT error %d\n", rc);
 	}
 	
 	/* Creating Queueing port */
   CREATE_QUEUING_PORT("QSAMPLE", 1024, 32, SOURCE, FIFO, &qpid, &rc );
 	if(NO_ERROR != rc){
-		pprintf("CREATE_QUEUING_PORT error %d\n", rc);
+		printf("CREATE_QUEUING_PORT error %d\n", rc);
 	} 
 	
 	
@@ -118,7 +118,7 @@ int entry_func() {
 	
 	SET_PARTITION_MODE(NORMAL, &rc);
 	if (NO_ERROR != rc) {
-		pprintf("SET_PARTITION_MODE error %d\n", rc);
+		printf("SET_PARTITION_MODE error %d\n", rc);
 	}
 	
 	return RTEMS_SUCCESSFUL;

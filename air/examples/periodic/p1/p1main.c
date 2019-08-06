@@ -16,8 +16,6 @@
 #include <a653.h>
 #include <imaspex.h>
  
-#include <pprintf.h>
-
 
 
 
@@ -35,18 +33,18 @@ void test(PARTITION_ID_TYPE self_id) {
 
 	/* get the number of ticks per second */
 	int tps = 1000000 / xky_syscall_get_us_per_tick();
-	pprintf("P1: TPS %i\n", tps);
+	printf("P1: TPS %i\n", tps);
 
 	RETURN_CODE_TYPE rc = NO_ERROR;
 
 	//while(1) {
 
-		//pprintf ("P1:Partition %d with message: %s..\n", self_id, message);
+		//printf ("P1:Partition %d with message: %s..\n", self_id, message);
 		
 		/*
 		WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )message, 17, &rc );
 		if (NO_ERROR != rc) {
-			pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
+			printf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
 		}
 		*/
 		/*identify the string with an integer index*/
@@ -77,14 +75,14 @@ int receiver() {
 	/*Getting my own partition id*/
 	GET_PARTITION_ID(&self_id, &rc);
 	if(NO_ERROR != rc) {
-		//pprintf("GET_PARTITION_ID error %d\n", rc);
+		//printf("GET_PARTITION_ID error %d\n", rc);
 	}
 	
 	for (;;)
 	{
-	  pprintf("In partition P1 loop t20\n");
+	  printf("In partition P1 loop t20\n");
 	  rtems_task_wake_after(20);
-  	  pprintf("P1 : Waking up\n");
+  	  printf("P1 : Waking up\n");
 	}
 	
 	/*Creating Source sampling Port
@@ -94,7 +92,7 @@ int receiver() {
 	
 	CREATE_SAMPLING_PORT (NAME, SIZE, SOURCE, PERIOD, &SEND_PORT, &rc);
 	if (NO_ERROR != rc) {
-		pprintf("CREATE_SAMPLING_PORT error %d\n", rc);
+		printf("CREATE_SAMPLING_PORT error %d\n", rc);
 	}
 	
 	
@@ -104,7 +102,7 @@ int receiver() {
 	
 	SET_PARTITION_MODE(NORMAL, &rc);
 	if (NO_ERROR != rc) {
-		pprintf("SET_PARTITION_MODE error %d\n", rc);
+		printf("SET_PARTITION_MODE error %d\n", rc);
 	}
 	*/
 	return RTEMS_SUCCESSFUL;
