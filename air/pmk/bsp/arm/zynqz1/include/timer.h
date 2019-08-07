@@ -25,7 +25,8 @@
 #define ARM_GT_CTRL_IRQ_EN              (1U << 2)
 #define ARM_GT_CTRL_AUTOINC_EN          (1U << 3)
 #define ARM_GT_CTRL_PRESCALER(value) \
-        ((value << 8) ? value <= 255 : (1U << 8))
+        ((value <= 255) ? value << 8 : (255U << 8))
+
 
 typedef struct {
     air_u32_t cnt_lower;
@@ -42,6 +43,8 @@ void arm_start_global_timer(void);
 air_u64_t arm_read_global_timer(void);
 air_u32_t arm_acknowledge_ttc(void);
 void arm_setup_interprocessor_irq(air_u32_t cpu_id);
+void arm_acknowledge_gt(void);
+air_u32_t arm_determine_gt_prescaler(air_u32_t us_per_tick);
 
 /**************************** Triple Timer Counter ***************************/
 #define TTC0_BASE_MEMORY                0xf8001000
