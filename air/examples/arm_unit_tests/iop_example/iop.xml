@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<IOPartition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="iop.xsd" version="1.0" date="2013-06-05" name="iop_example" request_number="64" time_to_live="5">
+
+  <RemotePorts>
+    <Port Name="dsampling" LogicalDeviceId="1"/>
+    <Port Name="squeuing" />
+  </RemotePorts>
+
+  <LogicalDevices>
+    <Device Id=0" Name="PARSERVER" />
+  </LogicalDevices>
+
+  <PhysicalDevices>
+
+    <!-- UART 0:  -->
+    <Device Id="1" Device="UART0" Baud="115.200">
+      <PhysicalRoute Id="1" PortId="squeuing">
+        <UartHeader Extended="true" Sshot="false" RTR="false" UartID="34"/>
+      </PhysicalRoute>
+      <LogicalRoute Id="2" LogicalDeviceId="0">
+        <UartHeader Extended="false" Sshot="false" RTR="false" UartID="5"/>
+      </LogicalRoute>
+    </Device>
+
+    <!-- UART 1:  -->
+    <Device Id="2" Device="UART1" Baud="115.200">
+      <PhysicalRoute Id="3" PortId="squeuing">
+          <UartHeader Extended="true" Sshot="false" RTR="false" UartID="35"/>
+      </PhysicalRoute>
+      <LogicalRoute Id="4" LogicalDeviceId="0">
+        <UartHeader Extended="false" Sshot="false" RTR="false" UartID="6"/>
+      </LogicalRoute>
+    </Device>
+
+  </PhysicalDevices>
+
+<!-- Module Schedules  -->
+
+  <ModuleSchedules>
+
+    <Schedule ScheduleIdentifier="1">
+      <DevicesConfiguration>
+        <Device DeviceId="1" Device="UART0" Reads="1"/>
+        <Device DeviceId="2" Device="UART1" Reads="1"/>
+      </DevicesConfiguration>
+      <RoutesConfiguration>
+        <Route RouteId="1" Active="true"/>
+        <Route RouteId="2" Active="true"/>
+        <Route RouteId="3" Active="true"/>
+        <Route RouteId="4" Active="true"/>
+      </RoutesConfiguration>
+    </Schedule>
+  </ModuleSchedules>
+</IOPartition>

@@ -62,7 +62,7 @@ void bsp_start_hook(void) {
 air_u32_t bsp_core_init(void) {
 
     arm_a9mpcore_start_hook();
-    arm_define_uart(1);
+    arm_define_uart(0);
 
     air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
 
