@@ -208,6 +208,8 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
     /* GT Interrupt*/
     if (id == 27) {
 
+        arm_acknowledge_gt();
+
 #ifdef PMK_DEBUG_TIMER
         global_timer_t *gt = (global_timer_t *)GT_BASE_MEMORY;
         ic_distributor_t *ic_dist = (ic_distributor_t *)IC_DIST_BASE_MEMORY;
@@ -241,7 +243,7 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
         frame = core->context->isf_pointer;
         core->partition_switch = 0;
 
-#ifdef PMK_DEBUG
+#ifdef PMK_DEBUG_ISR
         if (core->partition != NULL) {
             printk("       ISR :: Switching to Partition %d\n\n", core->partition->id);
         } else {
