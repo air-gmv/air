@@ -67,7 +67,6 @@ void test2(uintptr_t self_id) {
     }*/
 }
 
-
 int producer() {
 
     RETURN_CODE_TYPE rc;
@@ -93,5 +92,3 @@ int producer() {
 
     return RTEMS_SUCCESSFUL;
 }
-
-
