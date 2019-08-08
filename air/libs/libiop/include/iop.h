@@ -1,8 +1,12 @@
+/*
+ * Copyright (C) 2011  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
 /** 
  * @file
- * 
- *  COPYRIGHT (c) 2011\n
- *  GMV-SKYSOFT \n
  * 
  * @author cdcs
  * @brief Defines the internal memory structures used by the IOP.

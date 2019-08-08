@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Copyright (C) 2008-2018  GMVIS Skysoft S.A.
+
+  The license and distribution terms for this file may be
+  found in the file LICENSE in this distribution or at
+  air/LICENSE
+-->
 <ARINC_653_Module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ModuleName="mms">
 
   <Partition Criticality="LEVEL_A" EntryPoint="entry_func" PartitionIdentifier="10" PartitionName="master" SystemPartition="true">

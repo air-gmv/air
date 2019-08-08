@@ -1,22 +1,16 @@
+/*
+ * COPYRIGHT (c) 2007  Gaisler Research
+ * Copyright (C) 2011-2017  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE.RTEMS in this distribution or at
+ * http://www.rtems.com/license/LICENSE.
+ */
 /**
  *  @file
  *  @brief Macros used for Spacewire bus 
  *
- *  COPYRIGHT (c) 2011.
- *  GMV-SKYSOFT
- *	
- *  @author Cláudio Silva
- *
- *
- */
- 
-/*
- *  COPYRIGHT (c) 2007.
- *  Gaisler Research
- *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
+ *  @author Clï¿½udio Silva, lumm
  */
 
 #ifndef __SPW_H__

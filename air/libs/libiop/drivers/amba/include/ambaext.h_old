@@ -1,14 +1,14 @@
+/*
+ * Copyright (C) 2011  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
 /** 
  *  @file ambaext.h
- * 
- *  COPYRIGHT (c) 2011.
- *  GMV-SKYSOFT 
  *
- *  @author Cláudio Silva
- *
- *  The license and distribution terms for this file may be 
- *  found in the file LICENSE at: 
- *  http://www.rtems.com/license/LICENSE.
+ *  @author Clï¿½udio Silva
  * 
  *  @brief Functions that perform amba bus scanning
  * 

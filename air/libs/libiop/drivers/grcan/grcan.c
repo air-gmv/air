@@ -1,22 +1,19 @@
 /*
- *  GRCAN driver  
+ * GRCAN driver
  *
- *  COPYRIGHT (c) 2007.
- *  Cobham Gaisler AB.
+ * COPYRIGHT (c) 2007  Cobham Gaisler AB
+ * Copyright (C) 2018  GMVIS Skysoft S.A.
  *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.org/license/LICENSE.
- * 
- * Modified by: gmvs@gmv.com
- * 
- * The original driver has been modified to be included in the Hypervisor
- * AIR, developed by gmv.
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE.RTEMS in this distribution or at
+ * http://www.rtems.org/license/LICENSE.
  */
-
-/*
- * Modified by gmvs @ GMV 2018
- * gmvs@gmv.com
+/**
+ * @file
+ * @brief The original driver has been modified to be included in the
+ * Hypervisor AIR. It is assumed to be used for the GR740 board.
+ *
+ * @author gmvs
  */
 #include <grcan.h>
 #include <bsp.h>

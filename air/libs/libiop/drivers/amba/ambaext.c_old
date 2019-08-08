@@ -1,12 +1,12 @@
+/*
+ * Copyright (C) 2011  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
 /** 
  *  @file ambaext.c
- * 
- *  COPYRIGHT (c) 2011.
- *  GMV-SKYSOFT 
- * 
- *  The license and distribution terms for this file may be 
- *  found in the file LICENSE at: 
- *  http://www.rtems.com/license/LICENSE.
  * 	
  *  @author Cl�udio Silva
  *  @brief This driver add-on hook performs amba bus scanning

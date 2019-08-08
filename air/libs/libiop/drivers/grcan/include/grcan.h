@@ -1,24 +1,17 @@
+/*
+ * COPYRIGHT (c) 2007  Cobham Gaisler AB
+ * Copyright (C) 2018  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE.RTEMS in this distribution or at
+ * http://www.rtems.org/license/LICENSE.
+ */
 /**
  * @file
- * @ingroup sparc_bsp
- * @defgroup can GRCAN
- * @ingroup can
+ * @author gmvs
  * @brief Macros used for grcan controller
  */
 
-/*
- *  COPYRIGHT (c) 2007.
- *  Cobham Gaisler AB.
- *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.org/license/LICENSE.
- */
-
-/*
- * Modified by gmvs @ GMV 2018
- * gmvs@gmv.com
- */
 #include <air.h>
 #include <iop.h>
 #include <can_support.h>
