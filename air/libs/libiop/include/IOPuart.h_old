@@ -1,8 +1,12 @@
+/*
+ * Copyright (C) 2007  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
 /**
  *  @brief Driver interface for polled UART
- *
- *  COPYRIGHT (c) 2007.
- *  Gaisler Research
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at

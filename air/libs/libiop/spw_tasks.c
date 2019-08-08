@@ -1,8 +1,12 @@
+/*
+ * Copyright (C) 2011-2017  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
 /** 
  * 	@file IOPspw_tasks.c
- * 
- *  COPYRIGHT (c) 2011.
- *  GMV-SKYSOFT 
  *
  * 	@ingroup TASKS
  *

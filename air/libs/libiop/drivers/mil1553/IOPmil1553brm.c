@@ -1,25 +1,19 @@
-/**	@file
- *  @brief This file contains the MIL-STD-1553 A/B driver for LEON3.
+/*
+ * BRM driver
  *
- *  COPYRIGHT (c) 2011
- *  GMV-SKYSOFT
+ * COPYRIGHT (c) 2006  Gaisler Research
+ * Copyright (C) 2011-2019  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE.RTEMS in this distribution or at
+ * http://www.rtems.com/license/LICENSE.
+ */
+/** @file
+ *  @brief This file contains the MIL-STD-1553 A/B driver for LEON3.
  *
  *  @author Cl�udio Silva
  *	
  */
-
-/*
- *  BRM driver  
- *
- *  COPYRIGHT (c) 2006.
- *  Gaisler Research.
- *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- */
-
 
 /**
  * @brief basic bus/interface of device,

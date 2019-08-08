@@ -1,14 +1,17 @@
+/*
+ * Copyright (C) 2012-2019  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
 /**
  *  @file gr1553_support.c
- *
- *  COPYRIGHT (c) 2012.
- *  GMV-SKYSOFT
  *
  *  @author Claudio Silva
  *
  *  @brief IOP STD-MIL-1553B Support Functions
  */
-
 #include <gr1553_support.h>
 #include <bsp.h>
 
