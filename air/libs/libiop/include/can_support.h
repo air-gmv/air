@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2017  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * https://spass-git-ext.gmv.com/AIR/AIR/raw/master/air/LICENSE
+ */
 /**
  *  @author gmvs@gmv.com
  *  @brief CAN support structures and functions definitions

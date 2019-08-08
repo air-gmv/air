@@ -1,31 +1,21 @@
-/**
- *  @file 
- *  @brief This file contains the driver for the Gaisler's MIL-STD1553B interface
+/*
+ * GR1553B BC driver
  *
- *  COPYRIGHT (c) 2011.
- *  GMV-SKYSOFT
+ * COPYRIGHT (c) 2010  Aeroflex Gaisler
+ * Copyright (C) 2011  GMVIS Skysoft S.A.
  *
- *  @author Cl�udio Silva
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE.RTEMS in this distribution or at
+ * http://www.rtems.com/license/LICENSE.
  *
+ * 2010-03-15, Daniel Hellstrom <daniel@gaisler.com>
+ *   Created
  */
- 
-/*  GR1553B BC driver
+/**
+ * @file
+ * @brief This file contains the driver for the Gaisler's MIL-STD1553B interface
  *
- *  COPYRIGHT (c) 2010.
- *  Aeroflex Gaisler.
- *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *  2010-03-15, Daniel Hellstrom <daniel@gaisler.com>
- *    Created
- *
- *
- * OVERVIEW
- * ========
- *  See header file and list header file.
- *
+ * @author Cl�udio Silva
  */
 
 
