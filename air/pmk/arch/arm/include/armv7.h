@@ -69,15 +69,22 @@
     #endif
 #endif
 
-
 /** @brief Size for the exception saved information. 20 uint32 */
-#define ARM_EXCEPTION_FRAME_SIZE 80
-#define ARM_EXCEPTION_FRAME_VFP_CONTEXT_OFFSET 72
-#define ARM_VFP_CONTEXT_SIZE 264
+#define ARM_EXCEPTION_FRAME_SIZE                80
+#define ARM_EXCEPTION_FRAME_VFP_CONTEXT_OFFSET  72
+#define ARM_VFP_CONTEXT_SIZE                    264
 
+#define ARM_CORE_CONTEXT_TRASHED                1
 
-#define ARM_CORE_CONTEXT_TRASHED    1
-
+#define ARM_EXCEPTION_RESET                     0
+#define ARM_EXCEPTION_UNDEF                     1
+#define ARM_EXCEPTION_SWI                       2
+#define ARM_EXCEPTION_PREF_ABORT                3
+#define ARM_EXCEPTION_DATA_ABORT                4
+#define ARM_EXCEPTION_RESERVED                  5
+#define ARM_EXCEPTION_IRQ                       6
+#define ARM_EXCEPTION_FIQ                       7
+#define MAX_EXCEPTIONS                          8
 
 #else /* ASM */
 
@@ -119,12 +126,11 @@ typedef enum {
     ARM_EXCEPTION_DATA_ABORT = 4,
     ARM_EXCEPTION_RESERVED = 5,
     ARM_EXCEPTION_IRQ = 6,
-    ARM_EXCEPTION_FIQ = 7,
-    MAX_EXCEPTIONS = 8,
-} symbolic_exception_name;
+    ARM_EXCEPTION_FIQ = 7
+} arm_exception_e;
 
 /**
- *  @brief Floating Point Unit (FPU) registers context
+ * @brief Floating Point Unit (FPU) registers context
  */
 typedef struct {
     air_u32_t fpexc;
@@ -164,7 +170,7 @@ typedef struct {
 } arm_vfp_context_t;
 
 /**
- *  @brief Context saved on stack for an interrupt.
+ * @brief Context saved on stack for an interrupt.
  */
 typedef struct {
     air_u32_t r0;
@@ -184,13 +190,13 @@ typedef struct {
     air_u32_t usr_lr;                   /**< pre-exception lr               */
     air_u32_t ret_addr;                 /**< return addr after the exception*/
     air_u32_t ret_psr;                  /**< pre-exception cpsr             */
-    symbolic_exception_name exception_name;
+    arm_exception_e exception_name;
     arm_vfp_context_t *vfp_context;
     air_u32_t reserved;
 } arm_interrupt_stack_frame_t;
 
 /**
- *  @brief Context saved on stack for a supervisor call.
+ * @brief Context saved on stack for a supervisor call.
  */
 typedef struct {
     air_u32_t r0;
@@ -212,8 +218,8 @@ typedef struct {
 } arm_virtual_cpu_t;
 
 /**
- *  @brief Virtual Interrupt Controller registers
- *  these are based on the version 2 of the GIC
+ * @brief Virtual Interrupt Controller registers
+ * these are based on the version 2 of the GIC
  */
 typedef struct {
     air_u32_t vm_ctrl;                  /**< VM interrupt control           */
@@ -322,11 +328,11 @@ static inline void arm_set_cpsr(air_u32_t val) {
 }
 
 static inline void arm_disable_interrupts() {
-    __asm__ volatile ("cpsid i\n");
+    __asm__ volatile ("cpsid if\n");
 }
 
 static inline void arm_enable_interrupts() {
-    __asm__ volatile ("cpsie i\n");
+    __asm__ volatile ("cpsie if\n");
 }
 
 static inline air_u32_t arm_is_vint_enabled(
