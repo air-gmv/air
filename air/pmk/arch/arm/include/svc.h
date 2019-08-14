@@ -44,6 +44,6 @@ air_u32_t arm_syscall_get_core_id(pmk_core_ctrl_t *core);
 air_u64_t arm_syscall_get_elapsed_ticks(pmk_core_ctrl_t *core);
 
 /**************************** function declarations ***************************/
-void arm_svc_handler(pmk_core_ctrl_t *core, air_u32_t svc_id, arm_supervisor_stack_frame_t *frame);
+void arm_svc_handler(air_u32_t svc_id, pmk_core_ctrl_t *core, arm_supervisor_stack_frame_t *frame);
 
 #endif /* ARM_SVC_H */
