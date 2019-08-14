@@ -24,7 +24,7 @@ void arm_svc_handler(
 
 #ifdef PMK_DEBUG_SVC
     printk("\n ** svc #%i **\n", svc_id);
-    printk("       with ret_addr: 0x%08x\n", frame->lr);
+    printk("       with ret_addr: 0x%08x\n", *(&(frame->lr) + 1));
 #endif
     air_u32_t elapsed = 0;
 
@@ -155,7 +155,7 @@ void arm_svc_handler(
                 (air_identifier_t)frame->r1,
                 (air_message_ptr_t)frame->r2,
                 (air_sz_t *)frame->r3,
-                (void *)frame->r4);
+                (void *)frame->sp[0]);
         break;
     case AIR_SYSCALL_WRITE_PORT:
         frame->r0 = (air_u32_t)pmk_syscall_write_port(
@@ -164,7 +164,7 @@ void arm_svc_handler(
                 (air_identifier_t)frame->r1,
                 (air_message_ptr_t)frame->r2,
                 (air_sz_t)frame->r3,
-                (void *)frame->r4);
+                (void *)frame->sp[0]);
         break;
     case AIR_SYSCALL_GET_SHARED_AREA:
         frame->r0 = (air_u32_t)pmk_syscall_get_sharedmemory(
