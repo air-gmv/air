@@ -180,7 +180,7 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
     air_u8_t cpu = ((ack << 10U) & 0x7);
 
 #ifdef PMK_DEBUG_ISR
-    printk(" ** IRQ #%d acknowledge **\n\n", id);
+//    printk(" ** IRQ #%d acknowledge **\n\n", id);
 #endif
 #ifdef PMK_DEBUG_TICKS
     printk("|");
@@ -209,10 +209,6 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
         return ret;
     }
 
-#ifdef PMK_DEBUG_ISR
-    arm_isr_handler_print_frame(frame, "ENTRY");
-#endif
-
     if (arm_isr_handler_table[id] != (air_uptr_t)NULL) {
         ((isr)arm_isr_handler_table[id])(frame, core);
     }
@@ -223,22 +219,26 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
     /* check if context switch was performed */
     if (core->partition_switch == 1) {
 
+#ifdef PMK_DEBUG_ISR
+    arm_isr_handler_print_frame(frame, "ENTRY");
+#endif
+
         frame = core->context->isf_pointer;
         core->partition_switch = 0;
 
 #ifdef PMK_DEBUG
         if (core->partition != NULL) {
-            printk("       ISR :: Switching to Partition %d\n\n", core->partition->idx);
+            printk("       ISR :: Switching to Partition %d\n\n", core->partition->id);
         } else {
             printk("       ISR :: Switching to Partition IDLE\n\n");
         }
 
 #endif /* PMK_DEBUG */
+#ifdef PMK_DEBUG_ISR
+        arm_isr_handler_print_frame(frame, "EXIT ");
+#endif
     }
 
-#ifdef PMK_DEBUG_ISR
-    arm_isr_handler_print_frame(frame, "EXIT ");
-#endif
 
     /* will it route to the partition */
     if (core->partition != NULL && (id < 42 && id > 44)) {
