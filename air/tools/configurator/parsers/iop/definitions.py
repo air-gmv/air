@@ -4,12 +4,14 @@ MIL = 'MIL'
 ETH = 'ETH'
 RTR = 'SPWRTR'
 CAN = 'CAN'
+UART= 'UART'
 
 SUPPORTED_DEVICES 	=   {	SPW : ['GRSPW'],
                         	MIL : ['GRMIL', 'BRM1553'],
                         	ETH : ['GRETH'],
                             RTR : ['SPWRTR'],
-                            CAN : ['GRCAN']   }
+                            CAN : ['GRCAN'],
+                            UART: ['XUART']   }
 
 IOP_PORT_TYPE		= { 'SamplingPort' : 'IOP_SAMPLING_PORT',
 						'QueuingPort'  : 'IOP_QUEUING_PORT'   }
@@ -91,6 +93,9 @@ MILHEADER                       = 'MILHeader'
 MIL_ADDR                        = 'Addr'
 MIL_SUBADDR                     = 'SubAddr'
 
+#UART Header
+UARTHEADER                       = 'UartHeader'
+UARTHEADER_ID                    = 'UartID'
 
 import utils.parser as parserutils
 
@@ -124,6 +129,7 @@ PHYSICAL_DEVICE_STR     = 'Physical Device (Id: {0}, Device: {1})'
 ETH_HEADER_STR          = 'Ethernet Header (Mac: {0}, Ip: {1}, Port: {2})'
 SPW_HEADER_STR          = 'SpaceWire Header (Address: {0})'
 CAN_HEADER_STR          = 'Canbus Header (extended: {0}, Rtr: {1}, CanId: {2})'
+UART_HEADER_STR         = 'Uart Header (UartID: {0})'
 MIL_HEADER_STR          = 'MIL-STD-1553 Header (ADDR: {0}, SUBADDR: {1})'
 MIL_LIST_STR            = 'MIL LIST (Id: {0})'
 MIL_SLOT_STR            = 'MIL SLOT (Id: {0} Type:{1} ADDR: {2}, SUBADDR: {3})'
@@ -329,7 +335,7 @@ class EthHeader(object):
 
     def details(self):
         return self.__str__()
-        
+
 ## SpaceWire Header
 class SpwHeader(object):
 
@@ -351,7 +357,7 @@ class SpwHeader(object):
 
     def details(self):
         return self.__str__()
-    
+
 ## CANBUS Header
 class CanHeader(object):
     def __init__(self):
@@ -359,21 +365,21 @@ class CanHeader(object):
         self.sshot = 0
         self.rtr = 0
         self.can_id = 0
-        
+
     def __eq__(self, other):
         return isinstance(other, self.__class__) and \
             self.can_id == other.can_id
-            
+
     def __ne__(self, other):
         return not self.__eq__(other)
-    
+
     def __str__(self):
         return CAN_HEADER_STR.format(self.extended, \
                 self.sshot, self.rtr, self.can_id)
-    
+
     def __repr__(self):
         return self.__str__()
-    
+
     def details(self):
         return self.__str__()
 
@@ -400,3 +406,27 @@ class MILHeader(object):
 
     def details(self):
         return self.__str__()
+
+
+## UARTBUS Header
+class UartHeader(object):
+    def __init__(self):
+
+        self.uart_id = 0
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and \
+            self.uart_id == other.uart_id
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __str__(self):
+        return UART_HEADER_STR.format(self.uart_id)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def details(self):
+        return self.__str__()
+

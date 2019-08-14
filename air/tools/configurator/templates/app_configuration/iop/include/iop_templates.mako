@@ -3,7 +3,7 @@
 /**
  * @brief Device Scheduling
  */
-static uint32_t reads_per_period[] = ${'\\'}
+static air_u32_t reads_per_period[] = ${'\\'}
     { \
 % for i, schedule in enumerate(iop_configuration.schedules):
 <%
@@ -41,7 +41,7 @@ ${MILHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
  * @brief Routes Scheduling
  */
 % for i, route in enumerate(pdevice.routes):
-static uint32_t route_schedule_${i}[${len(iop_configuration.schedules)}] = ${'\\'}
+static air_u32_t route_schedule_${i}[${len(iop_configuration.schedules)}] = ${'\\'}
 <%
     active = []
     for schedule in iop_configuration.schedules:

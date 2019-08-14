@@ -145,9 +145,9 @@ arch_configure = air_arm.get_arm_configuration
 
 # IOP devices and definitions
 iop = IOP(defines=[],
-          devices=[],
-          drivers=[],
-          alias=dict(),
+          devices=['xuart0','xuart1'],
+          drivers=['xuart'],
+          alias=dict(uart0='xuart0', uart1='xuart1', eth0='greth0',eth1='greth1', spw0='grspw0', spw1='grspw1', spw2='grspw2', spw3='grspw3', spw4='grspw4', cpsw='cpsw0', spwrtr='spwrtr0', mil='mil0', can0 = 'grcan0', can1 = 'grcan1'),
           arch=iop_arch)
 
 # AIR application arch config
