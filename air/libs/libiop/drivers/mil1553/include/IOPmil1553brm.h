@@ -1,19 +1,16 @@
-/** @file
- *  @brief Macros used for brm controller
+/*
+ * COPYRIGHT (c) 2006  Gaisler Research
+ * Copyright (C) 2011-2019  GMVIS Skysoft S.A.
  *
- *  COPYRIGHT (c) 2011\n
- *  GMV-SKYSOFT\n
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE.RTEMS in this distribution or at
+ * http://www.rtems.com/license/LICENSE.
+ */
+/**
+ * @file
+ * @brief Macros used for brm controller
  *
- *  @author Cl�udio Silva
- *
- * =========================================================\n
- *  COPYRIGHT (c) 2006.
- *  Gaisler Research
- *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
+ * @author Cl�udio Silva
  */
 
 #ifndef __MIL1553BRM_H__

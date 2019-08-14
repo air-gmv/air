@@ -1,8 +1,12 @@
+/*
+ * Copyright (C) 2011  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * https://spass-git-ext.gmv.com/AIR/AIR/raw/master/air/LICENSE
+ */
 /** 
  * @file
- * 
- *  COPYRIGHT (c) 2011.
- *  GMV-SKYSOFT 
  * 
  * @author cdcs
  * @brief Declares several support functions

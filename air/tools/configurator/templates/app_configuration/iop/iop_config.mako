@@ -24,7 +24,7 @@ ${iop_template.PhysicalDevicesList(iop_configuration)}\
 static iop_physical_device_t *physical_device_list[${len(iop_configuration.physical_devices)}] = ${'\\'}
 {
 % for i, device in enumerate(iop_configuration.physical_devices):
-    &physical_device_${device.idx},
+    &physical_device_${device.id},
 % endfor
 };
 
@@ -34,7 +34,7 @@ static iop_physical_device_t *physical_device_list[${len(iop_configuration.physi
 static iop_logical_device_t *logical_device_list[${len(iop_configuration.logical_devices)}] = ${'\\'}
 {
 % for i, device in enumerate(iop_configuration.logical_devices):
-    &logical_device_${device.idx},
+    &logical_device_${device.id},
 % endfor
 };
 
