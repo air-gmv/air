@@ -7,7 +7,7 @@
  *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
  * ==========================================================================*/
 /**
- * @file exception_handler.c
+ * @file
  * @author lumm
  * @brief exception_handlers and default
  */
@@ -80,7 +80,7 @@ air_uptr_t arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
     return NULL;
 }
 
-air_uptr_t arm_hm_handler(air_u32_t id, air_u32_t far, air_u32_t fsr, air_u32_t *instr) {
+air_uptr_t arm_hm_handler(arm_exception_e id, air_u32_t fsr, air_u32_t far, air_u32_t *instr) {
 
     pmk_core_ctrl_t *core = (pmk_core_ctrl_t *)arm_cp15_get_Per_CPU();
 
@@ -118,16 +118,16 @@ air_uptr_t arm_hm_handler(air_u32_t id, air_u32_t far, air_u32_t fsr, air_u32_t 
     } else if (id == ARM_EXCEPTION_PREF_ABORT) {
 
 #ifdef PMK_DEBUG
-        printk("\n !!! Prefetch abort at 0x%08x, *instr = 0x%04x, IFAR: 0x%08x, IFSR: 0x%08x !!!\n\n",
-                instr, (air_u16_t)*(air_u16_t *)instr, far, fsr);
+        printk("\n !!! Prefetch abort at 0x%08x, IFAR: 0x%08x, IFSR: 0x%08x !!!\n\n",
+                instr, far, fsr);
 #endif
         error_id = AIR_VIOLATION_ERROR;
 
     } else if (id == ARM_EXCEPTION_DATA_ABORT) {
 
 #ifdef PMK_DEBUG
-        printk("\n !!! Data abort at 0x%08x, *instr = 0x%04x, DFAR: 0x%08x, DFSR: 0x%08x !!!\n\n",
-                instr, (air_u16_t)*(air_u16_t *)instr, far, fsr);
+        printk("\n !!! Data abort at 0x%08x (<10000), DFAR: 0x%08x, DFSR: 0x%08x !!!\n\n",
+                instr, far, fsr);
 #endif
         error_id = AIR_SEGMENTATION_ERROR;
 

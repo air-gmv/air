@@ -7,12 +7,16 @@
  *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
  * ==========================================================================*/
 /**
- * @file exceptions.S
+ * @file
  * @author lumm
- * @brief Exception handlers
+ * @brief SVC handler
+ *
+ * saves return status and global registers in system stack and branches
+ *  to svc routine
+ *
+ * TODO r4 might not have the 4th passed parameter
  */
 
-/* Are we in assembly file. Yes we are */
 #ifndef ASM
 #define ASM
 #endif
@@ -22,37 +26,35 @@
 #include <armv7.h>
 #include <air.h>
 
-    .arm
     .extern arm_svc_handler
 
-/* Save global registers and branch to save context */
+    .arm
 global(exception_svc)
-    push    {r0-r3, r12, lr}
+    srsfd   sp!, #ARM_PSR_SYS
+    cpsid   aif, #ARM_PSR_SYS
 
-    /* get pmk_core_ctrl_t */
-    mrc     p15, 0, r0, c13, c0, 4
+    push    {r0-r4, lr}
 
-    mov     r2, sp
-    mrs     r1, spsr
-
-    push    {r1, r3}
+    ldr     r0, [sp, #24]           // pref ret addr (lr)
+    ldr     r1, [sp, #28]           // spsr
 
     tst     r1, #ARM_PSR_T
-    ldrneh  r1, [lr, #-2]
-    bicne   r1, r1, #0xff00
-    ldreq   r1, [lr, #-4]
-    biceq   r1, r1, #0xff000000
+    ldrneh  r0, [r0, #-2]
+    bicne   r0, r0, #0xff00
+    ldreq   r0, [r0, #-4]
+    biceq   r0, r0, #0xff000000
 
     /* if return from trap, just exit peacefully, all is already taken care of */
-    teq     r1, #(AIR_SYSCALL_ARM_RETT)
+    cmp     r0, #(AIR_SYSCALL_ARM_RETT)
     beq     arm_rett
+
+    mrc     p15, 0, r1, c13, c0, 4  // get Per_CPU core
+    mov     r2, sp                  // arm_supervisor_stack_frame_t
 
     BL2C    arm_svc_handler
 
-    pop     {r1, r3}
-    msr     spsr, r1
-
-    ldmfd   sp!, {r0-r3, r12, pc}^
+    pop     {r0-r4, lr}
+    rfefd   sp!
 
 
 arm_rett:

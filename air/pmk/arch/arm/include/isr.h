@@ -22,7 +22,7 @@
 #include <workspace.h>
 
 void arm_hm_init(void);
-air_uptr_t arm_hm_handler(air_u32_t id, air_u32_t fsr, air_u32_t far, air_u32_t *instr);
+air_uptr_t arm_hm_handler(arm_exception_e id, air_u32_t fsr, air_u32_t far, air_u32_t *instr);
 air_uptr_t arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core);
 
 void arm_isr_table_init(void);
