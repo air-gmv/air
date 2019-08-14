@@ -1,11 +1,10 @@
-/* ============================================================================
- *  Copyright (C) GMVIS Skysoft S.A., 2014
- * ============================================================================
- *  This file is part of the AIR - ARINC 653 Interface in RTEMS - Operating
- *  system.
- *  The license and distribution terms for this file may be found in the file
- *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
- * ==========================================================================*/
+/*
+ * Copyright (C) 2014  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
 /**
  * @file ports_sampling.c
  * @author pfnf
@@ -127,6 +126,10 @@ air_status_code_e pmk_sampling_port_read(
         return AIR_INVALID_POINTER;
     }
 
+    /* check if port is being written */
+    if (atomic_fetch(&config->writing))
+        return AIR_NOT_AVAILABLE;
+
     /* get current slot */
     air_u32_t slot_idx = atomic_fetch(&config->current_slot);
     pmk_message_slot_t *slot = &config->buffer[slot_idx];
@@ -207,7 +210,6 @@ air_status_code_e pmk_sampling_port_read(
         return AIR_INVALID_POINTER;
     }
 
-
     /* clear updated flag */
     atomic_set(0, &port->updated);
 
@@ -221,7 +223,6 @@ air_status_code_e pmk_sampling_port_write(
         pmk_port_t *port,air_message_ptr_t msg,
         air_sz_t length, air_sampling_port_status_t *status) {
 
-	 int i = 0;
     /* get sampling channel configuration */
     pmk_sampling_config_t *config =
             (pmk_sampling_config_t *)port->channel->configuration;
@@ -247,23 +248,18 @@ air_status_code_e pmk_sampling_port_write(
         atomic_set(0, &config->writing);
         return AIR_INVALID_POINTER;
     }
-    
+
     slot->timestamp = air_shared_area.schedule_ctrl->total_ticks;
     slot->length = length;
 
-     /* 4 calls to ensure bus contention therefore share to 4 cores the information */
-	 for (i = 0; i < 4; i++)
-	 {
+    /* store new slot index */
+    atomic_set(slot_idx, &config->current_slot);
 
-		/* store new slot index */
-		atomic_set(slot_idx, &config->current_slot);
+    /* update all destination ports on the channel */
+    pmk_channel_update_ports(port->channel, AIR_NEW_MESSAGE);
 
-		/* finish writing operation */
-		atomic_set(0, &config->writing);
-		
-		/* update all destination ports on the channel */
-		pmk_channel_update_ports(port->channel, AIR_NEW_MESSAGE);
-	 }
-	 
+    /* finish writing operation */
+    atomic_set(0, &config->writing);
+
     return AIR_NO_ERROR;
 }

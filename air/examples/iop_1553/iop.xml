@@ -1,4 +1,11 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (C) 2008-2018  GMVIS Skysoft S.A.
+
+  The license and distribution terms for this file may be
+  found in the file LICENSE in this distribution or at
+  air/LICENSE
+-->
 <IOPartition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="iop.xsd" version="1.0" date="2018-05-23" name="iop_1553" request_number="64" time_to_live="5">
 	
 	<RemotePorts>

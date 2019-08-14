@@ -78,7 +78,6 @@ class IOParser(object):
 
         # store logical device
         self.logger.information(2, ldevice.details())
-        ldevice.idx = len(self.logical_devices)
         self.logical_devices.append(ldevice)
         return True
 
@@ -205,7 +204,6 @@ class IOParser(object):
         self.logger.information(2, pdevice.setup.details())
 
         if ( pdevice.type == RTR ):
-            pdevice.idx = len(self.physical_devices)
             self.physical_devices.append(pdevice)
             self.logger.event(2, "done PARSING SPWRTR device")
             return True
@@ -231,7 +229,6 @@ class IOParser(object):
                 self.logger.event(2, "done MIL LIST parsing")
 
         if rc:
-            pdevice.idx = len(self.physical_devices)
             self.physical_devices.append(pdevice)
 
         return rc

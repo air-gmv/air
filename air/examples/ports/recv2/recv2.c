@@ -1,11 +1,10 @@
-/* ============================================================================
- *  Copyright (C) GMVIS Skysoft S.A., 2008-2013
- * ============================================================================
- *  This file is part of the AIR - ARINC 653 Interface in RTEMS - Operating
- *  system.
- *  The license and distribution terms for this file may be found in the file 
- *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE. 
- * ==========================================================================*/
+/*
+ * Copyright (C) 2008-2019  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
  
 #include <rtems.h>
  
@@ -16,7 +15,7 @@
 #include <imaspex.h>
 
 #ifdef RTEMS48I
-	#include <pprintf.h>
+	#include <printf.h>
 #endif
 
 
@@ -59,12 +58,12 @@ void test(uintptr_t self_id) {
 	
 	while(1) {
 		
-		pprintf ("Partition %d receiving message..\n", self_id);
+		printf ("Partition %d receiving message..\n", self_id);
 		
 		
 		GET_SAMPLING_PORT_CURRENT_STATUS(RECV_PORT2, &STATUS, &rc);
 		if(NO_ERROR != rc) {
-			pprintf("GET_SAMPLING_PORT_CURRENT_STATUS error %d\n", rc);
+			printf("GET_SAMPLING_PORT_CURRENT_STATUS error %d\n", rc);
 		}
 		
 		switch (STATUS.UPDATED) {
@@ -72,45 +71,45 @@ void test(uintptr_t self_id) {
 			case NEW_MESSAGE:
 				READ_UPDATED_SAMPLING_MESSAGE(RECV_PORT2, (MESSAGE_ADDR_TYPE)message, &SIZE, &UPDATED, &rc);
 				if(NO_ERROR != rc) {
-					pprintf("READ_UPDATED_SAMPLING_MESSAGE error %d\n", rc);
+					printf("READ_UPDATED_SAMPLING_MESSAGE error %d\n", rc);
 				}
 				
-				pprintf("NEW_MSG: %s\n", message);
+				printf("NEW_MSG: %s\n", message);
 			break;
 			
 			case CONSUMED_MESSAGE:
 				READ_SAMPLING_MESSAGE(RECV_PORT2, (MESSAGE_ADDR_TYPE)message, &SIZE, &VALIDITY, &rc);
 				if(NO_ERROR != rc) {
-					pprintf("READ_SAMPLING_MESSAGE error %d\n", rc);
+					printf("READ_SAMPLING_MESSAGE error %d\n", rc);
 				}
 				
 				switch (VALIDITY) {
 					case INVALID: 
-						pprintf("INVALID: %s\n", message);
+						printf("INVALID: %s\n", message);
 					break;
 					case VALID:
-						pprintf("VALID: %s\n", message);
+						printf("VALID: %s\n", message);
 					break;
 				}
 			break;
 			
 			case EMPTY_PORT:
 				message[0]='\0';
-				pprintf("Empty sampling port\n");
+				printf("Empty sampling port\n");
 			break;
 			
 			default:
-				pprintf("Error in STATUS.UPDATED value\n");
+				printf("Error in STATUS.UPDATED value\n");
 			break;
 		}
 
 		RECEIVE_QUEUING_MESSAGE(qpid, INFINITE_TIME_VALUE, message, &len, &rc );
 		if (rc == NO_ERROR) {
-		    pprintf ("Received Partition Queue message %d: %s\n", self_id, message);
+		    printf ("Received Partition Queue message %d: %s\n", self_id, message);
 		}
 		else
     {
-        pprintf("Error in Receiving Queue Message - %d\n", rc);
+        printf("Error in Receiving Queue Message - %d\n", rc);
     }
 		rtems_task_wake_after(0.6*TPS); 
 	}
@@ -131,10 +130,10 @@ int entry_func() {
 	
 	GET_PARTITION_ID(&self_id, &rc);
 	if (NO_ERROR != rc) {
-		pprintf("GET_PARTITION_ID error %d\n", rc);
+		printf("GET_PARTITION_ID error %d\n", rc);
 	}
 	
-	pprintf("Initializing partition %d...\n", self_id);
+	printf("Initializing partition %d...\n", self_id);
 	
 	/*creating Destination sampling Port*/
 	SAMPLING_PORT_NAME_TYPE NAME = "RECV_SAMP2";
@@ -144,12 +143,12 @@ int entry_func() {
 	
 	CREATE_SAMPLING_PORT (NAME, SIZE, DESTINATION, PERIOD, &RECV_PORT2, &rc);
 	if (NO_ERROR != rc) {
-		pprintf("CREATE_SAMPLING_PORT error %d\n", rc);
+		printf("CREATE_SAMPLING_PORT error %d\n", rc);
 	}
 	
 		CREATE_QUEUING_PORT("QSAMPLE", 1024, 32, DESTINATION, FIFO, &qpid, &rc );
 	if(NO_ERROR != rc){
-		pprintf("CREATE_QUEUING_PORT error %d\n", rc);
+		printf("CREATE_QUEUING_PORT error %d\n", rc);
 	} 
 	
 	if (RTEMS_SUCCESSFUL == rtems_task_create (name, 15, 4096, mode, mode_mask, &id)) {
@@ -158,7 +157,7 @@ int entry_func() {
 	
 	SET_PARTITION_MODE(NORMAL, &rc);
 	if (NO_ERROR != rc) {
-		pprintf("SET_PARTITION_MODE error %d\n", rc);
+		printf("SET_PARTITION_MODE error %d\n", rc);
 	}
 	
 	return RTEMS_SUCCESSFUL;

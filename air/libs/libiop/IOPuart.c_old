@@ -1,11 +1,15 @@
+/*
+ * Copyright (C) 2011  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
 /**
  *  @brief This file contains the driver for the APBUART serial port.
  *  
  *  The driver is a polled RAW char driver.
  *  Adapted from the rtems4.8's console and apbuart drivers
- *
- *  COPYRIGHT (c) 2011.
- *  GMV-SKYSOFT
  *
  *  The license and distribution terms for this file may be
  *  found in the file LICENSE in this distribution or at

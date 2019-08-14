@@ -1,12 +1,16 @@
+/*
+ * Copyright (C) 2011  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
 /** 
- * 	@file gr1553_tasks.c
- * 
- *  COPYRIGHT (c) 2011\n
- *  GMV-SKYSOFT\n
+ *  @file IOPgr1553_tasks.c
  *
- *	@author Cl�udio Silva
+ *  @author Cl�udio Silva
  *
- * 	@brief Tasks that manage a MIL-STD-1553B
+ *  @brief Tasks that manage a gr1553b bus controller
  */
 
 

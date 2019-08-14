@@ -1,72 +1,19 @@
-/* ============================================================================
- *  Copyright (C) GMVIS Skysoft S.A., 2008-2013
- * ============================================================================
- *  This file is part of the AIR - ARINC 653 Interface in RTEMS - Operating
- *  system.
- *  The license and distribution terms for this file may be found in the file 
- *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE. 
- * ==========================================================================*/
+/*
+ * Copyright (C) 2008-2019  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
  
 #include <rtems.h>
- 
-#include <rtems/rtems/tasks.h> 
-#include <rtems/rtems/sem.h> 
-#include <rtems/rtems/clock.h> 
- 
+
 #include <a653.h>
 #include <imaspex.h>
  
 #include <pprintf.h>
 
-/*
- * gmvs
- * Garbage due to lazyness
- *
- * */
-
-void append_to_message(uint8_t *msg_ptr_, char * to_append, int offset){
-
-	int i;
-	//strlen
-	for( i = 0; to_append[i] != '\0'; i++);
-	int length = i;
-
-
-	for(i = 0; i < length; i++){
-		msg_ptr_[offset+i] = to_append[i];
-	}
-	msg_ptr_[offset + length] = '\0';
-}
-
-void append_time_to_message(uint8_t *msg_ptr_, rtems_interval time, int offset){
-
-	int i, length = 8;
-	char time_tag[] = "00000000";
-	for(i = length-1; time > 0 && i > 0; i--){
-		int digit = time%10;
-		time_tag[i] = digit + '0';
-		time /= 10;
-	}
-	for(i = 0; i < length; i++){
-		msg_ptr_[offset+i] = time_tag[i];
-	}
-	msg_ptr_[offset + length] = '\0';
-}
-
-
-
-/*
- * end of garbage
- * */
-
-
-
 SAMPLING_PORT_ID_TYPE SEND_PORT;
-
-/*---------------------------------------------------------	
- *		function: test										*
- *			outputs a simple string via a sampling port		* 
-------------------------------------------------------------*/
 
 void error_message(RETURN_CODE_TYPE rc){
 
@@ -79,15 +26,19 @@ void error_message(RETURN_CODE_TYPE rc){
 		break;
 		case INVALID_MODE:
 			pprintf("WRITE_SAMPLING_MESSAGE error Invalid Mode\n");
+		break;
 		default:
+			pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
 		break;
 	}
 }
 
-
+/*---------------------------------------------------------	
+ *		function: test										*
+ *			outputs a simple string via a sampling port		* 
+------------------------------------------------------------*/
 void test(PARTITION_ID_TYPE self_id) {
 
-    int i = 0, offset = 0;;
 	char sample[3] = "S0 ";
 	/* get the number of ticks per second */
 	uint32_t tps = 1000000 / air_syscall_get_us_per_tick();
@@ -96,7 +47,7 @@ void test(PARTITION_ID_TYPE self_id) {
 
 	RETURN_CODE_TYPE rc = NO_ERROR;
 	rtems_interval time;
-//        air_sparc_enable_fpu();
+
 	while(1) {
 
 #ifdef RTEMS48I
@@ -104,23 +55,18 @@ void test(PARTITION_ID_TYPE self_id) {
 #else
 		time = rtems_clock_get_ticks_since_boot();
 #endif
-//		append_to_message(message, sample, offset);
-//		append_time_to_message(message, time, 3 + offset);
-//		append_to_message(message, " ", offset + 3 + 8);
-
 		pprintf ("Partition %d at time %d sending: %s\n", self_id, time, sample);
+
 		WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )sample, 3, &rc );
-		if (NO_ERROR != rc) {
-			//pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
+		if (NO_ERROR != rc)
 			error_message(rc);
-		}
-		offset += 12;
+
 		/*identify the string with an integer index*/
-		i++;
-		if (i == 10) {
-			i=0;
-		}
-		sample[1] = 0x30 + i;
+		sample[1] += 1;
+
+		if (sample[1] == ':')
+			sample[1] = '0';
+
 #ifdef RTEMS48I
 		// 0.7 * tps does not work!
 		interval = tps * 7;

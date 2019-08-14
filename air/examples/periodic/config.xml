@@ -1,10 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?> 
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (C) 2008-2019  GMVIS Skysoft S.A.
+
+  The license and distribution terms for this file may be
+  found in the file LICENSE in this distribution or at
+  air/LICENSE
+-->
 <ARINC_653_Module ModuleName="periodic">
 
 
   <!-- partition 0-->
   <Partition PartitionIdentifier="1" PartitionName="p0" Criticality="LEVEL_A" SystemPartition="true" EntryPoint="producer">
-    <PartitionConfiguration Personality="RTEMS48I" Cores="1">
+    <PartitionConfiguration Personality="RTEMS5" Cores="1">
       <Libs>LIBAIR;IMASPEX;LIBPRINTF</Libs>
       <Cache>CODE; DATA</Cache>
       <Memory Size="0x500000" />

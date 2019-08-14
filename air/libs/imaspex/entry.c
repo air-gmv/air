@@ -1,11 +1,10 @@
-/* ============================================================================
- *  Copyright (C) GMVIS Skysoft S.A., 2008-2014
- * ============================================================================
- *  This file is part of the AIR - ARINC 653 Interface in RTEMS - Operating
- *  system.
- *  The license and distribution terms for this file may be found in the file 
- *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE. 
- * ==========================================================================*/
+/*
+ * Copyright (C) 2008-2014  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
 /** 
  * @file entry.c
  * @author cdcs
