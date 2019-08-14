@@ -17,7 +17,10 @@
 #include <printk.h>
 #endif
 
-void arm_svc_handler(pmk_core_ctrl_t *core, air_u32_t svc_id, arm_supervisor_stack_frame_t *frame) {
+void arm_svc_handler(
+        air_u32_t svc_id,
+        pmk_core_ctrl_t *core,
+        arm_supervisor_stack_frame_t *frame) {
 
 #ifdef PMK_DEBUG_SVC
     printk("\n ** svc #%i **\n", svc_id);
