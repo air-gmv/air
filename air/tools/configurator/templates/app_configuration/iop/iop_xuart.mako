@@ -1,8 +1,8 @@
 <%
     # device functions
     device_functions = dict(
-        reader_task='uart_reader',
-        writer_task='uart_writer',
+        reader_task='xuart_reader',
+        writer_task='xuart_writer',
 
         header_prebuild='NULL',
         header_compare='uart_compare_header',
@@ -22,15 +22,17 @@
 #include <xuart.h>
 #include <xuart_support.h>
 
-//#define UART_TX_SIZE    16   // ?<<<<<<<<<<<<<<<<<<
-//#define UART_RX_SIZE    48    // ?<<<<<<<<<<<<<<<<<<<
+#define UART_TX_SIZE   16
+#define UART_RX_SIZE   48
 
  ${iop_template.RemotePortList(iop_configuration)}\
 
 /**
  *@brief UART data buffer allocation
  */
-static uint8_t uart_msg_buffer[UART_RX_SIZE*16*4+UART_TX_SIZE*16*4+1024]; //<<<<<<<<<<<<<<<<<<<<<<<
+static uint8_t uart_msg_buffer[UART_RX_SIZE*16*4+UART_TX_SIZE*16*4+1024];
+
+static uart_priv xuart_driver;
 
 /**  @brief XUART control strucutre */
 static iop_uart_device_t device_configuration = ${'\\'}
