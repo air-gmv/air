@@ -199,11 +199,11 @@ typedef struct {
  * @brief Context saved on stack for a supervisor call.
  */
 typedef struct {
+    air_uptr_t sp;
     air_u32_t r0;
     air_u32_t r1;
     air_u32_t r2;
     air_u32_t r3;
-    air_u32_t r4;
     air_u32_t lr;                       /**< reserved                       */
 } arm_supervisor_stack_frame_t;
 

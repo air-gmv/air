@@ -33,16 +33,16 @@
 
   <!-- Schedule 1 -->
   <Module_Schedule ScheduleIdentifier="1" ScheduleName="schedule"
-    InitialModuleSchedule="true" MajorFrameSeconds="10.0">
+    InitialModuleSchedule="true" MajorFrameSeconds="0.2">
         <Partition_Schedule PartitionIdentifier="1" PartitionName="iop"
-      PeriodDurationSeconds="5" PeriodSeconds="10.0">
+      PeriodDurationSeconds="0.1" PeriodSeconds="0.2">
       <Window_Schedule WindowIdentifier="3" PartitionPeriodStart="true"
-        WindowDurationSeconds="5" WindowStartSeconds="5"/>
+        WindowDurationSeconds="0.1" WindowStartSeconds="0.1"/>
     </Partition_Schedule>
     <Partition_Schedule PartitionIdentifier="2" PartitionName="sampling"
-      PeriodDurationSeconds="5" PeriodSeconds="10.0">
+      PeriodDurationSeconds="0.1" PeriodSeconds="0.2">
       <Window_Schedule WindowIdentifier="1" PartitionPeriodStart="true"
-        WindowDurationSeconds="5"  WindowStartSeconds="0.0"/>
+        WindowDurationSeconds="0.1"  WindowStartSeconds="0.0"/>
     </Partition_Schedule>
  </Module_Schedule>
 

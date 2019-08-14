@@ -33,7 +33,9 @@ global(exception_svc)
     srsfd   sp!, #ARM_PSR_SYS
     cpsid   aif, #ARM_PSR_SYS
 
-    push    {r0-r4, lr}
+    push    {r0-r3, lr}
+    add     r0, sp, #28             // the sp needs to be the 1st value on push
+    push    {r0}                    // the sp needs to be the 1st value on push
 
     ldr     r0, [sp, #24]           // pref ret addr (lr)
     ldr     r1, [sp, #28]           // spsr
@@ -53,7 +55,8 @@ global(exception_svc)
 
     BL2C    arm_svc_handler
 
-    pop     {r0-r4, lr}
+    add     sp, #4
+    pop     {r0-r3, lr}
     rfefd   sp!
 
 
