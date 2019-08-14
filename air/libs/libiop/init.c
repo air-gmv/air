@@ -1,9 +1,13 @@
-/**
+/*
+ * Copyright (C) 2011  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * $(AIR_GIT_REMOTE_URL)/AIR/AIR/raw/master/air/LICENSE
+ */
+/** 
  * @file IOPinit.c
- *
- *  COPYRIGHT (c) 2011.
- *  GMV-SKYSOFT 
- *
+ * 
  * @author Cláudio Silva
  *
  * @brief IO Partition initialization procedures

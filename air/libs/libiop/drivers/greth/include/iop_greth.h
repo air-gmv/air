@@ -1,12 +1,12 @@
+/*
+ * Copyright (C) 2011  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE.RTEMS in this distribution or at
+ * http://www.rtems.com/license/LICENSE.
+ */
 /** 
  * @file IOPgreth.h
- * 
- *  COPYRIGHT (c) 2011.
- *  GMV-SKYSOFT 
- *
- *  The license and distribution terms for this file may be
- *  found in found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
  *
  * @ingroup Drivers
  * @author Cl�udio Silva
@@ -15,7 +15,7 @@
  *
  * Interrupts and dependency from the RTEMS BSD TCP/IP stack were removed.
  * Access to the driver is now done through the usual RTEMS IO access points.
- */ 
+ */
 
 #ifndef __IOP_GRETH_H__
 #define __IOP_GRETH_H__
