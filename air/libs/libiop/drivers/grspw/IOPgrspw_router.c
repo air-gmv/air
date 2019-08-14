@@ -1,7 +1,8 @@
-/* GRSPW ROUTER APB-Register Driver.
+/*
+ * GRSPW ROUTER APB-Register Driver.
  *
- * COPYRIGHT (c) 2010.
- * Cobham Gaisler AB.
+ * COPYRIGHT (c) 2010  Cobham Gaisler AB
+ * Copyright (C) 2011-2017  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at

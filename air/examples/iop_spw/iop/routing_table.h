@@ -1,13 +1,9 @@
-/**
- *  @file  routing_table.h
- *  @brief Tables used for Spacewire Router 
+/*
+ * Copyright (C) 2017-2019  GMVIS Skysoft S.A.
  *
- *  COPYRIGHT (c) 2017.
- *  GMV-SKYSOFT
- *	
- *  @author lumm
- *
- *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
  */
  
 #ifndef __RTRTBL_H__

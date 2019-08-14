@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2016 embedded brains GmbH.  All rights reserved.
+ * Copyright (C) 2018  GMVIS Skysoft S.A.
  *
  *  embedded brains GmbH
  *  Dornierstr. 4

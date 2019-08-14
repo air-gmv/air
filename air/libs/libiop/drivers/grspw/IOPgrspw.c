@@ -1,24 +1,16 @@
+/* 
+ * COPYRIGHT (c) 2007  Gaisler Research
+ * Copyright (C) 2011-2017  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE.RTEMS in this distribution or at
+ * http://www.rtems.com/license/LICENSE.
+ */
 /**
- *  @file 
+ *  @file
  *  @brief This file contains the interruptless SpaceWire Driver for LEON3.
  *
- *  COPYRIGHT (c) 2011.
- *  GMV-SKYSOFT
- *
- *  @author Cl�udio Silva
- *	
- *
- */
- 
-/* 
- *  COPYRIGHT (c) 2007
- *  Gaisler Research.
- *
- *  The license and distribution terms for this file may be
- *  found in the file LICENSE in this distribution or at
- *  http://www.rtems.com/license/LICENSE.
- *
- *
+ *  @author Cl�udio Silva, lumm
  */
 
 #ifndef SPW_PREFIX

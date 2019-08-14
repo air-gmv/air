@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+#
+# Copyright (C) 2008-2019  GMVIS Skysoft S.A.
+#
+# The license and distribution terms for this file may be
+# found in the file LICENSE in this distribution or at
+# air/LICENSE
+#
 # ===================================================================
 # A simple upd client sending integer values
 # The value is given as command line parameter

@@ -1,9 +1,13 @@
 /*
- * partition1.c
+ * Copyright (C) 2018-2019  GMVIS Skysoft S.A.
  *
- *  Created on: Mar 15, 2018
- *      Author: gmvs
- *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
+/**
+ * WARNING: When running this example on GR740, the following have to be configured:
+ * - CAN pin multiplexing
  */
 
 #include <rtems.h>

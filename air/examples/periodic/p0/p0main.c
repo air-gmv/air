@@ -1,11 +1,10 @@
-/* ============================================================================
- *  Copyright (C) GMVIS Skysoft S.A., 2008-2013
- * ============================================================================
- *  This file is part of the AIR - ARINC 653 Interface in RTEMS - Operating
- *  system.
- *  The license and distribution terms for this file may be found in the file 
- *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE. 
- * ==========================================================================*/
+/*
+ * Copyright (C) 2008-2019  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
  
 #include <rtems.h>
  
@@ -67,7 +66,6 @@ void test2(uintptr_t self_id) {
     }*/
 }
 
-
 int producer() {
 
     RETURN_CODE_TYPE rc;
@@ -93,5 +91,3 @@ int producer() {
 
     return RTEMS_SUCCESSFUL;
 }
-
-

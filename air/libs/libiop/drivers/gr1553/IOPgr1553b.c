@@ -1,9 +1,13 @@
+/*
+ * Copyright (C) 2011  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
 /**
  *  @file 
  *  @brief This file contains the driver for the Gaisler's MIL-STD1553B interface
- *
- *  COPYRIGHT (c) 2011.
- *  GMV-SKYSOFT
  *
  *  @author Cl�udio Silva
  *
