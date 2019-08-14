@@ -178,7 +178,7 @@ void core_context_setup_partition(
         air_u32_t stack =
                 (air_u32_t)partition->mmap->v_addr + partition->mmap->size;
         stack = (stack & ~(32 - 1));
-        isf->usr_sp = stack;
+        isf->usr_sp = stack - 4;
 #ifdef PMK_DEBUG
         printk("       cpu::setup::stack                  = 0x%x\n"
                 "       cpu::setup::isf->usr_sp            = 0x%x\n",
