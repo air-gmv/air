@@ -18,50 +18,8 @@
 
 #include <pprintf.h>
 
-/*
- * gmvs
- * Garbage due to lazyness
- *
- * */
-
-void append_to_message(air_u8_t *msg_ptr_, char * to_append, int offset){
-
-    int i;
-    //strlen
-    for( i = 0; to_append[i] != '\0'; i++);
-    int length = i;
-
-
-    for(i = 0; i < length; i++){
-        msg_ptr_[offset+i] = to_append[i];
-    }
-    msg_ptr_[offset + length] = '\0';
-}
-
-/*void append_time_to_message(air_u8_t *msg_ptr_, rtems_interval time, int offset){
-
-    int i, length = 8;
-    char time_tag[] = "00000000";
-    for(i = length-1; time > 0 && i > 0; i--){
-        int digit = time%10;
-        time_tag[i] = digit + '0';
-        time /= 10;
-    }
-    for(i = 0; i < length; i++){
-        msg_ptr_[offset+i] = time_tag[i];
-    }
-    msg_ptr_[offset + length] = '\0';
-}*/
-
-
-
-/*
- * end of garbage
- * */
-
-
-
 SAMPLING_PORT_ID_TYPE SEND_PORT;
+QUEUING_PORT_ID_TYPE qpid;
 
 /*---------------------------------------------------------
  *        function: test                                    *
@@ -87,50 +45,40 @@ void error_message(RETURN_CODE_TYPE rc){
 
 void test(PARTITION_ID_TYPE self_id) {
 
-    int i = 0, offset = 0;;
+    //int i = 0, offset = 0;;
     char sample[3] = "S0 ";
     /* get the number of ticks per second */
-    air_u32_t tps = 1000000 / air_syscall_get_us_per_tick();
-    pprintf("TPS %i\n", tps);
-    //air_u32_t interval = 0;
-
+    air_u32_t us_per_tick = air_syscall_get_us_per_tick();
+    air_u32_t tps = 1000000 / us_per_tick;
+    air_u32_t interval = 0;
+    unsigned char msg[1024]="empty\0";
+    MESSAGE_SIZE_TYPE len;
     RETURN_CODE_TYPE rc = NO_ERROR;
-    // rtems_interval time;
-//        air_sparc_enable_fpu();
     while(1) {
-//
-//#ifdef RTEMS48I
-//        rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
-//#else
-//        time = rtems_clock_get_ticks_since_boot();
-//#endif
-//        append_to_message(message, sample, offset);
-//        append_time_to_message(message, time, 3 + offset);
-//        append_to_message(message, " ", offset + 3 + 8);
 
-        //pprintf ("Partition %d at time %d sending: %s\n", self_id, time, sample);
+        pprintf ("Partition sending: %s\n", sample);
         WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )sample, 3, &rc );
         if (NO_ERROR != rc) {
-            //pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
+            pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
             error_message(rc);
         }
-        offset += 12;
+
         /*identify the string with an integer index*/
-        i++;
-        if (i == 10) {
-            i=0;
-        }
-        sample[1] = 0x30 + i;
-/*#ifdef RTEMS48I
-        // 0.7 * tps does not work!
-        interval = tps * 7;
-        interval /= 10;
-#else
+        sample[1] += 1;
+
+        if (sample[1] == ':')
+            sample[1] = '0';
+
         interval = tps * 0.7;
-#endif
+
         pprintf("interval %i\n", interval);
 
-        rtems_task_wake_after(interval);*/
+        RECEIVE_QUEUING_MESSAGE(qpid, INFINITE_TIME_VALUE, msg, &len, &rc );
+        if (rc == NO_ERROR)
+            pprintf ("Partition %d: %s\n", self_id, msg);
+        else
+            if(rc == INVALID_CONFIG)
+                pprintf ("Partition %d Overflow: %s\n", self_id, msg);
     }
 }
 
@@ -161,10 +109,9 @@ int entry_func() {
     SAMPLING_PORT_NAME_TYPE NAME = "ssampling";
     MESSAGE_SIZE_TYPE SIZE = 1024;
     SYSTEM_TIME_TYPE PERIOD = 1000000000ll;
-
     CREATE_SAMPLING_PORT (NAME, SIZE, SOURCE, PERIOD, &SEND_PORT, &rc);
     if (NO_ERROR != rc) {
-        pprintf("CREATE_SAMPLING_PORT error %d\n", rc);
+        pprintf("CREATE_SAMPLING_PORT error %d\n\n", rc);
     }
 
     /*
@@ -182,5 +129,6 @@ int entry_func() {
         pprintf("SET_PARTITION_MODE error %d\n", rc);
     }
 
+    test(self_id);
     return 1;
 }

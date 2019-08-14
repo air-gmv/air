@@ -41,8 +41,16 @@ typedef struct {
     air_u32_t tx_fifo_trigger;
 } uart_ctrl_t;
 
+typedef struct {
+    struct uart_ctrl_t *reg;
+
+    air_u32_t BaudRate;
+
+} uart_priv;
+
+
 //typedef struct {
-//    u16 DeviceId;             /**< Unique ID  of device */
+//    u16 DeviceId;             /**< Unique ID of device */
 //    u32 BaseAddress;          /**< Base address of device (IPIF) */
 //    u32 InputClockHz;         /**< Input clock frequency */
 //    s32 ModemPinsConnected;   /** Specifies whether modem pins are connected
@@ -133,8 +141,8 @@ typedef struct {
 #define ARM_UART_STATUS_TXEMPTY         (1U << 3)
 #define ARM_UART_STATUS_TXFULL          (1U << 4)
 
-void iop_xuart_init(iop_device_driver_t *iop_dev, void *arg);
-void iop_xuart_open(iop_device_driver_t *iop_dev, void *arg);
+air_u32_t iop_xuart_init(iop_device_driver_t *iop_dev, void *arg);
+air_u32_t iop_xuart_open(iop_device_driver_t *iop_dev, void *arg);
 air_u32_t iop_xuart_read(iop_device_driver_t *iop_dev, void *arg);
 air_u32_t iop_xuart_write(iop_device_driver_t *iop_dev, void *arg);
 void iop_xuart_close(iop_device_driver_t *iop_dev, void *arg);
