@@ -261,19 +261,18 @@ air_status_code_e IOPinit() {
     iop_debug("\nInitializing IOP\n");
     /* initialize queues */
     iop_init_queues();
-    iop_debug("\n\nESTOU AQUI 1\n\n");
+
     /* initialize mms */
     iop_init_mms();
-    iop_debug("\n\nESTOU AQUI 2\n\n");
+
     /* initialize ports  */
     if (iop_init_ports() != AIR_SUCCESSFUL) {
         iop_raise_error(CANT_CREATE_PORT);
     }
-    iop_debug("\n\nESTOU AQUI 3\n\n");
+
 
     /* initialize Devices and respective routes */
     iop_init_devs();
-    iop_debug("\n\nESTOU AQUI 4\n\n");
 #ifdef IOP_MAIN_DEBUG
     /* Pointer to amba bus structure*/
     amba_confarea_t *amba_bus;
@@ -316,7 +315,6 @@ air_status_code_e IOPinit() {
     if (iop_init_drivers() != AIR_SUCCESSFUL) {
         iop_raise_error(HW_PROBLEM);
     }
-    iop_debug("\n\nESTOU AQUI 6\n\n");
 
     iop_main_loop();
 

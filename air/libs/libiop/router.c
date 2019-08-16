@@ -30,7 +30,7 @@ static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
 
     size_t max_size = 0;
     size_t size = get_payload_size(wrapper->buffer);
-
+    iop_debug("\n\nsize = %d\n", (int) size);
     /* get maximum size allowed by the port */
     if (port->type == AIR_QUEUING_PORT) {
 
@@ -38,6 +38,8 @@ static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
                 (air_queuing_port_configuration_t *)port->configuration;
 
         max_size = config->max_message_size;
+
+        iop_debug("\nSend remote reply queuing port\n");
 
     } else if (port->type == AIR_SAMPLING_PORT) {
 
@@ -265,7 +267,7 @@ void pos_router(){
 
 	int i;
 
-//	iop_debug("\n :: IOP - pos-router running!\n");
+	iop_debug("\n :: IOP - pos-router running!\n");
 
 	/* iterate over all physical devices */
 	for (i = 0; i < usr_configuration.physical_devices.length; ++i) {
@@ -276,11 +278,9 @@ void pos_router(){
 						usr_configuration.physical_devices.elements)[i];
                
 		/* See if data was received on this device from HW */
-		while (!iop_chain_is_empty(&pdev->rcvqueue)){
-
+		while (!iop_chain_is_empty(&(pdev->rcvqueue))){
 			/* extract first request wrapper from send queue */
-			iop_wrapper_t *reply_wrapper = obtain_wrapper(&pdev->rcvqueue);
-
+			iop_wrapper_t *reply_wrapper = obtain_wrapper(&(pdev->rcvqueue));
 			/* apply routing information to this data */
 			route_reply(pdev, reply_wrapper);
 

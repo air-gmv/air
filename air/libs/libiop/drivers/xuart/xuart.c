@@ -88,6 +88,10 @@ air_u32_t iop_xuart_read(iop_device_driver_t *iop_dev, void *arg) {
     iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
     iop_buffer_t *iop_buffer = wrapper->buffer;
 
+    iop_buffer->payload_off = iop_buffer->header_size = sizeof(uart_header_t);
+    iop_buffer->header_off = iop_buffer->header_size - sizeof(uart_header_t);
+    iop_buffer->payload_size = 1024;
+
     char *b = (char *) iop_buffer->v_addr;
 
     if (iop_buffer->v_addr == NULL) {
@@ -101,6 +105,7 @@ air_u32_t iop_xuart_read(iop_device_driver_t *iop_dev, void *arg) {
         iop_debug("\n char: %c \n", b);
     }
     iop_debug("\n\n MSG: %s  [END OF MSG] \n\n", b);
+
     return AIR_SUCCESSFUL;
 }
 
