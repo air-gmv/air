@@ -37,20 +37,12 @@ void xuart_writer(air_uptr_t arg){
     /* get task physical device */
     iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
 
-    iop_debug("\n ::1::\n");
-
     /* initialize error chain (packets to be re-sent) */
     iop_chain_control error;
     iop_chain_initialize_empty(&error);
 
-    iop_debug("\n ::2::\n");
-
     /* get underlying driver */
     iop_uart_device_t *uart_driver = (iop_uart_device_t *)pdev->driver;
-
-
-    iop_debug("\n ::3::\n");
-
 
     /* empty send queue */
     while (!iop_chain_is_empty(&pdev->sendqueue)) {
@@ -69,14 +61,12 @@ void xuart_writer(air_uptr_t arg){
             iop_raise_error(HW_WRITE_ERROR);
         }
     }
-
     /* re-queue failed transmissions */
     while (!iop_chain_is_empty(&error)) {
-        iop_debug("\n ::5::\n");
         iop_wrapper_t *wrapper = obtain_wrapper(&error);
         iop_chain_append(&pdev->sendqueue, &wrapper->node);
     }
-    iop_debug("\n ::6::\n");
+
 }
 
 /**
