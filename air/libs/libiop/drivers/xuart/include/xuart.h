@@ -46,6 +46,17 @@ typedef struct {
 
     air_u32_t BaudRate;
 
+    /* Circular DMA buffers */
+    void *_rx, *rx_hw;
+    void *_tx, *tx_hw;
+    void *txbuf_adr;
+    void *rxbuf_adr;
+    unsigned int rxbuf_size;    /* requested RX buf size in bytes */
+    unsigned int txbuf_size;    /* requested TX buf size in bytes */
+
+    int txblock, rxblock;
+    int txcomplete, rxcomplete;
+
 } uart_priv;
 
 
