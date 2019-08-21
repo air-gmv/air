@@ -39,25 +39,34 @@ void isr_install_handler(air_u32_t id, void *new, void **old) {
 
 void pos_hm_undef(pos_hm_stack *hm_stack){
 
+    /* get current core id */
+    air_u32_t core_id = air_syscall_get_core_id();
+
 #ifdef POS_DEBUG
     pprintf("\n** POS UNDEFINED ERROR**\n");
 #endif
-    ((isr)isr_table[AIR_IRQ_HM_EVENT])();
+    ((isr)isr_table[core_id][AIR_IRQ_HM_EVENT])();
 
 }
 
 void pos_hm_pref_abort(pos_hm_stack *hm_stack){
 
+    /* get current core id */
+    air_u32_t core_id = air_syscall_get_core_id();
+
 #ifdef POS_DEBUG
     pprintf("\n** POS PREFETCH ERROR**\n");
 #endif
-    ((isr)isr_table[AIR_IRQ_HM_EVENT])();
+    ((isr)isr_table[core_id][AIR_IRQ_HM_EVENT])();
 }
 
 void pos_hm_data_abort(pos_hm_stack *hm_stack){
 
+    /* get current core id */
+    air_u32_t core_id = air_syscall_get_core_id();
+
 #ifdef POS_DEBUG
     pprintf("\n** POS DATA ERROR**\n");
 #endif
-    ((isr)isr_table[AIR_IRQ_HM_EVENT])();
+    ((isr)isr_table[core_id][AIR_IRQ_HM_EVENT])();
 }
