@@ -44,7 +44,7 @@ global(exception_svc)
     ldreq   r0, [r0, #-4]
     biceq   r0, r0, #0xff000000
 
-    /* if return from trap, just exit peacefully, all is already taken care of */
+    /* if rett, then it is returning from the POS HM (special case) */
     cmp     r0, #(AIR_SYSCALL_ARM_RETT)
     beq     arm_rett
 
@@ -58,8 +58,9 @@ global(exception_svc)
 
 
 arm_rett:
+    mrc     p15, 0, r0, c13, c0, 4  // get Per_CPU core
     BL2C    arm_syscall_rett
 
-    add     sp, #32
-    cpsid   aif, #ARM_PSR_SYS
+    pop     {r0-r4, lr}
+    add     sp, #8
     rfefd   sp!
