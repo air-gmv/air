@@ -335,25 +335,31 @@ static inline void arm_enable_interrupts() {
     __asm__ volatile ("cpsie if\n");
 }
 
-static inline air_u32_t arm_is_vint_enabled(
-        air_u32_t *icdiser,
-        air_u32_t id) {
+inline static void arm_disable_preemption(air_u32_t irq_mask) {
 
-    return (icdiser[id/32] & (id & 0x1f));
+    air_u32_t psr = arm_get_cpsr();
+
+    if ((psr & ARM_PSR_MODE_MASK) != ARM_PSR_USR) {
+
+        if (irq_mask && !(psr & ARM_PSR_I)) {
+            arm_disable_interrupts();
+        }
+    }
 }
 
-static inline air_u32_t arm_get_vint_priority(
-        air_u32_t *icdipr,
-        air_u32_t id) {
+inline static air_u32_t arm_enable_preemption(void) {
 
-    return icdipr[id];
-}
+    air_u32_t psr = arm_get_cpsr();
+    air_u32_t irq_mask = psr & ARM_PSR_I;
 
-static inline void arm_set_vint_pending(
-        air_u32_t *icdispr,
-        air_u32_t id) {
+    if ((psr & ARM_PSR_MODE_MASK) != ARM_PSR_USR) {
 
-    icdispr[id/32] |= (1U << (id & 0x1f));
+        if (irq_mask) {
+            arm_enable_interrupts();
+        }
+    }
+
+    return irq_mask;
 }
 
 /******************************************************************************/

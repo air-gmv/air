@@ -34,10 +34,10 @@ air_u32_t __atomic_hash[ATOMIC_HASH_SIZE] = { 0 };
 air_i32_t arm_atomic_add(air_i32_t i, atomic_t *v) {
 
     air_i32_t ret;
-    arm_lock(ATOMIC_HASH(v));
+    air_u32_t pil = arm_lock(ATOMIC_HASH(v));
     v->value += i;
     ret = v->value;
-    arm_unlock(ATOMIC_HASH(v));
+    arm_unlock(ATOMIC_HASH(v), pil);
 
     return ret;
 }
@@ -46,10 +46,10 @@ air_i32_t arm_atomic_swap(air_i32_t i, atomic_t *v) {
 
     air_i32_t ret;
 
-    arm_lock(ATOMIC_HASH(v));
+    air_u32_t pil = arm_lock(ATOMIC_HASH(v));
     ret = v->value;
     v->value = i;
-    arm_unlock(ATOMIC_HASH(v));
+    arm_unlock(ATOMIC_HASH(v), pil);
 
     return ret;
 }
@@ -58,10 +58,10 @@ air_i32_t arm_atomic_and(air_i32_t i, atomic_t *v) {
 
     air_i32_t ret;
 
-    arm_lock(ATOMIC_HASH(v));
+    air_u32_t pil = arm_lock(ATOMIC_HASH(v));
     v->value &= i;
     ret = v->value;
-    arm_unlock(ATOMIC_HASH(v));
+    arm_unlock(ATOMIC_HASH(v), pil);
 
     return ret;
 }
@@ -70,10 +70,10 @@ air_i32_t arm_atomic_or(air_i32_t i, atomic_t *v) {
 
     air_i32_t ret;
 
-    arm_lock(ATOMIC_HASH(v));
+    air_u32_t pil = arm_lock(ATOMIC_HASH(v));
     v->value |= i;
     ret = v->value;
-    arm_unlock(ATOMIC_HASH(v));
+    arm_unlock(ATOMIC_HASH(v), pil);
 
     return ret;
 }
@@ -82,10 +82,10 @@ air_i32_t arm_atomic_xor(air_i32_t i, atomic_t *v) {
 
     air_i32_t ret;
 
-    arm_lock(ATOMIC_HASH(v));
+    air_u32_t pil = arm_lock(ATOMIC_HASH(v));
     v->value ^= i;
     ret = v->value;
-    arm_unlock(ATOMIC_HASH(v));
+    arm_unlock(ATOMIC_HASH(v), pil);
 
     return ret;
 }
