@@ -75,8 +75,6 @@ air_u32_t iop_xuart_read(iop_device_driver_t *iop_dev, void *arg) {
 
     air_u32_t receive_count;
 
-    iop_debug("\n\n XUART READ \n\n");
-
     /*Current UART device*/
     iop_uart_device_t *device = (iop_uart_device_t *) iop_dev;
     uart_ctrl_t *pDev = (uart_ctrl_t *) (device->dev.driver);
@@ -88,11 +86,11 @@ air_u32_t iop_xuart_read(iop_device_driver_t *iop_dev, void *arg) {
     iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
     iop_buffer_t *iop_buffer = wrapper->buffer;
 
-    iop_buffer->payload_off = iop_buffer->header_size = sizeof(uart_header_t);
+    iop_buffer->payload_off = iop_buffer->header_size = sizeof(iop_header_t);//sizeof(uart_header_t);
     iop_buffer->header_off = iop_buffer->header_size - sizeof(uart_header_t);
-    iop_buffer->payload_size = 1024;
+    iop_buffer->payload_size = 8;
 
-    char *b = (char *) iop_buffer->v_addr;
+    char *b = (char *) iop_buffer->v_addr + sizeof(iop_header_t);
 
     if (iop_buffer->v_addr == NULL) {
         iop_debug("iop_xuart_write error iop_buffer\n");
@@ -102,28 +100,29 @@ air_u32_t iop_xuart_read(iop_device_driver_t *iop_dev, void *arg) {
     for (receive_count = 0; receive_count < iop_buffer->payload_size;
             receive_count++) {
         b[receive_count] = arm_uart_receive();
-        iop_debug("\n char: %c \n", b);
+        //iop_debug("\n char: %c [end]\n", b[receive_count]);
     }
     iop_debug("\n\n MSG: %s  [END OF MSG] \n\n", b);
 
     return AIR_SUCCESSFUL;
 }
 
-air_u32_t arm_uart_receive() {
+char arm_uart_receive() {
 
-    //while((uart->status & ARM_UART_STATUS_RXFULL) == 0);
+    char c='a';
 
-    if ((uart->status & ARM_UART_STATUS_RXEMPTY) == 0) {
-        return (air_u32_t) (uart->tx_rx_fifo);
-    }
-    return AIR_SUCCESSFUL;
+    while ((uart->status & ARM_UART_STATUS_RXEMPTY) != 0);
+
+    c= (char) (uart->tx_rx_fifo);
+
+
+    return c;
+
 }
 
 air_u32_t iop_xuart_write(iop_device_driver_t *iop_dev, void *arg) {
 
     air_u32_t sent_count = 0;
-
-    iop_debug("\n\n XUART WRITE \n\n");
 
     /*Current UART device*/
     iop_uart_device_t *device = (iop_uart_device_t *) iop_dev;
@@ -142,7 +141,7 @@ air_u32_t iop_xuart_write(iop_device_driver_t *iop_dev, void *arg) {
         return AIR_INVALID_SIZE;
     }
 
-    air_u8_t *b = (air_u8_t *) iop_buffer->v_addr;
+    char *b = (char *) iop_buffer->v_addr + sizeof(iop_header_t);
 
     for (sent_count = 0; sent_count < (iop_buffer->payload_size);
             sent_count++) {

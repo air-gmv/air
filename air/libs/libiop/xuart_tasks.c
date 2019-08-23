@@ -46,9 +46,7 @@ void xuart_writer(air_uptr_t arg){
 
     /* empty send queue */
     while (!iop_chain_is_empty(&pdev->sendqueue)) {
-        iop_debug("\n ::4::\n");
         iop_wrapper_t *wrapper = obtain_wrapper(&pdev->sendqueue);
-
         /* write to the device */
         if (uart_driver->dev.write((iop_device_driver_t *)uart_driver,
             wrapper) == AIR_SUCCESSFUL){
@@ -83,6 +81,8 @@ void xuart_writer(air_uptr_t arg){
  *  Failed reads are reported to FDIR
  *
  */
+
+
 void xuart_reader(air_uptr_t arg){
 
     iop_debug("\n :: IOP - UART-reader running!\n");
@@ -93,6 +93,7 @@ void xuart_reader(air_uptr_t arg){
     /* initialize error chain (packets to be resent) */
     iop_chain_control error;
     iop_chain_initialize_empty(&error);
+    char *message;
 
     /* get underlying driver */
     iop_uart_device_t *driver = (iop_uart_device_t *)pdev->driver;
@@ -112,7 +113,6 @@ void xuart_reader(air_uptr_t arg){
 
         /* read from the device */
         if (driver->dev.read((iop_device_driver_t *)driver, wrapper) == AIR_SUCCESSFUL) {
-            iop_debug("UART reader: Message received");
             iop_chain_append(&pdev->rcvqueue, &wrapper->node);
             wrapper = NULL;
         }
