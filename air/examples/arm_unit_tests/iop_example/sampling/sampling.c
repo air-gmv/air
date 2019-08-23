@@ -114,6 +114,11 @@ int entry_func() {
         pprintf("CREATE_SAMPLING_PORT error %d\n\n", rc);
     }
 
+    CREATE_QUEUING_PORT("dqueuing", 1024, 32, DESTINATION, FIFO, &qpid, &rc );
+    if(NO_ERROR != rc){
+        pprintf("CREATE_QUEUING_PORT error %d\n", rc);
+    }
+
     /*
 #ifdef RTEMS48I
     if (RTEMS_SUCCESSFUL == rtems_task_create (name, 15, 4096, mode, mode_mask, &id)) {

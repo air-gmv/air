@@ -30,7 +30,7 @@ air_u32_t uart_compare_header(
 
     uart_header_t *uart_header1 = (uart_header_t *) header;
     uart_header_t *uart_header2 = (uart_header_t *) get_header(wrapper->buffer);
-    iop_debug("\nComparing headers - H1:%d H2:%d\n", uart_header1->id , uart_header2->id);
+    //iop_debug("\nComparing headers - H1:%d H2:%d\n", uart_header1->id , uart_header2->id);
     if (uart_header1->id == uart_header2->id){
         return 1;
     }

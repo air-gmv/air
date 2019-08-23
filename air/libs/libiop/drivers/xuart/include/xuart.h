@@ -162,7 +162,7 @@ void iop_xuart_close(iop_device_driver_t *iop_dev, void *arg);
 void arm_define_uart(air_u32_t port);
 void arm_setup_uart(air_u32_t BaudRate);
 void arm_xuart_transmit(char ch);
-air_u32_t arm_uart_receive();
+char arm_uart_receive();
 
 /*-----------------------------------------------------------------------*/
 
