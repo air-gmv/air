@@ -359,7 +359,7 @@ void arm_segregation_init(void) {
         /* get a MMU control structure for the partition */
         arm_mmu_context_t *ctrl = pmk_workspace_alloc(sizeof(arm_mmu_context_t));
 
-        ctrl->context = partition->idx + 1;
+        ctrl->context = i + 1;
 
         ctrl->ttbr0 = arm_mmu_get_table(0);
 #if TTBR_N
