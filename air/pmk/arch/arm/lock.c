@@ -15,9 +15,9 @@
 
 #include <lock.h>
 
-void arm_lock(air_uptr_t hash) {
+air_u32_t arm_lock(air_uptr_t hash) {
 
-//    arm_disable_preemption(0);
+    air_u32_t pil = arm_save_preemption();
 
     air_u32_t token, lock;
 
@@ -33,38 +33,42 @@ void arm_lock(air_uptr_t hash) {
             : "=&r" (lock), "=&r" (token)
             : [hash] "r" (hash)
             : "memory");
+
+    return pil;
 }
 
-air_u32_t arm_unlock(air_uptr_t hash) {
+air_u32_t arm_unlock(air_uptr_t hash, air_u32_t pil) {
 
     *hash = 0;
-//    air_u32_t flag = arm_enable_preemption();
+    arm_restore_preemption(pil);
     return 0;
 }
 
-void arm_disable_preemption(air_u32_t irq_mask) {
+
+
+air_u32_t arm_save_preemption(void) {
 
     air_u32_t psr = arm_get_cpsr();
+    air_u32_t pil = psr & ARM_PSR_I;
 
     if ((psr & ARM_PSR_MODE_MASK) != ARM_PSR_USR) {
 
-        if (irq_mask && !(psr & ARM_PSR_I)) {
+        if (pil && !(psr & ARM_PSR_I)) {
             arm_disable_interrupts();
         }
     }
+
+    return pil;
 }
 
-air_u32_t arm_enable_preemption(void) {
+void arm_restore_preemption(air_u32_t pil) {
 
     air_u32_t psr = arm_get_cpsr();
-    air_u32_t irq_mask = psr & ARM_PSR_I;
 
     if ((psr & ARM_PSR_MODE_MASK) != ARM_PSR_USR) {
 
-        if (irq_mask) {
+        if (!pil && (psr & ARM_PSR_I)) {
             arm_enable_interrupts();
         }
     }
-
-    return irq_mask;
 }
