@@ -25,20 +25,24 @@ air_u32_t arm_lock(air_uptr_t hash) {
             "mov %1, #0x1\n"
             "try:\n"
             "ldrex %0, [%[hash]]\n"
+            "cmp %0, %1\n"
+            "it eq\n"
+            "beq try\n"
+            "strex %0, %1, [%[hash]]\n"
             "cmp %0, #0\n"
-            "itte eq\n"
-            "strexeq %0, %1, [%[hash]]\n"
-            "cmpeq %0, #0\n"
+            "it ne\n"
             "bne try\n"
             : "=&r" (lock), "=&r" (token)
             : [hash] "r" (hash)
             : "memory");
+    arm_data_memory_barrier(15);
 
     return pil;
 }
 
 air_u32_t arm_unlock(air_uptr_t hash, air_u32_t pil) {
 
+    arm_data_memory_barrier(15);
     *hash = 0;
     arm_restore_preemption(pil);
     return 0;
@@ -53,7 +57,7 @@ air_u32_t arm_save_preemption(void) {
 
     if ((psr & ARM_PSR_MODE_MASK) != ARM_PSR_USR) {
 
-        if (pil && !(psr & ARM_PSR_I)) {
+        if (!pil) {
             arm_disable_interrupts();
         }
     }
