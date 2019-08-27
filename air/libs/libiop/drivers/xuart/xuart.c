@@ -24,7 +24,13 @@ static volatile uart_ctrl_t *uart1 = (uart_ctrl_t *) UART1_BASE_MEMORY;
 
 air_u32_t iop_xuart_init(iop_device_driver_t *iop_dev, void *arg) {
 
-//    iop_uart_device_t *device = (iop_uart_device_t *) iop_dev;
+
+
+    iop_uart_device_t *device = (iop_uart_device_t *) iop_dev;
+    int uart_id = device->uart_core;
+    define_uart(uart_id);
+    air_u32_t baud = (air_u32_t) device->baud_rate;
+    arm_setup_uart(baud);
 //    uart_priv *pDev = (uart_priv*) (device->dev.driver);
 //    amba_apb_dev_t xuartdev;
 //    timer_regmap_t *tregs;
@@ -102,7 +108,6 @@ air_u32_t iop_xuart_read(iop_device_driver_t *iop_dev, void *arg) {
         b[receive_count] = arm_uart_receive();
         //iop_debug("\n char: %c [end]\n", b[receive_count]);
     }
-    iop_debug("\n\n MSG: %s  [END OF MSG] \n\n", b);
 
     return AIR_SUCCESSFUL;
 }
@@ -111,9 +116,9 @@ char arm_uart_receive() {
 
     char c='a';
 
-    while ((uart->status & ARM_UART_STATUS_RXEMPTY) != 0);
-
-    c= (char) (uart->tx_rx_fifo);
+    //while ((uart->status & ARM_UART_STATUS_RXEMPTY) != 0);
+    if ((uart->status & ARM_UART_STATUS_RXEMPTY) != 0)
+        c= (char) (uart->tx_rx_fifo);
 
 
     return c;
@@ -147,6 +152,7 @@ air_u32_t iop_xuart_write(iop_device_driver_t *iop_dev, void *arg) {
             sent_count++) {
         arm_xuart_transmit(b[sent_count]);
     }
+    arm_xuart_transmit('\n');
     return AIR_SUCCESSFUL;
 }
 
@@ -159,7 +165,7 @@ void arm_xuart_transmit(char ch) {
     }
 }
 
-void iop_xuart_close(iop_device_driver_t *iop_dev, void *arg) {   //can_close e can_stop e can_hw stop (sw não interessa, é semáforos)
+void iop_xuart_close(iop_device_driver_t *iop_dev, void *arg) {
 
 //    iop_uart_device_t *device = (iop_uart_device_t *) iop_dev;
 //    uart_priv *pDev = (uart_priv *) (device->dev.driver);
