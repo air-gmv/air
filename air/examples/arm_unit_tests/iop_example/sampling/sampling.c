@@ -52,16 +52,19 @@ void test(PARTITION_ID_TYPE self_id) {
     air_u32_t tps = 1000000 / us_per_tick;
     air_u32_t interval = 0;
     unsigned char msg[1024]="empty\0";
+    int i;
     MESSAGE_SIZE_TYPE len;
     RETURN_CODE_TYPE rc = NO_ERROR;
     while(1) {
 
-        pprintf ("Partition sending: %s\n", sample);
+        //pprintf ("Partition sending: %s\n", sample);
         WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )sample, 3, &rc );
         if (NO_ERROR != rc) {
             pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
             error_message(rc);
         }
+
+        //for(){}
 
         /*identify the string with an integer index*/
         sample[1] += 1;
@@ -71,7 +74,10 @@ void test(PARTITION_ID_TYPE self_id) {
 
         interval = tps * 0.7;
 
-        pprintf("interval %i\n", interval);
+        //pprintf("interval %i\n", interval);
+        for(i=0; i<1024; i++){
+            msg[i]='\0';
+        }
 
         RECEIVE_QUEUING_MESSAGE(qpid, INFINITE_TIME_VALUE, msg, &len, &rc );
         if (rc == NO_ERROR)

@@ -22,15 +22,7 @@
 #include <xuart.h>
 #include <xuart_support.h>
 
-#define UART_TX_SIZE   16
-#define UART_RX_SIZE   48
-
  ${iop_template.RemotePortList(iop_configuration)}\
-
-/**
- *@brief UART data buffer allocation
- */
-static uint8_t uart_msg_buffer[UART_RX_SIZE*16*4+UART_TX_SIZE*16*4+1024];
 
 static uart_priv xuart_driver;
 
@@ -48,6 +40,10 @@ static iop_uart_device_t device_configuration = ${'\\'}
     },
     .uart_core    = ${device.setup.uart_core},
     .baud_rate    = ${device.setup.baud},
+    .parity       = '${device.setup.parity}',
+    .data_bits    = ${device.setup.data_bits},
+    .stop_bits    = ${device.setup.stop_bits},
+    .data_bytes   = ${device.setup.data_bytes},
 };
 
 ${iop_template.PhysicalDevice(iop_configuration, device, device_functions)}\
