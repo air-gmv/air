@@ -10,7 +10,7 @@
       <Libs>LIBIOP</Libs>
       <Devices></Devices>
       <Cache>CODE; DATA</Cache>
-      <Memory Size="0x400000" />
+      <Memory Size="0x1000000" />
       <Permissions>SUPERVISOR;</Permissions>
     </PartitionConfiguration>
   </Partition>
@@ -24,7 +24,7 @@
       <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
       <Devices></Devices>
       <Cache>CODE; DATA</Cache>
-      <Memory Size="0x400000" />
+      <Memory Size="0x1000000" />
       <Permissions>
           FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
       </Permissions>
@@ -71,5 +71,5 @@
   </Connection_Table>
 
   <!-- Module configuration -->
-  <AIR_Configuration TicksPerSecond="200" RequiredCores="1"/>
+  <AIR_Configuration TicksPerSecond="10" RequiredCores="1"/>
 </ARINC_653_Module>
