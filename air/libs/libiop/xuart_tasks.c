@@ -32,7 +32,7 @@
  */
 void xuart_writer(air_uptr_t arg){
 
-    iop_debug("\n :: IOP - UART-writer running!\n");
+    //iop_debug("\n :: IOP - UART-writer running!\n");
 
     /* get task physical device */
     iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
@@ -51,7 +51,7 @@ void xuart_writer(air_uptr_t arg){
         if (uart_driver->dev.write((iop_device_driver_t *)uart_driver,
             wrapper) == AIR_SUCCESSFUL){
             release_wrapper(wrapper);
-            iop_debug("xuart writer write successful");
+            //iop_debug("xuart writer write successful");
 
         } else {
             iop_debug("\n :: UART ERROR writing\n\n");
@@ -81,11 +81,10 @@ void xuart_writer(air_uptr_t arg){
  *  Failed reads are reported to FDIR
  *
  */
-
-
 void xuart_reader(air_uptr_t arg){
 
-    iop_debug("\n :: IOP - UART-reader running!\n");
+
+    //iop_debug("\n :: IOP - UART-reader running!\n");
 
     /* get task physical device */
     iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
@@ -93,7 +92,6 @@ void xuart_reader(air_uptr_t arg){
     /* initialize error chain (packets to be resent) */
     iop_chain_control error;
     iop_chain_initialize_empty(&error);
-    char *message;
 
     /* get underlying driver */
     iop_uart_device_t *driver = (iop_uart_device_t *)pdev->driver;

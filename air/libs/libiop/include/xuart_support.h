@@ -19,6 +19,10 @@ typedef struct {
 
     int uart_core; // Identify which UART core corresponds to (either UART0 or UART1)
     int baud_rate;
+    char parity;
+    int data_bits;
+    int stop_bits;
+    int data_bytes;
 
 } iop_uart_device_t;
 
