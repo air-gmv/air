@@ -10,11 +10,20 @@ from localization.logger import *
 
 UART_CORE               = 'UartCore'
 UART_BAUD               = 'Baud'
+UART_PARITY             = 'Parity'
+UART_DATABITS           = 'DataBits'
+UART_STOPBITS           = 'StopBits'
 UART_READS              = 'Reads'
+UART_DATABYTES          = 'DataBytes'
 
 VALID_XD                = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
 VALID_READS             = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
 VALID_BAUD              = [ parserutils.str2int, lambda x : 0 < x <= 921600 ]
+VALID_DATABITS          = [ parserutils.str2int, lambda x : 5 < x <= 8 ]
+VALID_STOPBITS          = [ parserutils.str2int, lambda x : 0 < x <= 2 ]
+VALID_PARITY            = [ str, lambda x : x in [ 'E', 'O', 'N'] ]
+VALID_DATABYTES         = [ parserutils.str2int, lambda x : 0 < x <= 64 ]
+
 
 # UART physical device setup
 class UARTPhySetup(object):
@@ -53,6 +62,10 @@ def phy_xuart(iop_parser, xml, pdevice):
     setup                   = UARTPhySetup()
     setup.uart_core         = pdevice.minor
     setup.baud              = xml.parse_attr(UART_BAUD, VALID_BAUD, True, iop_parser.logger)
+    setup.parity            = xml.parse_attr(UART_PARITY, VALID_PARITY, True, iop_parser.logger)
+    setup.stop_bits         = xml.parse_attr(UART_STOPBITS, VALID_STOPBITS, True, iop_parser.logger)
+    setup.data_bits         = xml.parse_attr(UART_DATABITS, VALID_DATABITS, True, iop_parser.logger)
+    setup.data_bytes        = xml.parse_attr(UART_DATABYTES, VALID_DATABYTES, True, iop_parser.logger)
 
     # sanity check
     if iop_parser.logger.check_errors(): return False

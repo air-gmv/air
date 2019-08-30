@@ -6,84 +6,48 @@
 #include <bsp.h>
 #include <xuart.h>
 
-static volatile uart_ctrl_t *uart = (uart_ctrl_t *) UART0_BASE_MEMORY;
+static volatile uart_ctrl_t *uart0 = (uart_ctrl_t *) UART0_BASE_MEMORY;
 static volatile uart_ctrl_t *uart1 = (uart_ctrl_t *) UART1_BASE_MEMORY;
-
-/* air_u32_t iop_xuart_initialize(iop_device_driver_t *iop_dev, void *arg){
-
-    if(AIR_SUCCESSFUL != iop_grcan_device_init(iop_dev)){
-        // Couldn't initialize the device
-        iop_debug("Internal error on grcan_device_init\n");
-        return AIR_DEVICE_ERROR;
-    }
-
-    return AIR_SUCCESSFUL;
-}*/
-
-/*----------------------------------------------------------------------*/
 
 air_u32_t iop_xuart_init(iop_device_driver_t *iop_dev, void *arg) {
 
-
-
     iop_uart_device_t *device = (iop_uart_device_t *) iop_dev;
+
+    uart_ctrl_t *uart;
     int uart_id = device->uart_core;
-    define_uart(uart_id);
+    uart = define_xuart(uart_id);
+
+    char parity = device->parity;
+    int data_bits = device->data_bits;
+    int stop_bits = device->stop_bits;
+
+    set_uart_mode(uart, parity, data_bits, stop_bits);
+
+
     air_u32_t baud = (air_u32_t) device->baud_rate;
-    arm_setup_uart(baud);
-//    uart_priv *pDev = (uart_priv*) (device->dev.driver);
-//    amba_apb_dev_t xuartdev;
-//    timer_regmap_t *tregs;
-//
-//    amba_confarea_t * ambabus = (amba_confarea_t *)air_syscall_get_ambaconf();
-//
-//    memset(&xuartdev, 0, sizeof(amba_apb_dev_t));
-//
-//    if(!amba_get_apb_slave(ambabus, VENDOR_GAISLER, GAISLER_GRCAN, device->uart_core, &xuartdev))       // DEFINIR XUART!!!
-//        return AIR_DEVICE_NOT_FOUND;
-//
-//    pDev->irq = xuartdev.irq;
-//    pDev->regs = (struct uart_ctrl_t *) (xuartdev.start);
-//    pDev->minor = device->uart_core;
-//
-//    /*
-//     * Auto Detect the UART core frequency by assuming that the system frequency is
-//     * is the same as the UART core frequency.
-//     */
-//    if (amba_get_apb_slave(ambabus,VENDOR_GAISLER,GAISLER_GPTIMER,0,&gptimer))
-//    {
-//        /*Timer memory mapped registers*/
-//        tregs = (timer_regmap_t*)gptimer.start;
-//
-//        /*Calculate System frequency based on the timer register*/
-//        pDev->corefreq_hz = (tregs->scaler_reload+1)*1000000;
-//    }
-//    else
-//    {
-//        pDev->corefreq_hz = 250000000;
-//        iop_debug("XUART: Failed to detect system frequency\n\r");
-//    }
-//
-//    /* Reset Hardware*/
-//    //grcan_hw_reset(pDev->regs);
+    arm_setup_xuart(uart, baud);
+
     return AIR_SUCCESSFUL;
 
 }
 
-air_u32_t iop_xuart_open(iop_device_driver_t *iop_dev, void *arg) {   // a partir de iop_grcan_open e de iop_grcan_open_internal
-
-    //iop_uart_device_t *device = (iop_uart_device_t *) iop_dev;
+air_u32_t iop_xuart_open(iop_device_driver_t *iop_dev, void *arg) {
 
     return AIR_SUCCESSFUL;
 }
 
 air_u32_t iop_xuart_read(iop_device_driver_t *iop_dev, void *arg) {
 
-    air_u32_t receive_count;
+    air_u32_t receive_count=0;
 
     /*Current UART device*/
     iop_uart_device_t *device = (iop_uart_device_t *) iop_dev;
-    uart_ctrl_t *pDev = (uart_ctrl_t *) (device->dev.driver);
+
+    int uart_id = device->uart_core;
+
+    uart_ctrl_t *uart;
+    uart = define_xuart(uart_id);
+
 
     if (arg == NULL)
         return AIR_INVALID_PARAM;
@@ -94,36 +58,27 @@ air_u32_t iop_xuart_read(iop_device_driver_t *iop_dev, void *arg) {
 
     iop_buffer->payload_off = iop_buffer->header_size = sizeof(iop_header_t);//sizeof(uart_header_t);
     iop_buffer->header_off = iop_buffer->header_size - sizeof(uart_header_t);
-    iop_buffer->payload_size = 8;
+    iop_buffer->payload_size = device->data_bytes;
 
     char *b = (char *) iop_buffer->v_addr + sizeof(iop_header_t);
-
+    static char d[24];
     if (iop_buffer->v_addr == NULL) {
         iop_debug("iop_xuart_write error iop_buffer\n");
         return AIR_INVALID_SIZE;
     }
 
-    for (receive_count = 0; receive_count < iop_buffer->payload_size;
-            receive_count++) {
-        b[receive_count] = arm_uart_receive();
-        //iop_debug("\n char: %c [end]\n", b[receive_count]);
+    while( (receive_count<(iop_buffer->payload_size)) && ((uart->status & ARM_UART_STATUS_RXEMPTY) == 0) ){
+        b[receive_count] = (char) (uart->tx_rx_fifo);
+        receive_count++;
     }
+    if(receive_count==0)
+        return AIR_INVALID_SIZE;
 
+    iop_buffer->payload_size = receive_count;
+    iop_debug("\n\n READ str: %s | Receive count = %d \n\n", b, (int) receive_count);
     return AIR_SUCCESSFUL;
 }
 
-char arm_uart_receive() {
-
-    char c='a';
-
-    //while ((uart->status & ARM_UART_STATUS_RXEMPTY) != 0);
-    if ((uart->status & ARM_UART_STATUS_RXEMPTY) != 0)
-        c= (char) (uart->tx_rx_fifo);
-
-
-    return c;
-
-}
 
 air_u32_t iop_xuart_write(iop_device_driver_t *iop_dev, void *arg) {
 
@@ -131,7 +86,10 @@ air_u32_t iop_xuart_write(iop_device_driver_t *iop_dev, void *arg) {
 
     /*Current UART device*/
     iop_uart_device_t *device = (iop_uart_device_t *) iop_dev;
-    uart_ctrl_t *pDev = (uart_ctrl_t *) (device->dev.driver);
+
+    uart_ctrl_t *uart;
+    int uart_id = device->uart_core;
+    uart = define_xuart(uart_id);
 
     if (arg == NULL){
         iop_debug("\n\n Invalid Param \n\n");
@@ -150,13 +108,16 @@ air_u32_t iop_xuart_write(iop_device_driver_t *iop_dev, void *arg) {
 
     for (sent_count = 0; sent_count < (iop_buffer->payload_size);
             sent_count++) {
-        arm_xuart_transmit(b[sent_count]);
+        arm_xuart_transmit(uart, b[sent_count]);
     }
-    arm_xuart_transmit('\n');
+    arm_xuart_transmit(uart, '\n');
+
+    //iop_debug("\nWRITE = %s", b);
+
     return AIR_SUCCESSFUL;
 }
 
-void arm_xuart_transmit(char ch) {
+void arm_xuart_transmit(uart_ctrl_t *uart, char ch) {
 
     while ((uart->status & ARM_UART_STATUS_TXEMPTY) == 0);
 
@@ -165,7 +126,7 @@ void arm_xuart_transmit(char ch) {
     }
 }
 
-void iop_xuart_close(iop_device_driver_t *iop_dev, void *arg) {
+air_u32_t iop_xuart_close(iop_device_driver_t *iop_dev, void *arg) {
 
 //    iop_uart_device_t *device = (iop_uart_device_t *) iop_dev;
 //    uart_priv *pDev = (uart_priv *) (device->dev.driver);
@@ -186,6 +147,7 @@ void iop_xuart_close(iop_device_driver_t *iop_dev, void *arg) {
 //    pDev->started = STATE_STOPPED;
 //
 //    return 0;
+    return AIR_SUCCESSFUL;
 
 }
 
@@ -207,13 +169,14 @@ void arm_reset_uart(void) {
 
 }
 
-void arm_define_uart(air_u32_t port) {
-    if (port == 1) {
-        uart = uart1;
-    }
+uart_ctrl_t *define_xuart(air_u32_t port) {
+    if (port == 1)
+        return uart1;
+    else
+        return uart0;
 }
 
-void arm_setup_uart(air_u32_t BaudRate) {
+void arm_setup_xuart(uart_ctrl_t *uart, air_u32_t BaudRate) {
 
     air_u32_t IterBAUDDIV;          /* Iterator for available baud divisor values */
     air_u32_t BRGR_Value;           /* Calculated value for baud rate generator */
@@ -263,4 +226,32 @@ void arm_setup_uart(air_u32_t BaudRate) {
     uart->ctrl = (ARM_UART_CTRL_RX_EN | ARM_UART_CTRL_TX_EN);
 
     arm_data_synchronization_barrier(15);
+}
+
+
+void set_uart_mode(uart_ctrl_t *uart, char parity, int data_bits, int stop_bits) {
+
+    air_u32_t mode = ((uart->mode)&(0xFFFFFC01));
+
+
+   // mode |=  0x200;   NORMAL: 000; AUTOMATIC ECHO: 100; LOCAL LOOPBACK: 200; REMOTE LOOPBACK: 300
+
+    //PARITY -> default is EVEN (000)
+    if (parity=='O')
+        mode |= ARM_UART_MODE_PAR(001);
+    else if (parity=='N')
+        mode |= ARM_UART_MODE_PAR(100);
+
+    //DATA BITS -> default is 8 (0x)
+    if (data_bits==6)
+        mode |= ARM_UART_MODE_CHRL(11);
+    else if (data_bits==7)
+        mode |= ARM_UART_MODE_CHRL(10);
+
+    //STOP BITS -> default is 1 (00)
+    if (stop_bits==2)
+        mode |= ARM_UART_MODE_CHRL(10);
+
+    uart->mode = mode;
+
 }
