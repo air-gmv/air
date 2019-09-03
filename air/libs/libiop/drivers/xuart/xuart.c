@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2019  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
 /**
  * @file
  * @author trcpse
@@ -6,26 +13,25 @@
 #include <bsp.h>
 #include <xuart.h>
 
-static volatile uart_ctrl_t *uart0 = (uart_ctrl_t *) UART0_BASE_MEMORY;
-static volatile uart_ctrl_t *uart1 = (uart_ctrl_t *) UART1_BASE_MEMORY;
-
 air_u32_t iop_xuart_init(iop_device_driver_t *iop_dev, void *arg) {
 
     iop_uart_device_t *device = (iop_uart_device_t *) iop_dev;
+    uart_priv *pDev = (uart_priv *) (device->dev.driver);
 
-    uart_ctrl_t *uart;
     int uart_id = device->uart_core;
-    uart = define_xuart(uart_id);
+    pDev->reg = define_xuart(uart_id);
 
     char parity = device->parity;
     int data_bits = device->data_bits;
     int stop_bits = device->stop_bits;
 
-    set_uart_mode(uart, parity, data_bits, stop_bits);
+    set_uart_mode(pDev->reg, parity, data_bits, stop_bits);
 
 
     air_u32_t baud = (air_u32_t) device->baud_rate;
-    arm_setup_xuart(uart, baud);
+    arm_setup_xuart(pDev->reg, baud);
+
+    pDev->reg->rx_fifo_trigger = 0;
 
     return AIR_SUCCESSFUL;
 
@@ -38,15 +44,11 @@ air_u32_t iop_xuart_open(iop_device_driver_t *iop_dev, void *arg) {
 
 air_u32_t iop_xuart_read(iop_device_driver_t *iop_dev, void *arg) {
 
-    air_u32_t receive_count=0;
-
+    static air_u32_t receive_count = 0;
+    int i;
     /*Current UART device*/
     iop_uart_device_t *device = (iop_uart_device_t *) iop_dev;
-
-    int uart_id = device->uart_core;
-
-    uart_ctrl_t *uart;
-    uart = define_xuart(uart_id);
+    uart_priv *pDev = (uart_priv *) (device->dev.driver);
 
 
     if (arg == NULL)
@@ -56,26 +58,32 @@ air_u32_t iop_xuart_read(iop_device_driver_t *iop_dev, void *arg) {
     iop_wrapper_t *wrapper = (iop_wrapper_t *) arg;
     iop_buffer_t *iop_buffer = wrapper->buffer;
 
-    iop_buffer->payload_off = iop_buffer->header_size = sizeof(iop_header_t);//sizeof(uart_header_t);
-    iop_buffer->header_off = iop_buffer->header_size - sizeof(uart_header_t);
-    iop_buffer->payload_size = device->data_bytes;
+    static char d[UART_FIFO_MAX_SIZE];
 
-    char *b = (char *) iop_buffer->v_addr + sizeof(iop_header_t);
-    static char d[24];
     if (iop_buffer->v_addr == NULL) {
         iop_debug("iop_xuart_write error iop_buffer\n");
         return AIR_INVALID_SIZE;
     }
 
-    while( (receive_count<(iop_buffer->payload_size)) && ((uart->status & ARM_UART_STATUS_RXEMPTY) == 0) ){
-        b[receive_count] = (char) (uart->tx_rx_fifo);
+
+    while( (receive_count<(device->data_bytes)) && (!(pDev->reg->status & ARM_UART_STATUS_RXEMPTY)) ){
+        d[receive_count] = (char) (pDev->reg->tx_rx_fifo);
         receive_count++;
     }
-    if(receive_count==0)
+
+    if(receive_count<(device->data_bytes))
         return AIR_INVALID_SIZE;
 
+    iop_buffer->payload_off = iop_buffer->header_size = sizeof(iop_header_t);//sizeof(uart_header_t);
+    iop_buffer->header_off = iop_buffer->header_size - sizeof(iop_header_t);
+    iop_buffer->payload_size = device->data_bytes;
+
+    char *b = (char *) get_payload(iop_buffer);
+    memcpy(b, d, iop_buffer->payload_size);
+
     iop_buffer->payload_size = receive_count;
-    iop_debug("\n\n READ str: %s | Receive count = %d \n\n", b, (int) receive_count);
+    //iop_debug("\n\n READ str: %s | Receive count = %d \n\n", b, (int) receive_count);
+    receive_count=0;
     return AIR_SUCCESSFUL;
 }
 
@@ -83,13 +91,9 @@ air_u32_t iop_xuart_read(iop_device_driver_t *iop_dev, void *arg) {
 air_u32_t iop_xuart_write(iop_device_driver_t *iop_dev, void *arg) {
 
     air_u32_t sent_count = 0;
-
     /*Current UART device*/
     iop_uart_device_t *device = (iop_uart_device_t *) iop_dev;
-
-    uart_ctrl_t *uart;
-    int uart_id = device->uart_core;
-    uart = define_xuart(uart_id);
+    uart_priv *pDev = (uart_priv *) (device->dev.driver);
 
     if (arg == NULL){
         iop_debug("\n\n Invalid Param \n\n");
@@ -108,9 +112,9 @@ air_u32_t iop_xuart_write(iop_device_driver_t *iop_dev, void *arg) {
 
     for (sent_count = 0; sent_count < (iop_buffer->payload_size);
             sent_count++) {
-        arm_xuart_transmit(uart, b[sent_count]);
+        arm_xuart_transmit(pDev->reg, b[sent_count]);
     }
-    arm_xuart_transmit(uart, '\n');
+    arm_xuart_transmit(pDev->reg, '\n');
 
     //iop_debug("\nWRITE = %s", b);
 
@@ -170,10 +174,11 @@ void arm_reset_uart(void) {
 }
 
 uart_ctrl_t *define_xuart(air_u32_t port) {
+
     if (port == 1)
-        return uart1;
+        return (uart_ctrl_t *) UART1_BASE_MEMORY;
     else
-        return uart0;
+        return (uart_ctrl_t *) UART0_BASE_MEMORY;
 }
 
 void arm_setup_xuart(uart_ctrl_t *uart, air_u32_t BaudRate) {

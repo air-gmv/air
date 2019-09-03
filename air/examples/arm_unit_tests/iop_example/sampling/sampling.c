@@ -1,17 +1,9 @@
-/* ============================================================================
- *  Copyright (C) GMVIS Skysoft S.A., 2008-2013
- * ============================================================================
- *  This file is part of the AIR - ARINC 653 Interface in RTEMS - Operating
- *  system.
- *  The license and distribution terms for this file may be found in the file
- *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
- * ==========================================================================*/
 /*
-#include <rtems.h>
-
-#include <rtems/rtems/tasks.h>
-#include <rtems/rtems/sem.h>
-#include <rtems/rtems/clock.h>
+ * Copyright (C) 2019  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
  */
 #include <a653.h>
 #include <imaspex.h>
@@ -55,8 +47,8 @@ void test(PARTITION_ID_TYPE self_id) {
     int i;
     MESSAGE_SIZE_TYPE len;
     RETURN_CODE_TYPE rc = NO_ERROR;
-    while(1) {
 
+    while(1) {
         //pprintf ("Partition sending: %s\n", sample);
         WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )sample, 3, &rc );
         if (NO_ERROR != rc) {
