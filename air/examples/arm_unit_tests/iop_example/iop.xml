@@ -14,7 +14,7 @@
 
     <!-- UART 1:  -->
 
-    <Device Id="1" Device="UART1" Baud="115200" Parity="E" DataBits="8" StopBits="1" DataBytes="24">
+    <Device Id="1" Device="UART1" Baud="115200" Parity="E" DataBits="8" StopBits="1" DataBytes="64">
       <PhysicalRoute Id="1" PortId="squeuing">
         <UartHeader UartID="34"/>
       </PhysicalRoute>
@@ -23,7 +23,7 @@
       </LogicalRoute>
     </Device>
 
-    </PhysicalDevices>
+  </PhysicalDevices>
 
   <!-- Module Schedules  -->
 

@@ -1,9 +1,15 @@
+/*
+ * Copyright (C) 2008-2019  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
 /**
  * @file
  * @author trcpse
  * @brief UART support structures and function definitions
  */
-
 #ifndef __XUART_H__
 #define __XUART_H__
 
@@ -20,6 +26,7 @@ extern "C" {
 #define UART0_BASE_MEMORY               0xe0000000
 #define UART1_BASE_MEMORY               0xe0001000
 #define UART_RST_CTRL                   0xf8000228
+#define UART_FIFO_MAX_SIZE              64
 
 typedef struct {
     air_u32_t ctrl;
@@ -42,20 +49,9 @@ typedef struct {
 } uart_ctrl_t;
 
 typedef struct {
-    struct uart_ctrl_t *reg;
+    uart_ctrl_t *reg;
 
     air_u32_t BaudRate;
-
-    /* Circular DMA buffers */
-    void *_rx, *rx_hw;
-    void *_tx, *tx_hw;
-    void *txbuf_adr;
-    void *rxbuf_adr;
-    unsigned int rxbuf_size;    /* requested RX buf size in bytes */
-    unsigned int txbuf_size;    /* requested TX buf size in bytes */
-
-    int txblock, rxblock;
-    int txcomplete, rxcomplete;
 
 } uart_priv;
 
@@ -151,6 +147,8 @@ typedef struct {
 #define ARM_UART_STATUS_RXFULL          (1U << 2)
 #define ARM_UART_STATUS_TXEMPTY         (1U << 3)
 #define ARM_UART_STATUS_TXFULL          (1U << 4)
+#define ARM_UART_STATUS_TTRIG           (1U << 13)
+
 
 air_u32_t iop_xuart_init(iop_device_driver_t *iop_dev, void *arg);
 air_u32_t iop_xuart_open(iop_device_driver_t *iop_dev, void *arg);
