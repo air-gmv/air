@@ -65,6 +65,7 @@ iop_configuration_t usr_configuration = {
     .wrappers_count         = ${iop_configuration.requests},
     .fragments              = fragments,
     .fragment_count         = ${iop_configuration.requests},
+    .time_to_live           = 5,
 
     .physical_devices       = {
         .length             = ${len(iop_configuration.physical_devices)},
