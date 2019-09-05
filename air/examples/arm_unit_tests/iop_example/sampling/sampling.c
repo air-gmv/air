@@ -38,7 +38,7 @@ void error_message(RETURN_CODE_TYPE rc){
 void test(PARTITION_ID_TYPE self_id) {
 
     //int i = 0, offset = 0;;
-    char sample[3] = "S0 ";
+    char sample[200] = "123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789\n";
     /* get the number of ticks per second */
     air_u32_t us_per_tick = air_syscall_get_us_per_tick();
     air_u32_t tps = 1000000 / us_per_tick;
@@ -49,8 +49,16 @@ void test(PARTITION_ID_TYPE self_id) {
     RETURN_CODE_TYPE rc = NO_ERROR;
 
     while(1) {
+
+        RECEIVE_QUEUING_MESSAGE(qpid, INFINITE_TIME_VALUE, msg, &len, &rc );
+        if (rc == NO_ERROR)
+            pprintf ("Partition %d: %s\n", self_id, msg);
+        else
+            continue;
+
+
         //pprintf ("Partition sending: %s\n", sample);
-        WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )sample, 3, &rc );
+        WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )sample, 200, &rc );
         if (NO_ERROR != rc) {
             pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
             error_message(rc);
@@ -59,24 +67,18 @@ void test(PARTITION_ID_TYPE self_id) {
         //for(){}
 
         /*identify the string with an integer index*/
-        sample[1] += 1;
+        //sample[1] += 1;
 
         if (sample[1] == ':')
             sample[1] = '0';
 
         interval = tps * 0.7;
-
+        WRITE_SAMPLING_MESSAGE (SEND_PORT, '\n', 100, &rc );
         //pprintf("interval %i\n", interval);
         for(i=0; i<1024; i++){
             msg[i]='\0';
         }
 
-        RECEIVE_QUEUING_MESSAGE(qpid, INFINITE_TIME_VALUE, msg, &len, &rc );
-        if (rc == NO_ERROR)
-            pprintf ("Partition %d: %s\n", self_id, msg);
-        else
-            if(rc == INVALID_CONFIG)
-                pprintf ("Partition %d Overflow: %s\n", self_id, msg);
     }
 }
 
@@ -117,7 +119,7 @@ int entry_func() {
         pprintf("CREATE_QUEUING_PORT error %d\n", rc);
     }
 
-    /*
+/*
 #ifdef RTEMS48I
     if (RTEMS_SUCCESSFUL == rtems_task_create (name, 15, 4096, mode, mode_mask, &id)) {
         rtems_task_start (id, test, self_id);

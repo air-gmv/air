@@ -1,17 +1,15 @@
-/**
- *  @file
+/*
+ * Copyright (C) 2019  GMVIS Skysoft S.A.
  *
- *  COPYRIGHT (c) 2019
- *  GMV-SKYSOFT
- *
- *  @ingroup TASKS
- *
- *  @author trcpse
- *
- *  @brief Tasks that write and read from XUART
- *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
  */
-
+/**
+ * @file
+ * @author trcpse
+ * @brief UART support structures and function definitions
+ */
 #include <iop.h>
 #include <iop_mms.h>
 #include <iop_error.h>
@@ -33,10 +31,9 @@
 void xuart_writer(air_uptr_t arg){
 
     //iop_debug("\n :: IOP - UART-writer running!\n");
-
+    air_u32_t rc;
     /* get task physical device */
     iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
-
     /* initialize error chain (packets to be re-sent) */
     iop_chain_control error;
     iop_chain_initialize_empty(&error);
@@ -48,23 +45,24 @@ void xuart_writer(air_uptr_t arg){
     while (!iop_chain_is_empty(&pdev->sendqueue)) {
         iop_wrapper_t *wrapper = obtain_wrapper(&pdev->sendqueue);
         /* write to the device */
-        if (uart_driver->dev.write((iop_device_driver_t *)uart_driver,
-            wrapper) == AIR_SUCCESSFUL){
+        rc= uart_driver->dev.write((iop_device_driver_t *)uart_driver, wrapper);
+        if (rc == AIR_SUCCESSFUL){
             release_wrapper(wrapper);
             //iop_debug("xuart writer write successful");
 
+        } else if (rc == AIR_NOT_AVAILABLE) {    //FIFO is full
+            iop_chain_prepend(&pdev->sendqueue, &wrapper->node);
         } else {
             iop_debug("\n :: UART ERROR writing\n\n");
-            iop_chain_append(&error, &wrapper->node);
-            iop_raise_error(HW_WRITE_ERROR);
+            release_wrapper(wrapper);
+            break;
         }
     }
     /* re-queue failed transmissions */
-    while (!iop_chain_is_empty(&error)) {
+/*    while (!iop_chain_is_empty(&error)) {
         iop_wrapper_t *wrapper = obtain_wrapper(&error);
-        iop_chain_append(&pdev->sendqueue, &wrapper->node);
-    }
-
+        iop_chain_prepend(&pdev->sendqueue, &wrapper->node);
+    }*/
 }
 
 /**
