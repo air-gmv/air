@@ -29,29 +29,29 @@ extern "C" {
 #define UART_FIFO_MAX_SIZE              64
 
 typedef struct {
-    air_u32_t ctrl;
-    air_u32_t mode;
-    air_u32_t int_enable;
-    air_u32_t int_disable;
-    air_u32_t int_mask;
-    air_u32_t int_status;
-    air_u32_t baud_rate_gen;
-    air_u32_t rx_timeout;
-    air_u32_t rx_fifo_trigger;
-    air_u32_t modem_ctrl;
-    air_u32_t modem_status;
-    air_u32_t status;
-    air_u32_t tx_rx_fifo;
-    air_u32_t baud_rate_div;
-    air_u32_t flow_ctrl_delay;
-    air_u32_t reserved[2];
-    air_u32_t tx_fifo_trigger;
+    volatile air_u32_t ctrl;
+    volatile air_u32_t mode;
+    volatile air_u32_t int_enable;
+    volatile air_u32_t int_disable;
+    volatile air_u32_t int_mask;
+    volatile air_u32_t int_status;
+    volatile air_u32_t baud_rate_gen;
+    volatile air_u32_t rx_timeout;
+    volatile air_u32_t rx_fifo_trigger;
+    volatile air_u32_t modem_ctrl;
+    volatile air_u32_t modem_status;
+    volatile air_u32_t status;
+    volatile air_u32_t tx_rx_fifo;
+    volatile air_u32_t baud_rate_div;
+    volatile air_u32_t flow_ctrl_delay;
+    volatile air_u32_t reserved[2];
+    volatile air_u32_t tx_fifo_trigger;
 } uart_ctrl_t;
 
 typedef struct {
     uart_ctrl_t *reg;
 
-    air_u32_t BaudRate;
+    air_u32_t uart_open;
 
 } uart_priv;
 
@@ -159,7 +159,7 @@ air_u32_t iop_xuart_close(iop_device_driver_t *iop_dev, void *arg);
 
 uart_ctrl_t *define_uart(air_u32_t port);
 void arm_setup_xuart( uart_ctrl_t *uart, air_u32_t BaudRate);
-void arm_xuart_transmit(uart_ctrl_t *uart, char ch);
+air_u32_t arm_xuart_transmit(uart_ctrl_t *uart, char ch);
 void set_uart_mode(uart_ctrl_t *uart, char parity, int data_bits, int stop_bits);
 
 /*-----------------------------------------------------------------------*/

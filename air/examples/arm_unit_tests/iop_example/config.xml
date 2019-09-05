@@ -31,12 +31,27 @@
     </PartitionConfiguration>
   </Partition>
 
+  <!-- Partition 3
+  <Partition PartitionIdentifier="3" PartitionName="queuing"
+    Criticality="LEVEL_A" EntryPoint="entry_func" SystemPartition="false">
+    <Queuing_Port Name="aqueuing" Direction="DESTINATION" MaxMessageSize="1024" MaxNbMessages="32" />
+    <PartitionConfiguration Personality="BARE">
+      <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
+      <Devices></Devices>
+      <Cache>CODE; DATA</Cache>
+      <Memory Size="0x1000000" />
+      <Permissions>
+          FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+      </Permissions>
+    </PartitionConfiguration>
+  </Partition> -->
+
   <!-- Schedule 1 -->
   <Module_Schedule ScheduleIdentifier="1" ScheduleName="schedule"
     InitialModuleSchedule="true" MajorFrameSeconds="2">
-        <Partition_Schedule PartitionIdentifier="1" PartitionName="iop"
+    <Partition_Schedule PartitionIdentifier="1" PartitionName="iop"
       PeriodDurationSeconds="1.5" PeriodSeconds="2">
-      <Window_Schedule WindowIdentifier="3" PartitionPeriodStart="true"
+      <Window_Schedule WindowIdentifier="2" PartitionPeriodStart="true"
         WindowDurationSeconds="1.5" WindowStartSeconds="0.5"/>
     </Partition_Schedule>
     <Partition_Schedule PartitionIdentifier="2" PartitionName="sampling"
@@ -44,6 +59,11 @@
       <Window_Schedule WindowIdentifier="1" PartitionPeriodStart="true"
         WindowDurationSeconds="0.5"  WindowStartSeconds="0.0"/>
     </Partition_Schedule>
+    <!-- <Partition_Schedule PartitionIdentifier="3" PartitionName="queuing"
+      PeriodDurationSeconds="0.5" PeriodSeconds="2">
+      <Window_Schedule WindowIdentifier="2" PartitionPeriodStart="true"
+        WindowDurationSeconds="0.5"  WindowStartSeconds="1.5"/>
+    </Partition_Schedule> -->
  </Module_Schedule>
 
   <!-- Connection table  -->

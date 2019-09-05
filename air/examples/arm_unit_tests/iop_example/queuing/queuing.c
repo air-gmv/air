@@ -78,6 +78,6 @@ int entry_func() {
     if (NO_ERROR != rc){
             pprintf("SET_PARTITION_MODE error %d\n", rc);
     }
-
+    test(self_id);
     return 1;
 }
