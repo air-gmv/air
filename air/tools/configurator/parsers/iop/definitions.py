@@ -121,6 +121,7 @@ VALID_MILBUS_TYPE       = [ str, lambda x : x in [ 'A', 'B'] ]
 VALID_MILTYPE           = [ str, lambda x : x in [ 'BC_RT', 'RT_BC', 'RT_RT'] ]
 VALID_MILWCMODE_TYPE    = [ parserutils.str2int, lambda x : 0 <= x <= 32 ]
 VALID_MILTIME_TYPE      = [ parserutils.str2int, lambda x : 0 <= x <= 1000000 ]
+VALID_TIME_TO_LIVE      = [ parserutils.str2int, lambda x : 0 <= x <= 10 ]
 
 
 
