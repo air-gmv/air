@@ -161,9 +161,8 @@ void arm_setup_uart(air_u32_t BaudRate) {
 
 void arm_uart_transmit(char ch) {
 
-    while((uart->status & ARM_UART_STATUS_TXEMPTY) == 0);
+    while((uart->status & ARM_UART_STATUS_TXEMPTY) == 0); // Waits until txFIFO is empty
 
-    if ((uart->status & ARM_UART_STATUS_TXFULL) == 0) {
-        uart->tx_rx_fifo = ((air_u32_t)ch & 0xff);
-    }
+    uart->tx_rx_fifo = ((air_u32_t)ch & 0xff);
+
 }

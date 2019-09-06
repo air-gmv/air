@@ -61,6 +61,8 @@ air_u32_t iop_xuart_read(iop_device_driver_t *iop_dev, void *arg) {
     /*Current UART device*/
     iop_uart_device_t *device = (iop_uart_device_t *) iop_dev;
     uart_priv *pDev = (uart_priv *) (device->dev.driver);
+
+    pDev->uart_open=1;
     if(!(pDev->uart_open)){
         //iop_debug("Open error read");
         return AIR_DEVICE_ERROR;
@@ -137,11 +139,7 @@ air_u32_t iop_xuart_write(iop_device_driver_t *iop_dev, void *arg) {
     if((iop_buffer->payload_size)>sent_count){
         iop_buffer->payload_off+=sent_count;
         iop_buffer->payload_size-=sent_count;
-        /*  for(i=sent_count; i<=b_length; i++){
-            b[i-sent_count]=b[i];
-        }
-        b[i]='\0';*/
-
+        //iop_debug("\nFIFO FULL: New message = %s \n", get_payload(iop_buffer));
         return AIR_NOT_AVAILABLE;
     }
 
