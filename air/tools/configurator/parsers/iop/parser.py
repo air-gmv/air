@@ -624,6 +624,9 @@ class IOParser(object):
         xml = xml_parser.xmlOpen(os.path.join(air.WORKING_DIRECTORY, file_name), self.logger, None)
         if xml is None: return False
 
+        # parse optional field Time to Live
+        self.ttl = xml.parse_attr(TIME_TO_LIVE_ATTR, VALID_TIME_TO_LIVE, False, self.logger, self.ttl)
+
         # parse logical devices
         self.logger.event(1, LOG_EVENT_IOP_LDEVICES)
         xml_ldevices = xml.parse_tag(LOGICAL_DEVICE, 0, sys.maxint, self.logger)

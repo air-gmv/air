@@ -50,19 +50,15 @@ void xuart_writer(air_uptr_t arg){
             release_wrapper(wrapper);
             //iop_debug("xuart writer write successful");
 
-        } else if (rc == AIR_NOT_AVAILABLE) {    //FIFO is full
-            iop_chain_prepend(&pdev->sendqueue, &wrapper->node);
         } else {
-            iop_debug("\n :: UART ERROR writing\n\n");
-            release_wrapper(wrapper);
-            break;
+            if(rc == AIR_NOT_AVAILABLE)
+                iop_chain_prepend(&pdev->sendqueue, &wrapper->node);   //* re-queue failed transmissions. Time to live will manage the queue */
+            else{
+                iop_debug("\n:: Writer Error :: \n");
+                break;
+            }
         }
     }
-    /* re-queue failed transmissions */
-/*    while (!iop_chain_is_empty(&error)) {
-        iop_wrapper_t *wrapper = obtain_wrapper(&error);
-        iop_chain_prepend(&pdev->sendqueue, &wrapper->node);
-    }*/
 }
 
 /**

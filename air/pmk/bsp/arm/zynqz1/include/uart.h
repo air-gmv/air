@@ -24,23 +24,23 @@
 #define UART1_OFFSET                    0x00001000
 
 typedef struct {
-    air_u32_t ctrl;
-    air_u32_t mode;
-    air_u32_t int_enable;
-    air_u32_t int_disable;
-    air_u32_t int_mask;
-    air_u32_t int_status;
-    air_u32_t baud_rate_gen;
-    air_u32_t rx_timeout;
-    air_u32_t rx_fifo_trigger;
-    air_u32_t modem_ctrl;
-    air_u32_t modem_status;
-    air_u32_t status;
-    air_u32_t tx_rx_fifo;
-    air_u32_t baud_rate_div;
-    air_u32_t flow_ctrl_delay;
-    air_u32_t reserved[2];
-    air_u32_t tx_fifo_trigger;
+    volatile air_u32_t ctrl;
+    volatile air_u32_t mode;
+    volatile air_u32_t int_enable;
+    volatile air_u32_t int_disable;
+    volatile air_u32_t int_mask;
+    volatile air_u32_t int_status;
+    volatile air_u32_t baud_rate_gen;
+    volatile air_u32_t rx_timeout;
+    volatile air_u32_t rx_fifo_trigger;
+    volatile air_u32_t modem_ctrl;
+    volatile air_u32_t modem_status;
+    volatile air_u32_t status;
+    volatile air_u32_t tx_rx_fifo;
+    volatile air_u32_t baud_rate_div;
+    volatile air_u32_t flow_ctrl_delay;
+    volatile air_u32_t reserved[2];
+    volatile air_u32_t tx_fifo_trigger;
 } uart_t;
 
 #define ARM_UART_CTRL_RXRST             (1U << 0)
