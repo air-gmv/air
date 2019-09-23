@@ -1,14 +1,13 @@
-/* ============================================================================
- *  Copyright (C) GMVIS Skysoft S.A., 2013 - 2014
- * ============================================================================
- *  This file is part of the AIR - ARINC 653 Interface in RTEMS - Operating
- *  system.
- *  The license and distribution terms for this file may be found in the file
- *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.
- * ==========================================================================*/
+/*
+ * Copyright (C) 2018-2019  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
 /**
- * @file
- * @author pfnf
+ * @file virtualization_syscall.c
+ * @author lumm
  * @brief ARM virtualization system calls (PMK side)
  */
 
