@@ -6,26 +6,26 @@
  * air/LICENSE
  */
 /**
- * @file atomic.c
- * @author lumm
- * @brief Atomic type and atomic operations definitions
+ * \file atomic.c
+ * \author lumm
+ * \brief Atomic type and atomic operations definitions
  */
 
 #include <atomic.h>
 
 /**
- * @brief Number of spin locks to be used by the atomic operations
+ * \brief Number of spin locks to be used by the atomic operations
  */
 #define ATOMIC_HASH_SIZE                       (4)
 
 /**
- * @brief Spin lock hash function selector
+ * \brief Spin lock hash function selector
  */
 #define ATOMIC_HASH(a) \
         (&__atomic_hash[(((air_u32_t)a) >> 8) & (ATOMIC_HASH_SIZE - 1)])
 
 /**
- * @brief Array of spin locks to be used by the atomic operations
+ * \brief Array of spin locks to be used by the atomic operations
  */
 air_u32_t __atomic_hash[ATOMIC_HASH_SIZE] = { 0 };
 

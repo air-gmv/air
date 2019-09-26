@@ -6,13 +6,13 @@
  * air/LICENSE
  */
 /**
- * @file gic.h
- * @author lumm
- * @brief Zynq-Board Specifics for the int Controller
+ * \file gic.h
+ * \author lumm
+ * \brief Zynq-Board Specifics for the int Controller
  */
 
-#ifndef ARM_ZYNQ_Z1_GIC_H
-#define ARM_ZYNQ_Z1_GIC_H
+#ifndef GIC_H_
+#define GIC_H_
 
 #include <air_arch.h>
 #include <gic-irq.h>
@@ -145,4 +145,4 @@ void gic_init(air_u32_t cpu_id);
 void arm_generate_swi(air_u32_t cpu_filter,
         air_u32_t cpu_list, air_u32_t nonsecure, air_u32_t sgi_id);
 
-#endif /* ARM_ZYNQ_Z1_GIC_H */
+#endif /* GIC_H_ */

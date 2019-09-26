@@ -6,9 +6,9 @@
  * air/LICENSE
  */
 /**
- * @file gic.c
- * @author lumm
- * @brief Interrupt Controller routines.
+ * \file gic.c
+ * \author lumm
+ * \brief Interrupt Controller routines.
  * SGIs are always enabled on the Zynq board, and writes and reads to the
  * Set-Enable Register (ICDISER) Clear-Enable Register (ICDICER) are
  * pointless. SPIs and PPIs are disabled by default.
@@ -56,7 +56,7 @@ void gic_init(air_u32_t cpu_id) {
         arm_int_set_target(id, TARGET_DEFAULT);
     }
 
-    /* See the gicv2 for an indepth explanation of the following fields */
+    /* See the gicv1 for an indepth explanation of the following fields */
     air_u32_t int_mask = 0xff; /* all interrupts accepted */
     arm_set_int_mask(int_mask);
 

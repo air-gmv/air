@@ -6,9 +6,9 @@
  * air/LICENSE
  */
 /**
- * @file cpu.c
- * @author lumm
- * @brief Contains the PMK abstractions to handle the ARM processor context
+ * \file cpu.c
+ * \author lumm
+ * \brief Contains the PMK abstractions to handle the ARM processor context
  */
 
 #include <cpu.h>
@@ -19,15 +19,17 @@
 #include <printk.h>
 #endif
 
-/* stacks for the various modes */
+/**
+ * \brief This is the stack used by the multiple ARM operating modes
+ *
+ * \note
+ * Separate sizes can be changed in cpu.h
+ */
 air_u8_t air_stack[STACK_SIZE * PMK_MAX_CORES];
 
 /**
- * @brief Initializes the core context
- * @param context the core context to be initialized
- * @param id virtual core id;
- *
- * This function initializes the architecture dependent part of the core context
+ * This function initializes the architecture dependent part of the core
+ * context
  */
 void core_context_init(core_context_t *context, air_u32_t id) {
 
@@ -82,9 +84,6 @@ void core_context_init(core_context_t *context, air_u32_t id) {
 }
 
 /**
- * @brief Setups an idle context
- * @param context the core context to be set as idle
- *
  * This function setups a core context the architecture dependent part of
  * an idle context
  */
@@ -122,9 +121,8 @@ void core_context_setup_idle(core_context_t *context) {
 }
 
 /**
- * @brief Setups a core partition context
- * @param partition partition information
- * @param context core context
+ * This function setups a core context with the architecture dependent
+ * configuration for a partition
  */
 void core_context_setup_partition(
         core_context_t *context, pmk_partition_t *partition){
@@ -192,29 +190,15 @@ void core_context_setup_partition(
 }
 
 /**
- * @brief Setups a reload partition context
- * @param partition the partition to be reloaded
- * @param context the core context responsible for the reload
- *
- * This function setups a core context the architecture dependent part of
+ * TODO This function setups a core context the architecture dependent part of
  * an reload context
  */
-void core_context_setup_reload_partition(
-        core_context_t *context, pmk_partition_t *partition) {
+void core_context_setup_reload_partition(core_context_t *context, pmk_partition_t *partition) {
 
 
 }
 
-/**
- * @brief Flag an HM event on a core context
- * @param context core context
- * @param state_id current system state
- * @param error_id current error Id
- */
-void core_context_add_hm_event(
-        core_context_t *context,
-        air_state_e state_id,
-        air_error_e error_id) {
+void core_context_add_hm_event(core_context_t *context, air_state_e state_id, air_error_e error_id) {
 
     /* get the current core HM event */
     pmk_hm_event_t *hm_event = (pmk_hm_event_t *)context->hm_event;

@@ -6,13 +6,13 @@
  * air/LICENSE
  */
 /**
- * @file isr.h
- * @author lumm
- * @brief Interrupt Service Handler
+ * \file isr.h
+ * \author lumm
+ * \brief Interrupt Service Routine definitions
  */
 
-#ifndef ARM_ISR_H
-#define ARM_ISR_H
+#ifndef ISR_H_
+#define ISR_H_
 
 #include <air_arch.h>
 #include <armv7.h>
@@ -36,4 +36,4 @@ air_uptr_t arm_isr_install_handler(air_u32_t vector, void *handler);
 
 void arm_restore_fpu(arm_vfp_context_t *vfp_context);
 
-#endif /* ARM_ISR_H */
+#endif /* ISR_H_ */

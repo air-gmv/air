@@ -6,13 +6,13 @@
  * air/LICENSE
  */
 /**
- * @file bsp.h
- * @author lumm
- * @brief bsp headers and inline assembly functions.
+ * \file bsp.h
+ * \author lumm
+ * \brief bsp headers and inline assembly functions.
  */
 
-#ifndef ARM_BSP_H
-#define ARM_BSP_H
+#ifndef BSP_H_
+#define BSP_H_
 
 #ifndef ASM
 

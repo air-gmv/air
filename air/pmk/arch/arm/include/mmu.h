@@ -6,13 +6,13 @@
  * air/LICENSE
  */
 /**
- * @file mmu.h
- * @author lumm
- * @brief ARM virtualization MMU tables
+ * \file mmu.h
+ * \author lumm
+ * \brief ARM virtualization MMU tables
  */
 
-#ifndef ARM_MMU_H
-#define ARM_MMU_H
+#ifndef MMU_H_
+#define MMU_H_
 
 #include <air_arch.h>
 #include <armv7.h>
@@ -41,7 +41,7 @@
 #define TTBCR_PD            0 /* if tbl miss performs a table walk. 0 -> performs walk */
 
 /*************************** page related functions ***************************
- * @brief Paging functions
+ * \brief Paging functions
  *      Small page will have 4K and be on the level 2 page
  *      Big page (section) will be on 1st level and has 1MB
  */
@@ -59,7 +59,7 @@
 #define VA2L2TABLE(address) ((address & 0x000ff000) >> 12)
 
 /**
- * @brief Descriptor properties
+ * \brief Descriptor properties
  */
 #define MMU_L1              0x0
 #define MMU_L2              0x1
@@ -138,4 +138,4 @@ air_u32_t arm_copy_from_user(
         arm_core_context_t *core_ctx, void *dst, void *src, air_sz_t size);
 air_uptr_t arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr);
 
-#endif /* ARM_MMU_H */
+#endif /* MMU_H_ */

@@ -6,16 +6,28 @@
  * air/LICENSE
  */
 /**
- * @file segregation.h
- * @author lumm
- * @brief BSP segregation
+ * \file bsp_segregation.h
+ * \author lumm
+ * \brief BSP segregation
  */
 
-#ifndef ARM_SEGREGATION_H
-#define ARM_SEGREGATION_H
+#ifndef BSP_SEGREGATION_H_
+#define BSP_SEGREGATION_H_
 
 #include <partition.h>
 
 void bsp_segregation(pmk_partition_t *partition);
 
-#endif /* ARM_SEGREGATION_H */
+/**
+ * \brief Saves the core context
+ * \param core_ctrl control control pointer
+ */
+void arm_core_context_save(pmk_core_ctrl_t *core);
+
+/**
+ * \brief Restores the core context
+ * \param core_ctrl control control pointer
+ */
+void arm_core_context_restore(pmk_core_ctrl_t *core);
+
+#endif /* BSP_SEGREGATION_H_ */

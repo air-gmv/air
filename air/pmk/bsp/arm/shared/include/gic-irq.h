@@ -6,9 +6,9 @@
  * air/LICENSE
  */
 /**
- * @file gic-irq.h
- * @author lumm
- * @brief Interrupt Controller (IC) Interrupt Requests (IRQ)
+ * \file gic-irq.h
+ * \author lumm
+ * \brief Interrupt Controller (IC) Interrupt Requests (IRQ)
  */
 
 #ifndef ARM_SHARED_GIC_IRQ_H

@@ -6,13 +6,13 @@
  * air/LICENSE
  */
 /**
- * @file svc.h
- * @author lumm
- * @brief SVC
+ * \file svc.h
+ * \author lumm
+ * \brief Supervisor Calls definitions
  */
 
-#ifndef ARM_SVC_H
-#define ARM_SVC_H
+#ifndef SVC_H_
+#define SVC_H_
 
 #include <air_arch.h>
 #include <armv7.h>
@@ -45,4 +45,4 @@ air_u64_t arm_syscall_get_elapsed_ticks(pmk_core_ctrl_t *core);
 /**************************** function declarations ***************************/
 void arm_svc_handler(air_u32_t svc_id, pmk_core_ctrl_t *core, arm_supervisor_stack_frame_t *frame);
 
-#endif /* ARM_SVC_H */
+#endif /* SVC_H_ */

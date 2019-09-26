@@ -6,19 +6,19 @@
  * air/LICENSE
  */
 /**
- * @file atomic.h
- * @author lumm
- * @brief Atomic type and atomic operations definitions
+ * \file atomic.h
+ * \author lumm
+ * \brief Atomic type and atomic operations definitions
  */
 
-#ifndef ARM_ATOMIC_H
-#define ARM_ATOMIC_H
+#ifndef ATOMIC_H_
+#define ATOMIC_H_
 
 #include <air_arch.h>
 #include <lock.h>
 
 /**
- * @brief ARM atomic integer
+ * \brief ARM atomic integer
  */
 typedef struct { volatile int value; } atomic_t;
 
@@ -50,4 +50,4 @@ air_i32_t arm_atomic_xor(air_i32_t i, atomic_t *v);
 #define atomic_fetch_and(i, v)          (arm_atomic_and((int)(i), (v)))
 #define atomic_fetch_xor(i, v)          (arm_atomic_xor((int)(i), (v)))
 
-#endif /* ARM_ATOMIC_H */
+#endif /* ATOMIC_H_ */

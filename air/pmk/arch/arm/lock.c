@@ -6,9 +6,10 @@
  * air/LICENSE
  */
 /**
- * @file atomic.c
- * @author lumm
- * @brief Atomic type and atomic operations definitions
+ * \file lock.c
+ * \author lumm
+ * \brief lock operations
+ *
  * TODO do this right. possibly PIL has to be used
  */
 
@@ -46,8 +47,6 @@ air_u32_t arm_unlock(air_uptr_t hash, air_u32_t pil) {
     arm_restore_preemption(pil);
     return 0;
 }
-
-
 
 air_u32_t arm_save_preemption(void) {
 

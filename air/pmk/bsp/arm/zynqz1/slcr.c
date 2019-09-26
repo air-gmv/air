@@ -6,9 +6,9 @@
  * air/LICENSE
  */
 /**
- * @file slcr.c
- * @author trcpse
- * @brief functions to handle the slcr
+ * \file slcr.c
+ * \author trcpse
+ * \brief functions to handle the slcr
  *
  */
 

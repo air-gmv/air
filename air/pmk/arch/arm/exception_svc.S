@@ -6,14 +6,12 @@
  * air/LICENSE
  */
 /**
- * @file
- * @author lumm
- * @brief SVC handler
+ * \file exception_svc.S
+ * \author lumm
+ * \brief SVC handler
  *
  * saves return status and global registers in system stack and branches
- *  to svc routine
- *
- * TODO r4 might not have the 4th passed parameter
+ * to svc routine
  */
 
 #ifndef ASM
