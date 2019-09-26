@@ -20,6 +20,11 @@ extern "C" {
 #endif
 
 /**
+ * \brief force inline
+ */
+#define __FORCE_INLINE __attribute__((always_inline)) inline
+
+/**
  * \brief NULL pointer
  */
 #define NULL ((void *)0)

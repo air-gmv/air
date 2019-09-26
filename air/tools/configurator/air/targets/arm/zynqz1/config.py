@@ -60,6 +60,7 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     # Arch files
     'arch/arm/start.S',                           # entry point must be the 1st on the list
     'arch/arm/atomic.c',
+    'arch/arm/cache.c',
     'arch/arm/context_switch.c',
     'arch/arm/cpu.c',
     'arch/arm/exception_hm.S',
