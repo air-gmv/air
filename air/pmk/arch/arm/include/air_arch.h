@@ -94,11 +94,6 @@ typedef unsigned long *air_uptr_t;
  **/
 typedef unsigned long air_isr_level_t;
 
-/**
- * @brief Boolean
- */
-#define false   0
-#define true    1
 
 /**************** ARM paravirtualization syscalls declarations ****************/
 /**
