@@ -26,65 +26,6 @@
  */
 void arm_hm_init(void) {}
 
-air_uptr_t arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
-
-    arm_virtual_cpu_t *vcpu = &core->context->vcpu;
-
-    air_u32_t psr = vcpu->psr;
-    air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
-    air_uptr_t vbar = vcpu->vbar;
-
-#ifdef PMK_DEBUG_HM
-    printk("entered partition_hm_handler. vbar = 0x%x, vbar+4 = 0x%x, vpsr = 0x%x\n", (int)vbar, (int)(vbar+4), psr);
-#endif
-
-    if (vbar == NULL)
-        return NULL;
-
-    if (!psr_a) {
-
-        pmk_hm_event_t *hm_event = (pmk_hm_event_t *)core->context->hm_event;
-        if (hm_event->nesting > 0) {
-
-            vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
-
-#ifdef PMK_DEBUG_HM
-            printk("psr(A|I) = 0x%x, hm_event->error_id = %d\n", vcpu->psr, hm_event->error_id);
-#endif
-
-            switch (hm_event->error_id) {
-            case AIR_POWER_ERROR:
-                return vbar + 0;
-
-            case AIR_UNIMPLEMENTED_ERROR:
-                return vbar + 1;
-
-            case AIR_VIOLATION_ERROR:
-                return vbar + 3;
-
-            case AIR_SEGMENTATION_ERROR:
-                return vbar + 4;
-
-            case AIR_IO_ERROR:
-                // TODO not sure in this case
-                return vbar + 6;
-
-            case AIR_FLOAT_ERROR:
-                arm_restore_fpu(((arm_interrupt_stack_frame_t *)(core->context->isf_pointer))->vfp_context);
-                arm_syscall_rett(core);
-                return NULL;
-
-            case AIR_ARITHMETIC_ERROR: //overflow
-            case AIR_DIVISION_BY_0_ERROR: // /0
-            default:
-                return NULL;
-            }
-        }
-    }
-
-    return NULL;
-}
-
 air_uptr_t arm_hm_handler(arm_exception_e id, air_u32_t fsr, air_u32_t far, air_u32_t *instr) {
 
     pmk_core_ctrl_t *core = (pmk_core_ctrl_t *)arm_cp15_get_Per_CPU();
@@ -161,4 +102,63 @@ air_uptr_t arm_hm_handler(arm_exception_e id, air_u32_t fsr, air_u32_t far, air_
 #endif
 
     return ret;
+}
+
+air_uptr_t arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
+
+    arm_virtual_cpu_t *vcpu = &core->context->vcpu;
+
+    air_u32_t psr = vcpu->psr;
+    air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
+    air_uptr_t vbar = vcpu->vbar;
+
+#ifdef PMK_DEBUG_HM
+    printk("entered partition_hm_handler. vbar = 0x%x, vbar+4 = 0x%x, vpsr = 0x%x\n", (int)vbar, (int)(vbar+4), psr);
+#endif
+
+    if (vbar == NULL)
+        return NULL;
+
+    if (!psr_a) {
+
+        pmk_hm_event_t *hm_event = (pmk_hm_event_t *)core->context->hm_event;
+        if (hm_event->nesting > 0) {
+
+            vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
+
+#ifdef PMK_DEBUG_HM
+            printk("psr(A|I) = 0x%x, hm_event->error_id = %d\n", vcpu->psr, hm_event->error_id);
+#endif
+
+            switch (hm_event->error_id) {
+            case AIR_POWER_ERROR:
+                return vbar + 0;
+
+            case AIR_UNIMPLEMENTED_ERROR:
+                return vbar + 1;
+
+            case AIR_VIOLATION_ERROR:
+                return vbar + 3;
+
+            case AIR_SEGMENTATION_ERROR:
+                return vbar + 4;
+
+            case AIR_IO_ERROR:
+                // TODO not sure in this case
+                return vbar + 6;
+
+            case AIR_FLOAT_ERROR:
+                arm_restore_fpu(((arm_interrupt_stack_frame_t *)(core->context->isf_pointer))->vfp_context);
+                arm_syscall_rett(core);
+                return NULL;
+
+            case AIR_ARITHMETIC_ERROR: //overflow
+            case AIR_DIVISION_BY_0_ERROR: // /0
+            default:
+                return NULL;
+            }
+        }
+    }
+
+    return NULL;
 }

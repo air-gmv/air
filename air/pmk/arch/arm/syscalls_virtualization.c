@@ -6,7 +6,7 @@
  * $(AIR_GIT_REMOTE_URL)/AIR/AIR/raw/master/air/LICENSE
  */
 /**
- * \file virtualization_syscall.c
+ * \file syscalls_virtualization.c
  * \author lumm
  * \brief ARM virtualization system calls (PMK side)
  */
