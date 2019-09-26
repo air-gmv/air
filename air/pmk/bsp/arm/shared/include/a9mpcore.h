@@ -6,17 +6,17 @@
  * air/LICENSE
  */
 /**
- * \file arm_a9mpcore.h
+ * \file a9mpcore.h
  * \author lumm
  * \brief A9MPCore specifics. Refer to the ARM® Cortex-A9 MPCore TRM
  */
 
-#ifndef ARM_A9MPCORE_H
-#define ARM_A9MPCORE_H
+#ifndef A9MPCORE_H_
+#define A9MPCORE_H_
 
 #include <air_arch.h>
 #include <armv7.h>
-#include <arm_cp15.h>
+#include <cp15.h>
 #include <bsp.h>
 
 #define CTRL_SCU_EN                 (1U << 0)
@@ -111,4 +111,4 @@ static inline void arm_a9mpcore_start_hook(void) {
 }
 
 
-#endif /* ARM_A9MPCORE_H */
+#endif /* A9MPCORE_H_ */

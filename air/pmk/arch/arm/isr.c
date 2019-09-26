@@ -22,122 +22,11 @@ typedef void (*isr)(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core);
 
 air_uptr_t arm_isr_handler_table[ZYNQ_MAX_INT];
 
-void arm_isr_default_handler(arm_interrupt_stack_frame_t *frame,
-        pmk_core_ctrl_t *core) {
-
-    air_u32_t ack = arm_acknowledge_int();
-
-    air_u16_t id = (ack & 0x3ff);
-
-#ifdef PMK_DEBUG_ISR
-    printk("\n  :: IRQ #%d acknowledge\n\n", id);
-#endif
-    arm_end_of_int(ack);
-}
-
-air_uptr_t arm_isr_install_handler(air_u32_t vector, void *handler) {
-
-    air_uptr_t old_handler = (air_uptr_t)arm_isr_handler_table[vector];
-
-    if (handler != old_handler) {
-        arm_isr_handler_table[vector] = (air_uptr_t)handler;
-    }
-    return old_handler;
-}
-
 void arm_isr_table_init(void) {
 
     for (air_u32_t i = 0; i < arm_get_int_count(); ++i) {
         arm_isr_install_handler(i, arm_isr_default_handler);
     }
-}
-
-air_uptr_t arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
-
-    air_uptr_t ret = NULL;
-
-    arm_virtual_cpu_t *vcpu = &core->context->vcpu;
-    arm_virtual_gic_t *vgic = &core->context->vgic;
-
-    air_u32_t psr = vcpu->psr;
-    air_u32_t psr_i = ((psr & ARM_PSR_I) >> 7);
-    air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
-    air_uptr_t vbar = vcpu->vbar;
-
-    if (vbar == NULL)
-        return ret;
-
-    /* abort have higher priority than IRQ, soo if any pending and cpu is accepting they go 1st */
-    if (!psr_a) {
-
-        pmk_hm_event_t *hm_event = (pmk_hm_event_t *)core->context->hm_event;
-        if (hm_event->nesting > 0) {
-
-            vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
-
-            switch (hm_event->error_id) {
-            case AIR_UNIMPLEMENTED_ERROR:
-                ret = vbar + 1;
-                break;
-
-            case AIR_VIOLATION_ERROR:
-                ret = vbar + 3;
-                break;
-
-            case AIR_SEGMENTATION_ERROR:
-                ret = vbar + 4;
-                break;
-
-            case AIR_IO_ERROR:
-                // TODO not sure in this case
-                ret = vbar + 6;
-                break;
-
-            default:
-                ret = NULL;
-                break;
-            }
-        }
-
-        if (ret != NULL) {
-            vgic->ilist[id] |= (1U << 28);
-            return ret;
-        }
-    }
-
-    if (!psr_i) {
-
-        if ((vgic->vm_ctrl & 0x1)) {
-
-            if (((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) {
-
-                vgic->hppir = vgic->rpr;
-                vgic->ilist[(vgic->iar & 0x3ff)] &= ~(1U << 29);
-                vgic->ilist[(vgic->iar & 0x3ff)] |= (1U << 28);
-
-                vgic->iar = ((core->idx << 10) & id);
-                vgic->rpr = ((vgic->ilist[id] >> 23) & 0x1f);
-
-                vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
-
-                ret = vbar + 6;
-            } else {
-
-                vgic->ilist[id] |= (1U << 28);
-                if (((vgic->ilist[id] >> 23) & 0x1f) < ((vgic->ilist[(vgic->hppir & 0x3ff)] >> 23) & 0x1f)) {
-                    vgic->hppir = ((vgic->ilist[id] >> 23) & 0x1f);
-                }
-            }
-        }
-    } else {
-
-        vgic->ilist[id] |= (1U << 28);
-        if (((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) {
-            vgic->hppir = ((vgic->ilist[id] >> 23) & 0x1f);
-        }
-    }
-
-    return ret;
 }
 
 #ifdef PMK_DEBUG_ISR
@@ -267,3 +156,113 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
     return ret;
 }
 
+void arm_isr_default_handler(arm_interrupt_stack_frame_t *frame,
+        pmk_core_ctrl_t *core) {
+
+    air_u32_t ack = arm_acknowledge_int();
+
+    air_u16_t id = (ack & 0x3ff);
+
+#ifdef PMK_DEBUG_ISR
+    printk("\n  :: IRQ #%d acknowledge\n\n", id);
+#endif
+    arm_end_of_int(ack);
+}
+
+air_uptr_t arm_isr_install_handler(air_u32_t vector, void *handler) {
+
+    air_uptr_t old_handler = (air_uptr_t)arm_isr_handler_table[vector];
+
+    if (handler != old_handler) {
+        arm_isr_handler_table[vector] = (air_uptr_t)handler;
+    }
+    return old_handler;
+}
+
+air_uptr_t arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
+
+    air_uptr_t ret = NULL;
+
+    arm_virtual_cpu_t *vcpu = &core->context->vcpu;
+    arm_virtual_gic_t *vgic = &core->context->vgic;
+
+    air_u32_t psr = vcpu->psr;
+    air_u32_t psr_i = ((psr & ARM_PSR_I) >> 7);
+    air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
+    air_uptr_t vbar = vcpu->vbar;
+
+    if (vbar == NULL)
+        return ret;
+
+    /* abort have higher priority than IRQ, soo if any pending and cpu is accepting they go 1st */
+    if (!psr_a) {
+
+        pmk_hm_event_t *hm_event = (pmk_hm_event_t *)core->context->hm_event;
+        if (hm_event->nesting > 0) {
+
+            vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
+
+            switch (hm_event->error_id) {
+            case AIR_UNIMPLEMENTED_ERROR:
+                ret = vbar + 1;
+                break;
+
+            case AIR_VIOLATION_ERROR:
+                ret = vbar + 3;
+                break;
+
+            case AIR_SEGMENTATION_ERROR:
+                ret = vbar + 4;
+                break;
+
+            case AIR_IO_ERROR:
+                // TODO not sure in this case
+                ret = vbar + 6;
+                break;
+
+            default:
+                ret = NULL;
+                break;
+            }
+        }
+
+        if (ret != NULL) {
+            vgic->ilist[id] |= (1U << 28);
+            return ret;
+        }
+    }
+
+    if (!psr_i) {
+
+        if ((vgic->vm_ctrl & 0x1)) {
+
+            if (((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) {
+
+                vgic->hppir = vgic->rpr;
+                vgic->ilist[(vgic->iar & 0x3ff)] &= ~(1U << 29);
+                vgic->ilist[(vgic->iar & 0x3ff)] |= (1U << 28);
+
+                vgic->iar = ((core->idx << 10) & id);
+                vgic->rpr = ((vgic->ilist[id] >> 23) & 0x1f);
+
+                vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
+
+                ret = vbar + 6;
+            } else {
+
+                vgic->ilist[id] |= (1U << 28);
+                if (((vgic->ilist[id] >> 23) & 0x1f) < ((vgic->ilist[(vgic->hppir & 0x3ff)] >> 23) & 0x1f)) {
+                    vgic->hppir = ((vgic->ilist[id] >> 23) & 0x1f);
+                }
+            }
+        }
+    } else {
+
+        vgic->ilist[id] |= (1U << 28);
+        if (((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) {
+            vgic->hppir = ((vgic->ilist[id] >> 23) & 0x1f);
+        }
+    }
+
+    return ret;
+}

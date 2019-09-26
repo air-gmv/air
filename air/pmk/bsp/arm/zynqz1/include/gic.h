@@ -15,9 +15,7 @@
 #define GIC_H_
 
 #include <air_arch.h>
-#include <gic-irq.h>
-#include <gic-pl390.h>
-#include <gic-zynq.h>
+#include <gicv1.h>
 #include <bsp.h>
 
 static volatile ic_distributor_t *ic_dist = (ic_distributor_t *)IC_DIST_BASE_MEMORY;

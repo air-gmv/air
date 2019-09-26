@@ -22,8 +22,8 @@
 
 #include <air_arch.h>
 #include <armv7.h>
-#include <arm_a9mpcore.h>
-#include <arm_cp15.h>
+#include <a9mpcore.h>
+#include <cp15.h>
 #include <isr.h>
 #include <svc.h>
 #include <mmu.h>
