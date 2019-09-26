@@ -6,9 +6,11 @@
  * $(AIR_GIT_REMOTE_URL)/AIR/AIR/raw/master/air/LICENSE
  */
 /**
- * @file asm_offsets.h
- * @author lumm
- * @brief Offset determination for assembly code
+ * \file asm_offets.c
+ * \author lumm
+ * \brief Determines the offsets within C structs used by assembly code
+ *
+ * \note used only by the configurator, not included in pmk.a
  */
 
 #include <air_arch.h>

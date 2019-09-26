@@ -6,9 +6,9 @@
  * $(AIR_GIT_REMOTE_URL)/AIR/AIR/raw/master/air/LICENSE
  */
 /**
- * @file gic-zynq.h
- * @author lumm
- * @brief Zynq-Board Specifics for the Interrupt Controller
+ * \file gic-zynq.h
+ * \author lumm
+ * \brief Zynq-Board Specifics for the Interrupt Controller
  */
 
 #ifndef ARM_SHARED_GIC_ZYNQ_H

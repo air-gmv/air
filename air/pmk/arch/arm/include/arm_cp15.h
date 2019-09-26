@@ -6,9 +6,9 @@
  * $(AIR_GIT_REMOTE_URL)/AIR/AIR/raw/master/air/LICENSE
  */
 /**
- * @file arm_cp15.h
- * @author lumm
- * @brief CP15 System Control Coprocessor
+ * \file arm_cp15.h
+ * \author lumm
+ * \brief CP15 System Control Coprocessor
  */
 
 #ifndef ARM_CP15_H

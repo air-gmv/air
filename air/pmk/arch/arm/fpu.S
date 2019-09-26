@@ -6,12 +6,11 @@
  * $(AIR_GIT_REMOTE_URL)/AIR/AIR/raw/master/air/LICENSE
  */
 /**
- * @file fpu.S
- * @author lumm
- * @brief FPU lazy switching
+ * \file fpu.S
+ * \author lumm
+ * \brief FPU lazy switching
  */
 
-/* Are we in assembly file */
 #ifndef ASM
 #define ASM
 #endif

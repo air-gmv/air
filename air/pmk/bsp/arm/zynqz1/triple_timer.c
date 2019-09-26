@@ -6,9 +6,9 @@
  * $(AIR_GIT_REMOTE_URL)/AIR/AIR/raw/master/air/LICENSE
  */
 /**
- * @file tripe_timer.c
- * @author lumm
- * @brief Triple Timer Counters (TTC)
+ * \file tripe_timer.c
+ * \author lumm
+ * \brief Triple Timer Counters (TTC)
  */
 
 #include <isr.h>

@@ -6,9 +6,9 @@
  * $(AIR_GIT_REMOTE_URL)/AIR/AIR/raw/master/air/LICENSE
  */
 /**
- * @file uart.c
- * @author lumm
- * @brief UART setup and handler functions.
+ * \file uart.c
+ * \author lumm
+ * \brief UART setup and handler functions.
  */
 
 #include <uart.h>
