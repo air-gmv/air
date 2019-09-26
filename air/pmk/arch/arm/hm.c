@@ -6,9 +6,11 @@
  * air/LICENSE
  */
 /**
- * @file
- * @author lumm
- * @brief exception_handlers and default
+ * \file hm.c
+ * \author lumm
+ * \brief Health Monitor handler
+ *
+ * TODO better undef logic
  */
 
 #include <armv7.h>
@@ -18,6 +20,10 @@
 #include <printk.h>
 #endif
 
+/**
+ * the PMK will call a cpu_hm_init(), so it is here for compatibility and
+ * future is necessary
+ */
 void arm_hm_init(void) {}
 
 air_uptr_t arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {

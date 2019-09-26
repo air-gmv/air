@@ -6,9 +6,9 @@
  * air/LICENSE
  */
 /**
- * @file svc_handler.c
- * @author lumm
- * @brief exception_handlers and default
+ * \file svc.c
+ * \author lumm
+ * \brief Supervisor Call handlers
  */
 
 #include <svc.h>

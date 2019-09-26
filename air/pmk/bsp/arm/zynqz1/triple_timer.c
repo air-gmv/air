@@ -6,9 +6,9 @@
  * air/LICENSE
  */
 /**
- * @file tripe_timer.c
- * @author lumm
- * @brief Triple Timer Counters (TTC)
+ * \file tripe_timer.c
+ * \author lumm
+ * \brief Triple Timer Counters (TTC)
  */
 
 #include <isr.h>

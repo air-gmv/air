@@ -6,13 +6,13 @@
  * air/LICENSE
  */
 /**
- * @file lock.h
- * @author lumm
- * @brief lock function definitions
+ * \file lock.h
+ * \author lumm
+ * \brief lock function definitions
  */
 
-#ifndef ARM_LOCK_H
-#define ARM_LOCK_H
+#ifndef LOCK_H_
+#define LOCK_H_
 
 #include <armv7.h>
 
@@ -22,4 +22,4 @@ air_u32_t arm_unlock(air_uptr_t hash, air_u32_t pil);
 air_u32_t arm_save_preemption(void);
 void arm_restore_preemption(air_u32_t pil);
 
-#endif /* ARM_LOCK_H */
+#endif /* LOCK_H_ */

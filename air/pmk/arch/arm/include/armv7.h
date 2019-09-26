@@ -6,18 +6,18 @@
  * air/LICENSE
  */
 /**
- * @file arm.h
- * @author lumm
- * @brief Arm macros and typedef definitions.
+ * \file armv7.h
+ * \author lumm
+ * \brief ARM macros and typedef definitions.
  */
 
-#ifndef ARM_ARMv7_H
-#define ARM_ARMv7_H
+#ifndef ARMV7_H_
+#define ARMV7_H_
 
 #define ARM_IRQ_COUNT       1024        /**< Maximum number of IRQs         */
 
 /**
- * @brief Program Status Register.
+ * \brief Program Status Register.
  * Each program mode has its own Saved PSR (SPSR). usr and sys shared theirs.
  */
 #define ARM_PSR_N           (1 << 31)   /**< Negative condition flag        */
@@ -48,27 +48,9 @@
 
 #ifdef ASM
 
-/* @brief If the bit 0 of the bx reg is 0 it will remain in ARM, if 1 it will
- * change to Thumb. The .thumb directive is for the assembler to compile the
- * following instructions as Thumb. Same way for .arm.
+/**
+ * \brief Size for the exception saved information. 20 uint32
  */
-.macro BL2C label
-#if defined(__thumb__)
-    blx     \label
-#else
-    bl      \label
-#endif
-.endm
-
-#if PMK_FPU_SUPPORT
-    #if defined(__ARM_NEON)
-        #define VFP_D32
-    #else
-        #define VFP_D16
-    #endif
-#endif
-
-/** @brief Size for the exception saved information. 20 uint32 */
 #define ARM_EXCEPTION_FRAME_SIZE                80
 #define ARM_EXCEPTION_FRAME_VFP_CONTEXT_OFFSET  72
 #define ARM_VFP_CONTEXT_SIZE                    264
@@ -87,36 +69,11 @@
 
 #else /* ASM */
 
-
 #include <air_arch.h>
 
-/* @brief Synchronization barries
- * TODO specific compiler optimizations
+/**
+ * \brief Possible exceptions identifiers
  */
-inline static void arm_instruction_synchronization_barrier(void) {
-#if defined(__CC_ARM)
-    __isb(15);
-#else
-    __asm__ volatile ("isb");
-#endif
-}
-
-inline static void arm_data_synchronization_barrier(air_u32_t intrinsic) {
-#if defined(__CC_ARM)
-    __dsb(intrinsic);
-#else
-    __asm__ volatile ("dsb");
-#endif
-}
-
-inline static void arm_data_memory_barrier(air_u32_t intrinsic) {
-#if defined(__CC_ARM)
-    __dmb(intrinsic);
-#else
-    __asm__ volatile ("dmb");
-#endif
-}
-
 typedef enum {
     ARM_EXCEPTION_RESET = 0,
     ARM_EXCEPTION_UNDEF = 1,
@@ -129,7 +86,7 @@ typedef enum {
 } arm_exception_e;
 
 /**
- * @brief Floating Point Unit (FPU) registers context
+ * \brief Floating Point Unit (FPU) registers context
  */
 typedef struct {
     air_u32_t fpexc;
@@ -169,7 +126,7 @@ typedef struct {
 } arm_vfp_context_t;
 
 /**
- * @brief Context saved on stack for an interrupt.
+ * \brief Context saved on stack for an interrupt.
  */
 typedef struct {
     air_u32_t r0;
@@ -195,7 +152,7 @@ typedef struct {
 } arm_interrupt_stack_frame_t;
 
 /**
- * @brief Context saved on stack for a supervisor call.
+ * \brief Context saved on stack for a supervisor call.
  */
 typedef struct {
     air_uptr_t sp;
@@ -207,7 +164,7 @@ typedef struct {
 } arm_supervisor_stack_frame_t;
 
 /**
- * @brief Virtual ARM CPU
+ * \brief Virtual ARM CPU
  */
 typedef struct {
     air_u32_t id;                       /**< virtual CPU id                 */
@@ -217,7 +174,7 @@ typedef struct {
 } arm_virtual_cpu_t;
 
 /**
- * @brief Virtual Interrupt Controller registers
+ * \brief Virtual Interrupt Controller registers
  * these are based on the version 2 of the GIC
  */
 typedef struct {
@@ -233,7 +190,7 @@ typedef struct {
 } arm_virtual_gic_t;
 
 /**
- * @brief Structure to hold a CPU partition context
+ * \brief Structure to hold a CPU partition context
  */
 typedef struct {
     arm_virtual_cpu_t vcpu;             /**< virtual CPU control            */
@@ -249,7 +206,7 @@ typedef struct {
 } arm_core_context_t;
 
 /**
- * @brief ARM MMU control
+ * \brief ARM MMU control
  */
 typedef struct {
     air_u32_t context;                  /**< context id for CONTEXTIDR      */
@@ -259,7 +216,7 @@ typedef struct {
 } arm_mmu_context_t;
 
 /**
- * @brief ARM MMU Configuration
+ * \brief ARM MMU Configuration
  */
 typedef struct {
     air_u32_t mmu_context_entries;
@@ -276,8 +233,35 @@ typedef struct {
 #define MAX_SVC MAX_SVC_A32
 #endif
 
-/****************************** CPU Register Access ***************************
- * @brief assembly inline functions to access cpu regs
+/**
+ * \brief Instruction synchronization barrier
+ *
+ * TODO specific compiler optimizations
+ */
+inline static void arm_instruction_synchronization_barrier(void) {
+    __asm__ volatile ("isb");
+}
+
+/**
+ * \brief Data synchronization barrier
+ *
+ * TODO specific compiler optimizations
+ */
+inline static void arm_data_synchronization_barrier(air_u32_t intrinsic) {
+    __asm__ volatile ("dsb");
+}
+
+/**
+ * \brief Data memory barrier
+ *
+ * TODO specific compiler optimizations
+ */
+inline static void arm_data_memory_barrier(air_u32_t intrinsic) {
+    __asm__ volatile ("dmb");
+}
+
+/**
+ * \brief assembly inline functions to access cpu regs
  */
 static inline void arm_disable_fpu(void) {
     air_u32_t reg = 0;
@@ -361,12 +345,8 @@ inline static air_u32_t arm_enable_preemption(void) {
     return irq_mask;
 }
 
-/******************************************************************************/
-/*********************** Assembly functions declaration ***********************/
-//void arm_core_context_save(void *core);
-//void arm_core_context_restore(void *core);
 
-//void arm_cp15_setup_Per_CPU(air_u32_t cpu_id);
+/* Assembly function declarations */
 void exception_undef(void);
 void exception_svc(void);
 void exception_pref_abort(void);
@@ -374,5 +354,5 @@ void exception_data_abort(void);
 void exception_irq(void);
 void exception_fiq(void);
 
-#endif /* not ASM */
-#endif /* ARM_ARMv7_H */
+#endif /* !ASM */
+#endif /* ARMV7_H_ */

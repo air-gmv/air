@@ -6,9 +6,9 @@
  * air/LICENSE
  */
 /**
- * @file mmu.c
- * @author lumm
- * @brief MMU configuration
+ * \file mmu.c
+ * \author lumm
+ * \brief MMU configuration
  */
 
 #include <bsp_segregation.h>
@@ -21,7 +21,7 @@ extern air_u32_t air_kernel_memory_start;
 extern air_u32_t air_kernel_memory_end;
 extern air_u32_t air_kernel_end;
 /**
- * @brief mmu setup for each partition containing pmk
+ * \brief mmu setup for each partition containing pmk
  */
 void bsp_segregation(pmk_partition_t *partition) {
 

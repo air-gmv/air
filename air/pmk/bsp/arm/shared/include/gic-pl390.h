@@ -6,9 +6,9 @@
  * air/LICENSE
  */
 /**
- * @file gic-pl390.h
- * @author lumm
- * @brief Interrupt Controller (IC) available to the CPU. Based on ARM® Generic
+ * \file gic-pl390.h
+ * \author lumm
+ * \brief Interrupt Controller (IC) available to the CPU. Based on ARM® Generic
   Interrupt Controller Architecture version 2.0 Architecture Specification and
   the PrimeCell Controller (PL390)
  */

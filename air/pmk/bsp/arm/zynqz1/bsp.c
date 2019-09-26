@@ -6,25 +6,30 @@
  * air/LICENSE
  */
 /**
- * @file bsp.c
- * @author lumm
- * @brief Bsp core routines.
+ * \file bsp.c
+ * \author lumm
+ * \brief BSP core routines
  */
 #include <bsp.h>
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif
 
+
+/**
+ * \warning
+ * Care should be taken that no shared levels are invalidated by secondary CPUs
+ * in SMP case. It is not problem on Zynq-700 because the level of coherency is
+ * L1 only and higher levels are not maintained and seen by the CP15. So no
+ * special care to limit levels on the secondary are required there.
+ */
 void bsp_start_hook(void) {
 
     air_u32_t sctlr = arm_cp15_get_system_control();
 
     /*
-    * Current U-boot loader seems to start kernel image
-    * with I and D caches on and MMU enabled.
-    * If RTEMS application image finds that cache is on
-    * during startup then disable caches.
-    */
+     * If the I and D caches on and MMU are enabled, then disable them
+     */
     if (sctlr & (ARM_SCTLR_I | ARM_SCTLR_C | ARM_SCTLR_M) ) {
         if ( sctlr & (ARM_SCTLR_C | ARM_SCTLR_M) ) {
             /*
@@ -42,18 +47,8 @@ void bsp_start_hook(void) {
     sctlr |= ARM_SCTLR_FI;
     arm_cp15_set_system_control(sctlr);
 
-
-    arm_cp15_instruction_cache_invalidate();
-
-    /*
-    * The care should be taken there that no shared levels
-    * are invalidated by secondary CPUs in SMP case.
-    * It is not problem on Zynq because level of coherency
-    * is L1 only and higher level is not maintained and seen
-    * by CP15. So no special care to limit levels on the secondary
-    * are required there. TODO understand
-    */
-    arm_cp15_data_cache_invalidate_all_levels();
+    arm_instruction_cache_invalidate();
+    arm_data_cache_invalidate_all_levels();
     arm_cp15_branch_predictor_invalidate_all();
     arm_cp15_tlb_invalidate();
 }

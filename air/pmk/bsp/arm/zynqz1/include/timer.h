@@ -6,19 +6,22 @@
  * air/LICENSE
  */
 /**
- * @file timer.h
- * @author lumm
- * @brief Timers defs
+ * \file timer.h
+ * \author lumm
+ * \brief Timers defs
  */
 
-#ifndef ARM_TIMER_H
-#define ARM_TIMER_H
+#ifndef TIMER_H_
+#define TIMER_H_
 
 #include <air_arch.h>
 
 /******************************** Global Timer *******************************/
 #define GT_BASE_MEMORY                  0xf8f00200
 
+/**
+ * \brief Global Timer
+ */
 #define ARM_GT_CTRL_TIMER_EN            (1U << 0)
 #define ARM_GT_CTRL_COMP_EN             (1U << 1)
 #define ARM_GT_CTRL_IRQ_EN              (1U << 2)
@@ -49,6 +52,9 @@ air_u32_t arm_determine_gt_prescaler(air_u32_t us_per_tick);
 #define TTC0_BASE_MEMORY                0xf8001000
 #define TTC1_BASE_MEMORY                0xf8002000
 
+/**
+ * \brief Triple Timer Counter
+ */
 #define ARM_TTC_CLK_CTRL_PS_EN          (1U << 0)
 #define ARM_TTC_CLK_CTRL_PS(val)        ((val & 0xf) << 1)
 #define ARM_TTC_CLK_CTRL_SRC            (1U << 5)
@@ -113,4 +119,4 @@ void arm_init_ttc(air_u32_t timer_id);
 void arm_start_ttc(air_u32_t timer_id);
 air_u32_t arm_read_ttc(void);
 
-#endif /* ARM_TIMER_H */
+#endif /* TIMER_H_ */

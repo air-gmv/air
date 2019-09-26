@@ -6,9 +6,10 @@
  * air/LICENSE
  */
 /**
- * @file mmu.c
- * @author lumm
- * @brief ARM virtualization MMU tables and segregation
+ * \file mmu.c
+ * \author lumm
+ * \brief ARM virtualization MMU tables and segregation
+ *
  * TODO ASSUMES THERE IS ONLY ONE TTBR, AS IT EASIES WRITING CODE
  * STARTING WITH NO SUPERTABLE SUPPORT
  */
@@ -17,6 +18,7 @@
 #include <bsp.h>
 #include <configurations.h>
 #include <error.h>
+
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif
@@ -155,7 +157,6 @@ static air_sz_t arm_mmu_map_l2(
         if (unit < LPAGE_SIZE) {
 
             air_u32_t arm_permissions = arm_get_mmu_permissions(permissions, MMU_L2, MMU_PAGE1);
-
             pt_ptr[idx] = (((air_u32_t)p_addr & 0xfffff000) | arm_permissions | MMU_PAGE1);
             _consumed = TTL2_PAGE_SIZE;
 

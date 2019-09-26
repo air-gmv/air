@@ -6,12 +6,15 @@
  * air/LICENSE
  */
 /**
- * @file context_switch.c
- * @author lumm
- * @brief Contains the routines to perform a partition core context save
+ * \file context_switch.c
+ * \author lumm
+ * \brief Contains the routines to perform a partition core context save
  *        and partition core context restore on a ARMv7
- *        The context is handled in schedule.c, so in here the mmu and irq
- *        switch happens
+ *
+ * The context save/restore is handled in exception_irq.S and schedule.c,
+ * and because only one ISF needs to be saved, the only thing happening here
+ * is the save/restore of additional fields besides the general-purpose
+ * registers, such as the MMU and GIC registers.
  */
 
 #include <context_switch.h>

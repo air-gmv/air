@@ -6,13 +6,15 @@
  * air/LICENSE
  */
 /**
- * @file slcr.h
- * @author lumm
- * @brief System Level Control Registers Definitions
+ * \file slcr.h
+ * \author lumm
+ * \brief System Level Control Registers Definitions
+ *
+ * TODO too many registers. defined in place of use
  */
 
-#ifndef ARM_ZYNQ_Z1_SLCR_H
-#define ARM_ZYNQ_Z1_SLCR_H
+#ifndef SLCR_H_
+#define SLCR_H_
 
 #include <air_arch.h>
 
@@ -67,4 +69,4 @@ static inline air_u32_t arm_slcr_is_locked(void){
 
 void arm_peripheral_soft_reset(void);
 
-#endif /* ARM_ZYNQ_Z1_SLCR_H */
+#endif /* SLCR_H_ */

@@ -6,9 +6,9 @@
  * air/LICENSE
  */
 /**
- * @file start.S
- * @author lumm
- * @brief Boot code for ARM.
+ * \file start.S
+ * \author lumm
+ * \brief Boot code for ARM.
  */
 
 /* Are we in assembly file. yes we are */

@@ -6,9 +6,9 @@
  * air/LICENSE
  */
 /**
- * @file global_timer.c
- * @author lumm
- * @brief Global Timer setup and start.
+ * \file global_timer.c
+ * \author lumm
+ * \brief Global Timer setup and start.
  */
 
 #include <isr.h>

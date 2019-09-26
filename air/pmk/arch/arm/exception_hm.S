@@ -6,14 +6,15 @@
  * air/LICENSE
  */
 /**
- * @file
- * @author lumm
- * @brief HM exception handlers
+ * \file exception_hm.S
+ * \author lumm
+ * \brief HM exception handlers
  *
  * saves return status and global registers in system stack and branches
- *  to hm routines
-
- * TODO Need to see if it is entering in ARM of Thumb mode
+ * to hm routines
+ *
+ * \note
+ * the HM handler must not use FPU registers, or these must be saved aswell
  */
 
 #ifndef ASM
@@ -129,7 +130,7 @@ return_to_idle:
 
     rfefd   sp!
 
-
+    /* returns the partition to normal execution */
 return_to_partition:
     pop     {r0-r12, lr}
     add     sp, #8                  // due to the duplication

@@ -6,9 +6,9 @@
  * air/LICENSE
  */
 /**
- * @file arm_a9mpcore.h
- * @author lumm
- * @brief A9MPCore specifics. Refer to the ARM® Cortex-A9 MPCore TRM
+ * \file arm_a9mpcore.h
+ * \author lumm
+ * \brief A9MPCore specifics. Refer to the ARM® Cortex-A9 MPCore TRM
  */
 
 #ifndef ARM_A9MPCORE_H

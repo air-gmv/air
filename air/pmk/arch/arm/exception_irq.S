@@ -6,12 +6,20 @@
  * air/LICENSE
  */
 /**
- * @file exception_irq.S
- * @author lumm
- * @brief IRQ exception handler
+ * \file exception_irq.S
+ * \author lumm
+ * \brief IRQ exception handler
+ *
+ * saves the general-purpose registers from USR, the prefered return address
+ * and SPSR ahead of context save/restore to avoid any corruption
+ *
+ * \note
+ * r10: used arm_interrupt_stack_frame_t
+ * r11: original arm_interrupt_stack_frame_t
+ * r12: arm_core_context_t
+ * lr:  pmk_core_ctrl_t
  */
 
-/* Are we in assembly file */
 #ifndef ASM
 #define ASM
 #endif
@@ -22,28 +30,21 @@
 
     .extern arm_irq_default_handler
 
-/* Save global registers and branch to save context
-*  r10: isf_pointer as sp
-*  r11: isf_pointer
-*  r12: context
-*  lr:  core_ctrl
-*/
     .arm
 global(exception_irq)
     push    {r10-r12, lr}
 
-    /* Get Per_CPU core */
-    mrc     p15, 0, lr, c13, c0, 4
+    mrc     p15, 0, lr, c13, c0, 4  // get Per_CPU core
 
     ldr     r12, [lr, #offsetof_pmk_core_ctrl_t_context]
     ldr     r11, [r12, #offsetof_arm_core_context_t_isf_pointer]
     ldr     r10, [r12, #offsetof_arm_core_context_t_trash]
-    teq     r10, #1
+    cmp     r10, #1
     bne     arm_save_context
 
 arm_save_trashed:
-    mov     r0, r11 /* isf_pointer */
-    mov     r1, lr /* pmk_core_ctrl_t */
+    mov     r0, r11                 // arm_interrupt_stack_frame_t
+    mov     r1, lr                  // pmk_core_ctrl_t
 
     pop     {r10-r12, lr}
     b       arm_irq_isr_handler
@@ -54,9 +55,9 @@ arm_save_context:
     pop     {r0-r3}
     stmia   r10!, {r0, r1}
 
-    mov     r5, r3 /* ret_addr */
-    mrs     r6, spsr /* ret_psr */
-    mov     r7, #6 /* exception_name */
+    mov     r5, r3                  // ret_addr
+    mrs     r6, spsr                // ret_psr
+    mov     r7, #6                  // exception_name
 
     orr     r8, r6, #(ARM_PSR_I | ARM_PSR_F)
     bic     r8, #ARM_PSR_T
@@ -68,17 +69,17 @@ arm_save_context:
 
 arm_save_change_to_sys:
     mov     r9, #ARM_PSR_SYS
-    bfi     r8, r9, #0, #5 /* Change to SYS mode */
+    bfi     r8, r9, #0, #5          // change to SYS
 
 arm_save_non_user_mode:
     mrs     r9, cpsr
 
     msr     cpsr, r8
-    mov     r3, sp /* usr_sp */
-    mov     r4, lr /* usr_lr */
+    mov     r3, sp                  // usr_sp
+    mov     r4, lr                  // usr_lr
     msr     cpsr, r9
 
-    stmia   r10, {r2-r7} /* includes r12 - exception_name */
+    stmia   r10, {r2-r7}            // includes {r12 - exception_name}
 
 #if PMK_FPU_SUPPORT
     vmrs    r2, fpexc
@@ -96,16 +97,15 @@ arm_save_non_user_mode:
     mcr     p15, 0, r8, c1, c0, 2
 #endif /* PMK_FPU_SUPPORT */
 
-    mov     r0, r11 /* isf_pointer */
-    mov     r1, lr /* pmk_core_ctrl_t */
+    mov     r0, r11                 // arm_interrupt_stack_frame_t
+    mov     r1, lr                  // pmk_core_ctrl_t
 
 arm_irq_isr_handler:
-    /************************ Call high level handler  ************************/
-    BL2C    arm_isr_handler
-    /********************* Return from high level handler *********************/
 
-    /* Get Per_CPU core */
-    mrc     p15, 0, r12, c13, c0, 4
+    /* Call high level handler */
+    BL2C    arm_isr_handler
+
+    mrc     p15, 0, r12, c13, c0, 4  // get Per_CPU core
 
     ldr     r11, [r12, #(offsetof_pmk_core_ctrl_t_context)]
     ldr     r10, [r11, #(offsetof_arm_core_context_t_trash)]

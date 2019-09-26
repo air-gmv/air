@@ -46,6 +46,8 @@ air/examples/**/rtems_config.h
 .*-swp
 tags
 
+# Doxygen output directory
+doc/
 
 # Eclipse
 # Created by https://www.gitignore.io/api/eclipse

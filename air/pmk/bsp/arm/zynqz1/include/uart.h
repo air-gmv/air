@@ -6,13 +6,13 @@
  * air/LICENSE
  */
 /**
- * @file uart.h
- * @author lumm
- * @brief UART setup and handler functions.
+ * \file uart.h
+ * \author lumm
+ * \brief UART setup and handler functions.
  */
 
-#ifndef ARM_UART_H
-#define ARM_UART_H
+#ifndef UART_H_
+#define UART_H_
 
 #include <air_arch.h>
 #include <armv7.h>
@@ -112,4 +112,4 @@ void arm_define_uart(air_u32_t port);
 void arm_setup_uart(air_u32_t BaudRate);
 void arm_uart_transmit(char ch);
 
-#endif /* ARM_UART_H */
+#endif /* UART_H_ */
