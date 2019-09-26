@@ -6,7 +6,7 @@
  * https://spass-git-ext.gmv.com/AIR/AIR/raw/master/air/LICENSE
  */
 /**
- * \file mmu.c
+ * \file segregation.c
  * \author lumm
  * \brief MMU configuration
  */
