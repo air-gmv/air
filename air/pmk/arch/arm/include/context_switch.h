@@ -6,9 +6,9 @@
  * https://spass-git-ext.gmv.com/AIR/AIR/raw/master/air/LICENSE
  */
 /**
- * @file context_switch.h
- * @author lumm
- * @brief Context Switch headers
+ * \file context_switch.h
+ * \author lumm
+ * \brief Context Switch headers
  */
 
 #include <armv7.h>

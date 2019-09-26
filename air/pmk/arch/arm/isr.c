@@ -6,9 +6,9 @@
  * https://spass-git-ext.gmv.com/AIR/AIR/raw/master/air/LICENSE
  */
 /**
- * @file isr.c
- * @author lumm
- * @brief Interrupt Service Routines (ISR)
+ * \file isr.c
+ * \author lumm
+ * \brief Interrupt Service Routines (ISR)
  */
 
 #include <isr.h>

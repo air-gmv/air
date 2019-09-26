@@ -6,9 +6,9 @@
  * https://spass-git-ext.gmv.com/AIR/AIR/raw/master/air/LICENSE
  */
 /**
- * @file slcr.c
- * @author trcpse
- * @brief functions to handle the slcr
+ * \file slcr.c
+ * \author trcpse
+ * \brief functions to handle the slcr
  *
  */
 
