@@ -238,7 +238,7 @@ typedef struct {
  *
  * TODO specific compiler optimizations
  */
-inline static void arm_instruction_synchronization_barrier(void) {
+__FORCE_INLINE static void arm_instruction_synchronization_barrier(void) {
     __asm__ volatile ("isb");
 }
 
@@ -247,7 +247,7 @@ inline static void arm_instruction_synchronization_barrier(void) {
  *
  * TODO specific compiler optimizations
  */
-inline static void arm_data_synchronization_barrier(void) {
+__FORCE_INLINE static void arm_data_synchronization_barrier(void) {
     __asm__ volatile ("dsb");
 }
 
@@ -256,14 +256,14 @@ inline static void arm_data_synchronization_barrier(void) {
  *
  * TODO specific compiler optimizations
  */
-inline static void arm_data_memory_barrier(void) {
+__FORCE_INLINE static void arm_data_memory_barrier(void) {
     __asm__ volatile ("dmb");
 }
 
 /**
  * \brief assembly inline functions to access cpu regs
  */
-static inline void arm_disable_fpu(void) {
+__FORCE_INLINE static void arm_disable_fpu(void) {
     air_u32_t reg = 0;
     __asm__ volatile (
             "vmrs %0, FPEXC\n"
@@ -282,7 +282,7 @@ static inline void arm_disable_fpu(void) {
 
 }
 
-static inline void arm_enable_fpu(void) {
+__FORCE_INLINE static void arm_enable_fpu(void) {
     air_u32_t reg = 0;
     __asm__ volatile (
             "vmrs %0, FPEXC\n"
@@ -300,21 +300,21 @@ static inline void arm_enable_fpu(void) {
             : "memory"); */
 }
 
-static inline air_u32_t arm_get_cpsr(void) {
+__FORCE_INLINE static air_u32_t arm_get_cpsr(void) {
     air_u32_t reg;
     __asm__ volatile ("mrs %0, cpsr\n":"=r" (reg));
     return reg;
 }
 
-static inline void arm_set_cpsr(air_u32_t val) {
+__FORCE_INLINE static void arm_set_cpsr(air_u32_t val) {
     __asm__ volatile ("msr cpsr, %0\n"::"r" (val));
 }
 
-static inline void arm_disable_interrupts() {
+__FORCE_INLINE static void arm_disable_interrupts() {
     __asm__ volatile ("cpsid if\n");
 }
 
-static inline void arm_enable_interrupts() {
+__FORCE_INLINE static void arm_enable_interrupts() {
     __asm__ volatile ("cpsie if\n");
 }
 
