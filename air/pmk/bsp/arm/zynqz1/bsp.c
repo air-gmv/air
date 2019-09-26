@@ -36,7 +36,7 @@ void bsp_start_hook(void) {
             * If the data cache is on then ensure that it is clean
             * before switching off to be extra careful.
             */
-            arm_cp15_data_cache_clean_all_levels();
+            arm_data_cache_clean_all_levels();
         }
         arm_instruction_synchronization_barrier();
         sctlr &= ~( ARM_SCTLR_I | ARM_SCTLR_C | ARM_SCTLR_M | ARM_SCTLR_A );
