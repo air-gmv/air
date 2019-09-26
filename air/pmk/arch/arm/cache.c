@@ -12,7 +12,7 @@
  */
 
 #include <cache.h>
-#include <arm_cp15.h>
+#include <cp15.h>
 
 void arm_instruction_cache_invalidate(void) {
     arm_cp15_instruction_cache_invalidate();

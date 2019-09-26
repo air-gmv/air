@@ -16,7 +16,7 @@
 
 #include <air_arch.h>
 #include <armv7.h>
-#include <arm_cp15.h>
+#include <cp15.h>
 #include <cpu.h>
 
 /* Division between the two Translation Tables (N == 0 means only one tt) */

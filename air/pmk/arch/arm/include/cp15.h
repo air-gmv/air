@@ -6,7 +6,7 @@
  * air/LICENSE
  */
 /**
- * \file arm_cp15.h
+ * \file cp15.h
  * \author lumm
  * \brief CP15 System Control coprocessor
  */
