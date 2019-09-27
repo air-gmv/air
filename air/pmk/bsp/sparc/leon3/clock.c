@@ -27,13 +27,6 @@
 extern pmk_sharedarea_t air_shared_area;
 
 /**
- * @brief IPC trap handler
- * @param isf Executing stack frame
- * @param core Executing core control structure
- */
-void pmk_ipc_handler(void *isf, pmk_core_ctrl_t *core);
-
-/**
  * @brief Timer enable control bit
  * @ingroup bsp_leon_clock
  */

@@ -11,11 +11,10 @@
  * \brief Triple Timer Counters (TTC)
  */
 
-#include <isr.h>
-#include <bsp.h>
 #include <timer.h>
-#include <pmk.h>
 #include <configurations.h>
+#include <gic.h>
+#include <bsp.h>
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif
@@ -25,8 +24,6 @@
 #define CLK_FREQ 133
 
 static volatile triple_timer_cnt_t *ttc = (triple_timer_cnt_t *)0xf8001000;
-void pmk_ipc_handler(void *isf, pmk_core_ctrl_t *core);
-
 void arm_init_ttc(air_u32_t timer_id) {
 #ifdef PMK_DEBUG
     printk("\n :: Triple Timer #%d setup\n", timer_id);
@@ -100,26 +97,3 @@ void arm_start_ttc(air_u32_t timer_id) {
 air_u32_t arm_acknowledge_ttc(void) {
     return (ttc->int_cnt_1 & 0x3f);
 }
-
-//void arm_setup_interprocessor_irq(air_u32_t cpu_id) {
-//
-//    if (cpu_id == 0) {
-//        arm_isr_install_handler(ZYNQ_IRQ_TTC_0_0, pmk_partition_scheduler);
-//        arm_isr_install_handler(ZYNQ_IRQ_TTC_0_1, pmk_partition_scheduler);
-//        arm_isr_install_handler(ZYNQ_IRQ_TTC_0_2, pmk_partition_scheduler);
-//        arm_isr_install_handler(BSP_IPC_IRQ, pmk_partition_scheduler);
-//        arm_isr_install_handler(BSP_IPC_PCS, pmk_ipc_handler);
-//    }
-//
-//    arm_int_set_priority(ZYNQ_IRQ_TTC_0_0, 0);
-//    arm_int_set_priority(ZYNQ_IRQ_TTC_0_1, 0);
-//    arm_int_set_priority(ZYNQ_IRQ_TTC_0_2, 0);
-//    arm_int_set_priority(BSP_IPC_IRQ, 0);
-//    arm_int_set_priority(BSP_IPC_PCS, 0);
-//
-//    arm_int_enable(ZYNQ_IRQ_TTC_0_0);
-//    arm_int_enable(ZYNQ_IRQ_TTC_0_1);
-//    arm_int_enable(ZYNQ_IRQ_TTC_0_2);
-//    arm_int_enable(BSP_IPC_IRQ);
-//    arm_int_enable(BSP_IPC_PCS);
-//}

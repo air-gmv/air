@@ -13,9 +13,11 @@
  * TODO better undef logic
  */
 
-#include <armv7.h>
-#include <isr.h>
-#include <pmk.h>
+#include <hm.h>
+#include <cp15.h>
+#include <air.h>
+#include <svc.h>
+
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif

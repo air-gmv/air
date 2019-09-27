@@ -14,7 +14,8 @@
 #ifndef BSP_SEGREGATION_H_
 #define BSP_SEGREGATION_H_
 
-#include <partition.h>
+#include <a9mpcore.h>
+#include <workspace.h>
 
 void bsp_segregation(pmk_partition_t *partition);
 

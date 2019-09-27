@@ -14,9 +14,8 @@
 #ifndef GIC_H_
 #define GIC_H_
 
-#include <air_arch.h>
+#include <a9mpcore.h>
 #include <gicv1.h>
-#include <bsp.h>
 
 static volatile ic_distributor_t *ic_dist = (ic_distributor_t *)IC_DIST_BASE_MEMORY;
 static volatile ic_cpu_interface_t *ic_cpu = (ic_cpu_interface_t *)IC_CPU_BASE_MEMORY;

@@ -11,11 +11,7 @@
  * \brief ARM virtualization system calls (PMK side)
  */
 
-#include <air_arch.h>
-#include <armv7.h>
 #include <svc.h>
-#include <gic.h>
-#include <workspace.h>
 
 extern pmk_sharedarea_t air_shared_area;
 

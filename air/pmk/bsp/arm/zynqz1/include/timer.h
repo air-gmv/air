@@ -14,7 +14,7 @@
 #ifndef TIMER_H_
 #define TIMER_H_
 
-#include <air_arch.h>
+#include <a9mpcore.h>
 
 /******************************** Global Timer *******************************/
 #define GT_BASE_MEMORY                  0xf8f00200
@@ -43,7 +43,6 @@ typedef struct {
 void arm_init_global_timer(void);
 void arm_start_global_timer(void);
 air_u64_t arm_read_global_timer(void);
-air_u32_t arm_acknowledge_ttc(void);
 void arm_setup_interprocessor_irq(air_u32_t cpu_id);
 void arm_acknowledge_gt(void);
 air_u32_t arm_determine_gt_prescaler(air_u32_t us_per_tick);
@@ -118,5 +117,6 @@ typedef struct {
 void arm_init_ttc(air_u32_t timer_id);
 void arm_start_ttc(air_u32_t timer_id);
 air_u32_t arm_read_ttc(void);
+air_u32_t arm_acknowledge_ttc(void);
 
 #endif /* TIMER_H_ */

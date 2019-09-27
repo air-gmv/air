@@ -17,51 +17,38 @@
  * registers, such as the MMU and GIC registers.
  */
 
-#include <context_switch.h>
+#include <mmu.h>
 #include <workspace.h>
-#ifdef PMK_DEBUG
-#include <printk.h>
-#endif
 
-void arm_core_context_save(void *core) {
-#ifdef PMK_DEBUG_SCHED
-    printk("\n       CS :: Saving Context\n");
-#endif
+/**
+ * \details
+ * The context save is performed in the exception_irq.S (only one ISF needs
+ * to be saved). The change is then handled by the pmk_partition_scheduler(),
+ * so nothing really happens here.
+ */
+void arm_core_context_save(pmk_core_ctrl_t *core) {
 
-    if (((pmk_core_ctrl_t *)core)->context->trash) {
-#ifdef PMK_DEBUG_SCHED
-        printk("             CS :: TRASHED save context\n");
-#endif
-        return;
-    }
+    if (core->context->trash) return;
 
-    pmk_partition_t *partition = ((pmk_core_ctrl_t *)core)->partition;
-
-#ifdef PMK_DEBUG_SCHED
-    printk("       CS :: Done Saving\n");
-#endif
+//    pmk_partition_t *partition = core->partition;
 }
 
-void arm_core_context_restore(void *core) {
-#ifdef PMK_DEBUG_SCHED
-    printk("\n       CS :: Restoring Context\n");
-#endif
-    if (((pmk_core_ctrl_t *)core)->context->trash) {
-#ifdef PMK_DEBUG_SCHED
-        printk("       CS :: TRASHED restore context\n");
-#endif
-        return;
-    }
+/**
+ * \details
+ * The context restore is performed in the exception_irq.S (only one ISF needs
+ * to be restored). In here, only the MMU context needs to be switched.
+ */
+void arm_core_context_restore(pmk_core_ctrl_t *core) {
 
-    pmk_partition_t *partition = ((pmk_core_ctrl_t *)core)->partition;
+    __asm__ volatile ("clrex\n");
+
+    if (((pmk_core_ctrl_t *)core)->context->trash) return;
+
+    pmk_partition_t *partition = core->partition;
 
     if (arm_is_mmu_enabled()) {
         arm_mmu_change_context(partition->mmu_ctrl);
     } else {
         arm_mmu_enable(partition->mmu_ctrl);
     }
-
-#ifdef PMK_DEBUG_SCHED
-    printk("       CS :: Done Restoring\n");
-#endif
 }
