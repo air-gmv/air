@@ -11,10 +11,7 @@
  * \brief Global Timer setup and start.
  */
 
-#include <isr.h>
-#include <bsp.h>
 #include <timer.h>
-#include <pmk.h>
 #include <configurations.h>
 #ifdef PMK_DEBUG
 #include <printk.h>
@@ -23,7 +20,6 @@
 #define CPU_FREQ 650000000
 
 static volatile global_timer_t *gt = (global_timer_t *)GT_BASE_MEMORY;
-void pmk_ipc_handler(void *isf, pmk_core_ctrl_t *core);
 
 void arm_init_global_timer(void) {
 

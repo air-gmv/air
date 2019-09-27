@@ -31,9 +31,7 @@
 #ifndef ASM
 
 #include <armv7.h>
-#include <mmu.h>
-#include <health_monitor.h>
-#include <context_switch.h>
+#include <air.h>
 
 #define PREEMPTION_LEVEL 0
 

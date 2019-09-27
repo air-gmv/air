@@ -22,8 +22,8 @@
 #endif
 
 #include <asm.h>
-#include <armv7.h>
 #include <asm_offsets.h>
+#include <armv7.h>
 
     .extern arm_hm_handler
 

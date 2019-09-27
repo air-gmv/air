@@ -14,8 +14,7 @@
 #ifndef ATOMIC_H_
 #define ATOMIC_H_
 
-#include <air_arch.h>
-#include <lock.h>
+#include <armv7.h>
 
 /**
  * \brief ARM atomic integer

@@ -14,7 +14,6 @@
 #ifndef A9MPCORE_H_
 #define A9MPCORE_H_
 
-#include <air_arch.h>
 #include <armv7.h>
 #include <cp15.h>
 #include <bsp.h>

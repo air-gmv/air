@@ -11,10 +11,13 @@
  * \brief Contains the PMK abstractions to handle the ARM processor context
  */
 
+#include <armv7.h>
 #include <cpu.h>
 #include <bsp.h>
-#include <pmk.h>
+#include <workspace.h>
+#include <air.h>
 #include <ipc.h>
+
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif

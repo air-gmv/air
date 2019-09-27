@@ -12,6 +12,7 @@
  */
 
 #include <atomic.h>
+#include <lock.h>
 
 /**
  * \brief Number of spin locks to be used by the atomic operations

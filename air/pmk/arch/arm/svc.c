@@ -12,6 +12,8 @@
  */
 
 #include <svc.h>
+#include <syscall.h>
+#include <configurations.h>
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif

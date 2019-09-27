@@ -14,10 +14,7 @@
 #ifndef MMU_H_
 #define MMU_H_
 
-#include <air_arch.h>
 #include <armv7.h>
-#include <cp15.h>
-#include <cpu.h>
 
 /* Division between the two Translation Tables (N == 0 means only one tt) */
 #define TTBR_N              0 /* 0 <= N < 8 */
@@ -125,17 +122,7 @@ void arm_mmu_disable(void);
 void arm_mmu_enable(arm_mmu_context_t *ctx);
 air_u32_t arm_is_mmu_enabled(void);
 void arm_mmu_change_context(arm_mmu_context_t *ctx);
-void arm_segregation_init(void);
-void arm_map_memory(
-        arm_mmu_context_t *ctrl, void *p_addr, void *v_addr,
-        air_sz_t size, air_sz_t unit, air_u32_t permissions);
-
 air_u32_t arm_segregation_memcpy(
         arm_core_context_t *core_ctx, void *dst, void *src, air_sz_t size);
-air_u32_t arm_copy_to_user(
-        arm_core_context_t *core_ctx, void *dst, void *src, air_sz_t size);
-air_u32_t arm_copy_from_user(
-        arm_core_context_t *core_ctx, void *dst, void *src, air_sz_t size);
-air_uptr_t arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr);
 
 #endif /* MMU_H_ */

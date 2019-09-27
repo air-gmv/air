@@ -233,6 +233,60 @@ typedef struct {
 #define MAX_SVC MAX_SVC_A32
 #endif
 
+
+/**
+ * \brief segregation initialization
+ */
+void arm_segregation_init(void);
+
+/**
+ * \brief health-monitor initialization
+ */
+void arm_hm_init(void);
+
+/**
+ * \brief Maps virtual address to physical address with given permissions
+ * \param context MMU context
+ * \param p_addr Initial physical address
+ * \param v_addr Initial virtual address
+ * \param size Size of the memory block
+ * \param unit MMU unit of division
+ * \param permissions Memory block permissions
+ */
+void arm_map_memory(
+        arm_mmu_context_t *ctrl, void *p_addr, void *v_addr,
+        air_sz_t size, air_sz_t unit, air_u32_t permissions);
+
+/**
+ * \brief Copies a block of memory to the user-land
+ * \param core_ctx Executing core context
+ * \param dst Destination address
+ * \param src Source address
+ * \param size Size of the memory block
+ * \return zero if no faults, non-zero  otherwise
+ */
+air_u32_t arm_copy_to_user(
+        arm_core_context_t *core_ctx, void *dst, void *src, air_sz_t size);
+
+/**
+ * \brief Copies a block of memory from the user-land
+ * \param core_ctx Executing core context
+ * \param dst Destination address
+ * \param src Source address
+ * \param size Size of the memory block
+ * \return zero if no faults, non-zero  otherwise
+ */
+air_u32_t arm_copy_from_user(
+        arm_core_context_t *core_ctx, void *dst, void *src, air_sz_t size);
+
+/**
+ * \brief Get the physical address from the virtual one
+ * \param context MMU context
+ * \param v_addr Virtual address
+ * \return Physical address if available, NULL otherwise
+ */
+air_uptr_t arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr);
+
 /**
  * \brief Instruction synchronization barrier
  *

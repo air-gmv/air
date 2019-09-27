@@ -13,7 +13,6 @@
  * \note used only by the configurator, not included in pmk.a
  */
 
-#include <air_arch.h>
 #include <armv7.h>
 #include <workspace.h>
 

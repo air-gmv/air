@@ -14,11 +14,8 @@
 #ifndef SVC_H_
 #define SVC_H_
 
-#include <air_arch.h>
 #include <armv7.h>
-#include <mmu.h>
-#include <syscall.h>
-#include <configurations.h>
+#include <workspace.h>
 
 /**************************** syscalls declarations ***************************/
 void arm_syscall_disable_interrupts(pmk_core_ctrl_t *core);

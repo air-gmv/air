@@ -17,10 +17,9 @@
 #endif
 
 #include <asm.h>
-#include <armv7.h>
 #include <asm_offsets.h>
+#include <armv7.h>
 #include <cpu.h>
-//#include <bsp.h>
 
 #if __ARM_ARCH >= 7
     .arm

@@ -12,6 +12,7 @@
  */
 
 #include <bsp_segregation.h>
+#include <cpu.h>
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif

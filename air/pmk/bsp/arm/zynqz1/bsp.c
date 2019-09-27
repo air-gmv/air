@@ -11,6 +11,13 @@
  * \brief BSP core routines
  */
 #include <bsp.h>
+#include <cache.h>
+#include <isr.h>
+#include <hm.h>
+#include <mmu.h>
+#include <gic.h>
+#include <timer.h>
+
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif
@@ -87,7 +94,7 @@ void bsp_core_ready(void) {
 
     air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
 
-    arm_setup_interprocessor_irq(cpu_id);
+    arm_setup_ipc(cpu_id);
     arm_cp15_setup_Per_CPU(cpu_id);
 
     //MMU

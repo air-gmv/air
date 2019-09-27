@@ -12,6 +12,8 @@
  */
 
 #include <isr.h>
+#include <gic.h>
+#include <timer.h>
 #ifdef PMK_DEBUG
 #include <printk.h>
 air_u32_t counter = 0;
