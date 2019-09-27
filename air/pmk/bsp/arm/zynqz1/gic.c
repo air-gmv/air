@@ -18,6 +18,7 @@
  */
 
 #include <gic.h>
+#include <cpu.h>
 
 #define PRIORITY_DEFAULT    0x78
 #define INT_TARGET_CPU0     0x1
