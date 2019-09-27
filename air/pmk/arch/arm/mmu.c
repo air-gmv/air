@@ -15,7 +15,9 @@
  */
 
 #include <mmu.h>
-#include <bsp.h>
+#include <cp15.h>
+#include <workspace.h>
+#include <segregation.h>
 #include <configurations.h>
 #include <error.h>
 

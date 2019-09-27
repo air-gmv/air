@@ -12,6 +12,7 @@
  */
 
 #include <uart.h>
+#include <slcr.h>
 
 static volatile uart_t *uart = (uart_t *)UART0_BASE_MEMORY;
 static volatile uart_t *uart1 = (uart_t *)UART1_BASE_MEMORY;
