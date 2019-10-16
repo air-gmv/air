@@ -32,8 +32,8 @@ void arm_syscall_rett(pmk_core_ctrl_t *core);
 //air_u32_t arm_syscall_get_cache_register(void);
 //air_u32_t arm_syscall_set_cache_register(void);
 //air_u32_t AIR_SYSCALL_ARM_RESTORE_CACHE_REGISTER
-air_u32_t arm_syscall_get_irq_mask_register(void);
-void arm_syscall_set_irq_mask_register(air_u32_t val);
+air_u32_t arm_syscall_get_irq_mask_register(pmk_core_ctrl_t *core);
+void arm_syscall_set_irq_mask_register(pmk_core_ctrl_t *core, air_u32_t val);
 //air_u32_t arm_syscall_set_irq_force_register(void);
 
 air_u32_t arm_syscall_get_core_id(pmk_core_ctrl_t *core);
