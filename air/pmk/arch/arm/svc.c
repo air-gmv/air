@@ -55,7 +55,7 @@ void arm_svc_handler(
         frame->r0 = arm_syscall_get_psr(core);
         break;
     case AIR_SYSCALL_ARM_GET_IRQ_MASK_REGISTER:
-        frame->r0 = arm_syscall_get_irq_mask_register();
+        frame->r0 = arm_syscall_get_irq_mask_register(core);
         break;
 
     case AIR_SYSCALL_ARM_SET_TBR:
@@ -65,7 +65,7 @@ void arm_svc_handler(
         arm_syscall_set_psr(core, frame->r0);
         break;
     case AIR_SYSCALL_ARM_SET_IRQ_MASK_REGISTER:
-        arm_syscall_set_irq_mask_register(frame->r0);
+        arm_syscall_set_irq_mask_register(core, frame->r0);
         break;
 
     case AIR_SYSCALL_GET_P_ADDR:

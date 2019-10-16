@@ -8,7 +8,7 @@
 /**
  * \file syscalls_virtualization.c
  * \author lumm
- * \brief ARM virtualization system calls (PMK side)
+ * \brief ARM virtualization system calls
  */
 
 #include <svc.h>
@@ -71,19 +71,23 @@ void arm_syscall_set_psr(pmk_core_ctrl_t *core, air_u32_t val) {
 void arm_syscall_rett(pmk_core_ctrl_t *core) {
 
     core->context->vcpu.psr &= ~(ARM_PSR_A | ARM_PSR_I);
-//  core->context->state = AIR_STATE_PARTITION_EXEC; // its already in core_context_remove_hm_event
 }
 
 //air_u32_t arm_syscall_get_cache_register(void);
 //air_u32_t arm_syscall_set_cache_register(void);
 //air_u32_t AIR_SYSCALL_ARM_RESTORE_CACHE_REGISTER
-air_u32_t arm_syscall_get_irq_mask_register(void) {
-    return arm_get_int_mask();
+
+air_u32_t arm_syscall_get_irq_mask_register(pmk_core_ctrl_t *core) {
+
+    air_u32_t pmr = core->context->vgic.pmr;
+    return pmr;
 }
 
-void arm_syscall_set_irq_mask_register(air_u32_t val) {
-    arm_set_int_mask(val);
+void arm_syscall_set_irq_mask_register(pmk_core_ctrl_t *core, air_u32_t val) {
+
+    core->context->vgic.pmr = val;
 }
+
 //air_u32_t arm_syscall_set_irq_force_register(void);
 
 air_u32_t arm_syscall_get_core_id(pmk_core_ctrl_t *core) {
