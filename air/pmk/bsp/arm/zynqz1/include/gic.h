@@ -16,72 +16,73 @@
 
 #include <a9mpcore.h>
 #include <gicv1.h>
+#include <parameters.h>
 
-static volatile ic_distributor_t *ic_dist = (ic_distributor_t *)IC_DIST_BASE_MEMORY;
-static volatile ic_cpu_interface_t *ic_cpu = (ic_cpu_interface_t *)IC_CPU_BASE_MEMORY;
+#define ICD ((ic_distributor_t *)XPAR_PS7_SCUGIC_0_DIST_BASEADDR)
+#define ICC ((ic_cpu_t *)XPAR_PS7_SCUGIC_0_BASEADDR)
 
 /**< ************************ ICD Register Access ****************************/
 /**< ICDDCR - Distributor Control Register */
-static inline void arm_gic_disable(void) {
-    ic_dist->icddcr &= ~(1U << 0);
+__FORCE_INLINE static void arm_gic_disable(void) {
+    ICD->icddcr &= ~(1U << 0);
 }
 
-static inline void arm_gic_enable(void) {
-    ic_dist->icddcr |= (3U << 0);
+__FORCE_INLINE static void arm_gic_enable(void) {
+    ICD->icddcr |= (3U << 0);
 }
 
-static inline air_u32_t arm_is_gic_enabled(void) {
-    return (ic_dist->icddcr & 0x1);
+__FORCE_INLINE static air_u32_t arm_is_gic_enabled(void) {
+    return (ICD->icddcr & 0x1);
 }
 
 /**< ICDICTR - Interrupt Controller Type Register */
 #define ZYNQ_MAX_INT 256
-static inline air_u32_t arm_get_int_count(void) {
-    air_u32_t int_count = ((ic_dist->icdictr & 0x1f) + 1) * 32;
+__FORCE_INLINE static air_u32_t arm_get_int_count(void) {
+    air_u32_t int_count = ((ICD->icdictr & 0x1f) + 1) * 32;
     return int_count <= ZYNQ_MAX_INT ? int_count : ZYNQ_MAX_INT;
 }
 
-static inline air_u32_t arm_ic_processor_count(void) {
-    return ((ic_dist->icdictr >> 5U) & 0x7) + 1;
+__FORCE_INLINE static air_u32_t arm_ic_processor_count(void) {
+    return ((ICD->icdictr >> 5U) & 0x7) + 1;
 }
 
-static inline void arm_int_enable(air_u32_t id) {
-    ic_dist->icdiser[id/32] = (1U << (id & 0x1f));
+__FORCE_INLINE static void arm_int_enable(air_u32_t id) {
+    ICD->icdiser[id/32] = (1U << (id & 0x1f));
 }
 
 /**< ICDICER - Interrupt Clear-Enable Register */
-static inline void arm_sgi_ppi_disable(void) {
-    ic_dist->icdicer[0] = 0xffffffff;
+__FORCE_INLINE static void arm_sgi_ppi_disable(void) {
+    ICD->icdicer[0] = 0xffffffff;
 }
 
-static inline void arm_spi_disable(air_u32_t int_count) {
+__FORCE_INLINE static void arm_spi_disable(air_u32_t int_count) {
     for(air_u32_t i = 32; i < int_count; i += 32) {
-        ic_dist->icdicer[i/32] = 0xffffffff;
+        ICD->icdicer[i/32] = 0xffffffff;
     }
 }
 
 /**< ICDICPR  - Interrupt Clear-Pending Register*/
-static inline void arm_clear_pending(air_u32_t int_count) {
+__FORCE_INLINE static void arm_clear_pending(air_u32_t int_count) {
     for(air_u32_t i = 32; i < int_count; i += 32) {
-        ic_dist->icdicpr[i/32] = 0xffffffff;
+        ICD->icdicpr[i/32] = 0xffffffff;
     }
 }
 
 /**< ICDIPR - Interrupt Priority Register */
-static inline void arm_int_set_priority(air_u32_t id, air_u8_t priority) {
-    ic_dist->icdipr[id] = priority;
+__FORCE_INLINE static void arm_int_set_priority(air_u32_t id, air_u8_t priority) {
+    ICD->icdipr[id] = priority;
 }
 
-static inline air_u32_t arm_int_get_priority(air_u32_t id) {
-    return ic_dist->icdipr[id];
+__FORCE_INLINE static air_u32_t arm_int_get_priority(air_u32_t id) {
+    return ICD->icdipr[id];
 }
 
-static inline void arm_int_set_target(air_u32_t id, air_u32_t target) {
-    ic_dist->icdiptr[id] = target;
+__FORCE_INLINE static void arm_int_set_target(air_u32_t id, air_u32_t target) {
+    ICD->icdiptr[id] = target;
 }
 
-static inline air_u32_t arm_int_get_target(air_u32_t id) {
-    return ic_dist->icdiptr[id];
+__FORCE_INLINE static air_u32_t arm_int_get_target(air_u32_t id) {
+    return ICD->icdiptr[id];
 }
 
 
@@ -98,42 +99,42 @@ static inline air_u32_t arm_int_get_target(air_u32_t id) {
 #define ICCICR_EOI_S            (1U << 9)
 #define ICCICR_EOI_NS           (1U << 10)
 
-static inline void arm_set_ic_cpu_ctrl(air_u32_t iccicr) {
-    ic_cpu->iccicr = iccicr;
+__FORCE_INLINE static void arm_set_ic_cpu_ctrl(air_u32_t iccicr) {
+    ICC->iccicr = iccicr;
 }
 
-static inline void arm_gic_disable_interrupts(void) {
+__FORCE_INLINE static void arm_gic_disable_interrupts(void) {
     /* not used. masking irq in psr is the way to go */
-    ic_cpu->iccicr &= ~0x1;
+    ICC->iccicr &= ~0x1;
 }
 
-static inline void arm_gic_enable_interrupts(void) {
+__FORCE_INLINE static void arm_gic_enable_interrupts(void) {
     /* not used. masking irq in psr is the way to go */
-    ic_cpu->iccicr |= 0x3;
+    ICC->iccicr |= 0x3;
 }
 
 /**< ICCPMR (GICC_PMR) - Interrupt Priority Mask Register  */
-static inline air_u32_t arm_get_int_mask(void) {
-    return (ic_cpu->iccpmr & 0xff);
+__FORCE_INLINE static air_u32_t arm_get_int_mask(void) {
+    return (ICC->iccpmr & 0xff);
 }
 
-static inline void arm_set_int_mask(air_u32_t mask) {
-    ic_cpu->iccpmr = (mask & 0xff);
+__FORCE_INLINE static void arm_set_int_mask(air_u32_t mask) {
+    ICC->iccpmr = (mask & 0xff);
 }
 
-//*< ICCBPR (GICC_BPR) - Binary Point Register */
+/**< ICCBPR (GICC_BPR) - Binary Point Register */
 #define PREEMPTION(n_bits) ( 7 - n_bits ? (n_bits >= 0 && n_bits < 8) : 0)
-static inline void arm_set_ic_cpu_preemption(air_u32_t iccbpr) {
-    ic_cpu->iccbpr = iccbpr;
+__FORCE_INLINE static void arm_set_ic_cpu_preemption(air_u32_t iccbpr) {
+    ICC->iccbpr = iccbpr;
 }
 
 /**< ICCIAR (GICC_IAR) - Interrupt Acknowledge Register */
-static inline air_u32_t arm_acknowledge_int(void) {
-    return (ic_cpu->icciar & 0x1fff);
+__FORCE_INLINE static air_u32_t arm_acknowledge_int(void) {
+    return (ICC->icciar & 0x1fff);
 }
 
-static inline void arm_end_of_int(air_u32_t ack) {
-    ic_cpu->icceoir = ack;
+__FORCE_INLINE static void arm_end_of_int(air_u32_t ack) {
+    ICC->icceoir = ack;
 }
 
 /*****************************************************************************/

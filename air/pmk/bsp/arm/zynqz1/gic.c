@@ -81,7 +81,7 @@ void arm_generate_swi(air_u32_t cpu_filter,
     if (cpu_filter == ARM_SGI_TARGET_LIST && cpu_list == 0)
         return;
 
-    ic_dist->icdsgir =
+    ICD->icdsgir =
             (ARM_SGI_TARGET(cpu_filter) |
             ARM_SGI_TARGET_MASK(cpu_list) |
             (nonsecure << 15) |

@@ -12,14 +12,13 @@
  */
 
 #include <timer.h>
+#include <parameters.h>
 #include <configurations.h>
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif
 
-#define CPU_FREQ 650000000
-
-static volatile global_timer_t *gt = (global_timer_t *)GT_BASE_MEMORY;
+#define GT ((global_timer_t *)XPAR_PS7_GLOBALTIMER_0_S_AXI_BASEADDR)
 
 void arm_init_global_timer(void) {
 
@@ -28,31 +27,31 @@ void arm_init_global_timer(void) {
     air_u32_t prescaler = arm_determine_gt_prescaler(us_per_tick);
 
     air_u32_t ctrl = ARM_GT_CTRL_PRESCALER(prescaler);
-    gt->ctrl |= ctrl;
+    GT->ctrl |= ctrl;
 
     air_u32_t autoinc = (25 * pmk_get_usr_us_per_tick())/256 - 1;
-    gt->autoinc = autoinc;
+    GT->autoinc = autoinc;
 #ifdef PMK_DEBUG
     printk("\n :: global_timer_t\n"
-            "    gt = 0x%x\n"
-            "    gt->autoinc = 0x%x\n\n", gt, gt->autoinc);
+            "    GT = 0x%x\n"
+            "    GT->autoinc = 0x%x\n\n", GT, GT->autoinc);
 #endif
 }
 
 void arm_start_global_timer(void) {
 
     /* Start GT and set period to autoinc=usr_per_tick adjusted for frequency */
-    gt->ctrl &= ~(ARM_GT_CTRL_COMP_EN | ARM_GT_CTRL_TIMER_EN);
-    gt->cnt_lower = 0;
-    gt->cnt_upper = 0;
-    gt->comp_lower = gt->autoinc; // TODO should it start at 0 or gt->autoinc??
-    gt->comp_upper = 0;
+    GT->ctrl &= ~(ARM_GT_CTRL_COMP_EN | ARM_GT_CTRL_TIMER_EN);
+    GT->cnt_lower = 0;
+    GT->cnt_upper = 0;
+    GT->comp_lower = GT->autoinc; // TODO should it start at 0 or GT->autoinc??
+    GT->comp_upper = 0;
 
 #ifdef PMK_DEBUG
-    printk("    :: before gt enable;\n");
+    printk("    :: before GT enable;\n");
 #endif
 
-    gt->ctrl |= ARM_GT_CTRL_AUTOINC_EN | ARM_GT_CTRL_IRQ_EN |
+    GT->ctrl |= ARM_GT_CTRL_AUTOINC_EN | ARM_GT_CTRL_IRQ_EN |
             ARM_GT_CTRL_COMP_EN | ARM_GT_CTRL_TIMER_EN;
 
     arm_read_global_timer();
@@ -66,9 +65,9 @@ air_u64_t arm_read_global_timer(void) {
     air_u32_t upper_1 = 0;
     air_u32_t upper_2 = 0;
     do {
-        upper_1 = gt->cnt_upper;
-        lower = gt->cnt_lower;
-        upper_2 = gt->cnt_upper;
+        upper_1 = GT->cnt_upper;
+        lower = GT->cnt_lower;
+        upper_2 = GT->cnt_upper;
     } while (upper_1 != upper_2);
 
     air_u64_t result = (air_u64_t) upper_2 << 32 | lower;
@@ -98,14 +97,14 @@ void arm_setup_interprocessor_irq(air_u32_t cpu_id) {
 }
 
 void arm_acknowledge_gt(void) {
-    gt->irq_status = 0x1;
+    GT->irq_status = 0x1;
 }
 
 
 air_u32_t arm_determine_gt_prescaler(air_u32_t us_per_tick) {
 
     air_u32_t prescaler_n, us_per_tick_calc, error;
-    air_u64_t freq = CPU_FREQ / 2;
+    air_u64_t freq = XPAR_PS7_CORTEXA9_0_CPU_CLK_FREQ_HZ / 2;
     air_u32_t prescaler = 0;
     air_u64_t counter;
     air_u32_t best_error = ~(0x0);

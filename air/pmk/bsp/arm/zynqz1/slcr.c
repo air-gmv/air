@@ -14,19 +14,28 @@
 
 #include <slcr.h>
 
+#define PSS_RST_CTRL *(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x200)
+#define A9_CPU_RST_CTRL *(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x244)
 
-static volatile air_u32_t *a9_cpu_rst_ctrl = (air_u32_t *)0xF8000244;
-
- void arm_peripheral_soft_reset(void) {
+void arm_peripheral_soft_reset(void) {
     if (arm_slcr_is_locked()) {
         arm_slcr_unlock();
     }
-    *a9_cpu_rst_ctrl |= 0x100;
+    A9_CPU_RST_CTRL |= 0x100;
 
-    *a9_cpu_rst_ctrl &= ~(0x100);
+    A9_CPU_RST_CTRL &= ~(0x100);
 
     if (!arm_slcr_is_locked()) {
         arm_slcr_lock();
     }
 
+}
+
+void arm_ps_reset(void) {
+
+    if (ARM_SLCR_IS_LOCKED) arm_slcr_unlock();
+
+    while(true) PSS_RST_CTRL = 1;
+
+    /* shouldn't exit from this function */
 }
