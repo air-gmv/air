@@ -16,9 +16,6 @@
 
 #include <a9mpcore.h>
 
-/******************************** Global Timer *******************************/
-#define GT_BASE_MEMORY                  0xf8f00200
-
 /**
  * \brief Global Timer
  */
@@ -31,13 +28,13 @@
 
 
 typedef struct {
-    air_u32_t cnt_lower;
-    air_u32_t cnt_upper;
-    air_u32_t ctrl;
-    air_u32_t irq_status;
-    air_u32_t comp_lower;
-    air_u32_t comp_upper;
-    air_u32_t autoinc;
+    volatile air_u32_t cnt_lower;
+    volatile air_u32_t cnt_upper;
+    volatile air_u32_t ctrl;
+    volatile air_u32_t irq_status;
+    volatile air_u32_t comp_lower;
+    volatile air_u32_t comp_upper;
+    volatile air_u32_t autoinc;
 } global_timer_t;
 
 void arm_init_global_timer(void);
@@ -46,10 +43,6 @@ air_u64_t arm_read_global_timer(void);
 void arm_setup_interprocessor_irq(air_u32_t cpu_id);
 void arm_acknowledge_gt(void);
 air_u32_t arm_determine_gt_prescaler(air_u32_t us_per_tick);
-
-/**************************** Triple Timer Counter ***************************/
-#define TTC0_BASE_MEMORY                0xf8001000
-#define TTC1_BASE_MEMORY                0xf8002000
 
 /**
  * \brief Triple Timer Counter
@@ -79,39 +72,39 @@ air_u32_t arm_determine_gt_prescaler(air_u32_t us_per_tick);
 
 
 typedef struct {
-    air_u32_t clk_ctrl_1;
-    air_u32_t clk_ctrl_2;
-    air_u32_t clk_ctrl_3;
-    air_u32_t cnt_ctrl_1;
-    air_u32_t cnt_ctrl_2;
-    air_u32_t cnt_ctrl_3;
-    air_u32_t cnt_val_1;
-    air_u32_t cnt_val_2;
-    air_u32_t cnt_val_3;
-    air_u32_t intv_cnt_1;
-    air_u32_t intv_cnt_2;
-    air_u32_t intv_cnt_3;
-    air_u32_t mtc_1_cnt_1;
-    air_u32_t mtc_1_cnt_2;
-    air_u32_t mtc_1_cnt_3;
-    air_u32_t mtc_2_cnt_1;
-    air_u32_t mtc_2_cnt_2;
-    air_u32_t mtc_2_cnt_3;
-    air_u32_t mtc_3_cnt_1;
-    air_u32_t mtc_3_cnt_2;
-    air_u32_t mtc_3_cnt_3;
-    air_u32_t int_cnt_1;
-    air_u32_t int_cnt_2;
-    air_u32_t int_cnt_3;
-    air_u32_t int_en_1;
-    air_u32_t int_en_2;
-    air_u32_t int_en_3;
-    air_u32_t e_ctrl_timer_1;
-    air_u32_t e_ctrl_timer_2;
-    air_u32_t e_ctrl_timer_3;
-    air_u32_t e_cnt_1;
-    air_u32_t e_cnt_2;
-    air_u32_t e_cnt_3;
+    volatile air_u32_t clk_ctrl_1;
+    volatile air_u32_t clk_ctrl_2;
+    volatile air_u32_t clk_ctrl_3;
+    volatile air_u32_t cnt_ctrl_1;
+    volatile air_u32_t cnt_ctrl_2;
+    volatile air_u32_t cnt_ctrl_3;
+    volatile air_u32_t cnt_val_1;
+    volatile air_u32_t cnt_val_2;
+    volatile air_u32_t cnt_val_3;
+    volatile air_u32_t intv_cnt_1;
+    volatile air_u32_t intv_cnt_2;
+    volatile air_u32_t intv_cnt_3;
+    volatile air_u32_t mtc_1_cnt_1;
+    volatile air_u32_t mtc_1_cnt_2;
+    volatile air_u32_t mtc_1_cnt_3;
+    volatile air_u32_t mtc_2_cnt_1;
+    volatile air_u32_t mtc_2_cnt_2;
+    volatile air_u32_t mtc_2_cnt_3;
+    volatile air_u32_t mtc_3_cnt_1;
+    volatile air_u32_t mtc_3_cnt_2;
+    volatile air_u32_t mtc_3_cnt_3;
+    volatile air_u32_t int_cnt_1;
+    volatile air_u32_t int_cnt_2;
+    volatile air_u32_t int_cnt_3;
+    volatile air_u32_t int_en_1;
+    volatile air_u32_t int_en_2;
+    volatile air_u32_t int_en_3;
+    volatile air_u32_t e_ctrl_timer_1;
+    volatile air_u32_t e_ctrl_timer_2;
+    volatile air_u32_t e_ctrl_timer_3;
+    volatile air_u32_t e_cnt_1;
+    volatile air_u32_t e_cnt_2;
+    volatile air_u32_t e_cnt_3;
 } triple_timer_cnt_t;
 
 void arm_init_ttc(air_u32_t timer_id);

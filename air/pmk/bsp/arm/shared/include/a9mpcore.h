@@ -16,7 +16,7 @@
 
 #include <armv7.h>
 #include <cp15.h>
-#include <bsp.h>
+#include <parameters.h>
 
 #define CTRL_SCU_EN                 (1U << 0)
 #define CTRL_ADDR_FILTER_EN         (1U << 1)
@@ -69,32 +69,32 @@
 #define SNSAC_CPU3_GLOBAL_TIMER     (1U << 11)
 
 typedef struct {
-    air_u32_t ctrl;
-    air_u32_t cfg;  /* RO */
-    air_u32_t cpu_pow_st;
-    air_u32_t inv_reg_ss;
-    air_u32_t filter_start;
-    air_u32_t reserved_09[12];
-    air_u32_t filter_start_reg;
-    air_u32_t filter_end_reg;
-    air_u32_t reserved_48[2];
-    air_u32_t sac;
-    air_u32_t snsac;
-} scu_t;
+    volatile air_u32_t ctrl;
+    air_u32_t cfg; /* RO */
+    volatile air_u32_t cpu_pow_st;
+    volatile air_u32_t inv_reg_ss;
+    volatile air_u32_t filter_start;
+    volatile air_u32_t reserved_09[12];
+    volatile air_u32_t filter_start_reg;
+    volatile air_u32_t filter_end_reg;
+    volatile air_u32_t reserved_48[2];
+    volatile air_u32_t sac;
+    volatile air_u32_t snsac;
+} a9mpcore_scu_t;
 
-static volatile scu_t *scu = (volatile scu_t *)SCU_BASE_MEMORY;
+#define SCU ((a9mpcore_scu_t *)XPAR_PS7_SCUC_0_S_AXI_BASEADDR)
 
-static inline void scu_invalidate(air_u32_t cpu_id) {
-    scu->inv_reg_ss = ( (0xf) << ( (cpu_id & 0x3) * 4) );
+__FORCE_INLINE static void arm_scu_invalidate(air_u32_t cpu_id) {
+    SCU->inv_reg_ss = ( (0xf) << ( (cpu_id & 0x3) * 4) );
 }
 
-static inline void arm_a9mpcore_start_hook(void) {
+__FORCE_INLINE static void arm_a9mpcore_start_hook(void) {
 
     air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
 
     if (cpu_id == 0) {
         /* Enable SCU */
-        scu->ctrl |= CTRL_SCU_EN;
+        SCU->ctrl |= CTRL_SCU_EN;
     }
 
 #if PMK_SMP
@@ -106,8 +106,7 @@ static inline void arm_a9mpcore_start_hook(void) {
     arm_cp15_set_auxiliary_control(actlr);
 #endif
 
-    scu_invalidate(cpu_id);
+    arm_scu_invalidate(cpu_id);
 }
-
 
 #endif /* A9MPCORE_H_ */

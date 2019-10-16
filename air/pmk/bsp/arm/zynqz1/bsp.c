@@ -17,6 +17,7 @@
 #include <mmu.h>
 #include <gic.h>
 #include <timer.h>
+#include <slcr.h>
 
 #ifdef PMK_DEBUG
 #include <printk.h>
@@ -63,7 +64,7 @@ void bsp_start_hook(void) {
 air_u32_t bsp_core_init(void) {
 
     arm_a9mpcore_start_hook();
-    arm_define_uart(0);
+    arm_select_debug_uart(0);
 
     air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
 
@@ -76,7 +77,7 @@ air_u32_t bsp_core_init(void) {
 
         arm_isr_table_init();
         arm_hm_init();
-        arm_setup_uart(115200);
+        arm_setup_uart(0, 115200);
 //      arm_start_uart(); //TODO screws up in qemu. and everywhere else it seems
     }
 
@@ -134,10 +135,7 @@ void bsp_boot_core(air_u32_t cpu_id, void *entry_point) {
 /* Resets all cores */
 void bsp_restart_core(pmk_core_ctrl_t *core_ctx) {
 
-    volatile air_uptr_t pss_rst_ctrl = (air_uptr_t)(SLCR_BASE_MEMORY + 0x200);
-    while(true) {
-        *pss_rst_ctrl = 0x1;
-    }
+    arm_ps_reset();
 }
 
 /* TODO possibly go to standby mode */
