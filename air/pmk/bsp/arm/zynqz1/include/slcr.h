@@ -17,10 +17,7 @@
 #define SLCR_H_
 
 #include <air_arch.h>
-
-#define SLCR_BASE_MEMORY                0xf8000000
-
-/* too many registers. defined in place of use */
+#include <parameters.h>
 
 #define UART_CLK_CTRL_CLKACT0_ENABLE    (1U << 0)
 #define UART_CLK_CTRL_CLKACT1_ENABLE    (1U << 1)
@@ -45,28 +42,30 @@
 #define MIO_PIN_PULLUP(val)             (val << 12)
 #define MIO_PIN_DISABLE_RCVR            (1U << 13)
 
-#define SLCR_UNLOCK_KEY 0xDF0D
-#define SLCR_LOCK_KEY 0x767B
+#define SLCR_UNLOCK_KEY                 0xDF0D
+#define SLCR_LOCK_KEY                   0x767B
 
-typedef struct {                        /* 0xf8f0 1000*/
+/* too many registers. defined in place of use */
+typedef struct {                        /* 0xf800 0000*/
     air_u32_t scl;                      /* 0x000 */
     air_u32_t slcr_lock;                /* 0x004 */
     air_u32_t slcr_unlock;              /* 0x008 */
-    air_u32_t slcr_locksta;             /* 0x00c - 0x07c */
+    air_u32_t slcr_locksta;             /* 0x00c */
 } slcr_t;
 
-static volatile slcr_t *slcr = (slcr_t *)SLCR_BASE_MEMORY;
+#define SLCR ((slcr_t *)XPAR_PS7_SLCR_0_S_AXI_BASEADDR)
 
-static inline void arm_slcr_lock(void){
-    slcr->slcr_lock = SLCR_LOCK_KEY;
+__FORCE_INLINE static void arm_slcr_lock(void){
+    SLCR->slcr_lock = SLCR_LOCK_KEY;
 }
-static inline void arm_slcr_unlock(void){
-    slcr->slcr_unlock = SLCR_UNLOCK_KEY;
+
+__FORCE_INLINE static void arm_slcr_unlock(void){
+    SLCR->slcr_unlock = SLCR_UNLOCK_KEY;
 }
-static inline air_u32_t arm_slcr_is_locked(void){
-    return slcr->slcr_locksta;
-}
+
+#define ARM_SLCR_IS_LOCKED SLCR->slcr_locksta
 
 void arm_peripheral_soft_reset(void);
+void arm_ps_reset(void);
 
 #endif /* SLCR_H_ */

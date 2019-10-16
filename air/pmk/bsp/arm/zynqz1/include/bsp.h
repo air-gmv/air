@@ -16,10 +16,6 @@
 
 #ifndef ASM
 
-#define SCU_BASE_MEMORY     0xf8f00000
-#define IC_CPU_BASE_MEMORY  0xf8f00100
-#define IC_DIST_BASE_MEMORY 0xf8f01000
-
 #include <a9mpcore.h>
 #include <workspace.h>
 #include <gic.h>
@@ -93,7 +89,6 @@ static inline void arm_set_vector_base(void) {
     }
 }
 
-void arm_uart_transmit(char ch);
 #define bsp_console_outbyte(ch) arm_uart_transmit(ch)
 
 #endif /* ASM */
