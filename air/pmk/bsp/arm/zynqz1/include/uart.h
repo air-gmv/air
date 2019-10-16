@@ -18,30 +18,6 @@
 #include <armv7.h>
 #include <slcr.h>
 
-#define UART0_BASE_MEMORY               0xe0000000
-#define UART1_BASE_MEMORY               0xe0001000
-#define UART1_OFFSET                    0x00001000
-
-typedef struct {
-    volatile air_u32_t ctrl;
-    volatile air_u32_t mode;
-    volatile air_u32_t int_enable;
-    volatile air_u32_t int_disable;
-    volatile air_u32_t int_mask;
-    volatile air_u32_t int_status;
-    volatile air_u32_t baud_rate_gen;
-    volatile air_u32_t rx_timeout;
-    volatile air_u32_t rx_fifo_trigger;
-    volatile air_u32_t modem_ctrl;
-    volatile air_u32_t modem_status;
-    volatile air_u32_t status;
-    volatile air_u32_t tx_rx_fifo;
-    volatile air_u32_t baud_rate_div;
-    volatile air_u32_t flow_ctrl_delay;
-    volatile air_u32_t reserved[2];
-    volatile air_u32_t tx_fifo_trigger;
-} uart_t;
-
 #define ARM_UART_CTRL_RXRST             (1U << 0)
 #define ARM_UART_CTRL_TXRST             (1U << 1)
 #define ARM_UART_CTRL_RX_EN             (1U << 2)
@@ -107,9 +83,29 @@ typedef struct {
 #define ARM_UART_STATUS_TXFULL          (1U << 4)
 /* more...  (unused) */
 
-void arm_define_uart(air_u32_t port);
+typedef struct {
+    volatile air_u32_t ctrl;
+    volatile air_u32_t mode;
+    volatile air_u32_t int_enable;
+    volatile air_u32_t int_disable;
+    volatile air_u32_t int_mask;
+    volatile air_u32_t int_status;
+    volatile air_u32_t baud_rate_gen;
+    volatile air_u32_t rx_timeout;
+    volatile air_u32_t rx_fifo_trigger;
+    volatile air_u32_t modem_ctrl;
+    volatile air_u32_t modem_status;
+    volatile air_u32_t status;
+    volatile air_u32_t tx_rx_fifo;
+    volatile air_u32_t baud_rate_div;
+    volatile air_u32_t flow_ctrl_delay;
+    volatile air_u32_t reserved[2];
+    volatile air_u32_t tx_fifo_trigger;
+} uart_t;
+
 //void arm_start_uart(void);
-void arm_setup_uart(air_u32_t BaudRate);
+void arm_setup_uart(air_u32_t port, air_u32_t BaudRate);
+void arm_select_debug_uart(air_u32_t port);
 void arm_uart_transmit(char ch);
 
 #endif /* UART_H_ */
