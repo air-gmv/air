@@ -59,7 +59,7 @@ void arm_init_ttc(air_u32_t timer_id) {
 
         ttc->clk_ctrl_1 = ARM_TTC_CLK_CTRL_PS_EN | ARM_TTC_CLK_CTRL_PS(PRESCALER_N);
         ttc->cnt_ctrl_1 = ARM_TTC_CNT_CTRL_DIS;
-        arm_data_synchronization_barrier(15);
+        arm_data_synchronization_barrier();
         ttc->intv_cnt_1 = ARM_TTC_INTV_CNT(counter);
         ttc->int_en_1 = ARM_TTC_INT_EN_INTV;
     }
