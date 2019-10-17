@@ -308,12 +308,15 @@ void arm_mmu_enable(arm_mmu_context_t *ctx) {
     printk("\n\t\t    ---> MMU enable with ttbr = 0x%08x <---\n\n", (air_u32_t)ctx->ttbr0);
 #endif
 
+    arm_cp15_set_CONTEXTIDR(0);
+    arm_instruction_synchronization_barrier();
     air_u32_t ttbr0 = ((air_u32_t)ctx->ttbr0 & ~(TTBR0_SIZE - 1)) | (0b0010011);
     arm_cp15_set_translation_table0_base(ttbr0);
 #if TTBR_N
     arm_cp15_set_translation_table1_base((air_u32_t)ctx->ttbr1 & ~(TTBR1_SIZE - 1) | (0b0010011));
 #endif
     arm_instruction_synchronization_barrier();
+    arm_cp15_set_CONTEXTIDR(ctx->id);
 
     air_u32_t sctlr = arm_cp15_get_system_control();
     sctlr |= (ARM_SCTLR_M);
@@ -337,7 +340,7 @@ void arm_mmu_change_context(arm_mmu_context_t *ctx) {
     air_u32_t ttbr0 = ((air_u32_t)ctx->ttbr0 & ~(TTBR0_SIZE - 1)) | (0b0010011);
     arm_cp15_set_translation_table0_base(ttbr0);
     arm_instruction_synchronization_barrier();
-    arm_cp15_set_CONTEXTIDR(ctx->context);
+    arm_cp15_set_CONTEXTIDR(ctx->id);
 }
 
 void arm_segregation_init(void) {
@@ -361,7 +364,7 @@ void arm_segregation_init(void) {
         /* get a MMU control structure for the partition */
         arm_mmu_context_t *ctrl = pmk_workspace_alloc(sizeof(arm_mmu_context_t));
 
-        ctrl->context = i + 1;
+        ctrl->id = i + 1;
 
         ctrl->ttbr0 = arm_mmu_get_table(0);
 #if TTBR_N
