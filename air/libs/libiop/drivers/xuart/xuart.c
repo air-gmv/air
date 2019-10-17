@@ -259,7 +259,7 @@ void arm_setup_xuart(uart_ctrl_t *uart, air_u32_t BaudRate) {
     //enable uart
     uart->ctrl = (ARM_UART_CTRL_RX_EN | ARM_UART_CTRL_TX_EN);
 
-    arm_data_synchronization_barrier(15);
+    arm_data_synchronization_barrier();
 }
 
 
