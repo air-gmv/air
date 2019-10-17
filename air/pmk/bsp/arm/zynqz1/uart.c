@@ -73,10 +73,10 @@ void arm_define_uart(air_u32_t port) {
 //    /* Baud Rate of 921,600. Values on page 594 of ug585-zynq-7000-trm */
 //    uart0->baud_rate_gen = 9;
 //    uart0->baud_rate_div = 5;
-//    arm_data_synchronization_barrier(15);
+//    arm_data_synchronization_barrier();
 //    uart0->ctrl = (ARM_UART_CTRL_RXRST |
 //            ARM_UART_CTRL_TXRST);
-//    arm_data_synchronization_barrier(15);
+//    arm_data_synchronization_barrier();
 //    uart0->ctrl = ((ARM_UART_CTRL_RX_EN |
 //                ARM_UART_CTRL_TX_EN) &
 //                ~ARM_UART_CTRL_RX_DIS &
@@ -155,7 +155,7 @@ void arm_setup_uart(air_u32_t BaudRate) {
     //enable uart
     uart->ctrl = (ARM_UART_CTRL_RX_EN | ARM_UART_CTRL_TX_EN);
 
-    arm_data_synchronization_barrier(15);
+    arm_data_synchronization_barrier();
 }
 
 void arm_uart_transmit(char ch) {
