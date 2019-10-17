@@ -209,7 +209,7 @@ typedef struct {
  * \brief ARM MMU control
  */
 typedef struct {
-    air_u32_t context;                  /**< context id for CONTEXTIDR      */
+    air_u32_t id;                       /**< context id for CONTEXTIDR      */
     air_uptr_t ttbr0;                   /**< translation table base reg 0   */
     air_uptr_t ttbr1;                   /**< translation table base reg 1   */
     air_u32_t ttbcr;                    /**< translation table control reg  */
