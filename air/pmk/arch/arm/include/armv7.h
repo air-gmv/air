@@ -247,7 +247,7 @@ inline static void arm_instruction_synchronization_barrier(void) {
  *
  * TODO specific compiler optimizations
  */
-inline static void arm_data_synchronization_barrier(air_u32_t intrinsic) {
+inline static void arm_data_synchronization_barrier(void) {
     __asm__ volatile ("dsb");
 }
 
@@ -256,7 +256,7 @@ inline static void arm_data_synchronization_barrier(air_u32_t intrinsic) {
  *
  * TODO specific compiler optimizations
  */
-inline static void arm_data_memory_barrier(air_u32_t intrinsic) {
+inline static void arm_data_memory_barrier(void) {
     __asm__ volatile ("dmb");
 }
 

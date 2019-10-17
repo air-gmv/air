@@ -35,14 +35,14 @@ air_u32_t arm_lock(air_uptr_t hash) {
             : "=&r" (lock), "=&r" (token)
             : [hash] "r" (hash)
             : "memory");
-    arm_data_memory_barrier(15);
+    arm_data_memory_barrier();
 
     return pil;
 }
 
 air_u32_t arm_unlock(air_uptr_t hash, air_u32_t pil) {
 
-    arm_data_memory_barrier(15);
+    arm_data_memory_barrier();
     *hash = 0;
     arm_restore_preemption(pil);
     return 0;

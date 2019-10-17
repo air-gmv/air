@@ -61,7 +61,7 @@ void bsp_idle_loop(void);
 
 
 static inline void bsp_wait_for_event(void) {
-    arm_data_synchronization_barrier(15);
+    arm_data_synchronization_barrier();
     __asm__ volatile ("wfe" : : : "memory");
 }
 

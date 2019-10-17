@@ -222,7 +222,7 @@ static inline void arm_cp15_branch_predictor_invalidate_all(void) {
 static inline void arm_cp15_tlb_invalidate(void) {
     __asm__ volatile ("mcr p15, 0, r4, c8, c7, 0\n");
 
-    arm_data_synchronization_barrier(15);
+    arm_data_synchronization_barrier();
     arm_instruction_synchronization_barrier();
 }
 
