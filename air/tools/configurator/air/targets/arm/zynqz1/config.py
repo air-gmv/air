@@ -113,8 +113,9 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
 kernel_headers = set(utils.flatten([
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'core'), ['.h', '.ld']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'arch', 'arm'), ['.h', '.ld']),
-    file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'zynqz1'), ['.h', '.ld']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'shared'), ['.h', '.ld']),
+    file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'xilinx'), ['.h', '.ld']),
+    file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'zynqz1'), ['.h', '.ld']),
 ]))
 
 # Lib AIR sources
