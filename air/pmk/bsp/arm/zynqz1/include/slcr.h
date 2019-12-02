@@ -16,7 +16,7 @@
 #ifndef SLCR_H_
 #define SLCR_H_
 
-#include <air_arch.h>
+#include <a9mpcore.h>
 #include <parameters.h>
 
 #define UART_CLK_CTRL_CLKACT0_ENABLE    (1U << 0)
@@ -63,7 +63,11 @@ __FORCE_INLINE static void arm_slcr_unlock(void){
     SLCR->slcr_unlock = SLCR_UNLOCK_KEY;
 }
 
-#define ARM_SLCR_IS_LOCKED SLCR->slcr_locksta
+__FORCE_INLINE static air_u32_t arm_slcr_is_locked(void){
+    return SLCR->slcr_locksta;
+}
+
+#define PERI_RST                        0x100
 
 void arm_peripheral_soft_reset(void);
 void arm_ps_reset(void);
