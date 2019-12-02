@@ -11,6 +11,7 @@
  * @brief UART support structures and function definitions
  */
 #include <bsp.h>
+#include <slcr.h>
 #include <xuart.h>
 
 air_u32_t iop_xuart_init(iop_device_driver_t *iop_dev, void *arg) {
