@@ -11,5 +11,6 @@
 
 void pos_router();
 void pre_router();
+void route_request(iop_logical_device_t *ldev, iop_wrapper_t *wrapper);
 
 #endif
