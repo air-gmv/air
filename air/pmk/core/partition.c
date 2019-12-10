@@ -207,7 +207,7 @@ void pmk_partition_reload(pmk_partition_t *partition) {
     cpu_preemption_flags_t flags = (0x0F << 8);
 
     /* reload partition */
-    pmk_partition_load(partition->elf, cpu_get_physical_addr(partition->mmu_ctrl, partition->mmap->v_addr), partition->mmap->v_addr);
+    pmk_partition_load(partition->elf, partition->mmap->v_addr);
 
     cpu_disable_preemption(flags);
 
