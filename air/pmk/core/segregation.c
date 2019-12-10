@@ -21,19 +21,19 @@
 #include <configurations.h>
 
 void pmk_segregation_int(void) {
-	
-	air_u32_t i, j;
+
+    air_u32_t i, j;
 
 #ifdef PMK_DEBUG
     printk(" :: Segregation initialization\n");
 #endif
 
-	/* arch dependent initialization */
-	cpu_segregation_init();
-	
-	air_uptr_t p_addr = (air_uptr_t)&air_kernel_memory_end;
+    /* arch dependent initialization */
+    cpu_segregation_init();
 
-	/* get lists of partitions and shared memory areas */
+    air_uptr_t p_addr = (air_uptr_t)&air_kernel_memory_end;
+
+    /* get lists of partitions and shared memory areas */
     pmk_list_t *partition_list = pmk_get_usr_partitions();
     pmk_list_t *shm_areas_list = pmk_get_shared_memory_areas();
 
@@ -64,11 +64,11 @@ void pmk_segregation_int(void) {
                 PMK_MMU_R | PMK_MMU_W | PMK_MMU_E | PMK_MMU_CACHEABLE);
 
         /* load the partition ELF data into the main memory */
-        pmk_partition_load(partition->elf, (void *)p_addr, partition->mmap->v_addr);
+        pmk_partition_load(partition->elf, (void *)p_addr);
 
         /* increment the physical address by size requested by the partition*/
         p_addr += ADDR_ALIGN(partition->mmap->size, partition->mmap->p_unit);
-	}
+    }
 
     /* configure share main memory area */
     for(i = 0; i < shm_areas_list->length; ++i) {

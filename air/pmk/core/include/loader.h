@@ -44,10 +44,9 @@ typedef struct {
 /**
  * @brief Loads a partition elf data into the main memory
  * @param elf Compressed ELF data pointer
- * @param p_addr physical address of the partition
- * @param v_addr virtual address of the partition
+ * @param addr Address of the partition (beware MMU state)
  * @ingroup pmk_partition
  */
-void pmk_partition_load(pmk_elf_t *elf, void *p_addr, void *v_addr);
+void pmk_partition_load(pmk_elf_t *elf, void *addr);
 
 #endif /* __LOADER_H__ */
