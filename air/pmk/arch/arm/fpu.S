@@ -21,24 +21,26 @@
 
     .thumb
     .syntax unified
-
 global(arm_restore_fpu)
 #if PMK_FPU_SUPPORT
-    mrc     p15, 0, r1, c1, c0, 2
-    orr.w   r1, #(0b1010 << 20)
-    mcr     p15, 0, r1, c1, c0, 2
+    push    {r4-r5}
 
-    ldm     r0!, {r2-r3}
-    vmsr    fpexc, r2
+    mrc     p15, 0, r4, c1, c0, 2
+    orr.w   r4, #(0b1010 << 20)
+    mcr     p15, 0, r4, c1, c0, 2
 
-    tst.w   r2, #(1 << 30)
+    isb
+
+    ldm     r0!, {r4-r5}
+    vmsr    fpexc, r4
+
+    tst.w   r4, #(1 << 30)
     ittt    ne
-    vmsrne  fpscr, r3
+    vmsrne  fpscr, r5
     vldmiane r0!, {d0-d15}
     vldmiane r0, {d16-d31}
+
+    pop     {r4-r5}
 #endif
 
-#ifdef __thumb__
-    orr     lr, #1
-#endif
     bx      lr
