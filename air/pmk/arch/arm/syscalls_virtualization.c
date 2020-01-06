@@ -36,14 +36,12 @@ void arm_syscall_enable_traps(pmk_core_ctrl_t *core) {
 
 void arm_syscall_disable_fpu(pmk_core_ctrl_t *core) {
 
-    arm_interrupt_stack_frame_t *isf = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
-    isf->vfp_context->fpexc &= ~ARM_VFP_FPEXC_ENABLE;
+    core->context->vfp_context->fpexc &= ~ARM_VFP_FPEXC_ENABLE;
 }
 
 void arm_syscall_enable_fpu(pmk_core_ctrl_t *core) {
 
-    arm_interrupt_stack_frame_t *isf = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
-    isf->vfp_context->fpexc |= ARM_VFP_FPEXC_ENABLE;
+    core->context->vfp_context->fpexc |= ARM_VFP_FPEXC_ENABLE;
 }
 
 air_u32_t arm_syscall_get_tbr(pmk_core_ctrl_t *core) {

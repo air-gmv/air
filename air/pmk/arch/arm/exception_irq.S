@@ -86,7 +86,7 @@ arm_save_non_user_mode:
     tst     r2, #(1 << 30)
     beq     1f
     vmrs    r3, fpscr
-    ldr     r4, [r11, #(offsetof_arm_interrupt_stack_frame_t_vfp_context)]
+    ldr     r4, [r12, #(offsetof_arm_core_context_t_vfp_context)]
     stm     r4!, {r2, r3}
     vstmia  r4!, {d0-d15}
     vstmia  r4, {d16-d31}
@@ -122,7 +122,7 @@ arm_restore_not_trashed:
     ldr     r7, [r11, #(offsetof_arm_core_context_t_isf_pointer)]
 
 /*
-    ldr     r1, [r7, #(offsetof_arm_interrupt_stack_frame_t_vfp_context)]
+    ldr     r1, [r7, #(offsetof_arm_core_context_t_vfp_context)]
     ldm     r1!, {r2-r3}
     vmsr    fpexc, r2
     vmsr    fpscr, r3

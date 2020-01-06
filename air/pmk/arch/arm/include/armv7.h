@@ -147,8 +147,6 @@ typedef struct {
     air_u32_t ret_addr;                 /**< return addr after the exception*/
     air_u32_t ret_psr;                  /**< pre-exception cpsr             */
     arm_exception_e exception_name;
-    arm_vfp_context_t *vfp_context;
-    air_u32_t reserved;
 } arm_interrupt_stack_frame_t;
 
 /**
@@ -199,10 +197,12 @@ typedef struct {
     void *entry_point;                  /**< core entry point               */
     void *isf_pointer;                  /**< core stack pointer             */
     void *idle_isf_pointer;             /**< core ISF stack                 */
+    arm_vfp_context_t *vfp_context;     /**< core fpu context               */
     air_u32_t isr_nesting_level;        /**< core interrupt nesting level   */
     air_u32_t ipc_event;                /**< IPC event                      */
     air_u32_t state;                    /**< system state                   */
     void *hm_event;                     /**< health-monitor event           */
+    air_u32_t reserved;
 } arm_core_context_t;
 
 /**
