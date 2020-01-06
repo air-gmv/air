@@ -150,7 +150,7 @@ air_uptr_t arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
                 return vbar + 6;
 
             case AIR_FLOAT_ERROR:
-                arm_restore_fpu(((arm_interrupt_stack_frame_t *)(core->context->isf_pointer))->vfp_context);
+                arm_restore_fpu(core->context->vfp_context);
                 arm_syscall_rett(core);
                 return NULL;
 

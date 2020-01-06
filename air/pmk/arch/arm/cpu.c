@@ -51,11 +51,9 @@ void core_context_init(core_context_t *context, air_u32_t id) {
 
 #if PMK_FPU_SUPPORT
     /* allocate space to hold an FPU context */
-    ((arm_interrupt_stack_frame_t *)context->isf_pointer)->vfp_context =
-            (arm_vfp_context_t *) pmk_workspace_alloc(sizeof(arm_vfp_context_t));
+    context->vfp_context = (arm_vfp_context_t *)pmk_workspace_alloc(sizeof(arm_vfp_context_t));
 #else
-    ((arm_interrupt_stack_frame_t *)context->isf_pointer)->vfp_context =
-            (arm_vfp_context_t *)NULL;
+    context->vfp_context = (arm_vfp_context_t *)NULL;
 #endif
 
     /* initialize the IPC event */
@@ -63,26 +61,22 @@ void core_context_init(core_context_t *context, air_u32_t id) {
 
     /* initialize the System State and HM event */
     context->state = AIR_STATE_MODULE_EXEC;
-    pmk_hm_event_t *hm_event = (pmk_hm_event_t *) \
-            pmk_workspace_alloc(sizeof(pmk_hm_event_t));
+
+    pmk_hm_event_t *hm_event = (pmk_hm_event_t *)pmk_workspace_alloc(sizeof(pmk_hm_event_t));
     context->hm_event = hm_event;
     hm_event->nesting = 0;
 
 #ifdef PMK_DEBUG
-
-    printk("    context %i at         "
-            "0x%08x\n",
-            id, context);
-    printk("    idle_isf_pointer at  "
-            "0x%08x to 0x%08x\n",
+    printk("    :: context %02i at           0x%08x\n", id, context);
+    printk("       idle_isf_pointer at    0x%08x to 0x%08x\n",
             context->idle_isf_pointer,
-            (context->idle_isf_pointer + sizeof(arm_interrupt_stack_frame_t)));
-    printk("    fpu_context at       "
-            "0x%08x to 0x%08x\n",
-            ((arm_interrupt_stack_frame_t *)context->isf_pointer)->vfp_context,
-            ((arm_interrupt_stack_frame_t *)context->isf_pointer)->vfp_context
-            + sizeof(arm_vfp_context_t));
-
+            context->idle_isf_pointer + sizeof(arm_interrupt_stack_frame_t));
+    printk("       fpu_context at         0x%08x to 0x%08x\n",
+            context->vfp_context,
+            context->vfp_context + sizeof(arm_vfp_context_t));
+    printk("       hm_event at            0x%08x to 0x%08x\n",
+            context->hm_event,
+            context->hm_event + sizeof(pmk_hm_event_t));
 #endif
 }
 
@@ -159,9 +153,9 @@ void core_context_setup_partition(
         }
 
         if ((partition->permissions & AIR_PERMISSION_FPU_CONTROL) != 0) {
-            isf->vfp_context->fpexc = (ARM_VFP_FPEXC_ENABLE);
+            context->vfp_context->fpexc = (ARM_VFP_FPEXC_ENABLE);
         } else {
-            isf->vfp_context->fpexc = 0;
+            context->vfp_context->fpexc = 0;
         }
 
         /* setup the partition entry point */
@@ -169,9 +163,8 @@ void core_context_setup_partition(
 
 #ifdef PMK_DEBUG
         printk("       cpu::setup::context->entry_point   = 0x%x\n"
-                "       cpu::setup::isf->ret_addr          = 0x%x\n",
-                context->entry_point,
-                isf->ret_addr);
+               "       cpu::setup::isf->ret_addr          = 0x%x\n",
+               context->entry_point, isf->ret_addr);
 #endif
 
         /* setup the stack pointer of the partition */
@@ -181,8 +174,8 @@ void core_context_setup_partition(
         isf->usr_sp = stack - 4;
 #ifdef PMK_DEBUG
         printk("       cpu::setup::stack                  = 0x%x\n"
-                "       cpu::setup::isf->usr_sp            = 0x%x\n",
-                stack, isf->usr_sp);
+               "       cpu::setup::isf->usr_sp            = 0x%x\n",
+               stack, isf->usr_sp);
 #endif
 
         // TODO something about cache
