@@ -53,7 +53,11 @@ __FORCE_INLINE static air_u32_t arm_cp15_get_system_control(void) {
 }
 
 __FORCE_INLINE static void arm_cp15_set_system_control(air_u32_t val) {
+    arm_data_synchronization_barrier();
+    arm_instruction_synchronization_barrier();
     __asm__ volatile ("mcr p15, 0, %0, c1, c0, 0\n"::"r" (val));
+    arm_data_synchronization_barrier();
+    arm_instruction_synchronization_barrier();
 }
 
 __FORCE_INLINE static air_u32_t arm_cp15_get_level_of_coherency(air_u32_t clidr) {
@@ -201,13 +205,21 @@ __FORCE_INLINE static void arm_cp15_set_exception_base_address(air_u32_t val) {
     __asm__ volatile ("mcr p15, 0, %0, c12, c0, 0\n"::"r" (val):"memory");
 }
 
+/**
+ * \details
+ * loads the i-th core from the pmk_sharedarea_t
+ * the pmk_core_ctrl_t * points to a contiguous memory of n cores
+ * since pmk_core_ctrl_t holds 8 4byte values, access to the next cores can be done by
+ * adding the sizeof pmk_core_ctrl_t i times. since 8*4 = 32 = 2⁵, the value can more efficiently
+ * be shifted left by 5
+ */
 __FORCE_INLINE static void arm_cp15_setup_Per_CPU(air_u32_t cpu_id) {
     air_u32_t val;
     air_u32_t offset = 4;
     __asm__ volatile (
             "ldr %[rx], =air_shared_area\n"
             "ldr %[rx], [%[rx], %[offset]]\n"
-            "add %[rx], %[rx], %[id], asl #5\n"
+            "add %[rx], %[rx], %[id], lsl #5\n"
             "mcr p15, 0, %[rx], c13, c0, 4\n"
             : [rx] "=&r" (val)
             : [id] "r" (cpu_id), [offset] "r" (offset)
