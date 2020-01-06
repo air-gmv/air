@@ -19,22 +19,16 @@
 
 /**
  * \brief ARM Health Monitor handler
- * \param id the architecture specific exception ID
- * \param fsr the Fault Status Register (IFSR, DFSR or SPSR for undef)
- * \param far the Fault Address Register (IFAR, DFAR or LR for undef)
- * \param lr the LR (prefered returned address)
+ * \param frame interrupt stack frame
+ * \param core pmk core control structure
  * \return POS HM handler address (or NULL if continues execution)
  */
-air_uptr_t arm_hm_handler(arm_exception_e id, air_u32_t fsr, air_u32_t far, air_uptr_t lr);
-
-static air_uptr_t arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core);
-static air_boolean_t arm_hm_undef_is_fpu(air_u32_t ret_addr, air_boolean_t is_T32);
+air_uptr_t arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core);
 
 /**
  * \brief Restores the FPU with the current context values
  * \param vfp_context Current context fpu registers
  */
 void arm_restore_fpu(arm_vfp_context_t *vfp_context);
-
 #endif /* HM_H_ */
 

@@ -240,4 +240,30 @@ __FORCE_INLINE static void arm_cp15_set_CONTEXTIDR(air_u32_t val) {
     __asm__ volatile ("mcr p15, 0, %0, c13, c0, 1\n"::"r" (val));
 }
 
+/**
+ * Fault status/address registers
+ */
+__FORCE_INLINE static air_u32_t arm_cp15_get_IFSR(void) {
+    air_u32_t val;
+    __asm__ volatile ("mrc p15, 0, %0, c5, c0, 1\n":"=r" (val));
+    return val;
+}
+
+__FORCE_INLINE static air_u32_t arm_cp15_get_IFAR(void) {
+    air_u32_t val;
+    __asm__ volatile ("mrc p15, 0, %0, c6, c0, 2\n":"=r" (val));
+    return val;
+}
+
+__FORCE_INLINE static air_u32_t arm_cp15_get_DFSR(void) {
+    air_u32_t val;
+    __asm__ volatile ("mrc p15, 0, %0, c5, c0, 0\n":"=r" (val));
+    return val;
+}
+
+__FORCE_INLINE static air_u32_t arm_cp15_get_DFAR(void) {
+    air_u32_t val;
+    __asm__ volatile ("mrc p15, 0, %0, c6, c0, 0\n":"=r" (val));
+    return val;
+}
 #endif /* CP15_H_ */
