@@ -32,16 +32,15 @@ int main(void) {
     OFFSETOF(arm_core_context_t, trash);
     OFFSETOF(arm_core_context_t, isf_pointer);
     OFFSETOF(arm_core_context_t, idle_isf_pointer);
+    OFFSETOF(arm_core_context_t, vfp_context);
     OFFSETOF(arm_core_context_t, isr_nesting_level);
     OFFSETOF(arm_core_context_t, state);
 
     OFFSETOF(arm_interrupt_stack_frame_t, usr_sp);
     OFFSETOF(arm_interrupt_stack_frame_t, ret_addr);
-    OFFSETOF(arm_interrupt_stack_frame_t, vfp_context);
     SIZEOF(arm_interrupt_stack_frame_t);
 
     OFFSETOF(pmk_partition_t, context);
 
     LOG2(pmk_core_ctrl_t_size, 5);
-
 }
