@@ -22,7 +22,7 @@
  * @brief POS exception table
  */
 extern volatile air_u32_t arm_pos_exceptions;
-extern volatile air_uptr_t isr_table[PMK_MAX_CORES];
+extern volatile air_uptr_t *isr_table[PMK_MAX_CORES];
 
 void arm_pos_init(void) {
 

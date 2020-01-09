@@ -21,7 +21,7 @@
 /**
  * @brief Core exception ISR tables
  */
-extern volatile air_uptr_t isr_table[PMK_MAX_CORES];
+extern volatile air_uptr_t *isr_table[PMK_MAX_CORES];
 
 typedef void (*isr)(void);
 

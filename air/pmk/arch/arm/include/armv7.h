@@ -153,7 +153,7 @@ typedef struct {
  * \brief Context saved on stack for a supervisor call.
  */
 typedef struct {
-    air_uptr_t sp;
+    air_uptr_t *sp;
     air_u32_t r0;
     air_u32_t r1;
     air_u32_t r2;
@@ -167,7 +167,7 @@ typedef struct {
 typedef struct {
     air_u32_t id;                       /**< virtual CPU id                 */
     air_u32_t psr;                      /**< virtual PSR                    */
-    air_uptr_t vbar;                    /**< virtual vector base address    */
+    air_uptr_t *vbar;                    /**< virtual vector base address    */
     air_u32_t reserved;
 } arm_virtual_cpu_t;
 
@@ -210,8 +210,8 @@ typedef struct {
  */
 typedef struct {
     air_u32_t id;                       /**< context id for CONTEXTIDR      */
-    air_uptr_t ttbr0;                   /**< translation table base reg 0   */
-    air_uptr_t ttbr1;                   /**< translation table base reg 1   */
+    air_uptr_t *ttbr0;                   /**< translation table base reg 0   */
+    air_uptr_t *ttbr1;                   /**< translation table base reg 1   */
     air_u32_t ttbcr;                    /**< translation table control reg  */
 } arm_mmu_context_t;
 
@@ -285,7 +285,7 @@ air_u32_t arm_copy_from_user(
  * \param v_addr Virtual address
  * \return Physical address if available, NULL otherwise
  */
-air_uptr_t arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr);
+air_uptr_t *arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr);
 
 /**
  * \brief Instruction synchronization barrier
