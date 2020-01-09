@@ -142,11 +142,11 @@ typedef struct {
     air_u32_t r10;
     air_u32_t r11;
     air_u32_t r12;
+    arm_exception_e exception_name;     /**< here due to ISF faster save    */
     air_u32_t usr_sp;                   /**< pre-exception sp               */
     air_u32_t usr_lr;                   /**< pre-exception lr               */
     air_u32_t ret_addr;                 /**< return addr after the exception*/
     air_u32_t ret_psr;                  /**< pre-exception cpsr             */
-    arm_exception_e exception_name;
 } arm_interrupt_stack_frame_t;
 
 /**
@@ -168,7 +168,7 @@ typedef struct {
     air_u32_t id;                       /**< virtual CPU id                 */
     air_u32_t psr;                      /**< virtual PSR                    */
     air_uptr_t vbar;                    /**< virtual vector base address    */
-    air_u32_t reserved;                 /**< alignment                      */
+    air_u32_t reserved;
 } arm_virtual_cpu_t;
 
 /**
