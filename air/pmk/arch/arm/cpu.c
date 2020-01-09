@@ -51,7 +51,7 @@ void core_context_init(core_context_t *context, air_u32_t id) {
     /* allocate context stack */
     air_uptr_t isf = (air_uptr_t)((air_u32_t)pmk_workspace_alloc(SIZEOF_ISF) + SIZEOF_ISF);
 
-    context->idle_isf_pointer = (void *)((air_u32_t)isf - sizeof(arm_interrupt_stack_frame_t));
+    context->idle_isf_pointer = (void *)(isf - sizeof(arm_interrupt_stack_frame_t));
     context->isf_pointer = context->idle_isf_pointer;
 
 #if PMK_FPU_SUPPORT

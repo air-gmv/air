@@ -18,7 +18,7 @@
 /**
  * @brief Core exception ISR tables
  */
-volatile air_uptr_t isr_table[PMK_MAX_CORES];
+volatile air_uptr_t *isr_table[PMK_MAX_CORES];
 volatile air_u32_t __isr_table[PMK_MAX_CORES * ARM_IRQ_COUNT];
 
 void arm_pos_smp_init(void) {

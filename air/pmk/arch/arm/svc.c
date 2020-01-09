@@ -25,9 +25,9 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
     air_u64_t elapsed = 0;
 
     if (frame->ret_psr & ARM_PSR_T) {
-        svc_id = ( *((air_uptr_t)(frame->ret_addr - 2)) & 0xff );
+        svc_id = ( *((air_uptr_t *)(frame->ret_addr - 2)) & 0xff );
     } else {
-        svc_id = ( *((air_uptr_t)(frame->ret_addr - 4)) & 0xffffff );
+        svc_id = ( *((air_uptr_t *)(frame->ret_addr - 4)) & 0xffffff );
     }
 
     switch (svc_id) {
@@ -157,7 +157,7 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
                 (air_identifier_t)frame->r1,
                 (air_message_ptr_t)frame->r2,
                 (air_sz_t *)frame->r3,
-                (void *)((air_uptr_t)frame->usr_sp)[0]);
+                (void *)((air_uptr_t *)frame->usr_sp)[0]);
         break;
     case AIR_SYSCALL_WRITE_PORT:
         frame->r0 = (air_u32_t)pmk_syscall_write_port(
@@ -166,7 +166,7 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
                 (air_identifier_t)frame->r1,
                 (air_message_ptr_t)frame->r2,
                 (air_sz_t)frame->r3,
-                (void *)((air_uptr_t)frame->usr_sp)[0]);
+                (void *)((air_uptr_t *)frame->usr_sp)[0]);
         break;
     case AIR_SYSCALL_GET_SHARED_AREA:
         frame->r0 = (air_u32_t)pmk_syscall_get_sharedmemory(

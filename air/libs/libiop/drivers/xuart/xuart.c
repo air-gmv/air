@@ -188,7 +188,7 @@ air_u32_t iop_xuart_close(iop_device_driver_t *iop_dev, void *arg) {
 /*----------------------------------------------------------------------*/
 
 void arm_reset_uart(void) {
-    volatile air_uptr_t uart_rst_ctrl = (air_uptr_t) (UART_RST_CTRL);
+    volatile air_uptr_t *uart_rst_ctrl = (air_uptr_t *) (UART_RST_CTRL);
 
     if (arm_slcr_is_locked()) {
         arm_slcr_unlock();

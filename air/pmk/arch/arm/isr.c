@@ -25,14 +25,14 @@ void arm_isr_handler_print_frame(arm_interrupt_stack_frame_t *frame, const char 
 
 typedef void (*isr)(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core);
 
-air_uptr_t arm_isr_handler_table[ZYNQ_MAX_INT];
+air_uptr_t * arm_isr_handler_table[ZYNQ_MAX_INT];
 
 void arm_isr_table_init(void) {}
 
-air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) {
+air_uptr_t * arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) {
 
     /* Return Value */
-    air_uptr_t ret = NULL;
+    air_uptr_t * ret = NULL;
 
     /* Acknowledge Interrupt */
     air_u32_t ack = arm_acknowledge_int();
@@ -68,7 +68,7 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
         return ret;
     }
 
-    if (arm_isr_handler_table[id] != (air_uptr_t)NULL) {
+    if (arm_isr_handler_table[id] != (air_uptr_t *)NULL) {
         ((isr)arm_isr_handler_table[id])(frame, core);
     }
 
@@ -105,19 +105,19 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
     return ret;
 }
 
-air_uptr_t arm_isr_install_handler(air_u32_t vector, void *handler) {
+air_uptr_t * arm_isr_install_handler(air_u32_t vector, void *handler) {
 
-    air_uptr_t old_handler = (air_uptr_t)arm_isr_handler_table[vector];
+    air_uptr_t * old_handler = (air_uptr_t *)arm_isr_handler_table[vector];
 
     if (handler != old_handler) {
-        arm_isr_handler_table[vector] = (air_uptr_t)handler;
+        arm_isr_handler_table[vector] = (air_uptr_t *)handler;
     }
     return old_handler;
 }
 
-air_uptr_t arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
+air_uptr_t * arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
 
-    air_uptr_t ret = NULL;
+    air_uptr_t * ret = NULL;
 
     arm_virtual_cpu_t *vcpu = &core->context->vcpu;
     arm_virtual_gic_t *vgic = &core->context->vgic;
@@ -125,7 +125,7 @@ air_uptr_t arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
     air_u32_t psr = vcpu->psr;
     air_u32_t psr_i = ((psr & ARM_PSR_I) >> 7);
     air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
-    air_uptr_t vbar = vcpu->vbar;
+    air_uptr_t * vbar = vcpu->vbar;
 
     if (vbar == NULL)
         return ret;

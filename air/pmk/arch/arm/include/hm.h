@@ -23,7 +23,7 @@
  * \param core pmk core control structure
  * \return POS HM handler address (or NULL if continues execution)
  */
-air_uptr_t arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core);
+air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core);
 
 /**
  * \brief Restores the FPU with the current context values

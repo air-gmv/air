@@ -22,7 +22,7 @@
 #include <printk.h>
 #endif
 
-static air_uptr_t arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core);
+static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core);
 static air_boolean_t arm_hm_undef_is_fpu(air_u32_t ret_addr, air_boolean_t is_T32);
 
 /**
@@ -31,10 +31,10 @@ static air_boolean_t arm_hm_undef_is_fpu(air_u32_t ret_addr, air_boolean_t is_T3
  */
 void arm_hm_init(void) {}
 
-air_uptr_t arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) {
+air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) {
 
     arm_exception_e hm_id = frame->exception_name;
-    air_uptr_t ret = NULL;
+    air_uptr_t *ret = NULL;
 
     air_error_e error_id;
     air_u32_t fsr = 0, far = 0;
@@ -57,7 +57,7 @@ air_uptr_t arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *c
     case ARM_EXCEPTION_UNDEF:
 
         /* FPU Lazy Switching */
-        if (arm_hm_undef_is_fpu(*(air_uptr_t)frame->ret_addr, (frame->ret_psr & ARM_PSR_T))) {
+        if (arm_hm_undef_is_fpu(*(air_uptr_t *)frame->ret_addr, (frame->ret_psr & ARM_PSR_T))) {
             error_id = AIR_FLOAT_ERROR;
         } else {
             error_id = AIR_UNIMPLEMENTED_ERROR;
@@ -118,17 +118,17 @@ air_uptr_t arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *c
  * \param core pmk_core_ctrl_t
  * \return POS HM return address
  */
-static air_uptr_t arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
+static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
 
     arm_virtual_cpu_t *vcpu = &core->context->vcpu;
 
-    air_uptr_t vbar = vcpu->vbar;
+    air_uptr_t *vbar = vcpu->vbar;
     if (vbar == NULL) return NULL;
 
     air_u32_t psr = vcpu->psr;
     air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
 
-    air_uptr_t ret_addr = NULL;
+    air_uptr_t *ret_addr = NULL;
 
     if (!psr_a) {
 
