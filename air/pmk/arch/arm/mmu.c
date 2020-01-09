@@ -321,7 +321,6 @@ void arm_mmu_enable(arm_mmu_context_t *ctx) {
     air_u32_t sctlr = arm_cp15_get_system_control();
     sctlr |= (ARM_SCTLR_M);
     arm_cp15_set_system_control(sctlr);
-    arm_instruction_synchronization_barrier();
 }
 
 air_u32_t arm_is_mmu_enabled(void) {

@@ -14,20 +14,21 @@
 #include <svc.h>
 #include <syscall.h>
 #include <configurations.h>
+
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif
 
-void arm_svc_handler(
-        air_u32_t svc_id,
-        pmk_core_ctrl_t *core,
-        arm_supervisor_stack_frame_t *frame) {
+void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) {
 
-#ifdef PMK_DEBUG_SVC
-    printk("\n ** svc #%i **\n", svc_id);
-    printk("       with ret_addr: 0x%08x\n", *(&(frame->lr) + 1));
-#endif
-    air_u32_t elapsed = 0;
+    air_u32_t svc_id;
+    air_u64_t elapsed = 0;
+
+    if (frame->ret_psr & ARM_PSR_T) {
+        svc_id = ( *((air_uptr_t)(frame->ret_addr - 2)) & 0xff );
+    } else {
+        svc_id = ( *((air_uptr_t)(frame->ret_addr - 4)) & 0xffffff );
+    }
 
     switch (svc_id) {
     case AIR_SYSCALL_ARM_DISABLE_INTERRUPTS:
@@ -156,7 +157,7 @@ void arm_svc_handler(
                 (air_identifier_t)frame->r1,
                 (air_message_ptr_t)frame->r2,
                 (air_sz_t *)frame->r3,
-                (void *)frame->sp[0]);
+                (void *)((air_uptr_t)frame->usr_sp)[0]);
         break;
     case AIR_SYSCALL_WRITE_PORT:
         frame->r0 = (air_u32_t)pmk_syscall_write_port(
@@ -165,7 +166,7 @@ void arm_svc_handler(
                 (air_identifier_t)frame->r1,
                 (air_message_ptr_t)frame->r2,
                 (air_sz_t)frame->r3,
-                (void *)frame->sp[0]);
+                (void *)((air_uptr_t)frame->usr_sp)[0]);
         break;
     case AIR_SYSCALL_GET_SHARED_AREA:
         frame->r0 = (air_u32_t)pmk_syscall_get_sharedmemory(
