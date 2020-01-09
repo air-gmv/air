@@ -121,7 +121,7 @@ void bsp_core_ready(void) {
 void bsp_boot_core(air_u32_t cpu_id, void *entry_point) {
 
     if (cpu_id != 0) {
-        volatile air_uptr_t start_addr = (air_uptr_t)0xfffffff0;
+        volatile air_uptr_t *start_addr = (air_uptr_t *)0xfffffff0;
         arm_data_synchronization_barrier();
         arm_instruction_synchronization_barrier();
         *start_addr = (air_u32_t)0x00100020;

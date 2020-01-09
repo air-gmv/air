@@ -87,7 +87,7 @@ typedef signed long *air_iptr_t;
 /**
  * \brief Unsigned pointer
  **/
-typedef unsigned long *air_uptr_t;
+typedef unsigned long air_uptr_t;
 
 /**
  * \brief Unsigned 32 bit integer

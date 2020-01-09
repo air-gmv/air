@@ -19,13 +19,13 @@
 #include <printk.h>
 #endif
 
-air_uptr_t arm_exception_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) {
+air_uptr_t * arm_exception_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) {
 
 #ifdef PMK_DEBUG_EXCEPTION
     printk(" :: AIR arm_exception_handler with id %d\n", frame->exception_name);
 #endif
     /* return value */
-    air_uptr_t ret = NULL;
+    air_uptr_t * ret = NULL;
 
     switch(frame->exception_name) {
 

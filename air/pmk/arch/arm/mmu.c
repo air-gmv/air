@@ -25,7 +25,7 @@
 #include <printk.h>
 #endif
 
-static air_uptr_t arm_ln_table[2];
+static air_uptr_t *arm_ln_table[2];
 static air_u32_t arm_ln_index[2] = {0, 0};
 const air_u32_t ln_entries[2] = {TTBR0_ENTRIES, TTL2_ENTRIES};
 const air_u32_t ln_unit[2] = {SECTION_SIZE, PAGE_SIZE};
@@ -47,10 +47,10 @@ static air_u32_t arm_mmu_get_index(void *addr, air_u32_t n) {
     return id;
 }
 
-static air_uptr_t arm_mmu_get_table(air_u32_t n) {
+static air_uptr_t *arm_mmu_get_table(air_u32_t n) {
 
     air_u32_t e;
-    air_uptr_t table = arm_ln_table[n] + arm_ln_index[n];
+    air_uptr_t *table = arm_ln_table[n] + arm_ln_index[n];
 
     for (e = 0; e < ln_entries[n]; ++e)
         table[e] = 0;
@@ -140,7 +140,7 @@ static air_u32_t arm_get_mmu_permissions(
 }
 
 static air_sz_t arm_mmu_map_l2(
-        air_uptr_t pt_ptr, void *p_addr, void *v_addr, air_u32_t unit,
+        air_uptr_t *pt_ptr, void *p_addr, void *v_addr, air_u32_t unit,
         air_sz_t size, air_u32_t permissions, air_u32_t n) {
 
     air_u32_t idx = 0;
@@ -192,13 +192,13 @@ static air_sz_t arm_mmu_map_l2(
 }
 
 static void arm_mmu_map_l1(
-        air_uptr_t ttbr, void *p_addr, void *v_addr, air_sz_t unit,
+        air_uptr_t *ttbr, void *p_addr, void *v_addr, air_sz_t unit,
         air_sz_t size, air_u32_t permissions, air_u32_t n) {
 
     air_u32_t idx = 0;
     air_sz_t consumed = 0;
     air_sz_t _consumed = 0;
-    air_uptr_t pt_ptr = 0;
+    air_uptr_t *pt_ptr = 0;
 
 #ifdef PMK_DEBUG_MMU
     air_u32_t initial_idx = arm_mmu_get_index(v_addr, n);
@@ -220,7 +220,7 @@ static void arm_mmu_map_l1(
             switch(ttbr[idx] & MMU_D_TYPE_MASK) {
 
             case MMU_PTD:
-                pt_ptr = (air_uptr_t)(ttbr[idx] & 0xfffffc00);
+                pt_ptr = (air_uptr_t *)(ttbr[idx] & 0xfffffc00);
                 break;
 
             case MMU_SECTION:
@@ -442,13 +442,13 @@ air_u32_t arm_copy_from_user(
     return arm_segregation_memcpy(core_ctx, dst, src, size);
 }
 
-air_uptr_t arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr) {
+air_uptr_t *arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr) {
 
-    air_uptr_t ttbr = context->ttbr0;
+    air_uptr_t *ttbr = context->ttbr0;
 
     air_u32_t idx = arm_mmu_get_index(v_addr, 0);
-    air_uptr_t p_addr = NULL;
-    air_uptr_t pt_ptr = NULL;
+    air_uptr_t *p_addr = NULL;
+    air_uptr_t *pt_ptr = NULL;
 
     switch(ttbr[idx] & MMU_D_TYPE_MASK) {
 
@@ -457,7 +457,7 @@ air_uptr_t arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr) {
         break;
 
     case MMU_PTD:
-        pt_ptr = (air_uptr_t)((air_u32_t)ttbr[idx] & 0xfffffc00);
+        pt_ptr = (air_uptr_t *)((air_u32_t)ttbr[idx] & 0xfffffc00);
         idx = arm_mmu_get_index(v_addr, 1);
 
         switch((air_u32_t)pt_ptr[idx] & MMU_D_TYPE_MASK) {
@@ -466,14 +466,14 @@ air_uptr_t arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr) {
 
         case MMU_LPAGE:
             if (((air_u32_t)pt_ptr[idx] & MMU_ACCESS_UP(MMU_L2, MMU_LPAGE)))
-                p_addr = (air_uptr_t)(((air_u32_t)pt_ptr[idx] & 0xffff0000) | ((air_u32_t)v_addr & 0x0000ffff));
+                p_addr = (air_uptr_t *)(((air_u32_t)pt_ptr[idx] & 0xffff0000) | ((air_u32_t)v_addr & 0x0000ffff));
 
             break;
         // small page 1x
         case MMU_PAGE1:
         case MMU_PAGE2:
             if (((air_u32_t)pt_ptr[idx] & MMU_ACCESS_UP(MMU_L2, MMU_PAGE)))
-                p_addr = (air_uptr_t)(((air_u32_t)pt_ptr[idx] & 0xfffff000) | ((air_u32_t)v_addr & 0x00000fff));
+                p_addr = (air_uptr_t *)(((air_u32_t)pt_ptr[idx] & 0xfffff000) | ((air_u32_t)v_addr & 0x00000fff));
 
             break;
         }
@@ -481,7 +481,7 @@ air_uptr_t arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr) {
 
     case MMU_SECTION:
         if (((air_u32_t)ttbr[idx] & MMU_ACCESS_UP(MMU_L1, MMU_SECTION)))
-            p_addr = (air_uptr_t)(((air_u32_t)ttbr[idx] & 0xfff00000) | ((air_u32_t)v_addr & 0x000fffff));
+            p_addr = (air_uptr_t *)(((air_u32_t)ttbr[idx] & 0xfff00000) | ((air_u32_t)v_addr & 0x000fffff));
 
         break;
 
