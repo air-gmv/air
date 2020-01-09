@@ -74,6 +74,7 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     'arch/arm/svc.c',
     'arch/arm/syscalls_virtualization.c',
     # BSP files
+    'bsp/arm/shared/a9mpcore.c',
     'bsp/arm/zynqz1/bsp.c',
     'bsp/arm/zynqz1/gic.c',
     'bsp/arm/zynqz1/global_timer.c',
