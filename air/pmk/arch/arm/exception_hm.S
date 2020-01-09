@@ -76,20 +76,6 @@ global(exception_data_abort)
     mrc     p15, 0, r1, c5, c0, 0   // DFSR
     mrc     p15, 0, r2, c6, c0, 0   // DFAR
 
-    b       high_level_handler
-
-
-global(exception_fiq)
-    sub     lr, #4
-    srsfd   sp!, #ARM_PSR_SYS
-    srsfd   sp!, #ARM_PSR_SYS       // duplicate for pos hm
-    cpsid   aif, #ARM_PSR_SYS
-
-    push    {r0-r12, lr}
-    mov     r0, #ARM_EXCEPTION_FIQ
-    mov     r1, #0
-    mov     r2, #0
-
 
 high_level_handler:
     ldr     r3, [sp, #56]           // preferred return addr
