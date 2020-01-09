@@ -21,6 +21,13 @@
 #include <armv7.h>
 #include <cpu.h>
 
+    .extern exception_undef
+    .extern exception_svc
+    .extern exception_pref_abort
+    .extern exception_data_abort
+    .extern exception_irq
+    .extern exception_fiq
+
 #if __ARM_ARCH >= 7
     .arm
     .syntax unified

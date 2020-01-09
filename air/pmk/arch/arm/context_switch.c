@@ -47,8 +47,8 @@ void arm_core_context_save(pmk_core_ctrl_t *core) {
 
 /**
  * \details
- * The context restore is performed in the exception_irq.S (only one ISF needs
- * to be restored). In here, only the MMU context needs to be switched.
+ * The rest of the context restore is performed in exception.S (only the IRQ sp needs to be set
+ * here). The MMU context also needs to be switched.
  */
 void arm_core_context_restore(pmk_core_ctrl_t *core) {
 
