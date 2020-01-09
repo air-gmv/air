@@ -88,25 +88,6 @@ __FORCE_INLINE static void arm_scu_invalidate(air_u32_t cpu_id) {
     SCU->inv_reg_ss = ( (0xf) << ( (cpu_id & 0x3) * 4) );
 }
 
-__FORCE_INLINE static void arm_a9mpcore_start_hook(void) {
-
-    air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
-
-    if (cpu_id == 0) {
-        /* Enable SCU */
-        SCU->ctrl |= CTRL_SCU_EN;
-    }
-
-#if PMK_SMP
-    /* Enable cache coherency and cache/MMU maintenance broadcasts for
-     * this processor.
-     */
-    air_u32_t actlr = arm_cp15_get_auxiliary_control();
-    actlr |= CP15_ACTLR_SMP | CP15_ACTLR_FW;
-    arm_cp15_set_auxiliary_control(actlr);
-#endif
-
-    arm_scu_invalidate(cpu_id);
-}
+void arm_a9mpcore_start_hook(air_u32_t cpu_id);
 
 #endif /* A9MPCORE_H_ */
