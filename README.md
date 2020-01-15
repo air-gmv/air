@@ -16,6 +16,8 @@ $ ./source-builder/sb-check
 $ cd rtems
 $ ../source-builder/sb-set-builder --prefix=/opt/rtems/5 5/rtems-sparc
 
+Currently supported toolchain version : rtems-5.1-2019.07.25
+
 ## 2 - Configure and build AIR
 AIR configure requires python-mako, if not installed execute (in case of Debian)
 

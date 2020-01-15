@@ -171,7 +171,7 @@ static int lzss_decompress(
     return 0;
 }
 
-void pmk_partition_load(pmk_elf_t *elf, void *p_addr, void *v_addr) {
+void pmk_partition_load(pmk_elf_t *elf, void *addr) {
 
     int i;
     static atomic_t loading;
@@ -184,7 +184,7 @@ void pmk_partition_load(pmk_elf_t *elf, void *p_addr, void *v_addr) {
         /* de-compress partition */
         air_u32_t error = lzss_decompress(
                 (air_u8_t *)(elf->data + (air_sz_t)elf->segments[i].offset),
-                (air_u8_t *)((air_u32_t)p_addr + elf->segments[i].addr),
+                (air_u8_t *)((air_uptr_t)addr + elf->segments[i].addr),
                 elf->segments[i].size);
 
         /* check if error occurred */

@@ -220,7 +220,7 @@ void pmk_partition_reload(pmk_partition_t *partition) {
 #endif
 
     /* reload partition */
-    pmk_partition_load(partition->elf, partition->mmap->v_addr, partition->mmap->v_addr);
+    pmk_partition_load(partition->elf, partition->mmap->v_addr);
 
     cpu_disable_preemption(flags);
 
