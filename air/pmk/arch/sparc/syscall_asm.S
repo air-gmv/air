@@ -57,7 +57,7 @@ syscall_branch_table:
     ba,a    sparc_isr_handler_entry          ! get physical address     (in C)
     ba,a    syscall_get_nb_cores             ! get partition core number
     ba,a    syscall_get_core_id              ! get virtual core id
-    ba,a    syscall_set_tbr                  ! set virtual core tbr
+    ba,a    syscall_copy_tbr                 ! copy virtual core tbr
     ba,a    syscall_boot_core                ! boot virtual core
     ba,a    syscall_get_us_per_tick          ! get us per tick
     ba,a    syscall_get_elapsed_ticks        ! get elapsed ticks
@@ -130,7 +130,7 @@ syscall_get_core_id:
 /**
  * @brief Set a secondary core virtual cpu tbr
  */
-syscall_set_tbr:
+syscall_copy_tbr:
 
     set     SYM(air_shared_area), %l3                ! shared area
     ld      [%l3 + SHAREDAREA_CORE_CTRL], %l3        ! core control area
