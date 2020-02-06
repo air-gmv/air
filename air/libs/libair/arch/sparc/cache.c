@@ -45,9 +45,9 @@ air_status_code_e air_syscall_enable_cache(air_cache_e type) {
     }
 
     /* apply action */
-    air_u32_t cache = air_sparc_get_cache_register();
+    air_u32_t cache = air_syscall_get_cache_register();
     cache = (cache & ~action) | action;
-    return air_sparc_set_cache_register(cache);
+    return air_syscall_set_cache_register(cache);
 }
 
 /**
@@ -77,9 +77,9 @@ air_status_code_e air_syscall_disable_cache(air_cache_e type) {
     }
 
     /* apply action */
-    air_u32_t cache = air_sparc_get_cache_register();
+    air_u32_t cache = air_syscall_get_cache_register();
     cache = (cache & ~action);
-    return air_sparc_set_cache_register(cache);
+    return air_syscall_set_cache_register(cache);
 }
 
 /**
@@ -94,7 +94,7 @@ air_status_code_e air_syscall_freeze_cache(air_cache_e type) {
     /* get action to apply */
     air_u32_t clear = 0;
     air_u32_t action = 0;
-    air_u32_t cache = air_sparc_get_cache_register();
+    air_u32_t cache = air_syscall_get_cache_register();
 
     switch (type) {
 
@@ -122,7 +122,7 @@ air_status_code_e air_syscall_freeze_cache(air_cache_e type) {
 
     /* apply action */
     cache = (cache & ~clear) | action;
-    return air_sparc_set_cache_register(cache);
+    return air_syscall_set_cache_register(cache);
 }
 
 /**
@@ -156,13 +156,13 @@ air_status_code_e air_syscall_flush_cache(air_cache_e type) {
     }
 
     /* check if flush is valid */
-    air_u32_t cache = air_sparc_get_cache_register();
+    air_u32_t cache = air_syscall_get_cache_register();
     if ((cache & valid) != valid) {
 
         return AIR_INVALID_MODE;
     }
 
     /* apply action */
-    return air_sparc_set_cache_register((cache & ~action) | action);
+    return air_syscall_set_cache_register((cache & ~action) | action);
 }
 
