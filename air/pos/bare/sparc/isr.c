@@ -32,10 +32,10 @@ void isr_install_raw_handler(air_u32_t tn, void *new, void **old) {
     air_u32_t *tbr = (void *)&bare_trap_table;
 
     /* fetch old handler and apply new handler */
-    air_sparc_disable_traps();
+    air_syscall_disable_traps();
     *old = (void *)tbr[rtn];
     tbr[rtn] = (air_u32_t)new;
-    air_sparc_enable_traps();
+    air_syscall_enable_traps();
 }
 
 void isr_install_handler(air_u32_t tn, void *new, void **old) {
@@ -47,16 +47,16 @@ void isr_install_handler(air_u32_t tn, void *new, void **old) {
     air_u32_t rtn = SPARC_REAL_TRAP_NUMBER(tn);
 
     /* get old vector handle */
-    air_sparc_disable_traps();
+    air_syscall_disable_traps();
     *old = (void *)isr_table[core_id][rtn];
-    air_sparc_enable_traps();
+    air_syscall_enable_traps();
 
     /* set the raw handler */
     void *ignored;
     isr_install_raw_handler(rtn, sparc_isr_handler, &ignored);
 
     /* set the new vector handler */
-    air_sparc_disable_traps();
+    air_syscall_disable_traps();
     isr_table[core_id][rtn] = (air_u32_t)new;
-    air_sparc_enable_traps();
+    air_syscall_enable_traps();
 }
