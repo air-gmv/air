@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!--
+  Copyright (C) 2019  GMVIS Skysoft S.A.
+
+  The license and distribution terms for this file may be
+  found in the file LICENSE in this distribution or at
+  air/LICENSE
+-->
+<ARINC_653_Module ModuleName="shm">
+  <!-- partition 0 -->
+  <Partition PartitionIdentifier="1" PartitionName="p0" 
+   Criticality="LEVEL_A" SystemPartition="False" EntryPoint="entry_point">
+    <PartitionConfiguration Personality="BARE" Cores="1">
+      <Libs>LIBAIR;</Libs>
+      <Cache>CODE; DATA</Cache>
+      <Memory Size="0x3000" Unit="0x1000" />
+      <Permissions>
+       FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+      </Permissions>
+    </PartitionConfiguration>               
+  </Partition>
+
+  <!-- partition 1 -->
+  <Partition PartitionIdentifier="2" PartitionName="p1" 
+   Criticality="LEVEL_B" SystemPartition="False" EntryPoint="entry_point">
+    <PartitionConfiguration Personality="BARE" Cores="1">
+      <Libs>LIBAIR;</Libs>
+      <Cache>CODE; DATA</Cache>
+      <Memory Size="0x2000" Unit="0x1000" />
+      <Permissions>
+       FPU_CONTROL;
+      </Permissions>
+    </PartitionConfiguration>               
+  </Partition>
+
+  <SharedMemory Id="1" Name="DEBUG" Size="0x1000" Unit="0x1000">
+      <PartitionAccess PartitionIdentifier="1" PartitionName="p0" Permissions="RW"/>
+      <PartitionAccess PartitionIdentifier="2" PartitionName="p1" Permissions="R"/>
+  </SharedMemory>
+  
+  <!-- schedule 0 -->
+  <Module_Schedule ScheduleIdentifier="1" ScheduleName="sched" MajorFrameSeconds="1.0">
+    <Partition_Schedule PartitionIdentifier="1" PartitionName="p0" 
+      PeriodDurationSeconds="0.1" PeriodSeconds="1">
+      <Window_Schedule WindowIdentifier="1"  PartitionPeriodStart="true"
+       WindowStartSeconds="0.0" WindowDurationSeconds="0.1" />
+    </Partition_Schedule>
+    <Partition_Schedule PartitionIdentifier="2" PartitionName="p1" 
+      PeriodDurationSeconds="0.9" PeriodSeconds="1">
+      <Window_Schedule WindowIdentifier="1" PartitionPeriodStart="False"
+       WindowStartSeconds="0.1" WindowDurationSeconds="0.9" />
+    </Partition_Schedule>
+  </Module_Schedule>
+  
+  <!-- module configuration -->
+  <AIR_Configuration TicksPerSecond="100" RequiredCores="1"/>
+</ARINC_653_Module>
