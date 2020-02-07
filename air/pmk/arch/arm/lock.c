@@ -15,7 +15,7 @@
 
 #include <lock.h>
 
-air_u32_t arm_lock(air_uptr_t hash) {
+air_u32_t arm_lock(air_uptr_t *hash) {
 
     air_u32_t pil = arm_save_preemption();
 
@@ -40,7 +40,7 @@ air_u32_t arm_lock(air_uptr_t hash) {
     return pil;
 }
 
-air_u32_t arm_unlock(air_uptr_t hash, air_u32_t pil) {
+air_u32_t arm_unlock(air_uptr_t *hash, air_u32_t pil) {
 
     arm_data_memory_barrier();
     *hash = 0;

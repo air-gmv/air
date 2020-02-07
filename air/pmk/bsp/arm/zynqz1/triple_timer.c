@@ -35,7 +35,7 @@ void arm_init_ttc(air_u32_t timer_id) {
         return;
     }
 
-//  volatile air_uptr clk_621_true = (air_uptr_t)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x1c4);
+//  volatile air_uptr clk_621_true = (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x1c4);
 //  reset value 621
 
     air_u32_t us_per_tick = pmk_get_usr_us_per_tick();

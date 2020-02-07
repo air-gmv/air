@@ -24,7 +24,7 @@
 #define ARM_GT_CTRL_IRQ_EN              (1U << 2)
 #define ARM_GT_CTRL_AUTOINC_EN          (1U << 3)
 #define ARM_GT_CTRL_PRESCALER(value) \
-        ((value <= 255) ? value << 8 : (255U << 8))
+        ((value < 256) ? value << 8 : (255U << 8))
 
 
 typedef struct {

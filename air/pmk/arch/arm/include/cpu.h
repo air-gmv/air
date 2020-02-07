@@ -33,7 +33,10 @@
 #include <armv7.h>
 #include <air.h>
 
-#define PREEMPTION_LEVEL 0
+/**
+ * \brief Level of allowed IRQ nesting
+ */
+#define MAX_NESTING_LEVEL 2
 
 /**
  * \brief Double-word alignment

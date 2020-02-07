@@ -24,7 +24,7 @@
 /**< ************************ ICD Register Access ****************************/
 /**< ICDDCR - Distributor Control Register */
 __FORCE_INLINE static void arm_gic_disable(void) {
-    ICD->icddcr &= ~(1U << 0);
+    ICD->icddcr &= ~(3U << 0);
 }
 
 __FORCE_INLINE static void arm_gic_enable(void) {
@@ -32,14 +32,18 @@ __FORCE_INLINE static void arm_gic_enable(void) {
 }
 
 __FORCE_INLINE static air_u32_t arm_is_gic_enabled(void) {
-    return (ICD->icddcr & 0x1);
+    return (ICD->icddcr & 0x3);
 }
 
 /**< ICDICTR - Interrupt Controller Type Register */
+__FORCE_INLINE static air_u32_t arm_get_it_lines(void) {
+    return (ICD->icdictr & 0x1f);
+}
+
 #define ZYNQ_MAX_INT 256
 __FORCE_INLINE static air_u32_t arm_get_int_count(void) {
-    air_u32_t int_count = ((ICD->icdictr & 0x1f) + 1) * 32;
-    return int_count <= ZYNQ_MAX_INT ? int_count : ZYNQ_MAX_INT;
+    air_u32_t int_count = (arm_get_it_lines() + 1) * 32;
+    return (int_count <= ZYNQ_MAX_INT) ? int_count : ZYNQ_MAX_INT;
 }
 
 __FORCE_INLINE static air_u32_t arm_ic_processor_count(void) {
@@ -50,21 +54,38 @@ __FORCE_INLINE static void arm_int_enable(air_u32_t id) {
     ICD->icdiser[id/32] = (1U << (id & 0x1f));
 }
 
+/**< ICDISRn - Interrupt Security Registers */
+__FORCE_INLINE static void arm_int_set_grp1(void) {
+    for (air_u32_t i = 0; i < arm_get_it_lines(); ++i) {
+        ICD->icdisr[i] = 0xffffffff;
+    }
+}
+
+__FORCE_INLINE static void arm_int_set_grp0(air_u32_t int_id) {
+    ICD->icdisr[int_id/32] = (1U << int_id%32);
+}
+
 /**< ICDICER - Interrupt Clear-Enable Register */
+__FORCE_INLINE static void arm_int_clear() {
+    for (air_u32_t i = 0; i < arm_get_it_lines(); ++i) {
+        ICD->icdicer[i] = 0xffffffff;
+    }
+}
+
 __FORCE_INLINE static void arm_sgi_ppi_disable(void) {
     ICD->icdicer[0] = 0xffffffff;
 }
 
-__FORCE_INLINE static void arm_spi_disable(air_u32_t int_count) {
-    for(air_u32_t i = 32; i < int_count; i += 32) {
-        ICD->icdicer[i/32] = 0xffffffff;
+__FORCE_INLINE static void arm_spi_disable(void) {
+    for (air_u32_t i = 1; i < arm_get_it_lines(); ++i) {
+        ICD->icdicer[i] = 0xffffffff;
     }
 }
 
 /**< ICDICPR  - Interrupt Clear-Pending Register*/
-__FORCE_INLINE static void arm_clear_pending(air_u32_t int_count) {
-    for(air_u32_t i = 32; i < int_count; i += 32) {
-        ICD->icdicpr[i/32] = 0xffffffff;
+__FORCE_INLINE static void arm_clear_pending(void) {
+    for (air_u32_t i = 1; i < arm_get_it_lines(); ++i) {
+        ICD->icdicpr[i] = 0xffffffff;
     }
 }
 
@@ -110,7 +131,7 @@ __FORCE_INLINE static void arm_gic_disable_interrupts(void) {
 
 __FORCE_INLINE static void arm_gic_enable_interrupts(void) {
     /* not used. masking irq in psr is the way to go */
-    ICC->iccicr |= 0x3;
+    ICC->iccicr |= 0x1;
 }
 
 /**< ICCPMR (GICC_PMR) - Interrupt Priority Mask Register  */
