@@ -25,30 +25,58 @@
  * The context save is performed in the exception_irq.S (only one ISF needs
  * to be saved). The change is then handled by the pmk_partition_scheduler(),
  * so nothing really happens here.
+ *
+ * \note the core context shouldn't be trashed at this point
  */
 void arm_core_context_save(pmk_core_ctrl_t *core) {
 
-    if (core->context->trash) return;
+    void **isf = &(core->partition->context->isf_pointer);
+    register air_u32_t r1, r2;
 
-//    pmk_partition_t *partition = core->partition;
+    __asm__ volatile (
+            "mov %0, #18\n"
+            "bfi %1, %0, #0, #5\n"
+            "mrs %0, cpsr\n"
+            "msr cpsr_c, %1\n"
+            "str sp, [%2]\n"
+            "msr cpsr_c, %0"
+            : "=&r" (r1), "=&r" (r2)
+            : "r" (isf)
+            : "memory");
 }
 
 /**
  * \details
- * The context restore is performed in the exception_irq.S (only one ISF needs
- * to be restored). In here, only the MMU context needs to be switched.
+ * The rest of the context restore is performed in exception.S (only the IRQ sp needs to be set
+ * here). The MMU context also needs to be switched.
  */
 void arm_core_context_restore(pmk_core_ctrl_t *core) {
 
-    __asm__ volatile ("clrex\n");
+    void *isf = core->context->isf_pointer;
+    register air_u32_t r1, r2;
 
-    if (((pmk_core_ctrl_t *)core)->context->trash) return;
+    __asm__ volatile (
+            "mov %0, #18\n"
+            "bfi %1, %0, #0, #5\n"
+            "mrs %0, cpsr\n"
+            "msr cpsr_c, %1\n"
+            "mov sp, %2\n"
+            "msr cpsr_c, %0"
+            : "=&r" (r1), "=&r" (r2)
+            : "r" (isf));
 
     pmk_partition_t *partition = core->partition;
 
-    if (arm_is_mmu_enabled()) {
-        arm_mmu_change_context(partition->mmu_ctrl);
-    } else {
-        arm_mmu_enable(partition->mmu_ctrl);
+    if (partition != NULL) {
+
+        if (arm_is_mmu_enabled()) {
+
+            arm_mmu_change_context(partition->mmu_ctrl);
+        } else {
+
+            arm_mmu_enable(partition->mmu_ctrl);
+        }
     }
+
+    __asm__ volatile ("clrex");
 }

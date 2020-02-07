@@ -16,12 +16,14 @@
 
 #ifndef ASM
 
-#include <a9mpcore.h>
-#include <workspace.h>
-#include <gic.h>
-#include <uart.h>
-#include <bsp_segregation.h> // compatibility for segregation.c
-#include <bsp_ipc.h> // compatibility for segregation.c
+#include <air_arch.h>
+// #include <a9mpcore.h>
+// #include <workspace.h>
+// #include <gic.h>
+// #include <uart.h>
+#include <bsp_console.h>
+#include <bsp_ipc.h>            // for AIR core to use ipc.c
+#include <bsp_segregation.h>    // for AIR core to use segregation.c
 
 void pmk_trap_table(void);
 void air_kernel_bss_start(void);
@@ -88,8 +90,6 @@ static inline void arm_set_vector_base(void) {
         arm_cp15_set_system_control(ctrl);
     }
 }
-
-#define bsp_console_outbyte(ch) arm_uart_transmit(ch)
 
 #endif /* ASM */
 

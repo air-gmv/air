@@ -142,20 +142,18 @@ typedef struct {
     air_u32_t r10;
     air_u32_t r11;
     air_u32_t r12;
+    arm_exception_e exception_name;     /**< here due to ISF faster save    */
     air_u32_t usr_sp;                   /**< pre-exception sp               */
     air_u32_t usr_lr;                   /**< pre-exception lr               */
     air_u32_t ret_addr;                 /**< return addr after the exception*/
     air_u32_t ret_psr;                  /**< pre-exception cpsr             */
-    arm_exception_e exception_name;
-    arm_vfp_context_t *vfp_context;
-    air_u32_t reserved;
 } arm_interrupt_stack_frame_t;
 
 /**
  * \brief Context saved on stack for a supervisor call.
  */
 typedef struct {
-    air_uptr_t sp;
+    air_uptr_t *sp;
     air_u32_t r0;
     air_u32_t r1;
     air_u32_t r2;
@@ -169,8 +167,8 @@ typedef struct {
 typedef struct {
     air_u32_t id;                       /**< virtual CPU id                 */
     air_u32_t psr;                      /**< virtual PSR                    */
-    air_uptr_t vbar;                    /**< virtual vector base address    */
-    air_u32_t reserved;                 /**< alignment                      */
+    air_uptr_t *vbar;                    /**< virtual vector base address    */
+    air_u32_t reserved;
 } arm_virtual_cpu_t;
 
 /**
@@ -199,10 +197,12 @@ typedef struct {
     void *entry_point;                  /**< core entry point               */
     void *isf_pointer;                  /**< core stack pointer             */
     void *idle_isf_pointer;             /**< core ISF stack                 */
+    arm_vfp_context_t *vfp_context;     /**< core fpu context               */
     air_u32_t isr_nesting_level;        /**< core interrupt nesting level   */
     air_u32_t ipc_event;                /**< IPC event                      */
     air_u32_t state;                    /**< system state                   */
     void *hm_event;                     /**< health-monitor event           */
+    air_u32_t reserved;
 } arm_core_context_t;
 
 /**
@@ -210,8 +210,8 @@ typedef struct {
  */
 typedef struct {
     air_u32_t id;                       /**< context id for CONTEXTIDR      */
-    air_uptr_t ttbr0;                   /**< translation table base reg 0   */
-    air_uptr_t ttbr1;                   /**< translation table base reg 1   */
+    air_uptr_t *ttbr0;                   /**< translation table base reg 0   */
+    air_uptr_t *ttbr1;                   /**< translation table base reg 1   */
     air_u32_t ttbcr;                    /**< translation table control reg  */
 } arm_mmu_context_t;
 
@@ -285,7 +285,7 @@ air_u32_t arm_copy_from_user(
  * \param v_addr Virtual address
  * \return Physical address if available, NULL otherwise
  */
-air_uptr_t arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr);
+air_uptr_t *arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr);
 
 /**
  * \brief Instruction synchronization barrier
