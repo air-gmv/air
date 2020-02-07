@@ -12,102 +12,54 @@
  */
 
 #include <isr.h>
+#include <hm.h>
+#include <svc.h>
 #include <gic.h>
 #include <timer.h>
-#ifdef PMK_DEBUG
+
+#ifdef PMK_DEBUG_ISR
 #include <printk.h>
 air_u32_t counter = 0;
+void arm_isr_handler_print_frame(arm_interrupt_stack_frame_t *frame, const char txt[5]);
 #endif
-
 
 typedef void (*isr)(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core);
 
-air_uptr_t arm_isr_handler_table[ZYNQ_MAX_INT];
+air_uptr_t * arm_isr_handler_table[ZYNQ_MAX_INT];
 
-void arm_isr_table_init(void) {
+void arm_isr_table_init(void) {}
 
-    for (air_u32_t i = 0; i < arm_get_int_count(); ++i) {
-        arm_isr_install_handler(i, arm_isr_default_handler);
-    }
-}
-
-#ifdef PMK_DEBUG_ISR
-void arm_isr_handler_print_frame(arm_interrupt_stack_frame_t *frame, const char txt[5]) {
-    printk("\n        arm_interrupt_stack_frame_t %s content\n"
-            "\tr0   = 0x%08x\tr1   = 0x%08x\tr2   = 0x%08x\n"
-            "\tr3   = 0x%08x\tr4   = 0x%08x\tr5   = 0x%08x\n"
-            "\tr6   = 0x%08x\tr7   = 0x%08x\tr8   = 0x%08x\n"
-            "\tr9   = 0x%08x\tr10  = 0x%08x\tr11  = 0x%08x\n"
-            "\tr12  = 0x%08x\tsp   = 0x%08x\tlr   = 0x%08x\n"
-            "\tp_lr = 0x%08x\tcpsr = 0x%08x\tttbr = 0x%08x\n\n",
-            txt, frame->r0, frame->r1, frame->r2, frame->r3, frame->r4,
-            frame->r5, frame->r6, frame->r7, frame->r8, frame->r9,
-            frame->r10, frame->r11, frame->r12, frame->usr_sp,
-            frame->usr_lr, frame->ret_addr, frame->ret_psr,
-            arm_cp15_get_translation_table0_base());
-#ifdef PMK_DEBUG_PARTITION
-    printk("\n        partition memory contents\n");
-    for (air_u32_t i = 0; i < 0x400; i += 4) {
-        if (!(i%16))
-            printk("\n");
-        printk("0x%08x: 0x%08x   ", (0x10000000+i), *((air_u32_t *)(0x10000000+i)));
-    }
-    printk("\n");
-#endif
-}
-#endif
-
-air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
-        pmk_core_ctrl_t *core) {
+air_uptr_t * arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) {
 
     /* Return Value */
-    air_uptr_t ret = NULL;
+    air_uptr_t * ret = NULL;
 
     /* Acknowledge Interrupt */
     air_u32_t ack = arm_acknowledge_int();
 
-    air_u16_t id = (ack & 0x3ff);
+    air_u32_t id = (ack & 0x3ff);
     air_u8_t cpu = ((ack << 10U) & 0x7);
 
 #ifdef PMK_DEBUG_ISR
-//    printk(" ** IRQ #%d acknowledge **\n\n", id);
+    printk("interrupt ID = %d for cpu = %d (ack = 0x%08x)\n", id, cpu, ack);
 #endif
-#ifdef PMK_DEBUG_TICKS
-    printk("|");
-    if(!(++counter % 20))
-        printk("\n");
-#endif
-
-//    /* TTC interrupt */
-//    if (id >= 42 && id <= 44) {
-//
-//        air_u32_t ttc_ack_1 = arm_acknowledge_ttc();
-//
-//#ifdef PMK_DEBUG_TIMER
-//        printk("    ttc_ack_1 = 0x%x\n", ttc_ack_1);
-//
-//        triple_timer_cnt_t *ttc = (triple_timer_cnt_t *)0xf8001000;
-//        ic_distributor_t *ic_dist = (ic_distributor_t *)IC_DIST_BASE_MEMORY;
-//
-//        printk("    ttc->cnt_val_1 = 0x%x\n", ttc->cnt_val_1);
-//        printk("  * ic_dist->icdiser[1] = 0x%x\n", ic_dist->icdiser[1]);
-//        printk("  * ic_dist->icdispr[1] = 0x%x\n\n", ic_dist->icdispr[1]);
-//#endif
-//    }
 
     /* GT Interrupt*/
     if (id == 27) {
 
         arm_acknowledge_gt();
 
+#ifdef PMK_DEBUG_ISR
+#ifdef PMK_DEBUG_TICKS
+    printk("|");
+    if(!(++counter % 20))
+        printk(" %d\n", counter);
+#endif
 #ifdef PMK_DEBUG_TIMER
-        global_timer_t *gt = (global_timer_t *)GT_BASE_MEMORY;
-        ic_distributor_t *ic_dist = (ic_distributor_t *)IC_DIST_BASE_MEMORY;
+#define GT ((global_timer_t *)XPAR_PS7_GLOBALTIMER_0_S_AXI_BASEADDR)
 
-        printk("\n\n    gt->cnt_upper = 0x%x\n", gt->cnt_upper);
-        printk("\n\n    gt->cnt_lower = 0x%x\n\n", gt->cnt_lower);
-        printk("  * ic_dist->icdiser[1] = 0x%x\n", ic_dist->icdiser[1]);
-        printk("  * ic_dist->icdispr[1] = 0x%x\n\n", ic_dist->icdispr[1]);
+        arm_read_global_timer();
+#endif
 #endif
     }
 
@@ -116,21 +68,20 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
         return ret;
     }
 
-    if (arm_isr_handler_table[id] != (air_uptr_t)NULL) {
+    if (arm_isr_handler_table[id] != (air_uptr_t *)NULL) {
         ((isr)arm_isr_handler_table[id])(frame, core);
     }
 
-    /* core point may change if the execution was preempted. WTF? */
+    /* core point may change if the execution was preempted. */
 //  core = (pmk_core_ctrl_t *)arm_cp15_get_Per_CPU();
 
     /* check if context switch was performed */
     if (core->partition_switch == 1) {
-
 #ifdef PMK_DEBUG_ISR
-    arm_isr_handler_print_frame(frame, "ENTRY");
+        arm_isr_handler_print_frame(frame, "ENTRY");
 #endif
 
-        frame = core->context->isf_pointer;
+        frame = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
         core->partition_switch = 0;
 
 #ifdef PMK_DEBUG_ISR
@@ -139,16 +90,12 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
         } else {
             printk("       ISR :: Switching to Partition IDLE\n\n");
         }
-
-#endif /* PMK_DEBUG */
-#ifdef PMK_DEBUG_ISR
-        arm_isr_handler_print_frame(frame, "EXIT ");
+    arm_isr_handler_print_frame(frame, "EXIT ");
 #endif
     }
 
-
     /* will it route to the partition */
-    if (core->partition != NULL && (id < 42 && id > 44) && ( id != 27 )) {
+    if (core->partition != NULL && ( id != 27 )) {
 
         ret = arm_partition_isr_handler(id, core);
     }
@@ -158,32 +105,19 @@ air_uptr_t arm_isr_handler(arm_interrupt_stack_frame_t *frame,
     return ret;
 }
 
-void arm_isr_default_handler(arm_interrupt_stack_frame_t *frame,
-        pmk_core_ctrl_t *core) {
+air_uptr_t * arm_isr_install_handler(air_u32_t vector, void *handler) {
 
-    air_u32_t ack = arm_acknowledge_int();
-
-    air_u16_t id = (ack & 0x3ff);
-
-#ifdef PMK_DEBUG_ISR
-    printk("\n  :: IRQ #%d acknowledge\n\n", id);
-#endif
-    arm_end_of_int(ack);
-}
-
-air_uptr_t arm_isr_install_handler(air_u32_t vector, void *handler) {
-
-    air_uptr_t old_handler = (air_uptr_t)arm_isr_handler_table[vector];
+    air_uptr_t * old_handler = (air_uptr_t *)arm_isr_handler_table[vector];
 
     if (handler != old_handler) {
-        arm_isr_handler_table[vector] = (air_uptr_t)handler;
+        arm_isr_handler_table[vector] = (air_uptr_t *)handler;
     }
     return old_handler;
 }
 
-air_uptr_t arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
+air_uptr_t * arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
 
-    air_uptr_t ret = NULL;
+    air_uptr_t * ret = NULL;
 
     arm_virtual_cpu_t *vcpu = &core->context->vcpu;
     arm_virtual_gic_t *vgic = &core->context->vgic;
@@ -191,7 +125,7 @@ air_uptr_t arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
     air_u32_t psr = vcpu->psr;
     air_u32_t psr_i = ((psr & ARM_PSR_I) >> 7);
     air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
-    air_uptr_t vbar = vcpu->vbar;
+    air_uptr_t * vbar = vcpu->vbar;
 
     if (vbar == NULL)
         return ret;
@@ -268,3 +202,30 @@ air_uptr_t arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
 
     return ret;
 }
+
+#ifdef PMK_DEBUG_ISR
+void arm_isr_handler_print_frame(arm_interrupt_stack_frame_t *frame, const char txt[5]) {
+    printk("\n        arm_interrupt_stack_frame_t %s content (0x%08x)\n"
+            "\tr0   = 0x%08x\tr1   = 0x%08x\tr2   = 0x%08x\n"
+            "\tr3   = 0x%08x\tr4   = 0x%08x\tr5   = 0x%08x\n"
+            "\tr6   = 0x%08x\tr7   = 0x%08x\tr8   = 0x%08x\n"
+            "\tr9   = 0x%08x\tr10  = 0x%08x\tr11  = 0x%08x\n"
+            "\tr12  = 0x%08x\tsp   = 0x%08x\tlr   = 0x%08x\n"
+            "\tp_lr = 0x%08x\tcpsr = 0x%08x\tttbr = 0x%08x exp #%d\n\n",
+            txt, frame, frame->r0, frame->r1, frame->r2, frame->r3, frame->r4,
+            frame->r5, frame->r6, frame->r7, frame->r8, frame->r9,
+            frame->r10, frame->r11, frame->r12, frame->usr_sp,
+            frame->usr_lr, frame->ret_addr, frame->ret_psr,
+            arm_cp15_get_translation_table0_base(),
+            frame->exception_name);
+#ifdef PMK_DEBUG_PARTITION
+    printk("\n        partition memory contents\n");
+    for (air_u32_t i = 0; i < 0x400; i += 4) {
+        if (!(i%16))
+            printk("\n");
+        printk("0x%08x: 0x%08x   ", (0x10000000+i), *((air_u32_t *)(0x10000000+i)));
+    }
+    printk("\n");
+#endif
+}
+#endif

@@ -106,6 +106,5 @@ typedef struct {
 //void arm_start_uart(void);
 void arm_setup_uart(air_u32_t port, air_u32_t BaudRate);
 void arm_select_debug_uart(air_u32_t port);
-void arm_uart_transmit(char ch);
 
 #endif /* UART_H_ */

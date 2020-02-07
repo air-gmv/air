@@ -164,7 +164,7 @@ void pmk_apply_next_schedule(pmk_core_ctrl_t *core) {
                         partition->start_condition = AIR_START_CONDITION_NORMAL;
                         partition->state = PMK_PARTITION_STATE_RESTARTING;
                         partition->mode = AIR_MODE_COLD_START;
-//                         core_context_setup_reload_partition(&partition->context[0], partition);
+                        core_context_setup_reload_partition(&partition->context[0], partition);
                         break;
 
                     /* change partition to warm start */
@@ -172,7 +172,7 @@ void pmk_apply_next_schedule(pmk_core_ctrl_t *core) {
                         partition->start_condition = AIR_START_CONDITION_NORMAL;
                         partition->state = PMK_PARTITION_STATE_RESTARTING;
                         partition->mode = AIR_MODE_WARM_START;
-//                         core_context_setup_reload_partition(&partition->context[0], partition);
+                        core_context_setup_reload_partition(&partition->context[0], partition);
                         break;
 
                     /* default case, no action */

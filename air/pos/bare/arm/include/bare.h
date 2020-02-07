@@ -12,8 +12,8 @@
 #include <air.h>
 
 typedef struct {
-    air_uptr_t instr;
-    air_uptr_t lr;
+    air_uptr_t *instr;
+    air_uptr_t *lr;
 } pos_hm_stack;
 
 void pos_hm_undef(pos_hm_stack *hm_stack);
