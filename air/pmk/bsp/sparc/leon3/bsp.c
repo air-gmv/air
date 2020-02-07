@@ -107,15 +107,11 @@ void bsp_segregation(pmk_partition_t *partition) {
             0x01000000,
             PMK_MMU_SR | PMK_MMU_SW | PMK_MMU_SE | PMK_MMU_CACHEABLE);
 
-    /**
-     * Map devices IO area
-     * @todo This is a security flaw, it must be fixed
-     */
     cpu_segregation_map_memory(
             partition->mmu_ctrl,
             (void *)0x80000000,
             (void *)0x80000000,
             0x80000000,
             1 << 24,
-            PMK_MMU_R | PMK_MMU_W | PMK_MMU_E | PMK_MMU_DEVICE);
+            PMK_MMU_SR | PMK_MMU_SW | PMK_MMU_SE | PMK_MMU_DEVICE);
 }
