@@ -117,7 +117,7 @@ void core_context_setup_idle(core_context_t *context) {
  */
 void core_context_setup_partition(core_context_t *context, pmk_partition_t *partition) {
 
-    /* initialize the virtual core */
+       /* initialize the virtual core */
     context->vcpu.psr = (ARM_PSR_USR);
     context->vcpu.vbar = NULL;
 
@@ -169,6 +169,10 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
         air_u32_t stack = (air_u32_t)partition->mmap->v_addr + partition->mmap->size;
         stack = (stack & ~(32 - 1));
         isf->usr_sp = stack;
+
+        /*Enable virtual interrupts*/
+        context->vgic.vm_ctrl = 1;
+
 #ifdef PMK_DEBUG
         printk("       cpu::setup::stack                  = 0x%x\n"
                "       cpu::setup::isf->usr_sp            = 0x%x\n",

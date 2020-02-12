@@ -31,10 +31,10 @@ void isr_install_handler(air_u32_t id, void *new, void **old) {
     air_u32_t core_id = air_syscall_get_core_id();
 
     /* get old vector handle */
-    air_disable_traps();
+    air_syscall_disable_traps();
     *old = (void *)isr_table[core_id][id];
     isr_table[core_id][id] = (air_u32_t)new;
-    air_enable_traps();
+    air_syscall_enable_traps();
 }
 
 void pos_hm_undef(pos_hm_stack *hm_stack){

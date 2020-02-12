@@ -16,9 +16,9 @@
 #include <svc.h>
 #include <gic.h>
 #include <timer.h>
-
-#ifdef PMK_DEBUG_ISR
 #include <printk.h>
+#ifdef PMK_DEBUG_ISR
+
 air_u32_t counter = 0;
 void arm_isr_handler_print_frame(arm_interrupt_stack_frame_t *frame, const char txt[5]);
 #endif
@@ -95,8 +95,8 @@ air_uptr_t * arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t
     }
 
     /* will it route to the partition */
-    if (core->partition != NULL && ( id != 27 )) {
 
+    if (core->partition != NULL ) {
         ret = arm_partition_isr_handler(id, core);
     }
 
@@ -171,14 +171,13 @@ air_uptr_t * arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
     if (!psr_i) {
 
         if ((vgic->vm_ctrl & 0x1)) {
-
             if (((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) {
 
                 vgic->hppir = vgic->rpr;
                 vgic->ilist[(vgic->iar & 0x3ff)] &= ~(1U << 29);
                 vgic->ilist[(vgic->iar & 0x3ff)] |= (1U << 28);
 
-                vgic->iar = ((core->idx << 10) & id);
+                vgic->iar = id;//((core->idx << 10) & id);
                 vgic->rpr = ((vgic->ilist[id] >> 23) & 0x1f);
 
                 vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
