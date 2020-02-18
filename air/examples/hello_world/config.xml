@@ -17,7 +17,7 @@
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x100000" />
         <Permissions>
-          FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
+          FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL;
         </Permissions>
     </PartitionConfiguration>
   </Partition>
@@ -30,7 +30,7 @@
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x100000" />
         <Permissions>
-          FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
+          FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL;
         </Permissions>
     </PartitionConfiguration>
   </Partition>
@@ -42,7 +42,7 @@
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x100000" />
         <Permissions>
-          FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
+          FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL;
         </Permissions>
     </PartitionConfiguration>
   </Partition>
