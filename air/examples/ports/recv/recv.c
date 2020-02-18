@@ -15,7 +15,8 @@
 #include <imaspex.h>
 
 #ifdef RTEMS48I
-	#include <printf.h>
+	#include <pprintf.h>
+	#define printf(f_, ...) pprintf((f_), ##__VA_ARGS__)
 #endif
 
 
