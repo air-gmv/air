@@ -6,15 +6,14 @@
  * air/LICENSE
  */
 
-#define CONFIGURE_INIT
 #include <air.h>
+#include <rtems.h>
 
 #ifdef RTEMS48I
-	#include <pprintf.h>
+#include <pprintf.h>
 #else
-#include <time.h>
-#include <sys/time.h>
-#include <rtems/score/timespec.h>
+#include <stdio.h>
+#include <string.h>
 #endif
 
 #ifndef RTEMS48I
@@ -29,19 +28,21 @@ static char *my_ctime( time_t t )
 
 void entry_point(void) 
 {
+    struct timespec start;
     int ticks_per_sec = 1000000 / air_syscall_get_us_per_tick();
 
-	while(1)
-	{
+    while(1)
+    {
         #ifdef RTEMS48I
-            pprintf( "\n\n*** RTEMS48I HELLO WORLD TEST **********\n" );
+            rtems_clock_get_uptime( &start );
+
+            pprintf( "\n\n*** RTEMS48I HELLO WORLD TEST **** PART2 ***\n" );
+            pprintf( "Time is %ld:%9ld", (long)start.tv_sec, start.tv_nsec);
         #else
-            struct timespec start;
-            clock_gettime( CLOCK_REALTIME, &start );
+            clock_gettime( CLOCK_MONOTONIC, &start );
 
             printf( "\n\n*** RTEMS5 HELLO WORLD TEST **** PART2 ***\n" );
-            printf( "Time is : %s:%ld\n", my_ctime(start.tv_sec), start.tv_nsec);
-
+            printf( "Time is : %s:%9ld\n", my_ctime(start.tv_sec), start.tv_nsec);
         #endif
 
         rtems_task_wake_after(ticks_per_sec/10);
