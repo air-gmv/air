@@ -48,11 +48,12 @@
     <Partition_Schedule PartitionIdentifier="10" PartitionName="master" PeriodDurationSeconds="1.0000" PeriodSeconds="3.0000" SetModuleSchedule="true">
       <Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="1.0000" WindowIdentifier="110" WindowStartSeconds="0.0000"/>
     </Partition_Schedule>
-    <Partition_Schedule PartitionIdentifier="1" PartitionName="p1" PeriodDurationSeconds="1.0000" PeriodSeconds="3.0000">
-      <Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="1.0000" WindowIdentifier="11" WindowStartSeconds="1.0000"/>
+    <Partition_Schedule PartitionIdentifier="1" PartitionName="p1" PeriodDurationSeconds="0.5000" PeriodSeconds="1.5000">
+      <Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="0.5000" WindowIdentifier="111" WindowStartSeconds="1.0000"/>
+      <Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="0.5000" WindowIdentifier="112" WindowStartSeconds="2.5000"/>
     </Partition_Schedule>
     <Partition_Schedule PartitionIdentifier="2" PartitionName="p2" PeriodDurationSeconds="1.0000" PeriodSeconds="3.0000">
-      <Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="1.0000" WindowIdentifier="12" WindowStartSeconds="2.0000"/>
+      <Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="1.0000" WindowIdentifier="12" WindowStartSeconds="1.5000"/>
     </Partition_Schedule>
   </Module_Schedule>
 
