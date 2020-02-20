@@ -2,6 +2,11 @@
 
 AIR has a user manual at https://gmvdrive.gmv.com/index.php/s/eScXCAybbecmT9b
 
+You have two way of getting AIR
+1) AIR is integrrated in TASTE toolchain available at  https://taste.tuxfamily.org/
+
+2) Download from repository where following instructions apply:
+
 To install AIR after cloning from git, you should do the following:
 
 ## 1 - Install RTEMS toolchain for RTEMS 5
