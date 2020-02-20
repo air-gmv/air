@@ -94,3 +94,5 @@ AIR repo please execute (please backup any working folder)
 
     git fetch
     git reset origin/master --hard
+    
+Further information email air-product@gmv.com
