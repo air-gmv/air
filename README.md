@@ -60,6 +60,9 @@ Press 2 for leon4
 
 Press 0 for fpu enabled
 
+Press 0 for GRMON
+
+Press 1 to install all RTOS
 ...
 
 After configurator finishes execute
@@ -87,7 +90,7 @@ will create the respective binary in the created *executables* folder.
 ## Support
 Email to $(AIR_RUNNER_USER)@gmv.com or raise issue at our Gitlab
 
-## Updating AIR repo to AIR v5.3 and configurator v4.2
+## Updating AIR repo to AIR v5.3 and configurator v4.3
 Since configurator v4.2 the RTOS paravirtualized versions are obtained via git submodules.
 Pulling new AIR content into old AIR repo will generate conflicts. To get a new clean
 AIR repo please execute (please backup any working folder)
