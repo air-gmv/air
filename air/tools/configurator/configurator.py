@@ -18,7 +18,6 @@ import logging
 from sys import exit
 from utils.logger import Logger
 
-
 from localization.common import *
 from argparse import  ArgumentParser,  RawTextHelpFormatter
 
