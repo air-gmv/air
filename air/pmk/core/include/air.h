@@ -171,7 +171,7 @@ typedef enum {
  */
 typedef struct {
 
-    air_identifier_t index;                 /**< Partition index              */
+    air_u32_t index;                        /**< Partition index              */
     air_identifier_t window_id;             /**< Partition schedule window id */
     air_clocktick_t period;                 /**< Partition schedule period    */
     air_clocktick_t duration;               /**< Partition schedule duration  */
@@ -179,7 +179,7 @@ typedef struct {
     air_permissions_e permissions;          /**< Partition permissions        */
     air_operating_mode_e operating_mode;    /**< Partition operating mode     */
     air_start_condition_e start_condition;  /**< Partition start condition    */
-    air_u32_t restart_count;                 /**< Number of restarts           */
+    air_u32_t restart_count;                /**< Number of restarts           */
 
 } air_partition_status_t;
 
@@ -806,7 +806,7 @@ void air_syscall_shutdown_module(void);
 
 /**
  * @brief Extract AMBA Plug & Play configuration area
- * @param ambaptr pointer to amba config area
+ * @return ambaptr pointer to amba config area
  */
 air_uptr_t air_syscall_get_ambaconf(void);
 

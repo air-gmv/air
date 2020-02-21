@@ -42,7 +42,8 @@ static pmk_partition_schedule_t usr_schedule${i}_partitions[${len(schedule.parti
 static pmk_window_t usr_schedule${i}_windows${j}[${len(schedule.chain_of_execution[j])}] = ${'\\'}
 {
 % for k, window in enumerate(schedule.chain_of_execution[j]):
-    {   /* ${window} */
+    {
+        .id           = ${window.id},
         .duration     = ${nsec_to_ticks(window.duration)},
         .period_start = ${'1' if window.period_start else '0'},
         % if not window.partition:
