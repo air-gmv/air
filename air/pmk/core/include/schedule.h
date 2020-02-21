@@ -33,10 +33,10 @@
  */ 
 typedef enum {
 
-	PMK_SCHED_CHANGE_ACTION_IGNORE		= 0,
-	PMK_SCHED_CHANGE_ACTION_IDLE		= 1,
-	PMK_SCHED_CHANGE_ACTION_WARM_START	= 2,
-	PMK_SCHED_CHANGE_ACTION_COLD_START	= 3,
+	PMK_SCHED_CHANGE_ACTION_IGNORE      = 0,
+	PMK_SCHED_CHANGE_ACTION_IDLE        = 1,
+	PMK_SCHED_CHANGE_ACTION_WARM_START  = 2,
+	PMK_SCHED_CHANGE_ACTION_COLD_START  = 3,
 
 } pmk_sched_change_action_e;
 
@@ -45,6 +45,7 @@ typedef enum {
  */
 typedef struct {
 
+    air_identifier_t id;                    /**< Window Identifier            */
     air_u32_t        duration;              /**< Length of the window         */
     air_u32_t        period_start;          /**< Period start                 */
     pmk_partition_t *partition;             /**< Window partition             */

@@ -13,7 +13,7 @@
 void entry_func() {
 
     air_schedule_status_t status;
-    int i = 0, sched_a_id, sched_b_id, sched_id;
+    long int i = 0, sched_a_id, sched_b_id, sched_id;
     air_syscall_get_schedule_id("schedA", &sched_a_id);
     air_syscall_get_schedule_id("schedB", &sched_b_id);
     while (1) {

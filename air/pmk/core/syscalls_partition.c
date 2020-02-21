@@ -114,6 +114,7 @@ air_status_code_e pmk_syscall_get_partition_status(
     /* fill status structure */
     air_partition_status_t local_status;
     local_status.index = partition->idx;
+    local_status.window_id = partition->window_id;
     local_status.period = partition->period;
     local_status.duration = partition->duration;
     local_status.identifier = partition->id;
