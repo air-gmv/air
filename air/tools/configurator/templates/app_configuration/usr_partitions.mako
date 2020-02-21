@@ -72,6 +72,7 @@ pmk_partition_t usr_partition_table[USR_PARTITIONS] = ${'\\'}
         cache = 'AIR_CACHE_NONE'
 %>\
         .init_cache  = ${cache},
+        .events      = 0,
         .hm_table    = usr_hm_partition${i}_table,
         .mmap        = &usr_partitions_memmap[${i}],
         .elf         = &usr_partitions_data[${i}],
