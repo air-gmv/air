@@ -326,7 +326,12 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
             /* set period start flag */
             if (core_schedule->windows[wnd_idx].period_start == 1) {
                 partition->events |= AIR_EVENT_PERIOD_START;
+            } else {
+                partition->events &= ~AIR_EVENT_PERIOD_START;
             }
+
+            /* set partition's current window identifier */
+            partition->window_id = core_schedule->windows[wnd_idx].id;
 
             /* set window start flag */
             partition->events |= AIR_EVENT_WINDOW_START;
