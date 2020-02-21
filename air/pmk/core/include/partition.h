@@ -96,6 +96,8 @@ typedef struct {
     air_u64_t period;
     /** Current partition schedule duration                                 */
     air_u64_t duration;
+    /** Current partition schedule window identifier                        */
+    air_identifier_t window_id;
 
 } pmk_partition_t;
 
