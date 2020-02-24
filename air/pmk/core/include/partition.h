@@ -39,9 +39,7 @@ typedef enum {
     /** Partition is being executed                                         */
     PMK_PARTITION_STATE_RUNNING                 = 0x2,
     /** Partition execution halted                                          */
-    PMK_PARTITION_STATE_HALTED                  = 0x3,
-    /** Partition is restarting                                             */
-    PMK_PARTITION_STATE_RESTARTING              = 0x4
+    PMK_PARTITION_STATE_HALTED                  = 0x3
 
 } pmk_partition_state_t;
 
