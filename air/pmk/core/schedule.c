@@ -162,7 +162,7 @@ void pmk_apply_next_schedule(pmk_core_ctrl_t *core) {
                     /* change partition to cold start */
                     case PMK_SCHED_CHANGE_ACTION_COLD_START:
                         partition->start_condition = AIR_START_CONDITION_NORMAL;
-                        partition->state = PMK_PARTITION_STATE_RESTARTING;
+                        partition->state = PMK_PARTITION_STATE_INIT;
                         partition->mode = AIR_MODE_COLD_START;
                         core_context_setup_reload_partition(&partition->context[0], partition);
                         break;
@@ -170,7 +170,7 @@ void pmk_apply_next_schedule(pmk_core_ctrl_t *core) {
                     /* change partition to warm start */
                     case PMK_SCHED_CHANGE_ACTION_WARM_START:
                         partition->start_condition = AIR_START_CONDITION_NORMAL;
-                        partition->state = PMK_PARTITION_STATE_RESTARTING;
+                        partition->state = PMK_PARTITION_STATE_INIT;
                         partition->mode = AIR_MODE_WARM_START;
                         core_context_setup_reload_partition(&partition->context[0], partition);
                         break;
@@ -347,8 +347,7 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
             partition->core_mapping[vcore_id] = core->idx;
 
             /* check if partition is starting */
-            if (partition->state == PMK_PARTITION_STATE_INIT ||
-                partition->state == PMK_PARTITION_STATE_NOT_RUN) {
+            if (partition->state == PMK_PARTITION_STATE_NOT_RUN) {
 
                pmk_partition_start(partition, core->context);
                partition->last_clock_tick = scheduler_ctrl.total_ticks;

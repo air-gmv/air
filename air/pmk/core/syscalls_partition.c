@@ -192,7 +192,7 @@ air_status_code_e pmk_syscall_set_partition_mode(
         /* restart partition */
         case AIR_MODE_COLD_START:
         case AIR_MODE_WARM_START:
-            if(partition->state == PMK_PARTITION_STATE_RESTARTING)
+            if(partition->state == PMK_PARTITION_STATE_INIT)
                 break;
             pmk_partition_restart(partition);
             partition->start_condition = AIR_START_CONDITION_PARTITION_RESTART;

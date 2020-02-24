@@ -154,7 +154,7 @@ void pmk_partition_restart(pmk_partition_t *partition) {
     air_u32_t i;
     air_u32_t vcpus = 0x00000000;
 
-    partition->state = PMK_PARTITION_STATE_RESTARTING;
+    partition->state = PMK_PARTITION_STATE_INIT;
 
     /*Identify all running vcpu*/
     for (i = 0; i < partition->cores; ++i)
@@ -215,7 +215,7 @@ void pmk_partition_reload(pmk_partition_t *partition) {
     ++partition->restart_count;
 
     /* flag it to initialize on the next scheduling point */
-    partition->state = PMK_PARTITION_STATE_INIT;
+    partition->state = PMK_PARTITION_STATE_NOT_RUN;
 
     cpu_enable_preemption(flags);
 
