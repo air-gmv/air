@@ -243,7 +243,7 @@ static air_status_code_e iop_init_ports() {
         /* check return code */
         if (p_rc != AIR_NO_ERROR && p_rc != AIR_NO_ACTION) {
             iop_debug("    - error %i creating port %s\n", p_rc, port->name);
-            rc = AIR_INTERNAL_ERROR;
+            rc = p_rc;
         }
     }
 
