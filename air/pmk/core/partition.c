@@ -51,8 +51,8 @@ void pmk_partitions_init(void) {
         /* initialize the partition reset count */
         partition->restart_count = 0;
 
-        /* initialize PMK internal partition state*/
-        partition->state = PMK_PARTITION_STATE_NOT_RUN;
+        /* initialize partition state*/
+        partition->state = AIR_PARTITION_STATE_NOT_RUN;
 
         /* allocate space for the partition context switch and virtual core */
         partition->context =
@@ -105,7 +105,7 @@ void pmk_partition_start(pmk_partition_t *partition, core_context_t *context) {
        /* set entry point from the ELF */
        core_context_set_entry_point(context, partition->elf->entry);
        /* set partition state to running */
-       partition->state = PMK_PARTITION_STATE_RUNNING;
+       partition->state = AIR_PARTITION_STATE_RUNNING;
    }
 
    /* setup the partition context */
@@ -141,7 +141,7 @@ void pmk_partition_halt(pmk_partition_t *partition) {
     }
 
     /* flag the partition as halted */
-    partition->state = PMK_PARTITION_STATE_HALTED;
+    partition->state = AIR_PARTITION_STATE_HALTED;
     return;
 }
 
@@ -154,7 +154,7 @@ void pmk_partition_restart(pmk_partition_t *partition) {
     air_u32_t i;
     air_u32_t vcpus = 0x00000000;
 
-    partition->state = PMK_PARTITION_STATE_INIT;
+    partition->state = AIR_PARTITION_STATE_INIT;
 
     /*Identify all running vcpu*/
     for (i = 0; i < partition->cores; ++i)
@@ -214,8 +214,8 @@ void pmk_partition_reload(pmk_partition_t *partition) {
     /* increment the number of restarts */
     ++partition->restart_count;
 
-    /* flag it to initialize on the next scheduling point */
-    partition->state = PMK_PARTITION_STATE_NOT_RUN;
+    /* flag it to start on the next scheduling point */
+    partition->state = AIR_PARTITION_STATE_NOT_RUN;
 
     cpu_enable_preemption(flags);
 
