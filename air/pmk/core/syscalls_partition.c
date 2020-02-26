@@ -121,6 +121,7 @@ air_status_code_e pmk_syscall_get_partition_status(
     local_status.permissions = partition->permissions;
     local_status.operating_mode = partition->mode;
     local_status.start_condition = partition->start_condition;
+    local_status.state = partition->state;
     local_status.restart_count = partition->restart_count;
 
     /* copy status to partition */
@@ -185,6 +186,12 @@ air_status_code_e pmk_syscall_set_partition_mode(
        return AIR_INVALID_MODE;
     }
 
+    /* Avoid any change while partition is initializing*/
+    if(AIR_PARTITION_STATE_INIT == partition->state){
+
+       return AIR_NOT_AVAILABLE;
+    }
+
     /* apply state to the partition */
     partition->mode = mode;
     switch (mode) {
@@ -192,8 +199,6 @@ air_status_code_e pmk_syscall_set_partition_mode(
         /* restart partition */
         case AIR_MODE_COLD_START:
         case AIR_MODE_WARM_START:
-            if(partition->state == PMK_PARTITION_STATE_INIT)
-                break;
             pmk_partition_restart(partition);
             partition->start_condition = AIR_START_CONDITION_PARTITION_RESTART;
             break;

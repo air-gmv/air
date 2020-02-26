@@ -142,10 +142,27 @@ typedef enum {
 } air_start_condition_e;
 
 /**
- * @brief Partition system permissions flags
+ * @brief Partition state enumeration
  */
 typedef enum {
 
+    /** Partition hasn't run yet                                            */
+    AIR_PARTITION_STATE_NOT_RUN                 = 0x0,
+    /** Partition is initializing                                           */
+    AIR_PARTITION_STATE_INIT                    = 0x1,
+    /** Partition executing and enters STATE_READY at end of timeslot       */
+    AIR_PARTITION_STATE_RUNNING                 = 0x2,
+    /** Partition execution halted                                          */
+    AIR_PARTITION_STATE_HALTED                  = 0x3,
+    /** Partition will go to STATE_RUNNING at start of its next timeslot    */
+    AIR_PARTITION_STATE_READY                   = 0x4
+
+} pmk_partition_state_e;
+
+/**
+ * @brief Partition system permissions flags
+ */
+typedef enum {
 
     /** Floating Point unit control                                         */
     AIR_PERMISSION_FPU_CONTROL            = 1,
@@ -170,16 +187,26 @@ typedef enum {
  * @brief Partition Status structure
  */
 typedef struct {
-
-    air_u32_t index;                        /**< Partition index              */
-    air_identifier_t window_id;             /**< Partition schedule window id */
-    air_clocktick_t period;                 /**< Partition schedule period    */
-    air_clocktick_t duration;               /**< Partition schedule duration  */
-    air_identifier_t identifier;            /**< Partition identifier         */
-    air_permissions_e permissions;          /**< Partition permissions        */
-    air_operating_mode_e operating_mode;    /**< Partition operating mode     */
-    air_start_condition_e start_condition;  /**< Partition start condition    */
-    air_u32_t restart_count;                /**< Number of restarts           */
+    /**< Partition index                                                    */
+    air_u32_t index;
+    /**< Partition schedule window id (-1 if currently not executing window)*/
+    air_identifier_t window_id;
+    /**< Partition schedule period                                          */
+    air_clocktick_t period;
+    /**< Partition schedule duration                                        */
+    air_clocktick_t duration;
+    /**< Partition identifier                                               */
+    air_identifier_t identifier;
+    /**< Partition permissions                                              */
+    air_permissions_e permissions;
+    /**< Partition operating mode                                           */
+    air_operating_mode_e operating_mode;
+    /**< Partition start condition                                          */
+    air_start_condition_e start_condition;
+    /**< Partition current state                                            */
+    pmk_partition_state_e state;
+    /**< Number of times the Partition has restarted                        */
+    air_u32_t restart_count;
 
 } air_partition_status_t;
 
@@ -212,7 +239,9 @@ air_status_code_e air_syscall_get_partition_status(
  * @param mode Operating Mode to be set
  * @return INVALID_CONFIG  - if no permissions
  *         INVALID_PARAM   - if invalid mode or target partition
- *         NO_ACTION       - if transition from normal to normal
+ *         INVALID_MODE    - if invalid transition
+ *         NO_ACTION       - if set current mode
+ *         NOT_AVAILABLE   - if partition is initializing
  *         NO_ERROR        - no error otherwise
  */
 air_status_code_e air_syscall_set_partition_mode(
@@ -632,7 +661,7 @@ air_state_e air_syscall_get_system_state(void);
 air_status_code_e air_syscall_set_system_state(air_state_e state);
 
 /**
- * @brief Get the lasted health-monitor event
+ * @brief Get the last health-monitor event
  * @param event Pointer to store the HM event
  */
 void air_syscall_get_hm_event(air_hm_event_t *event);
