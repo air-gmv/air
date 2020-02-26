@@ -69,20 +69,20 @@ air_u32_t bsp_core_init(void) {
     air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
 
     arm_a9mpcore_start_hook(cpu_id);
-    arm_select_debug_uart(0);
-
-#ifdef PMK_DEBUG
-    printk("start! bsp_core_init::cpu_id = %d\n", cpu_id);
-#endif
 
     arm_set_vector_base();
 
     if(cpu_id == 0) {
 
+        arm_select_debug_uart(0);
         arm_isr_table_init();
         arm_hm_init();
         arm_setup_uart(0, 115200);
     }
+
+#ifdef PMK_DEBUG
+    printk("start! bsp_core_init::cpu_id = %d\n", cpu_id);
+#endif
 
     arm_peripheral_soft_reset();
     gic_init(cpu_id);
@@ -115,7 +115,10 @@ void bsp_core_ready(void) {
 
     arm_enable_interrupts();
 
-    arm_start_global_timer();
+    if (cpu_id == 0) {
+
+        arm_start_global_timer();
+    }
 }
 
 void bsp_boot_core(air_u32_t cpu_id, void *entry_point) {
