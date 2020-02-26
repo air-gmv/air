@@ -55,25 +55,22 @@ typedef char* air_message_ptr_t;
 typedef enum {
 
     AIR_NO_ERROR                = 0x00,
-    AIR_SUCCESSFUL              = 0x00,    /**<  request valid and operation performed */
-    AIR_NO_ACTION               = 0x01,    /**<  status of system unaffected by request */
-    AIR_NOT_AVAILABLE           = 0x02,    /**<  resource required by request unavailable */
-    AIR_INVALID_PARAM           = 0x03,    /**<  invalid parameter specified in request */
-    AIR_INVALID_CONFIG          = 0x04,    /**<  parameter incompatible with configuration */
-    AIR_INVALID_MODE            = 0x05,    /**<  request incompatible with current mode */
-    AIR_TIMED_OUT               = 0x06,    /**<  time-out tied up with request has expired */
-    AIR_INVALID_POINTER         = 0x07,    /**<  Invalid Memory Pointer            */
-    AIR_ERROR_MSGQUEUE_FULL     = 0x08,    /**<  Queueing port full                */
-    AIR_ERROR_MSGQUEUE_EMPTY    = 0x09,    /**<  Queueing port empty               */
-    AIR_ERROR_MAX_PORT_NUM      = 0x0A,    /**<  Maximum number of ports exceeded  */
-    AIR_INVALID_PORT_TYPE       = 0x0B,    /**<  Port has the wrong type           */
-    AIR_UNSUCCESSFUL            = 0x0C,
-    AIR_INTERNAL_ERROR          = 0x0D,
-    AIR_INVALID_SIZE            = 0x0E,
-    AIR_INVALID_ADDRESS         = 0x0F,
-    AIR_OUT_OF_MEMORY           = 0x10,
-    AIR_DEVICE_NOT_FOUND        = 0x11,    /**< Device not found                */
-    AIR_DEVICE_ERROR            = 0x12,
+    AIR_SUCCESSFUL              = 0x00, /**<  Request valid and operation performed     */
+    AIR_NO_ACTION               = 0x01, /**<  Status of system unaffected by request    */
+    AIR_NOT_AVAILABLE           = 0x02, /**<  Resource required by request unavailable  */
+    AIR_INVALID_PARAM           = 0x03, /**<  Invalid parameter specified in request    */
+    AIR_INVALID_CONFIG          = 0x04, /**<  Parameter incompatible with configuration */
+    AIR_INVALID_MODE            = 0x05, /**<  Request incompatible with current mode    */
+    AIR_TIMED_OUT               = 0x06, /**<  Time-out tied up with request has expired */
+    AIR_INVALID_POINTER         = 0x07, /**<  Invalid Memory Pointer                    */
+    AIR_ERROR_MSGQUEUE_FULL     = 0x08, /**<  Queueing port full                        */
+    AIR_ERROR_MSGQUEUE_EMPTY    = 0x09, /**<  Queueing port empty                       */
+    AIR_ERROR_MAX_PORT_NUM      = 0x0A, /**<  Maximum number of ports exceeded          */
+    AIR_INVALID_PORT_TYPE       = 0x0B, /**<  Port has the wrong type                   */
+    AIR_INVALID_SIZE            = 0x0C, /**< Invalid Size                               */
+    AIR_OUT_OF_MEMORY           = 0x0D, /**< Memory Could not be allocated              */
+    AIR_DEVICE_NOT_FOUND        = 0x0E, /**< Device not found                           */
+    AIR_DEVICE_ERROR            = 0x0F  /**< Device Specific Error Found                */
 
 } air_status_code_e;
 
@@ -82,10 +79,10 @@ typedef enum {
 #endif
 #ifdef ASM
 
-#define AIR_MODE_IDLE                                   0
-#define AIR_MODE_COLD_START                             1
-#define AIR_MODE_WARM_START                             2
-#define AIR_MODE_NORMAL                                 3
+#define AIR_MODE_IDLE                                0
+#define AIR_MODE_COLD_START                          1
+#define AIR_MODE_WARM_START                          2
+#define AIR_MODE_NORMAL                              3
 
 #define AIR_PERMISSION_FPU_CONTROL          0x00000001
 #define AIR_PERMISSION_CACHE_CONTROL        0x00000002
@@ -187,25 +184,25 @@ typedef enum {
  * @brief Partition Status structure
  */
 typedef struct {
-    /**< Partition index                                                    */
+    /** Partition index                                                     */
     air_u32_t index;
-    /**< Partition schedule window id (-1 if currently not executing window)*/
+    /** Partition schedule window id (-1 if currently not executing window) */
     air_identifier_t window_id;
-    /**< Partition schedule period                                          */
+    /** Partition schedule period                                           */
     air_clocktick_t period;
-    /**< Partition schedule duration                                        */
+    /** Partition schedule duration                                         */
     air_clocktick_t duration;
-    /**< Partition identifier                                               */
+    /** Partition identifier                                                */
     air_identifier_t identifier;
-    /**< Partition permissions                                              */
+    /** Partition permissions                                               */
     air_permissions_e permissions;
-    /**< Partition operating mode                                           */
+    /** Partition operating mode                                            */
     air_operating_mode_e operating_mode;
-    /**< Partition start condition                                          */
+    /** Partition start condition                                           */
     air_start_condition_e start_condition;
-    /**< Partition current state                                            */
+    /** Partition current state                                             */
     pmk_partition_state_e state;
-    /**< Number of times the Partition has restarted                        */
+    /** Number of times the Partition has restarted                         */
     air_u32_t restart_count;
 
 } air_partition_status_t;
@@ -465,9 +462,9 @@ typedef struct {
 
     air_clocktick_t refresh_period;             /**< Port refresh period     */
     air_clocktick_t time_stamp;                 /**< Message time stamp      */
-    air_u32_t max_message_size;                  /**< Max number of messages  */
+    air_u32_t max_message_size;                 /**< Max number of messages  */
     air_port_direction_e port_direction;        /**< Port direction          */
-    air_u32_t port_discipline;                   /**< Port discipline         */
+    air_u32_t port_discipline;                  /**< Port discipline         */
     air_message_age_e message_age;              /**< Message age             */
     air_port_updated_e updated;                 /**< Message updated state   */
     air_message_validity_e last_msg_validity;   /**< Message validity        */
@@ -494,7 +491,7 @@ typedef struct {
     air_identifier_t id;                    /**< Shared Memory identifier   */
     air_memory_attributes_e permissions;    /**< Shared Memory attributes   */
     void *address;                          /**< Shared Memory bloc address */
-    air_sz_t size;                            /**< Shared Memory block size   */
+    air_sz_t size;                          /**< Shared Memory block size   */
 
 } air_sharedmemory_t;
 

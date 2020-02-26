@@ -701,7 +701,7 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 		0,
 		&(pDev->rx_sem)) != AIR_SUCCESSFUL ) {
 		DBG("rx_sem couldn't be created\n");
-		return AIR_INTERNAL_ERROR;
+		return AIR_OUT_OF_MEMORY;
 	}
 	DBG("rx_sem successful with ID: %d\n", (int)pDev->rx_sem);
 	/* TX Semaphore created with count = 0 */
@@ -713,7 +713,7 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 			0,
 			&(pDev->tx_sem)) != AIR_SUCCESSFUL){
 		DBG("tx_sem couldn't be created\n");
-		return AIR_INTERNAL_ERROR;
+		return AIR_OUT_OF_MEMORY;
 	}
 	DBG("tx_sem successful with ID: %d\n", (int) pDev->tx_sem);
 	/* TX Empty Semaphore created with count = 0 */
@@ -724,7 +724,7 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 		0,
 		&(pDev->txempty_sem)) != AIR_SUCCESSFUL ) {
 		DBG("txempty_sem couldn't be created\n");
-		return AIR_INTERNAL_ERROR;
+		return AIR_OUT_OF_MEMORY;
 	}
 	DBG("txempty_sem successful with ID: %d\n", (int) pDev->txempty_sem);
 	/* Device Semaphore created with count = 1 */
@@ -735,7 +735,7 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 		0,
 		&(pDev->dev_sem)) != AIR_SUCCESSFUL ) {
 		DBG("dev_sem couldn't be created\n");
-		return AIR_INTERNAL_ERROR;
+		return AIR_OUT_OF_MEMORY;
 	}
 	DBG("dev_sem created with ID: %d\n", (int) pDev->dev_sem);
 #endif
