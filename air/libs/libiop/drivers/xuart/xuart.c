@@ -269,24 +269,42 @@ void set_uart_mode(uart_ctrl_t *uart, char parity, int data_bits, int stop_bits)
     air_u32_t mode = ((uart->mode)&(0xFFFFFC01));
 
 
-   // mode |=  0x200;   NORMAL: 000; AUTOMATIC ECHO: 100; LOCAL LOOPBACK: 200; REMOTE LOOPBACK: 300
+    // mode |=  0x200;   NORMAL: 000; AUTOMATIC ECHO: 100; LOCAL LOOPBACK: 200; REMOTE LOOPBACK: 300
 
-    //PARITY -> default is EVEN (000)
-    if (parity=='O')
-        mode |= ARM_UART_MODE_PAR(001);
-    else if (parity=='N')
-        mode |= ARM_UART_MODE_PAR(100);
+    /* Parity: E(even), O(odd), S(space), M(mark), N(none) */
+    switch (parity) {
+        case 'E':
+            mode |= ARM_UART_MODE_PAR(0);
+        case 'O':
+            mode |= ARM_UART_MODE_PAR(1);
+        case 'S':
+            mode |= ARM_UART_MODE_PAR(2);
+        case 'M':
+            mode |= ARM_UART_MODE_PAR(3);
+        case 'N':
+        default:
+            mode |= ARM_UART_MODE_PAR(4);
+    }
 
-    //DATA BITS -> default is 8 (0x)
-    if (data_bits==6)
-        mode |= ARM_UART_MODE_CHRL(11);
-    else if (data_bits==7)
-        mode |= ARM_UART_MODE_CHRL(10);
+    /* Character length: number of bits per char */
+    switch (data_bits) {
+        case 6:
+            mode |= ARM_UART_MODE_CHRL(3);
+        case 7:
+            mode |= ARM_UART_MODE_CHRL(2);
+        case 8:
+        default:
+            mode |= ARM_UART_MODE_CHRL(0);
+    }
 
-    //STOP BITS -> default is 1 (00)
-    if (stop_bits==2)
-        mode |= ARM_UART_MODE_CHRL(10);
+    /* Number of stop bits */
+    switch (stop_bits) {
+        case 2:
+            mode |= ARM_UART_MODE_NBSTOP(2);
+        case 1:
+        default:
+            mode |= ARM_UART_MODE_NBSTOP(0);
+    }
 
     uart->mode = mode;
-
 }
