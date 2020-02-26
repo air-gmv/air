@@ -21,7 +21,7 @@ VALID_READS             = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
 VALID_BAUD              = [ parserutils.str2int, lambda x : 0 < x <= 921600 ]
 VALID_DATABITS          = [ parserutils.str2int, lambda x : 5 < x <= 8 ]
 VALID_STOPBITS          = [ parserutils.str2int, lambda x : 0 < x <= 2 ]
-VALID_PARITY            = [ str, lambda x : x in [ 'E', 'O', 'N'] ]
+VALID_PARITY            = [ str, lambda x : x in ['E', 'O', 'S', 'M', 'N'] ]
 VALID_DATABYTES         = [ parserutils.str2int, lambda x : 0 < x <= 64 ]
 
 
