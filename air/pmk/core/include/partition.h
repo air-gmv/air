@@ -27,22 +27,6 @@
  * @{
  */
 
-/**
- * @brief Partition internal state enumeration
- */
-typedef enum {
-
-    /** Partition wasn't run yet                                            */
-    PMK_PARTITION_STATE_NOT_RUN                 = 0x0,
-    /** Partition is being initialized                                      */
-    PMK_PARTITION_STATE_INIT                    = 0x1,
-    /** Partition is being executed                                         */
-    PMK_PARTITION_STATE_RUNNING                 = 0x2,
-    /** Partition execution halted                                          */
-    PMK_PARTITION_STATE_HALTED                  = 0x3
-
-} pmk_partition_state_t;
-
 /** 
  * @brief Partition internal structure
  */
@@ -57,7 +41,7 @@ typedef struct {
     /** Partition initial cache state                                       */
     air_cache_e init_cache;
     /** Partition internal state                                            */
-    pmk_partition_state_t state;
+    pmk_partition_state_e state;
     /** Partition last clock tick                                           */
     air_clocktick_t last_clock_tick;
     /** Partition elapsed clock ticks                                       */
