@@ -52,6 +52,8 @@ pmk_partition_t usr_partition_table[USR_PARTITIONS] = ${'\\'}
     {   /* ${partition} */
         .id          = ${partition.id},
         .name        = "${partition.name}",
+        .state       = AIR_PARTITION_STATE_INIT,
+        .window_id   = -1, /*Default: No window assigned (-1)*/
 % if len(partition.permissions) > 0:
         .permissions = ${'\\'}
     % for j, permission in enumerate(partition.permissions):
