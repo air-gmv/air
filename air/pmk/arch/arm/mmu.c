@@ -321,6 +321,12 @@ void arm_mmu_enable(arm_mmu_context_t *ctx) {
     air_u32_t sctlr = arm_cp15_get_system_control();
     sctlr |= (ARM_SCTLR_M);
     arm_cp15_set_system_control(sctlr);
+
+    /* Enable instruction and data cache */
+    sctlr |= (ARM_SCTLR_I & ARM_SCTLR_C);
+    arm_cp15_set_system_control(sctlr);
+
+    arm_data_synchronization_barrier();
 }
 
 air_u32_t arm_is_mmu_enabled(void) {
@@ -340,6 +346,8 @@ void arm_mmu_change_context(arm_mmu_context_t *ctx) {
     arm_cp15_set_translation_table0_base(ttbr0);
     arm_instruction_synchronization_barrier();
     arm_cp15_set_CONTEXTIDR(ctx->id);
+
+    arm_data_synchronization_barrier();
 }
 
 void arm_segregation_init(void) {
