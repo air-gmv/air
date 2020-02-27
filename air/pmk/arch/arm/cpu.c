@@ -72,7 +72,7 @@ void core_context_init(core_context_t *context, air_u32_t id) {
     hm_event->nesting = 0;
 
 #ifdef PMK_DEBUG
-    printk("    :: context %02i at           0x%08x\n", id, context);
+    printk("\n    :: context %02i at           0x%08x\n", id, context);
     printk("       idle_isf_pointer at    0x%08x to 0x%08x\n",
             context->idle_isf_pointer,
             context->idle_isf_pointer + sizeof(arm_interrupt_stack_frame_t));
@@ -160,7 +160,7 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
         isf->ret_addr = (air_u32_t)context->entry_point;
 
 #ifdef PMK_DEBUG
-        printk("       cpu::setup::context->entry_point   = 0x%x\n"
+        printk("\n       cpu::setup::context->entry_point   = 0x%x\n"
                "       cpu::setup::isf->ret_addr          = 0x%x\n",
                context->entry_point, isf->ret_addr);
 #endif

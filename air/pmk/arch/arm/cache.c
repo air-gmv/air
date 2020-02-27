@@ -18,7 +18,7 @@ void arm_instruction_cache_invalidate(void) {
     arm_cp15_instruction_cache_invalidate();
 }
 
-void arm_data_cache_invalidate_all_levels(void) {
+void arm_data_cache_invalidate(void) {
     air_u32_t clidr = arm_cp15_get_cache_level_id();
     air_u32_t loc = (clidr >> 24U) & 0b111;
     air_u32_t level = 0;
@@ -33,7 +33,7 @@ void arm_data_cache_invalidate_all_levels(void) {
     }
 }
 
-void arm_data_cache_clean_all_levels(void) {
+void arm_data_cache_clean(void) {
     air_u32_t clidr = arm_cp15_get_cache_level_id();
     air_u32_t loc = (clidr >> 24U) & 0b111;
     air_u32_t level = 0;
@@ -46,6 +46,14 @@ void arm_data_cache_clean_all_levels(void) {
             arm_data_cache_clean_level(level);
         }
     }
+}
+
+void arm_tlb_invalidate(void) {
+    arm_cp15_tlb_invalidate();
+}
+
+void arm_branch_predictor_invalidate(void) {
+    arm_cp15_branch_predictor_invalidate_all();
 }
 
 /**

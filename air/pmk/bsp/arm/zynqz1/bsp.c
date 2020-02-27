@@ -46,20 +46,20 @@ void bsp_start_hook(void) {
              * If the data cache is on then ensure that it is clean
              * before switching off to be extra careful.
              */
-            arm_data_cache_clean_all_levels();
+            arm_data_cache_clean();
         }
-        sctlr &= ~( ARM_SCTLR_I | ARM_SCTLR_C | ARM_SCTLR_M | ARM_SCTLR_A );
+        sctlr &= ~( ARM_SCTLR_I | ARM_SCTLR_C | ARM_SCTLR_M );
         arm_cp15_set_system_control(sctlr);
     }
 
-    /* Low interrupt latency configuration */
-    sctlr |= ARM_SCTLR_FI;
+    /* Low interrupt latency configuration & Alignment fault enable*/
+    sctlr |= (ARM_SCTLR_FI & ARM_SCTLR_A);
     arm_cp15_set_system_control(sctlr);
 
+    arm_tlb_invalidate();
     arm_instruction_cache_invalidate();
-    arm_data_cache_invalidate_all_levels();
-    arm_cp15_branch_predictor_invalidate_all();
-    arm_cp15_tlb_invalidate();
+    arm_branch_predictor_invalidate();
+    arm_data_cache_invalidate();
 
     arm_instruction_synchronization_barrier();
 }
@@ -105,9 +105,6 @@ void bsp_core_ready(void) {
     //arm_mmu_enable(partition->mmu_ctrl);
 
     if(cpu_id == 0) {
-
-        //CACHE
-        // something about smp. not implement for now
 
         arm_init_global_timer();
         arm_clear_pending();

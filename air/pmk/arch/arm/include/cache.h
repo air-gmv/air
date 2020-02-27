@@ -24,12 +24,22 @@ void arm_instruction_cache_invalidate(void);
 /**
  * \brief Invalidates all data cache entries
  */
-void arm_data_cache_invalidate_all_levels(void);
+void arm_data_cache_invalidate(void);
 
 /**
  * \brief Cleans all data cache entries
  */
-void arm_data_cache_clean_all_levels(void);
+void arm_data_cache_clean(void);
+
+/**
+ * \brief Invalidates all TLB entries
+ */
+void arm_tlb_invalidate(void);
+
+/**
+ * \brief Invalidates all BP entries
+ */
+void arm_branch_predictor_invalidate(void);
 
 /**
  * \brief Invalidates instruction or data cache by level
