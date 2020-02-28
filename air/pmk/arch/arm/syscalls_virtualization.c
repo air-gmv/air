@@ -15,9 +15,11 @@
 
 extern pmk_sharedarea_t air_shared_area;
 
-void arm_syscall_disable_interrupts(pmk_core_ctrl_t *core) {
+air_u32_t arm_syscall_disable_interrupts(pmk_core_ctrl_t *core) {
 
+    air_u32_t level = core->context->vcpu.psr;
     core->context->vcpu.psr |= ARM_PSR_I;
+    return level;
 }
 void arm_syscall_enable_interrupts(pmk_core_ctrl_t *core) {
 
@@ -42,6 +44,7 @@ void arm_syscall_disable_fpu(pmk_core_ctrl_t *core) {
 void arm_syscall_enable_fpu(pmk_core_ctrl_t *core) {
 
     core->context->vfp_context->fpexc |= ARM_VFP_FPEXC_ENABLE;
+    //core->context->vfp_context->fpscr &=0xFFF8FFFF;
 }
 
 air_u32_t arm_syscall_get_tbr(pmk_core_ctrl_t *core) {
@@ -67,8 +70,14 @@ void arm_syscall_set_psr(pmk_core_ctrl_t *core, air_u32_t val) {
 }
 
 void arm_syscall_rett(pmk_core_ctrl_t *core) {
-
+    air_u32_t *isf=core->context->isf_pointer;
     core->context->vcpu.psr &= ~(ARM_PSR_A | ARM_PSR_I);
+
+    __asm__ volatile (
+                "mov sp, %0"
+                : "=r" (isf));
+    //arm_core_context_restore(core);
+
 }
 
 //air_u32_t arm_syscall_get_cache_register(void);

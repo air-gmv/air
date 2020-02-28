@@ -33,8 +33,8 @@ global(exception_undef)
     push    {r12, r14}
     mrs     r12, spsr
     tst     r12, #ARM_PSR_T
-    subeq   lr, #2                          //thumb
-    subne   lr, #4                          //arm
+    subne   lr, #2                          //thumb
+    subeq   lr, #4                          //arm
     srsdb   sp, #ARM_PSR_IRQ
     pop     {r12, r14}
 
@@ -196,6 +196,9 @@ c_handler:
 restore:
     cpsid   aif, #ARM_PSR_IRQ
 
+/*trcpse*/
+    mov r6, r0
+/**/
     add     sp, #56                         // usr_sp
     pop     {r0-r3}
 
@@ -215,6 +218,16 @@ restore:
     mov     lr, r1
     msr     cpsr, r5
 
+/*trcpse*/
+    cmp r6, 0
+    beq trcpse
+    mov lr, r6
+    mrs r6, spsr
+    bic r6, #(ARM_PSR_T)
+    msr spsr, r6
+
+/**/
+trcpse:
     sub     sp, #72
     pop     {r0-r12}
     dmb

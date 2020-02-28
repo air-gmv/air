@@ -143,7 +143,8 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
 
         /* setup partition real PSR */
         /* check if the partition have supervisor permissions */
-        if ((partition->permissions & AIR_PERMISSION_SUPERVISOR) != 0) {
+        if (partition->permissions == AIR_PERMISSION_SUPERVISOR) {
+
             isf->ret_psr = (ARM_PSR_SYS);
             context->vcpu.psr = (ARM_PSR_SYS);
         } else {
@@ -152,6 +153,7 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
 
         if ((partition->permissions & AIR_PERMISSION_FPU_CONTROL) != 0) {
             context->vfp_context->fpexc = (ARM_VFP_FPEXC_ENABLE);
+           //context->vfp_context->fpscr &=0xFFF8FFFF;
         } else {
             context->vfp_context->fpexc = 0;
         }
@@ -161,8 +163,9 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
 
 #ifdef PMK_DEBUG
         printk("       cpu::setup::context->entry_point   = 0x%x\n"
-               "       cpu::setup::isf->ret_addr          = 0x%x\n",
-               context->entry_point, isf->ret_addr);
+               "       cpu::setup::isf->ret_addr          = 0x%x\n"
+               "       cpu::setup::isf->ret_psr           = 0x%x\n",
+               context->entry_point, isf->ret_addr,isf->ret_psr);
 #endif
 
         /* setup the stack pointer of the partition */
@@ -172,6 +175,8 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
 
         /*Enable virtual interrupts*/
         context->vgic.vm_ctrl = 1;
+        /*Set the priority mask so that all the interrupts are enabled*/
+        context->vgic.pmr = 255;
 
 #ifdef PMK_DEBUG
         printk("       cpu::setup::stack                  = 0x%x\n"
