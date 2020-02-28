@@ -18,6 +18,10 @@
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif
+/*trcpse---------------------------------------*/
+#include <cp15.h>
+#include <gic.h>
+/*trcpse---------------------------------------*/
 
 void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) {
 
@@ -32,7 +36,7 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
 
     switch (svc_id) {
     case AIR_SYSCALL_ARM_DISABLE_INTERRUPTS:
-        arm_syscall_disable_interrupts(core);
+        frame->r0 = arm_syscall_disable_interrupts(core);
         break;
     case AIR_SYSCALL_ARM_ENABLE_INTERRUPTS:
         arm_syscall_enable_interrupts(core);
@@ -199,6 +203,20 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
     case AIR_SYSCALL_PUTCHAR:
         pmk_syscall_putchar(core, (char)frame->r0);
         break;
+/*trcpse---------------------------------------*/
+    case AIR_SYSCALL_GET_PER_CPU:
+        frame->r0 = arm_cp15_get_Per_CPU();
+        break;
+    case AIR_SYSCALL_SETUP_PER_CPU:
+        arm_cp15_set_Per_CPU(frame->r0);
+        break;
+    case AIR_SYSCALL_GET_NB_CORES:
+        frame->r0 = arm_ic_processor_count();
+        break;
+    case AIR_SYSCALL_ARM_RETT:
+        arm_syscall_rett(core);
+        break;
+/*trcpse---------------------------------------*/
     default:
         break;
     }
