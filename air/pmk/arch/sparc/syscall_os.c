@@ -206,8 +206,14 @@ static void sparc_syscall_os_handler(
                     (air_sz_t)isf->i1);
             break;
 
+        /* get AMBA Plug & Play configuration area struct address */
         case AIR_SYSCALL_GET_AMBACONF:
             isf->i0 = (air_u32_t)&amba_confarea;
+            break;
+
+        /* finish partition execution on current window */
+        case AIR_SYSCALL_END_WINDOW:
+            pmk_syscall_end_window(core);
             break;
 
         /* system call not defined */

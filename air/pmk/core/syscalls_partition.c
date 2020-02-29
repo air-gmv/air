@@ -16,6 +16,7 @@
 #include <multicore.h>
 #include <segregation.h>
 #include <configurations.h>
+#include <schedule.h>
 
 
 air_status_code_e pmk_syscall_get_partition_id(
@@ -216,6 +217,35 @@ air_status_code_e pmk_syscall_set_partition_mode(
 
     /* return no error */
     return AIR_NO_ERROR;
+}
+
+void pmk_syscall_end_window(pmk_core_ctrl_t *core) {
+
+    pmk_partition_t *partition = core->partition;
+
+    /* change partition state */
+    partition->state = AIR_PARTITION_STATE_READY;
+
+    /* store the current core partition context */
+    core_context_save(core);
+
+    /* update partition last ticks */
+    partition->last_clock_tick = pmk_get_schedule_total_ticks();
+
+    /* flag as not executing a Window */
+    partition->window_id = -1;
+
+    /* unmap the current core */
+    partition->core_mapping[core_context_id(core->context)] = PMK_MAX_CORES;
+
+    /* flag the switch */
+    core->partition_switch = 1;
+
+    /* unassign Partition to core */
+    core->partition = NULL;
+
+    /* ACTION: IDLE the core for the remainder of the window */
+    core->context = &pmk_core_idle_context[core->idx];
 }
 
 void pmk_syscall_putchar(pmk_core_ctrl_t *core, char ch) {

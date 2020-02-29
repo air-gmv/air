@@ -242,5 +242,11 @@ void pmk_syscall_putchar(pmk_core_ctrl_t *core, char ch);
  */
 air_u32_t pmk_syscall_print(pmk_core_ctrl_t *core, char *buffer, air_sz_t len);
 
+/**
+ * @brief Finish Partition Execution on Current Window
+ * @param core executing core information
+ */
+void pmk_syscall_end_window(pmk_core_ctrl_t *core);
+
 #endif /* __SYSCALL_H__ */
 
