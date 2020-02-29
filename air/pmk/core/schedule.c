@@ -258,7 +258,7 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
             partition = core->partition;
 
             /* get the current virtual core */
-            air_u32_t vcore_id = core_context_id(core->context);
+            vcore_id = core_context_id(core->context);
 
             /* store the current core partition context */
             if (!core_context_trashed(core->context)) {
@@ -279,7 +279,7 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
                 /* Flag as not executing a Window */
                 partition->window_id = -1;
 
-                /* un-map the current core */
+                /* unmap the current core */
                 partition->core_mapping[vcore_id] = PMK_MAX_CORES;
             }
         }
@@ -354,17 +354,25 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
             core->context = &partition->context[vcore_id];
             partition->core_mapping[vcore_id] = core->idx;
 
-            /* if READY then flag the state change */
-            if (partition->state == AIR_PARTITION_STATE_READY) {
+            /* Update Partition State */
+            switch (partition->state){
 
-                partition->state = AIR_PARTITION_STATE_RUNNING;
+                case(AIR_PARTITION_STATE_READY):
+                    if (core_context_id(core->context) == 0) {
+                        core_context_trashed(core->context) = 0;
+                        partition->state = AIR_PARTITION_STATE_RUNNING;
+                    }
+                    break;
 
-            } else {   /* check if partition is starting */
-                if (partition->state == AIR_PARTITION_STATE_NOT_RUN) {
+                case(AIR_PARTITION_STATE_NOT_RUN):
 
                     pmk_partition_start(partition, core->context);
                     partition->last_clock_tick = scheduler_ctrl.total_ticks;
-                }
+                    break;
+
+                default:
+                    /* STATE_HALTED or STATE_INIT*/
+                    break;
             }
 
             /* update partition global time */
@@ -432,4 +440,9 @@ pmk_schedule_t *pmk_get_schedule_by_name(air_name_ptr_t name) {
         }
     }
     return found;
+}
+
+air_clocktick_t pmk_get_schedule_total_ticks(void) {
+
+    return scheduler_ctrl.total_ticks;
 }
