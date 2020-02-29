@@ -272,3 +272,11 @@ SYM(air_syscall_get_ambaconf):
     ta      AIR_SYSCALL_OS_TRAP
     retl
     nop; nop
+
+    GLOBAL(air_syscall_end_window)
+SYM(air_syscall_end_window):
+
+    set     AIR_SYSCALL_END_WINDOW, %o5
+    ta      AIR_SYSCALL_OS_TRAP
+    retl
+    nop; nop

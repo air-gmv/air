@@ -16,10 +16,11 @@
 #include <pmk.h>
 #include <bsp.h>
 #include <sparc.h>
-#include <printk.h>
 #include <partition.h>
 #include <workspace.h>
-
+#ifdef PMK_DEBUG
+#include <printk.h>
+#endif
 /**
  * @brief Stack size allocated for each core context
  * @ingroup cpu_sparc

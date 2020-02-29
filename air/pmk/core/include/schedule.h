@@ -124,6 +124,12 @@ pmk_schedule_t *pmk_get_schedule_by_id(air_identifier_t pid);
  */
 pmk_schedule_t *pmk_get_schedule_by_name(air_name_ptr_t name);
 
+/**
+ * @brief Get system total elapsed ticks
+ * @return Total elapsed ticks
+ */
+air_clocktick_t pmk_get_schedule_total_ticks(void);
+
 /** @} */
 
 #endif /* ___SCHEDULE_H__ */

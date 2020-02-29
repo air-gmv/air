@@ -251,6 +251,12 @@ air_status_code_e air_syscall_set_partition_mode(
  */
 air_uptr_t air_syscall_get_physical_addr(air_uptr_t addr);
 
+/**
+ * @brief Finish Partition Execution on Current Window
+ * @note Partition execution only resumes at start of its next window
+ */
+void air_syscall_end_window(void);
+
 /** @} */
 
 /**
@@ -883,6 +889,7 @@ air_uptr_t air_syscall_get_ambaconf(void);
 #define AIR_SYSCALL_FREEZE_CACHE                   (AIR_SYSCALL_ARCH_COUNT + 35)
 #define AIR_SYSCALL_FLUSH_CACHE                    (AIR_SYSCALL_ARCH_COUNT + 36)
 #define AIR_SYSCALL_GET_AMBACONF                   (AIR_SYSCALL_ARCH_COUNT + 37)
-#define AIR_SYSCALL_COUNT                          (AIR_SYSCALL_ARCH_COUNT + 38)
+#define AIR_SYSCALL_END_WINDOW                     (AIR_SYSCALL_ARCH_COUNT + 38)
+#define AIR_SYSCALL_COUNT                          (AIR_SYSCALL_ARCH_COUNT + 39)
 
 #endif /* __AIR_H__ */
