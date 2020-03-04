@@ -33,12 +33,15 @@ air_uptr_t * arm_exception_handler(arm_interrupt_stack_frame_t *frame, pmk_core_
         case ARM_EXCEPTION_PREF_ABORT:
         case ARM_EXCEPTION_DATA_ABORT:
             ret = arm_hm_handler(frame, core);
+            break;
 
         case ARM_EXCEPTION_SWI:
             arm_svc_handler(frame, core);
+            break;
 
         case ARM_EXCEPTION_IRQ:
             ret = arm_isr_handler(frame, core);
+            break;
     }
 
     return ret;
