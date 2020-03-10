@@ -2,7 +2,7 @@
  * BRM driver
  *
  * COPYRIGHT (c) 2006  Gaisler Research
- * Copyright (C) 2011-2019  GMVIS Skysoft S.A.
+ * Copyright (C) 2011-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE.RTEMS in this distribution or at

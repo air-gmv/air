@@ -2,6 +2,11 @@
 
 AIR has a user manual at https://gmvdrive.gmv.com/index.php/s/eScXCAybbecmT9b
 
+You have two way of getting AIR
+1) AIR is integrrated in TASTE toolchain available at  https://taste.tuxfamily.org/
+
+2) Download from repository where following instructions apply:
+
 To install AIR after cloning from git, you should do the following:
 
 ## 1 - Install RTEMS toolchain for RTEMS 5
@@ -55,6 +60,9 @@ Press 2 for leon4
 
 Press 0 for fpu enabled
 
+Press 0 for GRMON
+
+Press 1 to install all RTOS
 ...
 
 After configurator finishes execute
@@ -82,10 +90,12 @@ will create the respective binary in the created *executables* folder.
 ## Support
 Email to $(AIR_RUNNER_USER)@gmv.com or raise issue at our Gitlab
 
-## Updating AIR repo to AIR v5.3 and configurator v4.2
+## Updating AIR repo to AIR v5.3 and configurator v4.3
 Since configurator v4.2 the RTOS paravirtualized versions are obtained via git submodules.
 Pulling new AIR content into old AIR repo will generate conflicts. To get a new clean
 AIR repo please execute (please backup any working folder)
 
     git fetch
     git reset origin/master --hard
+    
+Further information email air-product@gmv.com

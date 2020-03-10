@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2019  GMVIS Skysoft S.A.
+ * Copyright (C) 2013-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
