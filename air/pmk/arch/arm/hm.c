@@ -89,8 +89,18 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
         far = arm_cp15_get_DFAR();
         break;
 
+    case ARM_EXCEPTION_FIQ:
+        error_id = AIR_IO_ERROR;
+        fsr = frame->ret_psr;
+        far = frame->ret_addr;
+        break;
+
     default:
         error_id = AIR_UNIMPLEMENTED_ERROR;
+#ifdef PMK_DEBUG
+        fsr = frame->ret_psr;
+        far = frame->ret_addr;
+#endif
     }
 
 #ifdef PMK_DEBUG
