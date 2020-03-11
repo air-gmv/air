@@ -83,5 +83,5 @@ void arm_uart_transmit(char ch) {
     // Waits until txFIFO is empty
     while((UART(arm_uart_debug_port)->status & ARM_UART_STATUS_TXEMPTY) == 0);
 
-    UART(arm_uart_debug_port)->tx_rx_fifo = ((air_u32_t)ch & 0xff);
+    UART(arm_uart_debug_port)->tx_rx_fifo = (air_u64_t)ch;
 }
