@@ -17,4 +17,5 @@ iop_supported_devices = {
     'GRCAN'     : [ CAN,    gaisler.phy_grcan,      gaisler.sch_grcan,      'iop_grcan.mako'],
     'GRMIL'     : [ MIL,    gaisler.phy_gr1553b,    gaisler.sch_gr1553b,    'iop_gr1553b.mako'],
     'XUART'     : [ UART,   xilinx.phy_xuart,       xilinx.sch_xuart,       'iop_xuart.mako'],
+    'XCAN'      : [ CAN,    xilinx.phy_xcan,        xilinx.sch_xcan,        'iop_xcan.mako'],
 }
