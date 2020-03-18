@@ -36,7 +36,7 @@
 /**
  * \brief Level of allowed IRQ nesting
  */
-#define MAX_NESTING_LEVEL 2
+#define MAX_NESTING_LEVEL 7
 
 /**
  * \brief Double-word alignment
