@@ -24,11 +24,11 @@ cores = 4
 
 # Kernel Compiler with FPU
 kernel_compiler = dict(
-    CC="sparc-rtems5-gcc --pipe ",
-    CXX="sparc-rtems5-g++ --pipe ",
-    LD="sparc-rtems5-gcc --pipe ",
-    AR="sparc-rtems5-ar",
-    RANLIB="sparc-rtems5-ranlib",
+    CC="sparc-gaisler-elf-gcc --pipe ",
+    CXX="sparc-gaisler-elf-g++ --pipe ",
+    LD="sparc-gaisler-elf-gcc --pipe ",
+    AR="sparc-gaisler-elf-ar",
+    RANLIB="sparc-gaisler-elf-ranlib",
     CFLAGS="",
     CPPFLAGS="-mcpu=leon3 -mflat -g -fno-builtin -nodefaultlibs -O2 -Wall",
     CXXFLAGS="",
@@ -38,11 +38,11 @@ kernel_compiler = dict(
 
 # Kernel Compiler with NO FPU
 kernel_compiler_no_fpu = dict(
-	CC="sparc-rtems5-gcc --pipe ",
-	CXX="sparc-rtems5-g++ --pipe ",
-	LD="sparc-rtems5-gcc --pipe ",
-	AR="sparc-rtems5-ar",
-	RANLIB="sparc-rtems5-ranlib",
+	CC="sparc-gaisler-elf-gcc --pipe ",
+	CXX="sparc-gaisler-elf-g++ --pipe ",
+	LD="sparc-gaisler-elf-gcc --pipe ",
+	AR="sparc-gaisler-elf-ar",
+	RANLIB="sparc-gaisler-elf-ranlib",
 	CFLAGS="",
 	CPPFLAGS="-mcpu=leon3 -msoft-float -mflat -g -fno-builtin -nodefaultlibs -O2 -Wall",
 	CXXFLAGS="",

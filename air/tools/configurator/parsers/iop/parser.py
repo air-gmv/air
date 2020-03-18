@@ -149,7 +149,7 @@ class IOParser(object):
         pdevice.id = xml.parse_attr(PHYSICAL_DEVICE_ID, VALID_IDENTIFIER_TYPE, True, self.logger)
         pdevice.device = xml.parse_attr(PHYSICAL_DEVICE_NAME, VALID_NAME_TYPE, True, self.logger)
 
-        self.logger.event(2, "dev:"+ pdevice.device)
+        self.logger.event(2, "dev: " + pdevice.device)
         # sanity check
         if self.logger.check_errors(): return False
 
@@ -188,6 +188,8 @@ class IOParser(object):
 
         # check if a parser for that device is available
         if pdevice.type not in iop_supported_devices.keys():
+            print pdevice.type
+            print iop_supported_devices.keys()
             self.logger.error(LOG_UNSUPPORTED_DEVICE, xml.sourceline, pdevice.device)
             return False
 
@@ -372,18 +374,24 @@ class IOParser(object):
             xml_header = xml.parse_tag(ETHHEADER, 1, 1, self.logger)
             if self.logger.check_errors(): return None
             return self.parse_eth_header(xml_header)
-        
+
         # device of spacewire type
         elif pdevice.type == SPW:
             xml_header = xml.parse_tag(SPWHEADER, 1, 1, self.logger)
             if self.logger.check_errors(): return None
             return self.parse_spw_header(xml_header)
-        
+
         # device of canbus type
         elif pdevice.type == CAN:
             xml_header = xml.parse_tag(CANHEADER, 1, 1, self.logger)
             if self.logger.check_errors(): return None
             return self.parse_can_header(xml_header)
+
+        # device of uartbus type
+        elif pdevice.type == UART:
+            xml_header = xml.parse_tag(UARTHEADER, 1, 1, self.logger)
+            if self.logger.check_errors(): return None
+            return self.parse_uart_header(xml_header)
 
         # device of mil-std-1553 type
         elif pdevice.type == MIL:
@@ -427,20 +435,37 @@ class IOParser(object):
         # sanity check
         if self.logger.check_errors(): return False
         return header
-    
+
     ## Parse CANBUS Header
     # @param self object pointer
     # @param xml SpaceWire Header xml node
     def parse_can_header(self, xml):
-        
+
         # clear previous errors and warning
         self.logger.clear_errors(3)
-        
+
         # parse attributes
         header = CanHeader()
         header.extended = xml.parse_attr(CANHEADER_EXTENDED, VALID_BOOLEAN_TYPE, True, self.logger)
+        header.sshot = xml.parse_attr(CANHEADER_EXTENDED, VALID_BOOLEAN_TYPE, True, self.logger)
         header.rtr = xml.parse_attr(CANHEADER_RTR, VALID_BOOLEAN_TYPE, True, self.logger)
         header.can_id = xml.parse_attr(CANHEADER_ID, VALID_ID, True, self.logger)
+
+        # sanity check
+        if self.logger.check_errors(): return False
+        return header
+
+    ## Parse UARTBUS Header
+    # @param self object pointer
+    # @param xml SpaceWire Header xml node
+    def parse_uart_header(self, xml):
+
+        # clear previous errors and warning
+        self.logger.clear_errors(3)
+
+        # parse attributes
+        header = UartHeader()
+        header.uart_id = xml.parse_attr(UARTHEADER_ID, VALID_ID, True, self.logger)
 
         # sanity check
         if self.logger.check_errors(): return False
@@ -601,6 +626,9 @@ class IOParser(object):
         # open XML file
         xml = xml_parser.xmlOpen(os.path.join(air.WORKING_DIRECTORY, file_name), self.logger, None)
         if xml is None: return False
+
+        # parse optional field Time to Live
+        self.ttl = xml.parse_attr(TIME_TO_LIVE_ATTR, VALID_TIME_TO_LIVE, False, self.logger, self.ttl)
 
         # parse logical devices
         self.logger.event(1, LOG_EVENT_IOP_LDEVICES)
