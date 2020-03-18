@@ -52,7 +52,7 @@ void core_context_init(core_context_t *context, air_u32_t id) {
     /* allocate context stack */
     air_uptr_t stack_space = (air_uptr_t)pmk_workspace_alloc(CONTEXT_STACK_SIZE);
     context->isf_stack_pointer =
-            (void *)(stack_space +
+            (void *)((air_u32_t)stack_space +
                      CONTEXT_STACK_SIZE -
                      sizeof(sparc_interrupt_stack_frame_t));
 

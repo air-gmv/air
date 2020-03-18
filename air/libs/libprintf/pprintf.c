@@ -44,7 +44,7 @@ static air_identifier_t partition_idx = 0;
  * @brief pprintf library initialization flag
  * @ingroup lib_pprintf
  */
-static air_boolean printf_inited = 0;
+static air_boolean_t printf_inited = false;
 
 /**
  * @brief pprintf partition color table

@@ -52,7 +52,7 @@ void pmk_segregation_int(void) {
         bsp_segregation(partition);
 
         /* align physical address with the memory area unit */
-        p_addr = ADDR_ALIGN(p_addr, partition->mmap->p_unit);
+        p_addr = (air_uptr_t)ADDR_ALIGN(p_addr, partition->mmap->p_unit);
 
         /* map the Partition memory region for user access */
         cpu_segregation_map_memory(
@@ -81,7 +81,7 @@ void pmk_segregation_int(void) {
 #endif
 
         /* align physical address with the memory area unit */
-        p_addr = ADDR_ALIGN(p_addr, shm->unit);
+        p_addr = (air_uptr_t)ADDR_ALIGN(p_addr, shm->unit);
 
         for (j = 0; j < shm_access_list->length; ++j) {
 

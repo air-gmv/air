@@ -267,6 +267,10 @@ class Configuration(object):
     def get_library_sources(self, lib_name):
         if lib_name == 'libair':
             return supported_architectures[self.arch][self.bsp].libair_sources
+        if lib_name == 'libiop':
+            sources = self.supported_libraries[lib_name].source_files
+            sources.update(self.supported_libraries['libiop'].iop_get_drivers_sources(self.get_iop_configuration().drivers))
+            return sources
         return self.supported_libraries[lib_name].source_files
 
     ##
@@ -275,6 +279,10 @@ class Configuration(object):
     def get_library_public_headers(self, lib_name):
         if lib_name == 'libair':
             return self.get_libair_headers()
+        if lib_name == 'libiop':
+            headers = set(utils.flatten(self.supported_libraries[lib_name].header_files))
+            headers.update(self.supported_libraries['libiop'].iop_get_drivers_headers(self.get_iop_configuration().drivers))
+            return headers
         return set(utils.flatten(self.supported_libraries[lib_name].header_files))
 
     ##
@@ -285,7 +293,9 @@ class Configuration(object):
             return self.get_kernel_headers()
         dependencies = self.get_library_list_of_dependencies(lib_name)
         if lib_name == 'libiop':
-            return set(utils.flatten([[self.supported_libraries[n].header_files for n in dependencies], self.get_kernel_headers()]))
+            headers = set(utils.flatten([[self.supported_libraries[n].header_files for n in dependencies], self.get_kernel_headers()]))
+            headers.update(self.supported_libraries['libiop'].iop_get_drivers_headers(self.get_iop_configuration().drivers))
+            return headers
         lib_air = self.get_libair_headers()
         return set(utils.flatten([[self.supported_libraries[n].header_files for n in dependencies], lib_air]))
 
