@@ -30,7 +30,7 @@ static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
 
     size_t max_size = 0;
     size_t size = get_payload_size(wrapper->buffer);
-    iop_debug("\n\nsize = %d\n", (int) size);
+
     /* get maximum size allowed by the port */
     if (port->type == AIR_QUEUING_PORT) {
 
@@ -38,8 +38,6 @@ static void send_remote_reply(iop_wrapper_t *wrapper, iop_port_t *port){
                 (air_queuing_port_configuration_t *)port->configuration;
 
         max_size = config->max_message_size;
-
-        iop_debug("\nSend remote reply queuing port\n");
 
     } else if (port->type == AIR_SAMPLING_PORT) {
 
