@@ -24,7 +24,9 @@ extern "C" {
 /**
  * @brief boolean value
  */
-typedef enum {false, true} air_boolean_t;
+#define air_boolean_t _Bool
+#define false 0
+#define true 1
 /**
  * @brief Identifier type
  */
