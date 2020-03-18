@@ -62,9 +62,9 @@ global(exception_svc)
     push    {r0,r1}
     mrs     r1, spsr
     tst     r1, #ARM_PSR_T
-    ldrneh  r0, [lr, #-2]
+    ldrneh  r0, [lr, #-2]           //thumb
     bicne   r0, r0, #0xff00
-    ldreq   r0, [r0, #-4]
+    ldreq   r0, [lr, #-4]           //arm
     biceq   r0, r0, #0xff000000
 
     cmp     r0, #(AIR_SYSCALL_ARM_RETT)
@@ -89,9 +89,12 @@ global(exception_svc)
     b       save_previous
 
 arm_rett:
+    push    {r0, lr}
     mrc     p15, 0, r0, c13, c0, 4  // get Per_CPU core
     BL2C    arm_syscall_rett
-    rfe     sp!
+    pop     {r0, lr}
+//    sub     sp, #144
+    b       restore
 //TODO: check if there are pending interrupts before returning to the partition!
 
 global(exception_pref_abort)
@@ -215,17 +218,19 @@ c_handler:
 
     BL2C    arm_exception_handler
 
-restore:
     cpsid   aif, #ARM_PSR_IRQ
 
 /*trcpse*/
-    mov r6, r0
+    cmp     r0, 0
+    bne     virtual
 /**/
+
+restore:
     add     sp, #56                         // usr_sp
     pop     {r0-r3}
 
-    mov     lr, r2
-    msr     spsr, r3
+    mov     lr, r2                          // return address
+    msr     spsr, r3                        // return psr
 
     /* prepare spsr to jump to previous mode */
     orr     r4, r3, #(ARM_PSR_EXC_MASK)
@@ -236,26 +241,28 @@ restore:
 
     mrs     r5, cpsr
     msr     cpsr, r4
-    mov     sp, r0
-    mov     lr, r1
+    mov     sp, r0                          // previous mode sp
+    mov     lr, r1                          // previous mode lr
     msr     cpsr, r5
 
-/*trcpse*/
-    cmp r6, 0
-    beq continue
-    mov lr, r6
-    mrs r6, spsr
-    bic r6, #(ARM_PSR_T)
-    bic r6, #(0xF) //return to the virtual trap table in irq mode
-    msr spsr, r6
-
-/**/
-continue:
     sub     sp, #72
     pop     {r0-r12}
     dmb
-    addeq     sp, #20
-    addne     sp, #12
+    add     sp, #20
+    b       return
+
+/*trcpse*/
+virtual:
+    mov     lr, r0
+    mrs     r0, spsr
+    bic     r0, #(ARM_PSR_T)
+    bic     r0, #(0xF)                     // return to the virtual trap table in user mode
+    msr     spsr, r0
+
+    //sub     sp, #72
+    pop     {r0-r12}
+    dmb
+    sub     sp, #52
 
 return:
     subs    pc, lr, #0
