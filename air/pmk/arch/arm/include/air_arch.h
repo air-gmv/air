@@ -100,76 +100,76 @@ typedef unsigned long air_isr_level_t;
  * \brief ARM system call: disable virtual interrupts
  * \return previous PIL
  */
-air_u32_t air_disable_interrupts(void);
+air_u32_t air_syscall_disable_interrupts(void);
 /**
  * \brief ARM system call: enable virtual interrupts
  * \param pil PIL level to apply
  */
-void air_enable_interrupts(air_u32_t pil);
+void air_syscall_enable_interrupts(air_u32_t pil);
 /**
  * \brief ARM system call: disable virtual traps
  */
-void air_disable_traps(void);
+void air_syscall_disable_traps(void);
 /**
  * \brief ARM system call: enable virtual traps
  */
-void air_enable_traps(void);
+void air_syscall_enable_traps(void);
 /**
  * \brief ARM system call: disable FPU
  * \return NO_ERROR if the partition have permissions to control the FPU
  *         INVALID_CONFIG otherwise
  */
-air_u32_t air_disable_fpu(void);
+air_u32_t air_syscall_disable_fpu(void);
 /**
  * \brief ARM system call: enable FPU
  * \return NO_ERROR if the partition have permissions to control the FPU
  *         INVALID_CONFIG otherwise
  */
-air_u32_t air_enable_fpu(void);
+air_u32_t air_syscall_enable_fpu(void);
 /**
  * \brief ARM system call: get PSR
  * \return Core PSR
  */
-air_u32_t air_get_psr(void);
+air_u32_t air_syscall_get_psr(void);
 /**
  * \brief ARM system call: set PSR
  * \param psr PSR value
  */
-void air_set_psr(air_u32_t psr);
+void air_syscall_set_psr(air_u32_t psr);
 /**
  * \brief ARM system call: virtual RETT
  * \param pc program counter
  * \param n_npc next program counter
  */
-void air_virtual_rett(air_u32_t pc, air_u32_t n_pc);
+void air_syscall_virtual_rett(air_u32_t pc, air_u32_t n_pc);
 /**
  * \brief ARM system call: get cache register
  * \returns current cache register value
  */
-air_u32_t air_get_cache_register(void);
+air_u32_t air_syscall_get_cache_register(void);
 /**
  * \brief ARM system call: set cache register
  * \param cache cache register new value
  *
  * \note This system call requires permission
  */
-air_u32_t air_set_cache_register(air_u32_t cache);
+air_u32_t air_syscall_set_cache_register(air_u32_t cache);
 /**
  * \brief ARM system call: set TBR register
  * \param tbr pointer to the trap table
  */
-void air_set_tbr(void *tbr);
+void air_syscall_set_tbr(void *tbr);
 /**
  * \brief ARM system call: get TBR register
  * \return TBR register value
  */
-air_u32_t air_get_tbr(void);
+air_u32_t air_syscall_get_tbr(void);
 /**
  * \brief ARM system call: get IRQ mask register
  * \param core identifier
  * \return value of in the core IRQ mask register
  */
-air_u32_t air_get_irq_mask_register(air_u32_t core_id);
+air_u32_t air_syscall_get_irq_mask_register(air_u32_t core_id);
 /**
  * \brief ARM system call: get IRQ mask register
  * \param core identifier
@@ -177,7 +177,7 @@ air_u32_t air_get_irq_mask_register(air_u32_t core_id);
  * \return INVALID_CONFIG if the core isn't available
  *         NO_ERROR otherwise
  */
-air_u32_t air_set_irq_mask_register(air_u32_t core_id, air_u32_t mask);
+air_u32_t air_syscall_set_irq_mask_register(air_u32_t core_id, air_u32_t mask);
 /**
  * \brief ARM system call: set IRQ force register
  * \param core identifier
@@ -185,21 +185,28 @@ air_u32_t air_set_irq_mask_register(air_u32_t core_id, air_u32_t mask);
  * \return INVALID_CONFIG if the core isn't available
  *         NO_ERROR otherwise
  */
-air_u32_t air_set_irq_force_register(air_u32_t core_id, air_u32_t force);
+air_u32_t air_syscall_set_irq_force_register(air_u32_t core_id, air_u32_t force);
+
+/** TRCPSE
+ * \brief ARM system call: get IRQ mask register
+ * \param core identifier
+ * \return value of in the core IRQ mask register
+ */
+air_u32_t air_syscall_acknowledge_int(void);
 
 /**
  * \brief Disable Interrupts
  * \param level Interrupt level
  */
 #define air_syscall_disable_interrupts(level) \
-        level = air_disable_interrupts();
+        level = air_syscall_disable_interrupts();
 
 /**
  * \brief Enable Interrupts
  * \param level Interrupt level
  */
 #define air_syscall_enable_interrupts(level) \
-        air_enable_interrupts(level);
+        air_syscall_enable_interrupts(level);
 
 #ifdef  __cplusplus
 }
@@ -238,5 +245,9 @@ air_u32_t air_set_irq_force_register(air_u32_t core_id, air_u32_t force);
  *  air.h are a continuation of these
  */
 #define AIR_SYSCALL_ARCH_COUNT                          17
+
+//trcpse:
+#define AIR_SYSCALL_ARM_ACK_INT                         18
+//-----
 
 #endif /* AIR_ARCH_H_ */
