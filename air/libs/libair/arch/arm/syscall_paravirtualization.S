@@ -85,3 +85,8 @@ global(air_syscall_set_irq_mask_register)
 //FUNC(air_syscall_set_irq_force_register)
 //  svc     #(AIR_SYSCALL_ARM_SET_IRQ_FORCE_REGISTER)
 
+/*trcpse*/
+global(air_syscall_acknowledge_int)
+    svc     #(AIR_SYSCALL_ARM_ACK_INT)
+    bx      lr
+

@@ -128,3 +128,11 @@ global(air_syscall_putchar)
 global(air_syscall_print)
     svc     #(AIR_SYSCALL_PRINT)
     bx      lr
+
+/*trcpse---------------------------*/
+
+global(air_syscall_get_nb_cores)
+    svc     #(AIR_SYSCALL_GET_NB_CORES)
+    bx      lr
+
+/*trcpse---------------------------*/
