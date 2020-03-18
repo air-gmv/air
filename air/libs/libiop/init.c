@@ -44,7 +44,6 @@
 #include <iop_mms.h>
 #include <iop_support.h>
 #include <iop_error.h>
-#include <pprintf.h>
 
 //#define IOP_MAIN_DEBUG
 
@@ -126,10 +125,10 @@ static void iop_init_queues(void){
 static void iop_init_devs() {
 
     int i, j;
-    iop_debug("\n\n init devs \n\n");
-    iop_debug(" :: IOP - initializing logical devices (%d)\n",
-              (int) usr_configuration.logical_devices.length);
-    iop_debug("\n\n init devs log \n\n");
+
+    iop_debug(" :: IOP - initializing logical devices (%i)\n",
+              usr_configuration.logical_devices.length);
+
     /* iterate over all logical devices */
     for (i = 0; i < usr_configuration.logical_devices.length; ++i) {
 
@@ -258,7 +257,7 @@ static air_status_code_e iop_init_ports() {
  */
 air_status_code_e IOPinit() {
 
-    iop_debug("\nInitializing IOP\n");
+    iop_debug("Initializing IOP\n");
     /* initialize queues */
     iop_init_queues();
 
