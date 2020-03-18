@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<IOPartition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="iop.xsd" version="1.0" date="2013-06-05" name="iop_example" request_number="64" time_to_live="5">
+
+  <RemotePorts>
+    <Port Name="dsampling" LogicalDeviceId="0"/>
+    <Port Name="squeuing"/>
+  </RemotePorts>
+
+  <LogicalDevices>
+    <Device Id="0" Name="TESTER"/>
+  </LogicalDevices>
+
+  <PhysicalDevices>
+
+    <!-- UART 1:  -->
+
+    <Device Id="1" Device="UART1" Baud="115200" Parity="E" DataBits="8" StopBits="1" DataBytes="64">
+      <PhysicalRoute Id="1" PortId="squeuing">
+        <UartHeader UartID="34"/>
+      </PhysicalRoute>
+      <LogicalRoute Id="2" LogicalDeviceId="0">
+        <UartHeader UartID="5"/>
+      </LogicalRoute>
+    </Device>
+
+  </PhysicalDevices>
+
+  <!-- Module Schedules  -->
+
+  <ModuleSchedules>
+
+    <Schedule ScheduleIdentifier="1">
+      <DevicesConfiguration>
+        <Device DeviceId="1" Device="UART1" Reads="1"/>
+      </DevicesConfiguration>
+      <RoutesConfiguration>
+        <Route RouteId="1" Active="true"/>
+        <Route RouteId="2" Active="true"/>
+      </RoutesConfiguration>
+    </Schedule>
+  </ModuleSchedules>
+</IOPartition>
