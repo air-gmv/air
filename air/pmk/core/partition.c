@@ -15,10 +15,13 @@
 #include <bsp.h>
 #include <ipc.h>
 #include <ports.h>
-#include <printk.h>
 #include <barrier.h>
 #include <workspace.h>
 #include <configurations.h>
+
+#ifdef PMK_DEBUG
+#include <printk.h>
+#endif
 
 void pmk_partitions_init(void) {
 
@@ -185,14 +188,16 @@ void pmk_partition_restart(pmk_partition_t *partition) {
                 }
                 else
                 {
-                    if(1 << i  & (vcpus & (-vcpus)))
+                    if(1 << i  & (vcpus & (-vcpus))) {
                         core_context_setup_reload_partition(&partition->context[i], partition);
-                    else
+                    } else {
                         core_context_setup_idle(&partition->context[i]);
+                    }
                 }
             }
-            else
+            else {
                 core_context_setup_idle(&partition->context[i]);
+            }
         }
     }
     return;
@@ -205,6 +210,14 @@ void pmk_partition_restart(pmk_partition_t *partition) {
 void pmk_partition_reload(pmk_partition_t *partition) {
 
     cpu_preemption_flags_t flags = (0x0F << 8);
+
+#ifdef PMK_DEBUG
+    printk(" pmk_partition_reload\n");
+    printk("    partition: 0x%08x\n", partition);
+    printk("   partition->mmu_ctrl = 0x%08x, partition->mmap->v_addr = 0x%08x, phy_addr = 0x%08x\n",
+        partition->mmu_ctrl, partition->mmap->v_addr, cpu_get_physical_addr(partition->mmu_ctrl, partition->mmap->v_addr)
+    );
+#endif
 
     /* reload partition */
     pmk_partition_load(partition->elf, partition->mmap->v_addr);
