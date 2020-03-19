@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014  GMVIS Skysoft S.A.
+ * Copyright (C) 2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -21,6 +21,7 @@
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif
+
 /**
  * @brief Stack size allocated for each core context
  * @ingroup cpu_sparc
@@ -70,7 +71,7 @@ void core_context_init(core_context_t *context, air_u32_t id) {
     /* initialize the IPC event */
     context->ipc_event          = PMK_IPC_NO_ACTION;
 
-    /* iitialize the System State and HM event */
+    /* initialize the System State and HM event */
     context->state = AIR_STATE_MODULE_EXEC;
     pmk_hm_event_t *hm_event = (pmk_hm_event_t *) \
             pmk_workspace_alloc(sizeof(pmk_hm_event_t));
@@ -131,11 +132,10 @@ void core_context_setup_idle(core_context_t *context) {
     isf->nkpc = (air_u32_t)bsp_idle_loop + 0x00000004;
 }
 
-
 /**
  * @brief Setups a reload partition context
- * @param partition the partition to be reloaded
  * @param context the core context responsible for the reload
+ * @param partition the partition to be reloaded
  *
  * This function setups a core context the architecture dependent part of
  * an reload context
@@ -173,11 +173,10 @@ void core_context_setup_reload_partition(core_context_t *context, pmk_partition_
     isf->i0 = (air_u32_t) partition;
 }
 
-
 /**
  * @brief Setups a core partition context
- * @param partition partition information
  * @param context core context
+ * @param partition partition information
  */
 void core_context_setup_partition(
         core_context_t *context, pmk_partition_t *partition){
@@ -288,15 +287,22 @@ void core_context_add_hm_event(
     hm_event->state_id = state_id;
 }
 
+/**
+ * @brief Removes an HM event from the core context
+ * @param context Context of the core
+ */
 void core_context_remove_hm_event(core_context_t *context) {
 
     /* get the current core HM event */
     pmk_hm_event_t *hm_event = (pmk_hm_event_t *)context->hm_event;
 
     /* consume current HM event */
-    --hm_event->nesting;
-    if (hm_event->nesting == 0) {
-        hm_event->state_id = hm_event->previous_state_id;
-        context->state = hm_event->state_id;
+    if(hm_event->nesting > 0)
+    {
+        --hm_event->nesting;
+        if (hm_event->nesting == 0) {
+            hm_event->state_id = hm_event->previous_state_id;
+            context->state = hm_event->state_id;
+        }
     }
 }
