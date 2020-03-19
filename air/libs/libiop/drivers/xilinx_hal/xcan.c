@@ -128,7 +128,7 @@ air_u32_t iop_can_receive(iop_device_driver_t *iop_dev, void *arg) {
         if (iop_buffer->v_addr == NULL) {
 
             iop_debug("  :: xCAN :: iop_can_receive error iop_buffer doesn't exist\n");
-            ret = AIR_INVALID_ADDRESS;
+            ret = AIR_INVALID_POINTER;
         } else {
 
             status = XCanPs_Recv(canInstPtr, rxFrame);
@@ -193,7 +193,7 @@ air_u32_t iop_can_transmit(iop_device_driver_t *iop_dev, void *arg) {
         if (iop_buffer->v_addr == NULL) {
 
             iop_debug("  :: xCAN :: iop_can_transmit error iop_buffer doesn't exist\n");
-            ret = AIR_INVALID_ADDRESS;
+            ret = AIR_INVALID_POINTER;
         } else {
 
             header = (can_header_t *)get_header(iop_buffer);

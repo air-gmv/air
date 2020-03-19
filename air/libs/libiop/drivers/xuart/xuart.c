@@ -157,7 +157,7 @@ air_u32_t arm_xuart_transmit(uart_ctrl_t *uart, char ch) {
         uart->tx_rx_fifo = ((air_u32_t) ch & 0xff);
         return AIR_SUCCESSFUL;
     }
-    return AIR_UNSUCCESSFUL;
+    return AIR_DEVICE_ERROR;
 }
 
 air_u32_t iop_xuart_close(iop_device_driver_t *iop_dev, void *arg) {
