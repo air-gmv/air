@@ -25,12 +25,11 @@ extern volatile air_u32_t arm_pos_exceptions;
 extern volatile air_uptr_t *isr_table[PMK_MAX_CORES];
 
 void arm_pos_init(void) {
-
 #ifdef POS_DEBUG
     pprintf("POS init :: pos_exceptions: 0x%08x\n", &arm_pos_exceptions);
     pprintf("POS init :: isr_table: 0x%08x\n", &isr_table);
 #endif
-    air_set_tbr((void *)&arm_pos_exceptions);
+    air_syscall_set_tbr((void *)&arm_pos_exceptions);
 
     arm_pos_smp_init();
 

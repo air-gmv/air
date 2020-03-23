@@ -18,11 +18,16 @@
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif
+/*trcpse---------------------------------------*/
+#include <cp15.h>
+#include <gic.h>
+/*trcpse---------------------------------------*/
 
 void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) {
 
     air_u32_t svc_id;
     air_u64_t elapsed = 0;
+    int psri= core->context->vcpu.psr;
 
     if (frame->ret_psr & ARM_PSR_T) {
         svc_id = ( *((air_uptr_t *)(frame->ret_addr - 2)) & 0xff );
@@ -32,7 +37,7 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
 
     switch (svc_id) {
     case AIR_SYSCALL_ARM_DISABLE_INTERRUPTS:
-        arm_syscall_disable_interrupts(core);
+        frame->r0 = arm_syscall_disable_interrupts(core);
         break;
     case AIR_SYSCALL_ARM_ENABLE_INTERRUPTS:
         arm_syscall_enable_interrupts(core);
@@ -191,14 +196,23 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
         pmk_hm_isr_handler((air_error_e)frame->r0);
         break;
     case AIR_SYSCALL_PRINT:
+        //core->context->vcpu.psr |= ARM_PSR_I; //disable virtual interrupts when printing  TODO: interrupts with higher priority should be enabled...
         frame->r0 = (air_u32_t)pmk_syscall_print(
                 core,
                 (char *)frame->r0,
                 (air_sz_t)frame->r1);
+        //core->context->vcpu.psr=psri;
         break;
     case AIR_SYSCALL_PUTCHAR:
         pmk_syscall_putchar(core, (char)frame->r0);
         break;
+/*trcpse---------------------------------------*/
+    case AIR_SYSCALL_GET_NB_CORES:
+        frame->r0 = arm_ic_processor_count();
+        break;
+    case AIR_SYSCALL_ARM_ACK_INT:
+        frame->r0 = arm_syscall_acknowledge_int(core);
+/*trcpse---------------------------------------*/
     default:
         break;
     }
