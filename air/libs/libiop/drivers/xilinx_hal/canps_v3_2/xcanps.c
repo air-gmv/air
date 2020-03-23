@@ -287,14 +287,15 @@ void XCanPs_EnterMode(XCanPs *InstancePtr, u8 OperationMode)
 	 * enter Configuration Mode before switching into the target operation
 	 * mode.
 	 */
-//	XCanPs_WriteReg(InstancePtr->CanConfig.BaseAddr,
-//				XCANPS_SRR_OFFSET, 0U);
+	XCanPs_WriteReg(InstancePtr->CanConfig.BaseAddr,
+				XCANPS_SRR_OFFSET, 0U);
 
 	/*
 	 * Check if the device has entered Configuration Mode, if not, return to
 	 * the caller.
 	 */
 	if (XCanPs_GetMode(InstancePtr) != (u8)XCANPS_MODE_CONFIG) {
+		iop_debug(" CAN :: XCanPs_EnterMode not in CONFIG mode\n");
 		XCanPs_Reset(InstancePtr);
 	}
 

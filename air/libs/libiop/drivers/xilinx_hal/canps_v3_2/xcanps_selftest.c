@@ -124,6 +124,8 @@ s32 XCanPs_SelfTest(XCanPs *InstancePtr)
 	Xil_AssertNonvoid(InstancePtr != NULL);
 	Xil_AssertNonvoid(InstancePtr->IsReady == XIL_COMPONENT_IS_READY);
 
+	iop_debug(" CAN :: XCanPs_SelfTest::XCanPs_Reset PS: %d\n",
+			  XCanPs_GetBaudRatePrescaler(InstancePtr));
 	XCanPs_Reset(InstancePtr);
 
 	/*
@@ -135,8 +137,6 @@ s32 XCanPs_SelfTest(XCanPs *InstancePtr)
 		Status = XST_FAILURE;
 		return Status;
 	}
-
-	iop_debug(" XCanPs_SelfTest::XCanPs_GetMode = %d\n", XCanPs_GetMode(InstancePtr));
 
 	/*
 	 * Setup Baud Rate Prescaler Register (BRPR) and Bit Timing Register
@@ -150,13 +150,13 @@ s32 XCanPs_SelfTest(XCanPs *InstancePtr)
 	/*
 	 * Enter the loop back mode.
 	 */
+	iop_debug(" CAN :: XCanPs_SelfTest::XCanPs_EnterMode XCANPS_MODE_LOOPBACK PS: %d\n",
+			  XCanPs_GetBaudRatePrescaler(InstancePtr));
 	XCanPs_EnterMode(InstancePtr, XCANPS_MODE_LOOPBACK);
 	GetModeResult = XCanPs_GetMode(InstancePtr);
 	while (GetModeResult != ((u8)XCANPS_MODE_LOOPBACK)) {
 		GetModeResult = XCanPs_GetMode(InstancePtr);
 	}
-
-	iop_debug(" XCanPs_SelfTest::XCanPs_GetMode = %d\n", XCanPs_GetMode(InstancePtr));
 
 	/*
 	 * Create a frame to send with known values so we can verify them
@@ -227,7 +227,7 @@ s32 XCanPs_SelfTest(XCanPs *InstancePtr)
 	/*
 	 * Reset device again before returning to the caller.
 	 */
-	iop_debug(" XCanPs_SelfTest::Reset\n", XCanPs_GetMode(InstancePtr));
+	iop_debug(" CAN :: XCanPs_SelfTest::XCanPs_Reset\n");
 	XCanPs_Reset(InstancePtr);
 
 	Status = XST_SUCCESS;
