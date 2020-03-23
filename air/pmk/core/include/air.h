@@ -24,7 +24,7 @@ extern "C" {
 /**
  * @brief boolean value
  */
-typedef enum {false, true} air_boolean_t;
+typedef enum {False, True} air_boolean_t;
 /**
  * @brief Identifier type
  */
@@ -757,7 +757,7 @@ air_status_code_e air_syscall_boot_core(air_u32_t idx, void *entry_point);
  * @return INVALID_CONFIG  - if the partition doesn't have access to core idx,
  *         NO_ERROR        - otherwise
  */
-air_status_code_e air_syscall_set_tbr(air_u32_t idx);
+air_status_code_e air_syscall_copy_tbr(air_u32_t idx);
 /** @} */
 
 /**
@@ -825,7 +825,7 @@ air_uptr_t air_syscall_get_ambaconf(void);
 #define AIR_SYSCALL_GET_P_ADDR                     (AIR_SYSCALL_ARCH_COUNT + 3 )
 #define AIR_SYSCALL_GET_NB_CORES                   (AIR_SYSCALL_ARCH_COUNT + 4 )
 #define AIR_SYSCALL_GET_CORE_ID                    (AIR_SYSCALL_ARCH_COUNT + 5 )
-#define AIR_SYSCALL_SET_TBR                        (AIR_SYSCALL_ARCH_COUNT + 6 )
+#define AIR_SYSCALL_COPY_TBR                       (AIR_SYSCALL_ARCH_COUNT + 6 )
 #define AIR_SYSCALL_BOOT_CORE                      (AIR_SYSCALL_ARCH_COUNT + 7 )
 #define AIR_SYSCALL_GET_US_PER_TICK                (AIR_SYSCALL_ARCH_COUNT + 8 )
 #define AIR_SYSCALL_GET_ELAPSED_TICKS              (AIR_SYSCALL_ARCH_COUNT + 9 )

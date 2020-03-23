@@ -21,67 +21,72 @@
 #include <air.h>
 
     .thumb
-global(air_disable_interrupts)
+global(air_syscall_disable_interrupts)
     svc     #(AIR_SYSCALL_ARM_DISABLE_INTERRUPTS)
     bx      lr
 
-global(air_enable_interrupts)
+global(air_syscall_enable_interrupts)
     svc     #(AIR_SYSCALL_ARM_ENABLE_INTERRUPTS)
     bx      lr
 
-global(air_disable_traps)
+global(air_syscall_disable_traps)
     svc     #(AIR_SYSCALL_ARM_DISABLE_TRAPS)
     bx      lr
 
-global(air_enable_traps)
+global(air_syscall_enable_traps)
     svc     #(AIR_SYSCALL_ARM_ENABLE_TRAPS)
     bx      lr
 
-global(air_disable_fpu)
+global(air_syscall_disable_fpu)
     svc     #(AIR_SYSCALL_ARM_DISABLE_FPU)
     bx      lr
 
-global(air_enable_fpu)
+global(air_syscall_enable_fpu)
     svc     #(AIR_SYSCALL_ARM_ENABLE_FPU)
     bx      lr
 
-global(air_get_tbr)
+global(air_syscall_get_tbr)
     svc     #(AIR_SYSCALL_ARM_GET_TBR)
     bx      lr
 
-global(air_set_tbr)
+global(air_syscall_set_tbr)
     svc     #(AIR_SYSCALL_ARM_SET_TBR)
     bx      lr
 
-global(air_get_psr)
+global(air_syscall_get_psr)
     svc     #(AIR_SYSCALL_ARM_GET_PSR)
     bx      lr
 
-global(air_set_psr)
+global(air_syscall_set_psr)
     svc     #(AIR_SYSCALL_ARM_SET_PSR)
     bx      lr
 
-global(air_rett)
+global(air_syscall_rett)
     svc     #(AIR_SYSCALL_ARM_RETT)
     bx      lr
 
-//global(air_get_cache_register)
+//global(air_syscall_get_cache_register)
 //  svc     #(AIR_SYSCALL_ARM_GET_CACHE_REGISTER)
 
-//global(air_set_cache_register)
+//global(air_syscall_set_cache_register)
 //  svc     #(AIR_SYSCALL_ARM_SET_CACHE_REGISTER)
 
 /*global(????)
     svc     #(AIR_SYSCALL_ARM_RESTORE_CACHE_REGISTER)
     bx      lr */
 
-global(air_get_irq_mask_register)
+global(air_syscall_get_irq_mask_register)
     svc     #(AIR_SYSCALL_ARM_GET_IRQ_MASK_REGISTER)
     bx      lr
 
-global(air_set_irq_mask_register)
+global(air_syscall_set_irq_mask_register)
     svc     #(AIR_SYSCALL_ARM_SET_IRQ_MASK_REGISTER)
 
-//FUNC(air_set_irq_force_register)
+//FUNC(air_syscall_set_irq_force_register)
 //  svc     #(AIR_SYSCALL_ARM_SET_IRQ_FORCE_REGISTER)
+
+/*trcpse*/
+global(air_syscall_acknowledge_int)
+    svc     #(AIR_SYSCALL_ARM_ACK_INT)
+    bx      lr
 
