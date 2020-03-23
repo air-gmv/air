@@ -18,7 +18,7 @@
 #include <workspace.h>
 
 /**************************** syscalls declarations ***************************/
-void arm_syscall_disable_interrupts(pmk_core_ctrl_t *core);
+air_u32_t arm_syscall_disable_interrupts(pmk_core_ctrl_t *core);
 void arm_syscall_enable_interrupts(pmk_core_ctrl_t *core);
 void arm_syscall_disable_traps(pmk_core_ctrl_t *core);
 void arm_syscall_enable_traps(pmk_core_ctrl_t *core);
@@ -38,6 +38,10 @@ void arm_syscall_set_irq_mask_register(pmk_core_ctrl_t *core, air_u32_t val);
 
 air_u32_t arm_syscall_get_core_id(pmk_core_ctrl_t *core);
 air_u64_t arm_syscall_get_elapsed_ticks(pmk_core_ctrl_t *core);
+
+/*trcpse*/
+air_u32_t arm_syscall_acknowledge_int(pmk_core_ctrl_t *core);
+/*----*/
 
 /**************************** function declarations ***************************/
 void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core);
