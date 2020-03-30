@@ -26,28 +26,26 @@ air_u32_t iop_can_init(iop_device_driver_t *iop_dev, void *arg) {
     air_u32_t ret = AIR_SUCCESSFUL;
 
     air_i32_t status;
-    air_u16_t times = 0; /* 100 execution times deadline to change CAN mode */
+    air_u16_t times = 0;
     air_u8_t mode = 0;
-//    XCanPs *canInstPtr = &xilCanPsInst;
+    // XCanPs *canInstPtr = &xilCanPsInst;
     XCanPs_Config *canConfigPtr;
 
-    /* enable CAN transceiver. should already be done? */
+    /* enable CAN transceiver. @TODO Will depend on target board! */
 
     /* initialize CAN driver */
     canConfigPtr = XCanPs_LookupConfig(XPAR_XCANPS_0_DEVICE_ID);
-
-    iop_debug(" CAN :: canInstPtr 0x%x, canConfigPtr 0x%x, XPAR_XCANPS_0_DEVICE_ID %d\n",
-              canInstPtr, canConfigPtr, XPAR_XCANPS_0_DEVICE_ID);
 
     if (canConfigPtr == NULL) {
 
         iop_debug(" CAN :: device does not exist\n");
         ret = AIR_INVALID_CONFIG;
+
     } else {
 
         status = XCanPs_CfgInitialize(canInstPtr, canConfigPtr, canConfigPtr->BaseAddr);
         if (status != XST_SUCCESS) {
-            iop_debug(" CAN :: controller could not be initialized\n");
+            iop_debug(" :: CAN :: controller could not be initialized\n");
             ret = AIR_IO_ERROR;
         }
 
@@ -56,9 +54,8 @@ air_u32_t iop_can_init(iop_device_driver_t *iop_dev, void *arg) {
          * device and the driver.
          */
         status = XCanPs_SelfTest(canInstPtr);
-        if (status != XST_SUCCESS)
-        {
-            iop_debug(" CAN :: controller self test FAILED\n");
+        if (status != XST_SUCCESS) {
+            iop_debug(" :: CAN :: controller self test FAILED\n");
             ret = AIR_IO_ERROR;
         }
 
@@ -66,88 +63,64 @@ air_u32_t iop_can_init(iop_device_driver_t *iop_dev, void *arg) {
          * Enter Configuration Mode so we can setup Baud Rate Prescaler
          * Register (BRPR) and Bit Timing Register (BTR).
          */
-        iop_debug(" CAN :: iop_can_init::XCanPs_EnterMode XCANPS_MODE_CONFIG PS: %d\n",
-                  XCanPs_GetBaudRatePrescaler(canInstPtr));
         XCanPs_EnterMode(canInstPtr, XCANPS_MODE_CONFIG);
         mode = XCanPs_GetMode(canInstPtr);
         while(mode != XCANPS_MODE_CONFIG)
         {
+            if (times++ > 100) ret = AIR_IO_ERROR;
             mode = XCanPs_GetMode(canInstPtr);
         }
 
         times = 0;
+
+        // 40Kbps
+        /*
+        * Setup Baud Rate Prescaler Register (BRPR) and
+        * Bit Timing Register (BTR).
+        */
+        // status = XCanPs_SetBaudRatePrescaler(canInstPtr, (air_u8_t)29U);
+        // if (status != XST_SUCCESS) {
+        //     iop_debug(" :: CAN :: SetBaudRatePrescaler FAILED\n");
+        //     ret = AIR_IO_ERROR;
+        // }
+
+        // status = XCanPs_SetBitTiming(canInstPtr, (air_u8_t)3U, (air_u8_t)2U, (air_u8_t)15U);
+        // if (status != XST_SUCCESS) {
+        //     iop_debug(" :: CAN :: SetBitTiming FAILED\n");
+        //     ret = AIR_IO_ERROR;
+        // }
 
         /*
         * Setup Baud Rate Prescaler Register (BRPR) and
         * Bit Timing Register (BTR).
         */
-        iop_debug(" CAN :: iop_can_init::setting timing info\n");
-        (void)XCanPs_SetBaudRatePrescaler(canInstPtr, (air_u8_t)29U);
-        (void)XCanPs_SetBitTiming(canInstPtr, (air_u8_t)3U, (air_u8_t)2U, (air_u8_t)15U);
-
-        /*
-        * Enter the loop back mode.
-        */
-        iop_debug(" CAN :: iop_can_init::XCanPs_EnterMode XCANPS_MODE_LOOPBACK PS: %d\n",
-              XCanPs_GetBaudRatePrescaler(canInstPtr));
-        XCanPs_EnterMode(canInstPtr, XCANPS_MODE_LOOPBACK);
-        mode = XCanPs_GetMode(canInstPtr);
-        while (mode != (XCANPS_MODE_LOOPBACK)) {
-            mode = XCanPs_GetMode(canInstPtr);
-        }
-
-        /*
-        * Enter the loop back mode.
-        */
-        iop_debug(" CAN :: iop_can_init::XCanPs_EnterMode XCANPS_MODE_LOOPBACK PS: %d\n",
-              XCanPs_GetBaudRatePrescaler(canInstPtr));
-        XCanPs_EnterMode(canInstPtr, XCANPS_MODE_LOOPBACK);
-        mode = XCanPs_GetMode(canInstPtr);
-        while (mode != (XCANPS_MODE_LOOPBACK)) {
-            mode = XCanPs_GetMode(canInstPtr);
-        }
-
-        /*
-        * Enter the snoop mode.
-        */
-        iop_debug(" CAN :: iop_can_init::XCanPs_EnterMode XCANPS_MODE_SNOOP PS: %d\n",
-              XCanPs_GetBaudRatePrescaler(canInstPtr));
-        XCanPs_EnterMode(canInstPtr, XCANPS_MODE_SNOOP);
-        mode = XCanPs_GetMode(canInstPtr);
-        while (mode != (XCANPS_MODE_SNOOP) && times++ < 1000) {
-            mode = XCanPs_GetMode(canInstPtr);
-            iop_debug(" CAN :: SRR 0x%x\n", XCanPs_ReadReg(canInstPtr->CanConfig.BaseAddr, XCANPS_SRR_OFFSET));
-        }
-
-        times = 0;
-
-        /*
-        * Enter the sleep mode.
-        */
-        iop_debug(" CAN :: iop_can_init::XCanPs_EnterMode XCANPS_MODE_SLEEP PS: %d\n",
-              XCanPs_GetBaudRatePrescaler(canInstPtr));
-        XCanPs_EnterMode(canInstPtr, XCANPS_MODE_SLEEP);
-        mode = XCanPs_GetMode(canInstPtr);
-        while (mode != (XCANPS_MODE_SLEEP)) {
-            mode = XCanPs_GetMode(canInstPtr);
-        }
+        // 125Kbps
+        // (void)XCanPs_SetBaudRatePrescaler(canInstPtr, (air_u8_t)11U); // 12 - 1
+        // (void)XCanPs_SetBitTiming(canInstPtr, (air_u8_t)0U, (air_u8_t)1U, (air_u8_t)12U);
+        // 500Kbps
+        // (void)XCanPs_SetBaudRatePrescaler(canInstPtr, (air_u8_t)2U); // 3 - 1
+        // (void)XCanPs_SetBitTiming(canInstPtr, (air_u8_t)0U, (air_u8_t)1U, (air_u8_t)12U);
+        // 1000Kbps
+        (void)XCanPs_SetBaudRatePrescaler(canInstPtr, (air_u8_t)2U); // 3 - 1
+        (void)XCanPs_SetBitTiming(canInstPtr, (air_u8_t)0U, (air_u8_t)0U, (air_u8_t)5U);
 
         /*
         * Enter Normal Mode.
         */
-        iop_debug(" CAN :: iop_can_init::XCanPs_EnterMode XCANPS_MODE_NORMAL PS: %d\n",
-              XCanPs_GetBaudRatePrescaler(canInstPtr));
-        iop_debug(" CAN :: SRR 0x%x\n", XCanPs_ReadReg(canInstPtr->CanConfig.BaseAddr, XCANPS_SRR_OFFSET));
-        XCanPs_EnterMode(canInstPtr, XCANPS_MODE_NORMAL);
-        mode = XCanPs_GetMode(canInstPtr);
-        iop_debug(" CAN :: SRR 0x%x\n", XCanPs_ReadReg(canInstPtr->CanConfig.BaseAddr, XCANPS_SRR_OFFSET));
-        while(mode != XCANPS_MODE_NORMAL)
-        {
+        if (ret != AIR_SUCCESSFUL) {
+            ;
+        } else {
+            XCanPs_EnterMode(canInstPtr, XCANPS_MODE_NORMAL);
             mode = XCanPs_GetMode(canInstPtr);
+            while(mode != XCANPS_MODE_NORMAL)
+            {
+                if (times++ > 100) ret = AIR_IO_ERROR;
+                mode = XCanPs_GetMode(canInstPtr);
+            }
         }
     }
 
-    while (1) iop_debug(" CAN :: device initialized\n");
+    if (ret == AIR_SUCCESSFUL) iop_debug(" CAN :: device initialized\n");
 
     return ret;
 }

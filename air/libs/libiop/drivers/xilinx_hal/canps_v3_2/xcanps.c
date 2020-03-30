@@ -295,11 +295,8 @@ void XCanPs_EnterMode(XCanPs *InstancePtr, u8 OperationMode)
 	 * the caller.
 	 */
 	if (XCanPs_GetMode(InstancePtr) != (u8)XCANPS_MODE_CONFIG) {
-		iop_debug(" CAN :: XCanPs_EnterMode not in CONFIG mode\n");
 		XCanPs_Reset(InstancePtr);
 	}
-
-	iop_debug(" XCanPs_EnterMode::OperationMode = %d\n", OperationMode);
 
 	switch (OperationMode) {
 		case XCANPS_MODE_CONFIG:
@@ -366,7 +363,7 @@ u32 XCanPs_GetStatus(XCanPs *InstancePtr)
 
         u32 status = XCanPs_ReadReg(InstancePtr->CanConfig.BaseAddr,
 				XCANPS_SR_OFFSET);
-        iop_debug("XCanPs_GetStatus 0x08%x\n", status);
+
         return status;
 }
 
