@@ -1,16 +1,14 @@
-# Welcome to AIR
+# Welcome to AIR v5.4.0
 
 AIR has a user manual at https://gmvdrive.gmv.com/index.php/s/eScXCAybbecmT9b
 
-You have two way of getting AIR
+You have two ways of getting AIR
 1) AIR is integrrated in TASTE toolchain available at  https://taste.tuxfamily.org/
-
 2) Download from repository where following instructions apply:
 
 To install AIR after cloning from git, you should do the following:
 
 ## 1 - Install RTEMS toolchain for RTEMS 5
-
 Execute the following:
 
 git clone git://git.rtems.org/rtems-source-builder.git rsb
@@ -34,11 +32,11 @@ Clone AIR repo for example in */home/taste/work/*
 
 Add the *air_repo/air* to the PATH env variable, we recommend doing the following way in .bashrc file:
 
-    export AIR=/home/taste/work/air/air
+    export AIR=/home/taste/work/AIR/air
     export PATH=$PATH:$AIR
 
 AIR supports the following paravirtualized RTOS versions
-- RTEMS 4.8i
+- RTEMS 4.8i (Edisoft)
 - RTEMS 5
 
 AIR paravirtualized RTOS are obtained via git submodules. For example to use AIR 
@@ -55,22 +53,17 @@ On *air_repo/air* execute
 Configurator interface will enquire the user for options (architecture, BSP, FPU, Cache, Debugger, RTOS). For example
 
 Press 0 for sparc
-
 Press 2 for leon4
-
 Press 0 for fpu enabled
-
 Press 0 for GRMON
-
 Press 1 to install all RTOS
-...
+
 
 After configurator finishes execute
-
+    make clean
     make
 
 ### To build an example ready to run on a target board
-
 Then go to any example inside *air_repo/air/examples*
 
 Execute
@@ -90,7 +83,7 @@ will create the respective binary in the created *executables* folder.
 ## Support
 Email to $(AIR_RUNNER_USER)@gmv.com or raise issue at our Gitlab
 
-## Updating AIR repo to AIR v5.3 and configurator v4.3
+## Updating AIR repo to AIR v5.4.0 and configurator v4.3
 Since configurator v4.2 the RTOS paravirtualized versions are obtained via git submodules.
 Pulling new AIR content into old AIR repo will generate conflicts. To get a new clean
 AIR repo please execute (please backup any working folder)
@@ -99,3 +92,8 @@ AIR repo please execute (please backup any working folder)
     git reset origin/master --hard
     
 Further information email air-product@gmv.com
+
+##Gitlab
+Users can submit issues on gitlab, where they can follow development team addressing them.
+Gitlab address:
+$(AIR_GIT_REMOTE_URL)/AIR

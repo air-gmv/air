@@ -1,0 +1,35 @@
+# First version for AIR main source code
+# it executes configure and build in one go
+# next version should separate in stages using cache
+# To be execute in TASTE VM centralized in 192.19.13.167
+# We need create another job for ARM
+
+default:
+    before_script:
+        - cd air
+        - pwd
+        - ls
+        - export RTEMS410=/opt/rtems-4.10/bin
+        - export AIR=/home/gitlab-runner/builds/J/0/AIR/jPaxxwjh/air-dev/air
+        - export PATH=$PATH:$AIR
+        - export PATH=$PATH:$RTEMS410
+        - export GIT_SSL_NO_VERIFY=1
+        - export AIR_INSTALL=$AIR/install
+        - export AIR_PMK=$AIR_INSTALL/pmk
+        - export AIR_POS=$AIR_INSTALL/pos
+        - export RTEMS_MAKEFILE_PATH=$AIR_POS/rtems5/rtems5-install/sparc-rtems5/leon3
+        - export PATH=$PATH:/opt/rtems-5.1-2019.07.25/bin
+        - git submodule sync --recursive
+        - git submodule update --init --recursive
+
+stages:  #not used yet... use cache to copy data between jobs
+    - config
+    - building
+
+air_main:
+    stage: config
+    script:
+        -  cp /home/taste/work/gitlab/.air_config . #local file of VM at work/gitlab/
+        - ./configure -f .air_config
+        - make clean
+        - make
