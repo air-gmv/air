@@ -13,6 +13,7 @@
 
 #ifndef UART_H_
 #define UART_H_
+#if DEBUG_MONITOR != 2
 
 #include <air_arch.h>
 #include <armv7.h>
@@ -107,4 +108,5 @@ typedef struct {
 void arm_setup_uart(air_u32_t port, air_u32_t BaudRate);
 void arm_select_debug_uart(air_u32_t port);
 
+#endif /* DEBUG_MONITOR != 2 */
 #endif /* UART_H_ */

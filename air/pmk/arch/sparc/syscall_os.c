@@ -197,7 +197,8 @@ static void sparc_syscall_os_handler(
         case AIR_SYSCALL_PUTCHAR:
             pmk_syscall_putchar(core, (char)isf->i0);
             break;
-
+            
+#if DEBUG_MONITOR != 2
         /* print partition buffer */
         case AIR_SYSCALL_PRINT:
             isf->i0 = (air_u32_t)pmk_syscall_print(
@@ -205,6 +206,7 @@ static void sparc_syscall_os_handler(
                     (char *)isf->i0,
                     (air_sz_t)isf->i1);
             break;
+#endif /* DEBUG_MONITOR != 2 */
 
         /* get AMBA Plug & Play configuration area struct address */
         case AIR_SYSCALL_GET_AMBACONF:
