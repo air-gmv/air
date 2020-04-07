@@ -11,6 +11,7 @@
  * @brief UART device initialization and handling functions
  */
 
+#if DEBUG_MONITOR != 2
 #include <pmk.h>
 #include <amba.h>
 #include <clock.h>
@@ -82,3 +83,4 @@ void console_outbyte(char ch) {
     /* send byte to the UART0 */
     uart_regs->data = (air_u32_t)ch;
 }
+#endif /*DEBUG_MONITOR != 2 */

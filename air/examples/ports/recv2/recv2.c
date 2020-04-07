@@ -11,14 +11,8 @@
 #include <rtems/rtems/tasks.h> 
 #include <rtems/rtems/sem.h> 
 #include <rtems/rtems/clock.h> 
-
+#include <pprintf.h>
 #include <imaspex.h>
-
-#ifdef RTEMS48I
-	#include <pprintf.h>
-	#define printf(f_, ...) pprintf((f_), ##__VA_ARGS__)
-#endif
-
 
 #define TPS 200 /*ticks per second specified in the XML*/
 
@@ -58,9 +52,7 @@ void test(uintptr_t self_id) {
  	MESSAGE_SIZE_TYPE len;
 	
 	while(1) {
-		
 		printf ("Partition %d receiving message..\n", self_id);
-		
 		
 		GET_SAMPLING_PORT_CURRENT_STATUS(RECV_PORT2, &STATUS, &rc);
 		if(NO_ERROR != rc) {

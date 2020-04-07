@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011  GMVIS Skysoft S.A.
+ * Copyright (C) 2008-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -10,7 +10,6 @@
  * @author pfnf
  * @brief Simplified partition printf
  */
-
 #include <air.h>
 #include <pprintf.h>
 
@@ -289,4 +288,4 @@ void libpprintf_internal_pprintf(const char *fmt , ...) {
     va_start(ap , fmt);
     vpprintf(fmt , ap);
     va_end(ap);
-}
+}						  

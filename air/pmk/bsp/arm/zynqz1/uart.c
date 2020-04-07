@@ -11,6 +11,8 @@
  * \brief UART setup and handler functions.
  */
 
+#if DEBUG_MONITOR != 2
+
 #include <uart.h>
 #include <parameters.h>
 #include <bsp_console.h>
@@ -85,3 +87,4 @@ void arm_uart_transmit(char ch) {
 
     UART(arm_uart_debug_port)->tx_rx_fifo = (air_u64_t)ch;
 }
+ #endif /* DEBUG_MONITOR != 2 */
