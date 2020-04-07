@@ -125,6 +125,8 @@ global(air_syscall_putchar)
     svc     #(AIR_SYSCALL_PUTCHAR)
     bx      lr
 
+#if DEBUG_MONITOR != 2
 global(air_syscall_print)
     svc     #(AIR_SYSCALL_PRINT)
     bx      lr
+#endif /* DEBUG_MONITOR != 2 */

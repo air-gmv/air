@@ -190,15 +190,19 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
     case AIR_SYSCALL_RAISE_HM_EVENT:
         pmk_hm_isr_handler((air_error_e)frame->r0);
         break;
+
+#if DEBUG_MONITOR != 2		
     case AIR_SYSCALL_PRINT:
         frame->r0 = (air_u32_t)pmk_syscall_print(
                 core,
                 (char *)frame->r0,
                 (air_sz_t)frame->r1);
         break;
+#endif /* DEBUG_MONITOR != 2 */
     case AIR_SYSCALL_PUTCHAR:
         pmk_syscall_putchar(core, (char)frame->r0);
         break;
+		
     default:
         break;
     }

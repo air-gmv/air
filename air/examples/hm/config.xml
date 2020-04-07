@@ -148,7 +148,7 @@
     <Sampling_Port Direction="SOURCE" MaxMessageSize="32" Name="SEND_SAMP1" RefreshRateSeconds="1.000"/>
     <Sampling_Port Direction="DESTINATION" MaxMessageSize="32" Name="RECV_SAMP1" RefreshRateSeconds="1.000"/>
     <PartitionConfiguration Personality="RTEMS5" Cores="1">
-      <Libs>LIBAIR;LIBPRINTF;IMASPEX</Libs>
+      <Libs>LIBAIR;IMASPEX</Libs>
       <Cache>CODE; DATA</Cache>
       <Memory Size="0x500000" />
       <Permissions>

@@ -250,6 +250,7 @@ SYM(air_syscall_raise_hm_event):
     retl
     nop; nop
 
+#if DEBUG_MONITOR != 2
     GLOBAL(air_syscall_print)
 SYM(air_syscall_print):
 
@@ -257,6 +258,7 @@ SYM(air_syscall_print):
     ta      AIR_SYSCALL_OS_TRAP
     retl
     nop; nop
+#endif /* DEBUG_MONITOR != 2 */
 
     GLOBAL(air_syscall_putchar)
 SYM(air_syscall_putchar):

@@ -14,12 +14,6 @@
 
 #include <imaspex.h>
 
-#ifdef RTEMS48I
-	#include <pprintf.h>
-	#define printf(f_, ...) pprintf((f_), ##__VA_ARGS__)
-#endif
-
-
 #define TPS 200 /*ticks per second specified in the XML*/
 
 
