@@ -815,8 +815,6 @@ air_status_code_e air_syscall_copy_tbr(air_u32_t idx);
  */
 air_u32_t air_syscall_get_event(void);
 
-/** @} */
-
 
 /**
  * @brief Prints a partition character
@@ -824,6 +822,7 @@ air_u32_t air_syscall_get_event(void);
  */
 void air_syscall_putchar(char ch);
 
+#if DEBUG_MONITOR != 2
 /**
  * @brief Prints a partition buffer
  * @param buffer Buffer to be printed
@@ -831,7 +830,7 @@ void air_syscall_putchar(char ch);
  * @return Number of characters printed
  */
 air_u32_t air_syscall_print(char *str, air_sz_t len);
-
+#endif /* DEBUG_MONITOR != 2 */
 
 /**
  * @brief Shutdown module
