@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2014  GMVIS Skysoft S.A.
+ * Copyright (C) 2008-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -11,11 +11,12 @@
  *  @brief printk definition
  */
 
+
 #include <stdarg.h>
  
 #ifndef __PRINTK_H__
 #define __PRINTK_H__
-
+#if DEBUG_MONITOR != 2
 /**
  * @brief Writes the C string pointed by format to the standard output
  * @param fmt C string that contains the text to be written
@@ -27,4 +28,8 @@ void printk(const char *fmt, ...);
  */
 void pmk_console_outbyte(char ch);
 
+#else
+#define printk //disabled
+#endif /* DEBUG_MONITOR != 2 */
 #endif /* __PRINTK_H__ */
+
