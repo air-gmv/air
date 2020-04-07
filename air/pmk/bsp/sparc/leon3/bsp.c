@@ -38,7 +38,9 @@ int bsp_core_init(void) {
         amba_setup(&amba_confarea, LEON3_IO_AREA);
 
         rc |= clock_init();           /* initialize the clock               */
+#if DEBUG_MONITOR != 2		
         rc |= console_init();         /* initialize the console             */
+#endif /* DEBUG_MONITOR != 2	*/
         rc |= irqmp_init();           /* initialize the IRQASMP             */
     }
 
@@ -72,7 +74,7 @@ void bsp_core_ready(void) {
 
     /* primary core, will enable more BSP specific components */
     if (core_id == 0) {
-#if PMK_INIT_CACHE
+#if DEBUG_MONITOR
         /* initialize & configure L2 cache */
         if (l2cache_init() == 0) {
             l2cache_set_replacement_policy(MASTER_INDEX_0);
