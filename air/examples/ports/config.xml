@@ -76,7 +76,7 @@
     <Channel ChannelIdentifier="1" ChannelName="SAMPLING">
       <Source>
         <Standard_Partition PartitionIdentifier="1" PartitionName="send" PortName="SEND_SAMP"/>
-      </Source>
+      </Source>c
       <Destination>
         <Standard_Partition PartitionIdentifier="3" PartitionName="recv2" PortName="RECV_SAMP2"/>
       </Destination>

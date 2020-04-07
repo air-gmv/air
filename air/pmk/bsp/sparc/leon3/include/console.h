@@ -13,7 +13,7 @@
 
 #ifndef __CONSOLE_H__
 #define __CONSOLE_H__
-
+#if DEBUG_MONITOR != 2
 #include <pmk.h>
 
 /**
@@ -36,4 +36,5 @@ void console_outbyte(char ch);
 
 /** @} */
 
+#endif /* DEBUG_MONITOR != 2 */
 #endif /* __CONSOLE_H__ */
