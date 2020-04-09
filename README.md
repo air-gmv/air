@@ -11,13 +11,13 @@ To install AIR after cloning from git, you should do the following:
 ## 1 - Install RTEMS toolchain for RTEMS 5
 Execute the following:
 
+```
 git clone git://git.rtems.org/rtems-source-builder.git rsb
-
-$ cd rsb
-$ ./source-builder/sb-check
-
-$ cd rtems
-$ ../source-builder/sb-set-builder --prefix=/opt/rtems/5 5/rtems-sparc
+cd rsb
+./source-builder/sb-check
+cd rtems
+../source-builder/sb-set-builder --prefix=/opt/rtems/5 5/rtems-sparc
+```
 
 Currently supported toolchain version : rtems-5.1-2019.07.25
 
@@ -28,12 +28,15 @@ AIR configure requires python-mako, if not installed execute (in case of Debian)
 
 Clone AIR repo for example in */home/taste/work/*
 
-    git clone https://github.com/air-gmv/air.git
 
 Add the *air_repo/air* to the PATH env variable, we recommend doing the following way in .bashrc file:
 
     export AIR=/home/taste/work/AIR/air
     export PATH=$PATH:$AIR
+
+    git clone https://github.com/air-gmv/air.git
+RTEMS 5 tool chain should be in the PATH, e.g:
+    `export PATH=$PATH:/opt/rtems/5/bin` 
 
 AIR supports the following paravirtualized RTOS versions
 - RTEMS 4.8i (Edisoft)
@@ -45,25 +48,29 @@ RTEMS 5 version please execute in *air_repo/air*
     git submodule init air/pos/rtems5
     git submodule update
 
-### Using AIR configurator tool
+## 3 - Using AIR configurator tool
 On *air_repo/air* execute
 
     ./configure
 
 Configurator interface will enquire the user for options (architecture, BSP, FPU, Cache, Debugger, RTOS). For example
 
-Press 0 for sparc
-Press 2 for leon4
-Press 0 for fpu enabled
-Press 0 for GRMON
-Press 1 to install all RTOS
+* Press 0 for sparc
+* Press 2 for leon4
+* Press 0 for fpu enabled
+* Press 0 for GRMON
+* Press 1 to install all RTOS
 
 
-After configurator finishes execute
-    make clean
-    make
+After configurator finishes execute:
 
-### To build an example ready to run on a target board
+```
+make clean
+make
+```
+
+
+## 4- Build an example ready to run on a target board
 Then go to any example inside *air_repo/air/examples*
 
 Execute
@@ -80,10 +87,7 @@ Executing
 
 will create the respective binary in the created *executables* folder.
 
-## Support
-Email to $(AIR_RUNNER_USER)@gmv.com or raise issue at our Gitlab
-
-## Updating AIR repo to AIR v5.4.0 and configurator v4.3
+## 5 - Updating AIR repo to AIR v5.4.0 and configurator v4.3
 Since configurator v4.2 the RTOS paravirtualized versions are obtained via git submodules.
 Pulling new AIR content into old AIR repo will generate conflicts. To get a new clean
 AIR repo please execute (please backup any working folder)
@@ -93,7 +97,11 @@ AIR repo please execute (please backup any working folder)
     
 Further information email air-product@gmv.com
 
-##Gitlab
+## 6 - Support
+### Via Gitlab
 Users can submit issues on gitlab, where they can follow development team addressing them.
 Gitlab address:
 $(AIR_GIT_REMOTE_URL)/AIR
+
+### Via Email
+Email to avos_pt@gmv.com or raise issue at our Gitlab
