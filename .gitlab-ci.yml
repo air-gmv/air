@@ -27,11 +27,12 @@ stages:  #not used yet... use cache to copy data between jobs
     - config
     - building
 
-air_main:
+air_configure:
     stage: config
     script:
         -  cp /home/taste/work/gitlab/.air_config . #local file of VM at work/gitlab/
         - ./configure -f .air_config
+air_build:        
     stage: building
     script:
         - make clean
