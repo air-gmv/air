@@ -1,8 +1,9 @@
 # First version for AIR main source code
-# it executes configure and build in one go
-# next version should separate in stages using cache
-# To be execute in TASTE VM centralized in 192.19.13.167
+# Executed in TASTE VM centralized in 192.19.13.167
 # We need create another job for ARM
+
+variables:
+    GIT_CLEAN_FLAGS: none
 
 default:
     before_script:
@@ -31,5 +32,7 @@ air_main:
     script:
         -  cp /home/taste/work/gitlab/.air_config . #local file of VM at work/gitlab/
         - ./configure -f .air_config
+    stage: building
+    script:
         - make clean
         - make
