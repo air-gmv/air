@@ -15,6 +15,8 @@
 #define __PRINTF_H__
 #include <stdarg.h>
 
+#if defined(stdin)
+#else
 typedef enum {
 
     stdin                   = 0x00,
@@ -22,7 +24,7 @@ typedef enum {
     stderr                  = 0x02
 
 } fake_stdFiles;
-
+#endif
 /**
  * @brief Writes the C string pointed by format to the standard output
  * @param fmt C string that contains the text to be written

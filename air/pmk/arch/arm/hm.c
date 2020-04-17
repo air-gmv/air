@@ -170,6 +170,8 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
                 break;
 
             case AIR_FLOAT_ERROR:
+                core->context->vfp_context->fpexc|=ARM_VFP_FPEXC_ENABLE; //cheat!!!
+                //TODO why is the fpu being disabled in the partition?
                 arm_restore_fpu(core->context->vfp_context);
                 arm_syscall_rett(core);
                 break;
@@ -187,7 +189,7 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
 
 static air_boolean_t arm_hm_undef_is_fpu(air_u32_t instr, air_boolean_t is_T32) {
 
-    air_boolean_t is_fpu = False;
+    air_boolean_t is_fpu = false;
 
     if (is_T32) {
 
@@ -198,7 +200,7 @@ static air_boolean_t arm_hm_undef_is_fpu(air_u32_t instr, air_boolean_t is_T32) 
                 ((instr & 0x0e10ef00) == 0x0a10ee00) ||
                 ((instr & 0x0e00efe0) == 0x0a00ec40) )
 
-            is_fpu = True;
+            is_fpu = true;
     } else {
         if ( ((instr & 0xfe000000) == 0xf2000000) ||
                 ((instr & 0x0f000e10) == 0x0e000a00) ||
@@ -207,7 +209,7 @@ static air_boolean_t arm_hm_undef_is_fpu(air_u32_t instr, air_boolean_t is_T32) 
                 ((instr & 0x0f000e10) == 0x0e000a10) ||
                 ((instr & 0x0fe00e00) == 0x0c400a00) )
 
-            is_fpu = True;
+            is_fpu = true;
     }
 
     return is_fpu;
