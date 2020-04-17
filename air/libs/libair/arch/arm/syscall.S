@@ -130,3 +130,12 @@ global(air_syscall_print)
     svc     #(AIR_SYSCALL_PRINT)
     bx      lr
 #endif /* DEBUG_MONITOR != 2 */
+
+/*trcpse---------------------------*/
+
+global(air_syscall_get_nb_cores)
+    svc     #(AIR_SYSCALL_GET_NB_CORES)
+    bx      lr
+
+/*trcpse---------------------------*/
+

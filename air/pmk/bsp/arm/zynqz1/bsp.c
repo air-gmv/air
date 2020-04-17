@@ -153,7 +153,7 @@ void bsp_idle_loop(void) {
     printk("\n    wfi w/ ttbr at 0x%x\n\n", arm_cp15_get_translation_table0_base());
 #endif
     arm_data_synchronization_barrier();
-    while(true) {
+    while(True) {
         __asm__ volatile ("wfi");
     }
 }
