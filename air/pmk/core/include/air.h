@@ -24,9 +24,11 @@ extern "C" {
 /**
  * @brief boolean value
  */
+
 #define air_boolean_t _Bool
 #define false 0
 #define true 1
+
 /**
  * @brief Identifier type
  */
