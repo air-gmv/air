@@ -1,11 +1,12 @@
-# Welcome to AIR v5.4.0
+# Welcome to AIR v5.4.1
 
 AIR has a user manual at https://gmvdrive.gmv.com/index.php/s/eScXCAybbecmT9b
 
 You have two ways of getting AIR
-1) AIR is integrrated in TASTE toolchain available at  https://taste.tuxfamily.org/
+1) AIR is intregrated in TASTE toolchain available at  https://taste.tuxfamily.org/
 2) Download from repository where following instructions apply:
 
+Below is a guide for SPARC target, regarding ARM read section 4.2.1.
 To install AIR after cloning from git, you should do the following:
 
 ## 1 - Install RTEMS toolchain for RTEMS 5
