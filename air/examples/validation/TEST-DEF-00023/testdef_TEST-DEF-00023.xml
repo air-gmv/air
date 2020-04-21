@@ -1,0 +1,85 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-00023"
+			id="23" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.6"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR"
+			apex="IMASPEX">
+		<description>
+						Devise a test with two partitions, where only the first is
+			a system partition, hence authorized to call GET_A_PARTITION_ID. 
+		
+			In the first partition:
+			Check that a call to GET_A_PARTITION_ID before a call to TSAL_INIT returns
+			an INVALID_MODE error. Get the partition ID of the second partition,
+			and check that it is correct. Check that the same call with an incorrect
+			partition name returns a INVALID_PARAM error. 
+		
+			In the second partition: 
+			Check that a call to GET_A_PARTITION_ID returns INVALID_CONFIG irrespectively
+			of a correct partition name being passed or not.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0555" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					GET_A_PARTITION_ID on partition name 'p1';
+				expect INVALID_MODE: TSAL not initialized.
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					TSAL_INIT;
+				expect NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="2" partition="1" repeat="1">
+				<description>
+					TSAL_INIT;
+				expect NO_ERROR.
+				</description>
+			</teststep>			
+			<teststep id="3" partition="0" repeat="1">
+				<description>
+					GET_A_PARTITION_ID on valid partition name 'p1';
+				expect NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="4" partition="0" repeat="1">
+				<description>
+					GET_A_PARTITION_ID on invalid partition name 'XYZ';
+				expect INVALID_PARAM: name doesn't identify an existing partition.
+				</description>
+			</teststep>
+			<teststep id="5" partition="1" repeat="1">
+				<description>
+					GET_A_PARTITION_ID on valid partition name 'p0';
+				expect INVALID_CONFIG: calling partition is not a system partition.
+				</description>
+			</teststep>
+			<teststep id="6" partition="1" repeat="1">
+				<description>
+					GET_A_PARTITION_ID on invalid partition name 'XYZ';
+				expect INVALID_CONFIG: calling partition is not a system partition.
+				</description>
+			</teststep>			
+						
+		</testprocedure>		
+	</test>	<!-- Test id="23" -->
+</TDF>

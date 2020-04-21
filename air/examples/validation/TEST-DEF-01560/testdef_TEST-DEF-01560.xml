@@ -1,0 +1,57 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-01560"
+			id="1560" 
+			partitions="4"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.4"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<description>
+						Define a test with the following configuration: P1: ExWindow=10ms,
+			Period=40ms, Data Cache Enabled, Code Cache Enabled P2: ExWindow=10ms,
+			Period=40ms, Data Cache Enabled, Code Cache Disabled P3: ExWindow=10ms,
+			Period=40ms, Data Cache Disabled, Code Cache Enabled P4: ExWindow=10ms,
+			Period=40ms, Data Cache Disabled, Code Cache Disabled Use the Get Cache Control
+			Register system call on each partition to determine the code and data cache
+			are as expected. Run the test for at least 3 Major Time Frames.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0920" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="5">
+				<description>
+					Read the cache control register. Verify if the Data cache and the Code Cache are enabled. Wait for next execution window..
+				</description>
+			</teststep>
+			<teststep id="1" partition="1" repeat="5">
+				<description>
+					Read the cache control register. Verify if the Data cache is enabled and the Code Cache is disabled. Wait for next execution window..
+				</description>
+			</teststep>
+			<teststep id="2" partition="2" repeat="5">
+				<description>
+					Read the cache control register. Verify if the Data cache is disabled and the Code Cache is enabled. Wait for next execution window.
+				</description>
+			</teststep>	
+			<teststep id="3" partition="3" repeat="5">
+				<description>
+					Read the cache control register. Verify if the Data cache and the Code Cache are disabled. Wait for next execution window.
+				</description>
+			</teststep>				
+			
+		</testprocedure>		
+	</test>	<!-- Test id="1560" -->
+</TDF>
