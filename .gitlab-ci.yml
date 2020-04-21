@@ -1,6 +1,6 @@
 # First version for AIR main source code
 # Executed in TASTE VM centralized in 192.19.13.167
-# We need create another job for ARM
+# author: $(AIR_RUNNER_USER) @GMV 2020
 
 variables:
     GIT_CLEAN_FLAGS: none
@@ -20,20 +20,38 @@ default:
         - export AIR_POS=$AIR_INSTALL/pos
         - export RTEMS_MAKEFILE_PATH=$AIR_POS/rtems5/rtems5-install/sparc-rtems5/leon3
         - export PATH=$PATH:/opt/rtems-5.1-2019.07.25/bin
+        - export PATH=$PATH:/home/taste/work/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
+        - export PATH=/opt/rtems-5-arm/bin:$PATH
         - git submodule sync --recursive
         - git submodule update --init --recursive
 
-stages:  #not used yet... use cache to copy data between jobs
-    - config
-    - building
+stages: 
+    - sconfig-sparc
+    - sbuild-sparc
+    - sconfig-arm
+    - sbuild-arm
 
-air_configure:
-    stage: config
+config_sparc:
+    stage: sconfig-sparc
     script:
-        -  cp /home/taste/work/gitlab/.air_config . #local file of VM at work/gitlab/
-        - ./configure -f .air_config
-air_build:        
-    stage: building
+        -  cp /home/taste/work/gitlab/.sparc_config . #local file of VM at ~/work/gitlab/
+        - ./configure -f .sparc_config
+        
+build_sparc:        
+    stage: sbuild-sparc
     script:
         - make clean
         - make
+        
+config_arm:
+    stage: sconfig-arm
+    script:
+        -  cp /home/taste/work/gitlab/.arm_config . #local file of VM at ~/work/gitlab/
+        - ./configure -f .arm_config
+        
+build_arm:        
+    stage: sbuild-arm
+    script:
+        - make clean
+        - make
+        
