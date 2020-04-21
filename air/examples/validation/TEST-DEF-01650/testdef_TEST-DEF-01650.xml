@@ -1,0 +1,141 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-01650"
+			id="1650" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.6"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR"
+			apex="IMASPEX">
+		<description>
+						Check that the SET_PARTITION_MODE call is unable to set the mode of
+			a partition to a value different of NORMAL, IDLE, WARM START or COLD
+			START: it should return an INVALID_PARAM value and perform no action.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0430" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					TSAL_INIT. Expect NO_ERROR. 
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					Obtain partition operating mode. 
+				Expect OPERATING_MODE == COLD_START. 
+				</description>
+			</teststep>				
+			<teststep id="2" partition="0" repeat="1">
+				<description>
+					Set partition mode to (IDLE-1) as per the 
+				values defined in the standard OPERATING_MODE_TYPE enumeration.
+				Expect INVALID_PARAM return code. 
+				</description>
+			</teststep>
+			<teststep id="3" partition="0" repeat="1">
+				<description>
+					Set partition mode to (NORMAL+1) as per the 
+				values defined in the standard OPERATING_MODE_TYPE enumeration.
+				Expect INVALID_PARAM return code.
+				</description>
+			</teststep>
+			<teststep id="4" partition="0" repeat="1">
+				<description>
+					Obtain partition operating mode. 
+				Expect OPERATING_MODE == COLD_START to verify that operating mode 
+				wasn't changed as a result of steps 2 and 3. 
+				</description>
+			</teststep>	
+			<teststep id="5" partition="0" repeat="1">
+				<description>
+					Set partition mode to NORMAL.
+				Expect NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="6" partition="1" repeat="1">
+				<description>
+					TSAL_INIT. Expect NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="7" partition="1" repeat="1">
+				<description>
+					Obtain partition operating mode. 
+				Expect OPERATING_MODE == COLD_START. 
+				</description>
+			</teststep>											
+			<teststep id="8" partition="1" repeat="1">
+				<description>
+					Set partition mode to (IDLE-1) as per the 
+				values defined in the standard OPERATING_MODE_TYPE enumeration.
+				Expect INVALID_PARAM return code.					
+				</description>
+			</teststep>
+			<teststep id="9" partition="1" repeat="1">
+				<description>
+					Set partition mode to (NORMAL+1) as per the 
+				values defined in the standard OPERATING_MODE_TYPE enumeration.
+				Expect INVALID_PARAM return code.					
+				</description>
+			</teststep>
+			<teststep id="10" partition="1" repeat="1">
+				<description>
+					Obtain partition operating mode. 
+				Expect OPERATING_MODE == COLD_START to verify that operating mode 
+				wasn't changed as a result of steps 8 and 9. 
+				</description>
+			</teststep>			
+			<teststep id="11" partition="1" repeat="1">
+				<description>
+					Set partition mode to NORMAL.
+				Expect NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="12" partition="0" repeat="1">
+				<description>
+					Previously set partition mode to WARM_START.
+					Obtain partition operating mode and expect OPERATING_MODE == WARM_START.
+				</description>
+			</teststep>
+			<teststep id="13" partition="1" repeat="1">
+				<description>
+					Previously set partition mode to WARM_START.
+					Obtain partition operating mode and expect OPERATING_MODE == WARM_START.
+				</description>
+			</teststep>
+			<teststep id="14" partition="0" repeat="1">
+				<description>
+					Previously set partition mode to COLD_START.
+					Obtain partition operating mode and expect OPERATING_MODE == COLD_START.
+				</description>
+			</teststep>
+			<teststep id="15" partition="1" repeat="1">
+				<description>
+					Previously set partition mode to COLD_START.
+					Obtain partition operating mode and expect OPERATING_MODE == COLD_START.
+				</description>
+			</teststep>
+			<teststep id="16" partition="0" repeat="1">
+				<description>
+					P1 previously sets it's own partition mode to IDLE.
+					Obtain P1 partition operating mode and expect OPERATING_MODE == IDLE.
+					Test ends.				
+				</description>
+			</teststep>
+
+		</testprocedure>		
+	</test>	<!-- Test id="1650" -->
+</TDF>

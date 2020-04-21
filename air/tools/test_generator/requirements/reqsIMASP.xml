@@ -1,0 +1,3241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="reqs.css"?>
+<root>
+<section name="Capabilities Requirements">
+	<subsection name="Modes">
+		<req name="RB-01150">
+			The IMA-SP platform shall implement various operational modes where a mode is 
+			characterised by a platform configuration vector. 
+			The set of parameters that may change according to a mode transition shall include
+			at minimum the physical resource allocation parameters (CPU, FPU, memory).
+			<comment>
+				There is no 'FULL MODE CHANGE' call in D10, only SET_PARTITION_MODE and
+				SET_MODULE_SCHEDULE, thus these two functions will be considered the functionality 
+				defined by this requirement.
+				
+				By changing the mode of all partition to either COLD START/WARM START or IDLE, and
+				changing the active schedule, we are effectively changing the physical allocation
+				parameters.
+			
+				We cannot claim to change the memory allocation 'dynamically', since the the memory 
+				for all partitions should be pre-allocated at system start and these areas should
+				not be modified later. 
+				
+				Any change to this scheme is bound to add more (unwanted) complexity to the system.
+				
+				A possibility is to assume that a change of mode requires a full patch of the system,
+				and thus no specific 'mode change instruction' is needed. This is in fact what is 
+				assumed in RB-01125, thus it seems the some physical parameters can only be changed
+				after a system reset.
+			</comment>		
+			<note>
+				NOTE: This requirement stems from the experience; on board software is usually
+				organised in an initialisation phase (implementing e.g., operating system resources
+				allocation) and an "operational" phase where the various system operational modes 
+				are implemented. Initialisation and "operational" phases may have highly different 
+				needs in terms of physical resources.
+			</note>		
+			<note>
+				NOTE: The maintenance of an application may require a *safe* modification of
+				the resource allocation e.g., application of a patch requiring more memory 
+				than allocated in the local margin or in a more simple way (re-)execution of 
+				the initialisation phase for a given application. 
+				This point is to be investigated further on.
+				<comment>
+					Current system implementation does not support patching single partitions or 
+					changing its memory requirements.
+				</comment>
+			</note>
+			<note>
+				NOTE: The allocation of computing resources may be defined per system operational
+				mode, or if affordable (i.e. when resource allocation margins are sufficient) 
+				the envelope may be considered whatever the mode. 
+				Supporting the implementation of the various system operational modes is also 
+				to correlate with more focused requirements like e.g., flexibility of the CPU 
+				allocation scheme.
+			</note>
+		</req>
+		<req name="RB-01152">
+			The IMA-SP platform shall provide privileged applications, and only privileged ones, 
+			with the capability to trigger any transition between IMA-SP platform operational modes.	
+			<note>
+				NOTE: This requirement does not preclude the IMA-SP platform to trigger 
+				automatically a transition e.g., for FDIR purpose. This capability should be 
+				investigated further on and specific requirement added if necessary.
+			</note>
+		</req>	
+		<req name="RB-01154">
+			The IMA-SP platform shall execute any transition between its operational modes in a 
+			defined and predictable way.
+			<note>
+				NOTE: Conversely to the {system initialisation, system operation} couple where a 
+				transition point between both can be clearly defined, the transition between 
+				system operational modes is system-specific and may be a complex problem to solve.
+				A reasonable assumption is to decouple the system operational modes from the 
+				IMA-SP platform modes.
+			</note>
+			<comment>
+				In fact, this is the approach taken, we only consider ARINC-653 like modes (NORMAL,
+				WARM_START, etc) and multiple schedules.
+			</comment>
+			<note>
+				NOTE: A transition execution point (in time) shall be defined in consistency with 
+				the partition scheduling scheme. In [Std-A653], this transition is executed 
+				at beginning of the next Major Frame. 
+				The impact of that functionality on the IMA-SP platform overhead has to be 
+				taken into account when allocating the CPU resource.
+			</note>
+			<comment>
+				The SET_MODULE_SCHEDULE is indeed designed in such a way that its effects are only
+				taken into account in the next major time frame. The SET_PARTITION_MODE does not 
+				have the same constraint: so, it is up to the system designer to place the FDIR 
+				system partition on a appropriate position in the sceduling (typically the first or
+				last partition to be executed), in order to guarantee that a SET_PARTITION_MODE (
+				COLD_START) to all other partitions assures a proper IMA-SP Platform transition.
+				This is thus an higher level requirement, and not really testable beyond the 
+				previously defined tests.
+			</comment>
+		</req>				
+	</subsection>
+	<subsection name="Allocation of basic physical resources">
+		<req name="RB-01110">
+			The IMA-SP platform shall implement defined and predictable CPU resource allocation 
+			scheme.
+		</req>
+		<req name="RB-01111">
+			IMA SP platform shall consider hardware and environmental real time constraints in order
+			to guarantee determinism and defined latencies on each I/O and application data.	
+		</req>
+		<req name="RB-01115">
+			The IMA-SP platform CPU resource allocation scheme shall fit the real time requirements 
+			of every application, assuming any application may implement any set of activities 
+			per system operation mode, an activity being one of:
+			<sub>
+				a. Periodic activity with hard real-time deadlines e.g., for control loops; 
+				typical operating frequencies range from 0.01Hz to few dozen Hz;
+			</sub>
+			<sub>
+				b. Aperiodic activity with soft real-time deadlines and predictability requirement, 
+				triggered by a sporadic event like e.g. a TC or an operational event; 
+				these activities can be subdivided in three categories:
+				<sub>
+					a. Long duration CPU intensive activities e.g., for manoeuvre computation or 
+					update of large data structures in memory;			
+				</sub>
+					b. Long duration activities requiring very few CPU and mostly implementing 
+					wait states e.g., for equipment configuration;
+				<sub>
+					c. Short duration activities e.g., for basic TM/TC management;			
+				</sub>
+			</sub>			
+			<sub>
+				c. Background activity e.g. memory scrubbing or self-test:			
+			<note>
+				NOTE: Application activities are scheduled according to the system operational 
+				mode under execution, i.e. various set of application needs in terms of CPU budgets 
+				may be defined (one set per mode). 
+				Nevertheless the transition from a system mode to another one is a complex process
+				involving many activities at system, sub-system and equipment levels. 
+				This requirement does not preclude defining a single allocation scheme irrespective
+				of the system operational modes.
+			</note>
+			<note>
+				NOTE: This requirement is to be understood as encompassing any *reasonable* 
+				set of activities, e.g. typically less than 10.
+			 </note>
+			</sub>				
+		</req>		
+		<req name="RB-01120">
+			The IMA-SP platform CPU resource allocation scheme shall allow for optimising 
+			the execution of aperiodic activities and-so-forth the quality of service at system 
+			level.		
+			<note>
+				NOTE: The segregation of the CPU resource margins has been previously identified 
+				as being a concern when an ARINC653-like scheme is used (see [Rpt-TSPWG]). 
+				Indeed, three CPU resource margin areas can be considered for further analysis:
+				<sub>
+					Unused CPU time stemming from the non systematic achievement of WCET at
+					execution (various paths in the control flow graph) and, depending on the use
+					of a processor architectural features, the pessimism in WCET estimation;
+				</sub>
+				<sub>
+					 Local CPU margin that may be allocated to cover an increase of the WCET during
+					 the development or maintenance time without impact on the time analysis; 			
+				</sub>
+				<sub>
+					 Global CPU margin that may be allocated to cover major changes 
+					 (e.g., in the allocation scheme) with minimised impact on the time analysis.
+				 </sub>
+			</note>
+		</req>		
+		<req name="RB-01122">
+			The IMA-SP platform shall implement defined and predictable FPU resource allocation
+			scheme.
+			<note>
+				NOTE: An application might not necessarily require the FPU. 
+				The IMA-SP platform may provide every application with FPU support irrespectively
+				of application needs, or provide application-wise support for global performance 
+				reasons.
+			</note>
+		</req>
+		<req name="RB-01125">
+			The IMA-SP platform shall implement defined and predictable memory resource 
+			allocation scheme, assuming that every application uses a fixed amount of memory per 
+			system per operational mode. 
+			This allocation may change at restart of the system due to mission mode change 
+			by initialising a new scheduling plan with associated resources.		
+		</req>
+		<req name="RB-01130">
+			The set of parameters characterising the allocation of physical resources to every 
+			application shall be statically defined as part of the system configuration. 
+			More than one partitionning plan shall be possible to operate different phase
+			<note>
+				NOTE: Several sets might be defined per application; see below.
+			</note>
+		</req>
+		<req name="RB-01160">
+			The IMA-SP platform may support the optimisation of the memory resource in supporting
+			the implementation of software functions shared by distinct applications.
+			<note>
+				NOTE: This need is expressed as a possibility (instead of a requirement). 
+				Indeed, operational conditions or system ageing may lead to adapt specifically 
+				an instance of a given function. As a consequence, this case applies more to
+				general purpose libraries than application specific functionalities.
+			</note>
+			<comment>
+				If it a possibility instead of a requirement, we will probably not test it.
+			</comment>			
+		</req>
+		<req name="RB-01170">
+			The failure of an application shall have no impact on the integrity and availability of 
+			the physical resources allocated to the other integrated applications.	
+			<note>
+				NOTE: No assumption is made on the considered failures here and in the sections 
+				following. It is to be understood that a failure may propagate between applications
+				functionally coupled (e.g., wrong command at the wrong time), without impacting the 
+				allocation of computing resources by the platform, nor the integrity of the 
+				resources (of course an application may corrupt its own resources).
+				In other terms, independent applications still behave correctly.
+			</note>
+		</req>
+	</subsection>
+	<subsection name="Time services">
+		<req name="RB-01300">
+			The IMA-SP platform shall provide services to allow the following functions to any
+			application:
+			<sub>
+				a. Access the current OBT (platform one) value ( shall be done by specific services
+				or inter partition communication support as a link from I/O management and 
+				application so define by configuration);
+				<comment>
+					It seems like an acceptable compromise to accept that a system partition
+					could be responsible for synchronizing the system tim with the time read from OBT.
+					This way, no OBT user function is needed, thus reducing probable latency
+					problems.
+				</comment>
+			</sub>
+			<sub>
+				Wait for a given interval of time to elapse.
+			 	<note>
+					NOTE: Absolute time is referred here, i.e. no need has been identified so far 
+					to implement a partition-related time only running when the partition is 
+					executing. 
+					Partition-related clocks might be required for implementing an operating system 
+					layer within a partition. Waiting for occurrence of a given OBT event shall be 
+					done with a. and b.
+				</note>
+				<comment>
+					This is implemented by the paravirtualized POS.
+				</comment>
+			</sub>		
+		</req>		
+		<req name="RB-01305">
+			The IMA-SP platform shall provide dedicated interfaces to a privileged application in
+			order to manage the OBT hardware module functionality.
+			<note>
+				NOTE: This interface may be used for setting the OBT value, supporting the 
+				resynchronisation of the OBT source clock, or implementing PUS service 9 
+				(time management).
+			</note>
+		</req>
+		<req name="RB-01310">
+			The IMA-SP platform shall support the triggering of timed activities with an 
+			accuracy equal to the resolution of the on board operations scheduling. 
+			This resolution depends on a given mission requirements; it shall be at minimum in
+			O(100ms).
+			<comment>
+				These tests are verified by the RTEMS Improvement Test Suite.
+			</comment>
+			<note>
+				Figure compatible with the most demanding mission requirements (Earth observation)
+			</note>
+		</req>		
+		<req name="RB-01320">
+			The IMA-SP platform shall support the time stamping of on board parameters 
+			with an accuracy better than O(1ms).
+		</req>
+		<req name="RB-01330">
+			The IMA-SP platform shall support the implementation of waiting time with an accuracy 
+			better than O(1ms).
+			<comment>
+				Assuming the system time is synchronous with the OBT with an accuracy better than
+				1 ms, as detailed in the previous comments (RB-01300), this is fulfilled by the 
+				POS waiting primitives.
+			</comment>
+		</req>		
+		<req name="RB-01340">
+			The failure of an application shall have no impact on the capability of the other 
+			integrated applications to use time management services.
+		</req>
+	</subsection>	
+	<subsection name="Telecommand and telemetry">
+		<req name="RB-01200">
+			The IMA-SP platform shall support the operation of every on board application 
+			through standard TM/TC protocol, as defined by [Std-E70/41].
+			<note>
+				NOTE: There must be a central TM/TC service in charge at least of interfacing the 
+				TM/TC hardware, either implemented within the (domain-specific) platform or in 
+				dedicated application.
+			</note>
+		</req>		
+		<req name="RB-01210">
+			The failure of an application shall have no impact on the operability of the other
+			integrated applications.
+			<note>
+				NOTE: The TM/TC service, including data dispatching/collection service, shall be 
+				protected against application failures. This requirement is not applicable to an 
+				application, if any, dedicated to TM/TC. 			
+			</note>		
+		</req>
+	</subsection>	
+	<subsection name="Access to decentralised avionics units">
+		<req name="RB-01510">
+			The IMA-SP platform shall provide an acquisition service, assuming that acquisitions,
+			collected from a decentralised function, may be:
+			<sub>
+				a. periodic, unconditional (e.g., control loops) or programmable 
+				(e.g., oversampling for troubleshooting);
+			</sub>
+			<sub>
+				b. aperiodic (e.g., configuration setup).
+			</sub>
+		</req>		
+		<req name="RB-01512">
+			The IMA-SP platform shall contribute to minimise the latency of delivery of a parameter 
+			acquired from the decentralised unit.
+			<note>
+				NOTE: Certain periodic measurements require to guarantee a bounded latency of their 
+				acquisition e.g., inertial measurements triggered by a system-level synchronisation 
+				signal; a typical latency is 10% of the measurement period. 
+				A single measurement may require multiple transactions executed in one single burst 
+				e.g., consecutive MIL-STD-1553B RT-to-BC transfers from multiple terminals.
+			<comment>
+				As stated in [D06], a solution based on a pre-defined static scheduling in terms of 
+				IMA will contribute to the latency instead of its minimisation.
+			</comment>
+			</note>
+		</req>
+		<req name="RB-01514">
+			The IMA-SP platform shall provide a commanding service, assuming that commands, 
+			sent to a decentralised function, may be: 			
+			<sub>
+				a. urgent, i.e. with a deadline linked to the functionality and shorter than its 
+				operating cycle (e.g., control loops);
+			</sub>
+			<sub>
+				b. non urgent (e.g., configuration setup), possibly separated by a fixed interval
+				of time (e.g., pyro firing);
+			</sub>
+			<sub>
+				c. accurate in time, i.e. with punctuality requirement (e.g., instrument commanding).
+			</sub>
+			<comment>
+				Given the components defined in RB-08000, it seems sensible to assign this to the 
+				two later components (SYS-SS and APP-SS), and not SEP directly.
+			</comment>
+		</req>		
+		<req name="RB-01516">
+			The IMA-SP platform shall provide a large data transfer service, assuming that large 
+			data transfers may be aperiodic / non urgent (acquisition and commanding) or periodic 
+			(acquisition).
+			<note>
+				NOTE: Large data transfers may concern packetized or raw data e.g., 
+				for patch/dump of decentralised memory or acquisition of image samples. 
+				Depending on the communication protocols implemented on board, they may be 
+				multiplexed to simple commands/acquisitions.
+			</note>
+			<comment>
+				Given the components defined in RB-08000, it seems sensible to assign this to the 
+				two later components (SYS-SS and APP-SS), and not SEP directly.
+			</comment>			
+		</req>	
+		<req name="RB-01500">
+			The IMA SP platform shall provide access point (part of abstraction communication layer)
+			to every decentralised avionics function it must interact, an access point allows 
+			communication from one application via the IMA-SP platform to avionics functions either
+			resident on the same computing platfrom or decentralised avionic functions.
+			<note>
+				NOTE: Any application willing to interact with a decentralised function has to rely 
+				on the capabilities of the IMA SP platform. Hardware interface shall be defined per 
+				physical links (protocol aspect, filtering if needed and data availability per 
+				decentralised function).
+				Distribution of data from a decentralised function to a single or serveral users 
+				(application) shall be performed by access point (such as communication port).
+			</note>			
+		</req>		
+		<req name="RB-01520">
+			The set of access points allocated to an application shall be statically defined as part 
+			of the system configuration.		
+			<note>
+				NOTE: No need identified so far for reconfiguring dynamically the set of access 
+				points allocated to an application.
+			</note>	
+		</req>
+		<req name="RB-01530">
+			The failure of an application shall have no impact on the capability of the other 
+			integrated applications to interact with decentralised avionics functions.
+			<sub>
+				NOTE: This requirement imposes that shared decentralised functions or shared
+				interface units are properly managed.
+			</sub>
+			<comment>
+				Since the decentralized avionic functions are implemented as a (I/O) partition,
+				the requirements that cover failures on one partition should not affect others
+				already cover this requirement.
+			</comment>
+		</req>		
+	</subsection>
+	<subsection name="Access to on board data stores">
+		<req name="RB-01600">
+			The IMA-SP platform shall provide an application with access points to every on 
+			board store it must use, assuming an access point gives access to a single store.
+			<note>
+				NOTE: Several access points per store might be defined.
+			</note>
+			<note>
+				NOTE: In the case of a store shared by two or more applications, access points to 
+				that store should be allocated to separate applications. 
+				An example could be the storage of application-specific context data.
+			</note>
+			<comment>
+				Accordingly to D10 issue 1.8, section 7.4.2: "As the specification and the 
+				implementation of these services would be very effort consuming, it is out of the
+				scope of the IMA-SP Study".
+			</comment>			
+		</req>		
+		<req name="RB-01610">
+			The IMA-SP platform shall be compatible with on board stores logically organised as:
+			<sub>
+				a. plain buffers (raw file system),
+			</sub>
+			<sub>
+				b. packet stores (for TC or TM),
+			</sub>
+			<sub>
+				c. hierarchical file system with directories and plain files (e.g. for OBCP files).
+				<note>
+					NOTE: Note that this requirement implies that it must be traded off which 
+					component in the IMA-SP platform provides for the various features specified.
+				</note>
+			</sub>
+			<comment>
+				Accordingly to D10 issue 1.8, section 7.4.2: "As the specification and the 
+				implementation of these services would be very effort consuming, it is out of the
+				scope of the IMA-SP Study".
+			</comment>				
+		</req>
+		<req name="RB-01620">
+			The IMA-SP platform shall support the implementation of a set of management functions
+			adapted to the features of each on board store. Management includes initialisation, 
+			structuring, deletion etc.
+			<note>
+				NOTE: Management of a given on board store is to be implemented by a privileged 
+				application e.g., the Operability application.
+			</note>
+			<comment>
+				Accordingly to D10 issue 1.8, section 7.4.2: "As the specification and the 
+				implementation of these services would be very effort consuming, it is out of the
+				scope of the IMA-SP Study".
+			</comment>			
+		</req>		
+		<req name="RB-01630">
+			The set of access points allocated to an application shall be statically defined as part 
+			of the system configuration.
+			<note>
+				NOTE: No need identified so far for reconfiguring dynamically the set of access points
+				allocated to an application. 			
+			</note>
+		</req>
+		<req name="RB-01640">
+			The failure of an application shall have no impact on the capability of the other 
+			integrated applications to interact with on board stores.
+			<note>
+				NOTE: This requirement imposes that shared stores or shared storage units are 
+				properly managed.
+			</note>
+			<comment>
+				Accordingly to D10 issue 1.8, section 7.4.2: "As the specification and the 
+				implementation of these services would be very effort consuming, it is out of the
+				scope of the IMA-SP Study".
+			</comment>				
+		</req>
+	</subsection>	
+	<subsection name="Communication of on board parameters">		
+		<req name="RB-01700">
+			The IMA-SP platform shall allow applications to use and communicate on board parameters,
+			assuming the following characteristics:
+			<sub>
+				a. One and only one application (owner) shall have write access to a given parameter;
+			</sub>
+			<sub>
+				b. Several applications may have read access to a given parameter;
+			</sub>
+			<sub>
+				c. Access shall be immediately granted with minimal overhead in terms of execution
+				time;
+			</sub>
+			<sub>
+				d. Once written, a parameter value shall persist up to the next write or up to the
+				owner stop / reset, whichever is the first;
+			</sub>
+			<sub>
+				e. An application may be notified of (i.e. wait for) the occurrence of a parameter 
+				update;
+			</sub>			
+			<sub>
+				f. Consistency of a complex parameter shall be ensured; this may be enforced by the
+				IMA-SP platform software, or demonstrated at system level.
+				<note>
+					NOTE: The need for a SEP API (e.g. multicast sampling port) or Application 
+					Support Service API (with direct memory access) must be assessed as per §5.8. 
+					As an example, a data base may be implemented as a shared memory area 
+					(not necessarily connected), with defined access control scheme.
+				</note>
+				<note>
+					NOTE: This requirement does not preclude the implementation of separate services
+					considering functionality (e.g., with or without notification capability) versus
+					performance (e.g. overheads) trade offs.
+				</note>			
+			</sub>
+		</req>		
+		<req name="RB-01710">
+			Supported access modes shall comprise read/write (producer), read-only (consumer) 
+			and no-access (others). 
+			Access modes shall be defined as part of the system configuration.
+			<note>
+				NOTE: No-access mode aims at supporting fault detection or prevention 
+				(depending on the concrete implementation) and enforcing confidentiality. 
+				Other modes (i.e. write-only or even execute) are not required so far. 
+				This does not preclude implementing write-only mode at system executive level.
+			</note>
+		</req>
+		<req name="RB-01720">
+			Access mode shall be defined per parameter set; a set being defined as any subset of all
+			parameters produced by a given application.
+			<note>
+				NOTE: Access mode may be defined per parameter.
+			</note>
+		</req>		
+		<req name="RB-01730">
+			The failure of an application shall have no impact on the capability of the other
+			integrated applications to access to, or communicate, parameters.
+			<note>
+				NOTE: The trustability of parameters produced by a faulty application may not be 
+				guaranteed.
+			</note>
+		</req>		
+	</subsection>
+	<subsection name="Communication of on board events">		
+		<req name="RB-01400">
+			The IMA-SP platform shall allow applications to use and communicate on board events,
+			assuming the following characteristics:
+			<sub>
+				a. Any application may communicate an event to one or several applications, 
+				including (optional) associated data;
+			</sub>
+			<sub>
+				b. Once communicated to an application, an event shall persist up to when it has 
+				been read by the application;
+				<comment>
+					From D06:
+					By using queuing ports the fulfilment of line b of RB-01400: “...” is assured,
+					since the event remains on the application receiving queue until it is read. 
+					It is also a way to guarantee that a failure in a given application does not 
+					affect the correct behaviour of the remaining applications reading the same 
+					event.
+				</comment>
+			</sub>
+			<sub>
+				c. Access to the associated data shall be immediately granted with minimal overhead 
+				in terms of execution time;
+			</sub>
+			<sub>
+				d. An application may be notified of (i.e. wait for) the occurrence of an event; 
+				however in the case of several destination applications, it is not required that 
+				this notification is made atomic;
+			</sub>
+			<sub>
+				e. Optionally, an application may be notified of (i.e. wait for) the occurrence of
+				any event from an event set;
+			</sub>
+			<sub>
+				f. Optionally, an application may be notified of (i.e. wait for) the occurrence of 
+				any set of events.
+				<note>
+					NOTE: The extent of SEP support must be assessed as per §5.8 e.g., message 
+					passing with synchronisation capability. Dedicated event routing/dispatching 
+					application might be implemented with additional control capability e.g. for 
+					integrity checking.
+				</note>
+			</sub>
+			<comment>
+				This service is not yet implemented.
+			</comment>	
+		</req>
+		<req name="RB-01410">
+			Event communication and notification paths shall be defined as part of the 
+			system configuration.
+			<note>
+				NOTE: No need identified so far for reconfiguring dynamically the access and 
+				notification paths.
+			</note>			
+		</req>		
+		<req name="RB-01420">
+			The failure of an application shall have no impact on the capability of the other
+			integrated applications to use and communicate on board events.
+			<note>
+				NOTE: This requirement implies that the on board event service must be protected 
+				against application failures. This requirement is not applicable to an application
+				implementing event routing/dispatching.
+			</note>					
+		</req>
+	</subsection>
+	<subsection name="On board software maintenance">
+		<req name="RB-01800">
+			The IMA-SP platform shall support the implementation of a central maintenance service
+			having control over the integrated applications.
+			<note>
+				NOTE: The central maintenance service has read/write access to the application 
+				software image repository-ies, and controls the application operational life
+				cycle (in store, in memory, operational).
+			</note>
+			<note>
+				NOTE: Note that this requirement implies that analysis must be conducted to 
+				establish the partition level capabilities of the IMA-SP platform and 
+				characterise the basic life cycle management services e.g., start, stop, abort,
+				suspend, resume, load, unload, check etc., as well as establish the application 
+				level maintenance protocols.
+			</note>
+			<comment>
+				The implementation of this falls outside the realm of the SEP. A FDIR responsible
+				system partition seems a mission specific application.
+			</comment>
+		</req>
+		<req name="RB-01810">
+			The central maintenance service shall be operable through standard TM/TC protocol,
+			i.e. compliant to [Std-E70/41].
+			<comment>
+				Given the components defined in RB-08000, it seems sensible to assign this to the 
+				two later components (SYS-SS and APP-SS), and not SEP directly.
+			</comment>
+		</req>		
+		<req name="RB-01820">
+			The maintenance operations of a given application shall have no impact on the 
+			capabilities of the other integrated applications to perform their function, providing 
+			the latter are not functionally coupled to the application under maintenance.
+			<note>
+				NOTE: Other cases impact separate applications. It must be studied which means at 
+				application level and which capabilities are expected from the IMA-SP services 
+				supporting the coupling e.g., communication services, to allow for maintaining the 
+				level of service of impacted applications.
+			</note>	
+		</req>
+		<req name="RB-01830">
+			The failure of an application shall have no impact on the capability of the central 
+			maintenance service to perform its function.			
+		</req>
+	</subsection>
+	<subsection name="Fault Protection">
+		<req name="RB-01905">
+			The following failure modes shall be considered for the hosted Software functions:
+			<sub>
+				Elementary failure modes
+				<sub>
+					 Jump to an invalid (unimplemented or unaligned) address;
+				</sub>
+				<sub>
+					 Jump to unexpected valid address (with respect to the program control flow);				 
+				</sub>
+				<sub>
+					 Data read access to an invalid address;
+				</sub>
+				<sub>
+					 Data write access to an invalid address;			 
+				</sub>
+				<sub>
+					Execution of a trap instruction;
+				</sub>
+				<sub>
+					Execution of a supervisor mode processor instruction;			
+				</sub>
+				<sub>
+					Execution of an (unexpected) opcode compatible with the SPARC standard;
+					<comment>
+						Is there an unexpected opcode that is not also a supervisor mode instruction, 
+						thus being covered by the previous item? I cannot seem to recall one.
+					</comment>					
+				</sub>
+				<sub>
+					Execution of an (unexpected) 32 bits data word;
+				</sub>
+				<sub>
+					 Misuse of the IMA-SP platform software API: invalid pointer as input parameter
+					 (invalid address, unexpected valid address);
+				</sub>
+				<sub>
+					Misuse of the IMA-SP platform software API: invalid data as input parameter
+					(out of bounds data);			 				
+				</sub>
+			</sub>
+			<sub>
+				Complex failure modes
+				<sub>
+					Execution of any sequence of elementary failure modes;
+					<comment>
+						This is not clear... 
+						If one single failure leads the partition into IDLE mode or WARM/COLD reset,
+						what is a 'sequence of elementary failure modes'?
+					</comment>					 
+				</sub>
+				<sub>
+					Endless loop on IMA-SP platform software service call;
+					<comment>
+						This is also not clear.
+					</comment>
+				</sub>
+				<sub>
+					Execution of a bad instruction or endless loop in ISR (if applicable);				
+				</sub>
+			</sub>
+		</req>
+		<req name="RB-01900">
+			The IMA-SP platform shall support the implementation of a FDIR service having control 
+			over the system resources. This service shall manage:
+			<sub>
+				a. The system state;
+			</sub>
+			<sub>
+				b. The state of every partition implemented by the system;			
+			</sub>
+			<sub>
+				c. The interface with an external reconfiguration module in charge of reconfiguring
+				   the system on the occurrence of system alarms (potentially but not necessarily 
+				   triggered by software). 
+				   Dedicated hardware configuration signals might be send to the on board 
+				   computer executing the IMA-SP platform software, independently from the 
+				   nominal TC flow.
+				<note>
+					NOTE: Given that an application can be implemented as more than one partition,
+					it must be studied how the FDIR service can manage such configuration, 
+					i.e. whether it has knowledge of the application level.
+				</note>
+				<note>
+					NOTE: Note that this requirement implies also that it must be traded off which 
+					component in the IMA-SP platform provides for the various features required to 
+					implement the FDIR service. Particularly the applicability of the Health 
+					Monitoring service at system executive level as defined by [Std-A653/1] 
+					must be analysed.
+				</note>			
+			</sub>
+			<comment>
+				The AIR platform supports A653-1 Health Monitor services that can be used by a FDIR
+				application to implement mission specific FDIR requirements. The implementation of
+				a specific FDIR application seems out of scope for the SEP development, instead 
+				the focus should be on the tools the FDIR application may use.
+			</comment>			
+		</req>
+		<req name="RB-01910">
+			Configuration parameters shall be identified, allowing for customising the FDIR service
+			to the operational requirements of a given mission, in the scope of the satellites and
+			 exploration spacecraft domain.
+			<note>
+				NOTE: The FDIR service must have the degree of flexibility allowing for the 
+				definition of mission-specific FDIR schemes. 
+				Note that this requirement implies that an analysis of the various missions 
+				in the domain should be conducted, leading to the identification of 
+				the relevant parameters.
+			</note>
+		</req>
+		<req name="RB-01920">
+			The recovery of a given (set of) partition (reconfiguration to any state or 
+			other exclusion kinds) shall have no impact on the capability of the integrated 
+			applications to perform their function, provided that they are neither concerned 
+			by the recovery nor functionally coupled to the application(s) concerned.
+			<note>
+				NOTE: Other cases may impact separate applications. It must be studied which means 
+				at application level and which capabilities are expected from the IMA-SP services 
+				supporting the coupling e.g., communication services, to allow for maintaining the 
+				level of service of impacted applications.
+			</note>
+		</req>		
+		<req name="RB-01930">
+			The recovery of a given (set of) partition (reconfiguration to any state or 
+			other exclusion kinds) shall have no impact on the capability of the FDIR service 
+			to perform its function.
+			<note>
+				NOTE: Note that this requirement is also applicable to a set of partitions.
+				Indeed, several partitions may fail in a short period of time. 
+				This situation must be handled by the FDIR service.
+ 			</note>					
+		</req>
+		<req name="RB-01940">
+			The failure of an application not related to FDIR shall have no impact on the
+			capability of the FDIR service to perform its function.
+			<comment>
+				All other tests that evalute the capability of HM to handle unexpected events
+				indirectly test this requirement, thus no further requirement is devised here.
+			</comment>
+		</req>
+		<req name="RB-01950">
+			The failure of the FDIR service, including the failure of any FDIR-related application, 
+			shall be addressed as a system-level event.
+		</req>		
+		<req name="RB-01960">
+			The IMA-SP platform shall monitor the integrity of its own resources.		
+			<note>
+				NOTE: Such resources include MMU page tables in memory.
+			</note>
+		</req>			
+	</subsection>
+</section>
+<section name="System Interface Requirements">
+	<req name="RB-02000">
+		The IMA-SP platform shall allow hosted applications to interact with the platform services 
+		or other hosted applications through and only through well defined interfaces.
+	</req>
+	<req name="RB-02010">
+		The API provided by the IMA-SP platform shall derive from [Std-A653].
+		<note>
+		NOTE: The applicability and relevance of [Std-A653] must be analysed in order to
+			establish the IMA-SP platform API.
+		</note>	
+	</req>	
+</section>
+<section name="Computer Resource Requirements">
+	<req name="RB-04000">
+		The CPU and memory budgets overhead brought by the IMA-SP platform shall be predictable.
+	</req>
+	<req name="RB-04010">
+		The IMA-SP platform CPU budget shall be less than 20% when averaged over 1 second,
+		considering a typical OBSW partitioning strategy featuring up to 10 partitions 
+		with I/O partition, platform FDIR partition, payload functions partition, 
+		platform functions partition and additional service partitions.
+		<note>
+			NOTE: It is proposed to check this figure in every practical use case to be implemented
+			in the frame of the project.
+		</note>
+		<comment>
+			No use case as thus far been proposed.
+		</comment> 
+	</req>		
+	<req name="RB-04020">
+		The application software execution latency introduced by the IMA-SP platform shall 
+		be lower than TBD ms.
+		<note>
+			NOTE: Absolute timing; see also §5.1.4. At the level of a SEP, a partition context 
+			switch requirement may be derived, assuming the system support services do not 
+			interfere with mission-specific latency needs.
+		</note>
+	</req>
+	<req name="RB-04030">
+		The IMA-SP platform memory budget shall be less than TBD KBytes.
+	</req>			
+</section>
+<section name="Security Requirements">
+	<req name="RB-05000">
+		The IMA-SP platform shall support the implementation of the following system-level 
+		capabilities.
+		<sub>
+			Ensure SW integrity when transferring satellite operation responsibility 
+			from one entity to another (e.g. LEOP to Nominal)	
+		</sub>
+		<sub>
+			Provide an architecture compatible with LEOP configuration and operations:
+			hierarchy, privileges, criticality, security policy 
+		</sub>
+		<sub>				
+			Define a security policy for contingency cases, reduced configuration, 
+			downgraded levels.
+		</sub>
+		<sub>
+			Provide security and safety barriers in accordance with the operation scheme
+			(avionics vs payloads)
+		</sub>
+		<sub>
+			Allocate privileges for exclusive use of data processing algorithms and 
+			refined data production
+		</sub>
+		<sub>
+			Provide resources separation to users with different level of classification 
+			(confidentiality)
+		</sub>
+		<sub>
+			Provide data separation to users with different level of classification 
+			(confidentiality)
+		</sub>
+		<sub>
+			Ensure control of SW and processing limitations	
+		</sub>
+		<sub>
+			Control of SW maintenance and upgrade (patch).
+		</sub>
+		<comment>
+			Given the components defined in RB-08000, it seems sensible to assign this to the 
+			two later components (SYS-SS and APP-SS), and not SEP directly.
+			Also, it does not seem possible to properly define this without a meaningfull use case.
+		</comment>
+	</req>
+	<req name="RB-05010">
+		The IMA-SP platform shall provide safe boot.
+		<note>
+			NOTE: The objective is to provide a trusted initial state to any application,
+			at system start-up or restart (i.e. prior to starting all applications).
+		</note>		
+	</req>		
+	<req name="RB-05020">
+		The IMA-SP platform shall provide Identification and Authentication of input data.
+		<comment>
+			This requiment cannot be implemented by the SEP platform itself without a meaningfull
+			use case.
+		</comment>
+	</req>	
+	<req name="RB-05030">
+		The IMA-SP platform shall provide Audit functions.
+		<note>
+			NOTE: These functions support security audits, implemented by the Ground control 
+			system through standard TM/TC link.
+		</note>
+		<comment>
+			This requiment cannot be implemented by the SEP platform itself without a meaningfull
+			use case.
+		</comment>
+	</req>
+	<req name="RB-05040">
+		The IMA-SP platform shall provide Data segregation.
+	</req>		
+	<req name="RB-05050">
+		The IMA-SP platform shall provide security requirements and mechanisms that are 
+		compatible with functional and dependability requirements.
+		<note>
+			NOTE: Security enforcement shall not go against the system requirements. Mission
+			safety must be preserved over security such that the security function can
+			never impair spacecraft safety by shutting down the flight computer or
+			inhibiting avionics applications. 			
+		</note>
+	</req>
+	<req name="RB-05060">
+		The IMA-SP platform shall control the integrity of data; authorise data flows 
+		from a higher integrity classification level to a lower level.
+		<note>
+			NOTE: This requirement is not specific to security issues.
+		</note>
+		<comment>
+			Since the definition of how data flow are delivered (let us say from Spacewire or 
+			MIL-STD-1553B links) is configuration dependent, this requirement can only be tested
+			for specific configurations, based in specific use-cases.
+		</comment>
+	</req>
+	<req name="RB-05070">
+		The IMA-SP platform shall protect the confidentiality of data; authorise data flows from a 
+		lower confidentiality classification level to an higher level.
+		<comment>
+			Since the definition of how data flow are delivered (let us say from Spacewire or 
+			MIL-STD-1553B links) is configuration dependent, this requirement can only be tested
+			for specific configurations, based in specific use-cases.
+		</comment>
+	</req>		
+	<req name="RB-05080">
+		The IMA-SP platform shall control the use of computing and memory resources.
+		<note>
+			NOTE: This requirement is not specific to security issues.
+		</note>		
+	</req>	
+	<req name="RB-05090">
+		The IMA-SP platform shall preserve security properties in case of reconfiguration in 
+		operation, in accordance with access rights and authorisations.		
+	</req>
+	<req name="RB-05100">
+		The IMA-SP platform shall protect a partition against failure of another partition.
+		<note>
+			NOTE: This requirement is not specific to security issues.
+		</note>
+		<comment>
+			This requirement is redundant.
+		</comment>
+	</req>		
+	<req name="RB-05110">
+		The IMA-SP platform shall prevent from unexpected/unauthorised data leaks.
+	</req>
+	<req name="RB-05120">
+		The IMA-SP platform shall avoid reuse of data, e.g erase data after consumption.
+	</req>
+	<req name="RB-05130">
+		The IMA-SP platform shall limit the effects of covert/side channels.
+	</req>
+</section>
+<section name="Quality, Reliability and Availability Requirements">
+	<req name="RB-07000">
+		A tailoring of [Std-Q80] shall be proposed and made applicable to the development of
+		the IMA-SP platform components.
+	</req>
+	<req name="RB-07010">
+		The execution behaviour (logical, temporal, computational) of a given software 
+		application shall depend on a minimal set of IMA-SP platform configuration parameters. 
+		This set shall exclude any configuration parameter specific to other hosted applications.			
+		<note>
+			NOTE: Other parameters must be taken into account when designing application software
+			like e.g. jitters linked to a given implementation. 						
+		</note>
+	</req>	
+</section>
+<section name="Design Requirements and constraints">
+	<req name="RB-08000">
+		Trade off shall be conducted to allocate the IMA-SP platform capabilities to the 
+		following three IMA-SP high level components:
+		<sub>
+			System Executive Platform
+		</sub>
+		<sub>
+			System Support Services, executed in dedicated partitions
+		</sub>
+		<sub>
+			Application Support Services
+			<note>
+				NOTE: Specifying the set of services provided by the System Executive Platform 
+				is the purpose of task 7 of [SoW].
+			</note>
+		</sub>
+		<comment>
+			For further reference, the first component shall be refered to as SEP, the second one
+			as SYS-SS and the third one as APP-SS.
+		</comment>
+	</req>
+	<req name="RB-08005">
+		The System Executive Platform shall implement RTEMS for providing the basic O/S 
+		functionalities of multi-tasking and inter-tasks communication and synchronisation.		
+	</req>	
+	<req name="RB-08010">
+		Changes to the System Executive platform shall be possible with minimal impact on 
+		the hosted application.
+	</req>
+	<req name="RB-08020">
+		The IMA-SP platform design shall allow for verifying the System Executive platform 
+		behaviour independently of applications.
+		<comment>
+			The System Executive platform will feature an independent set of validation tests.
+		</comment>
+	</req>
+</section>
+<section name="System and Software Observability Requirements">
+	<req name="RB-10000">
+		The IMA-SP platform shall produce a set of parameters aiming at supporting 
+		Ground-led monitoring and control activities:
+		<sub>
+			Partition states, IMA-SP platform configuration parameters;
+		</sub>
+		<sub>
+			Operational events including alarms, IMA-SP platform reconfiguration.
+			<note>
+				NOTE: The list of alarms and events is to be defined. 
+				See also §5.5 for security audit.
+			</note>
+		</sub>
+		<comment>
+			Given the components defined in RB-08000, it seems sensible to assign this to the two
+			later components (SYS-SS and APP-SS), and not SEP directly.
+		</comment>
+	</req>
+</section>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+
+<section name="D07 FDIR Requirements">
+	<req name="GEN-FDIR-DEV-10">
+		If the PUS services are available for the mission, the FDIR shall preferably be implemented 
+		using:
+		- On-Board Monitoring (PUS Service 12) for failure detection,
+		- Event Reporting (PUS Service 5) for failure identification,
+		- Event/Action Management (PUS Service 19) for failure recovery action.
+		<note>
+			Rationale: the PUS implementation provides a standard way to define the FDIR function. 
+			It allows relying on well known mechanism and concept.
+		</note>
+		<comment>
+			Given the components defined in RB-08000, it seems sensible to assign this to the two
+			later components (SYS-SS and APP-SS), and not SEP directly.
+		</comment>
+	</req>
+	<req name="GEN-FDIR-DEV-20">
+		As the FDIR function may evolve during the mission, the FDIR implementation shall be 
+		highly configurable by adaptable software code and inhibition/authorization of the 
+		recovery actions.
+		<note>
+			Rationale: This configuration allows to define and change the FDIR actions to be 
+			implemented at a very late stage of the development (e.g. during the validation and 
+			qualification tests). It also allows inhibiting/authorising the FDIR recovery actions 
+			during the mission.
+		</note>
+		<comment>
+			The usr_hm.c file configures all recovery actions, and is not a part of the PMK library.
+			As such, it can be be modified and linked at any (later) stage of the development.
+			However, this does not mean that it is adaptable 'dynamically': at best a 
+			reconfiguration of the whole system is possible.
+		</comment>	
+	</req>
+	<req name="GEN-FDIR-FUNC-10">
+		The FDIR function shall be capable to detect any failure at different level: equipment, 
+		unit, sub-system and system.
+		<note>
+			Rationale: The FMECA analysis identifies the potential failures at each level of the 
+			system. The detection mechanism is specific to each level considered. By design some 
+			failures may be handled directly at equipment level and in this case the FDIR function
+			does not perform the recovery.
+		</note>
+		<comment>
+			The ARINC 653 Health Monitor implementation fulfills this requirement.
+		</comment>
+	</req>
+	<req name="GEN-FDIR-FUNC-20">
+		The detection of any failure shall be as much as possible performed locally and close to
+		the faulty equipment.
+		<note>
+			Rationale: As soon as the failure is detected, as lesser is the impact.
+		</note>
+		<comment>
+			The ARINC 653 Health Monitor implementation fulfills this requirement.
+		</comment>		
+	</req>
+	<req name="GEN-FDIR-FUNC-30">
+		The return code of each software function shall be systematically evaluated by the
+		calling procedure.
+		<note>
+			Rationale: As soon as the failure is detected, as lesser is the impact.
+		</note>
+	</req>
+	<req name="GEN-FDIR-FUNC-40">
+		The failure detection implemented by software shall be performed:
+		- Via the monitoring of predefined software parameters,
+		- By specific code detecting a problem (e.g. driver, AOCS...).
+		<note>
+			Rationale: The list of parameters to be monitored as well as their acceptable values 
+			will be derived from the equipment/system modelling. The parameter can be a single 
+			parameter acquired from a physical measurement, or a more complex parameter resulting 
+			from on-board calculation.
+		</note>
+		<comment>
+			Given the components defined in RB-08000, it seems sensible to assign this to the two
+			later components (SYS-SS and APP-SS), and not SEP directly.
+		</comment>	
+	</req>
+	<req name="GEN-FDIR-FUNC-50">
+		For the surveillance of the system critical tasks, a watchdog mechanism shall be implemented.
+		<note>
+			Rationale:The watchdog is a major concept for self testing of hard real-time system.
+		</note>
+		<comment>
+			An Hardware Watchdog is not yet implemented...
+		</comment>		
+	</req>
+	<req name="GEN-FDIR-FUNC-60">
+		For the surveillance of the HW critical resources, self test mechanism shall be implemented.
+		<note>
+			Rationale:These mechanisms are by example: bus error, parity and EDAC detection,
+			illegal instruction error …
+		</note>
+		<comment>
+			This requirement is mainly implemented by the security requirements of each component
+			coupled to the Health Monitor service.
+		</comment>
+	</req>
+	<req name="GEN-FDIR-FUNC-70">
+		A memory scrubbing function coupled with a hardware correction (EDAC) shall be implemented.
+		<note>
+			Rationale:The EDAC mechanism is a standard approach used in Space system for prevention
+			against the single event upset (SEU).
+		</note>
+		<comment>
+			The health monitor component of AIR assigns an error condition to EDAC events.
+			The implementation of the memory scrubbing itself is seen as SYS-SS or APP-SS service,
+			whose support in SEP can be resumed to memory mapping through MMU.
+		</comment>
+	</req>
+	<req name="GEN-FDIR-FUNC-80">
+		There shall be a mechanism to detect failure of the spacecraft’s sensors.
+		<note>
+			Rationale:Several mechanisms exist: majority voting between nominal and redundant
+			equipments, comparison between results from different sensors.
+		</note>
+		<comment>
+			Given the components defined in RB-08000, it seems sensible to assign this to the two
+			later components (SYS-SS and APP-SS), and not SEP directly.
+		</comment>	
+	</req>
+	<req name="GEN-FDIR-FUNC-90">
+		There shall be a mechanism to detect failure of the spacecraft’s actuators.
+		<note>
+			Rationale:Several mechanisms exist: comparison between current and previous measures, 
+			tank pressure for a thruster.
+		</note>
+		<comment>
+			Given the components defined in RB-08000, it seems sensible to assign this to the two
+			later components (SYS-SS and APP-SS), and not SEP directly.
+		</comment>		
+	</req>
+	<req name="GEN-FDIR-FUNC-100">
+		The FDIR function shall be capable to localise the fault location and prevent the 
+		propagation of the failure.
+		<note>
+			Rationale:This represents the common agreement on the isolation of the failure.
+		</note>	
+	</req>
+	<req name="GEN-FDIR-FUNC-110">
+		The FDIR function shall be capable to report each failure occurrence. The generated report
+		shall at least indicate the failed source and the invalid parameters detected.
+		<note>
+			Rationale:In an autonomous system; it is essential to have a detailed knowledge of 
+			the on-board events.
+		</note>
+	</req>
+	<req name="GEN-FDIR-FUNC-120">
+		The FDIR function shall implement the recovery actions defined for each identified failure.
+		<note>
+			Rationale:The most common actions are: switching from the nominal to the redundant 
+			equipment, to disconnect a faulty payload and mark it as unavailable, force the 
+			satellite to withdraw to a mission safe mode, to reboot...
+		</note>
+		<comment>
+			Given the components defined in RB-08000, it seems sensible to assign this to the two
+			later components (SYS-SS and APP-SS), and not SEP directly.
+		</comment>			
+	</req>
+	<req name="GEN-FDIR-FUNC-130">
+		Whenever possible, preference shall be given to systematic strategy for the recovery of
+		the failure.
+		<note>
+			Rationale:As an example, an automatic retry of the failed command is performed. 
+			The failure is only propagated at the second occurrence.
+		</note>
+		<comment>
+			Given the components defined in RB-08000, it seems sensible to assign this to the two
+			later components (SYS-SS and APP-SS), and not SEP directly.
+		</comment>		
+	</req>
+	<req name="GEN-FDIR-FUNC-140">
+		A hierarchical approach shall be preferred for the recovery of the detected failure.
+		IMA-SP System Level FDIR Approach
+		<note>
+			Rationale:The recovery is first attempted at the lowest possible level, and propagated 
+			to a higher level if the failure persists. The highest level of the hierarchy leads 
+			the spacecraft to a safe configuration.
+		</note>		
+	</req>
+	<req name="GEN-FDIR-FUNC-150">
+		It shall be possible to inhibit/authorise each recovery action.
+		<note>
+			Rationale:This provides some flexibility during the satellite integration and leaves 
+			to the ground the capability to override the automated mechanisms implemented on-board.
+		</note>
+		<comment>
+			This is a requirement for the FDIR partition, not for the SEP itself.
+		</comment>
+	</req>
+	<req name="GEN-FDIR-ARCH-10">
+		A distributed architecture shall be privileged for FDIR functions which require single fast 
+		management.
+		<note>
+			Rationale:It is preferable to implement locally the FDIR functions requiring a high 
+			timing constraint. When the timing constraint is very high, the function have to be 
+			directly implemented in HW.
+		</note>
+		<comment>
+			Given the components defined in RB-08000, it seems sensible to assign this to the two
+			later components (SYS-SS and APP-SS), and not SEP directly.
+		</comment>	
+	</req>
+	<req name="GEN-FDIR-ARCH-20">
+		A centralised architecture shall be privileged for FDIR functions which require distributed
+		activities.
+		<note>
+			Rationale:A centralised approach is preferable in case of complex FDIR function which 
+			can then be tested separately and easily adapted during the satellite development.
+		</note>
+		<comment>
+			The implementation of this falls outside the realm of the SEP. A FDIR responsible
+			system partition seems a mission specific application.
+		</comment>		
+	</req>
+	<req name="GEN-FDIR-ARCH-30">
+		A datapool shall contain the parameters all the relevant FDIR parameters.
+		<note>
+			Rationale:These parameters are accessed for monitoring purposes or filled as source 
+			of the reporting message.
+		</note>
+		<comment>
+			Given the components defined in RB-08000, it seems sensible to assign this to the two
+			later components (SYS-SS and APP-SS), and not SEP directly.
+		</comment>	
+	</req>
+	<req name="GEN-FDIR-ARCH-40">
+		A system configuration table shall contain the resource availability and use.
+		<note>
+			Rationale:This is mandatory in a configurable FDIR.
+		</note>
+	</req>
+</section>
+<section name="D06 I/O Requirements">
+	<subsection name="I/O Partition">
+		<req name="REQ-IO-IOP-01">
+			I/O partitions shall communicate with other partitions exclusively by the use of ports 
+			and shared memory, as defined in D10.
+		</req>
+		<req name="REQ-IO-IOP-02">
+			The interoperability between partitions and the I/O partition shall be encapsulated in 
+			a middleware layer linked with the I/O partition and its client applications.
+		</req>
+		<req name="REQ-IO-IOP-03">
+			The I/O partition and the interoperability shall be configuration-controlled.
+		</req>
+		<req name="REQ-IO-IOP-04">
+			The configuration tool chain for the I/O partition shall be independent from the 
+			underlying partition operating system. This configuration shall address the directives 
+			set in 6.2.2.		
+		</req>
+		<req name="REQ-IO-IOP-07">
+			An I/O partition shall be qualified to the same level as the most critical application 
+			that uses its services.
+		</req>
+	</subsection>
+	<subsection name="OS-based I/O">
+		<req name="REQ-IO-IOOS-01">
+			The OS shall provide means to disable interrupts.
+		</req>	
+		<req name="REQ-IO-IOOS-02">
+			The OS shall provide means to deactivate I/O services during the execution of 
+			applications that do not use those services.
+		</req>
+	</subsection>
+	<subsection name="Hardware-based Solutions">
+		<req name="REQ-IO-HW-MLSA-01">
+			A data isolation scheme based in MIL-STD-1553B Sub Addressing may assure that each 
+			subaddress is mapped to a proper partition.
+			<comment>
+				This is a hardware requirement.
+			</comment>
+		</req>
+		<req name="REQ-IO-HW-RMAP-01">
+			An RMAP hardware core shall implement the Write data authorisation, or otherwise
+			partitioning and even fault-coupling between computers cannot be guaranteed.
+			<comment>
+				This is a hardware requirement.
+			</comment>
+		</req>
+	</subsection>
+	<subsection name="D06 I/O Component Design">
+		<req name="REC-IO-IOD-01">
+			A layered architecture for an I/O component design is recommended. The lower level, 
+			called "raw data model", consists of the driver, a routing logic and an interface 
+			for higher levels.
+		</req>
+		<req name="REC-IO-IOD-02">
+			The raw data model should implement at least the following for interfaces, defined in 6.5.2:
+			1) Read
+			2) Subscribe
+			3) Write
+			4) Control
+		</req>
+		<req name="REC-IO-IOD-03">
+			The architecture for implementing these services may be based in:
+			* Communication middleware
+			* Router (logic addressing)
+			* Device Driver	
+		</req>
+		<req name="REQ-IO-IOD-01">
+			The high level services provided by the IMA-SP I/O platform shall include:
+			* On-board Parameters;
+			* On-board Events;
+			* On-board Storage;
+			* Time Services;
+			* Command Services;
+			* TM/TC Services.
+			<comment>
+				Given the components defined in RB-08000, it seems sensible to assign this to the
+				two later components (SYS-SS and APP-SS), and not SEP directly.
+			</comment>			
+		</req>
+		<req name="REQ-IO-IOD-02">
+			Each high level service includes services and resources that shall be 
+			configuration-defined.
+			<comment>
+				Given the components defined in RB-08000, it seems sensible to assign this to the 
+				two later components (SYS-SS and APP-SS), and not SEP directly.
+			</comment>		
+		</req>
+		<req name="REQ-IO-IOD-03">
+			Each high level resource may be classified as:
+			* Local
+			* Global
+			According to the definition on 6.5.4.1
+			<comment>
+				Given the components defined in RB-08000, it seems sensible to assign this to the 
+				two later components (SYS-SS and APP-SS), and not SEP directly.
+			</comment>		
+		</req>
+		<req name="REQ-IO-IOD-04">
+			The level of privilege assigned to each high level resource may be defined as:
+			* Owner
+			* User
+			* None
+			According to the definition on 6.5.4.1
+			<comment>
+				Given the components defined in RB-08000, it seems sensible to assign this to the 
+				two later components (SYS-SS and APP-SS), and not SEP directly.
+			</comment>	
+		</req>
+		<req name="REQ-IO-IOD-05">
+			The configuration tool chain shall support the definition of the I/O component 
+			in terms of:
+			* Subcomponents;
+			* Location of subcomponents (partition);
+			* The scheduling policy within the I/O component;
+			* Parameters and events;
+			* PUS Services;
+			* Application privileges.
+			<comment>
+				Given the components defined in RB-08000, it seems sensible to assign this to the 
+				two later components (SYS-SS and APP-SS), and not SEP directly.
+			</comment>		
+		</req>
+	</subsection>
+	<subsection name="D06 On-board Time Synchronisation">
+		<req name="REQ-IO-OBT-01">
+			Clock handling shall be handled at the SEP Kernel level.
+		</req>
+		<req name="REQ-IO-OBT-02">
+			The system clock shall be synchronised with an (external) on board (high precision) 
+			clock by the SEP Kernel or a dedicated partition.		
+		</req>
+	</subsection>
+</section>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<section name="IMA SEP REQ V4">
+	<subsection name="Scheduling">
+		<req name="IMA_SEP_001">
+			The SEP partitioning kernel shall schedule partitions on the processing core according 
+			to a fixed cyclic scheduling plan given by static configuration.
+			<parent ref="RB-01154" 	/>
+			<parent ref="RB-01110"	/>
+		</req>
+		<req name="IMA_SEP_002">
+			The SEP partitioning kernel shall allow defining several master scheduling plan. 
+			Only one master scheduling plan is used at a given time. A scheduling plan shall be 
+			configured to be used at start up.
+		</req>
+		<req name="IMA_SEP_003">
+			When switching to a new scheduling plan shall have no impact on the resource allocation.
+		</req>
+		<req name="IMA_SEP_004">
+			By configuration, switching to a new scheduling plan shall or not have impact on the 
+			status of partition already scheduled in the previous one.
+			<note>
+				Note : Guest OS constraints.
+			</note>
+		</req>
+		<req name="IMA_SEP_005">
+			Switching to a new scheduling plan shall schedule the partition that was not already 
+			scheduled in COLD START start type.
+		</req>
+		<req name="IMA_SEP_006">
+			The SEP Partitioning kernel shall schedule partition in  NORMAL, COLD START and 
+			WARM START mode. The SEP shall not schedule partitions in IDLE MODE (time slot is lost).
+			<comment>
+				This is not clear: is the Health Monitor considered part of the SEP? The Health
+				Monitor should be capable of placing a partition in IDLE MODE - which does not mean 
+				that the time slot is not used, it just means it is used for doing 'nothing'.
+			</comment>
+			<parent ref="RB-01150" />	
+			<parent ref="RB-01120" />	
+		</req>
+		<req name="IMA_SEP_007">
+			SIGNAL ACTIVITY COMPLETION shall inform the partitioning kernel that the activities of 
+			the partition are completed.
+			<parent ref="RB-01120" />
+		</req>		
+	</subsection>
+	<subsection name="Trap management (interruption, trap exception)">
+		<req name="IMA_SEP_100">
+			The SEP partitioning Kernel shall manage paravirtualisation of trap.
+			(cf trap allocation	and priority table on LEON3/LEON 2).	
+		</req>
+		<req name="IMA_SEP_101">
+			Synchronous Trap management shall be done by health monitoring in line with 
+			configuration of health monitoring.
+		</req>
+		<req name="IMA_SEP_102">
+			The SEP partitioning kernel shall  allow hardware interrupt to one or more partition 
+			using configuration table. Note that this "virtualised interrupt" is pending until the 
+			partition is scheduled.
+		</req>
+		<req name="IMA_SEP_104">
+			The SEP shall mask and unmask an allocated hardware interrupt on request.
+		</req>
+		<req name="IMA_SEP_105">
+			When hardware interruption occurs one or more time between two time slot of a partition, 
+			SEP partitioning kernel shall notify only one to a partition mapped on this interruption. 
+			For Guest OS time management, number of ticks is provided by the kernel for delays management. 
+		</req>
+	</subsection>
+	<subsection name="Boot">
+		<req name="IMA_SEP_200">
+			An image for the SEP partitioning kernel and for the partitions shall be available 
+			in Non Volatile Memory.
+		</req>
+		<req name="IMA_SEP_201">
+			The SEP partitioning kernel shall be executed in RAM (after being uploaded from NVM
+			to RAM by the resident software)
+		</req>
+		<req name="IMA_SEP_202">
+			At reset or reboot the SEP partitionning kernel shall initialise itself, MMU and 
+			all the resources allocations and schedule on the scheduled plan defined as the 
+			first one in configuration. (At application level, it could be possible to define 
+			a scheduling plan for scheduling only a partition system in charge of uploaded the 
+			others partitions if not done by resident software)
+			<parent ref="RB-05010" />			
+		</req>
+		<req name="IMA_SEP_204">
+			The PK has to manage entry point table for each partition in RAM. This entry point table 
+			shall be defined by MMU configuration and system configuration.
+			<comment>
+				The entry point is, currently, an entry usr_callbacks.c.
+				To test this is not practical, however, a more simple test could be devised, just 
+				to check that these entry points are actually the first thing to be executed after
+				a partition context switch to a 'new' partitions.
+			</comment>	
+		</req>
+		<req name="IMA_SEP_205">
+			TSAL_INIT shall initialize the Abstraction Layer before using services  
+			in each partition at reset or reboot. 
+		</req>
+	</subsection>
+	<subsection name="Memory and virtualisation">
+		<req name="IMA_SEP_300">
+			ThePK shall allow defining arbitrary virtual memory maps for partitions, 
+			in particular the same virtual address space may be used by several partitions 
+			at the same time. 
+			Access shall be defined by configuration (Read, Write, Execute)
+			<parent ref="RB-01125" />
+			<parent ref="RB-01160" />
+			<parent ref="RB-01600" />
+			<parent ref="RB-01610" />
+			<parent ref="RB-05040" />
+		</req>
+		<req name="IMA_SEP_301">
+			The SEP partitioning kernel shall allow mapping registers of an dedicated I/O device 
+			on virtual address space of a partition. Limitation of 4kb alignment shall be 
+			acceptable for use cases. Paravirtualisation could be decide for some registers or 
+			memory (such as OBT) or configurable.
+			<comment>
+				We are not convinced this is the best approach to be taken, or its advantages: no set 
+				of I/O registers is separated by 4 KB, and such this mapping is close to impossible, 
+				without some severe software emulation.
+				The use of system calls to access the registers, if applicable, seems more sensible.
+			</comment>	
+		</req>
+		<req name="IMA_SEP_302">
+			The Partitioning Kernel shall allow allocating the same physical memory page 
+			to several partitions, according to a memory mapping statically defined in 
+			system configuration.
+		</req>
+		<req name="IMA_SEP_304">
+			Only SEP partitioning kernel shall be allowed to execute priviledge instructions. 
+			Partitions shall be executed in user mode.
+		</req>
+		<req name="IMA_SEP_305">
+			Management of MMU shall only be done by the kernel
+			<comment>
+				Since the control of the MMU registers is only possible through privilidged
+				instructions, the fullfilment of the previous requirement already covers
+				that possibility. However, the paging tables remain.
+			</comment>
+		</req>
+	</subsection>
+	<subsection name="Floating Point">
+		<req name="IMA_SEP_400">
+			SEP partitioning kernel shall manage floating point unit according to the configuration. 
+			FP shall be activated /deactivated globally or per partition. 
+			In the latter case, the SEP partitioning kernel shall activate/deactivate the FP unit 
+			on partition context switch.
+			<parent ref="RB-01122" />
+		</req>
+	</subsection>
+	<subsection name="Cache management">
+		<req name="IMA_SEP_500">
+			The PK shall manage cache as defined in configuration.
+		</req>
+		<req name="IMA_SEP_501">
+			The cache management shall be dynamically impacted by partition using services.
+		</req>
+		<req name="IMA_SEP_502">
+			Paravirtualisation of the flush of cache shall be available at partition level.	
+		</req>
+		<req name="IMA_SEP_503">
+			Flush of the cache shall be done at each partition context time switch.		
+		</req>
+		<req name="IMA_SEP_504">
+			FLUSH CACHE service shall flush instruction and/or data cache for the current partition.
+		</req>
+		<req name="IMA_SEP_505">
+			ACTIVATE CACHE service shall activate instruction and/or data cache for the current 
+			partition when cache is enabled at configuration level and has been deactivated by 
+			ACTIVATE CACHE.
+		</req>
+		<req name="IMA_SEP_506">
+			DEACTIVATE CACHE service shall deactivate instruction and/or data cache for the
+			current partition when cache is enabled at configuration level.
+		</req>
+		<req name="IMA_SEP_507">
+			FREEZE CACHE service shall freeze the instruction and/or data cache. 		
+		</req>
+		<req name="IMA_SEP_508">
+			UNFREEZE CACHE service shall unfreeze the instruction and/or data cache.		
+		</req>
+	</subsection>
+	<subsection name="Configuration">
+		<req name="IMA_SEP_600">
+			Partitioning Kernel configuration shall respect an XML scheme fully documented and described.		
+		</req>
+		<req name="IMA_SEP_601">
+			The PK configuration table shall contain  
+			* features of partition  (name, size, entry point, temporal, rights, floating point....)
+			* features of health monitor (actions, report)
+			* features of communication ports  
+			* scheduling policy and scheduling plan (scheduling plan at reboot depending of 
+			  the boot strategy)
+			* interrupt
+			* memory 
+			* cache
+			<parent ref="RB-01630" />
+			<parent ref="RB-01410" />
+			<parent ref="RB-07010" />
+		</req>
+	</subsection>
+	<subsection name="Health Monitoring">
+		<req name="IMA_SEP_700">
+			PK shall manage health monitoring.
+		</req>
+		<req name="IMA_SEP_701">
+			SEP health monitoring shall handle as input processor events (cf trap allocation table 
+			for LEON 2/ LEON3). SEP health monitoring shall handle partitioning kernel internal event
+			such as memory protection, partition time slot overrun, TBC…). 
+			SEP health monitoring shall handle application events (posted by a specific ARINC service).
+			<parent ref="RB-01905" />	
+		</req>
+		<req name="IMA_SEP_702">
+			SEP health monitoring configuration shall allow to define for each health monitoring 
+			event, one recovery action to be executed such as ignore the event, cold reset for the 
+			system or a partition, warm reset of the system or a partition.
+			<parent ref="RB-01905" />
+		</req>
+	</subsection>
+	<subsection name="I/O">
+		<req name="IMA_SEP_802">
+			The PK shall authorise partitions to manage IO devices according to static configuration.		
+		</req>
+	</subsection>
+	<subsection name="Modes / Start type">
+		<req name="IMA_SEP_900">
+			COLD START / WARM START shall be a type of restart of a partition managed by the
+			partition itself. Type of initialisation could be different. 
+			This mode have no impact on copying flash to RAM.
+			<comment>
+				Is this ARINC 653 compliant?
+			</comment>
+		</req>
+		<req name="IMA_SEP_901">
+			The mode of a partition at kernel level shall be NORMAL, IDLE, WARM START or COLD START.
+		</req>
+		<req name="IMA_SEP_902">
+			The start type of a partition shall be COLD START (complete initialisation) or WARM START 
+			(part of initialisation already done)	
+		</req>
+		<req name="IMA_SEP_903">
+			COLD START / WARM , NORMAL , IDLE shall be decided by partition itself or system 
+			partition using SET PARTITION MODE  It also could be decided by Kernel as health 
+			monitoring action.
+			System partition shall have the rights to change status of each partition.
+		</req>
+		<req name="IMA_SEP_904">
+			In case of WARM START or COLD START, the PK has only one entry point. The partition 
+			has to manage the COLD START or WARM START using GET_PARTITION_STATUS.
+		</req>
+		<req name="IMA_SEP_906">
+			At restart of the system, all partition shall be in COLD START (context on entry point).
+		</req>
+	</subsection>
+	<subsection name="Communications">
+		<req name="IMA_SEP_1000">
+			The Partitioning Kernel shall provide ARINC653 communication mechanism 
+			between two partition(queuing port and sampling port). 
+			The Partitioning Kernel shall provide sampling port extension services.
+			<parent ref="RB-01700" />
+			<parent ref="RB-01710" />
+			<parent ref="RB-01400" />			
+		</req>
+		<req name="IMA_SEP_1001">
+			The Partitioning Kernel shall create the ports during its initialisation using system configuration.
+		</req>
+		<req name="IMA_SEP_1002">
+			Each partition shall create the link (channel) to this port using ARINC653 service 
+			(CREATE SAMPLING PORT or CREATE QUEUING PORT).
+		</req>
+		<req name="IMA_SEP_1003">
+			Changing the mode of a partition shall have no effect on the the contents of the port.
+			Only the link is removed on IDLE MODE or COLD START. Create the link shall be necessary
+			when partition is reschedule again after IDLE mode or COLD START.
+		</req>
+		<req name="IMA_SEP_1005">
+			Queing port shall be managed in first-in/first-out (FIFO) manner. Returns error on 
+			reading or writing a queing port shall be ARINC653 compliant. 
+			Blocking managment shall be guest OS depend.
+			<note>
+				Notification not covered.
+			</note>
+		</req>
+		<req name="IMA_SEP_1006">
+			Sampling port shall support multicast (one writer, several receiver) and unicast 
+			communication mode. Queuing port shall support only unicast communication mode.
+			<note>
+				Notification not covered.
+			</note>
+		</req>
+		<req name="IMA_SEP_1008">
+			Reading a queing port shall remove the data read from the port.
+		</req>
+		<req name="IMA_SEP_1009">
+			WRITE SAMPLING MESSAGE shall write a message in the specified sampling port.
+		</req>
+		<req name="IMA_SEP_1010">
+			READ SAMPLING MESSAGE shall read a message in the specified sampling port.
+		</req>
+		<req name="IMA_SEP_1011">
+			GET SAMPLING PORT ID shall provide sampling port identifier of the specified sampling 
+			port name.
+		</req>
+		<req name="IMA_SEP_1012">
+			GET SAMPLING PORT STATUS shall provide current status of the specified sampling port.
+		</req>
+		<req name="IMA_SEP_1013">
+			SEND QUEUING MESSAGE shall write a message in the specified queuing port.
+		</req>
+		<req name="IMA_SEP_1014">
+			RECEIVE QUEUING MESSAGE shall receive a message from the specified queuing port.
+		</req>
+		<req name="IMA_SEP_1015">
+			GET QUEUING PORT ID shall provide a queuing port identifier for the 
+			specified queuing port name.
+		</req>
+		<req name="IMA_SEP_1016">
+			GET QUEUING PORT STATUS shall provide the current status of the 
+			specified queuing port.
+		</req>
+		<req name="IMA_SEP_1017">
+			READ UPDATED SAMPLING MESSAGE shall read a message from the specified
+			sampling port only if it has been updated since the last request. 
+		</req>
+		<req name="IMA_SEP_1018">
+			GET SAMPLING PORT CURRENT STATUS shall indicate the current status of 
+			the data in the sampling port.
+		</req>
+		<req name="IMA_SEP_1019">
+			READ SAMPLING MESSAGE CONDITIONAL shall read the message if the 
+			timestamp of the message is greater that REF TIME STAMP.
+		</req>		
+	</subsection>
+	<subsection name="Time">
+		<req name="IMA_SEP_1100">
+			The PK shall configure and use one or more timer for scheduling and local time.			
+		</req>
+		<req name="IMA_SEP_1101">
+			The SEP shall manage the time on Guest OS to provide time service at guest OS level.
+			<parent ref="RB-01300" />
+			<parent ref="RB-01305" />
+		</req>		
+		<req name="IMA_SEP_1102">
+			GET TIME service shall provide the system clock to the partition.
+			System clock shall be local or global time as defined at configuration 
+			level or global time by construction as ARINC 653.
+		</req>
+
+	</subsection>
+	<subsection name="API / IPC">
+		<req name="IMA_SEP_1200">
+			A priviledge partition shall be allowed to change the scheduling plan from 
+			another one in configuration. 
+			SET_MODULE_SCHEDULE ARINC 653 service shall be used.
+			<parent ref="RB-01130" />
+		</req>
+		<req name="IMA_SEP_1201">
+			A partition shall be allowed to read the ID and the status of the scheduling plan using
+			ARINC 653 service GET_MODULE_SCHEDULE_ID and GET_MODULE_SCHEDULE_STATUS.
+			<parent ref="RB-08010" />
+		</req>
+		<req name="IMA_SEP_1202">
+			SET PARTITION MODE with COLD START or WARM START status shall change the context of the 
+			partition to the entry point for next schedule.
+		</req>
+		<req name="IMA_SEP_1203">
+			GET_PARTITION_STATUS shall return the mode of the partition (NORMAl , IDLE, COLD START, 
+			WARM START)
+		</req>
+		<req name="IMA_SEP_1204">
+			GET TIME shall give the local time.
+			<parent ref="RB-01320" />
+			<parent ref="RB-01330" />
+			<parent ref="RB-08010" />	
+		</req>
+		<req name="IMA_SEP_1205">
+			CACHE FLUSH, CACHE ACTIVATION, CACHE DEACTIVATION shall allowed a partition to manage the 
+			its cache.
+			<parent ref="RB-08010" />		
+		</req>
+		<req name="IMA_SEP_1206">
+			QUEUING PORT and SAMPLING PORT services shall allowed interpartition communication.
+			<parent ref="RB-08010" />
+		</req>
+		<req name="IMA_SEP_1208">
+			Services shall be available to access to the report of the kernel health monitoring.
+			This could be done by communication port (defined in configuration).
+			<comment>
+				This shall be achieved by either the error handlers or the partition/module 
+				Health Monitoring callbacks defined by the system integrator. As such, it cannot be
+				considered a responsability of the kernel or even of the APEX compatible services.
+			</comment>
+		</req>
+		<req name="IMA_SEP_1209">
+			SET A PARTITION MODE shall allow a privileged partition (system partition)
+			to change the mode of a partition.
+			<parent ref="RB-01152" />
+		</req>
+		<req name="IMA_SEP_1210">
+			RAISE_APPLICATION_ERROR shall allow the current partition to invoke the HM action.
+		</req>
+		<req name="IMA_SEP_1211">
+			A failure of an application shall have no impact on the integrity of the others partitions. 
+			<parent ref="RB-01170"	/>
+			<parent ref="RB-01340"	/>
+			<parent ref="RB-01210"	/>
+			<parent ref="RB-01530"	/>
+			<parent ref="RB-01640"	/>
+			<parent ref="RB-01730"	/>
+			<parent ref="RB-01420"	/>
+			<parent ref="RB-01830"	/>
+			<parent ref="RB-01940"	/>
+			<parent ref="RB-01950"	/>
+			<parent ref="RB-05100"	/>
+			<parent ref="RB-05110"	/>
+		</req>
+		<req name="IMA_SEP_1212">
+			SEP shall provide status of partition and communication mechanisms between partitions.
+			<parent ref="RB-01900"	/>
+			<parent ref="RB-10000"	/>
+		</req>
+		<req name="IMA_SEP_1213">
+			GET_A_PARTITION_STATUS shall allow a privileged partition (system partition)
+			to access to the mode of a partition.
+			<parent ref="RB-10000" />
+		</req>
+		<req name="IMA_SEP_1214">
+			GET_A_PARTITION_ID shall provide the ID of a partition using the partition name.
+			<parent ref="RB-10000" />
+		</req>	
+	</subsection>
+	<subsection name="Performance">
+		<req name="IMA_SEP_1305">
+			For time and space partitioning capabilities and services, 
+			time and space overheads shall be minimal.
+			<parent ref="RB-01111"	/>
+			<parent ref="RB-01115"	/>
+			<parent ref="RB-01310"	/>
+			<parent ref="RB-01320"	/>
+			<parent ref="RB-01330"	/>
+			<parent ref="RB-01512"	/>
+			<parent ref="RB-04000"	/>
+			<parent ref="RB-04010"	/>
+			<parent ref="RB-04020"	/>
+			<parent ref="RB-04030"	/>
+		</req>
+	</subsection>
+</section>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<section name="AIR SEP Requirements">
+	<subsection name="Space Partitioning Requirements">
+		<req name="AIR_SEP_0010">
+			Each partition shall have a dedicated memory area, not accessible by other partitions. 
+			This shall be enforced by a hardware memory management unit (MMU)
+			<parent ref="RB-01170"		/>
+			<parent ref="IMA_SEP_300" 	/>
+			<parent ref="IMA_SEP_1211"	/>
+			<test test_id="TEST-DEF-80000" fsb="100" rel="100">
+				The pmk_linkcmds_vars.h holds references to the text, data and bss sections of each 
+				partition. This test shall try to read data from each of these sections from all 
+				partitions (other than the test partition itself). 
+				Each attempt shall raise a Health Monitor event that shall be captured.
+			</test>
+			<test test_id="TEST-DEF-80010" fsb="100" rel="100">
+				The pmk_linkcmds_vars.h holds references to the text, data and bss sections of each 
+				partition. This test shall try to write data into each of these sections from all 
+				partitions (other than the test partition itself). 
+				Each attempt shall raise a Health Monitor event that shall be captured.
+			</test>
+			<test test_id="TEST-DEF-80020" fsb="50" rel="100">
+				The pmk_linkcmds_vars.h holds references to the text, data and bss sections of each 
+				partition. This test shall try to branch into each of these sections from all 
+				partitions (other than the test partition itself). 
+				Each attempt shall raise a Health Monitor event that shall be captured.
+			</test>
+			<test test_id="TEST-DEF-00620" fsb="90" rel="100">
+				Test if the execution of a jump instruction into the data area, for both valid 
+				and invalid opcodes, in a user mode (non-previledged) partition is captured by the
+				LEON and handled by the HM, and the associated HM action is called.
+				Check that the remaining partitions are not affected.
+			</test>      
+		</req>
+		<req name="AIR_SEP_0020">
+			The partition dedicated memory area shall comprise at least three sections, with the 
+			following permissions:
+			* Text : Read-Execute
+			* Data : Read-Write
+			* BSS  : Read-Write
+			Text is the name typically used for the code section. BSS is the uninitialized data
+			section, typically zeroed at application start-up.
+			<parent ref="IMA_SEP_300" />
+			<test test_id="TEST-DEF-80030" fsb="100" rel="80">
+				Define a constant string (which the compiler shall locate in the Text area) in the 
+				code. Get its address, and try to rewrite it using pointer indirection (to avoid 
+				compiler detection).
+				Each attempt shall raise a Health Monitor event that shall be captured.
+			</test>
+			<test test_id="TEST-DEF-80040" fsb="60" rel="80">     
+        Generate a script that analyses the linking memory map, asserting that: 
+        *	The code of each partition is placed into the respective text area; 
+        *	The data of each partition is placed into the respective data and bss areas; 
+        *	The code of the PMK is placed into the respective text area; 
+        *	The data of the PMK is placed into the respective data and bss areas; 
+        The script should also load the program into the simulator, run the PMK 
+        initialization and then check (using the walk command of tsim) that each 
+        section features the expected permissions.
+        It should also check that all rtems_xxx functions are in the same virtual
+        and physical address.
+			</test>
+		</req>
+		<req name="AIR_SEP_0030">
+			It shall be possible to define a partition with supervisor access to configurable 
+			parts of memory.
+			<test test_id="TEST-DEF-80050" fsb="70" rel="80">
+				Devise a test with two partitions:
+				1) A regular partition
+				2) A supervisor partition
+				Check that the first partition is unable to change a variable in the supervisor 
+				area (and attempting to do so raises a Health Monitor event), and the second 
+				partition is able to change the same variable.			
+			</test>
+		</req>
+		<req name="AIR_SEP_0050">
+			The configuration tools shall enable the user to define an address space according to
+			building blocks that are needed by the application to perform its function.
+      <comment>
+        Manual inspection of the config/usr_plugins.c file allows to determine 
+        if there are shared memory areas among partitions.
+      </comment>
+			<parent ref="IMA_SEP_300" />
+		</req>
+		<req name="AIR_SEP_0060">
+			On a LEON2/LEON3 system it shall be possible to map the I/O control memory area to a 
+			virtual address accessible to a single dedicated partition.
+			<note>
+				As the I/O mapped registers typically do not exceed a 4 KB total, this implies that
+				it is not possible to ensure data isolation if more than one partition maps the same 
+				area using MMU memory protection (and mapping) exclusively. A more fine grained 
+				control access mechanism, using system calls, could be devised, but this does not 
+				comply with the 'mapping' requested in the parent requirement.
+			</note>
+			<comment>
+				This requirement is not fulfilled by AIR.
+			</comment>
+			<parent ref="IMA_SEP_301"	/>
+			<parent ref="IMA_SEP_802"	/>
+			<testlink test_id="TEST-DEF-80040"  />
+		</req>		
+		<req name="AIR_SEP_0070">
+			AIR shall feature a configurable memory sharing mechanism that allows more than one
+			partition to access the same (physical) memory area (even if using distinct virtual 
+			addresses - although this is not mandatory). The memory access permissions to each
+			partition can be distinct, and shall be configuration defined.
+			<note>
+				This mechanism is implemented in AIR under the name 'plug-in'.
+			</note>		
+			<parent ref="IMA_SEP_302" />
+			<test test_id="TEST-DEF-80060" fsb="100" rel="100">
+				Configure a test with 3 partitions with a plug-in where a shared memory area (with
+				4KB) has the following permissions:
+				P0: RW
+				P1: R
+				P2: No Access
+				Test if the application running in partition 0 can read and write data from that
+				memory area, partition 1 can only read data and an attempt to write data generates
+				a Health Monitor event, and P2 can neither read or write without raising an HM 
+				event.
+			</test>	
+		</req>
+		<req name="AIR_SEP_0080">
+			If the same partition operating system is shared by more than one partition then it 
+			shall be possible to share its code among all partitions using virtual memory mapping 
+			facilities, instead of replicating the code to all partitions. In order to achieve this, 
+			the following conditions shall be met as well: 
+			* 	The data and bss section of the operating system shall be placed into distinct
+				physical memory addresses mapped to identical virtual addresses in each partition.
+				This allows the same code to work for each partition in a transparent way.
+			*	The configuration of each POS shall be separated from the remaining data in 
+				order to reduce the 'personality memory footprint' to a minimum while maintaining
+				partition independence. 
+			*	On a partition COLD_START/WARM_START, only the data and bss sections need 
+			restoring. The POS code section shall only be replaced at a full system reset.				
+			<parent ref="RB-01160"	/>
+			<test test_id="TEST-DEF-80080" fsb="60" rel="60">
+        Create a test with two partitions, with similar code, each with at
+        least one task. Corrupt the value of both _Thread_Executing and
+        _Thread_Heir variables in the first partition, and check that only
+        the first partition raises Health Monitor events.
+        The second partition should continue its execution without changes.      
+			</test>
+		</req>
+		<req name="AIR_SEP_0090">
+			A user partition shall not be able to access the kernel data area. 
+			<parent ref="IMA_SEP_1211"	/>
+			<testlink test_id="TEST-DEF-80040"  />
+			<test test_id="TEST-DEF-80810" fsb="90" rel="70">
+				Define a system with two non-supervisor partitions. Use the references in 
+				pmk_linkcmds_vars.h to determine the location of the kernel memory area 
+				(air_memmap_PMK_SharedAreaStart) and try to write it in both partitions. Check
+				that a health monitor event is raised in both.
+			</test>
+		</req>
+
+		<req name="AIR_SEP_0100">
+			The number of ticks since boot shall be stored in the kernel data (or bss) area.
+			<parent ref="RB-01340"		/>
+			<parent ref="AIR_SEP_0090"	/>
+			<testlink test_id="TEST-DEF-80810"	/>      
+		</req>
+		
+	</subsection>
+	<subsection name="Time Partitioning Requirements">	
+		<req name="AIR_SEP_0110">
+			The system shall support time partitioning according to the Partition Scheduling 
+			defined in ARINC 653 Part 1 [RD1].
+			<parent ref="IMA_SEP_001" />
+			<test test_id="TEST-DEF-00043" fsb="100" rel="100">
+				Show that applications execute only during their execution windows.
+			</test>	
+		</req>
+		<req name="AIR_SEP_0120">
+			The system shall support Multiple Module Schedules according to ARINC 653 Part 2 [RD2].
+			If the module schedule is altered (through the SET_MODULE_SCHEDULE service), the new 
+			schedule shall only be effective at the start of the following major time frame, 
+			as indicated in the standard.
+			<parent ref="RB-01154"		/>
+			<parent ref="IMA_SEP_002"	/>
+			<parent ref="IMA_SEP_1201" 	/>
+			<testlink test_id="T-API-MMS-0040:0011"	/>
+			<testlink test_id="T-API-MMS-0040:0021"	/>
+			<testlink test_id="T-API-MMS-0040:0031"	/>
+			<testlink test_id="T-API-MMS-0040:0041"	/>
+			<testlink test_id="T-API-MMS-0040:0051"	/>
+			<testlink test_id="T-API-MMS-0050:0011"	/>
+			<testlink test_id="T-API-MMS-0060:0011"	/>
+			<testlink test_id="T-API-MMS-0060:0021"	/>
+			<test test_id="TEST-DEF-00009" fsb="100" rel="100">
+				Call the pal_schedule_change function from an authorized partition and check 
+				that the partitioning schedule is altered starting at the next major time frame (MTF)
+				start.
+				Check that a call to pal_schedule_change with the current schedule produces no change.
+				Check that the call from a non-authorized partition fails with an HM process/
+				partition event.
+			</test>      
+			<test test_id="TEST-DEF-00010" fsb="100" rel="100">
+				Call the SET_MODULE_SCHEDULE function from an authorized partition and check 
+				that the partitioning schedule is altered starting at the next major time frame (MTF)
+				start (with GET_PARTITION_MODE).
+				Check that a call to SET_MODULE_SCHEDULE with the current schedule produces no change.
+				Check that the call from a non-authorized partition fails with an HM process/
+				partition event.
+			</test>
+			<test test_id="TEST-DEF-00012" fsb="100" rel="100">
+				Create a modified version of test TEST-DEF-00009 with more than one execution window for partition 0.
+			</test>        
+			<test test_id="TEST-DEF-01750" fsb="60" rel="90">
+				Test the GET_MODULE_SCHEDULE_ID and GET_MODULE_SCHEDULE_STATUS functions work from a 
+				regular user mode partition without any special permissions, and that the returned 
+				values are correct before and after a call to SET_MODULE_SCHEDULE.
+				Test this immediately after the call to SET_MODULE_SCHEDULE, and in the next Major 
+				Time Frame.
+			</test>
+		</req>
+		<req name="AIR_SEP_0130">
+			The schedule change operation shall be accessible only through a system call, 
+			properly authorized in the configuration.
+			<parent ref="IMA_SEP_1200"	/>
+			<testlink test_id="TEST-DEF-00010" />
+		</req>
+		<req name="AIR_SEP_0140">
+			The change of a Module schedule shall not have any impact on partitions that are not 
+			affected by a module schedule change, namely:
+			-	Memory 
+			-	Floating Point permissions
+			-	Cache usage permissions
+			<parent ref="IMA_SEP_003" />
+			<parent ref="IMA_SEP_004" />
+			<parent ref="IMA_SEP_1211"/>
+			<test test_id="TEST-DEF-01370" fsb="60" rel="70">
+				Define two schedules: 
+				1.	P0, P1, P2, P3 
+				2.	P2, P3, P4, P5 
+				Each partition should execute an MD5 of its own memory areas (data, bss
+				and code). Then, it should keep repeating this MD5 calculation to check 
+				that the MD5 has not been altered.
+				Partition 0 should, after one MD5 cycle, change the module schedule to 
+				the second schedule. The partitions that are common to both schedules 
+				(P2 and P3) should report no MD5 change.
+			</test>
+			<test test_id="TEST-DEF-01371" fsb="60" rel="70">
+				Define two schedules:
+				0) P0, P1, P2, P3
+				1) P2, P3, P4, P5
+				Where P2 shall have permission to perform floating point operations, and P3 shall 
+				have no permission to perform floating point operations.
+				Modify TEST-DEF-80380 in order to determine that the Module Schedule operation
+				has no impact in the floating point permissions of P2 and P3.
+			</test>
+			<test test_id="TEST-DEF-01372" fsb="60" rel="70">
+				Define two schedules:
+				0) P0, P1, P2, P3
+				1) P2, P3, P4, P5
+				
+				Modify TEST-DEF-01561 in order to determine that the Module Schedule operation
+				has no impact in the cache status of P2 and P3.				
+			</test>
+		</req>
+		<req name="AIR_SEP_0190">
+			PMK shall use timer 0 (on Leon2/Leon3) to define its master clock tick interrupt, and 
+			it shall announce the clock ticks to all hosted partitions
+			<parent ref="REQ-IO-OBT-01"	/>			
+			<parent ref="IMA_SEP_1100"	/>
+			<test test_id="TEST-DEF-80200" fsb="80" rel="50">
+				Define a test with one supervisor partition, which has access to the I/O memory
+				area. Check that the timer 0 is configured for the correct value (matching the 
+				number of ticks per second), and that the pmk_ISR_Clock_Handler is assigned to
+				the Timer 0 interrupt.
+			</test>		
+		</req>
+		<req name="AIR_SEP_0200">
+			The POS virtualisation layer shall provide services to announce the clock tick event 
+			to the POS. This shall be performed with either a 1-1 relation with the actual number 
+			of hardware clock tick events (global time) or a number of ticks relative only to the 
+			execution window of the partition (local time).
+			<parent ref="IMA_SEP_1100"	/>
+			<parent ref="IMA_SEP_1101"	/>
+      <testlink test_id="TEST-DEF-00012"  />
+			<test test_id="TEST-DEF-80210" fsb="100" rel="90">
+				Define a system with two partitions with the following data:
+				P0: ExWindow=10ms, Period=20ms, LocalTime
+				P1: ExWindow=10ms, Period=20ms, GlobalTime
+				TicksPerSecond=2ms
+				Define a program that runs in both partitions with the following pseudo-code 
+				running in cycle:
+				GET_TIME
+				rtems_task_wake_after(1)				
+				Check that the values returned by GET_TIME are aproximatelly constant for the first
+				partition after running the cycle for 20 times, and that for the second partition
+				the value reported is 5 times the regular value each 5 cycles.
+			</test>	
+			<testlink test_id="val_02_09_010" />
+			<testlink test_id="val_02_09_020" />			
+		</req>
+		
+		<req name="AIR_SEP_0210">
+			The ARINC-653 Part 1 service GET_TIME shall return:
+			* Global time if local time is disabled in the configuration;
+			* Local time if local time is enabled in the configuration.
+			<parent ref="RB-01320"		/>
+			<parent ref="IMA_SEP_1204"	/>
+			<testlink test_id="val_02_09_010" />
+			<testlink test_id="val_02_09_020" />				
+			<testlink test_id="TEST-DEF-80210"  />
+		</req>
+		
+		<req name="AIR_SEP_0220">
+			A computing platform shall manage a time value that is synchronised with the OBT. 
+			Temporary deviations from OBT between synchronisation points shall be less than 1ms. 
+			It is not a requirement that the kernel implements this synchronisation. Instead, 
+			a dedicated partition (possibly a system partition) described in AIR_SEP_0060 may be 
+			responsible for synchronising the system time with the OBT. 
+			<parent ref="RB-01300"		/>
+			<parent ref="REQ-IO-OBT-02"	/>
+			<parent ref="IMA_SEP_1101"	/>
+			<parent ref="AIR_SEP_0060"	/>
+			<test test_id="TEST-DEF-01360" fsb="40" rel="80">
+				Test an example implementation of a 1 cycle clock synchronization partition, and 
+				assure the GET_OBT_VALUE directive never exceeds a 1 ms difference to the OBT 
+				(after TBD minutes).
+			</test>			
+		</req>		
+		
+		<req name="AIR_SEP_0240">
+			The PMK kernel shall feature support for co-partitions, a special kind of partition
+			that is allowed to run during the execution window of another partition (instead of),
+			as long as the two following conditions are met:
+			*	All user tasks with criticality above a given limit (called the sharing barrier) 
+				have finished their activities for the current execution window;
+			*	The co-partition has not exceeded its allowed duration (specified as a sharing 
+				quota).
+			The sharing barrier and sharing quota are defined in the configuration individually 
+			for each co-partition.
+			<comment>
+				This requirement will be validated using a semi-formal approach, to be presented 
+				in a separate document.
+			</comment>
+			<parent ref="RB-01120"	/>
+			<test test_id="TEST-DEF-80250" fsb="30" rel="90">
+				Define a test with two partitions, where the first executes a critical 
+        task for 100% of its execution window, and the other features no 
+        critical task (i.e., above the share barrier).
+        Check that the co-partition never executes in the first partition.
+        Check that the co-partition always executes in the second partition.
+        Both tasks should require the service of the (common) chosen 
+        co-partition once in every execution window.
+			</test>
+			<test test_id="TEST-DEF-80260" fsb="30" rel="90">
+				Define a test with two partitions, where the first executes a critical 
+        task for 90% of its execution window (90ms), and the other features no
+        critical task (i.e., above the share barrier).
+        Define the sharing quota as 20% (20 ms on each partition).
+        Check that the co-partition does not execute for more than 10 ms in 
+        the first partition.
+        Check that the co-partition does no execute for more than 20 ms in the 
+        second partition.
+        Both tasks should require the service of the (common) chosen 
+        co-partition once in every execution window.
+			</test>
+			<test test_id="TEST-DEF-80270" fsb="30" rel="90">
+				Define a test with a co-partition assigned to two partitions, both with
+        no process with a criticality above the share barrier in any ocasion. 
+        The sharing quota should be 50% (50 ms)
+        The assigned test co-partition should be faulty, and generate a Health 
+        Monitor event after 10 ms.
+        Check that the execution is returned to the partition originally 
+        running on the execution window in question, leading to a total runtime 
+        of the partition of around 90ms.
+        Both tasks should require the service of the (common) chosen 
+        co-partition once in every execution window.
+			</test>		
+		</req>
+			
+	</subsection>
+	<subsection name="Target Requirements">
+		<req name="AIR_SEP_0260">
+			The system shall be able to execute and provide all its features on SPARC Leon 2 
+			processor with MMU.
+			<comment>
+				To test this requirement, all tests shall be run in a LEON2 environment.
+			</comment>
+		</req>
+		<req name="AIR_SEP_0270">
+			The system shall be able to execute and provide all its features on SPARC Leon 3 
+			processor with MMU.
+			<comment>
+				To test this requirement, all tests shall be run in a LEON3 environment.
+			</comment>			
+		</req>
+		<req name="AIR_SEP_0280">
+			The [Std-Q80] shall be para-virtualised for use with AIR.
+			<parent ref="RB-07000"	/>
+			<parent ref="RB-08005"	/>
+			<comment>
+				The [SW10] delivery is provided as a patch to [Std-Q80].
+				The [Std-Q80] testsuite is also presented.
+			</comment>
+		</req>
+		<req name="AIR_SEP_0290">
+			The para-virtualisation of the POS shall guarantee that the 'disable interrupts' 
+			functionality does not inhibit the Timer 0 interrupt.
+			<parent ref="REQ-IO-IOOS-01"	/>
+			<parent ref="IMA_SEP_1211"		/>
+			<parent ref="AIR_SEP_0190"		/>
+			<test test_id="TEST-DEF-80300" fsb="100" rel="80">
+				Define a test with two partitions, where the first partition calls the system call
+				to disable interrupts, and then enters an infinite loop. Check that the partition
+				scheduler remains active.
+			</test>
+		</req>
+	</subsection>
+	<subsection name="Safety Requirements">
+		<req name="AIR_SEP_0300">
+			The system shall distinguish super-user and user mode, called in this context 
+			supervisor mode and non-supervisor mode.
+			<test test_id="TEST-DEF-00600" fsb="100" rel="100">
+				Define a test with two partitions, an application partition with non-supervisor 
+				permissions, and a system partition, with supervisor permission. Test if the 
+				execution of a supervisor mode instruction (read psr contents) in the application 
+				partition is captured and handled by the HM, and the associated HM action is called.
+				Test if the remaining partitions continue to execute. 
+				Repeat the test in the system partition and check that no HM event is raised.
+			</test>			
+		</req>
+		<req name="AIR_SEP_0310">
+			Applications shall run in user mode.
+			<parent ref="IMA_SEP_304"	/>
+			<parent ref="IMA_SEP_1211"	/>
+			<parent ref="RB-01905" 		/>
+			<testlink test_id="TEST-DEF-00600" />
+		</req>
+		<req name="AIR_SEP_0320">
+			The separation kernel shall run in super-user mode.
+			<parent ref="IMA_SEP_304" />
+			<note>
+				Partitioning could not be guaranteed if the separation kernel did not run in 
+				super-user mode.
+			</note>
+		</req>
+		<req name="AIR_SEP_0330">
+			The MMU paging area (where the table and page pointers used by the MMU to ensure the 
+			memory protection are stored) shall be protected by the MMU. Only the PMK shall have 
+			access to this area. All other partitions (with possible exceptions defined in 
+			configuration) shall not have access to this area.
+			<note>
+				The AIR_SEP_0790 requirement specifies a special kind of partition with the
+				capability to overwrite all addressable memory RAM for system wide patching shall
+				be possible. This is a configurable exception that does not immediately contradict
+				this requirement.
+			</note>
+			<parent ref="RB-01960" 	/>
+			<parent ref="IMA_SEP_304" 	/>
+			<parent ref="IMA_SEP_305" 	/>
+			<parent ref="IMA_SEP_1211"	/>
+			<test test_id="TEST-DEF-00790" fsb="90" rel="90">
+				Define a test where the MMU tables (L1, L2, L3) are overwritten by a non-supervisor 
+				partition. Check that this attempt is unsuccessful, and the event is captured and 
+				handled  by the HM, and the associated HM action is called.
+				Test if the remaining partitions continue to execute.
+			</test>
+			<test test_id="TEST-DEF-00800" fsb="90" rel="90">
+				Define a test where the MMU tables (L1, L2, L3) are overwritten by a supervisor 
+				partition (with no additional pages mapped and the MMU enabled). Check that this 
+				attempt is unsuccessful, and the event is captured and handled by the HM, and the 
+				associated HM action is called.
+				Test if the remaining partitions continue to execute.
+			</test>			
+		</req>
+		
+		<req name="AIR_SEP_0340">
+			In order to allow applications to change some (restricted) kernel parameters or to 
+			allow its access to supervisor instructions (required for context changes, for example) 
+			the kernel shall implement a set of system calls, implemented as: 
+			*	Software trap handlers for kernel code; 
+			*	Partition adaptation layer (PAL) functions accessible to user code that raise 
+				software traps.
+			<parent ref="IMA_SEP_1211"	/>
+			<testlink test_id="TEST-DEF-80810"	/>
+			<test test_id="TEST-DEF-80310" fsb="60" rel="70">
+				Create an unit test for the CPU_CONTEXT_SWITCH system call.
+				Run the same code in a second non-authorized partition and check that a Health
+				Monitor event is generated.
+			</test>
+			<test test_id="TEST-DEF-80320" fsb="50" rel="70">
+				Create an unit test for the CPU_CONTEXT_RESTORE system call.
+				Run the same code in a second non-authorized partition and check that a Health
+				Monitor event is generated.				
+			</test>
+			<test test_id="TEST-DEF-80330" fsb="60" rel="70">
+				Create an unit test for the FP_CONTEXT_SAVE system call.
+				Run the same code in a second non-authorized partition and check that a Health
+				Monitor event is generated.				
+			</test>	
+			<test test_id="TEST-DEF-80340" fsb="60" rel="70">
+				Create an unit test for the FP_CONTEXT_RESTORE system call.
+				Run the same code in a second non-authorized partition and check that a Health
+				Monitor event is generated.				
+			</test>	
+			<test test_id="TEST-DEF-80350" fsb="60" rel="70">
+				Create an unit test for the SYS_EXIT system call.
+				Run the same code in a second non-authorized partition and check that a Health
+				Monitor event is generated.				
+			</test>	
+			<testlink test_id="TEST-DEF-80300"	/>
+			<test test_id="TEST-DEF-80360" fsb="60" rel="70">
+				Create an unit test for the IRQ_ENABLE system call.
+				Run the same code in a second non-authorized partition and check that a Health
+				Monitor event is generated.				
+			</test>	
+			<test test_id="TEST-DEF-80370" fsb="60" rel="70">
+				Create an unit test for the GET_INTERR_LEVEL system call.
+				Run the same code in a second non-authorized partition and check that a Health
+				Monitor event is generated.				
+			</test>	
+			<test test_id="TEST-DEF-80380" fsb="70" rel="80">
+				Create a test for the FLOAT_POINT_ENABLE and FLOAT_POINT_DISABLE system calls, 
+				with the following configuration:
+				P1: ExWindow=10ms, Period=25ms, Floating Point Enabled
+				P2: ExWindow=10ms, Period=25ms, Floating Point Disabled
+				P3: ExWindow=5ms , Period=25ms, Floating Point Enabled				
+				TicksPerSecond=1ms	
+				The code that runs in each partition shall toggle the state of the floating point 
+				at each 5 ms, and perform a cumulative floating point operation. On P2 the floating
+				point operation must always raise a Health Monitor event. 
+				The test must assure that once the floating point is re-enabled the context is not 
+				lost, and as such the cumulative operations produce the expected results. 
+				P3 is explicitly at an odd number of seconds, so that it leaves the floating point 
+				status at alternate states at each MTF.
+			</test>	
+			<test test_id="TEST-DEF-80390" fsb="60" rel="70">
+				Create an unit test for the FLOAT_POINT_DISABLE system call.
+				Run the same code in a second non-authorized partition and check that a Health
+				Monitor event is generated.				
+			</test>	
+			<test test_id="TEST-DEF-80400" fsb="60" rel="70">
+				Create a test for the pmk_sparc_enable_cache and pmk_sparc_disable_cache
+        system calls. Run the same code in a second non-authorized partition and
+        check that a Health Monitor event is generated.
+			</test>	
+			<test test_id="TEST-DEF-80420" fsb="60" rel="70">
+				Create an unit test for the CACHE_FLUSH system call.
+				Run the same code in a second non-authorized partition and check that a Health
+				Monitor event is generated.
+			</test>
+			<testlink test_id="TEST-DEF-00010"	/>
+		</req>
+		
+		<req name="AIR_SEP_0350">
+			The thread context switch operation of the para-virtualised POS shall use a dedicated
+			system call in order to perform its function.
+			<testlink test_id="TEST-DEF-80310"	/>
+		</req>
+
+		<req name="AIR_SEP_0360">
+			The interrupt disable/enable operations of the para-virtualised POS shall use a 
+			dedicated system call in order to perform its function.
+			<testlink test_id="TEST-DEF-80300"	/>
+			<testlink test_id="TEST-DEF-80360"	/>
+		</req>
+		
+		<req name="AIR_SEP_0370">
+			The system shall allow the execution of dedicated components (e.g. I/O partitions) 
+			in super-user mode.
+			<parent ref="AIR_SEP_0030" />
+			<testlink test_id="TEST-DEF-80050"	/>
+		</req>
+		
+		<req name="AIR_SEP_0430">
+			Fault management shall be performed by a Health Monitor mechanism as described in the 
+			ARINC 653 Part 1 [RD1], including the static configuration defined in an XML-based 
+			format.
+			<parent ref="IMA_SEP_101" 	/>
+			<parent ref="IMA_SEP_005"	/>
+			<parent ref="IMA_SEP_700" 	/>
+			<parent ref="IMA_SEP_701" 	/>
+			<parent ref="IMA_SEP_702" 	/>
+			<parent ref="IMA_SEP_704" 	/>
+			<parent ref="IMA_SEP_901" 	/>
+			<parent ref="IMA_SEP_1210"	/>
+			<parent ref="IMA_SEP_1211"	/>
+			<parent ref="IMA_SEP_1212"	/>
+			<parent ref="RB-01905"		/>
+			<parent ref="RB-01910"		/>
+			<parent ref="RB-01950"		/>
+			<parent ref="GEN-FDIR-FUNC-60"	/>
+			<parent ref="GEN-FDIR-FUNC-100"	/>
+			<parent ref="GEN-FDIR-FUNC-110"	/>
+			<parent ref="GEN-FDIR-FUNC-140"	/>
+			<parent ref="GEN-FDIR-ARCH-40"	/>
+			<test test_id="TEST-DEF-01610" fsb="50" rel="70">
+				Define a system with three (or more) partitions where the same software trap in each 
+				partition raises a distinct recovery action:
+				P0 : ignore
+				P1 : partition warm start
+				P2 : partition cold start
+				Check that the configured action is properly executed in each partition.
+			</test>	
+			<test test_id="TEST-DEF-01620" fsb="40" rel="70">
+				Define a system with one or more partitions where an event raises an error that is 
+				handled on MODULE level with action RESET. 
+				Check that this action is taken and the system successfully reboots.
+			</test>
+			<test test_id="TEST-DEF-01621" fsb="40" rel="70">
+				Define a system with one or more partitions where an event raises an error that is 
+				handled on MODULE level with action SHUTDOWN. 
+				Check that this action is taken and the system successfully stalls.
+			</test>
+			<test test_id="TEST-DEF-01622" fsb="70" rel="70">
+				Define a system with one or more partitions where an event raises a non-repeatable 
+				error that is handled on MODULE level with action IGNORE. 
+				Check that no action is taken and the system continues to operate (given that the 
+				selected error does not re-occur once re-executed).
+			</test>				
+			<test test_id="TEST-DEF-01650" fsb="90" rel="70">
+				Check that the SET_PARTITION_MODE call is unable to set the mode of a partition to 
+				a value different of NORMAL, IDLE, WARM START or COLD START: it should return an 
+				INVALID_MODE value and perform no action.
+			</test>
+			<test test_id="TEST-DEF-00770" fsb="70" rel="80">
+				Define a test configuration with the following actions for the given states:
+				State: Partition Application, Error: Segmentation Error, ErrorLevel: Partition
+				State: Health Monitor Processing, Error: Segmentation Error, ErrorLevel: Module
+				The test application shall generate a segmentation fault. The partition callback 
+				called by the Health Monitor shall in turn also generate a segmentation fault. 
+				Check that this translates into a system level HM event, that is properly detected 
+				and handled.
+			</test>
+			<test test_id="TEST-DEF-00500" fsb="100" rel="100">
+				Test if a branch into a non-code address is detected by the LEON, and the associated
+				fault detected by the HM.
+				Check that the remaining partitions are not affected.
+			</test>
+			<test test_id="TEST-DEF-00510" fsb="100" rel="100">
+				Test if a branch into an unaligned address (into an otherwise 'valid' code 
+				address) is detected by the LEON, and the associated fault detected by the HM.
+				Check that the remaining partitions are not affected.
+			</test>
+			<test test_id="TEST-DEF-00540" fsb="100" rel="100">
+				Test if a read data access to an unaligned address is detected by the LEON, and the
+				associated fault detected by the HM.
+				Check that the remaining partitions are not affected.
+			</test>
+			<test test_id="TEST-DEF-00560" fsb="100" rel="100">
+				Test if a data write access to an unaligned address is detected by the LEON, and the
+				associated fault detected by the HM.
+				Check that the remaining partitions are not affected.
+			</test>
+			<test test_id="TEST-DEF-00051" fsb="40" rel="100">
+				Define a test where a system partition sets up a serial port to generate a hardware
+				interrupt after each character is sent, but does not virtualize that interrupt in 
+				the configuration. Send several characters to the serial port and assert that 
+        no Health Monitor event is generated.
+			</test>
+			<test test_id="TEST-DEF-01200" fsb="100" rel="80">
+				Test if the execution of an invalid opcode intruction in a user mode 
+				(non-privileged) partition is captured by the LEON and handled by the HM, and the
+				associated HM action is called. The invalid opcode can be created (for example) 
+				by branching to the address of a fixed string. 
+				Check that the remaining partitions are not affected.
+			</test>
+			<test test_id="TEST-DEF-01210" fsb="100" rel="80">
+				Test if the execution of an invalid opcode instruction in supervisor mode is 
+				captured by the LEON and handled by the HM, and the associated HM action is called.
+				The invalid opcode can be created (for example) by jumping to the address of
+				a fixed string.
+				Check that the remaining partitions are not affected.
+			</test>			
+		</req>
+		
+		<req name="AIR_SEP_0500">
+			All functions from [D10] shall test for NULL pointers in their (relevant) 
+			input parameters.
+			<parent ref="RB-01905"	/>
+			<test test_id="TEST-DEF-00630" fsb="60" rel="70">
+				Develop unit tests for each D10 function to check they return INVALID_PARAM each 
+				time a NULL is passed as a pointer.
+			</test>			
+		</req>
+		<req name="AIR_SEP_0510">
+			All functions from [D10] shall test for valid input parameters (not considering 
+			pointers).
+			<parent ref="RB-01905"	/>
+			<test test_id="TEST-DEF-00640" fsb="60" rel="70">
+				Test if all D10 defined functions are resilient to invalid (out of bonds)
+				data, excluding pointers (but including data pointed by pointers).
+				This shall include:
+				* Individual sub tests for the boundary values of each input parameter,
+					when applicable.
+				* Individual sub tests for in-boundary but not valid values on each parameter,
+					when applicable.
+				Check that the remaining partitions are not affected.
+			</test>			
+		</req>
+		
+		<req name="AIR_SEP_0530">
+			The following table summarises all the valid partition mode transitions in AIR; the 
+			table is read as: from mode in the left-hand column, transitions to the mode indicated
+			in the other columns are triggered by the sub-system indicated in corresponding field:
+					-> 	|  IDLE	 | WARM-START | COLD-START |  NORMAL |
+			____________|____________________________________________|
+			IDLE       	| N/A    |   FDIR     |   FDIR     |   N/A   |
+			WARM-START 	| HM/APP |   HM/APP   |   HM/APP   |   APP   |
+			COLD-START 	| HM/APP |   N/A      |   HM/APP   |   APP   |
+			NORMAL		| HM/APP |   HM/APP   |   HM/APP   |   N/A   |
+			
+			N/A : Not a valid transition.
+			HM  : Health Monitor initiated transition.
+			APP : Application initiated transition.
+			FDIR: FDIR System Partition initiated transition.
+			<parent ref="IMA_SEP_006" 	/>
+			<parent ref="IMA_SEP_900"	/>
+			<parent ref="IMA_SEP_903"	/>
+			<testlink test_id="T-API-PART-0230:0010"	/>
+			<testlink test_id="T-API-PART-0230:0020"	/>
+			<testlink test_id="T-API-PART-0230:0030"	/>
+			<testlink test_id="T-API-PART-0230:0035"	/>
+			<testlink test_id="T-API-PART-0230:0040"	/>
+			<testlink test_id="T-API-PART-0230:0050"	/>
+			<testlink test_id="T-API-PART-0230:0060"	/>
+			<test test_id="TEST-DEF-00021" fsb="50" rel="80">
+				Define a system with three partitions:
+				* 	The first partition is a system partition, capable of calling 
+					SET_A_PARTITION_MODE to set the mode of another partition;
+				* 	The second partition is a user partition, where the mode change will be
+					applied;
+				*	The third partition is a user partition, where the GET_A_PARTITION_MODE is 
+					used to check the status of the second partition.
+				The test shall call SET_A_PARTITION_MODE in the first partition for each of the 
+				valid mode transistions indicated in AIR_SEP_0530 with the PARTITION_IDENTIFIER set
+				to the second partition. The third partition shall check that the mode was 
+				effectively changed.
+			</test>
+			<test test_id="TEST-DEF-00022" fsb="50" rel="80">
+				Define a test with two non-supervisor partitions where one calls the 
+				SET_A_PARTITION_MODE service with the PARTITION_IDENTIFIER of the other. 
+				Check that a HM process/partition exception is raised.
+			</test>		
+		</req>
+		<req name="AIR_SEP_0540">
+			The partition management service SET_A_PARTITION_MODE shall be implemented in IMASPEX
+			accordingly to the interface specified in [D10]. This service shall be implemented
+			as a system call, with the following behaviour:
+			* 	When the PARTITION_IDENTIFIER matches the current partition, the mode change 
+				operation may proceed as long as the transition is valid [AIR_SEP_0530].
+			* 	When the PARTITION_IDENTIFIER does not match the current partition, before 
+				checking that the transition is valid [AIR_SEP_0530] the system call shall 
+				verify that the calling (current) partition has supervisor privileges.
+			<parent ref="IMA_SEP_903"	/>
+			<parent ref="AIR_SEP_0530"	/>
+			<testlink test_id="TEST-DEF-00021"	/>
+			<testlink test_id="TEST-DEF-00022"	/>
+		</req>
+		<req name="AIR_SEP_0550">
+			The partition management service GET_A_PARTITION_STATUS shall be 
+			implemented in IMASPEX according to the interface specified in [D10].
+			<parent ref="RB-01900"		/>
+			<parent ref="IMA_SEP_1213"	/>
+			<testlink test_id="TEST-DEF-00021"	/>
+			<testlink test_id="TEST-DEF-00022"	/>			
+		</req>
+		<req name="AIR_SEP_0555">
+			The partition management service GET_A_PARTITION_ID shall be 
+			implemented in IMASPEX according to the interface specified in [D10].
+			<parent ref="RB-01900"		/>			
+			<parent ref="IMA_SEP_1214"	/>
+			<test test_id="TEST-DEF-00023" fsb="80" rel="80">
+				Devise a test with two partitions, where only the first is authorized to 
+				call the GET_A_PARTITION_ID system call.
+				In the first partition:
+				Check that a call to GET_A_PARTITION_ID before a call to 
+				TSAL_INIT returns an INVALID_MODE error.
+				Get the partition ID of the second partition, and check that it
+				is correct. Check that the same call with an incorrect partition
+				name returns a INVALID_PARAM error.
+				In the second partition:
+				Check that a call to GET_A_PARTITION_ID returns INVALID_CONFIG 
+				irrespectively of a correct partition name being passed or not.
+			</test>
+		</req>
+		<req name="AIR_SEP_0560">
+			During the POS boot-up the partition mode shall be either COLD-START or WARM-START. 
+			If the system is starting (or rebooting) the mode shall be COLD-START.
+			The partition is able to determine which through the GET_PARTITION_STATUS service.
+			<parent ref="IMA_SEP_902"	/>
+			<parent ref="IMA_SEP_904"	/>
+			<parent ref="IMA_SEP_906"	/>
+			<parent ref="IMA_SEP_1203"	/>
+			<parent ref="IMA_SEP_1212"	/>
+			<testlink test_id="TEST-DEF-00021"	/>
+			<testlink test_id="TEST-DEF-00022"	/>				
+			<test test_id="TEST-DEF-01390" fsb="80" rel="80">
+				Devise a test with three partitions, where the third is not included
+				in the initial schedule.
+				The second module schedule shall only assign one tick to the 
+				third partition, and the number of ticks per second shall be small (e.g. 1 ms/tick).
+				Check that a call to GET_PARTITION_STATUS on the newly run partition (after a
+				SET_MODULE_SCHEDULE function call) returns the status COLD_START.
+			</test>
+		</req>
+		<req name="AIR_SEP_0570">
+			When a partition transitions into COLD_START mode the following actions shall be taken: 
+			*	The partition operating system data section shall be restored (either from a RAM 
+				backup or NVM); 
+			*	The partition operating system bss section shall be zeroed. 
+			*	The application data section shall be restored (from a RAM backup or NVM); 
+			*	The application bss section shall be zeroed. 
+			*	The execution context switches to the partition entry point.
+			<parent ref="IMA_SEP_1202"	/>	
+		</req>
+		<req name="AIR_SEP_0580">
+			A WARM-START shall be identical to a COLD-START from the kernel point of view.
+			<parent ref="IMA_SEP_1202"	/>
+		</req>
+				
+		<req name="AIR_SEP_0600">
+			PMK shall allow any hardware interrupt to be virtualised to be used by a specific 
+			partition (with the exception of the Timer 0 interrupt, reserved for the system clock
+			tick). The virtualised interrupt handler (an application function) shall be called
+			whenever the following two conditions are met: 
+			*	The virtualised interrupt has occurred at least once; 
+			*	The partition that is assigned to this interrupt is resumed. 
+			<note>
+				By assigning a user function to the interrupt virtualisation, the handling of
+				the actual interrupt by the kernel shall be minimal, to avoid a significant impact 
+				on the current partition.
+			</note>
+			<note>
+				Please note that the interrupt may have occurred more than once, but that case is 
+				indiscernible from the one activation case.
+			</note>
+			<parent ref="IMA_SEP_100"	/>
+			<parent ref="IMA_SEP_102" 	/>
+			<parent ref="IMA_SEP_105"	/>
+			<parent ref="RB-01111"		/>
+			<parent ref="REQ-IO-IOOS-01"	/>
+			<parent ref="REQ-IO-IOOS-02"	/>
+			<test test_id="TEST-DEF-01410" fsb="50" rel="90">
+				Test if a registered trap handler (registered through the appropriate system call) 
+				is called only in the assigned partition.
+			</test>
+		</req>
+
+		<req name="AIR_SEP_0610">
+			The interrupt virtualization is defined at configuration level.
+			<parent ref="RB-01111"	/>
+			<testlink test_id="TEST-DEF-01410"  />
+		</req>
+
+		<req name="AIR_SEP_0620">
+			There shall be a system call that allows partitions to mask / unmask virtualised 
+			interrupts.
+			<parent ref="IMA_SEP_104" />
+			<test test_id="TEST-DEF-01425" fsb="30" rel="70">
+				Define a test where a system partition sets up a serial port to generate a hardware
+				interrupt after each character is sent, and virtualise the interrupt in another 
+				partition. Send several characters to the serial port in the system partition, and 
+				mask the interrupt in every odd execution window, and unmask it in every even 
+				execution window. 
+				Verify that the interrupt handler in the second partition only gets called in the
+				even execution windows.
+			</test>			
+		</req>
+		
+		<req name="AIR_SEP_0640">
+			The interrupt virtualisation shall be resilient to failures in the registered 
+			application interrupt handlers.
+			<test test_id="TEST-DEF-00670" fsb="40" rel="30">
+				Test if an illegal memory access in the registered interrupt handler is properly
+				detected and handled by the HM, and the associated HM action is called.
+				Check that the remaining partitions are not affected.
+			</test>
+		</req>
+		
+		<req name="AIR_SEP_0660">
+			AIR shall feature a hardware supported watchdog, which gets retriggered at each
+			partition context switch.
+			<note>
+				Application level software watchdogs can be implemented as plug-ins.
+			</note>
+			<comment>
+				To guarantee independence from the underlying SEP, the watchdog should be 
+				implemented as a hardware mechanism, with only a SEP level API to retrigger it.
+				The specific hardware watchdog to use is a systems integrator decision, thus the
+				hardware support functions can only be defined afterwards.
+			</comment>
+			<parent ref="GEN-FDIR-FUNC-50"	/>			
+		</req>
+	</subsection>
+	<subsection name="Inter-Partition Communication">
+		<req name="AIR_SEP_0670">
+			The system shall support unicast queuing channels according to ARINC 653 Part 1 [RD1].
+			<note>
+				The ARINC 653 standard leaves it to implementations whether uni-, multi- or 
+				broadcast mode is implemented. For queuing ports, multi and broadcast mode appear 
+				to be very difficult with the additional requirement imposed by ARINC 653 that the 
+				order of messages must not change.
+			</note>
+			<parent ref="RB-01410"		/>
+			<parent ref="IMA_SEP_1000"	/>
+			<parent ref="IMA_SEP_1002"	/>
+			<parent ref="IMA_SEP_1005"	/>
+			<parent ref="IMA_SEP_1006"	/>
+			<parent ref="IMA_SEP_1008"	/>
+			<parent ref="IMA_SEP_1013"	/>
+			<parent ref="IMA_SEP_1014"	/>
+			<parent ref="IMA_SEP_1015"	/>
+			<parent ref="IMA_SEP_1016"	/>
+			<parent ref="IMA_SEP_1206"	/>
+			<parent ref="IMA_SEP_1212"	/>
+			<testlink test_id="T-API-INTER-0570:0011"	/>
+			<testlink test_id="T-API-INTER-0570:0012"	/>
+			<testlink test_id="T-API-INTER-0570:0013"	/>
+			<testlink test_id="T-API-INTER-0580:0010"	/>
+			<testlink test_id="T-API-INTER-0590:0010"	/>
+			<testlink test_id="T-API-INTER-0590:0030"	/>
+			<testlink test_id="T-API-INTER-0590:0070"	/>
+			<testlink test_id="T-API-INTER-0600:0011"	/>
+			<testlink test_id="T-API-INTER-0600:0012"	/>
+			<testlink test_id="T-API-INTER-0610:0011"	/>
+			<testlink test_id="T-API-INTER-0610:0012"	/>
+		</req>
+		<req name="AIR_SEP_0690">
+			The system shall support multicast sampling channels according to ARINC 653 Part 1 [RD1].
+			<parent ref="IMA_SEP_1000" />
+			<parent ref="IMA_SEP_1006" />
+			<parent ref="IMA_SEP_1009" />
+			<parent ref="IMA_SEP_1010" />
+			<parent ref="IMA_SEP_1011" />
+			<parent ref="IMA_SEP_1012" />
+			<parent ref="IMA_SEP_1206" />
+			<parent ref="IMA_SEP_1212"	/>
+			<testlink test_id="T-API-INTER-010"	/>
+			<testlink test_id="T-API-INTER-0520:0011"	/>
+			<testlink test_id="T-API-INTER-0520:0012"	/>
+			<testlink test_id="T-API-INTER-0520:0013"	/>
+			<testlink test_id="T-API-INTER-0530:0011"	/>
+			<testlink test_id="T-API-INTER-0530:0012"	/>
+			<testlink test_id="T-API-INTER-0540:0011"	/>
+			<testlink test_id="T-API-INTER-0540:0013"	/>
+			<testlink test_id="T-API-INTER-0540:0012"	/>
+			<testlink test_id="T-API-INTER-0540:0014"	/>
+			<testlink test_id="T-API-INTER-0550:0011"	/>
+			<testlink test_id="T-API-INTER-0550:0012"	/>
+			<testlink test_id="T-API-INTER-0560:0011"	/>
+			<testlink test_id="T-API-INTER-0560:0012"	/>
+			<test test_id="TEST-DEF-01730" fsb="50" rel="80">
+				Create a test where one partition writes multicast messages to a sampling port, and
+				assert that all receiving partitions receive the data that was sent.
+			</test>		
+		</req>
+		<req name="AIR_SEP_0700">
+			The system shall support sampling port extensions as defined in ARINC 653 Part 2 [RD2].
+			<parent ref="IMA_SEP_1000" />
+			<parent ref="IMA_SEP_1212"	/>
+			<test test_id="TEST-DEF-01740" fsb="50" rel="80">
+				Create a unitary test for the READ_UPDATED_SAMPLING_MESSAGE function.
+			</test>
+			<test test_id="TEST-DEF-01741" fsb="50" rel="80">
+				Create a unitary test for the GET_SAMPLING_PORT_CURRENT_STATUS function.
+			</test>
+			<test test_id="TEST-DEF-01742" fsb="50" rel="80">
+				Create a unitary test for the READ_SAMPLING_MESSAGE_CONDITIONAL function.
+			</test>			
+		</req>
+				
+		<req name="AIR_SEP_0740">
+			Changing the mode of a partition (for example, due to a HM event) shall have no effect 
+			on the contents of the port. When passing through COLD_START or WARM_START the port 
+			status shall be checked to ensure the initialisation does not wipe any data yet to be 
+			consumed by the other end of the channel.
+			<parent ref="IMA_SEP_1003" 	/>
+			<parent ref="RB-01420"		/>
+			<comment>
+				This requirement is not fulfilled by AIR.				
+			</comment>		
+		</req>
+		<req name="AIR_SEP_0750">
+			The channel and ports shall be initialised at system boot-up.
+			<parent ref="IMA_SEP_1001" />	
+		</req>
+	</subsection>
+	<subsection name="Security Requirements">
+		<req name="AIR_SEP_0760">
+			Every system call shall require a partition-wise authorisation bit in the 
+			configuration.
+			<note>
+				This allows a fine-grained access control at partition level to each individual
+				system call.
+			</note>
+			<parent ref="AIR_SEP_0340"	/>
+			<testlink test_id="TEST-DEF-80310"	/>
+			<testlink test_id="TEST-DEF-80320"	/>
+			<testlink test_id="TEST-DEF-80330"	/>
+			<testlink test_id="TEST-DEF-80340"	/>
+			<testlink test_id="TEST-DEF-80350"	/>
+			<testlink test_id="TEST-DEF-80360"	/>
+			<testlink test_id="TEST-DEF-80370"	/>
+			<testlink test_id="TEST-DEF-80380"	/>
+			<testlink test_id="TEST-DEF-80390"	/>
+			<testlink test_id="TEST-DEF-80400"	/>
+			<testlink test_id="TEST-DEF-80420"	/>
+			<testlink test_id="TEST-DEF-00010"	/>
+		</req>
+	</subsection>
+	<subsection name="Boot">
+		<req name="AIR_SEP_0770">
+			The system shall be able to boot up from a single image present in NVM (possibly 
+			flash ram), containing the AIR partitioning kernel and the applications (partitions).
+      <comment>
+        This is the currently used method, validated through all other tests.
+      </comment>
+			<parent ref="IMA_SEP_200" />
+		</req>
+		<req name="AIR_SEP_0780">
+			The single image file shall be loaded into and executed from RAM.
+			<parent ref="IMA_SEP_200" />
+			<parent ref="IMA_SEP_201" />
+			<test test_id="TEST-DEF-01480" fsb="40" rel="70">
+				Define an offline test that checks that each of the addresses produced by the
+				linking tool are inside the RAM parameters defined in the linking script.
+			</test>
+		</req>
+		<req name="AIR_SEP_0790">		
+			The AIR system shall allow a special, configurable partition with access to all 
+			addressable RAM. The AIR system shall provide partition plug-in for this purpose, the 
+			memory patch plug-in. 
+			<note>
+				This special partition may then be able to reconfigure the system directly, by 
+				overwriting the relevant code and data sections.
+			</note>
+			<note>
+				This 'all memory access' can be achieved through MMU mapping, and does not 
+				necessarily require supervisor execution level on the CPU, at least in the SPARC
+				architecture.
+			</note>
+			<parent ref="IMA_SEP_202" />
+			<parent ref="RB-01800"		/>
+			<parent ref="AIR_SEP_0740"	/>
+			<test test_id="TEST-DEF-01490" fsb="30" rel="80">
+				Define a system with three partitions with the following schedules:
+				Schedule 1:
+				P1: ExWindows=50ms @  0ms; Period=50ms;
+				Schedule 2:
+				P2: ExWindows=50ms @  0ms; Period=100ms
+				P3: ExWindows=50ms @ 50ms; Period=100ms
+				TicksPerSecond=10ms
+				In the first schedule Partition 1, which features the 'memory patch' plug-in, 
+				modifies the contents of the other two partitions. Once this operation is finished,
+				SET_MODULE_SCHEDULE is called and the other two partitions are then scheduled.
+				Check that both partitions execute the programmed application.
+			</test>				
+		</req>
+		<req name="AIR_SEP_0800">
+			The configuration tool chain shall guarantee that only one partition (or none) has 
+			access to the memory patch plug-in.
+			<parent ref="IMA_SEP_305" />
+			<test test_id="TEST-DEF-01495" fsb="30" rel="80">
+				Define a XML file with the memory patch plug-in in two partitions, and check
+				that the configuration tool refuses to validate this configuration.
+			</test>
+		</req>
+		<req name="AIR_SEP_0810">
+			The special partition mentioned in AIR_SEP_0790 shall only be able to patch IDLE
+			partitions. Partitions not subject to a specific memory patch, shall be unaffected 
+			by this patch.
+			<parent ref="RB-01820"	/>
+			<parent ref="RB-01920"	/>
+			<parent ref="RB-01930"	/>
+			<test test_id="TEST-DEF-00730" fsb="30" rel="80">
+				A modified version of test TEST-DEF-01490: P2 shall also present and running in
+				Schedule 1, and as such the memory patch operation shall raise an health monitor
+				event.
+			</test>			
+		</req>
+		<req name="AIR_SEP_0820">
+			The memory patch plug-in should be able to patch each partition separately.
+			<parent ref="RB-01920"	/>
+			<parent ref="RB-01930"	/>
+		</req>
+		<req name="AIR_SEP_0830">
+			The memory patch plug-in shall not overwrite the kernel area. Full system recovery 
+			shall be achieved through an NVM update followed by a system restart from NVM.
+			<parent ref="RB-01930"		/>
+			<parent ref="IMA_SEP_201"	/>
+			<parent ref="IMA_SEP_1211"	/>
+			<test test_id="TEST-DEF-01492" fsb="30" rel="80">
+				Configure a test with one partition featuring the memory patch plug-in.
+				Use the pmk_linkcmds_vars.h file to obtain a link to the physical address of the 
+				kernel. Check if an attempt to write to this location raises an health monitor event.
+			</test>
+		</req>
+		<req name="AIR_SEP_0850">
+			The PMK kernel shall access all POS entry points or functions through the user 
+			configurable usr_callbacks.c, namely:
+			* The POS start-up callback;
+			* The application start-up callback;
+			The application start-up callback shall be called by the virtualised POS once it
+			finishes its initialisation.      
+      <parent ref="IMA_SEP_204" />
+			<parent ref="AIR_SEP_0840" />
+			<test test_id="TEST-DEF-15011" fsb="30" rel="70">
+				Check that the entries concerning POS start-up and application start-up correspond 
+				to the memory map generated from the image compilation. (Offline test)
+			</test>		
+		</req>	
+	</subsection>
+	<subsection name="Resource Requirements">
+		<req name="AIR_SEP_0880">
+			On a system with hardware floating point support, it shall be possible to enable/disable 
+			the floating point unit individually for each partition through an appropriate 
+			system call.
+			<parent ref="IMA_SEP_400" 	/>
+			<parent ref="AIR_SEP_0760" 	/>
+			<testlink test_id="TEST-DEF-80380"	/>
+      <testlink test_id="TEST-DEF-80390"	/>
+		</req>
+		<req name="AIR_SEP_0890">
+			The floating point support for each partition shall be preserved when a partition 
+			is suspended / restored.
+			<parent ref="IMA_SEP_400" />
+			<testlink test_id="TEST-DEF-80380"	/>
+      <testlink test_id="TEST-DEF-80390"	/>
+		</req>
+		<req name="AIR_SEP_0900">
+			A floating point error on one partition shall not affect the floating point
+			capability of the remaining partitions.
+			<parent ref="RB-01170"	/>
+			<parent ref="IMA_SEP_1211"	/>
+			<test test_id="TEST-DEF-15020" fsb="100" rel="100">				
+			</test>		
+		</req>
+		
+		<req name="AIR_SEP_0910">
+			The floating point support shall be configurable during the build process.
+			The following options shall be available:
+			* Hardware floating point support;
+			* No floating point support.
+			<test test_id="TEST-DEF-01550" fsb="50" rel="70">
+				Create an XML configuration file with no support for floating point.
+				Apply it to the configurator tool and check that the Makefiles do not enable
+				floating point support.
+			</test>
+		</req>
+		
+		<req name="AIR_SEP_0920">
+			The data and code cache status for each individual partition (active/inactive) shall
+			be specified in the configuration.
+			<parent ref="IMA_SEP_500"	/>
+			<test test_id="TEST-DEF-01560" fsb="70" rel="90">
+				Define a test with the following configuration:
+				P0: ExWindow=10ms, Period=40ms, Data Cache Enabled	, Code Cache Enabled
+				P1: ExWindow=10ms, Period=40ms, Data Cache Enabled	, Code Cache Disabled
+				P2: ExWindow=10ms, Period=40ms, Data Cache Disabled	, Code Cache Enabled
+				P3: ExWindow=10ms, Period=40ms, Data Cache Disabled	, Code Cache Disabled
+				Use the Get Cache Control Register system call on each partition to determine the 
+				code and data cache are as expected. Run the test for at least 3 Major Time Frames.
+			</test>			
+		</req>
+		<req name="AIR_SEP_0930">
+			There shall be a system call that allows an application to change the data and code 
+			cache configuration at runtime;  the use of this system call shall be limited to 
+			authorised partitions.
+			<parent ref="IMA_SEP_501"	/>
+			<parent ref="AIR_SEP_0760" 	/>
+			<testlink test_id="TEST-DEF-80400" />
+			<test test_id="TEST-DEF-01561" fsb="70" rel="90">
+				Modify TEST-DEF-01560 so that the first three partitions toggle the cache status at 
+				each Execution window, in the following manner:
+				P0: Toggle the code cache status
+				P1: Toggle the data cache status
+				P2: Toggle the code and data status
+				P3: Same as P3 but the system calls are not authorized. 
+				All but P4 shall succeed in changing the cache status and having those changes
+				preserved by the partition context switch. P4 shall raise health monitor events.
+			</test>
+		</req>
+		<req name="AIR_SEP_0940">
+			The IMASPEX function ACTIVATE_CACHE shall use the system call specified in AIR_SEP_0930.
+			<parent ref="IMA_SEP_1205"	/>
+			<parent ref="AIR_SEP_0930"	/>
+			<test test_id="TEST-DEF-80401" fsb="60" rel="70">
+				Create a unit test for the ACTIVATE_CACHE and DEACTIVATE_CACHE service calls.
+			</test>
+		</req>
+		<req name="AIR_TSP_0945">
+			The IMASPEX function FREEZE_CACHE shall use the system call 
+			specified in AIR_SEP_0930.
+			<parent ref="IMA_SEP_507"	/>
+			<parent ref="AIR_SEP_0930"	/>
+			<test test_id="TEST-DEF-01570" fsb="30" rel="60">
+				Create a test for the FREEZE_CACHE service. Run the same code in a 
+				second non-authorized partition and check that the error is detected.
+			</test>
+		</req>
+		<req name="AIR_SEP_0950">
+			The IMASPEX function DEACTIVATE_CACHE shall use the system call specified in 
+			AIR_SEP_0930.
+			<parent ref="IMA_SEP_1205"	/>
+			<parent ref="AIR_SEP_0930"	/>
+			<testlink test_id="TEST-DEF-80401"  />
+		</req>
+		<req name="AIR_SEP_0955">
+			The IMASPEX function SIGNAL_ACTIVITY_COMPLETION shall use the system 
+			call specified in AIR_SEP_0985 to implement the service specified in D10.
+			<parent ref="IMA_SEP_007"	/>
+			<testlink test_id="TEST-DEF-80401"  />
+		</req>		
+		<req name="AIR_SEP_0960">
+			The cache flush operation shall be accessible as a system call only to authorised 
+			partitions.
+			<parent ref="IMA_SEP_502"	/>
+			<parent ref="AIR_SEP_0760" 	/>
+			<testlink test_id="TEST-DEF-80420"  />
+		</req>
+		<req name="AIR_SEP_0980">
+			At every partition context switch both the data and the code cache shall be flushed.
+			<parent ref="IMA_SEP_503"	/>
+			<test test_id="TEST-DEF-01580" fsb="30" rel="60">
+				TBD.
+			</test>			
+		</req>
+		<req name="AIR_SEP_0985">
+			There shall be a system call that allows an application to yield the 
+			processor until the end of the current execution window; 
+			the use of this system call shall be limited to authorised partitions.
+			<parent ref="IMA_SEP_007"	/>
+			<test test_id="TEST-DEF-01585" fsb="30" rel="60">
+				Create a test for the SIGNAL_ACTIVITY_COMPLETION service.
+				Check that a (second) non-authorized partition is not able to
+				run this service.
+			</test>			
+		</req>
+		<req name="AIR_TSP_0987">
+			The TSAL_INIT service initialises all non-purely functional TSAL 
+			services, and it should be called by the application code at each 
+			partition (re)start.
+			<parent ref="IMA_SEP_205"	/>
+			<test test_id="TEST-DEF-01587" fsb="30" rel="60">
+				Create an unit test for the TSAL_INIT system call.
+				Check that a (second) non-authorized partition is not able to
+				run this service.
+			</test>			
+		</req>		
+		<req name="AIR_SEP_1030">
+			The partition context switch duration shall be deterministic.
+			<parent ref="RB-04000"	/>
+			<parent ref="RB-04020"	/>
+			<parent ref="IMA_SEP_1305"	/>
+			<comment>
+				The verification of this parameter should be established by tool support.
+			</comment>
+		</req>
+		<req name="AIR_SEP_1040">
+			The partition context switch delay due to plug-ins shall be deterministically 
+			determined by the number of plug-ins and size of assigned memory areas.
+			<parent ref="RB-04000"	/>
+			<parent ref="RB-04020"	/>
+			<parent ref="IMA_SEP_1305"	/>			
+			<comment>
+				The verification of this parameter should be established by tool support.
+			</comment>
+		</req>		
+		<req name="AIR_SEP_1050">
+			The memory footprint of the PMK and HAL sub-systems shall be independent of the 
+			number of plug-ins and partitions in the system.
+			<parent ref="RB-04000"	/>
+			<parent ref="RB-04030"	/>
+			<testlink test_id="TEST-DEF-80040" />
+		</req>
+		
+		<req name="AIR_SEP_1060">
+			The memory footprint of the PAL sub-system shall be predictable given the number
+			of plug-ins (and their memory use) and partitions in the system.
+			<parent ref="RB-04000"	/>
+			<parent ref="RB-04030"	/>
+			<testlink test_id="TEST-DEF-80040" />
+		</req>	
+
+	</subsection>
+	<subsection name="Configuration Requirements">
+		<req name="AIR_SEP_0990">
+			The configuration file shall be compliant with the format specified in ARINC 653 Part 1 
+			Supplement 2 [RD1] and ARINC 653 Part 2 [RD2], with AIR specific extensions. The 
+			specification shall be available as an XSD schema file, which is used to validate each 
+			configuration.
+			<note>
+				The ARINC 653 standard covers Health Monitor, Communication Ports and Scheduling 
+				in a way that has not been significantly changed by the parent requirements.
+			</note>
+			<parent ref="IMA_SEP_600"	/>
+			<parent ref="IMA_SEP_601"	/>
+			<parent ref="IMA_SEP_1001"	/>
+			<comment>
+				The configuration tool validates the ARINC 653 compatible XML file against the XSD
+				schema file.
+			</comment>
+		</req>
+		<req name="AIR_SEP_1000">
+			The configuration file shall feature the following information regarding each
+			individual partition (if not already defined by the ARINC 653 standard):
+			* Name
+			* Memory requirements:
+				- Code size
+				- Data size
+				- Stack size
+				- LibC Heap Size (for RTEMS 4.8.1)
+			* Entry point
+			* Authorised system calls
+			* Data cache status (Enabled/Disabled)
+			* Code cache status (Enabled/Disabled)
+			* Time reference (Global/Local)
+			* Floating point support
+			* Virtualised interruptions
+			* I/O partition (Enabled/Disabled, Number)
+			* Hardware interrupts and interrupt subscription
+			<parent ref="IMA_SEP_600"	/>
+			<parent ref="IMA_SEP_601"	/>
+			<parent ref="IMA_SEP_802"	/>
+			<parent ref="REQ-IO-IOP-04"	/>
+			<parent ref="REQ-IO-IOD-05"	/>			
+			<comment>
+				The configuration tool validates the ARINC 653 compatible XML file against the XSD
+				schema file.
+			</comment>			
+		</req>
+		<req name="AIR_SEP_1010">
+			Each I/O interface shall be fully defined by a static configuration, which specifies
+			among other parameters:
+			* Number of virtual devices
+			* Number of channels
+			* Type of underlying interface (MIL-STD-1553B, SpaceWire, RS232, etc).
+			<parent ref="IMA_SEP_802"	/>
+		</req>
+		
+		<req name="AIR_SEP_1020">
+			The data structures used to hold the configuration data shall be read-only during
+			runtime. Only the special partition mentioned in AIR_SEP_0790 shall be able to
+			write that memory.
+			<note>
+				This is achieved by marking the memory area as supervisor access only, thus enabling
+				Read/Write access only at kernel level. The application can still modify these 
+				parameters, but only through controlled system calls, implemented at PMK level and 
+				thus avoid user code.
+			</note>
+			<parent ref="IMA_SEP_1001"	/>
+      <testlink test_id="TEST-DEF-80810"  />
+		</req>
+	</subsection>
+
+</section>
+
+</root>

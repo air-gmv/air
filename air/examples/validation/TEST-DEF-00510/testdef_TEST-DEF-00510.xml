@@ -1,0 +1,65 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-00510"
+			id="510" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.3"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<!-- trap number should be in hexadecimal format -->
+		<registered_traps async="" sync="0x07" />
+		<description>
+						Test if a branch into an unaligned address (into an otherwise
+			'valid' code address) is detected by the LEON, and the associated fault
+			detected by the HM. Check that the remaining partitions are not affected.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0430" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					Execute a regular operation (e.g. increment a variable)
+				</description>
+			</teststep>
+			<teststep id="1" partition="1" repeat="1">
+				<description>
+					Create a Task with low priority that will branch to a unaligned address
+				</description>
+			</teststep>
+			<teststep id="2" partition="1" repeat="1">
+				<description>
+					Start the previous task.
+				</description>
+			</teststep>
+			<teststep id="3" partition="1" repeat="1">
+				<description>
+					Place current task in sleep mode for 1 tick
+				</description>
+			</teststep>
+			<teststep id="4" partition="1" repeat="1">
+				<description>
+					In task, Branch into an unaligned address. Verify that a trap was raised. 
+				</description>
+			</teststep>
+			<teststep id="5" partition="0" repeat="1">
+				<description>
+					Execute a regular operation (e.g. increment a variable)
+				</description>
+			</teststep>			
+			
+		</testprocedure>		
+	</test>	<!-- Test id="510" -->
+</TDF>
