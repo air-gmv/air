@@ -1,0 +1,74 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-90003"
+			id="90001" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="1.5"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<description>
+			Configure a test with 2 partitions, in which one of them has 2
+			tasks. One of the tasks call a function that sets the stack pointer
+			to 0. Checks if that function blocks or not the other partition
+			and/or the other task.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0120" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+      <teststep id="0" partition="0" repeat="1">
+        <description>
+			Create a task, with priority 1 and stack_size of 4096.
+        </description>
+      </teststep>
+      <teststep id="1" partition="0" repeat="1">
+        <description>
+			Create a task, with priority 100 and stack_size of 4096.
+        </description>
+      </teststep>
+      <teststep id="2" partition="0" repeat="1">
+        <description>
+            Start task #1.
+        </description>
+      </teststep>
+      <teststep id="3" partition="0" repeat="1">
+        <description>
+            Start task #2.
+        </description>
+      </teststep>
+      <teststep id="4" partition="0" repeat="1">
+        <description>
+            Call the function pmk_null_stack_pointer.
+        </description>
+      </teststep>
+      <teststep id="5" partition="0" repeat="1">
+        <description>
+            Set the stack pointer to 0.
+        </description>
+      </teststep>
+      <teststep id="6" partition="0" repeat="1">
+        <description>
+            Test if the task is blocked or not.
+        </description>
+      </teststep>
+      <teststep id="7" partition="1" repeat="1">
+        <description>
+            Test if the partition is blocked or not.
+        </description>
+      </teststep>
+
+		</testprocedure>		
+	</test>	<!-- Test id="050" -->
+</TDF>

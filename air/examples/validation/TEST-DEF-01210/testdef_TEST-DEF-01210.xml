@@ -1,0 +1,52 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-01210"
+			id="1210" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.3"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<!-- trap number should be in hexadecimal format -->
+		<registered_traps async="" sync="0x01 0x02 0x09" />
+		<description>
+						Test if the execution of an invalid opcode instruction in supervisor
+			mode is captured by the LEON and handled by the HM, and the associated HM
+			action is called. The invalid opcode can be created (for example) by
+			jumping to the address of a fixed string. Check that the remaining
+			partitions are not affected.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0430" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					Execute a regular operation (e.g. increment a variable). Wait for next MFT.
+				</description>
+			</teststep>
+			<teststep id="1" partition="1" repeat="1">
+				<description>
+					Execute a unimp instruction. Verify the HM event was raised and the partition continues executing.
+				</description>
+			</teststep>
+			<teststep id="2" partition="0" repeat="1">
+				<description>
+					Execute a regular operation (e.g. increment a variable). Terminate Test.
+				</description>
+			</teststep>				
+			
+		</testprocedure>			
+	</test>	<!-- Test id="1210" -->
+</TDF>

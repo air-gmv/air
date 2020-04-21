@@ -1,0 +1,162 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-01370"
+			id="1370" 
+			partitions="6"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.1"
+			ms_per_tick="2"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<description>
+			Define two schedules: 
+				1.P0, P1, P2, P3 
+				2.P2, P3, P4, P5 
+			Each partition should execute an MD5 of its own memory areas (data, bss and code).
+			Then, it should keep repeating this MD5 calculation to check that the MD5
+			has not been altered. Partition 0 should, after one MD5 cycle, change
+			the module schedule to the second schedule. The partitions that are
+			common to both schedules (P2 and P3) should report no MD5 change.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0140" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					Calculate the initial MD5 of the curren partition data, bss and code  memory zones. 
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="1" partition="1" repeat="1">
+				<description>
+					Calculate the initial MD5 of the curren partition data, bss and code  memory zones. 
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="2" partition="2" repeat="1">
+				<description>
+					Calculate the initial MD5 of the curren partition data, bss and code  memory zones. 
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="3" partition="3" repeat="1">
+				<description>
+					Calculate the initial MD5 of the curren partition data, bss and code  memory zones. 
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="4" partition="0" repeat="1">
+				<description>
+					Repeat the MD5 calculations, and check that no change as occured.
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="5" partition="1" repeat="1">
+				<description>
+					Repeat the MD5 calculations, and check that no change as occured.
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="6" partition="2" repeat="1">
+				<description>
+					Repeat the MD5 calculations, and check that no change as occured.
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="7" partition="3" repeat="1">
+				<description>
+					Repeat the MD5 calculations, and check that no change as occured.
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="8" partition="0" repeat="1">
+				<description>
+            		Call SET_MODULE_CHANGE for next schedule.
+				</description>
+			</teststep>
+			<teststep id="9" partition="0" repeat="1">
+				<description>
+					Repeat the MD5 calculations, and check that no change as occured.
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="10" partition="1" repeat="1">
+				<description>
+					Repeat the MD5 calculations, and check that no change as occured.
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="11" partition="2" repeat="1">
+				<description>
+					Repeat the MD5 calculations, and check that no change as occured.
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="12" partition="3" repeat="1">
+				<description>
+					Repeat the MD5 calculations, and check that no change as occured.
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="13" partition="2" repeat="1">
+				<description>
+					Repeat the MD5 calculations, and check that no change as occured.
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="14" partition="3" repeat="1">
+				<description>
+					Repeat the MD5 calculations, and check that no change as occured.
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="15" partition="4" repeat="1">
+				<description>
+					Calculate the initial MD5 of the curren partition data, bss and code  memory zones. 
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="16" partition="5" repeat="1">
+				<description>
+					Calculate the initial MD5 of the curren partition data, bss and code  memory zones. 
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="17" partition="2" repeat="1">
+				<description>
+					Repeat the MD5 calculations, and check that no change as occured.
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="18" partition="3" repeat="1">
+				<description>
+					Repeat the MD5 calculations, and check that no change as occured.
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="19" partition="4" repeat="1">
+				<description>
+					Repeat the MD5 calculations, and check that no change as occured.
+					Sleep until next MTF.
+				</description>
+			</teststep>
+			<teststep id="20" partition="5" repeat="1">
+				<description>
+					Repeat the MD5 calculations, and check that no change as occured.
+					Sleep until next MTF.
+				</description>
+			</teststep>
+		</testprocedure>		
+	</test>	<!-- Test id="1370" -->
+</TDF>
