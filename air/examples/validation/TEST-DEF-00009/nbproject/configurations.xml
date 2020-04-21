@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="100">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="TEST-DEF-00009"
+                   displayName="TEST-DEF-00009"
+                   projectFiles="true"
+                   root=".">
+      <logicalFolder name="config" displayName="config" projectFiles="true">
+        <itemPath>config/usr_arch.c</itemPath>
+        <itemPath>config/usr_channels.c</itemPath>
+        <itemPath>config/usr_config.c</itemPath>
+        <itemPath>config/usr_config.h</itemPath>
+        <itemPath>config/usr_hm.c</itemPath>
+        <itemPath>config/usr_partitions.c</itemPath>
+        <itemPath>config/usr_partitions_data.c</itemPath>
+        <itemPath>config/usr_schedules.c</itemPath>
+        <itemPath>config/usr_sharedmemory.c</itemPath>
+      </logicalFolder>
+      <logicalFolder name="p0" displayName="p0" projectFiles="true">
+        <itemPath>p0/P0testdef.c</itemPath>
+        <itemPath>p0/P0testdef.h</itemPath>
+        <itemPath>p0/init.c</itemPath>
+        <itemPath>p0/rtems_config.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="p1" displayName="p1" projectFiles="true">
+        <itemPath>p1/P1testdef.c</itemPath>
+        <itemPath>p1/P1testdef.h</itemPath>
+        <itemPath>p1/init.c</itemPath>
+        <itemPath>p1/rtems_config.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="p2" displayName="p2" projectFiles="true">
+        <itemPath>p2/P2testprint.c</itemPath>
+        <itemPath>p2/init.c</itemPath>
+        <itemPath>p2/rtems_config.h</itemPath>
+      </logicalFolder>
+      <itemPath>upgrate_tests.bash</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+      <itemPath>nbproject/private/launcher.properties</itemPath>
+    </logicalFolder>
+    <itemPath>TEST-DEF-00009.xml</itemPath>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <flagsDictionary>
+        <element flagsID="0" commonFlags="-g -O2"/>
+        <element flagsID="1" commonFlags="-g -g -O2 -g"/>
+      </flagsDictionary>
+      <codeAssistance>
+        <resolveSymbolicLinks>true</resolveSymbolicLinks>
+        <includeAdditional>true</includeAdditional>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+          <cTool flags="-O2 -g">
+          </cTool>
+        </makeTool>
+        <preBuild>
+          <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
+          <preBuildCommand>../../../configure</preBuildCommand>
+          <preBuildFirst>true</preBuildFirst>
+        </preBuild>
+        <requiredProjects>
+          <makeArtifact PL="../../.."
+                        CT="0"
+                        CN="Default"
+                        AC="true"
+                        BL="false"
+                        WD="../../.."
+                        BC="${MAKE} -f Makefile"
+                        CC="${MAKE} -f Makefile clean"
+                        OP="">
+          </makeArtifact>
+        </requiredProjects>
+      </makefileType>
+      <item path="config/usr_arch.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
+      </item>
+      <item path="config/usr_channels.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
+      </item>
+      <item path="config/usr_config.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
+      </item>
+      <item path="config/usr_hm.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
+      </item>
+      <item path="config/usr_partitions.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
+      </item>
+      <item path="config/usr_partitions_data.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
+      </item>
+      <item path="config/usr_schedules.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
+      </item>
+      <item path="config/usr_sharedmemory.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+        </cTool>
+      </item>
+      <folder path="TEST-DEF-00009/config">
+        <cTool>
+          <incDir>
+            <pElem>config</pElem>
+            <pElem>../../../install/pmk/bsp/sparc/leon3/include</pElem>
+            <pElem>../../../install/pmk/arch/sparc/include</pElem>
+            <pElem>../../../install/pmk/core/include</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>PMK_MAX_CORES=1</Elem>
+            <Elem>PMK_SPARC_LEON3_OR_TSIM2</Elem>
+          </preprocessorList>
+        </cTool>
+      </folder>
+      <folder path="TEST-DEF-00009/p0">
+        <cTool>
+          <incDir>
+            <pElem>../../../pmk/core/include</pElem>
+            <pElem>../../../pmk/arch/sparc/include</pElem>
+            <pElem>p0</pElem>
+            <pElem>common</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>AIR_HYPERVISOR</Elem>
+            <Elem>RTEMS48I</Elem>
+          </preprocessorList>
+        </cTool>
+      </folder>
+      <folder path="TEST-DEF-00009/p1">
+        <cTool>
+          <incDir>
+            <pElem>../../../pmk/core/include</pElem>
+            <pElem>../../../pmk/arch/sparc/include</pElem>
+            <pElem>p1</pElem>
+            <pElem>common</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>AIR_HYPERVISOR</Elem>
+            <Elem>RTEMS48I</Elem>
+          </preprocessorList>
+        </cTool>
+      </folder>
+      <folder path="TEST-DEF-00009/p2">
+        <cTool>
+          <incDir>
+            <pElem>../../../pmk/core/include</pElem>
+            <pElem>../../../pmk/arch/sparc/include</pElem>
+            <pElem>p2</pElem>
+            <pElem>common</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>AIR_HYPERVISOR</Elem>
+            <Elem>RTEMS48I</Elem>
+          </preprocessorList>
+        </cTool>
+      </folder>
+      <item path="p0/P0testdef.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="p0/init.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="p1/P1testdef.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="p1/init.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="p2/P2testprint.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="p2/init.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="1">
+        </cTool>
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
