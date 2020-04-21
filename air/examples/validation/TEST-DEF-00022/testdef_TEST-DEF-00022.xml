@@ -1,0 +1,99 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-00022"
+			id="22" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.6"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR"
+			apex="IMASPEX">
+		<description>
+						Define a test with two non-system partitions where one calls the
+			SET_A_PARTITION_MODE service with the PARTITION_IDENTIFIER of the other. Check that 
+		INVALID_CONFIG is returned and the target partition mode remains unchanged.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0530" />	
+			<req name="AIR_SEP_0540" />	
+			<req name="AIR_SEP_0550" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					TSAL_INIT; set partition mode to NORMAL; expect NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="1" partition="1" repeat="1">
+				<description>
+					TSAL_INIT; set partition mode to NORMAL; expect NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="2" partition="0" repeat="1">
+				<description>
+					Attempt to call GET_A_PARTITION_STATUS using an invalid 
+				target partition id; expect INVALID_PARAM.
+				</description>
+			</teststep>			
+			<teststep id="3" partition="0" repeat="1">
+				<description>
+					Attempt to call SET_A_PARTITION_MODE using an invalid target
+				partition id; expect INVALID_PARAM.
+				</description>
+			</teststep>
+			<teststep id="4" partition="0" repeat="1">
+				<description>
+					Call GET_A_PARTITION_ID to obtain the id of partition P1; 
+				expect NO_ERROR.
+				</description>
+			</teststep>						
+			<teststep id="5" partition="0" repeat="1">
+				<description>
+					Attempt to set partition P1 operating mode to an invalid 
+				operating mode (IDLE-1); expect INVALID_PARAM.
+				</description>
+			</teststep>
+			<teststep id="6" partition="0" repeat="1">
+				<description>
+					Attempt to set partition P1 operating mode to an invalid 
+				operating mode (NORMAL+1); expect INVALID_PARAM.
+				</description>
+			</teststep>
+			<teststep id="7" partition="0" repeat="1">
+				<description>
+					Set partition P1 operating mode to a valid mode using a valid 
+				transition (NORMAL->WARM_START).
+				</description>
+			</teststep>
+			<teststep id="8" partition="0" repeat="1">
+				<description>
+					Call GET_A_PARTITION_STATUS for partition P1; verify P1 
+				operating mode is WARM_START; expect NO_ERROR.
+				</description>
+			</teststep>			
+			<teststep id="9" partition="1" repeat="1">
+				<description>
+					Set self mode to NORMAL.
+				</description>
+			</teststep>
+			<teststep id="10" partition="1" repeat="1">
+				<description>
+					Attempt to set partition P0 mode to WARM_START 
+				(a valid transition); expect INVALID_CONFIG -- the caller 
+				partition is not a system partition.
+				</description>			
+			</teststep>
+		</testprocedure>
+	</test>	<!-- Test id="22" -->
+</TDF>

@@ -1,0 +1,79 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-01730"
+			id="1730" 
+			partitions="4"
+			test_end_partition="3"
+			repeat="1" 
+			mtf="0.5"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR"
+			apex="IMASPEX">
+		<description>
+						Create a test where one partition writes multicast messages to a
+			sampling port, and assert that all receiving partitions receive the data that
+			was sent.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0690" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					Create Sampling Port
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					Write dummy message to Sampling Port
+				</description>
+			</teststep>
+			<teststep id="2" partition="1" repeat="1">
+				<description>
+					Create Sampling Port
+				</description>
+			</teststep>
+			<teststep id="3" partition="1" repeat="1">
+				<description>
+					Receive the sampling message. Compare with the expected value. Wait for next MTF.
+				</description>
+			</teststep>
+			<teststep id="4" partition="2" repeat="1">
+				<description>
+					Create Sampling Port
+				</description>
+			</teststep>
+			<teststep id="5" partition="2" repeat="1">
+				<description>
+					Receive the sampling message. Compare with the expected value. Wait for next MTF.
+				</description>
+			</teststep>
+			<teststep id="6" partition="3" repeat="1">
+				<description>
+					Create Sampling Port
+				</description>
+			</teststep>
+			<teststep id="7" partition="3" repeat="1">
+				<description>
+					Receive the sampling message. Compare with the expected value. Wait for next MTF.
+				</description>
+			</teststep>
+			<teststep id="8" partition="3" repeat="1">
+				<description>
+					Terminate test.
+				</description>
+			</teststep>			
+			
+		</testprocedure>		
+	</test>	<!-- Test id="1730" -->
+</TDF>

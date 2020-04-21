@@ -1,0 +1,126 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-80400"
+			id="80400" 
+			partitions="4"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="1.6"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<registered_traps async="" sync="0xF0" />
+		<description>
+						Create a test for the pmk_sparc_enable_cache and
+			pmk_sparc_disable_cache system calls. Run the same code in a second non-authorized partition
+			and check that a Health Monitor event is generated.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0340" />	
+			<req name="AIR_SEP_0760" />	
+			<req name="AIR_SEP_0930" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					Call pmk_sparc_enable_cache with an invalid Cache Type argument. Return Code: PAL_INVALID_PARAM
+				</description>
+			</teststep>
+			<teststep id="2" partition="0" repeat="1">
+				<description>
+					Call pmk_sparc_disable_cache with an invalid Cache Type argument. Return Code: PAL_INVALID_PARAM
+				</description>
+			</teststep>
+			<teststep id="3" partition="0" repeat="1">
+				<description>
+					Try to activate Both Caches. Since they are already enabled at configuration level the return code shall be PAL_NO_ACTION.
+				</description>
+			</teststep>
+			<teststep id="4" partition="0" repeat="1">
+				<description>
+					Deactivate instruction cache. Action shall succeed with PAL_NO_ERROR. Sleep for one tick.
+				</description>
+			</teststep>
+			<teststep id="5" partition="0" repeat="1">
+				<description>
+					Read the cache control register. Verify that the instruction cache is disabled and the data cache is enabled. 
+				</description>
+			</teststep>
+			<teststep id="6" partition="0" repeat="1">
+				<description>
+					Deactivate data cache. Action shall succeed with PAL_NO_ERROR. Sleep for one tick.
+				</description>
+			</teststep>
+			<teststep id="7" partition="0" repeat="1">
+				<description>
+					Read the cache control register. Verify that both caches are disabled.
+				</description>
+			</teststep>
+			<teststep id="8" partition="1" repeat="1">
+				<description>
+					Call pmk_sparc_disable_cache for every CACHE_TYPE when cache management is not allowed at configuration level. Return Code: PAL_INVALID_CONFIG
+				</description>
+			</teststep>	
+			<teststep id="9" partition="1" repeat="1">
+				<description>
+					Call pmk_sparc_enable_cache for every CACHE_TYPE when cache management is not allowed at configuration level. Return Code: PAL_INVALID_CONFIG
+				</description>
+			</teststep>
+			<teststep id="10" partition="2" repeat="1">
+				<description>
+					Try to activate the instruction cache. Since it is already enabled at configuration level the return code shall be PAL_NO_ACTION.
+				</description>
+			</teststep>
+			<teststep id="11" partition="2" repeat="1">
+				<description>
+					Try to deactivate the data cache. Since it is already deactivated at configuration level the return code shall be PAL_NO_ACTION.
+				</description>
+			</teststep>
+			<teststep id="12" partition="2" repeat="1">
+				<description>
+					Activate Both Caches. Action shall succeed with PAL_NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="13" partition="2" repeat="1">
+				<description>
+					Read the cache control register. Verify that both caches are enabled.
+				</description>
+			</teststep>
+			<teststep id="14" partition="3" repeat="1">
+				<description>
+					Try to activate the data cache. Since it is already enabled at configuration level the return code shall be PAL_NO_ACTION.
+				</description>
+			</teststep>
+			<teststep id="15" partition="3" repeat="1">
+				<description>
+					Try to deactivate the instruction cache. Since it is already deactivated at configuration level the return code shall be PAL_NO_ACTION.
+				</description>
+			</teststep>
+			<teststep id="16" partition="3" repeat="1">
+				<description>
+					Deactivate Both Caches. Action shall succeed with PAL_NO_ERROR. Sleep for one tick.
+				</description>
+			</teststep>
+			<teststep id="17" partition="3" repeat="1">
+				<description>
+					Read the cache control register. Verify that both caches are disabled.
+				</description>
+			</teststep>
+			<teststep id="18" partition="3" repeat="1">
+				<description>
+					Deactivate Both Caches. Since both caches are disabled, pmk_sparc_disable_cache shall return PAL_NO_ACTION.
+				</description>
+			</teststep>
+			
+		</testprocedure>		
+	</test>	<!-- Test id="80400" -->
+</TDF>
