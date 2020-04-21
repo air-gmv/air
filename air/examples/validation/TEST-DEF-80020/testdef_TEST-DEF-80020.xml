@@ -1,0 +1,105 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-80020"
+			id="80020" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.3"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<!-- trap number should be in hexadecimal format -->
+		<registered_traps async="" sync="0x01" />		
+		<description>
+			The pmk_linkcmds_vars.h holds references to the text, data and bss
+			sections of each partition. This test shall try to branch into each of these
+			sections from all partitions (other than the test partition itself). Each
+			attempt shall raise a Health Monitor event that shall be captured.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0010" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="1" repeat="1">
+				<description>
+					Calculate the initial MD5 of the relevant partition 1 memory zones.
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					Create four low priority tasks (with increasing priorities).
+				</description>
+			</teststep>
+			<teststep id="2" partition="0" repeat="1">
+				<description>
+					Start the low priority tasks.
+				</description>
+			</teststep>			
+			<teststep id="3" partition="0" repeat="1">
+				<description>
+					Suspend main task (rtems_task_wake_after(MFT)).
+				</description>
+			</teststep>			
+			<teststep id="4" partition="0" repeat="1">
+				<description>
+					In task 0: Get the address of the start of the data section of partition 1.	
+				</description>
+			</teststep>			
+			<teststep id="5" partition="0" repeat="1">
+				<description>
+					In task 0: Define a function pointer and make it point to the obtained address. Call the function.
+				</description>
+			</teststep>			
+			<teststep id="6" partition="0" repeat="1">
+				<description>
+					Check  that the hm_part_callback was called with the i_error parameter set to PMK_SEG_ERR. 
+				</description>
+			</teststep>			
+			<teststep id="7" partition="0" repeat="1">
+				<description>
+					In task 1: Get the address of the start of the bss section of partition 1.
+				</description>
+			</teststep>			
+			<teststep id="8" partition="0" repeat="1">
+				<description>
+					In task 1: Define a function pointer and make it point to the obtained address. Call the function.
+				</description>
+			</teststep>			
+			<teststep id="9" partition="0" repeat="1">
+				<description>
+					Check that the hm_part_callback was called with the i_error parameter set to PMK_SEG_ERR. 
+				</description>
+			</teststep>
+			<teststep id="10" partition="0" repeat="1">
+				<description>
+					In task 2: Get the address of the start of the text section of partition 1.
+				</description>
+			</teststep>			
+			<teststep id="11" partition="0" repeat="1">
+				<description>
+					In task 2: Define a function pointer and make it point to the obtained address. Call the function. 
+				</description>
+			</teststep>			
+			<teststep id="12" partition="0" repeat="1">
+				<description>
+					Check that the hm_part_callback was called with the i_error parameter set to PMK_SEG_ERR.
+				</description>
+			</teststep>			
+			<teststep id="13" partition="1" repeat="1">
+				<description>
+					Check that the MD5 of the relevant partition 1 memory zones was not altered.
+				</description>
+			</teststep>			
+		</testprocedure>		
+	</test>	<!-- Test id="80020" -->
+</TDF>
