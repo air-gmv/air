@@ -1,0 +1,60 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-00560"
+			id="560" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="1.5"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<!-- trap number should be in hexadecimal format -->
+		<registered_traps async="" sync="0x07" />
+		<description>
+						Test if a data write access to an unaligned address is detected by
+			the LEON, and the associated fault detected by the HM. Check that the
+			remaining partitions are not affected.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0430" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					Execute a regular operation: Increment a Variable
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					Wait for next execution window.
+				</description>
+			</teststep>
+			<teststep id="2" partition="1" repeat="1">
+				<description>
+					Write a unaligned int address(int shall be word aligned). Verify that a trap was raised
+				</description>
+			</teststep>
+			<teststep id="3" partition="1" repeat="1">
+				<description>
+					Wait for next execution window.
+				</description>
+			</teststep>
+			<teststep id="4" partition="0" repeat="1">
+				<description>
+					Execute a regular operation: Increment a Variable
+				</description>
+			</teststep>			
+			
+		</testprocedure>		
+	</test>	<!-- Test id="050" -->
+</TDF>

@@ -1,0 +1,107 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-01741"
+			id="1741" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="1"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR"
+			apex="IMASPEX">
+		<description>
+						Create a test for the GET_SAMPLING_PORT_CURRENT_STATUS
+			function.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0700" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					 Call GET_SAMPLING_PORT_CURRENT_STATUS with an invalid port id (Invalid Param).
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					Create two sampling ports with distinct directions (no error).
+				</description>
+			</teststep>
+			<teststep id="2" partition="0" repeat="1">
+				<description>
+					Get current status from the destination port. Verify the port is empty.
+				</description>
+			</teststep>
+			<teststep id="3" partition="0" repeat="1">
+				<description>
+					Get current status from the source port. Verify the port is empty.
+				</description>
+			</teststep>
+			<teststep id="4" partition="0" repeat="1">
+				<description>
+					Wait for next mtf
+				</description>
+			</teststep>
+			<teststep id="5" partition="1" repeat="1">
+				<description>
+					Create two sampling ports with distinct directions (no error expected).
+				</description>
+			</teststep>
+			<teststep id="6" partition="1" repeat="1">
+				<description>
+					Write to source sampling port (No error)
+				</description>
+			</teststep>
+			<teststep id="7" partition="1" repeat="1">
+				<description>
+					Sleep for three mtfs.
+				</description>
+			</teststep>
+			<teststep id="8" partition="0" repeat="1">
+				<description>
+					Get current status from the destination port. Verify the port has a new, fresh, message. Read the message.
+				</description>
+			</teststep>
+			<teststep id="9" partition="0" repeat="1">
+				<description>
+					Get current status from the destination port. Verify the message is reported as consumed.
+				</description>
+			</teststep>
+			<teststep id="10" partition="0" repeat="1">
+				<description>
+					Sleep for two mtfs.
+				</description>
+			</teststep>
+			<teststep id="11" partition="0" repeat="1">
+				<description>
+					Get current status from the destination port. Verify the message is reported as stale and consumed. 
+				</description>
+			</teststep>
+			<teststep id="12" partition="0" repeat="1">
+				<description>
+					Wait for next mtf
+				</description>
+			</teststep>
+			<teststep id="13" partition="1" repeat="1">
+				<description>
+					Write to source sampling port (No error)
+				</description>
+			</teststep>
+			<teststep id="14" partition="0" repeat="1">
+				<description>
+					Get current status from the destination port. Verify the port has a new, fresh, message. 
+				</description>
+			</teststep>
+		</testprocedure>		
+	</test>	<!-- Test id="1741" -->
+</TDF>

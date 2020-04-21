@@ -1,0 +1,80 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-80200"
+			id="80200" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.3"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<registered_traps async="" sync="0xF0" />
+		<description>
+						Define a test with one supervisor partition, which has access to the
+			I/O memory area. Check that the timer 0 is configured for the correct
+			value (matching the number of ticks per second), and that the
+			pmk_ISR_Clock_Handler is assigned to the Timer 0 interrupt.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0190" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					Obtain a pointer to the GPTIMER control registers
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					Check that the reload value corresponds to the expected ms per tick. 
+				</description>
+			</teststep>
+			<teststep id="2" partition="0" repeat="1">
+				<description>
+					Check that the timer is enabled
+				</description>
+			</teststep>
+			<teststep id="3" partition="0" repeat="1">
+				<description>
+					Check that the timer reload is automatic
+				</description>
+			</teststep>
+			<teststep id="4" partition="0" repeat="1">
+				<description>
+					Check that the timer is set to activate the IRQ on each count end
+				</description>
+			</teststep>
+			<teststep id="5" partition="0" repeat="1">
+				<description>
+					Check that GPTIMER interrupt entry of the trap table (obtained through the pmk_sparc_get_tbr system call) matches the address of the pmk_ISR_Clock_Handler function.
+				</description>
+			</teststep>
+			<teststep id="6" partition="1" repeat="1">
+				<description>
+					Check that GPTIMER interrupt entry of the trap table (obtained through the pmk_sparc_get_tbr system call) matches the address of the pmk_ISR_Clock_Handler function.
+				</description>
+			</teststep>
+			<teststep id="7" partition="1" repeat="1">
+				<description>
+					Register a new handler with rtems_interrupt_catch. 
+				</description>
+			</teststep>
+			<teststep id="8" partition="1" repeat="1">
+				<description>
+					Check that the health monitor partition callback was called with the error PMK_VIOL_ERR.
+				</description>
+			</teststep>
+			
+		</testprocedure>		
+	</test>	<!-- Test id="80200" -->
+</TDF>

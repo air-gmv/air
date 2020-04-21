@@ -1,0 +1,330 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-00021"
+			id="21" 
+			partitions="4"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="1.0"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR"
+			apex="IMASPEX">
+		<description>
+						Define a system with four partitions: 
+			
+			* The first partition is a
+			system partition, capable of calling SET_A_PARTITION_MODE to set the mode
+			of another partition; this partition uses GET_A_PARTITION_STATUS to perform
+			verification by checking the status of the target partitions. 
+			
+			* Secondary (target) partitions are user partitions, where
+			the mode changes will be applied; 
+		
+			The test shall call SET_A_PARTITION_MODE in the first
+			partition for each of the valid mode transitions indicated in AIR_SEP_0530
+			with the PARTITION_IDENTIFIER set to the target partitions. Invalid transitions
+			(N/A) transitions are also tested for errors. On the following cycle the first
+			partition shall check that a mode was either effectively changed or remained 
+			unchanged (for the error cases).
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0530" />	
+			<req name="AIR_SEP_0540" />	
+			<req name="AIR_SEP_0550" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					Attempt to set mode of target partitions to COLD_START; expected  
+					INVALID_MODE for not initialized "TSAL".
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					Initialize P0 TSAL;
+				</description>
+			</teststep>
+			<teststep id="2" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is the initial mode (COLD_START).
+				</description>
+			</teststep>
+			<teststep id="3" partition="1" repeat="1">
+				<description>
+					Initialize P1 TSAL.
+				</description>
+			</teststep>
+			<teststep id="4" partition="2" repeat="1">
+				<description>
+					Initialize P2 TSAL.
+				</description>
+			</teststep>
+			<teststep id="5" partition="3" repeat="1">
+				<description>
+					Initialize P3 TSAL.
+				</description>
+			</teststep>
+			<teststep id="6" partition="0" repeat="1">
+				<description>
+					Attempt to set mode of target partitions to WARM_START; 
+					invalid trans: COLD_START->WARM_START.
+				</description>
+			</teststep>
+			<teststep id="7" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is the initial mode (COLD_START).
+				</description>
+			</teststep>
+			<teststep id="8" partition="0" repeat="1">
+				<description>
+					Set mode of target partitions to COLD_START; 
+					trans: COLD_START->COLD_START.
+				</description>
+			</teststep>
+			<teststep id="9" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is COLD_START.
+				</description>
+			</teststep>						
+			<teststep id="10" partition="0" repeat="1">
+				<description>
+					Set mode of target partitions to normal; transition cold->normal is 
+					available only to the running partition via SET_PARTITION_MODE.
+					invalid trans: COLD_START->NORMAL
+				</description>
+			</teststep>				
+			<teststep id="11" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is COLD_START.
+				</description>			
+			</teststep>
+			<teststep id="12" partition="1" repeat="1">
+				<description>
+					Set partition mode to normal (via SET_PARTITION_MODE);
+					trans: COLD_START->NORMAL.				
+				</description>
+			</teststep>
+			<teststep id="13" partition="2" repeat="1">
+				<description>
+					Set partition mode to normal (via SET_PARTITION_MODE);
+					trans: COLD_START->NORMAL.
+				</description>
+			</teststep>
+			<teststep id="14" partition="3" repeat="1">
+				<description>
+					Set partition mode to normal (via SET_PARTITION_MODE);
+					trans: COLD_START->NORMAL.				
+				</description>
+			</teststep>			
+			<teststep id="15" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is NORMAL.
+				</description>
+			</teststep>
+			<teststep id="16" partition="0" repeat="1">
+				<description>
+					Set mode of target partitions to NORMAL; 
+					invalid trans: NORMAL->NORMAL.
+				</description>
+			</teststep>			
+			<teststep id="17" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is NORMAL.
+				</description>			
+			</teststep>			
+			<teststep id="18" partition="0" repeat="1">
+				<description>
+					Set mode of target partitions to WARM_START; 
+					trans: NORMAL->WARM_START.
+				</description>
+			</teststep>
+			<teststep id="19" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is WARM_START.
+				</description>
+			</teststep>	
+			<teststep id="20" partition="0" repeat="1">
+				<description>
+					Set mode of target partitions to WARM_START; 
+					trans: WARM_START->WARM_START.
+				</description>
+			</teststep>
+			<teststep id="21" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is WARM_START.
+				</description>
+			</teststep>			
+			<teststep id="22" partition="0" repeat="1">
+				<description>
+					Set mode of target partitions to normal; transition warm->normal is 
+					available only to the running partition via SET_PARTITION_MODE.
+					invalid trans: WARM_START->NORMAL
+				</description>
+			</teststep>
+			<teststep id="23" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is WARM_START.
+				</description>			
+			</teststep>
+			<teststep id="24" partition="1" repeat="1">
+				<description>
+					Set partition mode to normal (via SET_PARTITION_MODE);
+					trans: WARM_START->NORMAL.	
+				</description>
+			</teststep>
+			<teststep id="25" partition="2" repeat="1">
+				<description>
+					Set partition mode to normal (via SET_PARTITION_MODE);
+					trans: WARM_START->NORMAL.
+				</description>
+			</teststep>
+			<teststep id="26" partition="3" repeat="1">
+				<description>
+					Set partition mode to normal (via SET_PARTITION_MODE);
+					trans: WARM_START->NORMAL.				
+				</description>
+			</teststep>			
+			<teststep id="27" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is NORMAL.
+				</description>
+			</teststep>		
+			<teststep id="28" partition="0" repeat="1">
+				<description>
+					Set mode of target partitions to COLD_START; 
+					trans: NORMAL->COLD_START.
+				</description>
+			</teststep>
+			<teststep id="29" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is COLD_START.
+				</description>
+			</teststep>			
+			<teststep id="30" partition="1" repeat="1">
+				<description>
+					Set partition mode to NORMAL (via SET_PARTITION_MODE);
+					trans: COLD_START->NORMAL (repeated).				
+				</description>
+			</teststep>
+			<teststep id="31" partition="2" repeat="1">
+				<description>
+					Set partition mode to NORMAL (via SET_PARTITION_MODE);
+					trans: COLD_START->NORMAL (repeated).
+				</description>
+			</teststep>
+			<teststep id="32" partition="3" repeat="1">
+				<description>
+					Set partition mode to NORMAL (via SET_PARTITION_MODE);
+					trans: COLD_START->NORMAL (repeated).				
+				</description>
+			</teststep>			
+			<teststep id="33" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is NORMAL.
+				</description>
+			</teststep>
+			<teststep id="34" partition="0" repeat="1">
+				<description>
+					Set mode of target partitions to WARM_START; 
+					trans: NORMAL->WARM_START (repeated).
+				</description>
+			</teststep>
+			<teststep id="35" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is WARM_START.
+				</description>
+			</teststep>			
+			<teststep id="36" partition="0" repeat="1">
+				<description>
+					Set mode of target partitions to COLD_START; 
+					trans: WARM_START->COLD_START.
+				</description>
+			</teststep>
+			<teststep id="37" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is COLD_START.
+				</description>
+			</teststep>
+			<teststep id="38" partition="1" repeat="1">
+				<description>
+					Set up the transitions to idle -- 1:
+					Set partition mode to NORMAL (via SET_PARTITION_MODE);
+					trans: COLD_START->NORMAL (repeated).
+				</description>
+			</teststep>
+			<teststep id="39" partition="2" repeat="1">
+				<description>
+					Set up the transitions to idle -- 2:
+					Set partition mode to NORMAL (via SET_PARTITION_MODE);
+					trans: COLD_START->NORMAL (repeated).
+				</description>
+			</teststep>
+			<teststep id="40" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is NORMAL for 
+					partitions p1 and p2; COLD_START for partition p3.
+				</description>
+			</teststep>
+			<teststep id="41" partition="0" repeat="1">
+				<description>
+					Set up the transitions to idle -- 3:
+					Set p2 partition mode to WARM_START;
+					(Three target partitions will be in NORMAL (P1), WARM_START (P2), COLD_START (P3)
+					trans: NORMAL->WARM_START (repeated).
+				</description>
+			</teststep>
+			<teststep id="42" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is NORMAL for 
+					partition P1; WARM_START for partition P2; COLD_START 
+					for partition P3.
+				</description>
+			</teststep>
+			<teststep id="43" partition="0" repeat="1">
+				<description>			
+					Set mode of target partitions to IDLE; 
+					trans: WARM_START->IDLE.
+					trans: COLD_START->IDLE.
+					trans: NORMAL->IDLE.
+				</description>
+			</teststep>
+			<teststep id="44" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is IDLE.
+				</description>
+			</teststep>
+			<teststep id="45" partition="0" repeat="1">
+				<description>
+					Set mode of target partitions to IDLE; 
+					invalid trans: IDLE->IDLE		
+				</description>
+			</teststep>
+			<teststep id="46" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is IDLE.
+				</description>
+			</teststep>
+			<teststep id="47" partition="0" repeat="1">
+				<description>
+					Set mode of target partitions to NORMAL;
+					invalid trans: IDLE->NORMAL				
+				</description>
+			</teststep>
+			<teststep id="48" partition="0" repeat="1">
+				<description>
+					Verify that the target partitions mode is IDLE.
+				</description>
+			</teststep>									
+		</testprocedure>	
+	</test>	<!-- Test id="21" -->
+</TDF>

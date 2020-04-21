@@ -13,6 +13,7 @@
 #include <air.h>
 #include <libtest.h>
 
+
 /**
  * @brief Partition count
  */
@@ -70,7 +71,6 @@ void control_partition_init(air_u32_t id, air_name_ptr_t shm_name) {
     air_u32_t i;
     test_control = NULL;
     air_sharedmemory_t sharedmemory;
-
     /* get partition configuration */
     air_syscall_get_partition_status(-1, &partition);
 
@@ -99,7 +99,7 @@ void control_partition_init(air_u32_t id, air_name_ptr_t shm_name) {
         partition_buffer = &test_control->buffers[partition.index];
 
         /* test header */
-        pprintf("+----[" COLOR_KMAG " %06i " COLOR_RESET "]----+\n", id);
+        pprintf("STARTING TEST [ %06i ]\n", id);
         flush_partition_buffer(partition_buffer);
 
         /* allow other partitions to continue */
@@ -113,7 +113,6 @@ void control_partition_init(air_u32_t id, air_name_ptr_t shm_name) {
         air_syscall_shutdown_module();
         for (;;);
     }
-
     /* loop to print the text results */
     while (1) {
 
@@ -140,10 +139,10 @@ void control_partition_init(air_u32_t id, air_name_ptr_t shm_name) {
             /* present the test final result */
             if (1 == all_pass) {
 
-                pprintf("+------[" COLOR_KGRN " OK " COLOR_RESET "]------+\n");
+                pprintf("END OF TEST ALL PASS"); //[" COLOR_KGREEN " OK " COLOR_RESET "]------+\n");
             } else {
 
-                pprintf("+------[" COLOR_KRED " KO " COLOR_RESET "]------+\n");
+                pprintf("END OF TEST FAILURES DETECTED"); //[" COLOR_KRED " KO " COLOR_RESET "]------+\n");
             }
             flush_partition_buffer(partition_buffer);
 

@@ -1,0 +1,68 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-80050"
+			id="80050" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.3"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<!-- trap number should be in hexadecimal format -->
+		<registered_traps async="" sync="0x09" />						
+		<description>
+			Devise a test with two partitions: 1) A regular partition 2) A
+			supervisor partition Check that the first partition is unable to change a
+			variable in the supervisor area (and attempting to do so raises a Health
+			Monitor event), and the second partition is able to change the same
+			variable.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0030" />	
+			<req name="AIR_SEP_0370" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					Read the PMK_TOD_Is_set variable value 
+				</description>
+			</teststep>
+			<teststep id="1" partition="1" repeat="1">
+				<description>
+					Attempt to a write predefined value to the PMK variable PMK_TOD_Is_set. Verify a 0x09 Trap was generated.
+				</description>
+			</teststep>
+			<teststep id="2" partition="0" repeat="1">
+				<description>
+					Read the PMK_TOD_Is_set variable value. Verify that the value has not changed.
+				</description>
+			</teststep>
+			<teststep id="3" partition="0" repeat="1">
+				<description>
+					Attempt to a write predefined value to the PMK variable PMK_TOD_Is_set. Verify a trap was not generated.
+				</description>
+			</teststep>
+			<teststep id="4" partition="0" repeat="1">
+				<description>
+					Read the variable and verify the correctness of its value. 
+				</description>
+			</teststep>
+			<teststep id="5" partition="0" repeat="1">
+				<description>
+					Terminate test.
+				</description>
+			</teststep>			
+			
+		</testprocedure>		
+	</test>	<!-- Test id="050" -->
+</TDF>

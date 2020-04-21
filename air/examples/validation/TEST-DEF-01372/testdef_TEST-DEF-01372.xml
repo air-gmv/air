@@ -1,0 +1,118 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-01372"
+			id="1372" 
+			partitions="5"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="1"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR"
+			apex="IMASPEX">
+		<description>
+						Define two schedules: 0) P0, P1, P2, P3 1) P1, P2, P4, P3 Modify
+			TEST-DEF-01561 in order to determine that the Module Schedule operation has no
+			impact in the cache status of the relevant partition.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0140" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					Read the cache control register. Verify if the data cache and the code cache are enabled.
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					Deactivate code cache. Wait for next MFT
+				</description>
+			</teststep>
+			<teststep id="2" partition="1" repeat="1">
+				<description>
+					Read the cache control register. Verify if the data cache and the code cache are enabled.
+				</description>
+			</teststep>
+			<teststep id="3" partition="1" repeat="1">
+				<description>
+					Deactivate data cache. Wait for next MFT
+				</description>
+			</teststep>
+			<teststep id="4" partition="2" repeat="1">
+				<description>
+					Read the cache control register. Verify if the data cache and the code cache are enabled.
+				</description>
+			</teststep>
+			<teststep id="5" partition="2" repeat="1">
+				<description>
+					Deactivate both caches. Wait for next MFT
+				</description>
+			</teststep>
+			<teststep id="6" partition="3" repeat="1">
+				<description>
+					Read the cache control register. Verify if the data cache and the code cache are enabled.
+				</description>
+			</teststep>
+			<teststep id="7" partition="3" repeat="1">
+				<description>
+					Change to the second module schedule.
+				</description>
+			</teststep>
+			<teststep id="8" partition="1" repeat="1">
+				<description>
+					Read the cache control register. Verify if data cache is enabled and the code cache is disabled.
+				</description>
+			</teststep>
+			<teststep id="9" partition="2" repeat="1">
+				<description>
+					Read the cache control register. Verify that both caches are disabled.
+				</description>
+			</teststep>
+			<teststep id="10" partition="4" repeat="1">
+				<description>
+					Read the cache control register. Verify if the data cache and the code cache are enabled.
+				</description>
+			</teststep>
+			<teststep id="11" partition="3" repeat="1">
+				<description>
+					Read the cache control register. Verify if the data cache and the code cache are enabled.
+				</description>
+			</teststep>
+			<teststep id="12" partition="3" repeat="1">
+				<description>
+					Change to the original module schedule.
+				</description>
+			</teststep>
+			<teststep id="13" partition="0" repeat="1">
+				<description>
+					Read the cache control register. Verify if data cache is enabled and the code cache is disabled.
+				</description>
+			</teststep>
+			<teststep id="14" partition="1" repeat="1">
+				<description>
+					Read the cache control register. Verify if data cache is enabled and the code cache is disabled.
+				</description>
+			</teststep>
+			<teststep id="15" partition="2" repeat="1">
+				<description>
+					Read the cache control register. Verify that both caches are disabled.
+				</description>
+			</teststep>
+			<teststep id="16" partition="3" repeat="1">
+				<description>
+					Read the cache control register. Verify if the data cache and the code cache are enabled.
+				</description>
+			</teststep>
+		</testprocedure>		
+	</test>	<!-- Test id="1372" -->
+</TDF>

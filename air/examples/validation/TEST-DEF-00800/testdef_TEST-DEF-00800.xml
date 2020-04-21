@@ -1,0 +1,71 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-00800"
+			id="800" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.3"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<registered_traps async="" sync="0x09" />
+		<description>
+						Define a test where the MMU tables (L1, L2, L3) are overwritten by a
+			supervisor partition (with no additional pages mapped and the MMU enabled).
+			Check that this attempt is unsuccessful, and the event is captured and
+			handled by the HM, and the associated HM action is called. Test if the
+			remaining partitions continue to execute.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0330" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					Execute a regular operation (e.g. increment a variable). Wait for next MFT.
+				</description>
+			</teststep>
+			<teststep id="1" partition="1" repeat="1">
+				<description>
+					Attempt to write the Context MMU Table. Verify that a trap was raised.
+				</description>
+			</teststep>
+			<teststep id="2" partition="1" repeat="1">
+				<description>
+					Attempt to write a Level1 MMU Table entry. Verify that a trap was raised.
+				</description>
+			</teststep>
+			<teststep id="3" partition="1" repeat="1">
+				<description>
+					Attempt to write a Level2 MMU Table entry. Verify that a trap was raised.
+				</description>
+			</teststep>
+			<teststep id="4" partition="1" repeat="1">
+				<description>
+					Attempt to write a Level3 MMU Table entry. Verify that a trap was raised.
+				</description>
+			</teststep>
+			<teststep id="5" partition="0" repeat="1">
+				<description>
+					Execute a regular operation (e.g. increment a variable).
+				</description>
+			</teststep>
+			<teststep id="6" partition="0" repeat="1">
+				<description>
+					Terminate test. 
+				</description>
+			</teststep>			
+			
+		</testprocedure>		
+	</test>	<!-- Test id="800" -->
+</TDF>

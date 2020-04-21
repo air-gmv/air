@@ -1,0 +1,50 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-80300"
+			id="80300" 
+			partitions="2"
+			test_end_partition="1"
+			repeat="1" 
+			mtf="0.2"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<description>
+			Define a test with two partitions, where the first partition calls
+			the system call to disable interrupts, and then enters an infinite loop.
+			Check that the partition scheduler remains active.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0290" />	
+			<req name="AIR_SEP_0340" />	
+			<req name="AIR_SEP_0360" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					Call the disable interrupts system call.
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					Enter an infinite loop.
+				</description>
+			</teststep>
+			<teststep id="2" partition="1" repeat="1">
+				<description>
+					If this step is executed, the test is successfull.
+				</description>
+			</teststep>			
+			
+		</testprocedure>		
+	</test>	<!-- Test id="050" -->
+</TDF>

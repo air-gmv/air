@@ -1,0 +1,104 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-80060"
+			id="80060" 
+			partitions="3"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="1.5"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<!-- trap number should be in hexadecimal format -->
+		<registered_traps async="" sync="0x09" />			
+		<description>
+			Configure a test with 3 partitions with a plug-in where a shared
+			memory area (with 4KB) has the following permissions: P0: RW P1: R P2: No
+			Access Test if the application running in partition 0 can read and write
+			data from that memory area, partition 1 can only read data and an attempt
+			to write data generates a Health Monitor event, and P2 can neither read
+			or write without raising an HM event.
+		</description>
+		<configuration>
+			Modify the generated configuration to have a plugin of type PMK_PLUGIN_TEST with
+			one memory area of 4KB, with the following permissions:
+				P0 : RW
+				P1 : R
+				P2 : No access
+		</configuration>
+		<requirements>
+			<req name="AIR_SEP_0070" />	
+		</requirements>
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					Call get_usr_plugins_fst_memarea with the plugin type PMK_PLUGIN_TEST to obtain a 
+					pointer to the plug-in memory area.
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					Read the value of a integer at the start of the plug-in memory area.
+					Check that the health monitor callback counter remains at zero.
+				</description>
+			</teststep>
+			<teststep id="2" partition="0" repeat="1">
+				<description>
+					Write an integer value at the start of the plug-in memory area.
+					Check that the health monitor callback counter remains at zero.
+				</description>
+			</teststep>
+			<teststep id="3" partition="1" repeat="1">
+				<description>
+					Call get_usr_plugins_fst_memarea with the plugin type PMK_PLUGIN_TEST to obtain a 
+					pointer to the plug-in memory area.
+				</description>
+			</teststep>
+			<teststep id="4" partition="1" repeat="1">
+				<description>
+					Read the value of a integer at the start of the plug-in memory area.
+					Check that the health monitor callback counter remains at zero.
+				</description>
+			</teststep>
+			<teststep id="5" partition="1" repeat="1">
+				<description>
+					Write an integer value at the start of the plug-in memory area.
+					Check that the health monitor callback counter has increased to one.
+				</description>
+			</teststep>
+
+			<teststep id="6" partition="2" repeat="1">
+				<description>
+					Call get_usr_plugins_fst_memarea with the plugin type PMK_PLUGIN_TEST to obtain a 
+					pointer to the plug-in memory area.
+				</description>
+			</teststep>
+			<teststep id="7" partition="2" repeat="1">
+				<description>
+					Read the value of a integer at the start of the plug-in memory area.
+					Check that the health monitor callback counter has increased to one.
+				</description>
+			</teststep>
+			<teststep id="8" partition="2" repeat="1">
+				<description>
+					Write an integer value at the start of the plug-in memory area.
+					Check that the health monitor callback counter has increased to two.
+				</description>
+			</teststep>
+			<teststep id="9" partition="0" repeat="1">
+				<description>
+					Terminate test.
+				</description>
+			</teststep>			
+			
+		</testprocedure>		
+	</test>	<!-- Test id="050" -->
+</TDF>

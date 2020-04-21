@@ -1,0 +1,50 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-80810"
+			id="80810" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.3"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<registered_traps async="" sync="0x09" />
+		<description>
+			Define a test where a regular partition tries to write the kernel memory area, 	
+			namely the number of ticks since boot.
+			Check that a health monitor event is raised. Check that the remaining partitions
+			are not affected.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_1020" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					Calculate the initial MD5 of the relevant partition 1 memory zones.
+				</description>
+			</teststep>
+			<teststep id="1" partition="1" repeat="1">
+				<description>
+					Attempt to write the kernel memory area (number of ticks since boot). Verify that a trap was raised.
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					Check that the MD5 of the partition 1 memory zones has not been altered.
+				</description>
+			</teststep>
+		
+		</testprocedure>		
+	</test>	<!-- Test id="80810" -->
+</TDF>
