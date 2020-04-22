@@ -1,0 +1,50 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-01622"
+			id="1622" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="1.5"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		 <registered_traps async="" sync="" virt="" />  
+		<description>
+			Define a system with one or more partitions where an event raises a
+			non-repeatable error that is handled on MODULE level with action IGNORE. Check that
+			no action is taken and the system continues to operate (given that the
+			selected error does not re-occur once re-executed).
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0430" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					Generate a trap 0x81				
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					If this step is reached, the test has passed.
+				</description>
+			</teststep>
+			<teststep id="2" partition="1" repeat="1">
+				<description>
+					If this step is reached, the test has passed.
+				</description>
+			</teststep>			
+			
+		</testprocedure>		
+	</test>	<!-- Test id="1622" -->
+</TDF>

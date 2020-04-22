@@ -40,24 +40,18 @@ air_u32_t test_partition_init(air_name_ptr_t shm_name) {
 
     /* get partition configuration */
     air_syscall_get_partition_status(-1, &partition);
-
     /* get shared memory area */
     if (air_syscall_get_sharedmemory(shm_name, &sharedmemory) == AIR_NO_ERROR) {
-
         test_control = (test_control_t *)sharedmemory.address;
-
     } else {
-
         /* shutdown partition */
+        pprintf("Error: Failed getting shared memory\n");
         air_syscall_set_partition_mode(-1, AIR_MODE_IDLE);
     }
-
     /* busy wait until the until the test controller initializes */
     while (test_control->test_id == 0);
-
     /* get the current partition buffer */
     partition_buffer = &test_control->buffers[partition.index];
-
     /* return number of partition restarts */
     return partition.restart_count;
 }
@@ -77,13 +71,11 @@ air_u32_t test_step_announce(air_u32_t id, announce_flags flags) {
 
     /* advance the current partition test step */
     if ((flags & SILENT) != 0) {
-
         test_control->step_id = id + 1;
     }
 
     /* mark that partition finish its test steps */
     if ((flags & FINISH) != 0) {
-
         partition_buffer->p_done = 1;
     }
 
@@ -106,23 +98,24 @@ air_u32_t test_step_announce(air_u32_t id, announce_flags flags) {
  * @param line of the test step condition
  * @param res result of the test step
  */
-void __test_step_report(char *cond, char *file, int line, test_result res) {
-
-    /*pprintf("|  %04x%03x|%x|%01x:%02x  |\n",
+void test_step_report(char *cond, int tvalue, char *file, int line, test_result res) {
+    printf("TEST| STEP ID %04x ITERATION %03x| RESULT %x\n",
             partition_buffer->step_id,
             partition_buffer->iterations,
-            res,
-            0,
-            0);*/
-
+            res);
+    
     /* store the test step result */
     partition_buffer->p_pass &= res;
 
     /* print error line */
-    if (FAILURE == res) {
-
-        pprintf("p%i (%s:%i) : %s failed\n",
-                partition.index, file, line, cond);
+    if (TEST_FAILURE == res) {
+        if (file != NULL)
+            pprintf("p%i (%s:%i) : %s %d\n",
+                partition.index, file, line, cond, tvalue);
+        else
+            pprintf("p%i: %s %d \n",
+                partition.index, cond, tvalue);
+            
     }
 
     /* increment test step if required */
@@ -144,7 +137,6 @@ void __test_step_report(char *cond, char *file, int line, test_result res) {
  *       test as successful
  */
 void test_finish(test_result result) {
-
     partition_buffer->p_done = 1;
     partition_buffer->p_pass &= result;
     for (;;);

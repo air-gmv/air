@@ -1,0 +1,88 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-01742"
+			id="1742" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.6"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR"
+			apex="IMASPEX">
+		<description>
+						Create a unitary test for the READ_SAMPLING_MESSAGE_CONDITIONAL
+			function.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0700" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					 Call READ_SAMPLING_MESSAGE_CONDITIONAL with an invalid port id (Invalid Param).
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					Create two sampling ports with distinct directions (no error).
+				</description>
+			</teststep>
+			<teststep id="2" partition="0" repeat="1">
+				<description>
+					READ_SAMPLING_MESSAGE_CONDITIONAL from the SOURCE port (Invalid Port).
+				</description>
+			</teststep>
+			<teststep id="3" partition="0" repeat="1">
+				<description>
+					READ_SAMPLING_MESSAGE_CONDITIONAL with an invalid REF_TIME_STAMP
+				</description>
+			</teststep>
+			<teststep id="4" partition="0" repeat="1">
+				<description>
+					READ_SAMPLING_MESSAGE_CONDITIONAL with an NULL MESSAGE_ADDR.
+				</description>
+			</teststep>
+			<teststep id="5" partition="0" repeat="1">
+				<description>
+					READ_SAMPLING_MESSAGE_CONDITIONAL from the DESTINATION port (Currently empty: No action).
+				</description>
+			</teststep>
+			<teststep id="6" partition="0" repeat="1">
+				<description>
+					Wait for next mtf.
+				</description>
+			</teststep>
+			<teststep id="7" partition="1" repeat="1">
+				<description>
+					Create two sampling ports with distinct directions (no error expected).
+				</description>
+			</teststep>
+			<teststep id="8" partition="1" repeat="1">
+				<description>
+					Write to source queuing port (No error)
+				</description>
+			</teststep>	
+			<teststep id="9" partition="0" repeat="1">
+				<description>
+					READ_SAMPLING_MESSAGE_CONDITIONAL from the DESTINATION port (No error).
+				</description>
+			</teststep>	
+			<teststep id="10" partition="0" repeat="1">
+				<description>
+					READ_SAMPLING_MESSAGE_CONDITIONAL from the DESTINATION port with an invalid REF_TIME_STAMP. (No Action)
+				</description>
+			</teststep>	
+			
+		</testprocedure>		
+	</test>	<!-- Test id="1742" -->
+</TDF>

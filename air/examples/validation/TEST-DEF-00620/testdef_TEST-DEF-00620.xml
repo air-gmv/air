@@ -1,0 +1,66 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-00620"
+			id="620" 
+			partitions="3"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.3"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<!-- trap number should be in hexadecimal format -->
+		<registered_traps async="" sync="0x01" />			
+		<description>
+			Test if the execution of a jump instruction into the data area, for
+			both valid and invalid opcodes, in a user mode (non-previledged)
+			partition is captured by the LEON and handled by the HM, and the associated HM
+			action is called. Check that the remaining partitions are not affected.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0430" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					Define a function pointer and make it point to the address of an internal variable.
+					Initialise that variable to all zeros (invalid opcode).
+					Call the function.
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					Check that the hm_part_callback was called with the i_error parameter set to
+					PMK_SEG_ERR.
+				</description>
+			</teststep>
+			<teststep id="2" partition="0" repeat="1">
+				<description>
+					Modify the contents of the variable to 0x01000000.
+					Call the function again.
+				</description>
+			</teststep>
+			<teststep id="3" partition="0" repeat="1">
+				<description>
+					Check that the hm_part_callback was called with the i_error parameter set to
+					PMK_SEG_ERR.
+				</description>
+			</teststep>
+			<teststep id="4" partition="1" repeat="1">
+				<description>
+					Terminate test.
+				</description>
+			</teststep>			
+			
+		</testprocedure>		
+	</test>	<!-- Test id="050" -->
+</TDF>

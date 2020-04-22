@@ -50,12 +50,12 @@ static air_boolean_t printf_inited = false;
  * @ingroup lib_pprintf
  */
 static char partition_colors[][6] = {
-    "\x1b[33m\0",       /**< color yellow   */
-    "\x1b[32m\0",       /**< color green    */
-    "\x1b[31m\0",       /**< color red      */
-    "\x1b[34m\0",       /**< color blue     */
-    "\x1b[36m\0",       /**< color cyan     */
-    "\x1b[35m\0",       /**< color magenta  */
+    COLOR_KYELLOW,       /**< color yellow   */
+    COLOR_KGREEN,       /**< color green    */
+    COLOR_KRED,       /**< color red      */
+    COLOR_KBLUE,       /**< color blue     */
+    COLOR_KCYAN,       /**< color cyan     */
+    COLOR_KMAGENTA,       /**< color magenta  */
 };
 
 /**
