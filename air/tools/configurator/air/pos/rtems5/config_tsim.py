@@ -6,9 +6,11 @@
 __author__ = '$(AIR_RUNNER_USER)'
 
 import os
+import air
 import utils
 from air import *
 import utils.file as file_tools
+import air.configurations as air_configuration
 
 # @brief Name
 name = "rtems5"
