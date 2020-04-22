@@ -34,6 +34,7 @@ CURRENT_PATH=$(shell pwd)
 # reguired AIR headers
 AIR_HEADERS=${'\\'}
 -DAIR_HYPERVISOR${'\\'}
+-I$(AIR_ROOT)/libs/libprintf/include${'\\'}
 ${template.get_headers_directories(libair_headers)}\
 
 # RTEMS build and install directories
