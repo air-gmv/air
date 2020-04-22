@@ -111,7 +111,7 @@ class Configuration(object):
         # get supported pos
         self.supported_pos = {}
         for pos in pos_select:
-            pos_path = os.path.join(air.POS_DIRECTORY, pos, 'config.py')
+            pos_path = os.path.join(air.POS_DIRECTORY, pos, 'config_' + bsp + '.py')
             module = imp.load_source(pos, pos_path)
             if not hasattr(module, 'supported_libraries'):
                 module.supported_libraries = []
