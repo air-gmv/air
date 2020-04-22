@@ -1,0 +1,115 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-80080"
+			id="80080" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.3"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<!-- trap number should be in hexadecimal format -->
+		<registered_traps async="" sync="0x07" />			
+		<description>
+			Create a test with two partitions, with similar code, each with at
+			least one task. Corrupt the value of both _Thread_Executing and 
+			_Thread_Heir variables in the first partition, and check that only
+			the first partition raises Health Monitor events.
+			The second partition should continue its execution without changes.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0080" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+      <teststep id="0" partition="0" repeat="1">
+        <description>
+          Create two tasks.
+        </description>
+      </teststep>
+      <teststep id="1" partition="0" repeat="1">
+        <description>
+          Start the first task, assigning it to a function that calculates the MD5 of the POS code section, and then sleeps. At each re-activation, the function should
+          re-calculate the MD5 and compare it to the value of the previous iteration (and then sleep again).
+        </description>
+      </teststep>
+      <teststep id="2" partition="0" repeat="1">
+        <description>
+          Start the second task, assigning it to a function that calculates the MD5 of the PAL code section, and then sleeps. At each re-activation, the function should
+          re-calculate the MD5 and compare it to the value of the previous iteration (and then sleep again).
+        </description>
+      </teststep>
+      <teststep id="3" partition="0" repeat="1">
+        <description>
+          Check that both tasks have run, and then sleep to repeat the process in the other partition
+        </description>
+      </teststep>
+      <teststep id="4" partition="1" repeat="1">
+        <description>
+          Create two tasks.
+        </description>
+      </teststep>
+      <teststep id="5" partition="1" repeat="1">
+        <description>
+          Start the first task, assigning it to a function that calculates the MD5 of the POS code section, and then sleeps. At each re-activation, the function should
+          re-calculate the MD5 and compare it to the value of the previous iteration (and then sleep again).
+        </description>
+      </teststep>
+      <teststep id="6" partition="1" repeat="1">
+        <description>
+          Start the second task, assigning it to a function that calculates the MD5 of the PAL code section, and then sleeps. At each re-activation, the function should
+          re-calculate the MD5 and compare it to the value of the previous iteration (and then sleep again).
+        </description>
+      </teststep>
+      <teststep id="7" partition="1" repeat="1">
+        <description>
+          Check that both tasks have run, and then sleep to repeat the process in the other partition
+        </description>
+      </teststep>
+      <teststep id="8" partition="0" repeat="1">
+        <description>
+          Overwrite the value of RTEMS variables _Thread_Executing and _Thread_Heir to an invalid value (-1).
+        </description>
+      </teststep>
+      <teststep id="9" partition="0" repeat="1">
+        <description>
+          Suspend main thread (with rtems_task_wake_after (1) ).
+        </description>
+      </teststep>
+      <teststep id="10" partition="0" repeat="1">
+        <description>
+          Check that the health monitor partition callback was called with the error PMK_SEG_ERR and put partition in idle mode.
+        </description>
+      </teststep>
+      <teststep id="11" partition="1" repeat="1">
+        <description>
+          Suspend main thread (with rtems_task_wake_after (1))
+        </description>
+      </teststep>
+      <teststep id="12" partition="1" repeat="1">
+        <description>
+          Recalculate the MD5 of the relevant sections, and check that it has not changed
+        </description>
+      </teststep>
+      <teststep id="13" partition="1" repeat="1">
+        <description>
+          Recalculate the MD5 of the relevant sections, and check that it has not changed
+        </description>
+      </teststep>
+      <teststep id="14" partition="1" repeat="1">
+        <description>
+          Check that both threads are executed with the same behaviour as before.
+        </description>
+      </teststep>
+		</testprocedure>		
+	</test>	<!-- Test id="80080" -->
+</TDF>

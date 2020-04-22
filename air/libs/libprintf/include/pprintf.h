@@ -15,6 +15,18 @@
 #define __PRINTF_H__
 #include <stdarg.h>
 
+
+#define COLOR_KNRM                             "\x1B[0m\0"
+#define COLOR_KRED                             "\x1B[31m\0"
+#define COLOR_KGREEN                           "\x1B[32m\0"
+#define COLOR_KYELLOW                          "\x1B[33m\0"
+#define COLOR_KBLUE                            "\x1B[34m\0"
+#define COLOR_KMAGENTA                         "\x1B[35m\0"
+#define COLOR_KCYAN                            "\x1B[36m\0"
+#define COLOR_KWHITE                           "\x1B[37m\0"
+#define COLOR_RESET                            "\033[0m\0"
+
+
 #if defined(stdin)
 #else
 typedef enum {
