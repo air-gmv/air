@@ -1,0 +1,185 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-80010"
+			id="80010" 
+			partitions="3"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.3"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR">
+		<!-- trap number should be in hexadecimal format -->
+		<registered_traps async="" sync="0x09" />			
+		<description>
+			The pmk_linkcmds_vars.h holds references to the text, data and bss
+			sections of each partition. This test shall try to write data into each of
+			these sections from all partitions (other than the test partition itself).
+			Each attempt shall raise a Health Monitor event that shall be captured.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0010" />	
+			<req name="AIR_SEP_0040" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					Get a pointer to the text section of partition 1.
+					Try to write an integer to the retrieved address.
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description> Check that the hm_part_callback was called with the i_error parameter set to PMK_SEG_ERR.
+				</description>
+			</teststep>
+			<teststep id="2" partition="0" repeat="1">
+				<description>
+					Get a pointer to the data section of partition 1.
+					Try to write an integer to the retrieved address.
+				</description>
+			</teststep>
+			<teststep id="3" partition="0" repeat="1">
+				<description>
+					Check that the hm_part_callback was called with the i_error parameter set to
+					PMK_SEG_ERR.
+				</description>
+			</teststep>
+			<teststep id="4" partition="0" repeat="1">
+				<description>
+					Get a pointer to the bss section of partition 1.
+					Try to write an integer to the retrieved address.
+				</description>
+			</teststep>
+			<teststep id="5" partition="0" repeat="1">
+				<description>
+					Check that the hm_part_callback was called with the i_error parameter set to
+					PMK_SEG_ERR.
+				</description>
+			</teststep>
+			<teststep id="6" partition="0" repeat="1">
+				<description>
+					Get a pointer to the text section of partition 2.
+					Try to write an integer to the retrieved address.
+				</description>
+			</teststep>
+			<teststep id="7" partition="0" repeat="1">
+				<description>
+					Check that the hm_part_callback was called with the i_error parameter set to
+					PMK_SEG_ERR.
+				</description>
+			</teststep>
+			<teststep id="8" partition="0" repeat="1">
+				<description>
+					Get a pointer to the data section of partition 2.
+					Try to write an integer to the retrieved address.
+				</description>
+			</teststep>
+			<teststep id="9" partition="0" repeat="1">
+				<description>
+					Check that the hm_part_callback was called with the i_error parameter set to
+					PMK_SEG_ERR.
+				</description>
+			</teststep>
+			<teststep id="10" partition="0" repeat="1">
+				<description>
+					Get a pointer to the bss section of partition 2.
+					Try to write an integer to the retrieved address.
+				</description>
+			</teststep>
+			<teststep id="11" partition="0" repeat="1">
+				<description>
+					Check that the hm_part_callback was called with the i_error parameter set to
+					PMK_SEG_ERR.
+				</description>
+			</teststep>
+
+			<teststep id="12" partition="1" repeat="1">
+				<description>
+					Get a pointer to the text section of partition 0.
+					Try to write an integer to the retrieved address.
+				</description>
+			</teststep>
+			<teststep id="13" partition="1" repeat="1">
+				<description>
+					Check that the hm_part_callback was called with the i_error parameter set to
+					PMK_SEG_ERR.
+				</description>
+			</teststep>
+			<teststep id="14" partition="1" repeat="1">
+				<description>
+					Get a pointer to the data section of partition 0.
+					Try to write an integer to the retrieved address.
+				</description>
+			</teststep>
+			<teststep id="15" partition="1" repeat="1">
+				<description>
+					Check that the hm_part_callback was called with the i_error parameter set to
+					PMK_SEG_ERR.
+				</description>
+			</teststep>
+			<teststep id="16" partition="1" repeat="1">
+				<description>
+					Get a pointer to the bss section of partition 0.
+					Try to write an integer to the retrieved address.
+				</description>
+			</teststep>
+			<teststep id="17" partition="1" repeat="1">
+				<description>
+					Check that the hm_part_callback was called with the i_error parameter set to
+					PMK_SEG_ERR.
+				</description>
+			</teststep>
+			<teststep id="18" partition="1" repeat="1">
+				<description>
+					Get a pointer to the text section of partition 2.
+					Try to write an integer to the retrieved address.
+				</description>
+			</teststep>
+			<teststep id="19" partition="1" repeat="1">
+				<description>
+					Check that the hm_part_callback was called with the i_error parameter set to
+					PMK_SEG_ERR.
+				</description>
+			</teststep>
+			<teststep id="20" partition="1" repeat="1">
+				<description>
+					Get a pointer to the data section of partition 2.
+					Try to write an integer to the retrieved address.
+				</description>
+			</teststep>
+			<teststep id="21" partition="1" repeat="1">
+				<description>
+					Check that the hm_part_callback was called with the i_error parameter set to
+					PMK_SEG_ERR.
+				</description>
+			</teststep>
+			<teststep id="22" partition="1" repeat="1">
+				<description>
+					Get a pointer to the bss section of partition 2.
+					Try to write an integer to the retrieved address.
+				</description>
+			</teststep>
+			<teststep id="23" partition="1" repeat="1">
+				<description>
+					Check that the hm_part_callback was called with the i_error parameter set to
+					PMK_SEG_ERR.
+				</description>
+			</teststep>
+			<teststep id="24" partition="0" repeat="1">
+				<description>
+					Terminate test.
+				</description>
+			</teststep>			
+			
+		</testprocedure>		
+	</test>	<!-- Test id="050" -->
+</TDF>

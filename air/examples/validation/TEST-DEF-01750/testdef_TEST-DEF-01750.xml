@@ -1,0 +1,212 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-01750"
+			id="1750" 
+			partitions="4"
+			test_end_partition="3"
+			repeat="1" 
+			mtf="0.6"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMSIMPR"
+			apex="IMASPEX">
+		<description>
+						Test the GET_MODULE_SCHEDULE_ID and GET_MODULE_SCHEDULE_STATUS
+			functions work from a regular user mode partition without any special
+			permissions, and that the returned values are correct before and after a call to
+			SET_MODULE_SCHEDULE. Test this immediately after the call to SET_MODULE_SCHEDULE, and in
+			the next Major Time Frame.
+		</description>
+		<requirements>
+			<req name="AIR_SEP_0120" />	
+		</requirements>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					TSAL_INIT; set partition mode to NORMAL; expect NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="1" partition="1" repeat="1">
+				<description>
+					TSAL_INIT; set partition mode to NORMAL; expect NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="2" partition="0" repeat="1">
+				<description>
+					Attempt to obtain a schedule id using a name that doesn't 
+				identify an existing schedule; expect INVALID_CONFIG.
+				</description>
+			</teststep>			
+			<teststep id="3" partition="0" repeat="1">
+				<description>
+					Obtain schedule id of the alternative schedule; expect NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="4" partition="0" repeat="1">
+				<description>
+					Obtain schedule status; expect NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="5" partition="0" repeat="1">
+				<description>
+					Verify: current schedule id != alternative schedule id.
+				</description>
+			</teststep>
+			<teststep id="6" partition="0" repeat="1">
+				<description>
+					Verify: next schedule id 	== current (there is no sched pending).
+				</description>
+			</teststep>
+			<teststep id="7" partition="1" repeat="1">
+				<description>
+					Attempt to obtain a schedule id using a name that doesn't 
+				identify an existing schedule; expect INVALID_CONFIG.
+				</description>
+			</teststep>			
+			<teststep id="8" partition="1" repeat="1">
+				<description>
+					Obtain schedule id of the alternative schedule; expect NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="9" partition="1" repeat="1">
+				<description>
+					Obtain schedule status; expect NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="10" partition="1" repeat="1">
+				<description>
+					Verify: current schedule id != alternative schedule id.
+				</description>
+			</teststep>
+			<teststep id="11" partition="1" repeat="1">
+				<description>
+					Verify: next schedule id 	== current (there is no sched pending).
+				</description>
+			</teststep>
+			<teststep id="12" partition="0" repeat="1">
+				<description>
+					Attempt to set module schedule using an invalid schedule id; 
+				expect INVALID_PARAM. 
+				</description>
+			</teststep>			
+			<teststep id="13" partition="0" repeat="1">
+				<description>
+					Set module schedule to the alternative schedule; expect NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="14" partition="0" repeat="1">
+				<description>
+					(On the same MTF of the schedule change call) Obtain schedule status.
+				Expect NO_ERROR.					
+				</description>
+			</teststep>
+			<teststep id="15" partition="0" repeat="1">
+				<description>
+					(On the same MTF of the schedule change call) Verify: 
+				current schedule id != alternative schedule id.
+				</description>
+			</teststep>			
+			<teststep id="16" partition="0" repeat="1">
+				<description>
+					(On the same MTF of the schedule change call) Verify: 
+				next schedule id 	== alternate sched id (sched is pending).
+				</description>
+			</teststep>	
+			<teststep id="17" partition="0" repeat="1">
+				<description>
+					(On the same MTF of the schedule change call) Verify: 
+				last sched switch 	== 0 (no sched switch has occurred).
+				</description>
+			</teststep>					
+			<teststep id="18" partition="1" repeat="1">
+				<description>
+					(On the same MTF of the schedule change call) Obtain schedule status.
+				Expect NO_ERROR.					
+				</description>
+			</teststep>
+			<teststep id="19" partition="1" repeat="1">
+				<description>
+					(On the same MTF of the schedule change call) Verify: 
+				current schedule id != alternative schedule id.
+				</description>
+			</teststep>			
+			<teststep id="20" partition="1" repeat="1">
+				<description>
+					(On the same MTF of the schedule change call) Verify: 
+				next schedule id 	== alternate sched id (sched is pending).
+				</description>
+			</teststep>	
+			<teststep id="21" partition="1" repeat="1">
+				<description>
+					(On the same MTF of the schedule change call) Verify: 
+				last sched switch 	== 0 (no sched switch has occurred).
+				</description>
+			</teststep>
+			<teststep id="22" partition="2" repeat="1">
+				<description>
+					TSAL_INIT; set partition mode to NORMAL; expect NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="23" partition="3" repeat="1">
+				<description>
+ 					TSAL_INIT; set partition mode to NORMAL; expect NO_ERROR.
+				</description>
+			</teststep>
+			<teststep id="24" partition="2" repeat="1">
+				<description>
+					Obtain schedule id of the alternative schedule; expect NO_ERROR. 					
+				</description>
+			</teststep>
+			<teststep id="25" partition="2" repeat="1">
+				<description>
+					(Schedule change should be effective) Obtain schedule status.
+				Expect NO_ERROR. 					 
+				</description>
+			</teststep>
+			<teststep id="26" partition="2" repeat="1">
+				<description>
+					(Schedule change should be effective) Verify: 
+				current schedule id == alternative schedule id.	 
+				</description>
+			</teststep>
+			<teststep id="27" partition="2" repeat="1">
+				<description>
+					(Schedule change should be effective) Verify: 
+				last sched switch == 180 ticks * ms_per_tick * 1000 (the abs time of the schedule switch).	 
+				</description>
+			</teststep>			
+			<teststep id="28" partition="3" repeat="1">
+				<description>
+					Obtain schedule id of the alternative schedule; expect NO_ERROR. 					
+				</description>
+			</teststep>
+			<teststep id="29" partition="3" repeat="1">
+				<description>
+					(Schedule change should be effective) Obtain schedule status.
+				Expect NO_ERROR. 					 
+				</description>
+			</teststep>
+			<teststep id="30" partition="3" repeat="1">
+				<description>
+					(Schedule change should be effective) Verify: 
+				current schedule id == alternative schedule id. 					 
+				</description>
+			</teststep>
+			<teststep id="31" partition="3" repeat="1">
+				<description>
+					(Schedule change should be effective) Verify: 
+				last sched switch == 180 ticks * ms_per_tick * 1000 (the abs time of the schedule switch).	 
+				</description>
+			</teststep>			
+		</testprocedure>		
+	</test>	<!-- Test id="1750" -->
+</TDF>
