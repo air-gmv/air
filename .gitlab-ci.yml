@@ -46,6 +46,9 @@ build_sparc:
 config_arm:
     stage: sconfig-arm
     script:
+        -  cd pos/rtems5
+        -  git checkout 1-arm-features-are-being-applied-on-wrong-version-of-rtems
+        -  cd ../..
         -  cp /home/taste/work/gitlab/.arm_config . #local file of VM at ~/work/gitlab/
         - ./configure -f .arm_config
         
