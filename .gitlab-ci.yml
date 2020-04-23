@@ -2,8 +2,8 @@
 # Executed in TASTE VM centralized in 192.19.13.167
 # author: $(AIR_RUNNER_USER) @GMV 2020
 
-#variables:
-#    GIT_CLEAN_FLAGS: none
+variables:
+    GIT_CLEAN_FLAGS: none
 
 default:
     before_script:
