@@ -40,7 +40,7 @@ int _rtems_clock_get(rtems_interval *t1)
 #else
     *t1 = rtems_clock_get_ticks_since_boot();
 #endif
-    return 1;
+    return RTEMS_SUCCESSFUL;
 }
 /* Test HM callbacks        ***********************************************	*/
 void partition_HM_callback(air_state_e state_id,air_error_e i_error) {
@@ -92,6 +92,7 @@ int test_main (void) {
 		/* EXPECTED: 
 		   The clock tick difference should be equal to 1 */			   
 		ret |= t2 == t1 + 1 ? RTEMS_SUCCESSFUL : 1;
+                //printf ("->r%d-t%d ", ret, t2-t1 );
 
 	} /* end for */
 	if (RTEMS_SUCCESSFUL == ret) {
@@ -103,22 +104,22 @@ int test_main (void) {
 									RESULT_DIFF | RESULT_TYPE_VALUE,
 									t2-t1);
 	}
+
 	rtems_task_wake_after(1);
 
     /* Test Step 2
     	Check that the last step differs (MTF - P0) ticks execution window from 
-		the previously stored value. */
+		the previously stored value.  */
     test_step_announce(2,1);
 
     /* Test step 2 code */
 	ret = RTEMS_SUCCESSFUL;
-	
+        
 	/* EXPECTED: 
 	   The rtems_clock_get function call should be successfull */
 	ret |=  _rtems_clock_get(&t1);
 
-	/* EXPECTED: 
-	   The clock tick difference should be equal to 31 */
+
 	ret |= t1 == t2 + 31 ? RTEMS_SUCCESSFUL : 1;
 	
 
@@ -176,7 +177,7 @@ int test_main (void) {
 		ret |=  _rtems_clock_get(&t2);
 		
 		/* EXPECTED: 
-		   The clock tick difference is equal to 1 */			   
+		   The clock tick difference is equal to 1 */
 		ret |= t2 == t1 + 1 ? RTEMS_SUCCESSFUL : 1;
 
 	} /* end for */
@@ -245,7 +246,6 @@ int test_main (void) {
 		/* EXPECTED: 
 		   The clock tick difference is equal to 1 */
 		ret |= t2 == t1 + 1 ? RTEMS_SUCCESSFUL : 1;
-
 	} /* end for */
 
 	if (RTEMS_SUCCESSFUL == ret) {

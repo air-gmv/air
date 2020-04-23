@@ -37,10 +37,13 @@
       <runprofile version="9">
         <runcommandpicklist>
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+          <runcommandpicklistitem>do</runcommandpicklistitem>
+          <runcommandpicklistitem>doit.sh</runcommandpicklistitem>
+          <runcommandpicklistitem>./doit.sh</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <runcommand>./doit.sh</runcommand>
         <rundir>.</rundir>
-        <buildfirst>false</buildfirst>
+        <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>
         <remove-instrumentation>0</remove-instrumentation>
         <environment>
