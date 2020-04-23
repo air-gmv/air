@@ -417,6 +417,6 @@
 	
 	</Connection_Table>
 	
-  <AIR_Configuration TicksPerSecond="1000" RequiredCores="1"/>
+  <AIR_Configuration TicksPerSecond="500" RequiredCores="1"/>
 
 </ARINC_653_Module>

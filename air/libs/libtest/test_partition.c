@@ -42,7 +42,7 @@ air_u32_t test_partition_init(air_name_ptr_t shm_name) {
     air_syscall_get_partition_status(-1, &partition);
     /* get shared memory area */
     if (air_syscall_get_sharedmemory(shm_name, &sharedmemory) == AIR_NO_ERROR) {
-        test_control = (test_control_t *)sharedmemory.address;
+        test_control = (test_control_t *) sharedmemory.address;
     } else {
         /* shutdown partition */
         pprintf("Error: Failed getting shared memory\n");
@@ -99,28 +99,28 @@ air_u32_t test_step_announce(air_u32_t id, announce_flags flags) {
  * @param res result of the test step
  */
 void test_step_report(char *cond, int tvalue, char *file, int line, test_result res) {
-    printf("TEST| STEP ID %04x ITERATION %03x| RESULT %x\n",
-            partition_buffer->step_id,
-            partition_buffer->iterations,
-            res);
-    
+
     /* store the test step result */
     partition_buffer->p_pass &= res;
 
     /* print error line */
     if (TEST_FAILURE == res) {
-        if (file != NULL)
+        printf("TEST| STEP ID %04x ITERATION %03x| FAILED\n",
+                partition_buffer->step_id,
+                partition_buffer->iterations);
+
+        if (file != NULL) {
             pprintf("p%i (%s:%i) : %s %d\n",
-                partition.index, file, line, cond, tvalue);
-        else
+                    partition.index, file, line, cond, tvalue);
+        } else {
             pprintf("p%i: %s %d \n",
-                partition.index, cond, tvalue);
-            
+                    partition.index, cond, tvalue);
+        }
     }
 
     /* increment test step if required */
     if (partition_buffer->iterations == 0 &&
-        (partition_buffer->flags & SILENT) == 0) {
+            (partition_buffer->flags & SILENT) == 0) {
 
         test_control->step_id = partition_buffer->step_id + 1;
     }
