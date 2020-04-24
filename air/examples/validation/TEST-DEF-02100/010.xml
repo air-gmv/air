@@ -170,7 +170,7 @@
                                   Partition Table
   ======================================================================== -->
   <Partition Criticality="LEVEL_A" EntryPoint="Initial" PartitionIdentifier="0" PartitionName="Master_Test_Driver" SystemPartition="true">
-    <air_partition_ext xmlns="PartitionExt" air_partition_personality="RTEMSIMPR">
+    <air_partition_ext xmlns="PartitionExt" air_partition_personality="RTEMS5">
       <type IOP="false" test="NONE" />
       <cache code="true" data="true" permission="true" />
       <properties localtime="false" supervisor="true" tod_sync="false" user_libs="IMASPEX" />

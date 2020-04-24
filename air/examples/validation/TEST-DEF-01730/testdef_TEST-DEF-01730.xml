@@ -15,7 +15,7 @@
 			mtf="0.5"
 			ms_per_tick="10"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR"
+			personality="RTEMS5"
 			apex="IMASPEX">
 		<description>
 						Create a test where one partition writes multicast messages to a

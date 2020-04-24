@@ -10,15 +10,15 @@
 /* ***********************************************************************	*/
 
 #include <rtems.h>
-#include <pmk_hm.h>
-#include <pal.h>
-#include <pal_pprintf.h>
+
+#include <air.h>
+#include <air_test.h>
 
 /* Test Printf *******************************************************	*/
 int test_printf (void) {
 	
 	while(1) {
-		pal_pprintf_process();
+		control_partition_init(1, TEST_MEMSHARE);
 		/* TODO : this value is somewhat random */
 		rtems_task_wake_after(80);
 	}	
