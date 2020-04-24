@@ -15,7 +15,7 @@
 			mtf="0.3"
 			ms_per_tick="10"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR">
+			personality="RTEMS5">
 		<registered_traps async="" sync="0xF0" />
 		<description>
 						Define a test with one supervisor partition, which has access to the

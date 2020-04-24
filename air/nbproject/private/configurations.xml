@@ -172,6 +172,22 @@
               <in>usr_plugins.c</in>
               <in>usr_syscall.c</in>
             </df>
+            <df name="p0">
+              <in>P0testdef.c</in>
+              <in>P0testdef.h</in>
+            </df>
+            <df name="p1">
+              <in>P1testdef.c</in>
+              <in>P1testdef.h</in>
+            </df>
+            <df name="p2">
+              <in>P2testdef.c</in>
+              <in>P2testdef.h</in>
+            </df>
+            <df name="p3">
+              <in>P3testprint.c</in>
+            </df>
+            <in>testdef.h</in>
           </df>
         </df>
         <df name="iop_1553">
@@ -595,24 +611,6 @@
             <df name="p2">
               <in>P2testprint.c</in>
             </df>
-          </df>
-          <df name="TEST-DEF-00045">
-            <df name="p0">
-              <in>P0testdef.c</in>
-              <in>P0testdef.h</in>
-            </df>
-            <df name="p1">
-              <in>P1testdef.c</in>
-              <in>P1testdef.h</in>
-            </df>
-            <df name="p2">
-              <in>P2testdef.c</in>
-              <in>P2testdef.h</in>
-            </df>
-            <df name="p3">
-              <in>P3testprint.c</in>
-            </df>
-            <in>testdef.h</in>
           </df>
           <df name="TEST-DEF-00500">
             <df name="p0">
