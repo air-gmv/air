@@ -15,7 +15,7 @@
 			mtf="1"
 			ms_per_tick="10"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR"
+			personality="RTEMS5"
 			apex="IMASPEX">
 		<description>
 						Define two schedules: 0) P0, P1, P2, P3 1) P1, P2, P4, P3 Modify
