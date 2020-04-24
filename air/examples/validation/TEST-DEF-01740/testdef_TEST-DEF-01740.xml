@@ -15,7 +15,7 @@
 			mtf="0.3"
 			ms_per_tick="10"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR"
+			personality="RTEMS5"
 			apex="IMASPEX">
 		<description>
 						Create a unitary test for the READ_UPDATED_SAMPLING_MESSAGE

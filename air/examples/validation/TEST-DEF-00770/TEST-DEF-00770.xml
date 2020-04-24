@@ -180,7 +180,7 @@
 				SystemPartition="false" 
 				EntryPoint="test_main">
 		<!-- AIR PARTITION EXTENSION -->
-		<air_partition_ext xmlns="PartitionExt" air_partition_personality="RTEMSIMPR">
+		<air_partition_ext xmlns="PartitionExt" air_partition_personality="RTEMS5">
 			<type IOP="false" test="TEST_GMV_VAL"/>
 			<cache code="true" data="true" permission="true"/>
 			<properties localtime="false" supervisor="false" tod_sync="false" user_libs="IMASPEX"/>
@@ -196,7 +196,7 @@
 				SystemPartition="false" 
 				EntryPoint="test_printf">
 		<!-- AIR PARTITION EXTENSION -->
-		<air_partition_ext xmlns="PartitionExt" air_partition_personality="RTEMSIMPR">
+		<air_partition_ext xmlns="PartitionExt" air_partition_personality="RTEMS5">
 			<type IOP="false" test="NONE"/>
 			<cache code="true" data="true" permission="true"/>
 			<properties localtime="false" supervisor="false" tod_sync="false" user_libs="IMASPEX"/>

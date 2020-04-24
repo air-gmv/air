@@ -11,7 +11,7 @@ default:
         - pwd
         - ls
         - export RTEMS410=/opt/rtems-4.10/bin
-        - export AIR=/home/gitlab-runner/builds/J/0/AIR/jPaxxwjh/air-dev/air
+        - export AIR=`pwd`
         - export PATH=$PATH:$AIR
         - export PATH=$PATH:$RTEMS410
         - export GIT_SSL_NO_VERIFY=1
@@ -28,30 +28,43 @@ default:
 stages: 
     - sconfig-sparc
     - sbuild-sparc
+    - test_0009_sparc
     - sconfig-arm
     - sbuild-arm
 
 config_sparc:
     stage: sconfig-sparc
     script:
-        -  cp /home/taste/work/gitlab/.sparc_config . #local file of VM at ~/work/gitlab/
+        - cp $AIR/../utils/gitlab-runner/.sparc_config .
         - ./configure -f .sparc_config
         
 build_sparc:        
     stage: sbuild-sparc
     script:
-        - make clean
         - make
         
 config_arm:
     stage: sconfig-arm
     script:
-        -  cp /home/taste/work/gitlab/.arm_config . #local file of VM at ~/work/gitlab/
+        -  cp $AIR/../utils/gitlab-runner/.arm_config . 
         - ./configure -f .arm_config
         
 build_arm:        
     stage: sbuild-arm
     script:
+        - make
+
+0009_sparc:
+    stage: test_0009_sparc
+    script:
+        - cd $AIR/examples/validation/TEST-DEF-00009
+        - configure
         - make clean
         - make
-        
+        - cp $AIR/../utils/gitlab-runner/* .
+        - ls
+        - ./doit.sh
+        - ./testcheck.py
+        - cd $AIR
+    environment:
+        name: SPARC LEON4
