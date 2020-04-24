@@ -15,7 +15,7 @@
 			mtf="0.4"
 			ms_per_tick="10"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR">
+			personality="RTEMS5">
 		<description>
 			Implements the ARINC-653 Part 3 tests related to the SET_PARTITION_MODE API.
 		</description>

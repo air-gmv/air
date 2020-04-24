@@ -15,7 +15,7 @@
 			mtf="0.3"
 			ms_per_tick="10"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR">
+			personality="RTEMS5">
 		<registered_traps async="" sync="0x09" />
 		<description>
 			Define a test where a regular partition tries to write the kernel memory area, 	

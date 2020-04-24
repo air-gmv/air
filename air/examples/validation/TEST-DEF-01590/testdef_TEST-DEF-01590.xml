@@ -15,7 +15,7 @@
 			mtf="0.4"
 			ms_per_tick="10"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR"
+			personality="RTEMS5"
 			apex="IMASPEX">
 		<description>
 						Create an unit test for the TSAL_INIT system call. A non
