@@ -171,7 +171,7 @@
   ======================================================================== -->
   <Partition Criticality="LEVEL_A" EntryPoint="Initial" PartitionIdentifier="0" PartitionName="Master_Test_Driver" SystemPartition="true">
     <Queuing_Port Direction="DESTINATION" MaxMessageSize="64" MaxNbMessages="4" Name="Test_1_Dq" />
-    <air_partition_ext xmlns="PartitionExt" air_partition_personality="RTEMSIMPR">
+    <air_partition_ext xmlns="PartitionExt" air_partition_personality="RTEMS5">
       <type IOP="false" test="NONE" />
       <cache code="true" data="true" permission="true" />
       <properties localtime="false" supervisor="true" tod_sync="true" user_libs="IMASPEX" />
@@ -180,7 +180,7 @@
   </Partition>
   <Partition Criticality="LEVEL_A" EntryPoint="Initial" PartitionIdentifier="1" PartitionName="Partition_1" SystemPartition="false">
     <Queuing_Port Direction="SOURCE" MaxMessageSize="64" MaxNbMessages="4" Name="Test_1_Sq" />
-    <air_partition_ext xmlns="PartitionExt" air_partition_personality="RTEMSIMPR">
+    <air_partition_ext xmlns="PartitionExt" air_partition_personality="RTEMS5">
       <type IOP="false" test="NONE" />
       <cache code="true" data="true" permission="true" />
       <properties localtime="false" supervisor="false" tod_sync="true" user_libs="IMASPEX" />

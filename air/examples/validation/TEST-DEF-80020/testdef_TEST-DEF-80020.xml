@@ -15,7 +15,7 @@
 			mtf="0.3"
 			ms_per_tick="10"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR">
+			personality="RTEMS5">
 		<!-- trap number should be in hexadecimal format -->
 		<registered_traps async="" sync="0x01" />		
 		<description>
