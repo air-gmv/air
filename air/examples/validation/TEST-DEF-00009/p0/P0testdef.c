@@ -9,9 +9,9 @@
 /* ***********************************************************************    */
 
 /* Test Description ******************************************************    */
-/* 	Call the pal_schedule_change function from an authorized partition and
+/* 	Call the air_syscall_set_schedule function from an authorized partition and
 	check that the partitioning schedule is altered starting at the next major time
-	frame (MTF) start. Check that a call to pal_schedule_change with the current
+	frame (MTF) start. Check that a call to air_syscall_set_schedule with the current
 	schedule produces no change. Check that the call from a non-authorized partition
 	fails with an HM process/ partition event. */
 
@@ -19,6 +19,8 @@
 #include <air.h>
 #include <air_test.h>
 #include <P0testdef.h>
+#include <a653.h>
+#include <imaspex.h>
 
 /* Test external definitions **********************************************	*/
 
@@ -91,8 +93,9 @@ int test_main (void) {
 		ret |=  _rtems_clock_get(&t2);
 		/* EXPECTED: 
 		   The clock tick difference should be equal to 1 */			   
-		ret |= t2 == t1 + 1 ? RTEMS_SUCCESSFUL : 1;
-                //printf ("->r%d-t%d ", ret, t2-t1 );
+
+                ret |= t2 == t1 + 1 ? RTEMS_SUCCESSFUL : 1;
+
 
 	} /* end for */
 	if (RTEMS_SUCCESSFUL == ret) {
@@ -137,7 +140,7 @@ int test_main (void) {
 	rtems_task_wake_after(wait);
 
     /* Test Step 3
-    	Call pal_schedule_change for schedule 1. */
+    	Call air_syscall_set_schedule for schedule 1. */
     test_step_announce(3,1);
 
 	/* Test step 3 code */

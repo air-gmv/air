@@ -15,7 +15,7 @@
 			mtf="0.15"
 			ms_per_tick="5"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR"
+			personality="RTEMS5"
 			apex="IMASPEX">
 		<description>
 						Define a system with two partitions with the following data: P1:
