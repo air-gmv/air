@@ -9,9 +9,9 @@
 /* ***********************************************************************    */
 
 /* Test Description ******************************************************    */
-/* 	Call the pal_schedule_change function from an authorized partition and
+/* 	Call the air_syscall_set_schedule function from an authorized partition and
 	check that the partitioning schedule is altered starting at the next major time
-	frame (MTF) start. Check that a call to pal_schedule_change with the current
+	frame (MTF) start. Check that a call to air_syscall_set_schedule with the current
 	schedule produces no change. Check that the call from a non-authorized partition
 	fails with an HM process/ partition event. */
 
@@ -58,7 +58,7 @@ int test_main (void) {
 
     /* Test Steps *******************************************************    */
     /* Test Step 1 
-    	Call pal_schedule_change for scheedule 1, and check that a 
+    	Call air_syscall_set_schedule for scheedule 1, and check that a 
 		PMK_VIOL_ERR fault occured, that was captured by the partition
 		callback. */
     test_step_announce(1,1);

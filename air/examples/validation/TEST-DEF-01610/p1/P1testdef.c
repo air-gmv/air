@@ -15,10 +15,10 @@
 	properly executed in each partition. */
 
 #include <rtems.h>
-#include <pmk_hm.h>
-#include <pal.h>
-#include <pal_pprintf.h>
-#include <pal_test.h>
+
+#include <air.h>
+#include <air_test.h>
+
 #include <P1testdef.h>
 
 #include <imaspex.h>
@@ -44,7 +44,7 @@ static void SW_TRAP() {
 }
 
 /* Test HM callbacks        ***********************************************	*/
-void hm_part_callback (pmk_hm_err_id_e i_error,void *i_state) {
+void partition_HM_callback(air_state_e state_id,air_error_e i_error) {
     /* i_state is not really a pointer, this signature is required due to the
         pal_callbacks function signature -> convert it into a relevant value */
     hmstate = (pmk_hm_state_id_e) 	i_state;
@@ -59,12 +59,12 @@ void hm_part_callback (pmk_hm_err_id_e i_error,void *i_state) {
 
     if (	(PMK_VIOL_ERR 	== hmerr) 	&&
     		(PMK_PAR_OS		== hmstate))  {
-    	res &= test_step_report(    TEST_SUCCESS,
+    	res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
                                     ret);
 
     } else {
-        res &= test_step_report(    TEST_FAILURE,
+        res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
                                     RESULT_DIFF | RESULT_TYPE_VALUE,
                                     ret);
     }
@@ -112,11 +112,11 @@ int test_main (void) {
 
     /* EXPECTED: */
     if ((0 == test_err) && (NO_ERROR == rc) && (0 == unexp_error))  {
-        res &= test_step_report(    TEST_SUCCESS,
+        res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
                                     ret);
     } else {    
-        res &= test_step_report(    TEST_FAILURE,
+        res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
                                     RESULT_DIFF | RESULT_TYPE_VALUE,
                                     ret);
     }
@@ -137,12 +137,12 @@ int test_main (void) {
 //    		(PMK_PAR_OS		== hmstate))  {
 //
 //    	unexp_error = 0;
-//    	res &= test_step_report(    TEST_SUCCESS,
+//    	res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
 //                                    RESULT_EQUAL | RESULT_TYPE_VALUE,
 //                                    ret);
 //
 //    } else {
-//        res &= test_step_report(    TEST_FAILURE,
+//        res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
 //                                    RESULT_DIFF | RESULT_TYPE_VALUE,
 //                                    ret);
 //    }
