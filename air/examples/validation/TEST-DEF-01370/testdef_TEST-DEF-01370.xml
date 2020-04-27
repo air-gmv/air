@@ -15,7 +15,7 @@
 			mtf="0.1"
 			ms_per_tick="2"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR">
+			personality="RTEMS5">
 		<description>
 			Define two schedules: 
 				1.P0, P1, P2, P3 

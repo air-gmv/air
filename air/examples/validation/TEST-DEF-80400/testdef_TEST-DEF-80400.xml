@@ -15,7 +15,7 @@
 			mtf="1.6"
 			ms_per_tick="10"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR">
+			personality="RTEMS5">
 		<registered_traps async="" sync="0xF0" />
 		<description>
 						Create a test for the pmk_sparc_enable_cache and
