@@ -18,10 +18,8 @@
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif
-/*trcpse---------------------------------------
-#include <cp15.h>
+
 #include <gic.h>
-trcpse---------------------------------------*/
 
 void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) {
 
