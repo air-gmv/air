@@ -158,7 +158,7 @@ air_u32_t air_syscall_set_cache_register(air_u32_t cache);
  * \brief ARM system call: set TBR register
  * \param tbr pointer to the trap table
  */
-void air_syscall_set_tbr(void *tbr);
+void air_syscall_set_tbr(air_u32_t *tbr);
 /**
  * \brief ARM system call: get TBR register
  * \return TBR register value
