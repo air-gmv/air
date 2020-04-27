@@ -16,9 +16,9 @@
 #include <svc.h>
 #include <gic.h>
 #include <timer.h>
-#include <printk.h>
-#ifdef PMK_DEBUG_ISR
 
+#ifdef PMK_DEBUG_ISR
+#include <printk.h>
 air_u32_t counter = 0;
 void arm_isr_handler_print_frame(arm_interrupt_stack_frame_t *frame, const char txt[5]);
 #endif
@@ -41,7 +41,7 @@ air_uptr_t * arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t
     air_u8_t cpu = ((ack << 10U) & 0x7);
 
 #ifdef PMK_DEBUG_ISR
-    //printk("interrupt ID = %d for cpu = %d (ack = 0x%08x)\n", id, cpu, ack);
+    printk("interrupt ID = %d for cpu = %d (ack = 0x%08x)\n", id, cpu, ack);
 #endif
 
     /* GT Interrupt*/
@@ -78,7 +78,7 @@ air_uptr_t * arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t
     /* check if context switch was performed */
     if (core->partition_switch == 1) {
 #ifdef PMK_DEBUG_ISR
-        //arm_isr_handler_print_frame(frame, "ENTRY");
+        arm_isr_handler_print_frame(frame, "ENTRY");
 #endif
 
         frame = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
@@ -90,14 +90,13 @@ air_uptr_t * arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t
         } else {
             printk("       ISR :: Switching to Partition IDLE\n\n");
         }
-    printk("!");//arm_isr_handler_print_frame(frame, "EXIT ");
+    arm_isr_handler_print_frame(frame, "EXIT ");
 #endif
     }
 
     /* will it route to the partition */
+    if (core->partition != NULL) {
 
-    if (core->partition != NULL ) {
-        printk("||id=%d||", id);
         ret = arm_partition_isr_handler(id, core);
     }
 
@@ -127,10 +126,7 @@ air_uptr_t * arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
     air_u32_t psr_i = ((psr & ARM_PSR_I) >> 7);
     air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
     air_uptr_t * vbar = vcpu->vbar;
-    //virtual id (TODO: how should this be defined?)
-    air_u32_t vid= id/2;
 
-    /*if virtual trap table isn't set return null*/
     if (vbar == NULL)
         return ret;
 
@@ -167,15 +163,15 @@ air_uptr_t * arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
         }
 
         if (ret != NULL) {
-            vgic->ilist[vid] |= (1U << 28);
+            vgic->ilist[id] |= (1U << 28);
             return ret;
         }
     }
-    /*the IRQ exception can only be taken if the IRQ mask bit is 0*/
+
     if (!psr_i) {
-        //virtual interrupts are enabled:
+
         if ((vgic->vm_ctrl & 0x1)) {
-            //the current interrupt priority is higher than the priority mask:
+
             if (((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) {
 
                 vgic->hppir = vgic->rpr;
@@ -189,9 +185,8 @@ air_uptr_t * arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
 
                 ret = vbar + 6;
             } else {
-                //set the state of the interrupt to pending
+
                 vgic->ilist[id] |= (1U << 28);
-                //change the highest priority pending if the current interrupt priority is higher
                 if (((vgic->ilist[id] >> 23) & 0x1f) < ((vgic->ilist[(vgic->hppir & 0x3ff)] >> 23) & 0x1f)) {
                     vgic->hppir = ((vgic->ilist[id] >> 23) & 0x1f);
                 }

@@ -44,7 +44,7 @@ void arm_core_context_save(pmk_core_ctrl_t *core) {
             : "r" (isf)
             : "memory");
 
-    arm_disable_fpu();
+    //arm_disable_fpu();
 }
 
 /**
