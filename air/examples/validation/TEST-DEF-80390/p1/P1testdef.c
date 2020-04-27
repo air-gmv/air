@@ -17,10 +17,10 @@
 	is generated. */
 
 #include <rtems.h>
-#include <pmk_hm.h>
-#include <pal.h>
-#include <pal_pprintf.h>
-#include <pal_test.h>
+
+#include <air.h>
+#include <air_test.h>
+
 #include <P1testdef.h>
 
 
@@ -37,10 +37,10 @@ int mtf_ticks    	= 30;
 /* Test auxiliary functions    ********************************************	*/
 
 /* Test HM callbacks        ***********************************************	*/
-void hm_part_callback (pmk_hm_err_id_e i_error,void *i_state) {
+void partition_HM_callback(air_state_e state_id,air_error_e i_error) {
     /* i_state is not really a pointer, this signature is required due to the
         pal_callbacks function signature -> convert it into a relevant value */
-    pmk_hm_state_id_e state = (pmk_hm_state_id_e) i_state;
+    
 	/* signal error ocurrence	*/
     unexp_error	= 1;
 	err_id = i_error;
@@ -78,11 +78,11 @@ int test_main (void) {
     if ((PAL_INVALID_CONFIG == rc) && (1 == unexp_error) && (PMK_VIOL_ERR == err_id))  {
 		unexp_error = 0;
 		err_id = 0;
-        res &= test_step_report(    TEST_SUCCESS,
+        res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
                                     ret);
     } else {    
-        res &= test_step_report(    TEST_FAILURE,
+        res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
                                     RESULT_DIFF | RESULT_TYPE_VALUE,
                                     ret);
     }
@@ -99,11 +99,11 @@ int test_main (void) {
     if ((PMK_FLOAT_ERR == err_id) && (1 == unexp_error))  {
 		unexp_error = 0;
 		err_id = 0;
-        res &= test_step_report(    TEST_SUCCESS,
+        res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
                                     ret);
     } else {    
-        res &= test_step_report(    TEST_FAILURE,
+        res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
                                     RESULT_DIFF | RESULT_TYPE_VALUE,
                                     ret);
     }

@@ -15,7 +15,7 @@
 			mtf="0.4"
 			ms_per_tick="10"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR">
+			personality="RTEMS5">
 		<description>
 						Define a test with the following configuration: P1: ExWindow=10ms,
 			Period=40ms, Data Cache Enabled, Code Cache Enabled P2: ExWindow=10ms,

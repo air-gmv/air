@@ -15,7 +15,7 @@
 			mtf="0.6"
 			ms_per_tick="10"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR"
+			personality="RTEMS5"
 			apex="IMASPEX">
 		<description>
 						Define a test with two non-system partitions where one calls the

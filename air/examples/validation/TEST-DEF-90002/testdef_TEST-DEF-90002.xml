@@ -15,7 +15,7 @@
 			mtf="1.5"
 			ms_per_tick="10"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR">
+			personality="RTEMS5">
 		<description>
 			Configure a test with 2 partitions, in which one of them call a
 			function that sets the frame pointer to 0. Checks if that function
