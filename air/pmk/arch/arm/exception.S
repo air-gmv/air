@@ -89,13 +89,31 @@ global(exception_svc)
     b       save_previous
 
 arm_rett:
-    push    {r0, lr}
+    push    {r0, r1, lr}
+    ldr     r0, [sp, #80]
+    and     r0, #(ARM_PSR_MODE_MASK)
+    cmp     r0, #(ARM_PSR_SVC)      //if previous mode was svc, how do we know there was a context switch?
+    beq     arm_return
+    mrs     r0, cpsr
+    mov     r1, r0
+    orr     r0, #(ARM_PSR_SYS) //change to system mode
+    msr     cpsr, r0
+    mov     r0, sp             //get user sp
+    msr     cpsr, r1
+    ldr     r1, [sp, #68]       //get return sp
+    cmp     r0, r1              //if return sp is different from
+    bne     arm_return    //user sp, there was a context switch
     mrc     p15, 0, r0, c13, c0, 4  // get Per_CPU core
     BL2C    arm_syscall_rett
-    pop     {r0, lr}
-//    sub     sp, #144
+    pop     {r0, r1, lr}
     b       restore
 //TODO: check if there are pending interrupts before returning to the partition!
+
+arm_return:
+    mrc     p15, 0, r0, c13, c0, 4  // get Per_CPU core
+    BL2C    arm_syscall_rett
+    pop     {r0, r1, lr}
+    b       restore
 
 global(exception_pref_abort)
 
