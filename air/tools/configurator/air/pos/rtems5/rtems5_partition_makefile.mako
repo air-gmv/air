@@ -56,7 +56,7 @@ $(AIR_PMK)/pmk.a
 % endif
 
 # The RTEMS_MAKEFILE_PATH is defined by the user for the specific CPU and BSP
-RTEMS_MAKEFILE_PATH=$(AIR_POS)/${os.path.join(pos_config.name, 'rtems5-install', 'arm-rtems5', 'xilinx_zynq_artyz7')}
+RTEMS_MAKEFILE_PATH=$(AIR_POS)/${os.path.join(pos_config.name, 'rtems5-install', 'sparc-rtems5', 'leon3')}
 
 # These includes should not be modified by the user.  
 include $(RTEMS_MAKEFILE_PATH)/Makefile.inc 
