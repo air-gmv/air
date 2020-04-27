@@ -28,19 +28,16 @@ git_id = "6bb9b3df7b5ea97e151d39654092c060d2175045"
 # @brief POS Source files
 source_files = {
     'sparc': [],             # empty, the magic happens in the makefile template
-	'arm': [],
 }
 
 # @brief POS Private Header files
 private_header_files = {
     'sparc': [],             # empty, the magic happens in the makefile template
-	'arm': [],
 }
 
 # @brief POS Public Header files
 public_header_files = {
     'sparc':  [],            # empty, the magic happens in the makefile template
-	'arm': [],
 }
 
 # @brief Custom Makefile
@@ -50,8 +47,8 @@ makefile = os.path.join(POS_DIRECTORY, 'rtems5', 'rtems5_makefile.mako')
 # RTEMS_DIRECTORY is  necessary only for lbiop
 makefile_inc = [
     "RTEMS5_DIRECTORY=rtems5",
-    "RTEMS5_TARGET=arm-rtems5",
-    "RTEMS5_BSP=xilinx_zynq_artyz7",
+    "RTEMS5_TARGET=sparc-rtems5",
+    "RTEMS5_BSP=leon3",
 ]
 
 # @brief List of application partition templates
