@@ -57,8 +57,8 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <flagsDictionary>
-        <element flagsID="0" commonFlags="-g -O2"/>
-        <element flagsID="1" commonFlags="-g -g -O2 -g"/>
+        <element flagsID="0" commonFlags="-O2 -g"/>
+        <element flagsID="1" commonFlags="-g -O2"/>
       </flagsDictionary>
       <codeAssistance>
         <resolveSymbolicLinks>true</resolveSymbolicLinks>
@@ -70,7 +70,7 @@
           <buildCommand>${MAKE} -f Makefile</buildCommand>
           <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
           <executablePath></executablePath>
-          <cTool flags="-O2 -g">
+          <cTool flags="0">
           </cTool>
         </makeTool>
         <preBuild>
@@ -92,35 +92,35 @@
         </requiredProjects>
       </makefileType>
       <item path="config/usr_arch.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="0">
+        <cTool flags="1">
         </cTool>
       </item>
       <item path="config/usr_channels.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="0">
+        <cTool flags="1">
         </cTool>
       </item>
       <item path="config/usr_config.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="0">
+        <cTool flags="1">
         </cTool>
       </item>
       <item path="config/usr_hm.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="0">
+        <cTool flags="1">
         </cTool>
       </item>
       <item path="config/usr_partitions.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="0">
+        <cTool flags="1">
         </cTool>
       </item>
       <item path="config/usr_partitions_data.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="0">
+        <cTool flags="1">
         </cTool>
       </item>
       <item path="config/usr_schedules.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="0">
+        <cTool flags="1">
         </cTool>
       </item>
       <item path="config/usr_sharedmemory.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="0">
+        <cTool flags="1">
         </cTool>
       </item>
       <folder path="TEST-DEF-00009/config">
@@ -132,8 +132,8 @@
             <pElem>../../../install/pmk/core/include</pElem>
           </incDir>
           <preprocessorList>
-            <Elem>PMK_MAX_CORES=1</Elem>
-            <Elem>PMK_SPARC_LEON3_OR_TSIM2</Elem>
+            <Elem>PMK_MAX_CORES=4</Elem>
+            <Elem>PMK_SPARC_LEON4</Elem>
           </preprocessorList>
         </cTool>
       </folder>
@@ -147,7 +147,7 @@
           </incDir>
           <preprocessorList>
             <Elem>AIR_HYPERVISOR</Elem>
-            <Elem>RTEMS48I</Elem>
+            <Elem>RTEMS5</Elem>
           </preprocessorList>
         </cTool>
       </folder>
@@ -161,7 +161,7 @@
           </incDir>
           <preprocessorList>
             <Elem>AIR_HYPERVISOR</Elem>
-            <Elem>RTEMS48I</Elem>
+            <Elem>RTEMS5</Elem>
           </preprocessorList>
         </cTool>
       </folder>
@@ -175,32 +175,32 @@
           </incDir>
           <preprocessorList>
             <Elem>AIR_HYPERVISOR</Elem>
-            <Elem>RTEMS48I</Elem>
+            <Elem>RTEMS5</Elem>
           </preprocessorList>
         </cTool>
       </folder>
       <item path="p0/P0testdef.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="1">
+        <cTool flags="0">
         </cTool>
       </item>
       <item path="p0/init.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="1">
+        <cTool flags="0">
         </cTool>
       </item>
       <item path="p1/P1testdef.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="1">
+        <cTool flags="0">
         </cTool>
       </item>
       <item path="p1/init.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="1">
+        <cTool flags="0">
         </cTool>
       </item>
       <item path="p2/P2testprint.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="1">
+        <cTool flags="0">
         </cTool>
       </item>
       <item path="p2/init.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="1">
+        <cTool flags="0">
         </cTool>
       </item>
     </conf>
