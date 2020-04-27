@@ -60,7 +60,7 @@ extern "C" {
            && (((!_Thread_Dispatch_is_enabled()) == false && (_expect) != 0) \
              || ((!_Thread_Dispatch_is_enabled()) && (_expect) == 0)) \
     ) { \
-      printf( \
+      pprintf( \
         "\n_Thread_Dispatch_disable_level is (%i)" \
            " not %d detected at %s:%d\n", \
          !_Thread_Dispatch_is_enabled(), (_expect), __FILE__, __LINE__ ); \
@@ -76,7 +76,7 @@ extern "C" {
 #define check_if_allocator_mutex_is_not_owned() \
   do { \
     if ( _RTEMS_Allocator_is_owner() ) { \
-      printf( \
+      pprintf( \
         "\nRTEMS Allocator Mutex is owned by executing thread " \
           "and should not be.\n" \
         "Detected at %s:%d\n", \
@@ -103,7 +103,7 @@ extern "C" {
 #define fatal_directive_check_status_only( _stat, _desired, _msg ) \
   do { \
     if ( (_stat) != (_desired) ) { \
-      printf( "\n%s FAILED -- expected (%s) got (%s)\n", \
+      pprintf( "\n%s FAILED -- expected (%s) got (%s)\n", \
               (_msg), rtems_status_text(_desired), rtems_status_text(_stat) ); \
       rtems_test_exit( _stat ); \
     } \
@@ -131,7 +131,7 @@ extern "C" {
     long statx = _stat; \
     check_dispatch_disable_level( 0 ); \
     check_if_allocator_mutex_is_not_owned(); \
-    printf( "\n%s FAILED -- expected (%d - %s) got (%ld %d - %s)\n", \
+    pprintf( "\n%s FAILED -- expected (%d - %s) got (%ld %d - %s)\n", \
 	    (_msg), _desired, strerror(_desired), \
             statx, errno, strerror(errno) ); \
     rtems_test_exit( _stat ); \
@@ -145,9 +145,9 @@ extern "C" {
     check_dispatch_disable_level( _level ); \
     check_if_allocator_mutex_is_not_owned(); \
     if ( (_stat) != (_desired) ) { \
-      printf( "\n%s FAILED -- expected (%d - %s) got (%d - %s)\n", \
+      pprintf( "\n%s FAILED -- expected (%d - %s) got (%d - %s)\n", \
               (_msg), _desired, strerror(_desired), _stat, strerror(_stat) ); \
-      printf( "\n FAILED -- errno (%d - %s)\n", \
+      pprintf( "\n FAILED -- errno (%d - %s)\n", \
               errno, strerror(errno) ); \
       rtems_test_exit( _stat ); \
     } \
@@ -159,7 +159,7 @@ extern "C" {
 #define fatal_posix_sem( _ptr, _msg ) \
   if ( (_ptr != SEM_FAILED) ) { \
     check_dispatch_disable_level( 0 ); \
-    printf( "\n%s FAILED -- expected (-1) got (%p - %d/%s)\n", \
+    pprintf( "\n%s FAILED -- expected (-1) got (%p - %d/%s)\n", \
 	    (_msg), _ptr, errno, strerror(errno) ); \
     rtems_test_exit( -1 ); \
   }
@@ -170,7 +170,7 @@ extern "C" {
 #define fatal_posix_mqd( _ptr, _msg ) \
   if ( (_ptr != (mqd_t) -1) ) { \
     check_dispatch_disable_level( 0 ); \
-    printf( "\n%s FAILED -- expected (-1) got (%" PRId32 " - %d/%s)\n", \
+    pprintf( "\n%s FAILED -- expected (-1) got (%" PRId32 " - %d/%s)\n", \
 	    (_msg), _ptr, errno, strerror(errno) ); \
     rtems_test_exit( -1 ); \
   }
@@ -193,7 +193,7 @@ extern "C" {
   do { \
     check_dispatch_disable_level( _level ); \
     if ( (_stat) != (_desired) ) { \
-      printf( "\n%s FAILED -- expected (%d) got (%d)\n", \
+      pprintf( "\n%s FAILED -- expected (%d) got (%d)\n", \
               (_msg), (_desired), (_stat) ); \
       rtems_test_exit( _stat ); \
     } \
@@ -213,7 +213,7 @@ extern "C" {
 
 #define print_time(_s1, _tb, _s2) \
   do { \
-    printf( "%s%02" PRIu32 ":%02" PRIu32 ":%02" PRIu32 "   %02" PRIu32 "/%02" PRIu32 "/%04" PRIu32 "%s", \
+    pprintf( "%s%02" PRIu32 ":%02" PRIu32 ":%02" PRIu32 "   %02" PRIu32 "/%02" PRIu32 "/%04" PRIu32 "%s", \
        _s1, (_tb)->hour, (_tb)->minute, (_tb)->second, \
        (_tb)->month, (_tb)->day, (_tb)->year, _s2 ); \
   } while ( 0 )
@@ -225,23 +225,23 @@ extern "C" {
 
 #define new_line  puts( "" )
 
-#define puts_nocr printf
+#define puts_nocr pprintf
 
 #ifdef RTEMS_TEST_NO_PAUSE
 #define rtems_test_pause() \
     do { \
-      printf( "<pause>\n" ); \
+      pprintf( "<pause>\n" ); \
   } while ( 0 )
 
 #define rtems_test_pause_and_screen_number( _screen ) \
   do { \
-    printf( "<pause - screen %d>\n", (_screen) ); \
+    pprintf( "<pause - screen %d>\n", (_screen) ); \
   } while ( 0 )
 #else
 #define rtems_test_pause() \
   do { \
     char buffer[ 80 ]; \
-    printf( "<pause>" ); \
+    pprintf( "<pause>" ); \
     gets( buffer ); \
     puts( "" ); \
   } while ( 0 )
@@ -249,7 +249,7 @@ extern "C" {
 #define rtems_test_pause_and_screen_number( _screen ) \
   do { \
     char buffer[ 80 ]; \
-    printf( "<pause - screen %d>", (_screen) ); \
+    pprintf( "<pause - screen %d>", (_screen) ); \
     gets( buffer ); \
     puts( "" ); \
   } while ( 0 )
@@ -288,7 +288,7 @@ extern "C" {
 #define rtems_test_assert(__exp) \
   do { \
     if (!(__exp)) { \
-      printf( "%s: %d %s\n", __FILE__, __LINE__, #__exp ); \
+      pprintf( "%s: %d %s\n", __FILE__, __LINE__, #__exp ); \
       rtems_test_exit(0); \
     } \
   } while (0)
