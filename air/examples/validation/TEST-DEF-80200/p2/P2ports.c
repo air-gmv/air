@@ -11,7 +11,7 @@
 
 #include <pmk_plugin.h>
 #include <pal_callbacks.h>
-#include <pal.h>
+#include <air.h>
 
 #define P2_NUMBER_OF_PORTS (0U)
 

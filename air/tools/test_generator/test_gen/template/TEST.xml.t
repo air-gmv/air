@@ -177,6 +177,13 @@
         </PartitionConfiguration>
     </Partition>	
 	
+    <SharedMemory Id="1" Name="TTEST" Size="0x10000" Unit="0x1000">
+        % for p in range(0,partitions+1):		
+        <PartitionAccess PartitionIdentifier="${p}" PartitionName="p${p}" Permissions="RW"/>
+        % endfor
+    </SharedMemory>    
+      
+        
     <!-- =========================================================================================
     Module Schedules
     ========================================================================================= -->	
