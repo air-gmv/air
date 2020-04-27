@@ -15,7 +15,7 @@
 			mtf="1.5"
 			ms_per_tick="10"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR">
+			personality="RTEMS5">
 		<description>
 						Define a system with one or more partitions where an event raises an
 			error that is handled on MODULE level with action SHUTDOWN. Check that

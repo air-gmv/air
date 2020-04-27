@@ -444,6 +444,7 @@ if __name__ == '__main__':
     
     if(len(sys.argv) == 3) and (sys.argv[1] == '-xml'):
         argname = sys.argv[2]
+        print "Generating only xml configurations"
         xmlFlag = True;
     elif len(sys.argv) ==  2:
         argname = sys.argv[1]

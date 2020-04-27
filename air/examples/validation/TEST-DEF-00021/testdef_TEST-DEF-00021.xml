@@ -15,7 +15,7 @@
 			mtf="1.0"
 			ms_per_tick="10"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR"
+			personality="RTEMS5"
 			apex="IMASPEX">
 		<description>
 						Define a system with four partitions: 

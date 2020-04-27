@@ -15,7 +15,7 @@
 			mtf="1.5"
 			ms_per_tick="2"
 			type="TEST_GMV_VAL"
-			personality="RTEMSIMPR">
+			personality="RTEMS5">
 		<description>
 			Repeat test TEST-DEF-00009 with more than one execution window for
 			partition 0.

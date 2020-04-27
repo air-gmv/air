@@ -174,7 +174,7 @@
     <Queuing_Port Direction="DESTINATION" MaxMessageSize="64" MaxNbMessages="4" Name="Test_2_Dq" />
     <Queuing_Port Direction="DESTINATION" MaxMessageSize="64" MaxNbMessages="4" Name="Test_1_Da" />
     <Queuing_Port Direction="DESTINATION" MaxMessageSize="64" MaxNbMessages="4" Name="Test_2_Da" />
-    <air_partition_ext xmlns="PartitionExt" air_partition_personality="RTEMSIMPR">
+    <air_partition_ext xmlns="PartitionExt" air_partition_personality="RTEMS5">
       <type IOP="false" test="NONE" />
       <cache code="true" data="true" permission="true" />
       <properties localtime="false" supervisor="true" tod_sync="false" user_libs="IMASPEX" />
@@ -184,7 +184,7 @@
   <Partition Criticality="LEVEL_A" EntryPoint="Initial" PartitionIdentifier="1" PartitionName="Partition_1" SystemPartition="false">
     <Queuing_Port Direction="SOURCE" MaxMessageSize="64" MaxNbMessages="4" Name="Test_1_Sq" />
     <Queuing_Port Direction="SOURCE" MaxMessageSize="64" MaxNbMessages="4" Name="Test_1_Sa" />
-    <air_partition_ext xmlns="PartitionExt" air_partition_personality="RTEMSIMPR">
+    <air_partition_ext xmlns="PartitionExt" air_partition_personality="RTEMS5">
       <type IOP="false" test="NONE" />
       <cache code="true" data="true" permission="true" />
       <properties localtime="false" supervisor="false" tod_sync="false" user_libs="IMASPEX" />
@@ -194,7 +194,7 @@
   <Partition Criticality="LEVEL_A" EntryPoint="Initial" PartitionIdentifier="2" PartitionName="Partition_2" SystemPartition="false">
     <Queuing_Port Direction="SOURCE" MaxMessageSize="64" MaxNbMessages="4" Name="Test_2_Sq" />
     <Queuing_Port Direction="SOURCE" MaxMessageSize="64" MaxNbMessages="4" Name="Test_2_Sa" />
-    <air_partition_ext xmlns="PartitionExt" air_partition_personality="RTEMSIMPR">
+    <air_partition_ext xmlns="PartitionExt" air_partition_personality="RTEMS5">
       <type IOP="false" test="NONE" />
       <cache code="true" data="true" permission="true" />
       <properties localtime="false" supervisor="false" tod_sync="false" user_libs="IMASPEX" />

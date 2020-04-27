@@ -25,10 +25,10 @@
  */
 
 #include <rtems.h>
-#include <pmk_hm.h>
-#include <pal.h>
-#include <pal_pprintf.h>
-#include <pal_test.h>
+
+#include <air.h>
+#include <air_test.h>
+
 #include <P0testdef.h>
 
 /* Test external definitions */
@@ -55,7 +55,7 @@ void hm_part_callback(pmk_hm_err_id_e i_error,void *i_state){
 
     /* i_state is not really a pointer, this signature is required due to the
        pal_callbacks function signature -> convert it into a relevant value */
-    pmk_hm_state_id_e state = (pmk_hm_state_id_e) i_state;
+    
 
 	/* signal error occurrence	*/
     if (i_error == PMK_SEG_ERR) {
