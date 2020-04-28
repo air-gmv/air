@@ -195,7 +195,33 @@
         <Partition_Schedule PartitionIdentifier="${p}" 
                             PartitionName="p${p}" 
                             PeriodSeconds="${mtf}" 
-                            PeriodDurationSeconds="${part_slot}">
+                            PeriodDurationSeconds="${part_slot}"
+                        % if (p == 0):
+                            SetModuleSchedule="true">
+                        % else:
+                            SetModuleSchedule="false">
+                        % endif
+            <Window_Schedule 	WindowIdentifier="${p}01" 
+                                WindowStartSeconds="${p * part_slot}" 
+                                WindowDurationSeconds="${part_slot}" 
+                                PartitionPeriodStart="true"/>
+        </Partition_Schedule>
+        % endfor		
+    </Module_Schedule>
+    
+        <!-- module schedule 2 -->
+    <Module_Schedule  ScheduleIdentifier="1" ScheduleName="test_sched2" InitialModuleSchedule="false" MajorFrameSeconds="${mtf*5}">
+        % for p in range(0,partitions+1):		
+		<% part_slot = round(mtf*5 / (partitions + 1),4) %>
+        <Partition_Schedule PartitionIdentifier="${p}" 
+                            PartitionName="p${p}" 
+                            PeriodSeconds="${mtf*5}" 
+                            PeriodDurationSeconds="${part_slot}"
+                        % if (p == 0):
+                            SetModuleSchedule="true">
+                        % else:
+                            SetModuleSchedule="false">
+                        % endif
             <Window_Schedule 	WindowIdentifier="${p}01" 
                                 WindowStartSeconds="${p * part_slot}" 
                                 WindowDurationSeconds="${part_slot}" 
@@ -208,7 +234,7 @@
     Partition Health Monitor Table
     ========================================================================================= -->
     % for p in range(0,partitions+1):		
-    <Partition_HM_Table PartitionIdentifier="${p}" PartitionName="p${p}" PartitionCallback="hm_part_callback">
+    <Partition_HM_Table PartitionIdentifier="${p}" PartitionName="p${p}" PartitionCallback="partition_HM_callback">
         <System_State_Entry Description="Partition Initialization" SystemState="2">
             <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="0"/>
             <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="1"/>
