@@ -31,6 +31,7 @@ stages:
     - test_0009_sparc
     - sconfig-arm
     - sbuild-arm
+    - test_0001_arm
 
 config_sparc:
     stage: sconfig-sparc
@@ -41,6 +42,7 @@ config_sparc:
 build_sparc:        
     stage: sbuild-sparc
     script:
+        - make clean
         - make
         
 config_arm:
@@ -52,6 +54,7 @@ config_arm:
 build_arm:        
     stage: sbuild-arm
     script:
+        - make clean
         - make
 
 0009_sparc:
@@ -63,8 +66,23 @@ build_arm:
         - make
         - cp $AIR/../utils/gitlab-runner/* .
         - ls
-        - ./doit.sh
+        - ./do_leon4_grmon.sh
         - ./testcheck.py
         - cd $AIR
     environment:
         name: SPARC LEON4
+
+0009_arm:
+    stage: test_0001_arm
+    script:
+        - cd $AIR/examples/arm_unit_tests/lionel
+        - configure
+        - make clean
+        - make
+        - cp $AIR/../utils/gitlab-runner/* .
+        - ls
+        - ./do_zynqz1_qemu.sh
+        - ./testcheck.py
+        - cd $AIR
+    environment:
+        name: ARM ZYNQZ1
