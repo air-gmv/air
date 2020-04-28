@@ -35,7 +35,7 @@ int mtf_ticks     = 50;
 void partition_HM_callback(air_state_e state_id,air_error_e i_error) {
    
     hm_was_called = i_error;
-    
+    printf ("HM2 CALLED !!!\n");
     return;
 }
 
@@ -49,7 +49,7 @@ int test_main (void) {
 	/* total test result                */
     int res     = TEST_SUCCESS;     
 	/* wait ticks before test end to print results                    */
-    int wait    = 50;			
+    int wait    = 150;			
     test_enter(9); // this is new
 	/* since we are measuring execution windows, we should not use the
 	 * current one, since it was already partially occupied by the 
@@ -78,6 +78,7 @@ int test_main (void) {
     }
 
     /* Test End */
+    rtems_task_wake_after(3000); 
     test_finish(res);
  
     return 0;

@@ -191,7 +191,8 @@
         <Partition_Schedule PartitionIdentifier="0" 
                             PartitionName="p0" 
                             PeriodSeconds="0.3" 
-                            PeriodDurationSeconds="0.15">
+                            PeriodDurationSeconds="0.15"
+                            SetModuleSchedule="true">
             <Window_Schedule 	WindowIdentifier="001" 
                                 WindowStartSeconds="0.0" 
                                 WindowDurationSeconds="0.15" 
@@ -201,10 +202,37 @@
         <Partition_Schedule PartitionIdentifier="1" 
                             PartitionName="p1" 
                             PeriodSeconds="0.3" 
-                            PeriodDurationSeconds="0.15">
+                            PeriodDurationSeconds="0.15"
+                            SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="101" 
                                 WindowStartSeconds="0.15" 
                                 WindowDurationSeconds="0.15" 
+                                PartitionPeriodStart="true"/>
+        </Partition_Schedule>
+    </Module_Schedule>
+    
+        <!-- module schedule 2 -->
+    <Module_Schedule  ScheduleIdentifier="1" ScheduleName="test_sched2" InitialModuleSchedule="false" MajorFrameSeconds="1.5">
+		
+        <Partition_Schedule PartitionIdentifier="0" 
+                            PartitionName="p0" 
+                            PeriodSeconds="1.5" 
+                            PeriodDurationSeconds="0.75"
+                            SetModuleSchedule="true">
+            <Window_Schedule 	WindowIdentifier="001" 
+                                WindowStartSeconds="0.0" 
+                                WindowDurationSeconds="0.75" 
+                                PartitionPeriodStart="true"/>
+        </Partition_Schedule>
+		
+        <Partition_Schedule PartitionIdentifier="1" 
+                            PartitionName="p1" 
+                            PeriodSeconds="1.5" 
+                            PeriodDurationSeconds="0.75"
+                            SetModuleSchedule="false">
+            <Window_Schedule 	WindowIdentifier="101" 
+                                WindowStartSeconds="0.75" 
+                                WindowDurationSeconds="0.75" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
     </Module_Schedule>
@@ -212,7 +240,7 @@
     <!-- =========================================================================================
     Partition Health Monitor Table
     ========================================================================================= -->
-    <Partition_HM_Table PartitionIdentifier="0" PartitionName="p0" PartitionCallback="hm_part_callback">
+    <Partition_HM_Table PartitionIdentifier="0" PartitionName="p0" PartitionCallback="partition_HM_callback">
         <System_State_Entry Description="Partition Initialization" SystemState="2">
             <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="0"/>
             <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="1"/>
@@ -258,7 +286,7 @@
             <Error_ID_Action Action="WARM_START" Description="Deadline Miss" ErrorIdentifier="13"/>
         </System_State_Entry>
     </Partition_HM_Table>
-    <Partition_HM_Table PartitionIdentifier="1" PartitionName="p1" PartitionCallback="hm_part_callback">
+    <Partition_HM_Table PartitionIdentifier="1" PartitionName="p1" PartitionCallback="partition_HM_callback">
         <System_State_Entry Description="Partition Initialization" SystemState="2">
             <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="0"/>
             <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="1"/>

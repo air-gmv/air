@@ -14,10 +14,10 @@
 	not needed. */
 
 #include <rtems.h>
-#include <pmk_hm.h>
-#include <pal.h>
-#include <pal_pprintf.h>
-#include <pal_test.h>
+
+#include <air.h>
+#include <air_test.h>
+
 #include <P2testdef.h>
 #include "../testdef.h"
 
@@ -33,10 +33,10 @@ static char buf[NUMBER_OF_POINTS];
 /* Test auxiliary functions    ********************************************	*/
 
 /* Test HM callbacks        ***********************************************	*/
-void hm_part_callback (pmk_hm_err_id_e i_error,void *i_state) {
+void partition_HM_callback(air_state_e state_id,air_error_e i_error) {
     /* i_state is not really a pointer, this signature is required due to the
         pal_callbacks function signature -> convert it into a relevant value */
-    pmk_hm_state_id_e state = (pmk_hm_state_id_e) i_state;
+    
 	/* signal error ocurrence	*/
     unexp_error	= 1;
     return;
