@@ -49,6 +49,9 @@ tags
 # Doxygen output directory
 doc/
 
+#Netbeans
+nbproject
+
 # Eclipse
 # Created by https://www.gitignore.io/api/eclipse
 
