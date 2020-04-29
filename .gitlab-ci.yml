@@ -25,39 +25,77 @@ default:
         - git submodule sync --recursive
         - git submodule update --init --recursive
 
+        
+#Cronological order of jobs to be done
+#To be divided in the future in multiple VMs
 stages: 
     - sconfig-sparc
     - sbuild-sparc
+    - sclean-build-sparc
     - test_0009_sparc
     - sconfig-arm
+    - sclean-build-arm
     - sbuild-arm
     - test_0001_arm
 
+#Build SPARC
 config_sparc:
+#    tags: 
+#        - sparc
     stage: sconfig-sparc
     script:
         - cp $AIR/../utils/gitlab-runner/.sparc_config .
         - ./configure -f .sparc_config
         
-build_sparc:        
+build_sparc: 
+#    tags: 
+#        - sparc
     stage: sbuild-sparc
     script:
-        - make clean
+        - make clean # to be removed and used only on failure
         - make
         
+#clean_build_sparc:        
+#    tags: 
+#        - sparc
+#    stage: sclean-build-sparc
+#    script:
+#        - make clean
+#        - make
+#    when: on_failure
+    
+        
+#Build for ARM
 config_arm:
+#    tags: 
+#        - arm_qemu
     stage: sconfig-arm
     script:
         -  cp $AIR/../utils/gitlab-runner/.arm_config . 
         - ./configure -f .arm_config
         
-build_arm:        
+build_arm:
+#    tags: 
+#        - arm_qemu
     stage: sbuild-arm
     script:
-        - make clean
+        - make clean # to be removed and used only on failure
         - make
 
+#clean_build_arm:
+#    tags: 
+#        - arm_qemu
+#    stage: scleanbuild-arm
+#    script:
+#        - make clean
+#        - make     
+#    when: on_failure
+        
+        
+#Tests for SPARC
 0009_sparc:
+#    tags: 
+#        - sparc
     stage: test_0009_sparc
     script:
         - cd $AIR/examples/validation/TEST-DEF-00009
@@ -72,6 +110,9 @@ build_arm:
     environment:
         name: SPARC LEON4
 
+#Test for ARM
+#    tags: 
+#        - arm_qemu
 0009_arm:
     stage: test_0001_arm
     script:
