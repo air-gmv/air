@@ -234,55 +234,119 @@
     ========================================================================================= -->	
 
     <!-- module schedule 1 -->
-    <Module_Schedule  ScheduleIdentifier="0" ScheduleName="test_sched" InitialModuleSchedule="true" MajorFrameSeconds="0.6">
+    <Module_Schedule  ScheduleIdentifier="0" ScheduleName="test_sched" InitialModuleSchedule="true" MajorFrameSeconds="0.3">
 		
         <Partition_Schedule PartitionIdentifier="0" 
                             PartitionName="p0" 
-                            PeriodSeconds="0.6" 
-                            PeriodDurationSeconds="0.12">
+                            PeriodSeconds="0.3" 
+                            PeriodDurationSeconds="0.06"
+                            SetModuleSchedule="true">
             <Window_Schedule 	WindowIdentifier="001" 
                                 WindowStartSeconds="0.0" 
-                                WindowDurationSeconds="0.12" 
+                                WindowDurationSeconds="0.06" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="1" 
                             PartitionName="p1" 
-                            PeriodSeconds="0.6" 
-                            PeriodDurationSeconds="0.12">
+                            PeriodSeconds="0.3" 
+                            PeriodDurationSeconds="0.06"
+                            SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="101" 
-                                WindowStartSeconds="0.12" 
-                                WindowDurationSeconds="0.12" 
+                                WindowStartSeconds="0.06" 
+                                WindowDurationSeconds="0.06" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="2" 
                             PartitionName="p2" 
-                            PeriodSeconds="0.6" 
-                            PeriodDurationSeconds="0.12">
+                            PeriodSeconds="0.3" 
+                            PeriodDurationSeconds="0.06"
+                            SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="201" 
-                                WindowStartSeconds="0.24" 
-                                WindowDurationSeconds="0.12" 
+                                WindowStartSeconds="0.12" 
+                                WindowDurationSeconds="0.06" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="3" 
                             PartitionName="p3" 
-                            PeriodSeconds="0.6" 
-                            PeriodDurationSeconds="0.12">
+                            PeriodSeconds="0.3" 
+                            PeriodDurationSeconds="0.06"
+                            SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="301" 
-                                WindowStartSeconds="0.36" 
-                                WindowDurationSeconds="0.12" 
+                                WindowStartSeconds="0.18" 
+                                WindowDurationSeconds="0.06" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="4" 
                             PartitionName="p4" 
-                            PeriodSeconds="0.6" 
-                            PeriodDurationSeconds="0.12">
+                            PeriodSeconds="0.3" 
+                            PeriodDurationSeconds="0.06"
+                            SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="401" 
-                                WindowStartSeconds="0.48" 
-                                WindowDurationSeconds="0.12" 
+                                WindowStartSeconds="0.24" 
+                                WindowDurationSeconds="0.06" 
+                                PartitionPeriodStart="true"/>
+        </Partition_Schedule>
+    </Module_Schedule>
+    
+        <!-- module schedule 2 -->
+    <Module_Schedule  ScheduleIdentifier="1" ScheduleName="test_sched2" InitialModuleSchedule="false" MajorFrameSeconds="1.5">
+		
+        <Partition_Schedule PartitionIdentifier="0" 
+                            PartitionName="p0" 
+                            PeriodSeconds="1.5" 
+                            PeriodDurationSeconds="0.3"
+                            SetModuleSchedule="true">
+            <Window_Schedule 	WindowIdentifier="001" 
+                                WindowStartSeconds="0.0" 
+                                WindowDurationSeconds="0.3" 
+                                PartitionPeriodStart="true"/>
+        </Partition_Schedule>
+		
+        <Partition_Schedule PartitionIdentifier="1" 
+                            PartitionName="p1" 
+                            PeriodSeconds="1.5" 
+                            PeriodDurationSeconds="0.3"
+                            SetModuleSchedule="false">
+            <Window_Schedule 	WindowIdentifier="101" 
+                                WindowStartSeconds="0.3" 
+                                WindowDurationSeconds="0.3" 
+                                PartitionPeriodStart="true"/>
+        </Partition_Schedule>
+		
+        <Partition_Schedule PartitionIdentifier="2" 
+                            PartitionName="p2" 
+                            PeriodSeconds="1.5" 
+                            PeriodDurationSeconds="0.3"
+                            SetModuleSchedule="false">
+            <Window_Schedule 	WindowIdentifier="201" 
+                                WindowStartSeconds="0.6" 
+                                WindowDurationSeconds="0.3" 
+                                PartitionPeriodStart="true"/>
+        </Partition_Schedule>
+		
+        <Partition_Schedule PartitionIdentifier="3" 
+                            PartitionName="p3" 
+                            PeriodSeconds="1.5" 
+                            PeriodDurationSeconds="0.3"
+                            SetModuleSchedule="false">
+            <Window_Schedule 	WindowIdentifier="301" 
+                                WindowStartSeconds="0.9" 
+                                WindowDurationSeconds="0.3" 
+                                PartitionPeriodStart="true"/>
+        </Partition_Schedule>
+		
+        <Partition_Schedule PartitionIdentifier="4" 
+                            PartitionName="p4" 
+                            PeriodSeconds="1.5" 
+                            PeriodDurationSeconds="0.3"
+                            SetModuleSchedule="false">
+            <Window_Schedule 	WindowIdentifier="401" 
+                                WindowStartSeconds="1.2" 
+                                WindowDurationSeconds="0.3" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
     </Module_Schedule>
@@ -290,7 +354,7 @@
     <!-- =========================================================================================
     Partition Health Monitor Table
     ========================================================================================= -->
-    <Partition_HM_Table PartitionIdentifier="0" PartitionName="p0" PartitionCallback="hm_part_callback">
+    <Partition_HM_Table PartitionIdentifier="0" PartitionName="p0" PartitionCallback="partition_HM_callback">
         <System_State_Entry Description="Partition Initialization" SystemState="2">
             <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="0"/>
             <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="1"/>
@@ -336,7 +400,7 @@
             <Error_ID_Action Action="WARM_START" Description="Deadline Miss" ErrorIdentifier="13"/>
         </System_State_Entry>
     </Partition_HM_Table>
-    <Partition_HM_Table PartitionIdentifier="1" PartitionName="p1" PartitionCallback="hm_part_callback">
+    <Partition_HM_Table PartitionIdentifier="1" PartitionName="p1" PartitionCallback="partition_HM_callback">
         <System_State_Entry Description="Partition Initialization" SystemState="2">
             <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="0"/>
             <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="1"/>
@@ -382,7 +446,7 @@
             <Error_ID_Action Action="WARM_START" Description="Deadline Miss" ErrorIdentifier="13"/>
         </System_State_Entry>
     </Partition_HM_Table>
-    <Partition_HM_Table PartitionIdentifier="2" PartitionName="p2" PartitionCallback="hm_part_callback">
+    <Partition_HM_Table PartitionIdentifier="2" PartitionName="p2" PartitionCallback="partition_HM_callback">
         <System_State_Entry Description="Partition Initialization" SystemState="2">
             <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="0"/>
             <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="1"/>
@@ -428,7 +492,7 @@
             <Error_ID_Action Action="WARM_START" Description="Deadline Miss" ErrorIdentifier="13"/>
         </System_State_Entry>
     </Partition_HM_Table>
-    <Partition_HM_Table PartitionIdentifier="3" PartitionName="p3" PartitionCallback="hm_part_callback">
+    <Partition_HM_Table PartitionIdentifier="3" PartitionName="p3" PartitionCallback="partition_HM_callback">
         <System_State_Entry Description="Partition Initialization" SystemState="2">
             <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="0"/>
             <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="1"/>
@@ -474,7 +538,7 @@
             <Error_ID_Action Action="WARM_START" Description="Deadline Miss" ErrorIdentifier="13"/>
         </System_State_Entry>
     </Partition_HM_Table>
-    <Partition_HM_Table PartitionIdentifier="4" PartitionName="p4" PartitionCallback="hm_part_callback">
+    <Partition_HM_Table PartitionIdentifier="4" PartitionName="p4" PartitionCallback="partition_HM_callback">
         <System_State_Entry Description="Partition Initialization" SystemState="2">
             <Error_ID_Action Action="IGNORE" Description="Power Interrupt" ErrorIdentifier="0"/>
             <Error_ID_Action Action="COLD_START" Description="Illegal Instruction" ErrorIdentifier="1"/>
