@@ -56,7 +56,7 @@ makefile_inc = [
 
 # @brief List of application partition templates
 partition_templates = [
-    os.path.join(POS_DIRECTORY, 'rtems5', 'rtems5_partition_makefile.mako'),    # POS makefile
+    os.path.join(POS_DIRECTORY, 'rtems5', 'rtems5_partition_makefile_zynqz1.mako'),    # POS makefile
     os.path.join(POS_DIRECTORY, 'rtems5', 'init.c.mako'),
     os.path.join(POS_DIRECTORY, 'rtems5', 'rtems_config.h.mako'),
 ]
