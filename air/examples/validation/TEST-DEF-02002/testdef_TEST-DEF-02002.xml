@@ -1,0 +1,100 @@
+<!-- Test description file -->
+<!-- Test steps must be sequential, starting at 001 -->
+<!-- Repetitions are limited to 0xFFF,i.e. 4095		-->
+<!-- Major time frame [seconds]						-->
+<!-- Test End partition : partition where the test
+	 will end and finish - if needed, this can be 
+	 adapted										-->
+<TDF>
+	<!-- Test Definition -->
+	<test 	name="TEST-DEF-02002"
+			id="2001" 
+			partitions="2"
+			test_end_partition="0"
+			repeat="1" 
+			mtf="0.3"
+			ms_per_tick="10"
+			type="TEST_GMV_VAL"
+			personality="RTEMS5">
+		<description>
+			Implements the ARINC-653 Part 3 tests related to the Sampling Ports APIs.
+		</description>
+		
+		<!-- Test Procedure -->
+		<testprocedure repeat="1">
+			<teststep id="0" partition="0" repeat="1">
+				<description>
+					T-API-INTER-0560:0011 - Successful sampling port status check.
+				</description>
+			</teststep>
+			<teststep id="1" partition="0" repeat="1">
+				<description>
+					T-API-INTER-0560:0012 - Unsuccessful sampling port status check
+				</description>
+			</teststep>
+			<teststep id="2" partition="0" repeat="1">
+				<description>
+					T-API-INTER-0570:0011 - Queuing port creation.
+				</description>
+			</teststep>
+			<teststep id="3" partition="0" repeat="1">
+				<description>
+					T-API-INTER-0570:0011 - Queuing port creation.
+				</description>
+			</teststep>
+			<teststep id="4" partition="0" repeat="1">
+				<description>
+					T-API-INTER-0570:0012 - Queuing port creation error handling.
+				</description>
+			</teststep>
+			<teststep id="5" partition="0" repeat="1">
+				<description>
+					T-API-INTER-0570:0013 - Unsuccessful queuing port creation upon an existing partition in NORMAL state.
+				</description>
+			</teststep>
+			<teststep id="6" partition="0" repeat="1">
+				<description>
+					T-API-INTER-0580:0010 - Test the service SEND_QUEUING_MESSAGE with timeout = 0 milliseconds and enough space and no processes waiting
+				</description>
+			</teststep>
+			<teststep id="7" partition="0" repeat="1">
+				<description>
+					T-API-INTER-0590:0010 - Test the service RECEIVE_QUEUING_MESSAGE when FIFO is not empty and length of message is  below MAXIMUM_LENGTH (input parameter of the service)
+				</description>
+			</teststep>
+			<teststep id="8" partition="0" repeat="1">
+				<description>
+					T-API-INTER-0590:0030 - RECEIVE_QUEUING_MESSAGE when the FIFO queue is empty and timeout= 0
+				</description>
+			</teststep>
+			<teststep id="9" partition="0" repeat="1">
+				<description>
+					T-API-INTER-0590:0070 - Test the service RECEIVE_QUEUING_MESSAGE under error conditions
+				</description>
+			</teststep>
+			<teststep id="10" partition="0" repeat="1">
+				<description>
+					T-API-INTER-0600:0011 - Successful queuing port ID check.
+				</description>
+			</teststep>
+			<teststep id="11" partition="0" repeat="1">
+				<description>
+					T-API-INTER-0600:0012 - Unsuccessful queuing port ID check.
+				</description>
+			</teststep>
+			<teststep id="12" partition="0" repeat="1">
+				<description>
+					T-API-INTER-0610:0011 - Successful queuing port status check.
+				</description>
+			</teststep>
+			<teststep id="13" partition="0" repeat="1">
+				<description>
+					T-API-INTER-0610:0012 - Unsuccessful queuing port status check, due to invalid port ID.
+				</description>
+			</teststep>
+
+			
+			
+		</testprocedure>		
+	</test>	<!-- Test id="80200" -->
+</TDF>
