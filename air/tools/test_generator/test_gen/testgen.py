@@ -81,7 +81,7 @@ TESTXML_FILE          = "%s.xml"
 VALID_APEXs           = ["NONE", "AIRPEX", "IMASPEX"]
 
 # output dir for testdefs_TEST*.xml
-TESTGEN_OUTDIR        = os.path.join("testgen", "generated")
+TESTGEN_OUTDIR        = os.path.join("generated")
 
 # residence of the mako file templates
 TEMPLATE_PATH         = "template"
