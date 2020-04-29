@@ -24,11 +24,11 @@ cores = 2
 
 # Kernel Compiler with FPU
 kernel_compiler = dict(
-    CC="arm-none-eabi-gcc --pipe",
-    CXX="arm-none-eabi-g++ --pipe",
-    LD="arm-none-eabi-gcc --pipe",
-    AR="arm-none-eabi-ar",
-    RANLIB="arm-none-eabi-ranlib",
+    CC="arm-rtems5-gcc --pipe",
+    CXX="arm-rtems5-g++ --pipe",
+    LD="arm-rtems5-gcc --pipe",
+    AR="arm-rtems5-ar",
+    RANLIB="arm-rtems5-ranlib",
     CFLAGS="",
     CPPFLAGS="-g -c -fno-builtin -nodefaultlibs -Wall -march=armv7-a -mthumb \
 -mfpu=neon -mfloat-abi=hard -mtune=cortex-a9",
@@ -41,11 +41,11 @@ kernel_compiler = dict(
 
 # Kernel Compiler with NO FPU
 kernel_compiler_no_fpu = dict(
-    CC="arm-none-eabi-gcc --pipe",
-    CXX="arm-none-eabi-g++ --pipe",
-    LD="arm-none-eabi-gcc --pipe",
-    AR="arm-none-eabi-ar",
-    RANLIB="arm-none-eabi-ranlib",
+    CC="arm-rtems5-gcc --pipe",
+    CXX="arm-rtems5-g++ --pipe",
+    LD="arm-rtems5-gcc --pipe",
+    AR="arm-rtems5-ar",
+    RANLIB="arm-rtems5-ranlib",
     CFLAGS="",
     CPPFLAGS="-g -c -fno-builtin -nodefaultlibs -Wall -march=armv7-a -mthumb \
 -mtune=cortex-a9",
