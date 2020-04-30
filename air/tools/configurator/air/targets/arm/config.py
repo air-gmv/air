@@ -23,7 +23,7 @@ class ARMConfiguration(object):
 MAX_CORES                  = 2
 
 CPU_CORE_CONTROL            = [       0x8,      0x24]
-CPU_CORE_CONTEXT            = [       0x8,      0x90]
+CPU_CORE_CONTEXT            = [       0x8,      0x98]
 CPU_CORE_CONTEXT_STACK      = [       0x8,     0x240] # 8x isf (0x48 each)
 CPU_CORE_CONTEXT_FPU        = [       0x8,     0x108]
 CPU_CORE_CONTEXT_HM         = [       0x8,      0x10]
