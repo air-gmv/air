@@ -61,7 +61,10 @@ int test_main (void) {
 	
     RETURN_CODE_TYPE 		rc 			= -1;
     PARTITION_ID_TYPE 		targetid	= -1;
-                                        
+    
+    /* Test Start ******************************************************    */
+    test_enter(23);
+    
     /* Test Steps *******************************************************    */
     /* Test Step 2 
     	TSAL_INIT; expect NO_ERROR. */
