@@ -202,22 +202,27 @@
     ========================================================================================= -->	
 
     <!-- module schedule 1 -->
-    <Module_Schedule  ScheduleIdentifier="0" ScheduleName="test_sched" InitialModuleSchedule="true" MajorFrameSeconds="0.3">
+        <Module_Schedule  ScheduleIdentifier="0" ScheduleName="test_sched" InitialModuleSchedule="true" MajorFrameSeconds="0.4">
 		
         <Partition_Schedule PartitionIdentifier="0" 
                             PartitionName="p0" 
-                            PeriodSeconds="0.3" 
-                            PeriodDurationSeconds="0.1"
+                            PeriodSeconds="0.4" 
+                            PeriodDurationSeconds="0.2"
                             SetModuleSchedule="true">
             <Window_Schedule 	WindowIdentifier="001" 
                                 WindowStartSeconds="0.0" 
                                 WindowDurationSeconds="0.1" 
                                 PartitionPeriodStart="true"/>
+            <Window_Schedule 	WindowIdentifier="002" 
+                                WindowStartSeconds="0.2" 
+                                WindowDurationSeconds="0.1" 
+                                PartitionPeriodStart="false"/>
+
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="1" 
                             PartitionName="p1" 
-                            PeriodSeconds="0.3" 
+                            PeriodSeconds="0.4" 
                             PeriodDurationSeconds="0.1"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="101" 
@@ -228,17 +233,17 @@
 		
         <Partition_Schedule PartitionIdentifier="2" 
                             PartitionName="p2" 
-                            PeriodSeconds="0.3" 
+                            PeriodSeconds="0.4" 
                             PeriodDurationSeconds="0.1"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="201" 
-                                WindowStartSeconds="0.2" 
+                                WindowStartSeconds="0.3" 
                                 WindowDurationSeconds="0.1" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
     </Module_Schedule>
-    
-        <!-- module schedule 2 -->
+        
+    <!-- module schedule 2 -->
     <Module_Schedule  ScheduleIdentifier="1" ScheduleName="test_sched2" InitialModuleSchedule="false" MajorFrameSeconds="1.5">
 		
         <Partition_Schedule PartitionIdentifier="0" 
@@ -246,7 +251,7 @@
                             PeriodSeconds="1.5" 
                             PeriodDurationSeconds="0.5"
                             SetModuleSchedule="true">
-            <Window_Schedule 	WindowIdentifier="001" 
+            <Window_Schedule 	WindowIdentifier="501" 
                                 WindowStartSeconds="0.0" 
                                 WindowDurationSeconds="0.5" 
                                 PartitionPeriodStart="true"/>
@@ -257,7 +262,7 @@
                             PeriodSeconds="1.5" 
                             PeriodDurationSeconds="0.5"
                             SetModuleSchedule="false">
-            <Window_Schedule 	WindowIdentifier="101" 
+            <Window_Schedule 	WindowIdentifier="601" 
                                 WindowStartSeconds="0.5" 
                                 WindowDurationSeconds="0.5" 
                                 PartitionPeriodStart="true"/>
@@ -268,7 +273,7 @@
                             PeriodSeconds="1.5" 
                             PeriodDurationSeconds="0.5"
                             SetModuleSchedule="false">
-            <Window_Schedule 	WindowIdentifier="201" 
+            <Window_Schedule 	WindowIdentifier="701" 
                                 WindowStartSeconds="1.0" 
                                 WindowDurationSeconds="0.5" 
                                 PartitionPeriodStart="true"/>

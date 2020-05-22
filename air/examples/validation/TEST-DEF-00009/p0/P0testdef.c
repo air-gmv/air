@@ -49,7 +49,6 @@ int _rtems_clock_get(rtems_interval *t1) {
 void partition_HM_callback(air_state_e state_id, air_error_e i_error) {
     /* signal error ocurrence	*/
     unexp_error = 1;
-    printf ("HM1 CALLED !!!\n");
     return;
 }
 
@@ -61,7 +60,7 @@ int test_main(void) {
     /* total test result                */
     int res = TEST_SUCCESS;
     /* wait ticks before test end to print results                    */
-    int wait = 150;
+    int wait = 150; // MTF is 0.3
 
     printf ("Starting TEST-DEF-0009\n");
 
@@ -115,7 +114,8 @@ int test_main(void) {
 
     /* Test Step 2
         Check that the last step differs (MTF - P0) ticks execution window from 
-     * Original passes -19 ticks consumed by P0, so 1tick from P0 + 10ticks P2 + 20 ticks from p3 == 31 in TOTAL
+     *  test_step_announce is blocked waiting for steip 1,1
+     
      * New passes  (50-19) from p0, 50ofP1 + 50ofP2 so 131 in TOTAL
                 the previously stored value.  */
     test_step_announce(2, 1);
@@ -149,11 +149,11 @@ int test_main(void) {
     test_step_announce(3, 1);
 
     /* Test step 3 code */
-    air_syscall_set_schedule(1);
-    ret = RTEMS_SUCCESSFUL;
+    ret = air_syscall_set_schedule(1);
+    
 
     /* EXPECTED: */
-    if ((RTEMS_SUCCESSFUL == ret) && (0 == unexp_error)) {
+    if (RTEMS_SUCCESSFUL == ret) {
         res &= test_report(__FILE__, __LINE__, TEST_SUCCESS,
                 RESULT_EQUAL | RESULT_TYPE_VALUE,
                 ret);
@@ -229,7 +229,9 @@ int test_main(void) {
                 RESULT_DIFF | RESULT_TYPE_VALUE
                 , t1 - t2);
     }
-    rtems_task_wake_after(750); //150
+    
+    //Jump one MTF for initializations
+    rtems_task_wake_after(750);
 
 
     /* Test Step 6 

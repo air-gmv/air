@@ -67,12 +67,14 @@ int test_main (void) {
     
     /* Test specific variables  ******************************************	*/
 	RETURN_CODE_TYPE rc = -1;
-                                        
+    
+    /* Test Start ******************************************************    */
+    test_enter(21);
+        
     /* Test Steps *******************************************************    */
 
 	/* Reboot monitoring */
 	reboot_count += 1;
-	if (reboot_count > 0) pal_pprint_enter_part(2,NULL);
 
 
 	/* Test step 4 code */
@@ -82,6 +84,7 @@ int test_main (void) {
 		/* Test Step 4 
 			Initialize P2 TSAL. */
 		test_step_announce(4,1);
+                printf ("ANNOUNCE 4\n");
 
 		/* EXPECTED: */
 		if ((NO_ERROR == rc) && (0 == unexp_error))  {
@@ -104,6 +107,7 @@ int test_main (void) {
 			Set partition mode to normal (via SET_PARTITION_MODE); trans:
 		COLD_START->NORMAL. */
 		test_step_announce(13,1);
+                printf ("ANNOUNCE 13\n");
 
 		/* Test step 13 code */
 

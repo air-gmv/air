@@ -35,7 +35,6 @@ int mtf_ticks     = 50;
 void partition_HM_callback(air_state_e state_id,air_error_e i_error) {
    
     hm_was_called = i_error;
-    printf ("HM2 CALLED !!!\n");
     return;
 }
 
@@ -43,7 +42,7 @@ void partition_HM_callback(air_state_e state_id,air_error_e i_error) {
 int test_main (void) {
     /* Test generic variables  ******************************************	*/
 	/* repeatition iteration counter	*/ 
-	int repeat     = 0;                
+    int repeat     = 0;                
 	/* function to test return code     */
     rtems_status_code ret    = RTEMS_SUCCESSFUL; 
 	/* total test result                */
@@ -63,18 +62,17 @@ int test_main (void) {
 		callback. */
     test_step_announce(1,1);
     /* Test step 1 code */
-    air_syscall_set_schedule(1);
+    ret = air_syscall_set_schedule(1);
 
     /* EXPECTED: */
-    if (hm_was_called == 0) {
+    if (AIR_NO_ERROR != ret) {
         res &=    test_report(__FILE__, __LINE__, TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
                                     ret);
     } else {    
         res &=     test_report(__FILE__, __LINE__,TEST_FAILURE,
                                     RESULT_DIFF | RESULT_TYPE_VALUE,
-                                    hm_was_called);
-		test_exit(TEST_FAILURE,mtf_ticks >> 1);
+                                    ret);
     }
 
     /* Test End */
