@@ -84,6 +84,12 @@ typedef struct {
 
 extern void test_step_report(char *, int, char *, int, test_result);
 
+
+/**
+ * @brief Enables libtest debug prints
+ */
+void debug_libtest();
+
 /**
  * @brief Initializes the test partition
  * @param shm_name name of the shared memory for the test report

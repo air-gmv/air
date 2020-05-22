@@ -27,6 +27,19 @@ test_control_t *test_control;
 partition_buffer_t *partition_buffer;
 
 /**
+ * @brief flag enables debug information
+ */
+int libtest_debug = 0;
+
+/**
+ * @brief Enables libtest debug prints
+ */
+void debug_libtest()
+{
+    libtest_debug = 1;
+}
+
+/**
  * @brief Initializes the test partition
  * @param shm_name name of the shared memory for the test report
  * @return number of times that the partition have been reseted
@@ -65,7 +78,11 @@ air_u32_t test_partition_init(air_name_ptr_t shm_name) {
  * @note This function blocks until the global test step allows it to run
  */
 air_u32_t test_step_announce(air_u32_t id, announce_flags flags) {
-
+    //air_partition_status_t status;
+    
+    if(libtest_debug)
+        printf ("test_step_announce %d\n", id);
+    
     /* wait for the current step */
     while (id > test_control->step_id);
 
@@ -87,7 +104,8 @@ air_u32_t test_step_announce(air_u32_t id, announce_flags flags) {
     /* store the current step as the current step */
     partition_buffer->step_id = id;
     partition_buffer->flags = flags;
-
+    //air_syscall_get_partition_status(-1, &status);
+    //printf ("Test %d Partition %d: Window %d\n", id, status.identifier, status.window_id);
     return id;
 }
 

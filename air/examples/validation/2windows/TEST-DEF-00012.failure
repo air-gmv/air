@@ -202,7 +202,7 @@
     ========================================================================================= -->	
 
     <!-- module schedule 1 -->
-        <Module_Schedule  ScheduleIdentifier="0" ScheduleName="test_sched" InitialModuleSchedule="true" MajorFrameSeconds="0.4">
+    <Module_Schedule  ScheduleIdentifier="0" ScheduleName="test_sched" InitialModuleSchedule="true" MajorFrameSeconds="0.4">
 		
         <Partition_Schedule PartitionIdentifier="0" 
                             PartitionName="p0" 
@@ -214,7 +214,7 @@
                                 WindowDurationSeconds="0.1" 
                                 PartitionPeriodStart="true"/>
             <Window_Schedule 	WindowIdentifier="002" 
-                                WindowStartSeconds="0.2" 
+                                WindowStartSeconds="0.3" 
                                 WindowDurationSeconds="0.1" 
                                 PartitionPeriodStart="false"/>
 
@@ -237,12 +237,12 @@
                             PeriodDurationSeconds="0.1"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="201" 
-                                WindowStartSeconds="0.3" 
+                                WindowStartSeconds="0.2" 
                                 WindowDurationSeconds="0.1" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
     </Module_Schedule>
-        
+    
     <!-- module schedule 2 -->
     <Module_Schedule  ScheduleIdentifier="1" ScheduleName="test_sched2" InitialModuleSchedule="false" MajorFrameSeconds="1.5">
 		
@@ -251,7 +251,7 @@
                             PeriodSeconds="1.5" 
                             PeriodDurationSeconds="0.5"
                             SetModuleSchedule="true">
-            <Window_Schedule 	WindowIdentifier="501" 
+            <Window_Schedule 	WindowIdentifier="001" 
                                 WindowStartSeconds="0.0" 
                                 WindowDurationSeconds="0.5" 
                                 PartitionPeriodStart="true"/>
@@ -262,7 +262,7 @@
                             PeriodSeconds="1.5" 
                             PeriodDurationSeconds="0.5"
                             SetModuleSchedule="false">
-            <Window_Schedule 	WindowIdentifier="601" 
+            <Window_Schedule 	WindowIdentifier="101" 
                                 WindowStartSeconds="0.5" 
                                 WindowDurationSeconds="0.5" 
                                 PartitionPeriodStart="true"/>
@@ -273,7 +273,7 @@
                             PeriodSeconds="1.5" 
                             PeriodDurationSeconds="0.5"
                             SetModuleSchedule="false">
-            <Window_Schedule 	WindowIdentifier="701" 
+            <Window_Schedule 	WindowIdentifier="201" 
                                 WindowStartSeconds="1.0" 
                                 WindowDurationSeconds="0.5" 
                                 PartitionPeriodStart="true"/>
@@ -429,5 +429,5 @@
 	
     </Connection_Table>
 	
-    <AIR_Configuration TicksPerSecond="500" RequiredCores="1"/>
+    <AIR_Configuration TicksPerSecond="100" RequiredCores="1"/>
 </ARINC_653_Module>  

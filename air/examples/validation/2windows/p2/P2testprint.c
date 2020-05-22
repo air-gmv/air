@@ -1,4 +1,14 @@
 
+/* ***********************************************************************	*/
+/* ** TEST-DEF-00012 / 12 *********************************************** */
+/* ***********************************************************************	*/
+
+#include <rtems.h>
+
+#include <air.h>
+#include <air_test.h>
+
+
 /* ***********************************************************************    */
 /* ** TEST-DEF-00009 / 9 ************************************************ */
 /* ***********************************************************************    */
@@ -18,7 +28,7 @@
 #include <rtems.h>
 #include <air.h>
 #include <air_test.h>
-#include <P1testdef.h>
+
 
 /* Test external definitions **********************************************    */
 
@@ -30,54 +40,50 @@ int hm_was_called = 0;
 int mtf_ticks     = 50;
 
 /* Test auxiliary functions    ***********************************************    */
-
+/**
+ Call rtems clock get
+ */
+int _rtems_clock_get(rtems_interval *t1) {
+#ifdef RTEMS48I
+    rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, t1);
+#else
+    *t1 = rtems_clock_get_ticks_since_boot();
+#endif
+    return RTEMS_SUCCESSFUL;
+}
 /* Test HM callbacks        ***********************************************    */
 void partition_HM_callback(air_state_e state_id,air_error_e i_error) {
    
     hm_was_called = i_error;
     return;
 }
+/* Test Printf *******************************************************	*/
+int test_printf (void) {
 
-/* Test execution *******************************************************    */
-int test_main (void) {
     /* Test generic variables  ******************************************	*/
-	/* repeatition iteration counter	*/ 
-    int repeat     = 0;                
-	/* function to test return code     */
-    rtems_status_code ret    = RTEMS_SUCCESSFUL; 
-	/* total test result                */
-    int res     = TEST_SUCCESS;     
-	/* wait ticks before test end to print results                    */
-    int wait    = 150;			
-    test_enter(9); // this is new
-	/* since we are measuring execution windows, we should not use the
-	 * current one, since it was already partially occupied by the 
-	 * partition rtems boot-up, so let's wait until the next one	*/
-	rtems_task_wake_after(wait >> 1); 
+    /* function to test return code     */
+    rtems_status_code ret = RTEMS_SUCCESSFUL;
+    air_partition_status_t status;
+    /* total test result                */
+    int res = TEST_SUCCESS;
+    /* wait ticks before test end to print results                    */
+    int wait = 200; // MTF is 0.4
+
+
+    /* Test specific variables  ******************************************	*/
+    int counter = 0;
+    rtems_interval t1 = 0;
+    rtems_interval t2 = 0;
+
 
     /* Test Steps *******************************************************    */
-    /* Test Step 1 
-    	Call air_syscall_set_schedule for scheedule 1, and check that a 
-		PMK_VIOL_ERR fault occured, that was captured by the partition
-		callback. */
-    test_step_announce(1,1);
-    /* Test step 1 code */
-    ret = air_syscall_set_schedule(1);
 
-    /* EXPECTED: */
-    if (AIR_NO_ERROR != ret) {
-        res &=    test_report(__FILE__, __LINE__, TEST_SUCCESS,
-                                    RESULT_EQUAL | RESULT_TYPE_VALUE,
-                                    ret);
-    } else {    
-        res &=     test_report(__FILE__, __LINE__,TEST_FAILURE,
-                                    RESULT_DIFF | RESULT_TYPE_VALUE,
-                                    ret);
+    /* Test step 0 code */
+    for (;;) {
+        ret |= rtems_task_wake_after(2);
+        air_syscall_get_partition_status(-1, &status);
+        printf ("Partition %d: Window %d\n", status.identifier, status.window_id);
     }
-
-    /* Test End */
-    rtems_task_wake_after(3000); 
-    test_finish(res);
  
     return 0;
 }

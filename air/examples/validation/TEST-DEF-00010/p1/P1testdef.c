@@ -51,8 +51,8 @@ int test_main (void) {
 	/* total test result                */
     int res     = TEST_SUCCESS;     
 	/* wait ticks before test end to print results                    */
-    int wait    = 50;			
-    
+    int wait    = 150;			
+    test_enter(10); // this is new
 	/* since we are measuring execution windows, we should not use the
 	 * current one, since it was already partially occupied by the 
 	 * partition rtems boot-up, so let's wait until the next one	*/
@@ -68,7 +68,7 @@ int test_main (void) {
 	SCHEDULE_ID_TYPE sched_id;
 	RETURN_CODE_TYPE rc;
 
-	GET_MODULE_SCHEDULE_ID ("alternative_sched", &sched_id, &rc);
+	GET_MODULE_SCHEDULE_ID ("test_sched2", &sched_id, &rc);
 	ret |= rc;
 
 	SET_MODULE_SCHEDULE(sched_id, &rc);
@@ -86,7 +86,8 @@ int test_main (void) {
     }
 
     /* Test End */
-    test_return();
+    rtems_task_wake_after(3000); 
+    test_finish(res);
     return 0;
 }
 
