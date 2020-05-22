@@ -65,7 +65,7 @@ int test_main (void) {
     NAME_TYPE				P1name		= "p1";
     PARTITION_STATUS_TYPE	target_status;
 
-
+    printf ("WELLCOME 0\n");
     /* Test Start ******************************************************    */
     test_enter(22);
                                         
@@ -73,6 +73,7 @@ int test_main (void) {
     /* Test Step 0 
     	TSAL_INIT; set partition mode to NORMAL; expect NO_ERROR. */
     test_step_announce(0,1);
+    printf ("ANNOUNCED 0\n");
 
     /* Test step 0 code */
 
@@ -103,6 +104,7 @@ int test_main (void) {
     	Attempt to call GET_A_PARTITION_STATUS using an invalid target
 	partition id; expect INVALID_PARAM. */
     test_step_announce(2,1);
+    printf ("ANNOUNCED 2\n");
 
     /* Test step 2 code */
 

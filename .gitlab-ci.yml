@@ -25,18 +25,23 @@ default:
         - git submodule sync --recursive
         - git submodule update --init --recursive
 
-        
+
 #Cronological order of jobs to be done
 #To be divided in the future in multiple VMs
 stages: 
     - sconfig-sparc
     - sbuild-sparc
     - sclean-build-sparc
-    - test_0009_sparc
+    - test_00009_sparc
+    - test_00010_sparc
+    - test_00012_sparc
+    - test_00021_sparc
+    - test_00022_sparc
+    - test_00023_sparc
     - sconfig-arm
     - sclean-build-arm
     - sbuild-arm
-    - test_0001_arm
+    - test_00001_arm
 
 #Build SPARC
 config_sparc:
@@ -46,16 +51,16 @@ config_sparc:
     script:
         - cp $AIR/../utils/gitlab-runner/.sparc_config .
         - ./configure -f .sparc_config
-        
-build_sparc: 
-#    tags: 
+
+build_sparc:
+#    tags:
 #        - sparc
     stage: sbuild-sparc
     script:
         - make clean # to be removed and used only on failure
         - make
-        
-#clean_build_sparc:        
+
+#clean_build_sparc:
 #    tags: 
 #        - sparc
 #    stage: sclean-build-sparc
@@ -63,8 +68,8 @@ build_sparc:
 #        - make clean
 #        - make
 #    when: on_failure
-    
-        
+
+
 #Build for ARM
 config_arm:
 #    tags: 
@@ -73,7 +78,7 @@ config_arm:
     script:
         -  cp $AIR/../utils/gitlab-runner/.arm_config . 
         - ./configure -f .arm_config
-        
+
 build_arm:
 #    tags: 
 #        - arm_qemu
@@ -88,33 +93,95 @@ build_arm:
 #    stage: scleanbuild-arm
 #    script:
 #        - make clean
-#        - make     
+#        - make
 #    when: on_failure
-        
-        
-#Tests for SPARC
-0009_sparc:
+
+
+########################
+#Tests for SPARC       #
+########################
+00009_sparc:
 #    tags: 
 #        - sparc
-    stage: test_0009_sparc
+    stage: test_00009_sparc
     script:
         - cd $AIR/examples/validation/TEST-DEF-00009
-        - configure
-        - make clean
-        - make
         - cp $AIR/../utils/gitlab-runner/* .
-        - ls
-        - ./do_leon4_grmon.sh
-        - ./testcheck.py
+        - ./do_leon4_grmon.bash
         - cd $AIR
     environment:
         name: SPARC LEON4
 
-#Test for ARM
+00010_sparc:
+#    tags: 
+#        - sparc
+    stage: test_00010_sparc
+    script:
+        - cd $AIR/examples/validation/TEST-DEF-00010
+        - cp $AIR/../utils/gitlab-runner/* .
+        - ./do_leon4_grmon.bash
+        - cd $AIR
+    environment:
+        name: SPARC LEON4
+
+00012_sparc:
+#    tags: 
+#        - sparc
+    stage: test_00012_sparc
+    script:
+        - cd $AIR/examples/validation/TEST-DEF-00012
+        - cp $AIR/../utils/gitlab-runner/* .
+        - ./do_leon4_grmon.bash
+        - cd $AIR
+    environment:
+        name: SPARC LEON4
+
+
+
+#00021_sparc: ## Failing in step 5
+##    tags: 
+##        - sparc
+#    stage: test_00021_sparc
+#    script:
+#        - cd $AIR/examples/validation/TEST-DEF-00021
+#        - cp $AIR/../utils/gitlab-runner/* .
+#        - ./do_leon4_grmon.bash
+#        - cd $AIR
+#    environment:
+#        name: SPARC LEON4
+
+#00022_sparc: ## Failing in step 5
+##    tags: 
+##        - sparc
+#    stage: test_00022_sparc
+#    script:
+#        - cd $AIR/examples/validation/TEST-DEF-00022
+#        - cp $AIR/../utils/gitlab-runner/* .
+#        - ./do_leon4_grmon.bash
+#        - cd $AIR
+#    environment:
+#        name: SPARC LEON4
+
+#00023_sparc: ## Failing in step 5
+##    tags: 
+##        - sparc
+#    stage: test_00023_sparc
+#    script:
+#        - cd $AIR/examples/validation/TEST-DEF-00023
+#        - cp $AIR/../utils/gitlab-runner/* .
+#        - ./do_leon4_grmon.bash
+#        - cd $AIR
+#    environment:
+#        name: SPARC LEON4
+
+
+########################        
+#Tests for ARM         #
+########################
 #    tags: 
 #        - arm_qemu
-0009_arm:
-    stage: test_0001_arm
+00001_arm:
+    stage: test_00001_arm
     script:
         - cd $AIR/examples/arm_unit_tests/lionel
         - configure
@@ -122,7 +189,7 @@ build_arm:
         - make
         - cp $AIR/../utils/gitlab-runner/* .
         - ls
-        - ./do_zynqz1_qemu.sh
+        - ./do_zynqz1_qemu.bash
         - ./testcheck.py
         - cd $AIR
     environment:
