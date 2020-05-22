@@ -68,6 +68,9 @@ int test_main (void) {
     /* Test specific variables  ******************************************	*/
 	
 	RETURN_CODE_TYPE rc = -1;
+    
+    /* Test Start ******************************************************    */
+    test_enter(21);
                                         
     /* Test Steps *******************************************************    */
 
@@ -76,13 +79,14 @@ int test_main (void) {
 
 	/* test step 5 code */
 	rc = TSAL_INIT();
-	if (reboot_count > 0) pal_pprint_enter_part(3,NULL);
+        
 
 
 	if (reboot_count == 0) {
 		/* Test Step 5 
 			Initialize P3 TSAL. */
 		test_step_announce(5,1);
+                printf ("ANNOUNCE 5\n");
 
 		/* expected: */
 		if ((NO_ERROR == rc) && (0 == unexp_error))  {
