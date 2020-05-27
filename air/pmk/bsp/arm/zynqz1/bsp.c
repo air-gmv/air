@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019  GMVIS Skysoft S.A.
+ * Copyright (C) 2018-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -20,10 +20,8 @@
 #include <timer.h>
 #include <slcr.h>
 #include <uart.h>
-
-#ifdef PMK_DEBUG
+#include <ddr.h>
 #include <printk.h>
-#endif
 
 
 /**
@@ -137,8 +135,38 @@ void bsp_restart_core(pmk_core_ctrl_t *core_ctx) {
     arm_ps_reset();
 }
 
-/* TODO possibly go to standby mode */
 void bsp_shutdown_core(pmk_core_ctrl_t *core_ctx) {
+
+    printk("\nAIR has been terminaded by the application.\n");
+
+    /* 1. disable interrupts */
+    arm_disable_interrupts();
+
+    /* 2. configure wake-up device */
+    /* 3. enable l2 cache dynamic clock gating */
+    /* 4. enable scu standby mode */
+    arm_scu_standy_enable();
+
+    /* 5. enable topswitch clock stop */
+    *(air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x16c) |= 1;
+
+    /* 6. enable cortex-a9 dynamic clock gating */
+    arm_cp15_enable_dynamic_clock_gating();
+
+    /* 7. put external DDR into self-refresh mode */
+    arm_ddr_self_refresh();
+
+    /* 8. put PLLs into bypass mode */
+    arm_pll_bypass_mode();
+
+    /* 9. shutdown PLLs */
+    arm_pll_shutdown();
+
+    /* 10. increase clock divider (0x3f) and slow down CPU clock */
+    arm_set_cpu_clock_divisor(0x3f);
+
+    __asm__ volatile ("wfi");
+
     return;
 }
 

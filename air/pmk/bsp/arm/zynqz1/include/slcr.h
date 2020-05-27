@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019  GMVIS Skysoft S.A.
+ * Copyright (C) 2018-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -55,15 +55,15 @@ typedef struct {                        /* 0xf800 0000*/
 
 #define SLCR ((slcr_t *)XPAR_PS7_SLCR_0_S_AXI_BASEADDR)
 
-__FORCE_INLINE static void arm_slcr_lock(void){
+__FORCE_INLINE static void arm_slcr_lock(void) {
     SLCR->slcr_lock = SLCR_LOCK_KEY;
 }
 
-__FORCE_INLINE static void arm_slcr_unlock(void){
+__FORCE_INLINE static void arm_slcr_unlock(void) {
     SLCR->slcr_unlock = SLCR_UNLOCK_KEY;
 }
 
-__FORCE_INLINE static air_u32_t arm_slcr_is_locked(void){
+__FORCE_INLINE static air_u32_t arm_slcr_is_locked(void) {
     return SLCR->slcr_locksta;
 }
 
@@ -71,5 +71,8 @@ __FORCE_INLINE static air_u32_t arm_slcr_is_locked(void){
 
 void arm_peripheral_soft_reset(void);
 void arm_ps_reset(void);
+void arm_pll_bypass_mode(void);
+void arm_pll_shutdown(void);
+void arm_set_cpu_clock_divisor(air_u32_t divisor);
 
 #endif /* SLCR_H_ */

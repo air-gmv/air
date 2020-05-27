@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019  GMVIS Skysoft S.A.
+ * Copyright (C) 2018-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -86,6 +86,18 @@ typedef struct {
 
 __FORCE_INLINE static void arm_scu_invalidate(air_u32_t cpu_id) {
     SCU->inv_reg_ss = ( (0xf) << ( (cpu_id & 0x3) * 4) );
+}
+
+__FORCE_INLINE static void arm_scu_standy_enable() {
+    SCU->ctrl |= CTRL_SCU_STANDBY_EN;
+}
+
+__FORCE_INLINE static void arm_cp15_enable_dynamic_clock_gating(void) {
+
+    air_u32_t val;
+    __asm__ volatile ("mrc p15, 0, %0, c15, c0, 0\n":"=r" (val));
+    val |= 1;
+    __asm__ volatile ("mcr p15, 0, %0, c15, c0, 0\n"::"r" (val));
 }
 
 void arm_a9mpcore_start_hook(air_u32_t cpu_id);
