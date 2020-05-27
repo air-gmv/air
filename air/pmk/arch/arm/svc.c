@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019  GMVIS Skysoft S.A.
+ * Copyright (C) 2018-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -14,6 +14,7 @@
 #include <svc.h>
 #include <syscall.h>
 #include <configurations.h>
+#include <bsp.h>
 
 #ifdef PMK_DEBUG
 #include <printk.h>
@@ -177,7 +178,9 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
                 (air_name_ptr_t)frame->r0,
                 (air_sharedmemory_t *)frame->r1);
         break;
-//  arm_svc_install_handler(AIR_SYSCALL_SHUTDOWN_MODULE)
+    case AIR_SYSCALL_SHUTDOWN_MODULE:
+        bsp_shutdown_core(core);
+        break;
 //  arm_svc_install_handler(AIR_SYSCALL_GET_EVENT)
 //  arm_svc_install_handler(AIR_SYSCALL_GET_SYSTEM_STATE)
     case AIR_SYSCALL_SET_SYSTEM_STATE:

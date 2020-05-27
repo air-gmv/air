@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019  GMVIS Skysoft S.A.
+ * Copyright (C) 2018-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -38,4 +38,33 @@ void arm_ps_reset(void) {
     }
 
     /* shouldn't exit from this function */
+}
+
+
+#define ARM_PLL_CTRL (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x100)
+#define DDR_PLL_CTRL (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x104)
+#define IO_PLL_CTRL (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x108)
+
+void arm_pll_bypass_mode(void) {
+
+    *ARM_PLL_CTRL |= (1 << 4);
+    *DDR_PLL_CTRL |= (1 << 4);
+    *IO_PLL_CTRL |= (1 << 4);
+}
+
+void arm_pll_shutdown(void) {
+
+    *ARM_PLL_CTRL |= (1 << 1);
+    *DDR_PLL_CTRL |= (1 << 1);
+    *IO_PLL_CTRL |= (1 << 1);
+}
+
+#define ARM_CLK_CTRL (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x120)
+
+void arm_set_cpu_clock_divisor(air_u32_t divisor) {
+
+    if (divisor < 0) divisor = 0;
+    else if (divisor > 0x3f) divisor = 0x3f;
+
+    *ARM_CLK_CTRL |= (divisor << 8);
 }
