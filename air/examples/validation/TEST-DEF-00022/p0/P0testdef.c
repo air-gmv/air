@@ -50,8 +50,6 @@ int test_main (void) {
     /* Test generic variables  ******************************************	*/
 	/* repeatition iteration counter	*/ 
 	int repeat     = 0;                
-	/* function to test return code     */
-    rtems_status_code ret    = RTEMS_SUCCESSFUL; 
 	/* total test result                */
     int res     = TEST_SUCCESS;     
     
@@ -65,15 +63,15 @@ int test_main (void) {
     NAME_TYPE				P1name		= "p1";
     PARTITION_STATUS_TYPE	target_status;
 
-    printf ("WELLCOME 0\n");
     /* Test Start ******************************************************    */
     test_enter(22);
+    debug_libtest();
                                         
     /* Test Steps *******************************************************    */
     /* Test Step 0 
     	TSAL_INIT; set partition mode to NORMAL; expect NO_ERROR. */
     test_step_announce(0,1);
-    printf ("ANNOUNCED 0\n");
+
 
     /* Test step 0 code */
 
@@ -91,11 +89,11 @@ int test_main (void) {
     if ((0 == test_err) && (NO_ERROR == rc) && (0 == unexp_error))  {
         res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
-                                    ret);
+                                    rc);
     } else {    
         res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
                                     RESULT_DIFF | RESULT_TYPE_VALUE,
-                                    ret);
+                                    rc);
     }
     rtems_task_wake_after(mtf_ticks);
 
@@ -104,7 +102,6 @@ int test_main (void) {
     	Attempt to call GET_A_PARTITION_STATUS using an invalid target
 	partition id; expect INVALID_PARAM. */
     test_step_announce(2,1);
-    printf ("ANNOUNCED 2\n");
 
     /* Test step 2 code */
 
@@ -115,11 +112,11 @@ int test_main (void) {
     if ((INVALID_PARAM == rc) && (0 == unexp_error))  {
         res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
-                                    ret);
-    } else {    
+                                    rc);
+    } else {
         res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
                                     RESULT_DIFF | RESULT_TYPE_VALUE,
-                                    ret);
+                                    rc);
     }
 
     /* Test Step 3 
@@ -136,11 +133,11 @@ int test_main (void) {
     if ((INVALID_PARAM == rc) && (0 == unexp_error))  {
         res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
-                                    ret);
+                                    rc);
     } else {    
         res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
                                     RESULT_DIFF | RESULT_TYPE_VALUE,
-                                    ret);
+                                    rc);
     }
 
     /* Test Step 4 
@@ -157,11 +154,11 @@ int test_main (void) {
     if ((NO_ERROR == rc) && (0 == unexp_error))  {
         res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
-                                    ret);
+                                    rc);
     } else {    
         res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
                                     RESULT_DIFF | RESULT_TYPE_VALUE,
-                                    ret);
+                                    rc);
     }
 
     /* Test Step 5 
@@ -178,11 +175,11 @@ int test_main (void) {
     if ((INVALID_PARAM == rc) && (0 == unexp_error))  {
         res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
-                                    ret);
+                                    rc);
     } else {    
         res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
                                     RESULT_DIFF | RESULT_TYPE_VALUE,
-                                    ret);
+                                    rc);
     }
 
     /* Test Step 6 
@@ -199,11 +196,11 @@ int test_main (void) {
     if ((INVALID_PARAM == rc) && (0 == unexp_error))  {
         res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
-                                    ret);
+                                    rc);
     } else {    
         res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
                                     RESULT_DIFF | RESULT_TYPE_VALUE,
-                                    ret);
+                                    rc);
     }
 
     /* Test Step 7 
@@ -220,11 +217,11 @@ int test_main (void) {
     if ((NO_ERROR == rc) && (0 == unexp_error))  {
         res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
-                                    ret);
+                                    rc);
     } else {    
         res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
                                     RESULT_DIFF | RESULT_TYPE_VALUE,
-                                    ret);
+                                    rc);
     }
     rtems_task_wake_after(mtf_ticks);
 
@@ -248,18 +245,18 @@ int test_main (void) {
 
         res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
-                                    ret);
+                                    rc);
     } else {    
         res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
                                     RESULT_DIFF | RESULT_TYPE_VALUE,
-                                    ret);
+                                    rc);
     }
 
     rtems_task_wake_after(mtf_ticks);
 
     
     /* Test End */
-    test_return();
+    test_return(res);
     return 0;
 }
 

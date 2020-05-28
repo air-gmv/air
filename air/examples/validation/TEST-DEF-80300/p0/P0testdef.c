@@ -103,7 +103,7 @@ int test_main (void) {
     while (1) { };
 
     /* Test End */
-    test_return();
+    test_return(res);
     return 0;
 }
 

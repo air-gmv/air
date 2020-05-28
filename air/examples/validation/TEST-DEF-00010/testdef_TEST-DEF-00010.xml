@@ -13,7 +13,7 @@
 			test_end_partition="0"
 			repeat="1" 
 			mtf="0.3"
-			ms_per_tick="10"
+			ms_per_tick="2"
 			type="TEST_GMV_VAL"
 			personality="RTEMS5">
 		<description>
