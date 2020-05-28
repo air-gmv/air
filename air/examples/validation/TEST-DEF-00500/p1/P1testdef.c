@@ -52,6 +52,21 @@ void partition_HM_callback(air_state_e state_id, air_error_e i_error) {
     /* signal error ocurrence	*/
     printf ("HM CALLBACK error %d\n", i_error);
     unexp_error = i_error;
+    int res2 = 0;
+    /* Expecting Segmentation error*/
+    if(unexp_error == AIR_UNIMPLEMENTED_ERROR) {
+        res2 = test_report(__FILE__, __LINE__, TEST_SUCCESS,
+                RESULT_EQUAL | RESULT_TYPE_VALUE,
+                1);
+    } else
+    {
+        res2 = test_report(__FILE__, __LINE__, TEST_FAILURE,
+                RESULT_DIFF | RESULT_TYPE_VALUE,
+                unexp_error);
+        test_exit(TEST_FAILURE, mtf_ticks >> 1);
+    }
+
+    test_return(res2);
     return;
 }
 
@@ -75,8 +90,7 @@ int test_main(void) {
 
     /* Test Start ******************************************************    */
     test_enter(500);
-    libtest_debug = 1;
-    
+
     /* Test Steps *******************************************************    */
     /* Test Step 1 
         Create a Task with low priority that will branch to a non code
@@ -157,7 +171,7 @@ int test_main(void) {
     }
 
     /* Test End */
-    test_return();
+    test_return(res);
     return 0;
 }
 
