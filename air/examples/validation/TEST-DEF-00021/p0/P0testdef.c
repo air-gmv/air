@@ -79,6 +79,7 @@ int test_main(void) {
 
     /* Test Start ******************************************************    */
     test_enter(21);
+    debug_libtest();
 
     /* Test Steps *******************************************************    */
     /* Test Step 0 
@@ -109,7 +110,6 @@ int test_main(void) {
     /* Test Step 1 
         Initialize P0 TSAL; */
     test_step_announce(1, 1);
-    printf ("ANNOUNCE 1\n");
     /* Test step 1 code */
 
     rc = -1;
@@ -132,7 +132,6 @@ int test_main(void) {
         Verify that the target partitions mode is the initial mode
         (COLD_START). */
     test_step_announce(2, 1);
-    printf ("ANNOUNCE 2\n");
     /* Test step 2 code */
 
     rc = -1;
@@ -169,7 +168,6 @@ int test_main(void) {
         Attempt to set mode of target partitions to WARM_START; invalid
         trans: COLD_START->WARM_START. */
     test_step_announce(6, 1);
-    printf ("ANNOUNCE 6\n");
     /* Test step 6 code */
 
     rc = -1;
@@ -307,7 +305,6 @@ int test_main(void) {
     test_step_announce(10, 1);
 
     /* Test step 10 code */
-
     rc = -1;
     test_error = 0;
 
@@ -679,7 +676,6 @@ int test_main(void) {
     test_step_announce(27, 1);
 
     /* Test step 27 code */
-
     rc = -1;
     test_error = 0;
 
@@ -687,6 +683,7 @@ int test_main(void) {
 
         /* first clean up the variable to be verified*/
         target_status[i].OPERATING_MODE = -1;
+        printf ("Set op mode\n");
 
         /* obtain mode in partition status of target partitions */
         GET_A_PARTITION_STATUS(target_ids[i], &target_status[i], &rc);
@@ -1277,7 +1274,8 @@ int test_main(void) {
     rtems_task_wake_after(mtf_ticks * 2);
 
     /* Test End */
-    test_exit(res, mtf_ticks);
+    printf ("text exit\n");
+    test_finish(res);
     return 0;
 }
 

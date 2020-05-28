@@ -51,8 +51,7 @@ int test_main(void) {
     /* Test generic variables  ******************************************	*/
     /* repeatition iteration counter	*/
     int repeat = 0;
-    /* function to test return code     */
-    rtems_status_code ret = RTEMS_SUCCESSFUL;
+
     /* total test result                */
     int res = TEST_SUCCESS;
 
@@ -62,23 +61,28 @@ int test_main(void) {
     int test_err = 0;
     PARTITION_ID_TYPE P0id = 0;
     PARTITION_STATUS_TYPE status;
+    PARTITION_STATUS_TYPE target_status;
 
     /* Test Start ******************************************************    */
     test_enter(22);
+    debug_libtest();
 
     /* Test Steps *******************************************************    */
 
     /* Reboot monitoring */
-    reboot_count += 1;
-    //if (reboot_count > 0) pal_pprint_enter_part(1, NULL);
-
+    air_status_code_e status_code;
+    air_partition_status_t partition_status;
+    status_code = air_syscall_get_partition_status(-1, &partition_status);
+    //printf ("P1 REBOOTS %d\n", partition_status.restart_count);
+    reboot_count = partition_status.restart_count;
+    
     rc = TSAL_INIT();
 
     if (reboot_count == 0) {
         /* Test Step 1 
                 TSAL_INIT; set partition mode to NORMAL; expect NO_ERROR. */
         test_step_announce(1, 1);
-        printf ("ANNOUNCED 1\n");
+
         /* Test step 1 code */
 
         test_err = 0;
@@ -94,11 +98,11 @@ int test_main(void) {
         if ((0 == test_err) && (NO_ERROR == rc) && (0 == unexp_error)) {
             res &= test_report(__FILE__, __LINE__, TEST_SUCCESS,
                     RESULT_EQUAL | RESULT_TYPE_VALUE,
-                    ret);
+                    rc);
         } else {
             res &= test_report(__FILE__, __LINE__, TEST_FAILURE,
                     RESULT_DIFF | RESULT_TYPE_VALUE,
-                    ret);
+                    rc);
         }
         rtems_task_wake_after(mtf_ticks * 2);
 
@@ -125,11 +129,11 @@ int test_main(void) {
         if ((NO_ERROR == rc) && (0 == unexp_error)) {
             res &= test_report(__FILE__, __LINE__, TEST_SUCCESS,
                     RESULT_EQUAL | RESULT_TYPE_VALUE,
-                    ret);
+                    rc);
         } else {
             res &= test_report(__FILE__, __LINE__, TEST_FAILURE,
                     RESULT_DIFF | RESULT_TYPE_VALUE,
-                    ret);
+                    rc);
         }
 
         /* Test Step 10
@@ -146,11 +150,34 @@ int test_main(void) {
         if ((INVALID_CONFIG == rc) && (0 == unexp_error)) {
             res &= test_report(__FILE__, __LINE__, TEST_SUCCESS,
                     RESULT_EQUAL | RESULT_TYPE_VALUE,
-                    ret);
+                    rc);
         } else {
             res &= test_report(__FILE__, __LINE__, TEST_FAILURE,
                     RESULT_DIFF | RESULT_TYPE_VALUE,
-                    ret);
+                    rc);
+        }
+
+
+        /* Test Step 11
+    	Call GET_A_PARTITION_STATUS for partition P0;  expect INVALID_CONFIG. */
+    test_step_announce(11,1);
+
+    /* Test step 11 code */
+
+    rc = -1;
+    target_status.OPERATING_MODE = -1;
+
+    GET_A_PARTITION_STATUS(P0id, &target_status, &rc);
+
+        /* EXPECTED: */
+        if ((INVALID_CONFIG == rc) && (0 == unexp_error)) {
+            res &= test_report(__FILE__, __LINE__, TEST_SUCCESS,
+                    RESULT_EQUAL | RESULT_TYPE_VALUE,
+                    rc);
+        } else {
+            res &= test_report(__FILE__, __LINE__, TEST_FAILURE,
+                    RESULT_DIFF | RESULT_TYPE_VALUE,
+                    rc);
         }
 
     }

@@ -153,7 +153,7 @@ void partition_HM_callback(air_state_e state_id,air_error_e i_error) {
     }
 
 	/* there is no valid task to return, since RTEMS is corrupted */
-	test_return();
+	test_return(res);
     return;
 }
 

@@ -32,16 +32,16 @@ void test_enter_postprocssd(int id) {
 int test_report(char * file, int line, test_result_e result,test_result_cause_e ttype, int tvalue){
         switch (ttype & 0x3){
             case RESULT_DIFF:
-                test_step_report("Result is different from ", tvalue , file, line, result);
+                test_step_report("Result is different, getting ", tvalue , file, line, result);
                 break;
             case RESULT_EQUAL:
                 test_step_report("Result is equal to ", tvalue , file, line, result);
                 break;
             case RESULT_GT:
-                test_step_report("Result is greater than ", tvalue , file, line, result);
+                test_step_report("Result is greater, getting ", tvalue , file, line, result);
                 break;
             case RESULT_LT:
-                test_step_report("Result is lower than ", tvalue , file, line, result);
+                test_step_report("Result is lower, getting ", tvalue , file, line, result);
                 break;
         }
 
@@ -51,8 +51,8 @@ int test_report(char * file, int line, test_result_e result,test_result_cause_e 
 /** 
  * @brief Enter idle mode
  */
-void test_return (void) {
-    // do nothing, idle is automatic
+void test_return (test_result_e result) {
+    test_finish(result);
 }
 
 /** 

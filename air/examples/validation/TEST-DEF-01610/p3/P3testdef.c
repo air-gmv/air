@@ -87,7 +87,7 @@ int test_main (void) {
 
     if(reboot_count > 0){
         rtems_task_wake_after(mtf_ticks);
-        test_return();
+        test_return(res);
     }
     reboot_count++;
                                         
@@ -148,7 +148,7 @@ int test_main (void) {
 //    rtems_task_wake_after(mtf_ticks);
     
     /* Test End */
-    test_return();
+    test_return(res);
     return 0;
 }
 

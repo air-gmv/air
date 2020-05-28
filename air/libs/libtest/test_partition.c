@@ -79,12 +79,15 @@ air_u32_t test_partition_init(air_name_ptr_t shm_name) {
  */
 air_u32_t test_step_announce(air_u32_t id, announce_flags flags) {
     //air_partition_status_t status;
-    
+
     if(libtest_debug)
-        printf ("test_step_announce %d\n", id);
-    
+        printf ("libtest: step_announce id = %d, control step id = %d\n", 
+                id, test_control->step_id);
+
     /* wait for the current step */
     while (id > test_control->step_id);
+    if(libtest_debug)
+        printf ("libtest: Freeing id = %d\n", id);
 
     /* advance the current partition test step */
     if ((flags & SILENT) != 0) {
