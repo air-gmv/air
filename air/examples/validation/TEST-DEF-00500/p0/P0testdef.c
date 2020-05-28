@@ -38,7 +38,7 @@ void partition_HM_callback(air_state_e state_id, air_error_e i_error) {
         pal_callbacks function signature -> convert it into a relevant value */
 
     /* signal error ocurrence	*/
-    unexp_error++;
+    unexp_error = i_error;
     return;
 }
 
@@ -57,6 +57,7 @@ int test_main(void) {
 
     /* Test Start ******************************************************    */
     test_enter(500);
+    debug_libtest();
 
     /* Test Steps *******************************************************    */
     /* Test Step 0 

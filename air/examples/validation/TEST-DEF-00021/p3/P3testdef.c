@@ -64,29 +64,31 @@ int test_main (void) {
     int res     = TEST_SUCCESS;     
 	/* Target partition iterator 		*/
 	int i;
-    
+
     /* Test specific variables  ******************************************	*/
 	
 	RETURN_CODE_TYPE rc = -1;
-    
+
     /* Test Start ******************************************************    */
     test_enter(21);
-                                        
+    //debug_libtest();
+
     /* Test Steps *******************************************************    */
 
 	/* Reboot monitoring */
-	reboot_count += 1;
+    air_status_code_e status_code;
+    air_partition_status_t partition_status;
+    status_code = air_syscall_get_partition_status(-1, &partition_status);
+    //printf ("P3 REBOOTS %d\n", partition_status.restart_count);
+    reboot_count = partition_status.restart_count;
 
 	/* test step 5 code */
 	rc = TSAL_INIT();
-        
-
 
 	if (reboot_count == 0) {
 		/* Test Step 5 
 			Initialize P3 TSAL. */
 		test_step_announce(5,1);
-                printf ("ANNOUNCE 5\n");
 
 		/* expected: */
 		if ((NO_ERROR == rc) && (0 == unexp_error))  {
@@ -130,7 +132,7 @@ int test_main (void) {
 			rtems_task_wake_after(mtf_ticks);
 		}
 
-	} else if (reboot_count == 2) {
+	} else if ((reboot_count == 2) || (reboot_count == 3)){
 		/* Test Step 26 
 			Set partition mode to NORMAL (via SET_PARTITION_MODE); trans:
 		WARM_START->NORMAL. */
@@ -155,7 +157,7 @@ int test_main (void) {
 			rtems_task_wake_after(mtf_ticks);
 		}
 
-	} else if (reboot_count == 3) {
+	} else if (reboot_count == 4) {
 		/* Test Step 32 
 			Set partition mode to NORMAL (via SET_PARTITION_MODE); trans:
 		COLD_START->NORMAL (repeated). */
@@ -176,14 +178,14 @@ int test_main (void) {
 										ret);
 		}
 
-		for (i=0; i<100; i++){
-			rtems_task_wake_after(mtf_ticks);
-		}
+//		for (i=0; i<100; i++){
+	//		rtems_task_wake_after(mtf_ticks);
+		//}
 
 	}
 
     /* Test End */
-    test_return();
+    test_finish(res);
     return 0;
 }
 

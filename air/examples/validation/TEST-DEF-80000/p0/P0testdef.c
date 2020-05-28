@@ -306,7 +306,7 @@ int test_main (void) {
 	rtems_task_wake_after(mtf_ticks*3);
 
     if ((RTEMS_SUCCESSFUL == ret) && (0 == unexp_error))  {
-		test_return();
+		test_return(res);
 	} else {
     	test_exit(res,mtf_ticks);
 	}

@@ -17,6 +17,8 @@ find . -name '*.c' -print -exec sed -i 's/pmk_hm_state_id_e state = (pmk_hm_stat
 find . -name '*.c' -print -exec sed -i 's/test_step_report( /test_report(__FILE__, __LINE__,    /g' {} \;
 find . -name '*.c' -print -exec sed -i 's/pal_schedule_change/air_syscall_set_schedule/g' {} \;
 find . -name '*.c' -print -exec sed -i 's/pal_pprintf_process()/control_partition_init(1, TEST_MEMSHARE)/g' {} \;
+find . -name '*.c' -print -exec sed -i 's/test_return()/test_return(res)/g' {} \;
+
 
 find . -name '*.h' -print -exec sed -i 's/#include <pal_test.h>//g' {} \;
 find . -name '*.h' -print -exec sed -i 's/#include <pal.h>/#include <air.h>/g' {} \;
@@ -27,6 +29,7 @@ find . -name '*.h' -print -exec sed -i 's/pmk_hm_state_id_e state = (pmk_hm_stat
 find . -name '*.h' -print -exec sed -i 's/test_step_report( /test_report(__FILE__, __LINE__,    /g' {} \;
 find . -name '*.h' -print -exec sed -i 's/pal_schedule_change/air_syscall_set_schedule/g' {} \;
 find . -name '*.h' -print -exec sed -i 's/pal_pprintf_process()/control_partition_init(1, TEST_MEMSHARE)/g' {} \;
+find . -name '*.h' -print -exec sed -i 's/test_return()/test_return(res)/g' {} \;
 
 find . -name '*.xml' -print -exec sed -i 's/RTEMSIMPR/RTEMS5/g' {} \;
 

@@ -70,11 +70,15 @@ int test_main (void) {
     
     /* Test Start ******************************************************    */
     test_enter(21);
-        
+    debug_libtest();
     /* Test Steps *******************************************************    */
 
 	/* Reboot monitoring */
-	reboot_count += 1;
+    air_status_code_e status_code;
+    air_partition_status_t partition_status;
+    status_code = air_syscall_get_partition_status(-1, &partition_status);
+    //printf ("P2 REBOOTS %d\n", partition_status.restart_count);
+    reboot_count = partition_status.restart_count;
 
 
 	/* Test step 4 code */
@@ -84,7 +88,6 @@ int test_main (void) {
 		/* Test Step 4 
 			Initialize P2 TSAL. */
 		test_step_announce(4,1);
-                printf ("ANNOUNCE 4\n");
 
 		/* EXPECTED: */
 		if ((NO_ERROR == rc) && (0 == unexp_error))  {
@@ -107,7 +110,6 @@ int test_main (void) {
 			Set partition mode to normal (via SET_PARTITION_MODE); trans:
 		COLD_START->NORMAL. */
 		test_step_announce(13,1);
-                printf ("ANNOUNCE 13\n");
 
 		/* Test step 13 code */
 
@@ -129,7 +131,7 @@ int test_main (void) {
 			rtems_task_wake_after(mtf_ticks);
 		}
 
-	} else if (reboot_count == 2) {
+	} else if ((reboot_count == 2) || (reboot_count == 3)){
 
 		/* Test Step 25 
 			Set partition mode to normal (via SET_PARTITION_MODE); trans:
@@ -155,7 +157,7 @@ int test_main (void) {
 			rtems_task_wake_after(mtf_ticks);
 		}
 	
-	} else if (reboot_count == 3) {
+	} else if (reboot_count == 4) {
 
 		/* Test Step 31 
 			Set partition mode to NORMAL (via SET_PARTITION_MODE); trans:
@@ -181,7 +183,7 @@ int test_main (void) {
 			rtems_task_wake_after(mtf_ticks);
 		}
 	
-	} else if (reboot_count == 4) {
+	} else if ((reboot_count == 5) || (reboot_count == 6)) {
 	
 
 		/* Test Step 39 
@@ -204,14 +206,13 @@ int test_main (void) {
 										ret);
 		}
 
-		for (i=0; i<100; i++){
-			rtems_task_wake_after(mtf_ticks);
-		}
-	
-	}
-		
+//		for (i=0; i<100; i++){
+//			rtems_task_wake_after(mtf_ticks);
+//		}
+	}   else if (reboot_count == 7) {
+    }
     /* Test End */
-    test_return();
+    test_finish(res);
     return 0;
 
 }

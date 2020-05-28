@@ -15,15 +15,19 @@ with open("testresult.txt",'r') as f:
     # f.close()
 
 print text
-error_list = ["FAILURE DETECTED","HM error detected" , "| FAILED"]
+error_list = ["FAILURE DETECTED", "Killed", "| FAILED, " , "giving up on"]
 test_ok = True
 
 for word in error_list:
     for item in text.split("\n"):
         if word in item:
             test_ok = False
-            if (word == error_list[0]) or (word == error_list[2]):
+            if (word == error_list[0]) or (word == error_list[3]):
                 sys.stderr.write("Unit Test Failure\n")
+            if (word == error_list[1]):
+                sys.stderr.write("Test Timeout Failure\n")
+            if (word == error_list[3]):
+                sys.stderr.write("Test Timeout, Board was locked\n")                
 
 if(test_ok == False):
     sys.stderr.write("FAILURE DETECTED")
