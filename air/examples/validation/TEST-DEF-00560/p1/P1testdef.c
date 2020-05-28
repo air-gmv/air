@@ -49,10 +49,13 @@ int test_main (void) {
     int res     = TEST_SUCCESS;     
     
     /* Test specific variables  ******************************************	*/
-	unsigned int my_int = 0;
-	unsigned int *ptr;
-	unsigned int aux = 0xDEAD;
-                                        
+	volatile unsigned int my_int = 0;
+	volatile unsigned int *ptr;
+	volatile unsigned int aux = 0xDEAD;
+                               
+    /* Test Start ******************************************************    */
+    test_enter(560);
+    
     /* Test Steps *******************************************************    */
     /* Test Step 2 
     	Write a unaligned int address(int shall be word aligned). Verify
@@ -69,7 +72,7 @@ int test_main (void) {
     ret |= RTEMS_SUCCESSFUL;
 
     /* EXPECTED: */
-    if (PMK_SEG_ERR == unexp_error)  {
+    if (AIR_SEGMENTATION_ERROR == unexp_error)  {
         res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
                                     ret);
@@ -101,7 +104,7 @@ int test_main (void) {
     }
     
     /* Test End */
-    test_return();
+    test_return(res);
     return 0;
 }
 

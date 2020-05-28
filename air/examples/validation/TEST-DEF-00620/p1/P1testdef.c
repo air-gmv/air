@@ -146,7 +146,7 @@ int test_main (void) {
     
 	rtems_task_wake_after(mtf_ticks >> 1);
     /* Test End */
-    test_return();
+    test_return(res);
     return 0;
 }
 

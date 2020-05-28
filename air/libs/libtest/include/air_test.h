@@ -55,7 +55,7 @@ int test_report(char * file, int line, test_result_e result,test_result_cause_e 
 /** 
  * Enter idle mode
  */
-void test_return (void);
+void test_return (test_result_e result);
 
 /** 
  * @brief Report the final test result and exit

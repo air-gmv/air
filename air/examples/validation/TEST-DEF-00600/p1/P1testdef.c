@@ -128,7 +128,7 @@ int test_main (void) {
 
     
     /* Test End */
-    test_return();
+    test_return(res);
     return 0;
 }
 
