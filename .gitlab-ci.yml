@@ -38,6 +38,10 @@ stages:
     - test_00021_sparc
     - test_00022_sparc
     - test_00023_sparc
+    - test_00500_sparc
+    - test_00510_sparc
+    - test_00540_sparc
+    - test_00560_sparc
     - sconfig-arm
     - sclean-build-arm
     - sbuild-arm
@@ -138,44 +142,91 @@ build_arm:
 
 
 
-#00021_sparc: ## Failing in step 5
-##    tags: 
-##        - sparc
-#    stage: test_00021_sparc
-#    script:
-#        - cd $AIR/examples/validation/TEST-DEF-00021
-#        - cp $AIR/../utils/gitlab-runner/* .
-#        - ./do_leon4_grmon.bash
-#        - cd $AIR
-#    environment:
-#        name: SPARC LEON4
+00021_sparc: 
+#    tags: 
+#        - sparc
+    stage: test_00021_sparc
+    script:
+        - cd $AIR/examples/validation/TEST-DEF-00021
+        - cp $AIR/../utils/gitlab-runner/* .
+        - ./do_leon4_grmon.bash
+        - cd $AIR
+    environment:
+        name: SPARC LEON4
 
-#00022_sparc: ## Failing in step 5
-##    tags: 
-##        - sparc
-#    stage: test_00022_sparc
-#    script:
-#        - cd $AIR/examples/validation/TEST-DEF-00022
-#        - cp $AIR/../utils/gitlab-runner/* .
-#        - ./do_leon4_grmon.bash
-#        - cd $AIR
-#    environment:
-#        name: SPARC LEON4
+00022_sparc: 
+#    tags: 
+#        - sparc
+    stage: test_00022_sparc
+    script:
+        - cd $AIR/examples/validation/TEST-DEF-00022
+        - cp $AIR/../utils/gitlab-runner/* .
+        - ./do_leon4_grmon.bash
+        - cd $AIR
+    environment:
+        name: SPARC LEON4
 
-#00023_sparc: ## Failing in step 5
-##    tags: 
-##        - sparc
-#    stage: test_00023_sparc
-#    script:
-#        - cd $AIR/examples/validation/TEST-DEF-00023
-#        - cp $AIR/../utils/gitlab-runner/* .
-#        - ./do_leon4_grmon.bash
-#        - cd $AIR
-#    environment:
-#        name: SPARC LEON4
+00023_sparc: 
+#    tags: 
+#        - sparc
+    stage: test_00023_sparc
+    script:
+        - cd $AIR/examples/validation/TEST-DEF-00023
+        - cp $AIR/../utils/gitlab-runner/* .
+        - ./do_leon4_grmon.bash
+        - cd $AIR
+    environment:
+        name: SPARC LEON4
 
+00500_sparc: 
+#    tags: 
+#        - sparc
+    stage: test_00500_sparc
+    script:
+        - cd $AIR/examples/validation/TEST-DEF-00500
+        - cp $AIR/../utils/gitlab-runner/* .
+        - ./do_leon4_grmon.bash
+        - cd $AIR
+    environment:
+        name: SPARC LEON4
 
-########################        
+00510_sparc: 
+#    tags: 
+#        - sparc
+    stage: test_00510_sparc
+    script:
+        - cd $AIR/examples/validation/TEST-DEF-00510
+        - cp $AIR/../utils/gitlab-runner/* .
+        - ./do_leon4_grmon.bash
+        - cd $AIR
+    environment:
+        name: SPARC LEON4
+
+00540_sparc: 
+#    tags: 
+#        - sparc
+    stage: test_00540_sparc
+    script:
+        - cd $AIR/examples/validation/TEST-DEF-00540
+        - cp $AIR/../utils/gitlab-runner/* .
+        - ./do_leon4_grmon.bash
+        - cd $AIR
+    environment:
+        name: SPARC LEON4
+
+00560_sparc: 
+#    tags: 
+#        - sparc
+    stage: test_00560_sparc
+    script:
+        - cd $AIR/examples/validation/TEST-DEF-00560
+        - cp $AIR/../utils/gitlab-runner/* .
+        - ./do_leon4_grmon.bash
+        - cd $AIR
+    environment:
+        name: SPARC LEON4
+
+########################
 #Tests for ARM         #
 ########################
 #    tags: 
