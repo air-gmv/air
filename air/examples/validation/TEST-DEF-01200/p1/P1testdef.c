@@ -41,6 +41,8 @@ static __inline__ void ASM_UNIMP(void) {
 void partition_HM_callback(air_state_e state_id,air_error_e i_error) {
 	/* signal error ocurrence	*/
     unexp_error	= i_error;
+    printf ("HM CALLBACK error %d\n", i_error);
+
     return;
 }
 
@@ -53,10 +55,10 @@ int test_main (void) {
     rtems_status_code ret    = RTEMS_SUCCESSFUL; 
 	/* total test result                */
     int res     = TEST_SUCCESS;     
-    
+
     /* Test specific variables  ******************************************	*/
 	int i = 0;
-                                        
+
     /* Test Steps *******************************************************    */
     /* Test Step 1 
     	Execute a unimp instruction. Verify the HM event was raised and the
@@ -71,7 +73,7 @@ int test_main (void) {
 	i++;
 
     /* EXPECTED: */
-    if ((2 == i) && (PMK_ILL_ERR == unexp_error))  {
+    if ((2 == i) && (AIR_UNIMPLEMENTED_ERROR == unexp_error))  {
         res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
                                     ret);
@@ -83,7 +85,7 @@ int test_main (void) {
 		test_exit(TEST_FAILURE,mtf_ticks>>1);
     }
 
-    
+
     /* Test End */
     test_return(res);
     return 0;
