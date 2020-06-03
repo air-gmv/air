@@ -61,11 +61,13 @@ int test_main (void) {
 	/* function to test return code     */
     rtems_status_code ret    = RTEMS_SUCCESSFUL; 
 	/* total test result                */
-    int res     = TEST_SUCCESS;     
-    
+    int res     = TEST_SUCCESS;
+
     /* Test specific variables  ******************************************	*/
 	unsigned int i=0;
-                                        
+    /* Test Start ******************************************************    */
+    test_enter(600);
+    
     /* Test Steps *******************************************************    */
     /* Test Step 2 
     	Execute a regular operation. */
@@ -95,7 +97,7 @@ int test_main (void) {
 	read_psr_register();
 
     /* EXPECTED: */
-    if ((RTEMS_SUCCESSFUL == ret) && (PMK_VIOL_ERR == unexp_error))  {
+    if ((RTEMS_SUCCESSFUL == ret) && (AIR_VIOLATION_ERROR == unexp_error))  {
         res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
                                     ret);

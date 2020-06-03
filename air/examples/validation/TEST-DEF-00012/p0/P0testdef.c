@@ -72,6 +72,11 @@ int test_main(void) {
     /* Test Start ******************************************************    */
     test_enter(12);
 
+        /* since we are measuring execution windows, we should not use the
+     * current one, since it was already partially occupied by the 
+     * partition rtems boot-up, so let's wait until the next one	*/
+    rtems_task_wake_after(wait >> 1);
+    
     /* Test Steps *******************************************************    */
     /* Test Step 0 
            Get the current time, sleep for one tick, get the time again and 
@@ -110,7 +115,7 @@ int test_main(void) {
     /* Test Step 2
         Check that the last step differs (MTF - P0) ticks execution window from 
      * *  test_step_announce is blocked waiting for steip 1,1
-     * Execution time:  (50-19) of P0w1 + 50 of P2   = 81!
+     * Execution time:  (50-19) of P0w1 + 50 of P2 + 50P1 + 50P0w2 = 81!
      *         the previously stored value.  */
     test_step_announce(2, 1);
 
@@ -121,7 +126,7 @@ int test_main(void) {
        The rtems_clock_get function call should be successfull */
     ret |= _rtems_clock_get(&t1);
 
-    ret |= t1 == t2 + 81 ? RTEMS_SUCCESSFUL : 1;
+    ret |= t1 == t2 + 181 ? RTEMS_SUCCESSFUL : 1;
 
 
     /* EXPECTED: */
@@ -265,7 +270,7 @@ int test_main(void) {
     test_step_announce(7, 1);
     
     // push to end of window
-    rtems_task_wake_after(241);
+    rtems_task_wake_after(245);
 
     /* Test step 7 code */
     /*   The rtems_clock_get function call should be successfull */

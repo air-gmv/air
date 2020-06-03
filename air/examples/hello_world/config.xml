@@ -12,12 +12,12 @@
   <Partition PartitionIdentifier="1" PartitionName="part0" 
     Criticality="LEVEL_A" EntryPoint="entry_point" SystemPartition="false">
     <PartitionConfiguration Personality="RTEMS5" Cores="1" Mode="source">
-        <Libs>LIBAIR; LIBPRINTF</Libs>
+        <Libs>LIBAIR; LIBPRINTF; IMASPEX</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x100000" />
         <Permissions>
-          FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL;
+          FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE; MODULE_CONTROL;
         </Permissions>
     </PartitionConfiguration>
   </Partition>
@@ -25,24 +25,24 @@
   <Partition PartitionIdentifier="2" PartitionName="part1" 
     Criticality="LEVEL_A" EntryPoint="entry_point" SystemPartition="false">
     <PartitionConfiguration Personality="RTEMS5" Cores="1">
-        <Libs>LIBAIR; LIBPRINTF</Libs>
+        <Libs>LIBAIR; LIBPRINTF; IMASPEX</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x100000" />
         <Permissions>
-          FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL;
+          FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE; MODULE_CONTROL;
         </Permissions>
     </PartitionConfiguration>
   </Partition>
   <Partition PartitionIdentifier="3" PartitionName="part2" 
     Criticality="LEVEL_A" EntryPoint="entry_point" SystemPartition="false">
     <PartitionConfiguration Personality="RTEMS5" Cores="1">
-        <Libs>LIBAIR; LIBPRINTF</Libs>
+        <Libs>LIBAIR; LIBPRINTF; IMASPEX</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x100000" />
         <Permissions>
-          FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL;
+          FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE; MODULE_CONTROL;
         </Permissions>
     </PartitionConfiguration>
   </Partition>
@@ -59,13 +59,13 @@
       PeriodDurationSeconds="0.3" PeriodSeconds="1.0">
       <Window_Schedule WindowIdentifier="2" PartitionPeriodStart="true" 
         WindowDurationSeconds="0.3"  WindowStartSeconds="0.3" />
-      <WindowConfiguration WindowIdentifier="2" Cores="1" />
+      <WindowConfiguration WindowIdentifier="2" Cores="0" />
     </Partition_Schedule>
     <Partition_Schedule PartitionIdentifier="3" PartitionName="part2" 
       PeriodDurationSeconds="0.3" PeriodSeconds="1.0">
       <Window_Schedule WindowIdentifier="3" PartitionPeriodStart="true" 
         WindowDurationSeconds="0.3"  WindowStartSeconds="0.6" />
-      <WindowConfiguration WindowIdentifier="3" Cores="2" />
+      <WindowConfiguration WindowIdentifier="3" Cores="0" />
     </Partition_Schedule>
   </Module_Schedule>
 
