@@ -6,6 +6,7 @@ ${makoutils.cfileHeader("init.c", "Partition Initialization")}
 
 #include <air.h>
 #include <rtems.h>
+#include <rtems/irq-extension.h>
 %if 'imaspex' in partition.libraries:
 #include <imaspex.h>
 %endif

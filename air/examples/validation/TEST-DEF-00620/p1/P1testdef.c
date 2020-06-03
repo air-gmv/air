@@ -16,8 +16,6 @@
 
 #include <rtems.h>
 
-#include <pmk_linkcmd_vars.h>
-#include <pmk_segregation.h>
 #include <air.h>
 #include <air_test.h>
 

@@ -5,4 +5,6 @@ rm -f /var/lock/n2x.grmonlock
 ./killgrmon.bash &
 board-commands.sh runAIRAPP.bash
 ls
+killall sleep
+killall killgrmon.bash
 exit

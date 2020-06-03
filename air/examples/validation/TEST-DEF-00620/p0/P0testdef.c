@@ -219,7 +219,7 @@ int test_main (void) {
     test_step_announce(4,1);
 
     /* Test step 4 code */
-	if (PMK_SEG_ERR == unexp_error) {
+	if (AIR_SEGMENTATION_ERROR == unexp_error) {
 	    ret = RTEMS_SUCCESSFUL;
 		unexp_error = 0;
 	}
@@ -260,7 +260,7 @@ int test_main (void) {
 	test_step_announce(7,1);
 
     /* Test step 7 code */
-   	if (PMK_SEG_ERR == unexp_error) {
+   	if (AIR_SEGMENTATION_ERROR == unexp_error) {
 	    ret = RTEMS_SUCCESSFUL;
 		unexp_error = 0;
 	}
