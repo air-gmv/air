@@ -31,7 +31,7 @@ void entry_point(void)
     struct timespec start;
     int ticks_per_sec = 1000000 / air_syscall_get_us_per_tick();
 
-    while(1)
+    for (int i= 0; i < 10; i++)
     {
         #ifdef RTEMS48I
             rtems_clock_get_uptime( &start );
@@ -47,4 +47,5 @@ void entry_point(void)
 
         rtems_task_wake_after(ticks_per_sec/10);
     }
+    air_syscall_shutdown_module();
 }
