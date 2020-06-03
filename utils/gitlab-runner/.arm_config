@@ -3,9 +3,11 @@ p0
 S'zynqz1'
 p1
 I01
-I1
+I2
 (lp2
 S'bare'
 p3
-atp4
+aS'rtems5'
+p4
+atp5
 .

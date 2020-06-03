@@ -269,7 +269,7 @@ int test_main(void) {
                 t2 - t1);
     }
     // schedule push to end of windows.
-    rtems_task_wake_after(240);
+    rtems_task_wake_after(245);
 
 
     /* Test Step 7 
