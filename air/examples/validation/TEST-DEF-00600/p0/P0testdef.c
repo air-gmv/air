@@ -60,20 +60,19 @@ int test_main (void) {
 	/* function to test return code     */
     rtems_status_code ret    = RTEMS_SUCCESSFUL; 
 	/* total test result                */
-    int res     = TEST_SUCCESS;     
+    int res     = TEST_SUCCESS;
     
     /* Test specific variables  ******************************************	*/
 	unsigned int i=0;
 	
     /* Test Start ******************************************************    */
     test_enter(600);
-                                        
+
     /* Test Steps *******************************************************    */
     /* Test Step 0 
     	Execute a supervisor instruction [e.g. lda instruction]. Verify that
 	the HM is not raised. */
     test_step_announce(0,1);
-	
 	read_psr_register();
 	
     /* Test step 0 code */
