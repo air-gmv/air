@@ -153,6 +153,7 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
 
         if ((partition->permissions & AIR_PERMISSION_FPU_CONTROL) != 0) {
             context->vfp_context->fpexc = (ARM_VFP_FPEXC_ENABLE);
+            arm_enable_fpu();
            //context->vfp_context->fpscr &=0xFFF8FFFF;
         } else {
             context->vfp_context->fpexc = 0;
