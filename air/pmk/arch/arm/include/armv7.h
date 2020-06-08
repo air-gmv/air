@@ -339,6 +339,8 @@ __FORCE_INLINE static void arm_disable_fpu(void) {
 __FORCE_INLINE static void arm_enable_fpu(void) {
     air_u32_t reg = 0;
     __asm__ volatile (
+            "ldr %0, =(0xF <<20)\n"
+            "mcr p15, 0, %0, c1, c0, 2\n"
             "vmrs %0, FPEXC\n"
             "orr %0, #(1 << 30U)\n"
             "vmsr FPEXC, %0\n"
