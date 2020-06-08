@@ -66,7 +66,7 @@ build_sparc:
     stage: sbuild-sparc
     script:
         - make clean # to be removed and used only on failure
-        - make -j3
+        - make -j4
 
 #clean_build_sparc:
 #    tags: 
@@ -93,7 +93,7 @@ build_arm:
     stage: sbuild-arm
     script:
         - make clean # to be removed and used only on failure
-        - make -j3
+        - make -j4
 
 #clean_build_arm:
 #    tags: 
