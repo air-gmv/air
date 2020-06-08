@@ -100,7 +100,7 @@ int test_main (void) {
         res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
                                     ret);
-    } else {    
+    } else {
         res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
                                     RESULT_DIFF | RESULT_TYPE_VALUE,
                                     ret);
