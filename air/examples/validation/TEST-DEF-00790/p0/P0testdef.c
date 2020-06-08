@@ -9,10 +9,7 @@
 /* ***********************************************************************    */
 
 /* Test Description ******************************************************    */
-/* 	Define a test where the MMU tables (L1, L2, L3) are overwritten by a
-	non-supervisor partition. Check that this attempt is unsuccessful, and the event is
-	captured and handled by the HM, and the associated HM action is called. Test if the
-	remaining partitions continue to execute. */
+/* 	Define a test where the MMU region is overwritten by a non-supervisor partition. Check that this attempt is unsuccessful, and the event is captured and handled by the HM, and the associated HM action is called. Test if the remaining partitions continue to execute. */
 
 #include <rtems.h>
 
@@ -83,7 +80,7 @@ int test_main (void) {
 	
     /* Test Step 5 
     	Execute a regular operation (e.g. increment a variable). */
-    test_step_announce(5,1);
+    test_step_announce(2,1);
 
 	i++;
 
@@ -100,7 +97,7 @@ int test_main (void) {
 
     /* Test Step 6 
     	Terminate test. */
-    test_step_announce(6,1);
+    test_step_announce(3,1);
 
     /* EXPECTED: */
     if (0 == unexp_error)  {
