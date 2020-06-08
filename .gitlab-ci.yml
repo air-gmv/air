@@ -28,69 +28,34 @@ default:
 
 #Cronological order of jobs to be done
 #To be divided in the future in multiple VMs
-stages: 
-    - sconfig-sparc
-    - sbuild-sparc
-    - sclean-build-sparc
-    - test_hello_world_sparc
-    - test_hm_sparc
-    - test_00009_sparc
-    - test_00010_sparc
-    - test_00012_sparc
-    - test_00021_sparc
-    - test_00022_sparc
-    - test_00023_sparc
-    - test_00500_sparc
-    - test_00510_sparc
-    - test_00540_sparc
-    - test_00560_sparc
-    - test_00600_sparc
-    - sconfig-arm
-    - sclean-build-arm
-    - sbuild-arm
-    - test_hello_world_arm
-    - test_00001_arm
+
 
 #Build SPARC
 config_sparc:
-#    tags: 
-#        - sparc
-    stage: sconfig-sparc
+    tags: 
+        - sparc-taste-debian1
     script:
         - cp $AIR/../utils/gitlab-runner/.sparc_config .
         - ./configure -f .sparc_config
 
 build_sparc:
-#    tags:
-#        - sparc
-    stage: sbuild-sparc
+    tags: 
+        - sparc-taste-debian1
     script:
-        - make clean # to be removed and used only on failure
+        - make clean
         - make -j4
-
-#clean_build_sparc:
-#    tags: 
-#        - sparc
-#    stage: sclean-build-sparc
-#    script:
-#        - make clean
-#        - make
-#    when: on_failure
-
 
 #Build for ARM
 config_arm:
-#    tags: 
-#        - arm_qemu
-    stage: sconfig-arm
+    tags: 
+        - arm-taste-debian1
     script:
         -  cp $AIR/../utils/gitlab-runner/.arm_config . 
         - ./configure -f .arm_config
 
 build_arm:
-#    tags: 
-#        - arm_qemu
-    stage: sbuild-arm
+    tags: 
+        - arm-taste-debian1
     script:
         - make clean # to be removed and used only on failure
         - make -j4
@@ -109,9 +74,8 @@ build_arm:
 #Example Tests for SPARC       #
 ########################
 hello_sparc:
-#    tags: 
-#        - sparc
-    stage: test_hello_world_sparc
+    tags: 
+        - sparc-taste-debian1
     script:
         - cd $AIR/examples/hello_world
         - cp $AIR/../utils/gitlab-runner/* .
@@ -120,10 +84,9 @@ hello_sparc:
     environment:
         name: SPARC LEON4
 
-        hello_sparc:
-#    tags: 
-#        - sparc
-    stage: test_hm_sparc
+hm_sparc:
+    tags: 
+        - sparc-taste-debian1
     script:
         - cd $AIR/examples/hm
         - cp $AIR/../utils/gitlab-runner/* .
@@ -137,9 +100,8 @@ hello_sparc:
 
 
 00009_sparc:
-#    tags: 
-#        - sparc
-    stage: test_00009_sparc
+    tags: 
+        - sparc-taste-debian1
     script:
         - cd $AIR/examples/validation/TEST-DEF-00009
         - cp $AIR/../utils/gitlab-runner/* .
@@ -149,9 +111,8 @@ hello_sparc:
         name: SPARC LEON4
 
 00010_sparc:
-#    tags: 
-#        - sparc
-    stage: test_00010_sparc
+    tags: 
+        - sparc-taste-debian1
     script:
         - cd $AIR/examples/validation/TEST-DEF-00010
         - cp $AIR/../utils/gitlab-runner/* .
@@ -161,9 +122,8 @@ hello_sparc:
         name: SPARC LEON4
 
 00012_sparc:
-#    tags: 
-#        - sparc
-    stage: test_00012_sparc
+    tags: 
+        - sparc-taste-debian1
     script:
         - cd $AIR/examples/validation/TEST-DEF-00012
         - cp $AIR/../utils/gitlab-runner/* .
@@ -175,9 +135,8 @@ hello_sparc:
 
 
 00021_sparc: 
-#    tags: 
-#        - sparc
-    stage: test_00021_sparc
+    tags: 
+        - sparc-taste-debian1
     script:
         - cd $AIR/examples/validation/TEST-DEF-00021
         - cp $AIR/../utils/gitlab-runner/* .
@@ -187,9 +146,8 @@ hello_sparc:
         name: SPARC LEON4
 
 00022_sparc: 
-#    tags: 
-#        - sparc
-    stage: test_00022_sparc
+    tags: 
+        - sparc-taste-debian1
     script:
         - cd $AIR/examples/validation/TEST-DEF-00022
         - cp $AIR/../utils/gitlab-runner/* .
@@ -199,9 +157,8 @@ hello_sparc:
         name: SPARC LEON4
 
 00023_sparc: 
-#    tags: 
-#        - sparc
-    stage: test_00023_sparc
+    tags: 
+        - sparc-taste-debian1
     script:
         - cd $AIR/examples/validation/TEST-DEF-00023
         - cp $AIR/../utils/gitlab-runner/* .
@@ -211,9 +168,8 @@ hello_sparc:
         name: SPARC LEON4
 
 00500_sparc: 
-#    tags: 
-#        - sparc
-    stage: test_00500_sparc
+    tags: 
+        - sparc-taste-debian1
     script:
         - cd $AIR/examples/validation/TEST-DEF-00500
         - cp $AIR/../utils/gitlab-runner/* .
@@ -223,9 +179,8 @@ hello_sparc:
         name: SPARC LEON4
 
 00510_sparc: 
-#    tags: 
-#        - sparc
-    stage: test_00510_sparc
+    tags: 
+        - sparc-taste-debian1
     script:
         - cd $AIR/examples/validation/TEST-DEF-00510
         - cp $AIR/../utils/gitlab-runner/* .
@@ -235,9 +190,8 @@ hello_sparc:
         name: SPARC LEON4
 
 00540_sparc: 
-#    tags: 
-#        - sparc
-    stage: test_00540_sparc
+    tags: 
+        - sparc-taste-debian1
     script:
         - cd $AIR/examples/validation/TEST-DEF-00540
         - cp $AIR/../utils/gitlab-runner/* .
@@ -247,9 +201,8 @@ hello_sparc:
         name: SPARC LEON4
 
 00560_sparc: 
-#    tags: 
-#        - sparc
-    stage: test_00560_sparc
+    tags: 
+        - sparc-taste-debian1
     script:
         - cd $AIR/examples/validation/TEST-DEF-00560
         - cp $AIR/../utils/gitlab-runner/* .
@@ -259,9 +212,8 @@ hello_sparc:
         name: SPARC LEON4
 
 00600_sparc: 
-#    tags: 
-#        - sparc
-    stage: test_00600_sparc
+    tags: 
+        - sparc-taste-debian1
     script:
         - cd $AIR/examples/validation/TEST-DEF-00600
         - cp $AIR/../utils/gitlab-runner/* .
@@ -277,26 +229,27 @@ hello_sparc:
 #    tags: 
 #        - arm_qemu
 
-#hello_world_arm:
-#    stage: test_hello_world_arm
-#    script:
-#        - cd $AIR/examples/hello_world
-#        - configure
-#        - make clean
-#        - make
-#        - cp $AIR/../utils/gitlab-runner/* .
-#        - ls
-#        - ./do_zynqz1_qemu.bash#
-#        - ./testcheck.py
-#        - cd $AIR
-#    environment:
-#        name: ARM ZYNQZ1
-
-
 00001_arm:
-    stage: test_00001_arm
+    tags: 
+        - arm-taste-debian1
     script:
         - cd $AIR/examples/arm_unit_tests/lionel
+        - configure
+        - make clean
+        - make
+        - cp $AIR/../utils/gitlab-runner/* .
+        - ls
+        - ./do_zynqz1_qemu.bash
+        - ./testcheck.py
+        - cd $AIR
+    environment:
+        name: ARM ZYNQZ1
+
+hello_world_arm:
+    tags: 
+        - arm-taste-debian1
+    script:
+        - cd $AIR/examples/hello_world
         - configure
         - make clean
         - make
