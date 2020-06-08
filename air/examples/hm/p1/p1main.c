@@ -8,11 +8,7 @@
 
 #include <air.h>
 #include <rtems.h>
-#ifdef RTEMS48I
-    #include <pprintf.h>
-#else
-    #include <stdio.h>
-#endif
+#include <pprintf.h>
 
 void partition_HM_callback(air_state_e state_id,air_error_e error_id)
 {
@@ -31,20 +27,13 @@ int receiver() {
 
     uint32_t tps = 1000000 / air_syscall_get_us_per_tick();
 
-    for (;;)
+    for (int i=0; i<3; i++)
     {
-      #ifdef RTEMS48I
-        pprintf("In partition P1 loop\n");
-      #else
         printf("In partition P1 loop\n");
-      #endif
         rtems_task_wake_after(tps/2);
-      #ifdef RTEMS48I
-        pprintf("P1 : Waking up - %d\n", x);
-      #else
         printf("P1 : Waking up - %d\n", x);
-      #endif
     }
 
+    air_syscall_shutdown_module();
     return AIR_SUCCESSFUL;
 }
