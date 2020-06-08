@@ -60,14 +60,14 @@ ${'\t\t'}--enable-smp ${'\\'}
 ${'\t\t'}--enable-rtemsbsp=$(RTEMS5_BSP) ${'\\'}
 ${'\t\t'}--prefix=$(RTEMS_INSTALL_DIR) && cd ..; ${'\\'}
 ${'\t'}fi
-${'\t'}make -C $(RTEMS_BUILD_DIR) CPPFLAGS='$(AIR_HEADERS)' && ${'\\'}
-${'\t'}make -C $(RTEMS_BUILD_DIR) install
+${'\t'}$(MAKE) -C $(RTEMS_BUILD_DIR) CPPFLAGS='$(AIR_HEADERS)' && ${'\\'}
+${'\t'}$(MAKE) -C $(RTEMS_BUILD_DIR) install
 
 # RTEMS 5 with no configure
 ${template.Rule('noconf', True, None)}
 ${template.Remove(install_dir)}
-${'\t'}make -C $(RTEMS_BUILD_DIR) CPPFLAGS='$(AIR_HEADERS)' && ${'\\'}
-${'\t'}make -C $(RTEMS_BUILD_DIR) install
+${'\t'}$(MAKE) -C $(RTEMS_BUILD_DIR) CPPFLAGS='$(AIR_HEADERS)' && ${'\\'}
+${'\t'}$(MAKE) -C $(RTEMS_BUILD_DIR) install
 
 # Clean
 ${template.Rule('clean', True, None)}

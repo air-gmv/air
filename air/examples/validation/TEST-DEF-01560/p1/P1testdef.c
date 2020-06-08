@@ -71,11 +71,11 @@ int test_main (void) {
 		
         /* EXPECTED: */
 		if (((ccr & 0xF) == 0x3) && (0 == unexp_error))  {
-            res &= test_step_report(	TEST_SUCCESS,
+            res &= test_report(__FILE__, __LINE__,    	TEST_SUCCESS,
                                         RESULT_EQUAL | RESULT_TYPE_VALUE,
                                         ret);
         } else {    
-            res &= test_step_report(TEST_FAILURE,
+            res &= test_report(__FILE__, __LINE__,    TEST_FAILURE,
                                         RESULT_DIFF | RESULT_TYPE_VALUE,
                                         ret);
             test_exit(TEST_FAILURE,mtf_ticks);

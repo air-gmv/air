@@ -157,7 +157,7 @@
     <Sampling_Port Direction="SOURCE" MaxMessageSize="32" Name="SEND_SAMP1" RefreshRateSeconds="1.000"/>
     <Sampling_Port Direction="DESTINATION" MaxMessageSize="32" Name="RECV_SAMP1" RefreshRateSeconds="1.000"/>
     <PartitionConfiguration Personality="RTEMS5" Cores="1">
-      <Libs>LIBAIR;IMASPEX</Libs>
+      <Libs>LIBAIR;IMASPEX; LIBPRINTF;</Libs>
       <Cache>CODE; DATA</Cache>
       <Memory Size="0x500000" />
       <Permissions>
@@ -171,11 +171,11 @@
     <Sampling_Port Direction="SOURCE" MaxMessageSize="32" Name="SEND_SAMP2" RefreshRateSeconds="1.000"/>
     <Sampling_Port Direction="DESTINATION" MaxMessageSize="32" Name="RECV_SAMP2" RefreshRateSeconds="1.000"/>
     <PartitionConfiguration Personality="RTEMS5" Cores="1">
-      <Libs>LIBAIR; IMASPEX</Libs>
+      <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
       <Cache>CODE; DATA</Cache>
       <Memory Size="0x500000" />
       <Permissions>
-       FPU_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+       FPU_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE; MODULE_CONTROL;
       </Permissions>
     </PartitionConfiguration>
   </Partition>
@@ -219,7 +219,7 @@
             <Error_ID_Action Action="IGNORE" Description="Unimplemented Error" ErrorIdentifier="3"/>
             <Error_ID_Action Action="IGNORE" Description="Floating Point Error" ErrorIdentifier="4"/>
             <Error_ID_Action Action="COLD_START" Description="Overflow Error" ErrorIdentifier="5"/>
-            <Error_ID_Action Action="WARM_START" Description="Divide by zero" ErrorIdentifier="6"/>
+            <Error_ID_Action Action="IGNORE" Description="Divide by zero" ErrorIdentifier="6"/>
             <Error_ID_Action Action="COLD_START" Description="I/O Error" ErrorIdentifier="7"/>
             <Error_ID_Action Action="IDLE" Description="Partition Conf Error" ErrorIdentifier="8"/>
             <Error_ID_Action Action="IDLE" Description="Partition Init Error" ErrorIdentifier="9"/>
@@ -265,7 +265,7 @@
             <Error_ID_Action Action="IGNORE" Description="Unimplemented Error" ErrorIdentifier="3"/>
             <Error_ID_Action Action="IGNORE" Description="Floating Point Error" ErrorIdentifier="4"/>
             <Error_ID_Action Action="COLD_START" Description="Overflow Error" ErrorIdentifier="5"/>
-            <Error_ID_Action Action="WARM_START" Description="Divide by zero" ErrorIdentifier="6"/>
+            <Error_ID_Action Action="IGNORE" Description="Divide by zero" ErrorIdentifier="6"/>
             <Error_ID_Action Action="COLD_START" Description="I/O Error" ErrorIdentifier="7"/>
             <Error_ID_Action Action="IDLE" Description="Partition Conf Error" ErrorIdentifier="8"/>
             <Error_ID_Action Action="IDLE" Description="Partition Init Error" ErrorIdentifier="9"/>
