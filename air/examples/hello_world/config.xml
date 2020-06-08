@@ -15,7 +15,7 @@
         <Libs>LIBAIR; LIBPRINTF; IMASPEX</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
-        <Memory Size="0x100000" />
+        <Memory Size="0x2000000" />
         <Permissions>
           FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE; MODULE_CONTROL;
         </Permissions>
@@ -28,7 +28,7 @@
         <Libs>LIBAIR; LIBPRINTF; IMASPEX</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
-        <Memory Size="0x100000" />
+        <Memory Size="0x2000000" />
         <Permissions>
           FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE; MODULE_CONTROL;
         </Permissions>
@@ -40,7 +40,7 @@
         <Libs>LIBAIR; LIBPRINTF; IMASPEX</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
-        <Memory Size="0x100000" />
+        <Memory Size="0x2000000" />
         <Permissions>
           FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE; MODULE_CONTROL;
         </Permissions>
@@ -70,5 +70,5 @@
   </Module_Schedule>
 
   <!-- Module configuration -->
-  <AIR_Configuration TicksPerSecond="500" RequiredCores="3"/>
+  <AIR_Configuration TicksPerSecond="500" RequiredCores="1"/>
 </ARINC_653_Module>
