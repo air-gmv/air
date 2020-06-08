@@ -86,7 +86,7 @@ air_uptr_t * arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t
 
 #ifdef PMK_DEBUG_ISR
         if (core->partition != NULL) {
-            printk("       ISR :: Switching to Partition %d\n\n", core->partition->id);
+            printk("       ISR :: Switching to Partition %d \n\n", core->partition->id);
         } else {
             printk("       ISR :: Switching to Partition IDLE\n\n");
         }
