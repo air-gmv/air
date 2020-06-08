@@ -76,7 +76,9 @@ CPPFLAGS+=${'\\'}
 -I../common/${'\\'}
 -B../common/${'\\'}
 -DRTEMS5${'\\'}
+-B$(AIR_POS)/rtems5/rtems5/cpukit/score/cpu/arm/include/${'\\'}
 ${template.LibraryIncludes(partition.libraries)}\
+
 
 # build LD falgs
 LDFLAGS += -Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar
