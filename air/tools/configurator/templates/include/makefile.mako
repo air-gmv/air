@@ -123,9 +123,9 @@ ${'\t'}@($(RM) ${files})\
 %>\
 % if os.path.isdir(os.path.join(output_dir, dir)) and (os.path.isfile(os.path.join(output_dir, dir, 'Makefile') or  os.path.isfile(os.path.join(output_dir, dir, 'makefile')))):
 % if rule is not None:
-${'\t'}make -C ${dir} ${rule}\
+${'\t'}$(MAKE) -C ${dir} ${rule}\
 % else:
-${'\t'}make -C ${dir}\
+${'\t'}$(MAKE) -C ${dir}\
 % endif
 % endif
 </%def>

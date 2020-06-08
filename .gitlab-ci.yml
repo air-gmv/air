@@ -33,6 +33,7 @@ stages:
     - sbuild-sparc
     - sclean-build-sparc
     - test_hello_world_sparc
+    - test_hm_sparc
     - test_00009_sparc
     - test_00010_sparc
     - test_00012_sparc
@@ -65,7 +66,7 @@ build_sparc:
     stage: sbuild-sparc
     script:
         - make clean # to be removed and used only on failure
-        - make
+        - make -j3
 
 #clean_build_sparc:
 #    tags: 
@@ -92,7 +93,7 @@ build_arm:
     stage: sbuild-arm
     script:
         - make clean # to be removed and used only on failure
-        - make
+        - make -j3
 
 #clean_build_arm:
 #    tags: 
@@ -105,7 +106,7 @@ build_arm:
 
 
 ########################
-#Tests for SPARC       #
+#Example Tests for SPARC       #
 ########################
 hello_sparc:
 #    tags: 
@@ -118,6 +119,21 @@ hello_sparc:
         - cd $AIR
     environment:
         name: SPARC LEON4
+
+        hello_sparc:
+#    tags: 
+#        - sparc
+    stage: test_hm_sparc
+    script:
+        - cd $AIR/examples/hm
+        - cp $AIR/../utils/gitlab-runner/* .
+        - ./do_leon4_grmon.bash
+        - cd $AIR
+    environment:
+        name: SPARC LEON4
+########################
+#Unit Tests for SPARC       #
+########################
 
 
 00009_sparc:
