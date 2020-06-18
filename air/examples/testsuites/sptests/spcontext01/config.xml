@@ -4,7 +4,7 @@
 	<Partition PartitionIdentifier="1" PartitionName="p0" 
 			Criticality="LEVEL_A" SystemPartition="false" EntryPoint="entry_point">
 		<PartitionConfiguration Personality="RTEMS5" Cores="1">
-			<Libs>LIBAIR;LIBPRINTF</Libs>
+			<Libs>LIBAIR;LIBPRINTF;IMASPEX;</Libs>
 			<Cache>CODE; DATA</Cache>
 			<Memory Size="0x2000000" />
 			<Permissions>

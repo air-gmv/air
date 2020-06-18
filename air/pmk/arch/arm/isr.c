@@ -83,20 +83,21 @@ air_uptr_t * arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t
 
         frame = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
         core->partition_switch = 0;
-
 #ifdef PMK_DEBUG_ISR
         if (core->partition != NULL) {
             printk("       ISR :: Switching to Partition %d \n\n", core->partition->id);
         } else {
             printk("       ISR :: Switching to Partition IDLE\n\n");
         }
-    arm_isr_handler_print_frame(frame, "EXIT ");
+        arm_isr_handler_print_frame(frame, "EXIT ");
 #endif
     }
 
+    if ((frame->usr_sp > (air_u32_t)(core->partition)->mmap->v_addr) && ((core->context->vcpu.psr & ARM_PSR_MODE_MASK) != ARM_PSR_IRQ))
+        core->context->sp_svc = frame->usr_sp;
+
     /* will it route to the partition */
     if (core->partition != NULL) {
-
         ret = arm_partition_isr_handler(id, core);
     }
 
@@ -167,12 +168,14 @@ air_uptr_t * arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
             return ret;
         }
     }
-
+    /*the IRQ exception can only be taken if the IRQ mask bit is 0*/
     if (!psr_i) {
-
+        //virtual interrupts are enabled:
         if ((vgic->vm_ctrl & 0x1)) {
-
+            //the current interrupt priority is higher than the priority mask:
             if (((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) {
+
+                //vgic->pmr = ((vgic->ilist[id] >> 23) & 0x1f); //updates priority mask
 
                 vgic->hppir = vgic->rpr;
                 vgic->ilist[(vgic->iar & 0x3ff)] &= ~(1U << 29);
@@ -182,11 +185,17 @@ air_uptr_t * arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
                 vgic->rpr = ((vgic->ilist[id] >> 23) & 0x1f);
 
                 vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
+                if ((vcpu->psr & ARM_PSR_MODE_MASK) != ARM_PSR_IRQ){
+                    vcpu->psr |= ARM_PSR_MODE_MASK;
+                    vcpu->psr &= ARM_PSR_IRQ;
+                }
 
                 ret = vbar + 6;
-            } else {
 
+            } else {
+                //set the state of the interrupt to pending
                 vgic->ilist[id] |= (1U << 28);
+                //change the highest priority pending if the current interrupt priority is higher
                 if (((vgic->ilist[id] >> 23) & 0x1f) < ((vgic->ilist[(vgic->hppir & 0x3ff)] >> 23) & 0x1f)) {
                     vgic->hppir = ((vgic->ilist[id] >> 23) & 0x1f);
                 }
