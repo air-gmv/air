@@ -117,7 +117,6 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
     if (ret != NULL)
         printk("hm_handler ret = 0x%x\n", (int)ret);
 #endif
-
     return ret;
 }
 
@@ -139,6 +138,11 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
     air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
 
     air_uptr_t *ret_addr = NULL;
+
+    arm_interrupt_stack_frame_t *frame = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
+
+    if ((frame->usr_sp > (air_u32_t)(core->partition)->mmap->v_addr) && ((core->context->vcpu.psr & ARM_PSR_MODE_MASK) != ARM_PSR_IRQ))
+        core->context->sp_svc = frame->usr_sp;
 
     if (!psr_a) {
 
@@ -170,10 +174,12 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
                 break;
 
             case AIR_FLOAT_ERROR:
-                core->context->vfp_context->fpexc|=ARM_VFP_FPEXC_ENABLE; //cheat!!!
-                //TODO why is the fpu being disabled in the partition?
-                arm_restore_fpu(core->context->vfp_context);
+                //core->context->vfp_context->fpexc|=ARM_VFP_FPEXC_ENABLE;
+                frame->vfp_context.fpexc|=ARM_VFP_FPEXC_ENABLE;
+                //arm_restore_fpu(core->context->vfp_context);
+                arm_restore_fpu(frame);
                 arm_syscall_rett(core);
+                ret_addr = vbar + 1;
                 break;
 
             case AIR_ARITHMETIC_ERROR: //overflow
