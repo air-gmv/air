@@ -58,7 +58,7 @@ air_u32_t iop_xuart_open(iop_device_driver_t *iop_dev, void *arg) {
 air_u32_t iop_xuart_read(iop_device_driver_t *iop_dev, void *arg) {
 
     static air_u32_t receive_count = 0;
-    int i;
+
     /*Current UART device*/
     iop_uart_device_t *device = (iop_uart_device_t *) iop_dev;
     uart_priv *pDev = (uart_priv *) (device->dev.driver);
@@ -108,7 +108,7 @@ air_u32_t iop_xuart_read(iop_device_driver_t *iop_dev, void *arg) {
 
 air_u32_t iop_xuart_write(iop_device_driver_t *iop_dev, void *arg) {
 
-    air_u32_t sent_count = 0, b_length = 0, i;
+    air_u32_t sent_count = 0;
 
     /*Current UART device*/
     iop_uart_device_t *device = (iop_uart_device_t *) iop_dev;
