@@ -18,6 +18,7 @@
 
 #include "tmacros.h"
 #include <pprintf.h>
+#include <air.h>
 
 const char rtems_test_name[] = "SPCONTEXT 1";
 
@@ -41,7 +42,11 @@ static test_context test_instance;
 
 static void validate_task(rtems_task_argument arg)
 {
+   //pprintf("VALIDATE TEST\n");
   _CPU_Context_validate(arg);
+  pprintf("end validate\n");
+  air_syscall_print_frame();
+
   rtems_test_assert(0);
 }
 
@@ -75,7 +80,8 @@ static void reset_timer_or_finish(test_context *self, rtems_id timer)
 {
   rtems_status_code sc;
   int i = self->iteration_counter;
-
+  if (!(i%10))
+      pprintf("%d|", i);
   if (i < ITERATION_COUNT) {
     self->iteration_counter = i + 1;
 
@@ -84,6 +90,7 @@ static void reset_timer_or_finish(test_context *self, rtems_id timer)
   } else {
     sc = rtems_event_send(self->control_task, FINISH_EVENT);
     rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+printf("FINISH!\n");
   }
 }
 
@@ -146,6 +153,8 @@ static void wait_for_finish(void)
     RTEMS_NO_TIMEOUT,
     &out
   );
+
+  //pprintf("event received\n");
   rtems_test_assert(sc == RTEMS_SUCCESSFUL);
   rtems_test_assert(out == FINISH_EVENT);
 }
@@ -186,17 +195,24 @@ static void test(
   start_timer(self);
   wait_for_finish();
 
+  pprintf("wait complete");
+
   sc = rtems_task_delete(self->validate_tasks[0]);
+  pprintf("1");
   rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+
 
   sc = rtems_task_delete(self->validate_tasks[1]);
   rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+  pprintf("2");
 
   sc = rtems_task_delete(self->validate_tasks[2]);
   rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+  pprintf("3");
 
   sc = rtems_timer_delete(self->timer);
   rtems_test_assert(sc == RTEMS_SUCCESSFUL);
+  pprintf("4");
 }
 
 static void test_context_is_executing(void)
@@ -263,9 +279,9 @@ static void Init(rtems_task_argument arg)
   for (i = 0; i < 2; ++i) {
     for (j = 0; j < 2; ++j) {
       for (k = 0; k < 2; ++k) {
-        printf("Test configuration %s %s %s... ", desc(i), desc(j), desc(k));
+        pprintf("Test configuration %s %s %s... ", desc(i), desc(j), desc(k));
         test(self, is_fp(i), is_fp(j), is_fp(k));
-        printf("done\n");
+        pprintf("done\n");
       }
     }
   }

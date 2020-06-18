@@ -30,7 +30,7 @@ global(arm_restore_fpu)
     mcr     p15, 0, r4, c1, c0, 2
 
     isb
-
+    add     r0, #56
     ldm     r0!, {r4-r5}
     vmsr    fpexc, r4
 
