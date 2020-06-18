@@ -18,7 +18,7 @@
  * \brief ARM Stack spaces
  */
 #define DEFAULT_STACK_SIZE  0x10000
-#define STACK_SIZE          7*DEFAULT_STACK_SIZE
+#define STACK_SIZE          14*DEFAULT_STACK_SIZE
 #define svc_stack_size      DEFAULT_STACK_SIZE
 #define fiq_stack_size      DEFAULT_STACK_SIZE
 #define irq_stack_size      DEFAULT_STACK_SIZE
@@ -36,7 +36,7 @@
 /**
  * \brief Level of allowed IRQ nesting
  */
-#define MAX_NESTING_LEVEL 7
+#define MAX_NESTING_LEVEL 14
 
 /**
  * \brief Double-word alignment
