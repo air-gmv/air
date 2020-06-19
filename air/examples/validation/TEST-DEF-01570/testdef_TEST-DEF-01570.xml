@@ -12,10 +12,10 @@
 			partitions="8"
 			test_end_partition="0"
 			repeat="1" 
-			mtf="0.3"
+			mtf="0.9"
 			ms_per_tick="10"
 			type="TEST_GMV_VAL"
-			personality="RTEMS5"
+			personality="RTEMS48I"
 			apex="IMASPEX">
 		<registered_traps async="" sync="0xF0" />
 		<description>
