@@ -13,7 +13,6 @@
 #define CONFIGURE_INIT
 #include <air.h>
 
-#define RTEMS48I
 
 #ifdef RTEMS48I
 	#include <pprintf.h>
@@ -52,7 +51,7 @@ void entry_point(void)
             printf( "Time is : %s:%ld\n", my_ctime(start.tv_sec), start.tv_nsec);
             
         #endif
-    i++;
+        i++;
         rtems_task_wake_after(10);
 
     }
