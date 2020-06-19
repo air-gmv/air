@@ -73,6 +73,10 @@ rtems_task Init(rtems_task_argument ignored) {
         ${partition.entry_point}();
     }
 
+#ifdef COVERAGE_ENABLED
+    __gcov_exit();
+#endif
+
     rtems_task_delete(RTEMS_SELF);
 }
 
