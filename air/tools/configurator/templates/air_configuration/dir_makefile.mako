@@ -5,10 +5,13 @@
 <%namespace name="template" file="/makefile.mako"/>\
 ${template.FileHeader("AIR OS - Directory Makefile")}\
 
+MAKEFLAGS += -j4
+
 # All
-${template.Rule('all', True, None)}
+${template.Rule('all', True, directories)}
 %for i, directory in enumerate(directories):
-${template.RunMakeInDir(True, directory, 'all')}
+${template.Rule(directory, True, None)}
+${template.RunMakeInDir(True, directory, None)}
 %endfor
 
 # No Configure

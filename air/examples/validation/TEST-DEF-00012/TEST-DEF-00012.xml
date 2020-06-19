@@ -158,7 +158,7 @@
                 Criticality="LEVEL_A" 
                 SystemPartition="false" 
                 EntryPoint="test_main">
-        <PartitionConfiguration Personality="RTEMS48I" Cores="1">
+        <PartitionConfiguration Personality="RTEMS5" Cores="1">
             <Libs>LIBAIR;LIBPRINTF;IMASPEX;LIBTEST</Libs>
             <Cache>CODE; DATA</Cache>
             <Memory Size="0x500000" />
@@ -173,7 +173,7 @@
                 Criticality="LEVEL_A" 
                 SystemPartition="false" 
                 EntryPoint="test_main">
-        <PartitionConfiguration Personality="RTEMS48I" Cores="1">
+        <PartitionConfiguration Personality="RTEMS5" Cores="1">
             <Libs>LIBAIR;LIBPRINTF;IMASPEX;LIBTEST</Libs>
             <Cache>CODE; DATA</Cache>
             <Memory Size="0x500000" />
@@ -190,7 +190,7 @@
                 Criticality="LEVEL_A" 
                 SystemPartition="false" 
                 EntryPoint="test_printf">
-        <PartitionConfiguration Personality="RTEMS48I" Cores="1">
+        <PartitionConfiguration Personality="RTEMS5" Cores="1">
             <Libs>LIBAIR;LIBPRINTF;IMASPEX;LIBTEST</Libs>
             <Cache>CODE; DATA</Cache>
             <Memory Size="0x500000" />

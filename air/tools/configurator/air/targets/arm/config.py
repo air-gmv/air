@@ -60,7 +60,7 @@ def partition_mmu_tables(table, v_addr, n, size, unit):
         if unit < level_unit:
 
             if table[i] is None:
-                table[i] = level_entries[i+1] * [None]
+                table[i] = MMU_LEVEL_ENTRIES[n+1] * [None]
 
             l_consumed = partition_mmu_tables(table[i], v_addr, n + 1, size, unit)
 
