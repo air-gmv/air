@@ -162,7 +162,7 @@
         <PartitionConfiguration Personality="${personality}" Cores="1">
             <Libs>LIBAIR;LIBPRINTF;IMASPEX;LIBTEST</Libs>
             <Cache>CODE; DATA</Cache>
-            <Memory Size="0x500000" />
+            <Memory Size="0x1500000" />
             <Permissions>
                 FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
             </Permissions>
@@ -180,7 +180,7 @@
         <PartitionConfiguration Personality="${personality}" Cores="1">
             <Libs>LIBAIR;LIBPRINTF;IMASPEX;LIBTEST</Libs>
             <Cache>CODE; DATA</Cache>
-            <Memory Size="0x500000" />
+            <Memory Size="0x1500000" />
             <Permissions>
                 FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE; MODULE_CONTROL;
             </Permissions>

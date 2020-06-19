@@ -13,7 +13,7 @@
        <Libs>LIBAIR; LIBPRINTF</Libs>
        <Cache>CODE; DATA</Cache>
        <Memory Size="0x100000" />
-       <Permissions>CACHE_CONTROL; SET_PARTITION_MODE;</Permissions>
+       <Permissions>CACHE_CONTROL; SET_PARTITION_MODE; MODULE_CONTROL</Permissions>
     </PartitionConfiguration>   
   </Partition>
   

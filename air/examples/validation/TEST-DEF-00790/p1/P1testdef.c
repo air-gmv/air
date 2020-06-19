@@ -25,7 +25,7 @@ int unexp_error	   = 0;
 int mtf_ticks    	= 30;
 
 /* Test auxiliary functions    ********************************************	*/
-extern air_u32_t air_workspace;
+extern air_u32_t *ln_tables[4];
 
 /* Test HM callbacks        ***********************************************	*/
 void partition_HM_callback(air_state_e state_id,air_error_e i_error) {
@@ -50,6 +50,7 @@ int test_main (void) {
     /* Test specific variables  ******************************************	*/
 	int part_point = 1;
     air_u32_t * current_pointer;
+    
 
     /* Test Start ******************************************************    */
     test_enter(790);
@@ -61,8 +62,10 @@ int test_main (void) {
     test_step_announce(1,1);
 
     /* Set zero random MMU entry */
-    current_pointer = &air_workspace + 100;
-	*current_pointer = 0xDEAD;
+    /* Context MMU */
+	current_pointer = ln_tables[0]; // fazer syscall para extrair
+    current_pointer += 100;
+    *current_pointer = 0xDEAD;
 
     /* EXPECTED: */
     if (AIR_SEGMENTATION_ERROR == unexp_error)  {
@@ -70,7 +73,7 @@ int test_main (void) {
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
                                     ret);
 		unexp_error = 0;
-    } else {    
+    } else {
         res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
                                     RESULT_DIFF | RESULT_TYPE_VALUE,
                                     unexp_error);
