@@ -22,6 +22,8 @@
 #include <air_test.h>
 
 #include <P2testdef.h>
+#define LEON_CACHE_DATA_MASK        0xC
+#define LEON_CACHE_INST_MASK        0x3
 
 
 /* Test external definitions **********************************************	*/
@@ -58,8 +60,11 @@ int test_main (void) {
     
     /* Test specific variables  ******************************************	*/
 	volatile uint32_t ccr;
+    volatile uint32_t expected_cache;
 	RETURN_CODE_TYPE RC;
-    
+    /* Test Start ******************************************************    */
+    test_enter(1561);
+
 	imaspex_init();
 	
     /* Test Steps *******************************************************    */
@@ -69,10 +74,11 @@ int test_main (void) {
 		Code Cache are enabled. */
 		test_step_announce(4,repeat);
 
-		ccr = pmk_sparc_get_cache_ctrl();
+		ccr = air_syscall_get_cache_register();
+        expected_cache = LEON_CACHE_DATA_MASK | LEON_CACHE_INST_MASK;
 	
         /* EXPECTED: */
-		if (((ccr & 0xF) == 0xF) && (0 == unexp_error))  {
+		if (((ccr & expected_cache) == expected_cache) && (0 == unexp_error))  {
 			res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
 										RESULT_EQUAL | RESULT_TYPE_VALUE,
 										ret);
@@ -107,10 +113,11 @@ int test_main (void) {
 		disabled. */
 		test_step_announce(12,repeat);
 
-		ccr = pmk_sparc_get_cache_ctrl();
+		ccr = air_syscall_get_cache_register();
+        expected_cache = 0;
 	
         /* EXPECTED: */
-		if (((ccr & 0xF) == 0x0) && (0 == unexp_error))  {
+		if (((ccr & expected_cache) == expected_cache) && (0 == unexp_error))  {
 			res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
 										RESULT_EQUAL | RESULT_TYPE_VALUE,
 										ret);

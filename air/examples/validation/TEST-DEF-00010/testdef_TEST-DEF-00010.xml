@@ -15,7 +15,7 @@
 			mtf="0.3"
 			ms_per_tick="2"
 			type="TEST_GMV_VAL"
-			personality="RTEMS48I">
+			personality="RTEMS5">
 		<description>
 						Call the SET_MODULE_SCHEDULE function from an authorized partition
 			and check that the partitioning schedule is altered starting at the next

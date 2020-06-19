@@ -22,7 +22,8 @@
 #include <air_test.h>
 
 #include <P3testdef.h>
-
+#define LEON_CACHE_DATA_MASK        0xC
+#define LEON_CACHE_INST_MASK        0x3
 
 /* Test external definitions **********************************************	*/
 #include <imaspex.h>
@@ -55,11 +56,15 @@ int test_main (void) {
     rtems_status_code ret    = RTEMS_SUCCESSFUL; 
 	/* total test result                */
     int res     = TEST_SUCCESS;     
-    
+
     /* Test specific variables  ******************************************	*/
 	volatile uint32_t ccr;
+    volatile uint32_t expected_cache;
 	RETURN_CODE_TYPE RC;
-	
+
+    /* Test Start ******************************************************    */
+    test_enter(1561);
+
 	imaspex_init();
                                         
     /* Test Steps *******************************************************    */
@@ -69,10 +74,11 @@ int test_main (void) {
 		Code Cache are enabled. */
 		test_step_announce(6,repeat);
 
-		ccr = pmk_sparc_get_cache_ctrl();
+		ccr = air_syscall_get_cache_register();
+        expected_cache = LEON_CACHE_DATA_MASK | LEON_CACHE_INST_MASK;
 	
         /* EXPECTED: */
-		if (((ccr & 0xF) == 0xF))  {
+		if (((ccr & expected_cache) == expected_cache) && (0 == unexp_error))  {
 			res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
 										RESULT_EQUAL | RESULT_TYPE_VALUE,
 										ret);
@@ -91,7 +97,7 @@ int test_main (void) {
 		DEACTIVATE_CACHE(ALL_CACHES, &RC);
 
 		/* EXPECTED: */
-		if ((INVALID_CONFIG == RC) && (1 == unexp_error))  {
+		if (INVALID_CONFIG == RC)  {
 			res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
 										RESULT_EQUAL | RESULT_TYPE_VALUE,
 										ret);
@@ -99,6 +105,7 @@ int test_main (void) {
 			res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
 										RESULT_DIFF | RESULT_TYPE_VALUE,
 										ret);
+            printf ("RC %d, err %d \n", RC, unexp_error);
 		}
 		
 		rtems_task_wake_after(mtf_ticks);
@@ -108,10 +115,11 @@ int test_main (void) {
 		enabled. */
 		test_step_announce(14,repeat);
 
-		ccr = pmk_sparc_get_cache_ctrl();
+		ccr = air_syscall_get_cache_register();
+        expected_cache = LEON_CACHE_DATA_MASK | LEON_CACHE_INST_MASK;
 	
         /* EXPECTED: */
-		if (((ccr & 0xF) == 0xF) && (1 == unexp_error))  {
+		if (((ccr & expected_cache) == expected_cache) && (0 == unexp_error))  {
 			res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
 										RESULT_EQUAL | RESULT_TYPE_VALUE,
 										ret);
@@ -130,7 +138,7 @@ int test_main (void) {
 		ACTIVATE_CACHE(ALL_CACHES, &RC);
 
 		/* EXPECTED: */
-		if ((INVALID_CONFIG == RC) && (1 == unexp_error))  {
+		if (INVALID_CONFIG == RC)  {
 			res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
 										RESULT_EQUAL | RESULT_TYPE_VALUE,
 										ret);

@@ -23,10 +23,10 @@
 #include <air_test.h>
 
 #include <P3testdef.h>
-
+#define LEON_CACHE_DATA_MASK        0xC
+#define LEON_CACHE_INST_MASK        0x3
 
 /* Test external definitions **********************************************	*/
-#include <pal_system.h>
 #include <stdint.h>
 
 /* Test type definitions **************************************************	*/
@@ -59,7 +59,11 @@ int test_main (void) {
     
     /* Test specific variables  ******************************************	*/
 	volatile uint32_t ccr;
-                                        
+    volatile uint32_t expected_cache;
+
+    /* Test Start ******************************************************    */
+    test_enter(1560);
+
     /* Test Steps *******************************************************    */
     /* Test Step 3 
     	Read the cache control register. Verify if the Data cache and the
@@ -67,10 +71,11 @@ int test_main (void) {
     for (repeat=1;repeat <= test_step_rep_list[4]; repeat ++) {
         test_step_announce(3,repeat);
 
-        ccr = pmk_sparc_get_cache_ctrl();
-		
+        ccr = air_syscall_get_cache_register();
+        expected_cache = ~LEON_CACHE_DATA_MASK | ~LEON_CACHE_INST_MASK;
+	
         /* EXPECTED: */
-		if (((ccr & 0xF) == 0x0) && (0 == unexp_error))  {
+		if (((ccr & expected_cache) == expected_cache) && (0 == unexp_error))  {
             res &= test_report(__FILE__, __LINE__,    	TEST_SUCCESS,
                                         RESULT_EQUAL | RESULT_TYPE_VALUE,
                                         ret);
