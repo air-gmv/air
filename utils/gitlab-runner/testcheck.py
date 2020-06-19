@@ -14,7 +14,7 @@ with open("testresult.txt",'r') as f:
     text = f.read()
     # f.close()
 
-error_list = ["FAILURES DETECTED", "Killed", "| FAILED" , "giving up on"]
+error_list = ["FAILURES DETECTED", "Killed", "| FAILED" , "giving up on", "could not load"]
 test_ok = True
 
 for word in error_list:
@@ -26,7 +26,9 @@ for word in error_list:
             if (word == error_list[1]):
                 sys.stderr.write("Test Timeout Failure\n")
             if (word == error_list[3]):
-                sys.stderr.write("Test Timeout, Board was locked\n")                
+                sys.stderr.write("Test Timeout, Board was locked\n") 
+            if (word == error_list[4]):
+                sys.stderr.write("Failed to Load\n")                 
 
 if(test_ok == False):
     sys.exit(-1);

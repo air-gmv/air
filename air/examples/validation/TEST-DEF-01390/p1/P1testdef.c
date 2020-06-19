@@ -62,32 +62,16 @@ int test_main (void) {
 	
     RETURN_CODE_TYPE 		rc = -1;
     PARTITION_STATUS_TYPE 	status;
-                                        
+
+    /* Test Start ******************************************************    */
+    test_enter(1390);
+
     /* Test Steps *******************************************************    */
-    /* Test Step 3 
-    	TSAL_INIT; expect NO_ERROR. */
-    test_step_announce(3,1);
-
-    /* Test step 3 code */
-
-    rc = TSAL_INIT();
-
-    /* EXPECTED: NO_ERROR */
-    if ((NO_ERROR == rc) && (0 == unexp_error))  {
-        res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
-                                    RESULT_EQUAL | RESULT_TYPE_VALUE,
-                                    ret);
-    } else {    
-        res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
-                                    RESULT_DIFF | RESULT_TYPE_VALUE,
-                                    ret);
-    }
-
-    /* Test Step 4 
+    /* Test Step 2 
     	Verify partition mode is the initial mode (COLD_START). */
-    test_step_announce(4,1);
+    test_step_announce(2,1);
 
-    /* Test step 4 code */
+    /* Test step 2 code */
 
 	/* clean up the variables to be verified */
     rc 						= -1;
@@ -107,11 +91,11 @@ int test_main (void) {
                                     ret);
     }
 
-    /* Test Step 5 
+    /* Test Step 3 
     	Set partition mode to NORMAL; expect NO_ERROR. */
-    test_step_announce(5,1);
+    test_step_announce(3,1);
 
-    /* Test step 5 code */
+    /* Test step 3 code */
 	/* clean up the variables to be verified */
     rc 						= -1;
 	status.OPERATING_MODE 	= -1;
@@ -133,11 +117,11 @@ int test_main (void) {
     rtems_task_wake_after(mtf_ticks);
 
 
-    /* Test Step 7 
+    /* Test Step 5 
     	Verify partition mode is NORMAL. */
-    test_step_announce(7,1);
+    test_step_announce(5,1);
 
-    /* Test step 7 code */
+    /* Test step 5 code */
 
 	/* clean up the variables to be verified */
     rc 						= -1;
@@ -160,11 +144,11 @@ int test_main (void) {
     rtems_task_wake_after(mtf_ticks+mtf_ticks/2);
 
 
-    /* Test Step 11 
+    /* Test Step 9 
     	Verify partition mode is NORMAL. */
-    test_step_announce(11,1);
+    test_step_announce(9,1);
 
-    /* Test step 11 code */
+    /* Test step 9 code */
 
 	/* clean up the variables to be verified */
     rc 						= -1;

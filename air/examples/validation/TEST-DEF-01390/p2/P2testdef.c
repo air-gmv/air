@@ -62,13 +62,15 @@ int test_main (void) {
 
     RETURN_CODE_TYPE 		rc = -1;
     PARTITION_STATUS_TYPE 	status;
-
+    
+    /* Test Start ******************************************************    */
+    test_enter(1390);
     /* Test Steps *******************************************************    */
-    /* Test Step 12
+    /* Test Step 10
     	Verify partition mode is the initial mode (COLD_START). */
-    test_step_announce(12,1);
+    test_step_announce(10,1);
 
-    /* Test step 11 code */
+    /* Test step 10 code */
 	/* clean up the variables to be verified */
     rc 						= -1;
 	status.OPERATING_MODE 	= -1;
