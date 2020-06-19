@@ -20,6 +20,8 @@
 #include <P7testdef.h>
 
 #include <imaspex.h>
+#define LEON_CACHE_DATA_MASK        0xC
+#define LEON_CACHE_INST_MASK        0x3
 
 /* Test external definitions **********************************************	*/
 
@@ -54,9 +56,14 @@ int test_main (void) {
     
     /* Test specific variables  ******************************************	*/
 	RETURN_CODE_TYPE RC;
-	unsigned int ccr;
+		unsigned int ccr;
+    volatile uint32_t expected_cache;
+
                                         
+        test_enter(1570);
+   
     /* Test Steps *******************************************************    */
+
     /* Test Step 20 
     	Try to freeze Both Caches. Action shall succeed with NO_ERROR. */
     test_step_announce(20,1);
@@ -81,10 +88,11 @@ int test_main (void) {
     test_step_announce(21,1);
 
     /* Test step 21 code */
-    ccr = pmk_sparc_get_cache_ctrl();
+	ccr = air_syscall_get_cache_register();
+       expected_cache = 0x5;
 	
-        /* EXPECTED: */
-	if (((ccr & 0xF) == 0x5) && (0 == unexp_error))  {
+    /* EXPECTED: */
+	if (((ccr & expected_cache) == expected_cache) && (0 == unexp_error))  {
         res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
                                     ret);

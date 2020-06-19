@@ -71,30 +71,12 @@ int test_main (void) {
     test_enter(1390);
                                         
     /* Test Steps *******************************************************    */
-    /* Test Step 0 
-    	TSAL_INIT; expect NO_ERROR. */
+
+    /* Test Step 0
+    	Verify partition mode is the initial mode (COLD_START). */
     test_step_announce(0,1);
 
     /* Test step 0 code */
-
-    rc = TSAL_INIT();
-
-    /* EXPECTED: NO_ERROR */
-    if ((NO_ERROR == rc) && (0 == unexp_error))  {
-        res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
-                                    RESULT_EQUAL | RESULT_TYPE_VALUE,
-                                    ret);
-    } else {    
-        res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
-                                    RESULT_DIFF | RESULT_TYPE_VALUE,
-                                    ret);
-    }
-
-    /* Test Step 1 
-    	Verify partition mode is the initial mode (COLD_START). */
-    test_step_announce(1,1);
-
-    /* Test step 1 code */
 
 	/* clean up the variables to be verified */
     rc 						= -1;
@@ -114,11 +96,11 @@ int test_main (void) {
                                     ret);
     }
 
-    /* Test Step 2 
+    /* Test Step 1 
     	Set partition mode to NORMAL; expect NO_ERROR. */
-    test_step_announce(2,1);
+    test_step_announce(1,1);
 
-    /* Test step 2 code */
+    /* Test step 1 code */
 
 	/* clean up the variables to be verified */
     rc 						= -1;
@@ -141,11 +123,11 @@ int test_main (void) {
     rtems_task_wake_after(mtf_ticks);
 
 
-    /* Test Step 6 
+    /* Test Step 4 
     	Verify partition mode is NORMAL. */
-    test_step_announce(6,1);
+    test_step_announce(4,1);
 
-    /* Test step 6 code */
+    /* Test step 4 code */
 
 	/* clean up the variables to be verified */
     rc 						= -1;
@@ -168,11 +150,11 @@ int test_main (void) {
     rtems_task_wake_after(mtf_ticks);
 
 
-    /* Test Step 8 
+    /* Test Step 6 
     	Verify yet unscheduled partition p2 mode is COLD_START. */
-    test_step_announce(8,1);
+    test_step_announce(6,1);
 
-    /* Test step 8 code */
+    /* Test step 6 code */
 
 	/* clean up the variables to be verified */
     rc 						= -1;
@@ -206,7 +188,7 @@ int test_main (void) {
     /* Test Step 9 
     	SET_MODULE_SCHEDULE to the second schedule, the one including
 	partition p2. */
-    test_step_announce(9,1);
+    test_step_announce(7,1);
 
     /* Test step 9 code */
 
@@ -215,7 +197,7 @@ int test_main (void) {
     test_err 	= 0;
 
 
-    GET_MODULE_SCHEDULE_ID("alt_sched", &altsched, &rc);
+    GET_MODULE_SCHEDULE_ID("test_sched2", &altsched, &rc);
     if (NO_ERROR != rc){
     	test_err = 1;
     }
@@ -237,11 +219,11 @@ int test_main (void) {
     rtems_task_wake_after(mtf_ticks);
 
 
-    /* Test Step 10 
+    /* Test Step 8 
     	Verify partition mode is NORMAL. */
-    test_step_announce(10,1);
+    test_step_announce(8,1);
 
-    /* Test step 10 code */
+    /* Test step 8 code */
 
 	/* clean up the variables to be verified */
     rc 							= -1;

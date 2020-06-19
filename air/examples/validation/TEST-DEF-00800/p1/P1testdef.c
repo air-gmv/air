@@ -22,40 +22,20 @@
 
 #include <P1testdef.h>
 
-
-/* Test external definitions **********************************************	*/
-#include <pmk_segregation.h>
-#include <pmk_linkcmd_vars.h>
-
 /* Test type definitions **************************************************	*/
 
 /* Test global variables **************************************************	*/
 int unexp_error	   = 0;
 int mtf_ticks    	= 30;
 
-/* Context Table */
-PMK_MMU_ContextTable_t *ContextTable = 
-			(PMK_MMU_ContextTable_t *)&air_memmap_MMU_ContextTableStart;
-
-/** Pointer to System Level 1 table which contains L1 tables for all partitions*/
-static PMK_MMU_L1Table_t *L1Table	= 
-			(PMK_MMU_L1Table_t *)&air_memmap_MMU_Level1TableStart;	
-	
-/** Pointer to System Level 2 table which contains L2 tables for all partitions*/
-static PMK_MMU_Partition_L2Tables_t *L2Table = 
-			(PMK_MMU_Partition_L2Tables_t *)&air_memmap_MMU_Level2TablesStart;
-
-/** Pointer to System Level 3 table which contains L3 tables for all partitions*/
-static PMK_MMU_Partition_L3Tables_t *L3Table =
-			(PMK_MMU_Partition_L3Tables_t *) &air_memmap_MMU_Level3TablesStart;
-
 /* Test auxiliary functions    ********************************************	*/
+extern air_u32_t *ln_tables[4];
 
 /* Test HM callbacks        ***********************************************	*/
 void partition_HM_callback(air_state_e state_id,air_error_e i_error) {
     /* i_state is not really a pointer, this signature is required due to the
         pal_callbacks function signature -> convert it into a relevant value */
-    
+
 	/* signal error ocurrence	*/
     unexp_error++;
     return;
@@ -70,86 +50,38 @@ int test_main (void) {
     rtems_status_code ret    = RTEMS_SUCCESSFUL; 
 	/* total test result                */
     int res     = TEST_SUCCESS;     
-    
+
     /* Test specific variables  ******************************************	*/
 	int part_point = 1;
-                                        
+    air_u32_t * current_pointer;
+
+    /* Test Start ******************************************************    */
+    test_enter(800);
+
     /* Test Steps *******************************************************    */
     /* Test Step 1 
-    	Attempt to write the Context MMU Table. Verify that a trap was
+    	Attempt to write in the MMU region. Verify that a trap was
 	raised. */
     test_step_announce(1,1);
-	
-	/* delete one random context entry */
-	(*ContextTable)[part_point] = 0x0;
+
+    /* Set zero random MMU entry, L3 space  */
+	current_pointer = ln_tables[3];
+    current_pointer += 100;
+    *current_pointer = 0xDEAD;
 
     /* EXPECTED: */
-    if (1 == unexp_error)  {
+    if (AIR_SEGMENTATION_ERROR == unexp_error)  {
         res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
                                     ret);
+		unexp_error = 0;
     } else {    
         res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
                                     RESULT_DIFF | RESULT_TYPE_VALUE,
-                                    ret);
+                                    unexp_error);
+		test_exit(TEST_FAILURE,mtf_ticks>>1);
     }
 
-    /* Test Step 2 
-    	Attempt to write a Level1 MMU Table entry. Verify that a trap was
-	raised. */
-    test_step_announce(2,1);
-	
-	/* change one random entry entry */
-    (L1Table)[0][10] = 0xDEAD;
-
-    /* EXPECTED: */
-    if (2 == unexp_error)  {
-        res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
-                                    RESULT_EQUAL | RESULT_TYPE_VALUE,
-                                    ret);
-    } else {    
-        res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
-                                    RESULT_DIFF | RESULT_TYPE_VALUE,
-                                    ret);
-    }
-
-    /* Test Step 3 
-    	Attempt to write a Level2 MMU Table entry. Verify that a trap was
-	raised. */
-    test_step_announce(3,1);
-
-    L2Table[1][5][10] = 0xDEAD;
-
-    /* EXPECTED: */
-    if (3 == unexp_error)  {
-        res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
-                                    RESULT_EQUAL | RESULT_TYPE_VALUE,
-                                    ret);
-    } else {    
-        res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
-                                    RESULT_DIFF | RESULT_TYPE_VALUE,
-                                    ret);
-    }
-
-    /* Test Step 4 
-    	Attempt to write a Level3 MMU Table entry. Verify that a trap was
-	raised. */
-    test_step_announce(4,1);
-
-    L3Table[0][0][20] = 0xDEAD;
-
-    /* EXPECTED: */
-    if (4 == unexp_error)  {
-        res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
-                                    RESULT_EQUAL | RESULT_TYPE_VALUE,
-                                    ret);
-    } else {    
-        res &= test_report(__FILE__, __LINE__,       TEST_FAILURE,
-                                    RESULT_DIFF | RESULT_TYPE_VALUE,
-                                    ret);
-    }
-
-    
     /* Test End */
     test_return(res);
     return 0;
