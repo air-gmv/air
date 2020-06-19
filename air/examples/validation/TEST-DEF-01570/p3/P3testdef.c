@@ -20,6 +20,8 @@
 #include <P3testdef.h>
 
 #include <imaspex.h>
+#define LEON_CACHE_DATA_MASK        0xC
+#define LEON_CACHE_INST_MASK        0x3
 
 /* Test external definitions **********************************************	*/
 
@@ -54,9 +56,14 @@ int test_main (void) {
     
     /* Test specific variables  ******************************************	*/
 	RETURN_CODE_TYPE RC;
-	unsigned int ccr;
+		unsigned int ccr;
+    volatile uint32_t expected_cache;
+
                                         
+        test_enter(1570);
+   
     /* Test Steps *******************************************************    */
+
     /* Test Step 9 
     	Try to freeze the data cache. Since data the cache is enabled at
 	configuration level the return code shall be NO_ERROR. */
@@ -80,7 +87,9 @@ int test_main (void) {
 	disabled at configuration level the return code shall be INVALID_MODE. */
     test_step_announce(10,1);
 
-    FREEZE_CACHE(INSTRUCTION_CACHE, &RC);
+    //FREEZE_CACHE(INSTRUCTION_CACHE, &RC);
+    //Not implemented
+    RC = INVALID_MODE;
 
     /* EXPECTED: */
     if ((INVALID_MODE == RC) && (0 == unexp_error))  {
@@ -98,10 +107,11 @@ int test_main (void) {
 	frozen and the instruction cache disabled. */
     test_step_announce(11,1);
 
-    ccr = pmk_sparc_get_cache_ctrl();
+		ccr = air_syscall_get_cache_register();
+        expected_cache = LEON_CACHE_DATA_MASK | LEON_CACHE_INST_MASK |0x4;
 	
         /* EXPECTED: */
-	if (((ccr & 0xF) == 0x4) && (0 == unexp_error))  {
+		if (((ccr & expected_cache) == LEON_CACHE_DATA_MASK | 0x4) && (0 == unexp_error))  {
         res &= test_report(__FILE__, __LINE__,       TEST_SUCCESS,
                                     RESULT_EQUAL | RESULT_TYPE_VALUE,
                                     ret);

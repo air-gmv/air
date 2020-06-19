@@ -15,7 +15,7 @@
       <Cache>CODE; DATA</Cache>
       <Memory Size="0x100000" />
       <Permissions>
-       FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+       FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE; MODULE_CONTROL;
       </Permissions>
     </PartitionConfiguration>               
   </Partition>
