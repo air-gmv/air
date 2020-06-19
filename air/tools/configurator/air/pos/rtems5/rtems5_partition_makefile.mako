@@ -76,6 +76,9 @@ CPPFLAGS+=${'\\'}
 -I../common/${'\\'}
 -B../common/${'\\'}
 -DRTEMS5${'\\'}
+% if 'libcov' in partition.libraries:
+-fprofile-arcs -ftest-coverage -DCOVERAGE_ENABLED${'\\'}
+% endif
 ${template.LibraryIncludes(partition.libraries)}\
 
 # build LD falgs
