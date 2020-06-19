@@ -106,5 +106,5 @@ char message[] = {
 void entry_point() {
 
     air_syscall_print(message, sizeof(message));
-    for (;;);
+    air_syscall_shutdown_module();
 }

@@ -208,7 +208,7 @@
             <Cache>CODE; DATA</Cache>
             <Memory Size="0x500000" />
             <Permissions>
-                FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+                FPU_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
             </Permissions>
         </PartitionConfiguration>
     </Partition>
@@ -512,8 +512,8 @@
             <Error_ID_Action Action="COLD_START" Description="Overflow Error" ErrorIdentifier="5"/>
             <Error_ID_Action Action="WARM_START" Description="Divide by zero" ErrorIdentifier="6"/>
             <Error_ID_Action Action="COLD_START" Description="I/O Error" ErrorIdentifier="7"/>
-            <Error_ID_Action Action="IDLE" Description="Partition Conf Error" ErrorIdentifier="8"/>
-            <Error_ID_Action Action="IDLE" Description="Partition Init Error" ErrorIdentifier="9"/>
+            <Error_ID_Action Action="IGNORE" Description="Partition Conf Error" ErrorIdentifier="8"/>
+            <Error_ID_Action Action="IGNORE" Description="Partition Init Error" ErrorIdentifier="9"/>
             <Error_ID_Action Action="COLD_START" Description="User defined Stack error" ErrorIdentifier="10"/>
             <Error_ID_Action Action="IGNORE" Description="User defined Debug error" ErrorIdentifier="11"/>
             <Error_ID_Action Action="WARM_START" Description="User defined Module APEX Error" ErrorIdentifier="12"/>

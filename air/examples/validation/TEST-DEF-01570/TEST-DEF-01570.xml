@@ -158,7 +158,7 @@
                 Criticality="LEVEL_A" 
                 SystemPartition="false" 
                 EntryPoint="test_main">
-        <PartitionConfiguration Personality="RTEMS5" Cores="1">
+        <PartitionConfiguration Personality="RTEMS48I" Cores="1">
             <Libs>LIBAIR;LIBPRINTF;IMASPEX;LIBTEST</Libs>
             <Cache>CODE; DATA</Cache>
             <Memory Size="0x500000" />
@@ -173,7 +173,7 @@
                 Criticality="LEVEL_A" 
                 SystemPartition="false" 
                 EntryPoint="test_main">
-        <PartitionConfiguration Personality="RTEMS5" Cores="1">
+        <PartitionConfiguration Personality="RTEMS48I" Cores="1">
             <Libs>LIBAIR;LIBPRINTF;IMASPEX;LIBTEST</Libs>
             <Cache>CODE; DATA</Cache>
             <Memory Size="0x500000" />
@@ -188,7 +188,7 @@
                 Criticality="LEVEL_A" 
                 SystemPartition="false" 
                 EntryPoint="test_main">
-        <PartitionConfiguration Personality="RTEMS5" Cores="1">
+        <PartitionConfiguration Personality="RTEMS48I" Cores="1">
             <Libs>LIBAIR;LIBPRINTF;IMASPEX;LIBTEST</Libs>
             <Cache>CODE; DATA</Cache>
             <Memory Size="0x500000" />
@@ -203,7 +203,7 @@
                 Criticality="LEVEL_A" 
                 SystemPartition="false" 
                 EntryPoint="test_main">
-        <PartitionConfiguration Personality="RTEMS5" Cores="1">
+        <PartitionConfiguration Personality="RTEMS48I" Cores="1">
             <Libs>LIBAIR;LIBPRINTF;IMASPEX;LIBTEST</Libs>
             <Cache>CODE; DATA</Cache>
             <Memory Size="0x500000" />
@@ -218,7 +218,7 @@
                 Criticality="LEVEL_A" 
                 SystemPartition="false" 
                 EntryPoint="test_main">
-        <PartitionConfiguration Personality="RTEMS5" Cores="1">
+        <PartitionConfiguration Personality="RTEMS48I" Cores="1">
             <Libs>LIBAIR;LIBPRINTF;IMASPEX;LIBTEST</Libs>
             <Cache>CODE; DATA</Cache>
             <Memory Size="0x500000" />
@@ -233,7 +233,7 @@
                 Criticality="LEVEL_A" 
                 SystemPartition="false" 
                 EntryPoint="test_main">
-        <PartitionConfiguration Personality="RTEMS5" Cores="1">
+        <PartitionConfiguration Personality="RTEMS48I" Cores="1">
             <Libs>LIBAIR;LIBPRINTF;IMASPEX;LIBTEST</Libs>
             <Cache>CODE; DATA</Cache>
             <Memory Size="0x500000" />
@@ -248,7 +248,7 @@
                 Criticality="LEVEL_A" 
                 SystemPartition="false" 
                 EntryPoint="test_main">
-        <PartitionConfiguration Personality="RTEMS5" Cores="1">
+        <PartitionConfiguration Personality="RTEMS48I" Cores="1">
             <Libs>LIBAIR;LIBPRINTF;IMASPEX;LIBTEST</Libs>
             <Cache>CODE; DATA</Cache>
             <Memory Size="0x500000" />
@@ -263,7 +263,7 @@
                 Criticality="LEVEL_A" 
                 SystemPartition="false" 
                 EntryPoint="test_main">
-        <PartitionConfiguration Personality="RTEMS5" Cores="1">
+        <PartitionConfiguration Personality="RTEMS48I" Cores="1">
             <Libs>LIBAIR;LIBPRINTF;IMASPEX;LIBTEST</Libs>
             <Cache>CODE; DATA</Cache>
             <Memory Size="0x500000" />
@@ -280,7 +280,7 @@
                 Criticality="LEVEL_A" 
                 SystemPartition="false" 
                 EntryPoint="test_printf">
-        <PartitionConfiguration Personality="RTEMS5" Cores="1">
+        <PartitionConfiguration Personality="RTEMS48I" Cores="1">
             <Libs>LIBAIR;LIBPRINTF;IMASPEX;LIBTEST</Libs>
             <Cache>CODE; DATA</Cache>
             <Memory Size="0x500000" />
@@ -308,207 +308,207 @@
     ========================================================================================= -->	
 
     <!-- module schedule 1 -->
-    <Module_Schedule  ScheduleIdentifier="0" ScheduleName="test_sched" InitialModuleSchedule="true" MajorFrameSeconds="0.3">
+    <Module_Schedule  ScheduleIdentifier="0" ScheduleName="test_sched" InitialModuleSchedule="true" MajorFrameSeconds="0.9">
 		
         <Partition_Schedule PartitionIdentifier="0" 
                             PartitionName="p0" 
-                            PeriodSeconds="0.3" 
-                            PeriodDurationSeconds="0.0333"
+                            PeriodSeconds="0.9" 
+                            PeriodDurationSeconds="0.1"
                             SetModuleSchedule="true">
             <Window_Schedule 	WindowIdentifier="001" 
                                 WindowStartSeconds="0.0" 
-                                WindowDurationSeconds="0.0333" 
+                                WindowDurationSeconds="0.1" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="1" 
                             PartitionName="p1" 
-                            PeriodSeconds="0.3" 
-                            PeriodDurationSeconds="0.0333"
+                            PeriodSeconds="0.9" 
+                            PeriodDurationSeconds="0.1"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="101" 
-                                WindowStartSeconds="0.0333" 
-                                WindowDurationSeconds="0.0333" 
+                                WindowStartSeconds="0.1" 
+                                WindowDurationSeconds="0.1" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="2" 
                             PartitionName="p2" 
-                            PeriodSeconds="0.3" 
-                            PeriodDurationSeconds="0.0333"
+                            PeriodSeconds="0.9" 
+                            PeriodDurationSeconds="0.1"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="201" 
-                                WindowStartSeconds="0.0666" 
-                                WindowDurationSeconds="0.0333" 
+                                WindowStartSeconds="0.2" 
+                                WindowDurationSeconds="0.1" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="3" 
                             PartitionName="p3" 
-                            PeriodSeconds="0.3" 
-                            PeriodDurationSeconds="0.0333"
+                            PeriodSeconds="0.9" 
+                            PeriodDurationSeconds="0.1"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="301" 
-                                WindowStartSeconds="0.0999" 
-                                WindowDurationSeconds="0.0333" 
+                                WindowStartSeconds="0.3" 
+                                WindowDurationSeconds="0.1" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="4" 
                             PartitionName="p4" 
-                            PeriodSeconds="0.3" 
-                            PeriodDurationSeconds="0.0333"
+                            PeriodSeconds="0.9" 
+                            PeriodDurationSeconds="0.1"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="401" 
-                                WindowStartSeconds="0.1332" 
-                                WindowDurationSeconds="0.0333" 
+                                WindowStartSeconds="0.4" 
+                                WindowDurationSeconds="0.1" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="5" 
                             PartitionName="p5" 
-                            PeriodSeconds="0.3" 
-                            PeriodDurationSeconds="0.0333"
+                            PeriodSeconds="0.9" 
+                            PeriodDurationSeconds="0.1"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="501" 
-                                WindowStartSeconds="0.1665" 
-                                WindowDurationSeconds="0.0333" 
+                                WindowStartSeconds="0.5" 
+                                WindowDurationSeconds="0.1" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="6" 
                             PartitionName="p6" 
-                            PeriodSeconds="0.3" 
-                            PeriodDurationSeconds="0.0333"
+                            PeriodSeconds="0.9" 
+                            PeriodDurationSeconds="0.1"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="601" 
-                                WindowStartSeconds="0.1998" 
-                                WindowDurationSeconds="0.0333" 
+                                WindowStartSeconds="0.6" 
+                                WindowDurationSeconds="0.1" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="7" 
                             PartitionName="p7" 
-                            PeriodSeconds="0.3" 
-                            PeriodDurationSeconds="0.0333"
+                            PeriodSeconds="0.9" 
+                            PeriodDurationSeconds="0.1"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="701" 
-                                WindowStartSeconds="0.2331" 
-                                WindowDurationSeconds="0.0333" 
+                                WindowStartSeconds="0.7" 
+                                WindowDurationSeconds="0.1" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="8" 
                             PartitionName="p8" 
-                            PeriodSeconds="0.3" 
-                            PeriodDurationSeconds="0.0333"
+                            PeriodSeconds="0.9" 
+                            PeriodDurationSeconds="0.1"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="801" 
-                                WindowStartSeconds="0.2664" 
-                                WindowDurationSeconds="0.0333" 
+                                WindowStartSeconds="0.8" 
+                                WindowDurationSeconds="0.1" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
     </Module_Schedule>
     
         <!-- module schedule 2 -->
-    <Module_Schedule  ScheduleIdentifier="1" ScheduleName="test_sched2" InitialModuleSchedule="false" MajorFrameSeconds="1.5">
+    <Module_Schedule  ScheduleIdentifier="1" ScheduleName="test_sched2" InitialModuleSchedule="false" MajorFrameSeconds="4.5">
 		
         <Partition_Schedule PartitionIdentifier="0" 
                             PartitionName="p0" 
-                            PeriodSeconds="1.5" 
-                            PeriodDurationSeconds="0.1667"
+                            PeriodSeconds="4.5" 
+                            PeriodDurationSeconds="0.5"
                             SetModuleSchedule="true">
             <Window_Schedule 	WindowIdentifier="001" 
                                 WindowStartSeconds="0.0" 
-                                WindowDurationSeconds="0.1667" 
+                                WindowDurationSeconds="0.5" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="1" 
                             PartitionName="p1" 
-                            PeriodSeconds="1.5" 
-                            PeriodDurationSeconds="0.1667"
+                            PeriodSeconds="4.5" 
+                            PeriodDurationSeconds="0.5"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="101" 
-                                WindowStartSeconds="0.1667" 
-                                WindowDurationSeconds="0.1667" 
+                                WindowStartSeconds="0.5" 
+                                WindowDurationSeconds="0.5" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="2" 
                             PartitionName="p2" 
-                            PeriodSeconds="1.5" 
-                            PeriodDurationSeconds="0.1667"
+                            PeriodSeconds="4.5" 
+                            PeriodDurationSeconds="0.5"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="201" 
-                                WindowStartSeconds="0.3334" 
-                                WindowDurationSeconds="0.1667" 
+                                WindowStartSeconds="1.0" 
+                                WindowDurationSeconds="0.5" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="3" 
                             PartitionName="p3" 
-                            PeriodSeconds="1.5" 
-                            PeriodDurationSeconds="0.1667"
+                            PeriodSeconds="4.5" 
+                            PeriodDurationSeconds="0.5"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="301" 
-                                WindowStartSeconds="0.5001" 
-                                WindowDurationSeconds="0.1667" 
+                                WindowStartSeconds="1.5" 
+                                WindowDurationSeconds="0.5" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="4" 
                             PartitionName="p4" 
-                            PeriodSeconds="1.5" 
-                            PeriodDurationSeconds="0.1667"
+                            PeriodSeconds="4.5" 
+                            PeriodDurationSeconds="0.5"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="401" 
-                                WindowStartSeconds="0.6668" 
-                                WindowDurationSeconds="0.1667" 
+                                WindowStartSeconds="2.0" 
+                                WindowDurationSeconds="0.5" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="5" 
                             PartitionName="p5" 
-                            PeriodSeconds="1.5" 
-                            PeriodDurationSeconds="0.1667"
+                            PeriodSeconds="4.5" 
+                            PeriodDurationSeconds="0.5"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="501" 
-                                WindowStartSeconds="0.8335" 
-                                WindowDurationSeconds="0.1667" 
+                                WindowStartSeconds="2.5" 
+                                WindowDurationSeconds="0.5" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="6" 
                             PartitionName="p6" 
-                            PeriodSeconds="1.5" 
-                            PeriodDurationSeconds="0.1667"
+                            PeriodSeconds="4.5" 
+                            PeriodDurationSeconds="0.5"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="601" 
-                                WindowStartSeconds="1.0002" 
-                                WindowDurationSeconds="0.1667" 
+                                WindowStartSeconds="3.0" 
+                                WindowDurationSeconds="0.5" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="7" 
                             PartitionName="p7" 
-                            PeriodSeconds="1.5" 
-                            PeriodDurationSeconds="0.1667"
+                            PeriodSeconds="4.5" 
+                            PeriodDurationSeconds="0.5"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="701" 
-                                WindowStartSeconds="1.1669" 
-                                WindowDurationSeconds="0.1667" 
+                                WindowStartSeconds="3.5" 
+                                WindowDurationSeconds="0.5" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
 		
         <Partition_Schedule PartitionIdentifier="8" 
                             PartitionName="p8" 
-                            PeriodSeconds="1.5" 
-                            PeriodDurationSeconds="0.1667"
+                            PeriodSeconds="4.5" 
+                            PeriodDurationSeconds="0.5"
                             SetModuleSchedule="false">
             <Window_Schedule 	WindowIdentifier="801" 
-                                WindowStartSeconds="1.3336" 
-                                WindowDurationSeconds="0.1667" 
+                                WindowStartSeconds="4.0" 
+                                WindowDurationSeconds="0.5" 
                                 PartitionPeriodStart="true"/>
         </Partition_Schedule>
     </Module_Schedule>
