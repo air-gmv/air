@@ -1,12 +1,13 @@
-# Welcome to AIR v5.4.1
+# Welcome to AIR v5.5.1
 
 AIR has a user manual at https://gmvdrive.gmv.com/index.php/s/eScXCAybbecmT9b
 
 You have two ways of getting AIR
 1) AIR is intregrated in TASTE toolchain available at  https://taste.tuxfamily.org/
-2) Download from repository where following instructions apply:
+2) Download from repository (email to airproduct@gmv.com to register)
 
-Below is a guide for SPARC target, regarding ARM read section 4.2.1.
+Below is an examplo on installing and using AIR.
+This example is usu SPARC target, if ARM read section 4.2.1 of user manual.
 To install AIR after cloning from git, you should do the following:
 
 ## 1 - Install RTEMS toolchain for RTEMS 5
@@ -42,6 +43,7 @@ RTEMS 5 tool chain should be in the PATH, e.g:
 AIR supports the following paravirtualized RTOS versions
 - RTEMS 4.8i (Edisoft)
 - RTEMS 5
+- BARE OS (Metal-bare)
 
 AIR paravirtualized RTOS are obtained via git submodules. For example to use AIR 
 RTEMS 5 version please execute in *air_repo/air*
@@ -56,7 +58,7 @@ On *air_repo/air* execute
 
 Configurator interface will enquire the user for options (architecture, BSP, FPU, Cache, Debugger, RTOS). For example
 
-* Press 0 for sparc
+* Press 0 for sparc 
 * Press 2 for leon4
 * Press 0 for fpu enabled
 * Press 0 for GRMON
@@ -105,4 +107,4 @@ Gitlab address:
 $(AIR_GIT_REMOTE_URL)/AIR
 
 ### Via Email
-Email to avos_pt@gmv.com or raise issue at our Gitlab
+Email to airproduct@gmv.com or raise issue at our Gitlab
