@@ -10,12 +10,12 @@
   <!-- partition 0 -->
   <Partition PartitionIdentifier="1" PartitionName="p0" 
    Criticality="LEVEL_A" SystemPartition="False" EntryPoint="entry_point">
-    <PartitionConfiguration Personality="BARE" Cores="1">
+    <PartitionConfiguration Personality="RTEMS5" Cores="1">
       <Libs>LIBAIR;</Libs>
       <Cache>CODE; DATA</Cache>
-      <Memory Size="0x3000" Unit="0x1000" />
+      <Memory Size="0x200000" />
       <Permissions>
-       FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+       FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE; MODULE_CONTROL;
       </Permissions>
     </PartitionConfiguration>               
   </Partition>
@@ -26,7 +26,7 @@
     <PartitionConfiguration Personality="BARE" Cores="1">
       <Libs>LIBAIR;</Libs>
       <Cache>CODE; DATA</Cache>
-      <Memory Size="0x2000" Unit="0x1000" />
+      <Memory Size="0x20000" />
       <Permissions>
        FPU_CONTROL;
       </Permissions>

@@ -10,7 +10,7 @@
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x900000" />
         <Permissions>
-          FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
+          FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE; MODULE_CONTROL;
         </Permissions>
     </PartitionConfiguration>
   </Partition>

@@ -11,6 +11,7 @@
 #include <rtems/rtems/tasks.h> 
 #include <rtems/rtems/sem.h> 
 #include <rtems/rtems/clock.h> 
+#include <pprintf.h>
 
 #include <imaspex.h>
 
