@@ -111,5 +111,6 @@ void __gcov_exit()
                 tmp = tmp->next;
         
         }
+        air_syscall_shutdown_module();
 }
 
