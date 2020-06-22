@@ -11,11 +11,11 @@ This folder contain examples for using AIR, they are the following:
 *iop_can* - CAN communication example, using IOP Partition
 *iop_example* - Ethernet communication example, using IOP Partition
 *iop_spw* - Spacewire communication example, using IOP Partition
-*math* - Example using math library
+*math* - Example using math library (printf is not working properly)
 *mms* - Example of using multiple module schedules (MMS)
 *periodic* - Example using RTEMS periodic tasks
 *ports* - Example of using Queuing and Sampling Ports
 *posix* - Example of using POSIX threads
-*smp* - Multicore example with SMP and AMP
-*testsuites* - Some of RTEMS testsuite
+*shm* - Shared Memory Example
+*testsuites* - Some of examples of the RTEMS testsuite (includes SMP and AMP multicore example in AIR)
 
