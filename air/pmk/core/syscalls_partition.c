@@ -249,18 +249,19 @@ void pmk_syscall_end_window(pmk_core_ctrl_t *core) {
 }
 
 void pmk_syscall_putchar(pmk_core_ctrl_t *core, char ch) {
-
+#if DEBUG_MONITOR != 2
     /* allow partition to be preempted */
     cpu_preemption_flags_t flags;
     cpu_enable_preemption(flags);
-
     /* output character */
     pmk_console_outbyte(ch);
 
     /* disable preemption */
     cpu_disable_preemption(flags);
+#endif /* DEBUG_MONITOR != 2 */
 }
 
+#if DEBUG_MONITOR != 2
 air_u32_t pmk_syscall_print(pmk_core_ctrl_t *core, char *buffer, air_sz_t len) {
 
     cpu_preemption_flags_t flags;
@@ -269,7 +270,7 @@ air_u32_t pmk_syscall_print(pmk_core_ctrl_t *core, char *buffer, air_sz_t len) {
     /* allow partition to be preempted */
     cpu_enable_preemption(flags);
 
-    /* print buffer @todo needs optimization */
+    /* print buffer */
     char ch;
     air_u32_t count;
     for (count = 0; count < len; ++count) {
@@ -288,3 +289,4 @@ air_u32_t pmk_syscall_print(pmk_core_ctrl_t *core, char *buffer, air_sz_t len) {
     cpu_disable_preemption(flags);
     return count;
 }
+#endif /* DEBUG_MONITOR != 2 */

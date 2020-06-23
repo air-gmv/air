@@ -1,0 +1,116 @@
+# Changelog
+All notable changes to AIR will be documented in this file.
+
+
+## [V5.5.1] - 2020-06-20
+### Added
+- AIR build supports multicore (up to 4 cores), recommend to build with make -j4
+- AIR for ARM with RTEMS 5 (stable in single core)
+
+### Changed
+- Reviewed and fixed examples not working
+
+
+### Removed
+- Experimental examples what were not working
+
+
+## [V5.5.0] - 2020-04-20
+### Added
+- AIR main validation tests migrated to Gitlab CI/CD
+- How to use ARM instructions
+
+
+## [V5.4.0] - 2020-03-10
+### Added
+- Add stable AIR for ARM for Bare
+- Add CAN device driver for ARM
+- Adds air_syscall_end_window that terminates partition execution on current window
+
+### Changed
+- AIR validated under MORA-TSP activity
+- Partitions are able to provide information of completion of activities
+- Clarify partition state under air.h. There are 5 states: INIT-NOT_RUN-RUNNING-READY-HALTED
+- Improve partition status information: add current partition executing window and state information
+- AIR usage examples cleanup while improving mms example and adding shared memory example
+- RTEMS5 POS compatible with RTEMS toolchain of September 2019, rtems-5.1-2019.07.25.
+
+
+## [V5.3.2] - 2019-09-19
+### Add
+- AIR supports UART device driver
+
+## [V5.3.1] - 2019-07-19
+### Changed
+- AIR supported RTOS as submodules
+
+
+## [V5.3.0] - 2019-02-01
+### Added
+- AIR Supports SMP + AMP scenarios with RTEMS 5
+
+## Changed
+- Correct HM error while we were restoring a window underflow whenever we interrupt a preemptible syscall such as write/read ports.
+
+
+## [V5.2.0] - 2018-08-31
+### Added
+- AIR support gcov usage
+
+### Changed
+- Add improved 1553 milbus and CAN driver for SPARC
+
+
+## [V5.1.0] - 2018-07-5
+### Added
+- AIR with RTEMS 5 single-core tested and stable
+
+
+## [V5.0.0] - 2018-01-25
+### Added
+- AIR with RTEMS 5 as POS paravirtualized, first non-stable version
+- Add Spacewire device driver
+
+## [V4.3.0] - 2017-05-19
+### Added
+- AIR improved support to LEON4 FPU
+
+## [V4.3.0] - 2016-09-4
+### Added
+- AIR costumized for usage in ATB's.
+
+
+## [V4.1.0] - 2015-11-19
+### Added
+- AIR new API compatible with HAIR
+
+
+## [V4.0.0] - 2014-01-20
+### Added
+- AIR supports multi-core for NGMP/GR740
+- AIR fully validated with RTEMS48i
+
+
+## [V3.1.0] - 2012-03-30
+### Added
+- AIR fully validated including RTEMS48i  (IMASP Finael Release)
+- Support to LEON3 Processor
+
+
+## [V3.0.0] - 2012-03-30
+### Added
+- AIR fully validated including RTEMS48i  (IMASP First Release)
+- Add cache support
+
+
+## [V2.0.0] - 2011-09-23
+### Added
+- AIR with paravirtualized RTEMS 48i
+
+
+## [V1.0.0] - 2011-01-25
+## Added
+- AIR first version, hypervisor with a BARE OS and ARINC653 syscall via IMASPEX
+- Supports LEON2 Processor
+
+

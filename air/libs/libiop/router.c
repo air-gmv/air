@@ -265,7 +265,7 @@ void pos_router(){
 
 	int i;
 
-//	iop_debug("\n :: IOP - pos-router running!\n");
+	iop_debug("\n :: IOP - pos-router running!\n");
 
 	/* iterate over all physical devices */
 	for (i = 0; i < usr_configuration.physical_devices.length; ++i) {
@@ -276,11 +276,9 @@ void pos_router(){
 						usr_configuration.physical_devices.elements)[i];
                
 		/* See if data was received on this device from HW */
-		while (!iop_chain_is_empty(&pdev->rcvqueue)){
-
+		while (!iop_chain_is_empty(&(pdev->rcvqueue))){
 			/* extract first request wrapper from send queue */
-			iop_wrapper_t *reply_wrapper = obtain_wrapper(&pdev->rcvqueue);
-
+			iop_wrapper_t *reply_wrapper = obtain_wrapper(&(pdev->rcvqueue));
 			/* apply routing information to this data */
 			route_reply(pdev, reply_wrapper);
 
