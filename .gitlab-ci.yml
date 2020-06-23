@@ -78,9 +78,9 @@ build_arm:
 #    when: on_failure
 
 
-########################
-#Example Tests for SPARC       #
-########################
+##########################
+#Example Tests for SPARC #
+##########################
 hello_sparc:
    stage: examples
    tags: 
@@ -201,9 +201,9 @@ shm:
     environment:
         name: SPARC LEON4
 
-        
+
 ########################
-#Unit Tests for SPARC       #
+#Unit Tests for SPARC  #
 ########################
 
 
@@ -212,7 +212,7 @@ shm:
    tags: 
        - sparc-taste-debian1
    script:
-       - cd $AIR/examples/private/validation/TEST-DEF-00009
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00009
        - cp $AIR/../utils/gitlab-runner/* .
        - ./do_leon4_grmon.bash
        - cd $AIR
@@ -224,7 +224,7 @@ shm:
    tags: 
        - sparc-taste-debian1
    script:
-       - cd $AIR/examples/private/validation/TEST-DEF-00010
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00010
        - cp $AIR/../utils/gitlab-runner/* .
        - ./do_leon4_grmon.bash
        - cd $AIR
@@ -236,7 +236,7 @@ shm:
     tags: 
         - sparc-taste-debian1
     script:
-        - cd $AIR/examples/private/validation/TEST-DEF-00012
+        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00012
         - cp $AIR/../utils/gitlab-runner/* .
         - ./do_leon4_grmon.bash
         - cd $AIR
@@ -250,7 +250,7 @@ shm:
    tags: 
        - sparc-taste-debian1
    script:
-       - cd $AIR/examples/private/validation/TEST-DEF-00021
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00021
        - cp $AIR/../utils/gitlab-runner/* .
        - ./do_leon4_grmon.bash
        - cd $AIR
@@ -262,7 +262,7 @@ shm:
    tags: 
        - sparc-taste-debian1
    script:
-       - cd $AIR/examples/private/validation/TEST-DEF-00022
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00022
        - cp $AIR/../utils/gitlab-runner/* .
        - ./do_leon4_grmon.bash
        - cd $AIR
@@ -274,7 +274,7 @@ shm:
     tags: 
         - sparc-taste-debian1
     script:
-        - cd $AIR/examples/private/validation/TEST-DEF-00023
+        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00023
         - cp $AIR/../utils/gitlab-runner/* .
         - ./do_leon4_grmon.bash
         - cd $AIR
@@ -286,7 +286,7 @@ shm:
    tags: 
        - sparc-taste-debian1
    script:
-       - cd $AIR/examples/private/validation/TEST-DEF-00500
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00500
        - cp $AIR/../utils/gitlab-runner/* .
        - ./do_leon4_grmon.bash
        - cd $AIR
@@ -298,7 +298,7 @@ shm:
    tags: 
        - sparc-taste-debian1
    script:
-       - cd $AIR/examples/private/validation/TEST-DEF-00510
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00510
        - cp $AIR/../utils/gitlab-runner/* .
        - ./do_leon4_grmon.bash
        - cd $AIR
@@ -310,7 +310,7 @@ shm:
    tags: 
        - sparc-taste-debian1
    script:
-       - cd $AIR/examples/private/validation/TEST-DEF-00540
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00540
        - cp $AIR/../utils/gitlab-runner/* .
        - ./do_leon4_grmon.bash
        - cd $AIR
@@ -322,7 +322,7 @@ shm:
     tags: 
         - sparc-taste-debian1
     script:
-        - cd $AIR/examples/private/validation/TEST-DEF-00560
+        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00560
         - cp $AIR/../utils/gitlab-runner/* .
         - ./do_leon4_grmon.bash
         - cd $AIR
@@ -334,7 +334,7 @@ shm:
     tags: 
         - sparc-taste-debian1
     script:
-        - cd $AIR/examples/private/validation/TEST-DEF-00600
+        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00600
         - cp $AIR/../utils/gitlab-runner/* .
         - ./do_leon4_grmon.bash
         - cd $AIR
@@ -346,7 +346,7 @@ shm:
    tags: 
        - sparc-taste-debian1
    script:
-       - cd $AIR/examples/private/validation/TEST-DEF-01390
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-01390
        - cp $AIR/../utils/gitlab-runner/* .
        - ./do_leon4_grmon.bash
        - cd $AIR
@@ -358,7 +358,7 @@ shm:
    tags: 
        - sparc-taste-debian1
    script:
-       - cd $AIR/examples/private/validation/TEST-DEF-01561
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-01561
        - cp $AIR/../utils/gitlab-runner/* .
        - ./do_leon4_grmon.bash
        - cd $AIR
@@ -370,7 +370,7 @@ shm:
     tags: 
         - sparc-taste-debian1
     script:
-        - cd $AIR/examples/private/validation/TEST-DEF-01570
+        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01570
         - cp $AIR/../utils/gitlab-runner/* .
         - ./do_leon4_grmon.bash
         - cd $AIR
@@ -380,15 +380,17 @@ shm:
 ########################
 #Tests for ARM         #
 ########################
-#    tags: 
-#        - arm_qemu
+
+##########################
+#Example Tests for ARM   #
+##########################
 
 00001_arm:
     stage: examples
     tags: 
         - arm-taste-debian1
     script:
-        - cd $AIR/examples/private/arm_unit_tests/lionel
+        - cd $AIR/examples/private-example/private/arm_unit_tests/lionel
         - cp $AIR/../utils/gitlab-runner/* .
         - ls
         - ./do_zynqz1_qemu.bash
@@ -411,12 +413,16 @@ hello_world_arm:
     environment:
         name: ARM ZYNQZ1
 
+########################
+#Unit Tests for ARM    #
+########################
+
 00009_arm:
     stage: validation_tests
     tags: 
         - arm-taste-debian1
     script:
-        - cd $AIR/examples/private/validation/TEST-DEF-00009
+        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00009
         - cp $AIR/../utils/gitlab-runner/* .
         - ./do_zynqz1_qemu.bash
         - ./testcheck.py
@@ -429,7 +435,7 @@ hello_world_arm:
    tags: 
        - arm-taste-debian1
    script:
-       - cd $AIR/examples/private/validation/TEST-DEF-00010
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00010
        - cp $AIR/../utils/gitlab-runner/* .
        - ./do_zynqz1_qemu.bash
        - ./testcheck.py
@@ -442,7 +448,7 @@ hello_world_arm:
    tags: 
        - arm-taste-debian1
    script:
-       - cd $AIR/examples/private/validation/TEST-DEF-00012
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00012
        - cp $AIR/../utils/gitlab-runner/* .
        - ./do_zynqz1_qemu.bash
        - ./testcheck.py
@@ -457,7 +463,7 @@ hello_world_arm:
    #tags: 
        #- arm-taste-debian1
    #script:
-       #- cd $AIR/examples/private/validation/TEST-DEF-00021
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00021
        #- cp $AIR/../utils/gitlab-runner/* .
        #- ./do_zynqz1_qemu.bash
        #- ./testcheck.py
@@ -470,7 +476,7 @@ hello_world_arm:
    #tags: 
        #- arm-taste-debian1
    #script:
-       #- cd $AIR/examples/private/validation/TEST-DEF-00022
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00022
        #- cp $AIR/../utils/gitlab-runner/* .
        #- ./do_zynqz1_qemu.bash
        #- ./testcheck.py
@@ -483,7 +489,7 @@ hello_world_arm:
    #tags: 
        #- arm-taste-debian1
    #script:
-       #- cd $AIR/examples/private/validation/TEST-DEF-00023
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00023
        #- cp $AIR/../utils/gitlab-runner/* .
        #- ./do_zynqz1_qemu.bash
        #- ./testcheck.py
@@ -496,7 +502,7 @@ hello_world_arm:
    tags: 
        - arm-taste-debian1
    script:
-       - cd $AIR/examples/private/validation/TEST-DEF-00500
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00500
        - cp $AIR/../utils/gitlab-runner/* .
        - ./do_zynqz1_qemu.bash
        - ./testcheck.py
@@ -509,7 +515,7 @@ hello_world_arm:
    tags: 
        - arm-taste-debian1
    script:
-       - cd $AIR/examples/private/validation/TEST-DEF-00510
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00510
        - cp $AIR/../utils/gitlab-runner/* .
        - ./do_zynqz1_qemu.bash
        - ./testcheck.py
@@ -522,7 +528,7 @@ hello_world_arm:
    tags: 
        - arm-taste-debian1
    script:
-       - cd $AIR/examples/private/validation/TEST-DEF-00540
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00540
        - cp $AIR/../utils/gitlab-runner/* .
        - ./do_zynqz1_qemu.bash
        - ./testcheck.py
@@ -535,7 +541,7 @@ hello_world_arm:
    tags: 
        - arm-taste-debian1
    script:
-       - cd $AIR/examples/private/validation/TEST-DEF-00560
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00560
        - cp $AIR/../utils/gitlab-runner/* .
        - ./do_zynqz1_qemu.bash
        - ./testcheck.py
@@ -548,7 +554,7 @@ hello_world_arm:
    #tags: 
        #- arm-taste-debian1
    #script:
-       #- cd $AIR/examples/private/validation/TEST-DEF-00600
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00600
        #- cp $AIR/../utils/gitlab-runner/* .
        #- ./do_zynqz1_qemu.bash
        #- ./testcheck.py
@@ -561,7 +567,7 @@ hello_world_arm:
    tags: 
        - arm-taste-debian1
    script:
-       - cd $AIR/examples/private/validation/TEST-DEF-01390
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-01390
        - cp $AIR/../utils/gitlab-runner/* .
        - ./do_zynqz1_qemu.bash
        - ./testcheck.py
@@ -574,7 +580,7 @@ hello_world_arm:
    #tags: 
        #- arm-taste-debian1
    #script:
-       #- cd $AIR/examples/private/validation/TEST-DEF-01561
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01561
        #- cp $AIR/../utils/gitlab-runner/* .
        #- ./do_zynqz1_qemu.bash
        #- ./testcheck.py
@@ -587,7 +593,7 @@ hello_world_arm:
    #tags: 
        #- arm-taste-debian1
    #script:
-       #- cd $AIR/examples/private/validation/TEST-DEF-01570
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01570
        #- cp $AIR/../utils/gitlab-runner/* .
        #- ./do_zynqz1_qemu.bash
        #- ./testcheck.py
