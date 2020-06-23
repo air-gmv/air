@@ -1,0 +1,104 @@
+/*
+ * Copyright (C) 2007  GMVIS Skysoft S.A.
+ *
+ * The license and distribution terms for this file may be
+ * found in the file LICENSE in this distribution or at
+ * air/LICENSE
+ */
+/**
+ *  @brief Driver interface for polled UART
+ *
+ *  The license and distribution terms for this file may be
+ *  found in the file LICENSE in this distribution or at
+ *  http://www.rtems.com/license/LICENSE.
+ *
+ */
+
+#ifndef __UART_H__
+#define __UART_H__
+
+#include <ambapp.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct {
+  unsigned int hw_dovr;
+  unsigned int hw_parity;
+  unsigned int hw_frame;
+  unsigned int rx_cnt;
+  unsigned int tx_cnt;
+} uart_stats;
+
+/**
+ * @brief structure used as an interface with the APBUART driver
+ */
+struct uart_args{
+    char *data;            /**< pointer to data */
+    int data_len;        /**< data length */
+    int bytes_moved;    /**< bytes written or read by the driver*/
+};
+
+/**
+ * @brief structure used as an IOCTL interface with the APBUART driver
+ */
+struct uart_ioctl_args{
+    char *buffer;        /**< pointer to data */
+    int command;        /**< IOCTL command*/
+    int ioctl_return;    /**< ioctl return value */
+};
+
+#define UART_START    0
+#define UART_STOP     1
+#define UART_SET_BAUDRATE   4
+#define UART_SET_SCALER     5
+#define UART_SET_BLOCKING   6
+#define UART_SET_ASCII_MODE 7
+#define UART_SET_LP_MODE 8
+#define UART_GET_STATS 16
+#define UART_CLR_STATS 17
+
+#define UART_BLK_RX 0x1
+#define UART_BLK_FLUSH 0x4
+
+
+#define UART_CTRL_RE 0x1
+#define UART_CTRL_TE 0x2
+#define UART_CTRL_RI 0x4
+#define UART_CTRL_TI 0x8
+#define UART_CTRL_PS 0x10
+#define UART_CTRL_PE 0x20
+#define UART_CTRL_FL 0x40
+#define UART_CTRL_LB 0x80
+#define UART_CTRL_EC 0x100
+#define UART_CTRL_TF 0x200
+#define UART_CTRL_RF 0x400
+
+#define UART_STATUS_DR 0x1
+#define UART_STATUS_TS 0x2
+#define UART_STATUS_TE 0x4
+#define UART_STATUS_BR 0x8
+#define UART_STATUS_OV 0x10
+#define UART_STATUS_PE 0x20
+#define UART_STATUS_FE 0x40
+#define UART_STATUS_TH 0x80
+#define UART_STATUS_RH 0x100
+#define UART_STATUS_TF 0x200
+#define UART_STATUS_RF 0x400
+
+
+/*Driver Acess Points*/
+rtems_device_driver uart_initialize(rtems_device_major_number  major, rtems_device_minor_number  minor,  void *arg);
+rtems_device_driver uart_open(rtems_device_major_number major, rtems_device_minor_number minor, void *arg);
+rtems_device_driver uart_close(rtems_device_major_number major, rtems_device_minor_number minor, void *arg);
+rtems_device_driver uart_read(rtems_device_major_number major, rtems_device_minor_number minor, void *arg);
+rtems_device_driver uart_write(rtems_device_major_number major, rtems_device_minor_number minor, void *arg);
+rtems_device_driver uart_control(rtems_device_major_number major, rtems_device_minor_number minor, void *arg);
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* __UART_H__ */

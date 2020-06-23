@@ -1,0 +1,1651 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root encoding="ASCII" version="1.0">
+  <section name="GENERAL REQUIREMENTS">
+    <req method="Testing" name="Target Platform" nametag="AIR-GEN-00010" origin="Created" priority="Mandatory" sima="False">
+      AIR shall provide all its mandatory features, defined in this document, in the next generation multiprocessor system developed by Aeroflex Gaisler in the following configuration:
+				-  Quad core SPARC V8 integer unit with 7-stage pipeline, 8 register windows, 4x4 KiB instruction and 4x4 KiB data caches.
+				-  Dual double precision IEEE-754 floating point units
+				-  MMU and IOMMU management units
+				-  Multi-processor interrupt controller
+				-  10/100/1000 Mbit Ethernet interface
+				-  SpaceWire interface
+				-  MIL-STD-1553B interface
+      <comment>Target platform definition;</comment>
+    </req>
+    <req method="Testing" name="Target Interface " nametag="AIR-GEN-00020" origin="Created" priority="Mandatory" sima="False">
+      AIR shall use RTEMS-improvement from Edisoft as the partition operating system;
+      <comment>This personality is the standard for IMA for Space related projects;</comment>
+    </req>
+    <req method="Testing" name="Complementary Target Interface " nametag="AIR-GEN-00030" origin="Created" priority="Mandatory" sima="False">
+      AIR shall provide an IMA-SP/D10 [AD.5] compliant interface (time and space partitioning abstraction layer);
+      <comment>This personality is the standard for IMA for Space related projects;</comment>
+    </req>
+    <req method="Testing" name="Multi-Core" nametag="AIR-GEN-00040" origin="Created" priority="Mandatory" sima="True">
+      AIR shall provide all its mandatory features in configurations up to 4 cores;
+      <comment>NGMP has only four cores, thus we will be unable to test the system with more cores;</comment>
+    </req>
+    <req method="Testing/Inspection" name="Multi-core scheduling" nametag="AIR-GEN-00050" origin="Created" priority="Mandatory" sima="True">
+      AIR shall be able to schedule partitions in more than one core simultaneously;
+      <comment>AIR will support single and multi-core configurations;</comment>
+    </req>
+    <req method="Testing" name="Number of partitions" nametag="AIR-GEN-00060" origin="Created" priority="Mandatory" sima="True">
+      AIR shall support up to 16 partitions;
+      <tests>
+        <test name="TEST-DEF-08002" />
+      </tests>
+      <comment>The number of partitions is based on experience and inputs from IMA-SP</comment>
+    </req>
+    <req method="Testing" name="Number of sampling ports" nametag="AIR-GEN-00070" origin="Created" priority="Mandatory" sima="True">
+      AIR shall support up to 256 sampling ports;
+      <tests>
+        <test name="TEST-DEF-08000" />
+      </tests>
+      <comment>Value is based on previous experience; The real limitation on the number of sampling ports is the available memory;</comment>
+    </req>
+    <req method="Testing" name="Number of queuing ports" nametag="AIR-GEN-00080" origin="Created" priority="Mandatory" sima="True">
+      AIR shall support up to 256 queuing ports;
+      <comment>Value is based on previous experience; The real limitation on the number of queuing ports is the available memory;</comment>
+      <tests>
+        <test name="TEST-DEF-08001" />
+      </tests>
+    </req>
+    <req method="Testing" name="Maximum partition frequency" nametag="AIR-GEN-00090" origin="Created" priority="Mandatory" sima="True">
+      AIR shall be able to schedule partitions up to a frequency of 50Hz;
+      <comment>Value is based on inputs from IMA-SP, see [AD.5] for more details;</comment>
+      <tests>
+        <test name="TEST-DEF-08011" />
+      </tests>
+    </req>
+    <req method="Testing" name="Number of multiple module schedules" nametag="AIR-GEN-00100" origin="Created" priority="Mandatory" sima="True">
+      AIR shall support up to 16 multiple module schedules;
+      <comment>Value is based on previous experience;</comment>
+      <tests>
+        <test name="TEST-DEF-08002" />
+      </tests>
+    </req>
+    <req method="Testing" name="Partition Memory Size" nametag="AIR-GEN-00110" origin="Created" priority="Mandatory" sima="False">
+      AIR shall be able to allocate up to TBD megabytes of physical memory to a partition;
+      <comment>This value cannot exceed the maximum available memory;</comment>
+      <tests>
+        <test name="TEST-DEF-08013" description="Alocate a memory buffer of TBD size and verify the system is able to operate and the partition can access the buffer" />
+      </tests>
+    </req>
+    <req method="Inspection" name="Flat Register Windows" nametag="AIR-GEN-00120" origin="Created" priority="Recommendation" sima="False">
+      AIR should support a flat register window mode that uses only one register window;
+      <comment>A flat register window model decreases the overhead of the partition context switch and increases the predictability of the system. The default for the SPARC architecture is to use an windowed register model with 8 depth;</comment>
+    </req>
+    <req method="Inspection" name="Predictable memory allocation" nametag="AIR-GEN-00130" origin="Created" priority="Mandatory" sima="True">
+      AIR shall implement a defined and predictable memory resource allocation scheme, assuming that every application uses a fixed amount of memory per system per operational mode.
+      <comment>A well defined memory allocation scheme is necessary for partitioning;</comment>
+    </req>
+    <req method="Testing" name="Predictable core allocation" nametag="AIR-GEN-00140" origin="Created" priority="Mandatory" sima="True">
+      AIR shall implement a statically defined and predictable core resource allocation scheme.
+      <comment>A static core allocation scheme is necessary to guarantee access to every partition;</comment>
+    </req>
+    <req method="Testing" name="Predictable FPU allocation " nametag="AIR-GEN-00150" origin="Created" priority="Mandatory" sima="False">
+      AIR shall implement a statically defined and predictable FPU allocation scheme.
+      <comment>In the NGMP, FPU is shared between two processors and therefore subject to contention. An static allocation scheme allows for increased predictability;</comment>
+    </req>
+    <req method="Testing" name="Super Memory Access" nametag="AIR-GEN-00160" origin="Created" priority="Recommendation" sima="False">
+      The AIR system should allow a special, configurable partition, with access to all addressable RAM.
+      <comment>Attempt to simplify FDIR capabilities with a special partition.</comment>
+      <tests>
+        <test name="TEST-DEF-00730" />
+        <test name="TEST-DEF-01490" />
+      </tests>
+    </req>
+    <req method="Source Code Analysis" name="Partition virtual memory map configuration" nametag="AIR-GEN-00170" origin="Created" priority="Mandatory" sima="False">
+      AIR shall allow defining arbitrary virtual memory maps for partitions; in particular the same virtual address space may be used by several partitions at the same time.
+      <comment>Using the same memory map eases partition loading;</comment>
+    </req>
+    <subsection name="IMA GENERIC REQUIREMENTS">
+      <req method="Testing" name="Robust Partitioning" nametag="AIR-GEN-01000" origin="Created" priority="Mandatory" sima="False">
+        The system shall provide fault containment equivalent to an idealized system in which each partition is allocated an independent processor and associated peripherals and all inter partition communications are carried on dedicated lines;
+        <comment>Fundamental requirement for a safety critical time and space partitioned operating system;</comment>
+      </req>
+      <req method="Testing" name="Partition Independence" nametag="AIR-GEN-01001" origin="Derived" priority="Mandatory" sima="False">
+        The behavior and performance of the software in one partition shall be unaffected by the software in other partitions, with the exception of well defined communication channels;
+        <comment>Fundamental requirement for a safety critical time and space partitioned operating system;</comment>
+        <parents>
+          <parent name="AIR-GEN-01000 " />
+        </parents>
+      </req>
+      <req method="Testing" name="Interference Channels" nametag="AIR-GEN-01002" origin="Derived" priority="Mandatory" sima="False">
+        Shared resources shall be strictly segregated between partitions;
+        <comment>Partitions can only be affected by others through shared resources; The capability to ensure proper segregation depends on the hardware characteristics;</comment>
+        <parents>
+          <parent name="AIR-GEN-01001 " />
+        </parents>
+      </req>
+      <req method="Testing" name="Memory segregation" nametag="AIR-GEN-01010" origin="Derived" priority="Mandatory" sima="True">
+        The system memory shall be segregated between partitions (i.e. spatial partitioning);
+        <comment>Memory is a shared resource and has to be segregated;</comment>
+        <parents>
+          <parent name="AIR-GEN-01002 " />
+        </parents>
+      </req>
+      <req method="Testing" name="Temporal segregation" nametag="AIR-GEN-01020" origin="Derived" priority="Mandatory" sima="True">
+        The core access time shall be segregated between partitions (i.e. temporal partitioning);
+        <comment>core is a shared resource and has to be segregated;</comment>
+        <parents>
+          <parent name="AIR-GEN-01002 " />
+        </parents>
+      </req>
+      <req method="Testing" name="Input/output segregation" nametag="AIR-GEN-01030" origin="Derived" priority="Mandatory" sima="False">
+        The access to shared peripherals shall be segregated between partitions;
+        <comment>A communication data bus or network may be shared by more than one partition, and therefore has to be segregated;</comment>
+        <parents>
+          <parent name="AIR-GEN-01002 " />
+        </parents>
+        <note>To be Implemented.</note>
+      </req>
+      <req method="Inspection/Source Code Analysis" name="Segregation Enforcement" nametag="AIR-GEN-01040" origin="Derived" priority="Mandatory" sima="False">
+        Temporal and spatial partitioning shall be enforced by an independent component from the partitions - the separation kernel (also called partitioning kernel);
+        <comment>One could think that the partitioning could be cooperative, relying on a partition to yield the resources to others. In this cooperative mode a faulty partition could disrupt the system by denial of service;</comment>
+        <parents>
+          <parent name="AIR-GEN-01002 " />
+        </parents>
+      </req>
+      <req method="Inspection/Source Code Analysis" name="I/O Segregation Enforcement" nametag="AIR-GEN-01050" origin="Derived" priority="Clause" sima="False">
+        The segregation of communication buses can be ensured by the separation kernel or by another system component (e.g. user level I/O partition).
+        <comment>Every application needs access to memory and CPU core time, whilst access to a communication bus or peripheral may not be required or may not require segregation (dedicated bus). Hence, forcing bus segregation functions to be part of the kernel would increase the trusted computing base and difficult qualification efforts;</comment>
+        <parents>
+          <parent name="AIR-GEN-01000 " />
+          <parent name="AIR-GEN-01002 " />
+        </parents>
+      </req>
+      <req method="Testing" name="Space Partitioning" nametag="AIR-GEN-01060" origin="Derived" priority="Mandatory" sima="False">
+        The partitioning kernel shall ensure that software in one partition cannot change, directly or indirectly, the software and private data of another partition (either in memory, caches or in transit) nor command private devices of other partitions;
+        <comment>Direct implication of AIR-GEN-01010;</comment>
+        <parents>
+          <related name="AIR-GEN-01010 " />
+          <parent name="AIR-GEN-01040 " />
+        </parents>
+      </req>
+      <req method="Testing" name="Partitioning Kernel Spatial Isolation" nametag="AIR-GEN-01065" origin="Derived" priority="Mandatory" sima="False">
+        The partitioning kernel shall ensure that software in any partition cannot change, directly or indirectly,  the software and private data of separation kernel (either in memory, caches or in transit) nor command its private devices.
+        <comment>If the partitioning kernel can be influenced by partitions, then segregation cannot be ensured.</comment>
+        <parents>
+          <related name="AIR-GEN-01010 " />
+          <parent name="AIR-GEN-01040 " />
+        </parents>
+      </req>
+      <req method="Testing" name="Temporal Partitioning" nametag="AIR-GEN-01070" origin="Derived" priority="Mandatory" sima="False">
+        The partitioning kernel shall ensure that the service received from core access by the software in one partition cannot be affected by the software in another partition. This includes performance of the resource concerned, as well as the rate, latency, jitter and duration of scheduled access to it.
+        <comment>Direct implication of AIR-GEN-01020;</comment>
+        <parents>
+          <related name="AIR-GEN-01020 " />
+          <parent name="AIR-GEN-01040 " />
+        </parents>
+      </req>
+      <req method="Testing" name="Partitioning Kernel Temporal Isolation" nametag="AIR-GEN-01075" origin="Derived" priority="Mandatory" sima="False">
+        The partitioning kernel shall ensure that software in one partition cannot impact the service received from core access by the partitioning kernel itself.
+        <comment>If the partitioning kernel can be somehow prevented from accessing the core, then temporal partitioning will be violated.</comment>
+        <parents>
+          <related name="AIR-GEN-01020 " />
+          <parent name="AIR-GEN-01040 " />
+        </parents>
+      </req>
+      <req method="Inspection" name="PMK influence on Temporal Partitioning" nametag="AIR-GEN-01080" origin="Derived" priority="Mandatory" sima="False">
+        The effects of the presence of the partitioning kernel on the service received from core access by the software in one partition shall be bounded and well characterized;
+        <comment>The partitioning kernel will have an impact on the timing characteristics of the application software. This impact needs to be characterized in detail;</comment>
+        <parents>
+          <related name="AIR-GEN-01020 " />
+          <parent name="AIR-GEN-01040 " />
+        </parents>
+      </req>
+    </subsection>
+  </section>
+  <section name="FUNCTIONAL REQUIREMENTS">
+    <subsection name="SPACE PARTITIONING">
+      <req method="Source Code Analysis" name="MMU memory protection" nametag="AIR-FUNC-02000" origin="Created" priority="Mandatory" sima="False">
+        AIR shall use a memory management unit (MMU) to enforce spatial partitioning;
+        <comment>A memory management unit is the more practical approach available to provide memory protection and virtual memory;</comment>
+      </req>
+      <req method="Source Code Analysis" name="Virtual Memory" nametag="AIR-FUNC-02010" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall use virtual memory;
+        <comment>Virtual memory increases the independence between partitions;</comment>
+        <parents>
+          <related name="AIR-GEN-00170 " />
+          <related name="AIR-GEN-01060 " />
+          <parent name="AIR-FUNC-02000 " />
+        </parents>
+      </req>
+      <req method="Testing" name="Paging area protection" nametag="AIR-FUNC-02020" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall protect the paging tables used by the MMU from access from anyone except the partitioning kernel;
+        <comment>Without protecting the paging tables, memory segregation cannot be ensured;</comment>
+        <parents>
+          <related name="AIR-GEN-01040 " />
+          <parent name="AIR-FUNC-02000 " />
+        </parents>
+        <tests>
+          <test description="MMU overwrite on non-supervisor partition" name="TEST-DEF-00790" />
+          <test description="MMU overwrite on supervisor" name="TEST-DEF-00800" />
+        </tests>
+      </req>
+      <req method="Testing" name="IOMMU memory protection" nametag="AIR-FUNC-02031" origin="Created" priority="Mandatory" sima="False">
+        AIR shall enforce memory protection from DMA capable I/O devices accesses through the use of an IOMMU;
+        <comment>An IOMMU is necessary to prevent devices from accessing protected memory sections. However, IOMMUs are not a ubiquitous device in processors. Its absence should impact the distribution of devices among different partitions.</comment>
+        <tests>
+          <test name="TEST-DEF-12031" description="Configure the IOMMU to prevent all DMA capable devices from accessing memory. Configure the device to access main memory. Verify that the device is not capable of doing so, and the memory section is unaltered" />
+        </tests>
+      </req>
+      <req method="Testing" name="IOMMU configuration protection" nametag="AIR-FUNC-02040" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall protect the IOMMU configuration (paging tables or configuration vector) from access from any software except the partitioning kernel;
+        <comment>Without protecting the paging tables/configuration, memory segregation cannot be ensured;</comment>
+        <parents>
+          <parent name="AIR-FUNC-02030 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-12040" description="Use a user-mode partition to try to find and access the IOMMU. Verify that is unable to access it. Ensure that the configuration is protected by a Supervisor mode table" />
+        </tests>
+      </req>
+      <req method="Testing" name="Partition memory isolation" nametag="AIR-FUNC-02050" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall provide a dedicated memory area to each partition, not accessible by any other partitions;
+        <comment>Direct implication of AIR-GEN-01060;</comment>
+        <parents>
+          <parent name="AIR-GEN-01060 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-80000" />
+          <test name="TEST-DEF-80010" />
+          <test name="TEST-DEF-80020" />
+        </tests>
+      </req>
+      <req method="Testing" name="Partition memory isolation from DMA" nametag="AIR-FUNC-02060" origin="Derived" priority="Recommendation" sima="False">
+        AIR should protect each partitions dedicated memory area from accesses by DMA capable I/O devices not owned by the same partition or by the partitioning kernel;
+        <comment>A device belonging to a partition could change the software or code of other partitions if this access is not prevented by the partitioning kernel;</comment>
+        <parents>
+          <parent name="AIR-GEN-01060" />
+          <related name="AIR-FUNC-02031" />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-12060" description="Allocate a device to a user partition and configure the device to access memory areas outside the partition's memory space. Verify the memory contents are unchanged and the device failed to write" />
+        </tests>
+      </req>
+      <req method="Inspection" name="Partition memory area configuration" nametag="AIR-FUNC-02070" origin="Derived" priority="Mandatory" sima="False">
+        The size of each partitions reserved memory area shall be configurable as part of AIR configuration;
+        <comment>Each partition has its own memory requirements;</comment>
+        <parents>
+          <parent name="AIR-GEN-01060 " />
+        </parents>
+      </req>
+      <req method="Testing" name="Partition Address Space" nametag="AIR-FUNC-02080" origin="Derived" priority="Mandatory" sima="False">
+        Each partition shall have its own virtual address space (memory context);
+        <comment>A dedicated address space makes partitions mutually invisible;</comment>
+        <parents>
+          <parent name="AIR-GEN-00170 " />
+        </parents>
+      </req>
+      <req method="Testing" name="Kernel memory isolation" nametag="AIR-FUNC-02090" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall provide a dedicated memory area for the AIR kernel itself that is not accessible by any partitions;
+        <comment>Direct implication of AIR-GEN-01065. The access can be reduced to read only if there are no concerns with security;</comment>
+        <parents>
+          <parent name="AIR-GEN-01065 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-80810" />
+        </tests>
+      </req>
+      <req method="Testing" name="Kernel memory isolation from DMA" nametag="AIR-FUNC-02100" origin="Derived" priority="Recommendation" sima="False">
+        AIR should protect its own dedicated memory area from accesses by DMA capable I/O devices not owned by AIR itself;
+        <comment>A device belonging to a partition could change the software or code of the partitioning kernel if this access is not blocked;</comment>
+        <parents>
+          <parent name="AIR-GEN-01065 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-12100" description="Allocate a device to a user partition and configure the device to access memory areas belonging to PMK. Verify the memory contents are unchanged and the device failed to write" />
+        </tests>
+      </req>
+      <req method="Testing" name="Shared Memory" nametag="AIR-FUNC-02120" origin="Created" priority="Mandatory" sima="False">
+        AIR shall feature a configurable memory sharing mechanism that allows more than one partition to access the same memory area (even if using distinct virtual addresses). The shared memory access permissions to each partition can be distinct;
+        <comment>Shared Memory between partitions can be helpful for sharing big sets of data efficiently;</comment>
+        <tests>
+          <test name="TEST-DEF-80060" />
+        </tests>
+      </req>
+      <req method="Inspection" name="Shared Memory Configuration" nametag="AIR-FUNC-02130" origin="Created" priority="Mandatory" sima="False">
+        The memory shared mechanism shall be statically configured;
+        <comment>A dynamic shared memory mechanism would impact spatial segregation;</comment>
+      </req>
+      <req method="Inspection" name="Shared Segment Memory Configuration" nametag="AIR-FUNC-02140" origin="Created" priority="Mandatory" sima="False">
+        The configuration of a shared memory segment shall include:
+					-  The size of the memory segment;
+					-  The partitions which can access the segment;
+					-  The permissions (Read or Read-Write) that each partition has over the segment;
+        <comment>Minimal set of configuration options required for the definition of a share memory segment;</comment>
+      </req>
+      <req method="Testing" name="Shared Memory owners" nametag="AIR-FUNC-02141" origin="Created" priority="Mandatory" sima="False">
+        AIR shall guarantee that partitions not configured to access a shared memory segment cant access it;
+        <comment>Enforce shared memory permission: Partitions not configured to access a shared memory segment shall not have access over it;</comment>
+        <tests>
+          <test name="TEST-DEF-80060" />
+        </tests>
+      </req>
+      <req method="Testing" name="Shared Memory permissions" nametag="AIR-FUNC-02142" origin="Created" priority="Mandatory" sima="False">
+        AIR shall guarantee that a partition with read only access over a shared memory segment is not be able to write it;
+        <comment>Enforce shared memory permissions;</comment>
+        <tests>
+          <test name="TEST-DEF-80060" />
+        </tests>
+      </req>
+      <req method="Inspection" name="Shared Code" nametag="AIR-FUNC-02150" origin="Created" priority="Recommendation" sima="False">
+        AIR should feature a mechanism to share the same code between several partitions, including the possibility of sharing a complete operating system;
+        <comment>Sharing code can decrease the memory footprint, but it may increase safety concerns. If the code to be shared is purely functional, only an instance of the code and data will need to exist. However if the library contains some internal state, the. data and .bss sections will need to be replicated in each partition that uses the library (code is therefore shared but the data sections are private).</comment>
+        <tests>
+          <test name="TEST-DEF-80080" />
+        </tests>
+      </req>
+      <req method="Testing" name="Peripheral mapping to the kernel" nametag="AIR-FUNC-02160" origin="Created" priority="Mandatory" sima="False">
+        AIR shall be capable of reserving a peripheral for kernel use;
+        <comment>Critical peripherals like timers may need to be reserved for the kernel;</comment>
+        <tests>
+          <test name="TEST-DEF-12160" description="Allocate, by configuration, a device to AIR. Verify that any partition is unable to access the device configuration register or plug and play information" />
+        </tests>
+      </req>
+      <req method="Testing" name="Peripheral mapping to partitions" nametag="AIR-FUNC-02170" origin="Created" priority="Recommendation" sima="False">
+        AIR should be capable assigning a peripheral to a single dedicated partition.
+        <comment>The mapping of a peripheral to a single partition is necessary for the implementation of an I/O partition. However, mapping a DMA capable device to a user partition can lead to a violation of the memory segregation if no IOMMU is present on the system. Even if the IOMMU is present and correctly configured for guaranteeing the memory isolation, DMA activities from a device belonging to a given partition may steal clock cycles from other partitions since they will not be stopped when the partition is preempted;</comment>
+        <tests>
+          <test name="TEST-DEF-12170" description="Allocate, by configuration, a device to a given partition. Verify that no other partition is able to access the device configuration registers" />
+        </tests>
+      </req>
+      <req method="Testing" name="Kernel Peripherals Protection" nametag="AIR-FUNC-02180" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall protect kernel reserved peripherals from access by partitions or by other devices;
+        <comment>Device segregation is necessary for independence;</comment>
+        <parents>
+          <parent name="AIR-FUNC-02160 " />
+          <related name="AIR-GEN-01050 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-08008" />
+        </tests>
+      </req>
+      <req method="Testing" name="Partition  Peripherals Protection" nametag="AIR-FUNC-02190" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall protect peripherals assigned to a partition from access by other partitions or by any other devices not owned by the partition;
+        <comment>Device segregation is necessary for independence;</comment>
+        <parents>
+          <parent name="AIR-FUNC-02170 " />
+          <related name="AIR-GEN-01050 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-08008" />
+        </tests>
+      </req>
+      <req method="Testing" name="Peripheral memory mapping to the kernel" nametag="AIR-FUNC-02200" origin="Derived" priority="Recommendation" sima="False">
+        AIR should be capable of mapping the I/O control memory area of a peripheral to a virtual address accessible only to the kernel;
+        <comment>Depending on the memory map, it can be impossible to make the registers from only a single peripheral available to the kernel (due to MMU page granularity); More than one device may have to be mapped. This needs to be analyzed and managed at system integrator level;</comment>
+        <parents>
+          <parent name="AIR-FUNC-02180 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-12160" />
+        </tests>
+      </req>
+      <req method="Testing" name="Peripheral memory mapping to partitions" nametag="AIR-FUNC-02210" origin="Derived" priority="Recommendation" sima="False">
+        AIR should be capable of mapping the I/O control memory area of a peripheral to a virtual address accessible to a single dedicated partition.
+        <comment>Depending on the memory map, it can be impossible to make the registers from only a single peripheral available to a given partition (due to MMU page granularity); More than one device may have to be mapped to a partition. This needs to be analyzed and managed at system integrator level;</comment>
+        <parents>
+          <parent name="AIR-FUNC-02190 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-12170" description="Allocate, by configuration, a device to a given partition. Verify that no other partition is able to access the device configuration registers" />
+        </tests>
+      </req>
+      <req method="Source Code Analysis" name="Default Peripheral Mapping;" nametag="AIR-FUNC-02220" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall map the I/O control memory area of any device that is not assigned to a partition to its own memory space;
+        <comment>Non used devices should not be accessed by anyone;</comment>
+        <parents>
+          <parent name="AIR-GEN-01050 " />
+        </parents>
+      </req>
+      <req method="Source Code Analysis, Unit Testing" name="Address Space Initialization" nametag="AIR-FUNC-02230" origin="Created" priority="Mandatory" sima="False">
+        The complete virtual address space (from 0x0000000 to 0xFFFFFFFF) of each partition shall be initialized as invalid (accessing any address in this state will raise a trap);
+        <comment>This avoids the existence of holes in the memory protection mechanism;</comment>
+      </req>
+      <req method="Source Code Analysis" name="Kernel Mapping" nametag="AIR-FUNC-02240" origin="Created" priority="Mandatory" sima="False">
+        AIR shall be mapped in every partition virtual address space;
+        <comment>The kernel needs to be always present to handle interrupts and traps;</comment>
+        <parents>
+          <related name="AIR-FUNC-02010" />
+        </parents>
+      </req>
+      <req method="Testing" name="Kernel Memory Map Permissions" nametag="AIR-FUNC-02250" origin="Derived" priority="Mandatory" sima="False">
+        Access to AIR memory sections shall be only allowed when the processor is in supervisor mode;
+        <comment>Supervisor mode allows for the kernel to have full access over the processor while maintaining the memory isolation from partition accesses;</comment>
+        <parents>
+          <parent name="AIR-GEN-01065 " />
+          <parent name="AIR-FUNC-02240 " />
+          <parent name="AIR-GEN-01065" />
+        </parents>
+        <tests>
+          <test description="User partition tries to write kernel data" name="TEST-DEF-80810" />
+          <test description="Supervisor mode" name="TEST-DEF-00600" />
+        </tests>
+      </req>
+      <req method="Source Code Analysis" name="Virtual address space composition" nametag="AIR-FUNC-02260" origin="Derived" priority="Mandatory" sima="False">
+        The following components shall be mapped in each partition virtual address space:
+					-  AIR kernel
+					-  Partition Code (including partition operating system, run time libraries, application code, etc) and memory (.data, .bss, .rodata, etc)
+					-  Shared Memory Sections
+					-  Shared Code Sections
+        <comment>This is the set of memory sections derived from the space partitioning requirements;</comment>
+        <parents>
+          <related name="AIR-FUNC-02120" />
+          <related name="AIR-FUNC-02140 " />
+          <parent name="AIR-FUNC-02240" />
+        </parents>
+      </req>
+      <req method="Testing" name="Partition Memory permissions" nametag="AIR-FUNC-02270" origin="Created" priority="Recommendation" sima="False">
+        AIR should permit each partition to define the memory permissions applicable to of each one of its memory sections (.data, .text, .bss, .rodata, etc) between the following possible values: 
+					-  Read
+					-  Read/Execute
+					-  Read/Write
+					-  Read/Write/Execute
+        <comment>Setting up the permission allow for the POS to protect at least its code from modification;</comment>
+        <parents>
+          <parent name="AIR-GEN-00170 " />
+        </parents>
+        <tests>
+            <test name="TEST-DEF-00620" />
+            <test name="TEST-DEF-12270" description="Define several memory sections in a partition. Each memory section shall have one of the possible memory permissions, so that all memory permissions are covered. Try to execute an operation not permited by the memory permission and verify that all not permited operations fail (e.g. write and exectue in a read only section )"/>
+        </tests>
+      </req>
+      <req method="Source Code Analysis" name="Cache Flush on partition context switch" nametag="AIR-FUNC-02280" origin="Created" priority="Mandatory" sima="False">
+        Level 1 Cache (data and instruction) shall be flushed at each partition context switch;
+        <comment>The kernel needs to be always present to handle interrupts and traps;</comment>
+        <parents>
+          <parent name="AIR-GEN-01060 " />
+        </parents>
+      </req>
+    </subsection>
+    <subsection name="TIME PARTITIONING">
+      <req method="Inspection/Testing;" name="ARINC 653 Scheduling" nametag="AIR-FUNC-03000" origin="Created" priority="Mandatory" sima="False">
+        AIR shall support time partitioning according to the Partition Scheduling defined in the ARINC 653 Part1 Supplement 2 specification [RD.1];
+        <comment>Time division multiplexing is the most acceptable from of partition scheduling for IMA systems;</comment>
+      </req>
+      <req method="Inspection/Testing;" name="AIR partition scheduling" nametag="AIR-FUNC-03010" origin="Derived" priority="Mandatory" sima="True">
+        AIR shall schedule partitions to a core according to a statically defined, fixed cyclic scheduling plan compatible with the ARINC 653-Part 2 Supplement 2 specification [RD.2];
+        <comment>ARINC 653 Static Scheduling;</comment>
+        <parents>
+          <parent name="AIR-FUNC-03000 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-13010" description="Instrument PMK and the partition so that they output an identifier in each partition context switch and during each partition execution. Verify that the IDs are compatible with the ARINC 653 schedule used in the test. The ids may be output using an I/O device like a GPIO port or RS232" />
+        </tests>
+      </req>
+      <req method="Inspection/Testing;" name="Scheduling Multi-Core Extension" nametag="AIR-FUNC-03020" origin="Derived" priority="Mandatory" sima="True">
+        AIR shall implement an ARINC 653-Part 2 Supplement 2 [RD.2] compliant schedule per core;
+        <comment>The single core ARINC 653 partition schedule will be expanded to multi-core, as it maintains consistency with the single core configuration of ARINC systems;</comment>
+        <parents>
+          <related name="AIR-GEN-00040 " />
+          <parent name="AIR-FUNC-03000 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-00043" description="Partition execution window" />
+          <test name="TEST-DEF-13020" description="Complement TEST-DEF-13010 so that it verifies the schedule execution in several cores" />
+        </tests>
+      </req>
+      <req method="Testing" name="SMP partitions" nametag="AIR-FUNC-03030" origin="Created" priority="Mandatory" sima="False">
+        AIR shall feature a mechanism to allocate more than one core to a partition;
+        <comment>SMP partitions are useful to exploit the multi-core performance</comment>
+        <tests>
+          <test name="TEST-DEF-13030" description="Create a SMP partition in the configuration. Verify that the user application in that partition is able to place more than one thread executing simultaneously. This may be verified by creating an algorithm that needs cooperation of several tasks to complete and by locking preemption in each core" />
+        </tests>
+      </req>
+      <req method="Testing" name="Schedule Synchronization" nametag="AIR-FUNC-03040" origin="Derived" priority="Mandatory" sima="True">
+        AIR shall be able to synchronize the partition schedules running in different cores;
+        <comment>Synchronization of multi-core schedules is necessary for SMP partitions;</comment>
+        <parents>
+          <parent name="AIR-FUNC-03030 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-13040" description="Create a SMP partition in the configuration. Deploy instrumented tasks to the number of cores allocated to the partition. Verify that the tasks in different core start and stop executing with a delay of TBD cycles between each other. These measurements may be done using a I/O interface (e.g. GPIO) or a debbugger" />
+        </tests>
+      </req>
+      <req method="Testing/Inspection" name="CPU core halt" nametag="AIR-FUNC-03050" origin="Created" priority="Mandatory" sima="False">
+        AIR shall be able to halt a core;
+        <comment>If a core is not being used by the current schedule, then it should be halted;</comment>
+        <tests>
+          <test name="TEST-DEF-13050" description="Create a configuration that uses less cores than those available on the target hardware. Verify that the remaining cores are shutdown." />
+          <test name="TEST-DEF-13050" description="Create a configuration with multiple module schedules that have different number of cores. Exchange the MMS to demonstrate that the schedule with less number of core used have the remaining cores shutdown" />
+        </tests>
+      </req>
+      <req method="Testing/Inspection" name="Disable DMA operations" nametag="AIR-FUNC-03055" origin="Derived" priority="Recommendation" sima="False">
+        If permitted by the IOMMU or other DMA mediating device, AIR should provide an option/service to stop all DMA transfers belonging to a partition when the partition ends its execution window;
+        <comment>DMA transfers started and owned by a partition should not continue past that partition execution. otherwise they will compete for memory resources and introduce bus contention, therefore interfering with a unrelated partition;</comment>
+        <tests>
+          <test name="TEST-DEF-13055" description="Create a module with two partitions. One of the partitions configures an I/O device (e.g. ETH) to generate interrupts on data receive while the other partition registers an interrupt handler for the interrupt of the I/O device.AIR shall be configured to prevent DMA transfers outside of the first partition's execution windows. The test shall verify that no interrupts are generated in the second partition execution window. " />
+        </tests>
+      </req>
+      <req method="Testing" name="Temporal Segregation" nametag="AIR-FUNC-03070" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall guarantee that a partition is not able to HALT or RESET the processor or any of its cores;
+        <comment>Halting the processor disrupts temporal segregation;</comment>
+        <parents>
+          <parent name="AIR-GEN-01070 " />
+        </parents>
+      </req>
+      <req method="Testing" name="Enable Traps status" nametag="AIR-FUNC-03080" origin="Derived" priority="Mandatory" sima="False">
+        Partitions shall execute with traps enabled;
+        <comment>Raising a trap with traps disabled will halt the processor;</comment>
+        <parents>
+          <parent name="AIR-FUNC-03070 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-13080" description="Create a module with several partitions. Verify that the partitions run is supervisor mode" />
+        </tests>
+      </req>
+      <req method="Testing/Source Code Analysis" name="Pointer Validation" nametag="AIR-FUNC-03090" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall be forbidden from accessing any pointers originating from a partition when are traps disabled;
+        <comment>An invalid pointer, with traps disabled, would halt the processor;</comment>
+        <parents>
+          <parent name="AIR-FUNC-03070 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-13090" description="Create a module with several partitions. In one of the partitions annul all the registers and enter an idle loop. Verify that the system is not affected " />
+          <test name="TEST-DEF-13091" description="Analyse the source code from interrupt handlers, system calls and trap handlers to verify if user pointers only accessed when traps are disabled " />
+        </tests>
+      </req>
+      <req method="Testing" name="Trap Status permission" nametag="AIR-FUNC-03100" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall prevent partitions from disabling traps;
+        <comment>If so a partition could disable the processor;</comment>
+        <parents>
+          <parent name="AIR-FUNC-03070 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-13100" description="Create a test where a user partition tries to directly and indirectly (by changing stack or) change the $psr" />
+        </tests>
+      </req>
+      <req method="Source Code Analysis" name="Kernel Timer" nametag="AIR-FUNC-03110" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall reserve a timer for its own use (to drive the partition schedule);
+        <comment>A timer is necessary for driving the ARINC 653 partition scheduling;</comment>
+        <parents>
+          <related name="AIR-GEN-01070 " />
+          <parent name="AIR-FUNC-03010 " />
+        </parents>
+      </req>
+      <req method="Source Code Analysis" name="Clock Tick interrupt" nametag="AIR-FUNC-03120" origin="Derived" priority="Mandatory" sima="False">
+        The reserved timer shall be configured to generate an interrupt with a fixed frequency;
+        <comment>Monotonic timers are the basis of real time systems;</comment>
+        <parents>
+          <related name="AIR-GEN-01070" />
+          <parent name="AIR-FUNC-03110" />
+        </parents>
+      </req>
+      <req method="Testing" name="Clock Tick interrupt frequency" nametag="AIR-FUNC-03130" origin="Created" priority="Mandatory" sima="False">
+        The timer expiration frequency shall be statically configurable;
+        <comment>This timer frequency will depend on the partition schedule;</comment>
+        <tests>
+          <test name="TEST-DEF-13130" description="Externally instrument the clock tick interrupt code (using GDB or an external tool) to verify if the interrupt periodicity is in agreement with the configured value" />
+          <test name="TEST-DEF-00043" />
+        </tests>
+      </req>
+      <req method="Testing" name="Clock Tick Interrupt mask" nametag="AIR-FUNC-03140" origin="Derived" priority="Mandatory" sima="False">
+        The interrupt raised by the timer (called clock tick interrupt)  shall be always unmasked (state where the interrupt can occur) when partitions are executing;
+        <comment>A partition should not be able to delay the clock tick interrupt;</comment>
+        <parents>
+          <related name="AIR-GEN-01070" />
+          <parent name="AIR-FUNC-03110" />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-13130" description="Externally instrument the clock tick interrupt code (using GDB or an external tool) to verify if the interrupt periodicity is in agreement with the configured value" />
+          <test name="TEST-DEF-00043" />
+        </tests>
+      </req>
+      <req method="Testing" name="Mask interrupt permission" nametag="AIR-FUNC-03150" origin="Created" priority="Mandatory" sima="False">
+        AIR shall prevent partitions from masking/disabling hardware interrupts directly;
+        <comment>Disabling interrupts would disable time partitioning;</comment>
+        <parents>
+          <related name="AIR-GEN-01070 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-08012" />
+          <test name="TEST-DEF-80300" />
+        </tests>
+      </req>
+      <req method="Testing" name="Multiple Module Schedules" nametag="AIR-FUNC-03160" origin="Created" priority="Mandatory" sima="True">
+        AIR shall support Multiple Module Schedules according to ARINC 653 Part 2 Supplement 1 [RD.2].
+        <comment>Multiple Module Schedules increase the flexibility of the system;</comment>
+        <tests>
+          <test description="pal_schedule_change test" name="TEST-DEF-00009" />
+          <test description="pal_schedule_change test with multiple execution" name="TEST-DEF-00012" />
+        </tests>
+      </req>
+      <req method="Testing" name="Multiple Module Schedule permission" nametag="AIR-FUNC-03170" origin="Derived" priority="Mandatory" sima="True">
+        Only partitions  properly authorized in the configuration shall be allowed to change between multiple module schedules;
+        <comment>ARINC 653 compatible behavior;</comment>
+        <parents>
+          <related name="AIR-GEN-01070" />
+          <parent name="AIR-FUNC-03160 " />
+        </parents>
+        <tests>
+          <test description="pal_schedule_change test" name="TEST-DEF-00009" />
+          <test description="pal_schedule_change test with multiple execution" name="TEST-DEF-00012" />
+        </tests>
+      </req>
+      <req method="Testing" name="Multiple Schedules impact on resources " nametag="AIR-FUNC-03180" origin="Created" priority="Mandatory" sima="False">
+        Switching to a new scheduling plan shall have no impact on the resources allocated to a given partition:
+						-  Permissions;
+						-  Memory;
+						-  Floating point;
+						-  Cache Status;
+						-  Port Status and Contents;
+        <comment>A MMS change should not affect any resource allocation with t exception of partition scheduling;</comment>
+        <tests>
+          <test name="TEST-DEF-01370" />
+          <test name="TEST-DEF-01371" />
+          <test name="TEST-DEF-01372" />
+        </tests>
+      </req>
+      <req method="Testing" name="Multi-Core multiple module schedules" nametag="AIR-FUNC-03190" origin="Created" priority="Mandatory" sima="True">
+        Multiple Module Schedules shall be extended to include the ARINC 653 schedules in several cores;
+        <comment>MMS needs to be extended to multi-core;</comment>
+        <parents>
+          <related name="AIR-GEN-03020 " />
+          <related name="AIR-GEN-03160 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-13190" description="Create disjoint sets of multiple module schedules in different cores. Exchange the different schedules so that all partition are executed. Additionally, include a schedule that maintains the same partitions but just changes them from core. " />
+        </tests>
+      </req>
+      <req method="Inspection" name="Slack Time " nametag="AIR-FUNC-03200" origin="Created" priority="Recommendation" sima="False">
+        AIR should feature a mechanism to make use of budgeted but unused time in the partitioning schedule;
+        <comment>This will help coping with larger WCET bounds;</comment>
+      </req>
+      <req method="Inspection" name="Co-partitions" nametag="AIR-FUNC-03210" origin="Created" priority="Recommendation" sima="False">
+        AIR should feature support for co-partitions, a special kind of partition that is allowed to run during the execution window of another partition;
+        <comment>Co-partitions are a mechanism for reusing slack time;</comment>
+        <parents>
+          <parent name="AIR-FUNC-03200 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-80250" />
+          <test name="TEST-DEF-80260" />
+          <test name="TEST-DEF-80270" />
+        </tests>
+      </req>
+      <req method="Testing" name="Co-partitions Execution" nametag="AIR-FUNC-03220" origin="Created" priority="Mandatory" sima="False">
+        A co-partition  shall be only be able to execute when:
+					-  The current partition has informed the partitioning kernel that its critical tasks have finished for this execution window;
+					-  The co-partition has not exceeded its allowed duration (specified as a sharing quota);
+					-  There is a configurable amount of  time remaining in the current execution window;
+        <comment>These limitations on the schedulability of co-partitions ensure that the predictability of the ARINC 653 schedule is not affected with the introduction of co-partitions. Both the remaining time in the partition and the quota for the co-partition are defined as a percentage of the current partition execution window;</comment>
+        <tests>
+          <test name="TEST-DEF-80250" />
+          <test name="TEST-DEF-80260" />
+          <test name="TEST-DEF-80270" />
+        </tests>
+      </req>
+      <req method="Inspection" name="Co-partitions configuration" nametag="AIR-FUNC-03230" origin="Created" priority="Mandatory" sima="False">
+        The co-partition configuration shall include:
+					-  The execution windows where each co-partition is allowed to run;
+					-  The co-partition entry point;
+					-  The minimum number of clock ticks necessary for the co-partition to run;
+					-  All other regular partition configuration options
+        <comment>This is the minimal set of elements necessary for the definition of the characteristics of a co-partition;</comment>
+        <parents>
+          <parent name="AIR-FUNC-03200 " />
+        </parents>
+      </req>
+      <req method="Source Code Analysis/Testing" name="Co-partitions interface" nametag="AIR-FUNC-03240" origin="Created" priority="Recommendation" sima="False">
+        Co-partition should be able to interface with regular partitions through ARINC 653 ports;
+        <comment>ARINC 653 ports are the default inter partition communication mechanism;</comment>
+        <parents>
+          <parent name="AIR-FUNC-03200" />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-13240" description="Create a test where a partition and a Co-partition share data through a ARINC ports. Verify that bidirectional communication is possible" />
+        </tests>
+      </req>
+    </subsection>
+    <subsection name="TIME MANAGEMENT">
+      <req method="Source Code Analysis" name="Monotonic Time" nametag="AIR-FUNC-03500" origin="Created" priority="Mandatory" sima="False">
+        AIR shall maintain a monotonic (ticks since boot) time reference;
+        <comment>A monotonic clock is necessary to keep a notion of local time;</comment>
+      </req>
+      <req method="Source Code Analysis" name="TOD Time" nametag="AIR-FUNC-03510" origin="Created" priority="Recommendation" sima="False">
+        AIR should maintain a time of day clock (year, month, day, hour, minute, second) in the kernel;
+        <comment>A TOD representation on the PK may help system time distribution;</comment>
+      </req>
+      <req method="Testing" name="TOD Time Synchronization" nametag="AIR-FUNC-03520" origin="Created" priority="Recommendation" sima="False">
+        AIR should be able to synchronize the system time of day clock with the partitions time of day clock;
+        <comment>A TOD representation on the PMK may help system time distribution;</comment>
+        <tests>
+          <test name="TEST-DEF-08010" />
+        </tests>
+      </req>
+      <req method="Testing" name="TOD Set" nametag="AIR-FUNC-03530" origin="Created" priority="Recommendation" sima="False">
+        Only an authorized partition should be able to set the system time of day clock;
+        <comment>By setting the TOD a partition may be influencing others, therefore this operation needs to be authorized;</comment>
+        <tests>
+          <test name="TEST-DEF-08010" />
+        </tests>
+      </req>
+      <req method="Inspection" name="Configuration of TOD synchronization" nametag="AIR-FUNC-03540" origin="Created" priority="Recommendation" sima="False">
+        Every partition should be able to select if its time of day clock shall be synchronized with the partitioning kernel clock;
+        <comment>A partition may wish to maintain its clock independent  from system time;</comment>
+      </req>
+      <req method="Testing" name="Time Forwarding Global time" nametag="AIR-FUNC-03550" origin="Created" priority="Mandatory" sima="True">
+        AIR shall be able inform a partition of the time elapsed (number of clock ticks) since the partition last ran;
+        <comment>This global monotonic time may help schedule tasks inside the partitions;</comment>
+        <tests>
+          <test name="TEST-DEF-80210" />
+        </tests>
+      </req>
+      <req method="Testing" name="Local Time" nametag="AIR-FUNC-03560" origin="Created" priority="Mandatory" sima="True">
+        A partition shall be able to ignore the time elapsed (number of clock ticks)  when the partition was preempted;
+        <comment>An execution time reference increases composability and may ease the management of periodic tasks;</comment>
+        <tests>
+          <test name="TEST-DEF-80210" />
+        </tests>
+      </req>
+      <req method="Inspection" name="Time Configuration" nametag="AIR-FUNC-03570" origin="Created" priority="Mandatory" sima="True">
+        The usage of global or local time shall be defined during configuration for each partition;
+        <comment>As these time references are related with POS events, they cannot be configured during run-time;</comment>
+        <tests>
+          <test name="TEST-DEF-80210" />
+        </tests>
+      </req>
+    </subsection>
+    <subsection name="PROCESSOR">
+      <req method="Testing" name="Partition execution mode" nametag="AIR-FUNC-03700" origin="Derived" priority="Mandatory" sima="False">
+        Partitions shall execute, by default, in user mode;
+        <comment>This is required to guarantee segregation and independence;</comment>
+        <parents>
+          <related name="AIR-GEN-01060 " />
+          <related name="AIR-GEN-01070 " />
+          <parent name="AIR-GEN-01065 " />
+        </parents>
+      </req>
+      <req method="Inspection/Testing" name="Kernel execution mode" nametag="AIR-FUNC-03710" origin="Derived" priority="Mandatory" sima="False">
+        The AIR kernel (PMK) shall execute in supervisor mode;
+        <comment>Partitioning could not be guaranteed if the separation kernel did not run in super-user mode.</comment>
+        <parents>
+          <parent name="AIR-GEN-01065 " />
+          <related name="AIR-FUNC-02020 " />
+          <related name="AIR-FUNC-02090 " />
+        </parents>
+      </req>
+      <req method="Testing" name="Supervisor partitions" nametag="AIR-FUNC-03720" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall permit the execution of partitions in supervisor mode. These partitions are named system partitions;
+        <comment>Supervisor partitions can be required for maintenance purpose;</comment>
+        <parents>
+          <parent name="AIR-GEN-00160 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-80050" />
+          <test name="TEST-DEF-00600" />
+        </tests>
+      </req>
+      <req method="Inspection" name="Execution mode configuration" nametag="AIR-FUNC-03730" origin="Created" priority="Mandatory" sima="False">
+        The execution mode for each partition (supervisor or user) shall be defined as part of the configuration;
+        <comment>The execution mode of a partition is defined at configuration and the partition remains in that execution mode during the system execution;</comment>
+        <parents>
+          <parent name="AIR-FUNC-03700 " />
+          <related name="AIR-FUNC-03720 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-00600" />
+        </tests>
+      </req>
+      <req method="Testing" name="Execution mode escalation" nametag="AIR-FUNC-03740" origin="Created" priority="Mandatory" sima="False">
+        AIR shall ensure that a partition is not able to change its execution mode (between user and supervisor);
+        <comment>If a user partition was able to obtain supervisor mode it would be able to disrupt time and space partitioning;</comment>
+        <parents>
+          <related name="AIR-GEN-01060 " />
+          <related name="AIR-GEN-01070 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-13740" description="Create a user partition that tries to obtain supervisor mode by: writing directly to psr, writing directly to psr from an interrupt handler, trying to overwrite the trap table or a trap table entry, changing the stack of a task" />
+        </tests>
+      </req>
+    </subsection>
+    <subsection name="TRAPS">
+      <req method="Source Code Analysis" name="Trap Table" nametag="AIR-FUNC-04000" origin="Created" priority="Mandatory" sima="False">
+        AIR shall register trap handlers for every trap;
+        <comment>Unassigned traps are a safety concern;</comment>
+      </req>
+      <req method="Testing" name="Trap Table Protection" nametag="AIR-FUNC-04010" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall protect the Trap Table from access by partitions;
+        <comment>If a partition were able to replace a trap it would be able to gain supervisor permissions;</comment>
+        <parents>
+          <parent name="AIR-FUNC-03740 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-14010" description="A user partition tries to obtain the location of the trap table and tries to overwrite it. Verify that it fails. " />
+          <test name="TEST-DEF-14011" description="Inspect the source code to verify that the trap table is protected using a Supervisor page." />
+        </tests>
+      </req>
+      <req method="Testing" name="Unused Traps" nametag="AIR-FUNC-04020" origin="Created" priority="Mandatory" sima="False">
+        Traps not assigned/used by the system shall raise the health monitor;
+        <comment>If an unused trap occurs it is due to an error at software or hardware level. Therefore it should be handled by the health monitor;</comment>
+        <tests>
+          <test name="TEST-DEF-14020" description="Generate a random trap . Verify that the health monitor is raised." />
+        </tests>
+      </req>
+      <req method="Testing" name="Error Traps" nametag="AIR-FUNC-04030" origin="Created" priority="Mandatory" sima="False">
+        Trap that are assigned to error conditions (segmentation fault, divide by zero, etc) shall raise the health monitor;
+        <comment>This is necessary for the correct function of the health monitor;</comment>
+        <tests>
+          <test name="TEST-DEF-00500" />
+          <test name="TEST-DEF-00510" />
+          <test name="TEST-DEF-00540" />
+          <test name="TEST-DEF-00560" />
+          <test name="TEST-DEF-01200" />
+          <test name="TEST-DEF-01210" />
+          <test name="TEST-DEF-01210" />
+        </tests>
+      </req>
+      <req method="Source Code Analysis" name="Windows Overflow Trap;" nametag="AIR-FUNC-04040" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall provide a trap handler for the register window overflow condition;
+        <comment>This privileged operation is necessary for the SPARC architecture;</comment>
+        <parents>
+          <related name="AIR-FUNC-03700 " />
+          <parent name="AIR-FUNC-04000 " />
+        </parents>
+      </req>
+      <req method="Source Code Analysis" name="Windows Underflow Trap;" nametag="AIR-FUNC-04050" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall provide a trap handler for the register window underflow condition;
+        <comment>This privileged operation is necessary for the SPARC architecture;</comment>
+        <parents>
+          <related name="AIR-FUNC-03700 " />
+          <parent name="AIR-FUNC-04000 " />
+        </parents>
+      </req>
+      <req method="Source Code Analysis" name="Register Window Flush" nametag="AIR-FUNC-04060" origin="Derived" priority="Mandatory" sima="False">
+        AIR shall provide the capability to flush all register windows, except the current one, to the stack.
+        <comment>This privileged operation is necessary for context switching the SPARC architecture;</comment>
+        <parents>
+          <related name="AIR-FUNC-03700" />
+          <parent name="AIR-FUNC-04000 " />
+        </parents>
+      </req>
+      <req method="Source Code Analysis" name="Register Window Underflow behavior" nametag="AIR-FUNC-04070" origin="Derived" priority="Mandatory" sima="False">
+        The window underflow handler shall:
+					-  save the local (%l) an input (%i) registers of the next register window in the stack area, following the stack model defined in the application binary interface for SPARC [RD.3]:
+					-  update the windows invalid mask register;
+        <comment>The window underflow handler saves the next register window to the stack as defined in the SPARC ABI;</comment>
+        <parents>
+          <parent name="AIR-FUNC-04050 " />
+        </parents>
+      </req>
+      <req method="Source Code Analysis" name="Register Window Overflow behavior;" nametag="AIR-FUNC-04080" origin="Derived" priority="Mandatory" sima="False">
+        The window overflow handler shall:
+					-  load the local (%l) an input (%i) registers from the stack to the previous register window, following the stack model defined in the application binary interface for SPARC [RD.3]:
+					-  update the windows invalid mask register;
+        <comment>The window overflow handler loads the previous register window from the stack as defined in the SPARC ABI;</comment>
+        <parents>
+          <parent name="AIR-FUNC-04040 " />
+        </parents>
+      </req>
+      <req method="Source Code Analysis" name="Register Window Flush behavior;" nametag="AIR-FUNC-04090" origin="Derived" priority="Mandatory" sima="False">
+        The register window flush function shall:
+					-  save the local (%l) an input (%i) registers from all the register windows, except the current one, in their stack areas, following the stack model defined in the application binary interface for SPARC [RD.3]:
+					-  update the windows invalid mask register ($wim);
+        <comment>As part of a context switch, all register windows need to be stored to the stack and this needs to be done in supervisor mode because some registers are supervisor only (e.g. %wim);</comment>
+        <parents>
+          <parent name="AIR-FUNC-04060 " />
+        </parents>
+      </req>
+    </subsection>
+    <subsection name="INTERRUPT VIRTUALIZATION">
+      <req method="Testing" name="Interrupt Virtualization" nametag="AIR-FUNC-04200" origin="Created" priority="Mandatory" sima="False">
+        AIR shall allow any hardware interrupt to be virtualized;
+        <comment>Interrupt virtualization can be necessary for I/O or OBT synchronization;</comment>
+        <tests>
+          <test name="TEST-DEF-14200" description="Try to register all available interrupts. Verify that no error is returned." />
+        </tests>
+      </req>
+      <req method="Testing" name="Partition Interrupt Handler" nametag="AIR-FUNC-04210" origin="Created" priority="Mandatory" sima="False">
+        A partition shall be able to register a software handler for a given interrupt;
+        <comment>Partition software handlers are executed when the interrupt occurs;</comment>
+        <tests>
+          <test name="TEST-DEF-14210" description="Use PAL services to register an interrupt line belonging to a device. Configure the device to generate interrupts. Verify that the interrupt handler is called" />
+          <test name="TEST-DEF-14220" />
+        </tests>
+      </req>
+      <req method="Testing" name="Virtualized Interrupt Mask Vector" nametag="AIR-FUNC-04220" origin="Created" priority="Mandatory" sima="False">
+        An interrupt virtualized by a partition shall be unmasked in the hardware interrupt controller when that partition is executing;
+        <comment>Otherwise the interrupt would not happen;</comment>
+        <tests>
+          <test name="TEST-DEF-14220" description="Use PAL services to register an interrupt line belonging to a device. Configure the device to generate interrupts. Verify that the interrupt is masked during other partitions execution and unmasked during the execution of the partition that registered the interrupt" />
+        </tests>
+      </req>
+      <req method="Testing" name="Non Virtualized Interrupt Mask Vector" nametag="AIR-FUNC-04230" origin="Created" priority="Mandatory" sima="False">
+        Interrupts not virtualized by the current partition, neither reserved by the kernel, shall be masked in the interrupt controller;
+        <comment>Non-used interrupt shall not impact scheduling and consume execution time;</comment>
+        <tests>
+          <test name="TEST-DEF-14220" />
+        </tests>
+      </req>
+      <req method="Testing" name="Interrupt Forwarding" nametag="AIR-FUNC-04240" origin="Created" priority="Mandatory" sima="False">
+        PMK shall forward the interrupt to the partition registered handler with traps enabled;
+        <comment>Traps disabled could break the time partitioning;</comment>
+        <parents>
+          <related name="AIR-FUNC-04210 " />
+          <related name="AIR-FUNC-03100 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-14240" description="Register and force an interrupt in a user-mode partition. In the interrupt handler verify if traps are enabled by raising one." />
+        </tests>
+      </req>
+      <req method="Testing" name="Interrupt Forwarding Processor State" nametag="AIR-FUNC-04250" origin="Derived" priority="Mandatory" sima="False">
+        PMK shall forward the interrupt to the partition registered handler in the same execution mode as the current partition (supervisor or user mode);
+        <comment>If the partition runs in user mode, the registered handler should run in user mode as well. Otherwise, privilege escalation could happen;</comment>
+        <parents>
+          <related name="AIR-FUNC-04210 " />
+          <related name="AIR-FUNC-03740 " />
+        </parents>
+        <tests>
+            <test name="TEST-DEF-00670 "/>
+            <test name="TEST-DEF-14250" description="In a test with a supervisor mode and an user mode partition verify that interrupt handlers registered and called in those partitions have the permission level as the partition itself " />
+        </tests>
+      </req>
+      <req method="Testing" name="Disable Virtual Interrupts" nametag="AIR-FUNC-04260" origin="Created" priority="Mandatory" sima="False">
+        A partition shall be permitted to disable the interrupt forwarding;
+        <comment>Critical sections are generally protected by interrupt disabling. Thus the partition should be able to stop the PK from forwarding interrupts  into it;</comment>
+        <tests>
+          <test name="TEST-DEF-14260" description="Use AIR services to register an interrupt line belonging to a timer. Configure the timer to generate interrupts. Disable interrupts and verify that the handler is not called. After several MTFs, reenable interrupts and verify that the handler is indeed called." />
+        </tests>
+      </req>
+      <req method="Testing" name="Enable Virtual Interrupts" nametag="AIR-FUNC-04270" origin="Created" priority="Mandatory" sima="False">
+        A partition shall be permitted  to enable the interrupt forwarding;
+        <comment>Critical sections are generally protected by interrupt disabling. Thus the partition should be able to stop and start the PK from forwarding interrupts  into it;</comment>
+        <tests>
+          <test name="TEST-DEF-14260" />
+        </tests>
+      </req>
+      <req method="Testing" name="Pending Virtual Interrupts" nametag="AIR-FUNC-04280" origin="Created" priority="Recommendation" sima="False">
+        Interrupts not forwarded to the partition should be maintained as pending;
+        <comment>Mimic the behavior of the interrupt controller;</comment>
+        <tests>
+          <test name="TEST-DEF-14280" description="Use AIR services to register an interrupt line belonging to a timer. Configure the timer to generate interrupts. Disable interrupts and verify that the handler is not called. After several MTFs deactivate the device so it no longer generates interrupts and then re-enable interrupts. Verify that the handler is called once." />
+        </tests>
+      </req>
+      <req method="Testing" name="Pending Interrupts retrieval" nametag="AIR-FUNC-04290" origin="Created" priority="Mandatory" sima="False">
+        The partition shall be informed of pending interrupts when it enables virtual interrupts;
+        <comment>A partition should not lose interrupts meant to it.</comment>
+        <tests>
+          <test name="TEST-DEF-14280" />
+        </tests>
+      </req>
+      <req method="Testing" name="Interprocessor interrupt" nametag="AIR-FUNC-04300" origin="Created" priority="Recommendation" sima="False">
+        AIR should provide a virtualization of an mechanism for interprocessor interrupt;
+        <comment>Interprocessor interrupt can be necessary for SMP partition operating systems</comment>
+        <tests>
+          <test name="TEST-DEF-14300" description="Create a multi-core partition that doesn't use all cores in the system. Use AIR APIs to send an interprocessor interrupt too all cores and verify that only the cores used by the partition are able to see the interrupt."/>
+        </tests>
+      </req>
+      <req method="Testing" name="Interprocessor interrupt between partitions" nametag="AIR-FUNC-04310" origin="Created" priority="Recommendation" sima="False">
+        Virtualized interprocessor interrupts should only be allowed between cores owned by the same partition;
+        <comment>A partition should not be able to send an interrupt to an unrelated partition;</comment>
+        <tests>
+          <test name="TEST-DEF-14300" />
+        </tests>
+      </req>
+    </subsection>
+    <subsection name="FLOATING POINT">
+      <req method="Source Code Analysis/Testing" name="Hard-Float" nametag="AIR-FUNC-04500" origin="Created" priority="Mandatory" sima="False">
+        AIR shall support hardware floating point;
+        <comment>Hardware floating point increases the performance of floating point operations;</comment>
+        <tests>
+          <test name="TEST-DEF-80380" />
+          <test name="TEST-DEF-80390" />
+          <test name="TEST-DEF-01550" />
+        </tests>
+      </req>
+      <req method="Source Code Analysis/Testing" name="Soft-Float" nametag="AIR-FUNC-04510" origin="Created" priority="Mandatory" sima="False">
+        AIR shall support software floating point (floating point emulated through libraries);
+        <comment>FPU is a shared element in the NGMP. By using software floating point you can reduce competition for the FPU;</comment>
+        <tests>
+          <test name="TEST-DEF-14520" />
+        </tests>
+      </req>
+      <req method="Source Code Analysis/Testing" name="Mixed Floating Point" nametag="AIR-FUNC-04520" origin="Created" priority="Mandatory" sima="False">
+        AIR shall support applications that use a mix of hardware and software floating point;
+        <comment>The kernel itself should use a mix of software and hardware floating point;</comment>
+        <tests>
+          <test name="TEST-DEF-14520" description="Create a test with two partitions where one has hardware floating point enabled and the other disabled. Compile the second partition with software floating point. Verify that both are able to do floating point opeartions" />
+        </tests>
+      </req>
+      <req method="Testing" name="Floating Point Disable" nametag="AIR-FUNC-04530" origin="Created" priority="Mandatory" sima="False">
+        It shall be possible to enable/disable the hardware floating point unit individually for each partition
+        <comment>FPU is a shared element in the NGMP, by disabling it you can prevent contention;</comment>
+        <tests>
+          <test name="TEST-DEF-80380" />
+          <test name="TEST-DEF-80390" />
+          <test name="TEST-DEF-01550" />
+        </tests>
+      </req>
+      <req method="Testing" name="Floating Point Context Switch" nametag="AIR-FUNC-04540" origin="Created" priority="Mandatory" sima="False">
+        The floating point context for each partition shall be preserved when a partition is suspended / restored;
+        <comment>Floating point registers are shared like integer register and therefore need to be context switched;</comment>
+        <tests>
+          <test name="TEST-DEF-15020" />
+        </tests>
+      </req>
+    </subsection>
+    <subsection name="CACHE">
+      <req method="Inspection" name="Cache Management" nametag="AIR-FUNC-04600" origin="Created" priority="Mandatory" sima="False">
+        The level 1 data and code cache status for each individual partition (active/inactive) shall be specified in the configuration;
+        <comment>Cache state impacts performance and predictability, so its left for the developer to choose;</comment>
+      </req>
+      <req method="Testing" name="Cache Context Save" nametag="AIR-FUNC-04610" origin="Created" priority="Mandatory" sima="False">
+        Level 1 cache status shall be conserved across partition context switches;
+        <comment>No preserving the status of the cache would impact the performance and predictability of the partition;</comment>
+        <tests>
+          <test name="TEST-DEF-80400" />
+          <test name="TEST-DEF-80420" />
+          <test name="TEST-DEF-01560" />
+          <test name="TEST-DEF-01561" />
+        </tests>
+      </req>
+      <req method="Source Code Analysis" name="Cache Freeze on Interrupt" nametag="AIR-FUNC-04620" origin="Created" priority="Mandatory" sima="False">
+        AIR shall freeze level 1 cache on interrupt;
+        <comment>Otherwise the interrupt would trash the cache;</comment>
+      </req>
+      <req method="Source Code Analysis" name="Cache Restore on interrupt" nametag="AIR-FUNC-04630" origin="Created" priority="Mandatory" sima="False">
+        AIR shall restore the previous state of the level 1 cache on interrupt exit;
+        <comment>The interrupt should not impact the cache;</comment>
+      </req>
+      <req method="Source Code Analysis" name="Disable Instruction burst fetch " nametag="AIR-FUNC-04640" origin="Created" priority="Mandatory" sima="False">
+        AIR shall disable instruction burst fetch on interrupt;
+        <comment>Disabling instruction burst fetch on interrupt increases the predictability of the system;</comment>
+      </req>
+      <req method="Source Code Analysis" name="Enable Instruction burst fetch" nametag="AIR-FUNC-04650" origin="Created" priority="Recommendation" sima="False">
+        AIR should enable instruction burst fetch on interrupt exit;
+        <comment>Once the interrupt ends, AIR has to re-enable instruction burst fetch. Not re-enabling burst fetch would impact performance;</comment>
+      </req>
+    </subsection>
+    <subsection name="HEALTH MONITORING">
+      <req method="Testing" name="ARINC 653 Health Monitoring" nametag="AIR-FUNC-04700" origin="Created" priority="Mandatory" sima="True">
+        Fault management shall be performed by a Health Monitor mechanism as described in the ARINC 653 Part 1 [RD1], including the static configuration defined in an XML-based format;
+        <comment>Ensure as possible AIR configuration compliance with ARINC 653 specification;</comment>
+        <tests>
+          <test name="TEST-DEF-01610" />
+          <test name="TEST-DEF-01620" />
+          <test name="TEST-DEF-01621" />
+          <test name="TEST-DEF-01622" />
+        </tests>
+      </req>
+      <req method="Code Inspection" name="Error Handler Process Level Support " nametag="AIR-FUNC-04710" origin="Created" priority="Mandatory" sima="False">
+        ARINC 653 health monitor process level errors shall not be supported;
+        <comment>We are not using a complete ARINC 653 APEX;</comment>
+      </req>
+      <req method="Code Inspection" name="Error Handler ARINC 653 Compliance" nametag="AIR-FUNC-04720" origin="Created" priority="Mandatory" sima="False">
+        The error handler functionality of the ARINC 653 health monitor shall not be supported;
+        <comment>Error handler functionality was removed in IMA-SP;</comment>
+      </req>
+      <req method="Code Inspection" name="Health Monitoring Callbacks" nametag="AIR-FUNC-04730" origin="Derived" priority="Mandatory" sima="False">
+        Health Monitor callbacks, defined in ARINC 653, shall execute in the same mode (supervisor or user) as the partition that registered the callback;
+        <comment>Otherwise, privilege escalation would happen;</comment>
+        <parents>
+          <parent name="AIR-FUNC-04700 " />
+          <related name="AIR-FUNC-03740 " />
+        </parents>
+      </req>
+    </subsection>
+    <subsection name="PARTITION MANAGEMENT">
+      <req method="Testing" name="Initial Partition Mode" nametag="AIR-FUNC-04800" origin="Created" priority="Mandatory" sima="True">
+        AIR shall initialize its partitions in COLD_START mode;
+        <comment>Define initial (starting point) operating mode of a partition in AIR;</comment>
+        <tests>
+          <test name="TEST-DEF-01390" />
+        </tests>
+      </req>
+      <req method="Testing" name="Partition IDLE Mode Time Windows" nametag="AIR-FUNC-04810" origin="Created" priority="Mandatory" sima="True">
+        Partitions in IDLE mode shall consume their allocated  time windows;
+        <comment>Follow IDLE mode concept defined in ARINC 653 Specification</comment>
+        <tests>
+          <test name="TEST-DEF-04810" description="Create a schedule with several partitions. During runtime place al partition but one in idle mode. Verify that the period of the active partition remains the same " />
+        </tests>
+      </req>
+      <req method="Inspection" name="Partition IDLE Mode execution" nametag="AIR-FUNC-04820" origin="Created" priority="Mandatory" sima="True">
+        An idle loop shall execute during the time windows belonging to an IDLE partition;
+        <comment>for(;;);</comment>
+      </req>
+      <req method="Testing" name="Partition IDLE Mode effect in the bus" nametag="AIR-FUNC-04830" origin="Created" priority="Mandatory" sima="False">
+        A Partition in IDLE mode shall not generate bus and memory contention;
+        <comment>Idle partitions should not interfere with other partitions running in other cores;</comment>
+        <tests>
+          <test name="TEST-DEF-04830" description="Create a system with two schedules: a single core and a multicore one. In one of the partitions that runs in both schedules with the same duration create a benchmark algorithm that is dependent on the memory. Deploy idle partitions on the second core of the second schedule. Verify that the benchmark results remains the same independently of the schedule (i.e. the idle partition in the second core aren't generating any contention). " />
+        </tests>
+      </req>
+      <req method="Testing" name="WARM and COLD Start " nametag="AIR-FUNC-04840" origin="Created" priority="Mandatory" sima="True">
+        A mode change to COLD-START or WARM-START shall reboot the partition, where reboot means to return the partition to a state where it has to initialize and recreate its internal resources;
+        <comment>COLD and WARM start reboot the partition, but it is left for a design decision what each one of the states means in terms of actions taken;</comment>
+      </req>
+      <req method="Testing" name="Permanent Data" nametag="AIR-FUNC-04850" origin="Created" priority="Recommendation" sima="False">
+        A partition should be able to access data sections that are not restored during the partition restart;
+        <comment>Data sections that are not rewritten during restart may be useful for storing algorithmic data;</comment>
+        <tests>
+          <test name="TEST-DEF-04850" description="Create a system with a partition that writes to a persistent memory section and then reboots to COLD START. Verify that the persistent data is still available. Repeat the test for WARM_START" />
+        </tests>  
+      </req>
+      <req method="Testing" name="Set partition mode " nametag="AIR-FUNC-04855" origin="Created" priority="Mandatory" sima="True">
+        A partition shall be able to set its own operational mode;
+        <comment>ARINC 653 compliant behavior;</comment>
+        <tests>
+          <test description="Mode transitions" name="TEST-DEF-00021" />
+        </tests>
+      </req>
+      <req method="Testing" name="Set a partition mode " nametag="AIR-FUNC-04856" origin="Created" priority="Mandatory" sima="False">
+        An authorized partition shall be able to set another partition mode;
+        <comment>Can be useful for FDIR;</comment>
+        <tests>
+          <test description="Mode transitions" name="TEST-DEF-00021" />
+          <test description="Mode transitions" name="TEST-DEF-00022" />
+        </tests>
+      </req>
+      <req method="Testing" name="Normal Mode " nametag="AIR-FUNC-04860" origin="Created" priority="Guideline" sima="True">
+        Only the partition itself may change its state to Normal;
+        <comment>Normal should mark the end of the initialization phase, and only the partition itself knows this;</comment>
+        <tests>
+          <test name="TEST-DEF-00021" />
+          <test name="T-API-PART-0230:0010" />
+        </tests>
+      </req>
+      <req method="Testing" name="ARINC 653 Mode Transitions" nametag="AIR-FUNC-04870" origin="Created" priority="Mandatory" sima="False">
+        AIR shall only permit valid partition mode transitions.
+        <comment>Define and limit the complete set of mode transitions in AIR;</comment>
+        <tests>
+          <test description="Test the service SET_PARTITION_MODE to NORMAL" name="T-API-PART-0230:0010" />
+          <test description="Test the service SET_PARTITION_MODE to" name="T-API-PART-0230:0020" />
+          <test description="the service SET_PARTITION_MODE to" name="T-API-PART-0230:0030" />
+          <test description="Test the service SET_PARTITION_MODE to COLD_START T-API-PART-0230:0040 Test the service SET_PARTITION_MODE from NORMAL to" name="T-API-PART-0230:0035" />
+          <test description="Test the service SET_PARTITION_MODE when OPERATING_MODE does not represent an existing" name="T-API-PART-0230:0050" />
+          <test description="Test the service SET_PARTITION_MODE changing from COLD_START to" name="T-API-PART-0230:0060" />
+          <test name="TEST-DEF-00021" />
+        </tests>
+      </req>
+    </subsection>
+    <subsection name="INTER-PARTITION COMMUNICATION">
+      <req method="Testing" name="Inter-Partition Communication" nametag="AIR-FUNC-05000" origin="Created" priority="Mandatory" sima="True">
+        The system shall support unicast queuing channels according to ARINC 653 Part 1 [RD1];
+        <comment>AIR attempts to follow as close as possible the ARINC 653 specification;</comment>
+        <note>In this particular case ARINC 653 leaves it to implementations whether uni-, mult or broadcast mode is implemented. For queuing ports, multi and broadcast mode appear to be very difficult with the additional requirement imposed by ARINC 653 that the order of messages must not change;</note>
+        <tests>
+          <test description="Queuing port creation." name="T-API-INTER-0570:0011" />
+          <test description="Queuing port creation error" name="T-API-INTER-0570:0012" />
+          <test description="Unsuccessful queuing port creation upon an existing partition in NORMAL" name="T-API-INTER-0570:0013" />
+          <test description="Test the service SEND_QUEUING_MESSAGE with timeout = 0 milliseconds and enough space and no processes" name="T-API-INTER-0580:0010" />
+          <test description="Test the service RECEIVE_QUEUING_MESSAGE when FIFO is not empty and length of message is &lt;= MAXIMUM_LENGTH (input parameter of the" name="T-API-INTER-0590:0010" />
+          <test description="Test the service RECEIVE_QUEUING_MESSAGE when the FIFO queue is empty and timeout=" name="T-API-INTER-0590:0030" />
+          <test description="Test the service" name="T-API-INTER-0590:0070" />
+          <test description="Successful queuing port ID" name="T-API-INTER-0600:0011" />
+          <test description="Unsuccessful queuing port ID" name="T-API-INTER-0600:0012" />
+          <test description="Successful queuing port status" name="T-API-INTER-0610:0011" />
+          <test description="Unsuccessful queuing port status check, due to invalid port" name="T-API-INTER-0610:0012" />
+        </tests>
+      </req>
+      <req method="Testing" name="Sampling Ports" nametag="AIR-FUNC-05010" origin="Created" priority="Mandatory" sima="True">
+        The system shall support multicast sampling channels according to ARINC 653 Part 1 [RD.1];
+        <comment>AIR attempts to follow as close as possible the ARINC 653 specification;</comment>
+        <tests>
+          <test description="Sampling port creation." name="T-API-INTER-0520:0011" />
+          <test description="Sampling port creation error" name="T-API-INTER-0520:0012" />
+          <test description="Create a sampling port while in NORMAL" name="T-API-INTER-0520:0013" />
+          <test description="Successful sampling message" name="T-API-INTER-0530:0011" />
+          <test description="Sampling message write error handling. (invalid" name="T-API-INTER-0530:0012" />
+          <test description="Successful sampling message" name="T-API-INTER-0540:0011" />
+          <test description="Successful Sampling message readout error handling. (empty sampling" name="T-API-INTER-0540:0013" />
+          <test description="Successful sampling message readout (message age &gt;" name="T-API-INTER-0540:0012" />
+          <test description="Sampling message readout error handling. (invalid" name="T-API-INTER-0540:0014" />
+          <test description="Successful sampling port ID" name="T-API-INTER-0550:0011" />
+          <test description="Unsuccessful sampling port ID" name="T-API-INTER-0550:0012" />
+          <test description="Successful sampling port status" name="T-API-INTER-0560:0011" />
+          <test description="Unsuccessful sampling port status" name="T-API-INTER-0560:0012" />
+          <test name="TEST-DEF-01730" />
+        </tests>
+      </req>
+      <req method="Testing" name="Sampling Ports Extensions" nametag="AIR-FUNC-05020" origin="Created" priority="Mandatory" sima="True">
+        The system shall support sampling port extensions as defined in ARINC 653 Part 2 [RD.2];
+        <comment>AIR attempts to follow as close as possible the ARINC 653 specification;</comment>
+        <tests>
+          <test description="READ_UPDATED_SAMPLING_MESSAGE unit test" name="TEST-DEF-01740" />
+          <test description="GET_SAMPLING_PORT_CURRENT_STATUS unit" name="TEST-DEF-01741" />
+          <test description="READ_SAMPLING_MESSAGE_CONDITIONAL unit" name="TEST-DEF-01742" />
+        </tests>
+      </req>
+      <req method="Inspection" name="Port Integrity On Boot" nametag="AIR-FUNC-05030" origin="Created" priority="Mandatory" sima="False">
+        The effects of changing the operational mode of a partition (for example, due to a HM event) on the port contents and status shall be deterministic and documented;
+        <comment>Ensure AIR behavior coherency under situations such as cold/warm reboot.</comment>
+      </req>
+      <req method="Testing" name="Port Configuration Initialization" nametag="AIR-FUNC-05040" origin="Created" priority="Mandatory" sima="True">
+        Channels and ports shall be initialized before used;
+        <comment>Include in AIR initialization process the ports configuration;</comment>
+        <tests>
+          <test name="T-API-INTER-0520:0011" />
+          <test name="T-API-INTER-0570:0011" />
+        </tests>
+      </req>
+      <req method="Testing" name="Concurrent Port Behavior" nametag="AIR-FUNC-05050" origin="Created" priority="Mandatory" sima="True">
+        ARINC 653 ports shall be robust to race conditions originating from simultaneous operations on the same channel (i.e. a partition writing to a channel, while simultaneously other partition is reading );
+        <comment>With multi-core, partition can be simultaneously reading and writing to a channel;</comment>
+        <tests>
+          <test name="TEST-DEF-15050" description="Create a multi-core partition with several tasks that write, concurrently, a fixed data set to the same queueing and sampling port. Verify the integrity of the received data on the other end" />
+        </tests>
+      </req>
+      <req method="Testing" name="Port Configuration Concurrency" nametag="AIR-FUNC-05060" origin="Created" priority="Mandatory" sima="True">
+        In channels connecting two concurrent partitions, data shall be available for reading immediately after it has finished being written;
+        <comment>For two concurrent partition connected by channels it shall not be necessary a context switch for data to be available;</comment>
+         <tests>
+          <test name="TEST-DEF-15060" description="Create a system with two partitions, each running in a different core. Use a queueing port to transfer data between the two partitions. Verify that the receiving partition is able to receive data without having to wait for a partition context switch." />
+        </tests>
+      </req>
+      <req method="Source Code Analysis/Inspection" name="Different Types of Ports" nametag="AIR-FUNC-05070" origin="Created" priority="Guideline" sima="False">
+        AIR may feature different types of ARINC 653 ports optimized for different usage profiles and with different limitations:
+					-  Multi-core safe
+					-  Shared Memory Based
+					-  Kernel Based
+        <comment>For performance and safety reasons this may be a plausible solution;</comment>
+      </req>
+    </subsection>
+    <subsection name="INPUT/OUTPUT">
+      <req method="Testing" name="I/O partition" nametag="AIR-FUNC-05200" origin="Created" priority="Mandatory" sima="False">
+        AIR shall feature an I/O partition;
+        <comment>I/O partition will be required handle I/O;</comment>
+        <parents>
+          <related name="AIR-GEN-01050 " />
+        </parents>
+        <tests>
+          <test name="TEST-DEF-08006" />
+        </tests>
+      </req>
+      <req method="Inspection" name="I/O partition user interfaces" nametag="AIR-FUNC-05220" origin="Created" priority="Mandatory" sima="False">
+        The I/O partition shall communicate with other partitions exclusively by the use of ARINC 653 ports;
+        <comment>ARINC 653 ports are the default mechanism for inter partition communication and provide an abstraction to communicate with other partition or remote devices;</comment>
+      </req>
+      <req method="Analysis" name="I/O partition routing" nametag="AIR-FUNC-05230" origin="Created" priority="Mandatory" sima="False">
+        The I/O Partition shall handle all data routing on the operated data buses.
+        <comment>I/O partition handles the lower level protocol stack;</comment>
+      </req>
+      <req method="Testing" name="I/O partition segregation" nametag="AIR-FUNC-05240" origin="Created" priority="Mandatory" sima="False">
+        The IOP shall limit the number of read requests from each user partition, therefore avoiding denial of service situations;
+        <comment>This ensures quality of service for every partition;</comment>
+        <tests>
+        <test name="TEST-DEF-08006" />
+        </tests>
+      </req>
+      <req method="Inspection" name="I/O partition starvation" nametag="AIR-FUNC-05250" origin="Created" priority="Mandatory" sima="False">
+        The IOP shall automatically drop unhandled I/O requests and unprocessed data to avoid resource starvation;
+        <comment>Resource starvation would lead to denial of service;</comment>
+      </req>
+    </subsection>
+  </section>
+  <section name="PERFORMANCE REQUIREMENTS">
+    <req method="Inspection" name="Storage Size" nametag="AIR-PERF-00010" origin="Created" priority="Mandatory" sima="False">
+      AIR shall occupy less than TBD KiB when compiled;
+      <comment>Fundamental requirement to ensure a lightweight hypervisor on the NGMP;</comment>
+    </req>
+    <req method="Testing/WCET Analysis" name="Context Switch Time" nametag="AIR-PERF-00020" origin="Created" priority="Mandatory" sima="False">
+      AIR shall have a partition context switch time (time interval taken by the system to change the running partition) no greater than TBD us on a NGMP running at TBD MHz.
+      <note>These values assume that no plugins are used.</note>
+      <comment>Fundamental requirement to ensure a performance at least equal to mono-core counterparts. Plugins are an AIR mechanism similar to RTEMS user extensions that allow for the developer to execute code when specific events like the  partition context switch occur;</comment>
+      <tests>
+        <test name="TEST-DEF-50020" descrition="Measure the duration of the Partition Context Switch by instrumenting the interrupt code"/>
+      </tests>  
+    </req>
+    <req method="Testing/WCET Analysis" name="Critical Section" nametag="AIR-PERF-00030" origin="Created" priority="Mandatory" sima="False">
+      AIR shall have a critical section no greater than TBD us on the NGMP;
+      <comment>Fundamental requirement to ensure a performance at least equal to mono-core counterparts.</comment>
+      <tests>
+        <test name="TEST-DEF-50030" descrition="Determine and measure the larger critical section on PMK (section where interrupts are disabled or spinlocks are acquired)"/>
+      </tests>  
+    </req>
+    <req method="Testing/WCET Analysis" name="POS Critical Section" nametag="AIR-PERF-00040" origin="Created" priority="Mandatory" sima="False">
+      AIR shall induce a critical section on the partition operating system (length of time where the PK is pre-emptible but the operating system is not) no greater than TBD ?s on the NGMP;
+      <comment>Fundamental requirement to ensure a performance at least equal to mono-core counterparts.</comment>
+      <tests>
+        <test name="TEST-DEF-50040" descrition="Determine and measure the larger critical section on the partition operating system induced by the PMK (section where virtual interrupts are disabled)"/>
+      </tests>
+    </req>
+    <req method="Testing/WCET Analysis" name="Announcement of clock tick performance" nametag="AIR-PERF-00050" origin="Created" priority="Mandatory" sima="False">
+      The time to announce a clock tick shall be less then TBD ?s for NGMP;
+      <comment>Fundamental requirement to ensure a performance at least equal to mono-core counterparts.</comment>
+      <tests>
+        <test name="TEST-DEF-50050" descrition="Measure the time taken from the first instruction of the interrupt to the first instruction of the virtualized handler."/>
+      </tests>
+    </req>
+    <req method="Testing/WCET Analysis" name="Port Performance" nametag="AIR-PERF-00060" origin="Created" priority="Mandatory" sima="False">
+      The time necessary to write a 1 kilobyte message on a queuing port shall be no greater than TBD ms;
+      <comment>Fundamental requirement to ensure a performance at least equal to mono-core counterparts.</comment>
+      <tests>
+        <test name="TEST-DEF-08007" />
+      </tests>
+    </req>
+  </section>
+  <section name="INTERFACE REQUIREMENTS">
+    <req method="Testing" name="ARINC 653 ports" nametag="AIR-INT-00000" origin="Created" priority="Mandatory" sima="True">
+      AIR shall provide the following interfaces compliant with ARINC 653 Part 1 supplement 2 [RD.1]:
+					-  CREATE_SAMPLING_PORT 
+					-  WRITE_SAMPLING_MESSAGE 
+					-  READ_SAMPLING_MESSAGE
+					-  GET_SAMPLING_MESSAGE_PORT_ID
+					-  GET_SAMPLING_PORT_STATUS
+					-  CREATE_QUEUING_PORT
+					-  SEND_QUEUING_MESSAGE
+					-  RECEIVE_QUEUING_MESSAGE 
+					-  GET_QUEUING_PORT_ID 
+					-  GET_QUEUING_PORT_STATUS
+      <comment>ARINC 653 inter-partition communication services;</comment>
+      <tests>
+        <test description="Queuing port creation." name="T-API-INTER-0570:0011" />
+        <test description="Queuing port creation error" name="T-API-INTER-0570:0012" />
+        <test description="Unsuccessful queuing port creation upon an existing partition in NORMAL" name="T-API-INTER-0570:0013" />
+        <test description="Test the service SEND_QUEUING_MESSAGE with timeout = 0 milliseconds and enough space and no processes" name="T-API-INTER-0580:0010" />
+        <test description="Test the service RECEIVE_QUEUING_MESSAGE when FIFO is not empty and length of message is &lt;= MAXIMUM_LENGTH (input parameter of the" name="T-API-INTER-0590:0010" />
+        <test description="Test the service RECEIVE_QUEUING_MESSAGE when the FIFO queue is empty and timeout=" name="T-API-INTER-0590:0030" />
+        <test description="Test the service" name="T-API-INTER-0590:0070" />
+        <test description="Successful queuing port ID" name="T-API-INTER-0600:0011" />
+        <test description="Unsuccessful queuing port ID" name="T-API-INTER-0600:0012" />
+        <test description="Successful queuing port status" name="T-API-INTER-0610:0011" />
+        <test description="Unsuccessful queuing port status check, due to invalid port" name="T-API-INTER-0610:0012" />
+        <test description="Sampling port creation." name="T-API-INTER-0520:0011" />
+        <test description="Sampling port creation error" name="T-API-INTER-0520:0012" />
+        <test description="Create a sampling port while in NORMAL" name="T-API-INTER-0520:0013" />
+        <test description="Successful sampling message" name="T-API-INTER-0530:0011" />
+        <test description="Sampling message write error handling. (invalid" name="T-API-INTER-0530:0012" />
+        <test description="Successful sampling message" name="T-API-INTER-0540:0011" />
+        <test description="Successful Sampling message readout error handling. (empty sampling" name="T-API-INTER-0540:0013" />
+        <test description="Successful sampling message readout (message age &gt;" name="T-API-INTER-0540:0012" />
+        <test description="Sampling message readout error handling. (invalid" name="T-API-INTER-0540:0014" />
+        <test description="Successful sampling port ID" name="T-API-INTER-0550:0011" />
+        <test description="Unsuccessful sampling port ID" name="T-API-INTER-0550:0012" />
+        <test description="Successful sampling port status" name="T-API-INTER-0560:0011" />
+        <test description="Unsuccessful sampling port status" name="T-API-INTER-0560:0012" />
+        <test name="TEST-DEF-01730" />
+      </tests>
+    </req>
+    <req method="Testing" name="ARINC 653 port extensions" nametag="AIR-INT-00010" origin="Created" priority="Mandatory" sima="True">
+      AIR shall provide the following interfaces compliant with ARINC 653 Part 2 supplement 1 [RD.1]:
+					-  READ_UPDATED_SAMPLING_MESSAGE
+					-  GET_SAMPLING_PORT_CURRENT_STATUS
+					-  READ_SAMPLING_MESSAGE_CONDITIONAL
+      <comment>ARINC 653 inter-partition communication services;</comment>
+      <tests>
+        <test description="READ_UPDATED_SAMPLING_MESSAGE unit test" name="TEST-DEF-01740" />
+        <test description="GET_SAMPLING_PORT_CURRENT_STATUS unit" name="TEST-DEF-01741" />
+        <test description="READ_SAMPLING_MESSAGE_CONDITIONAL unit" name="TEST-DEF-01742" />
+      </tests>
+    </req>
+    <req method="Testing" name="ARINC 653 Multiple Module Schedules" nametag="AIR-INT-00020" origin="Created" priority="Mandatory" sima="True">
+      AIR shall provide the following interfaces compliant with ARINC 653 Part 2 supplement 1 [RD.1]:
+					-  SET_MODULE_SCHEDULE
+					-  GET_MODULE_SCHEDULE_STATUS
+					-  GET_MODULE_SCHEDULE_ID
+      <comment>ARINC 653 inter-partition communication services;</comment>
+      <tests>
+        <test name="TEST-DEF-01750" />
+        <test name="TEST-DEF-01650" />
+        <test name="TEST-DEF-00010" />
+      </tests>
+    </req>
+    <req method="Testing" name="Get Partition Status Functionality" nametag="AIR-INT-00030" origin="Created" priority="Mandatory" sima="True">
+      AIR shall implement the GET_PARTITION_STATUS partition management service;
+      <comment>ARINC 653 partition management services;</comment>
+      <tests>
+        <test name="TEST-DEF-01390" />
+      </tests>
+    </req>
+    <req method="Testing" name="Get Partition Status" nametag="AIR-INT-00040" origin="Created" priority="Mandatory" sima="True">
+      The GET_PARTITION_STATUS service shall return the current operational mode of the calling partition (NORMAL, COLD START, WARM START);
+      <comment>ARINC 653 partition management services;</comment>
+      <tests>
+        <test name="TEST-DEF-01390" />
+      </tests>
+    </req>
+    <req method="Testing" name="Set Partition Mode" nametag="AIR-INT-00050" origin="Created" priority="Mandatory" sima="True">
+      AIR shall implement the SET_PARTITION_MODE partition management service;
+      <comment>ARINC 653 partition management service;</comment>
+      <tests>
+        <test name="TEST-DEF-01650" />
+      </tests>
+    </req>
+    <req method="Testing" name="Set Partition Mode Functionality" nametag="AIR-INT-00060" origin="Created" priority="Mandatory" sima="True">
+      The SET_PARTITION_MODE primitive shall permit changing the current operational mode of the calling partition according to the valid mode transitions;
+      <comment>ARINC 653 partition management services;</comment>
+       <tests>
+        <test name="TEST-DEF-01650" />
+      </tests>
+    </req>
+    <req method="Testing" name="Get Another Partition Status" nametag="AIR-INT-00070" origin="Created" priority="Mandatory" sima="False">
+      AIR shall implement the GET A_PARTITION_STATUS partition management service as defined in IMA-SP/D10 [AD.5];
+      <comment>IMA-SP extension to ARINC653 partition services;</comment>
+      <tests>
+        <test name="TEST-DEF-00022" />
+      </tests>
+    </req>
+    <req method="Testing" name="Get Another Partition Status Functionality" nametag="AIR-INT-00080" origin="Created" priority="Mandatory" sima="False">
+      GET A_PARTITION_STATUS shall allow an authorized partition to access to the mode of any another partition;
+      <comment>IMA-SP extension to ARINC653 partition services;</comment>
+      <tests>
+        <test name="TEST-DEF-00022" />
+      </tests>
+    </req>
+    <req method="Testing" name="Set Another Partition Mode" nametag="AIR-INT-00090" origin="Created" priority="Mandatory" sima="False">
+      AIR shall implement the SET_A_PARTITION_MODE partition management service as defined in IMA-SP/D10 [AD.5];
+      <comment>IMA-SP extension to ARINC653 partition services;</comment>
+      <tests>
+        <test name="TEST-DEF-00022" />
+      </tests>
+    </req>
+    <req method="Testing" name="Set Another Partition Mode Functionality" nametag="AIR-INT-00100" origin="Created" priority="Mandatory" sima="False">
+      SET_A_PARTITION_MODE shall allow an authorized partition to change the mode of any other partition.
+      <comment>IMA-SP extension to ARINC653 partition services;</comment>
+      <tests>
+        <test name="TEST-DEF-00022" />
+      </tests>
+    </req>
+    <req method="Testing" name="Get Another Partition Id" nametag="AIR-INT-00110" origin="Created" priority="Mandatory" sima="False">
+      AIR shall implement the GET_A_PARTITION_ID partition management service as defined in IMA-SP/D10 [AD.5];
+      <comment>IMA-SP extension to ARINC653 partition services;</comment>
+      <tests>
+        <test name="TEST-DEF-00023" />
+      </tests>
+    </req>
+    <req method="Testing" name="Get Partition Id" nametag="AIR-INT-00120" origin="Created" priority="Mandatory" sima="True">
+      GET_PARTITION_ID shall allow obtain the identifier of the partition performing the request.
+      <comment>ARINC653 partition services;</comment>
+      <tests>
+        <test name="TEST-DEF-00023" />
+      </tests>
+    </req>
+    <req method="Testing" name="Cache Services" nametag="AIR-INT-00130" origin="Created" priority="Mandatory" sima="False">
+      AIR shall implement the following cache management services as defined in IMA-SP/D10:
+					-  ACTIVATE_CACHE;
+					-  DEACTIVATE_CACHE
+					-  FLUSH_CACHE
+					-  FREEZE_CACHE
+      <comment>IMA-SP cache services;</comment>
+      <tests>
+        <test name="TEST-DEF-80401" />
+        <test name="TEST-DEF-80420" />
+        <test name="TEST-DEF-01570" />
+      </tests>
+    </req>
+    <req method="Testing" name="Partition Cache Content Flush" nametag="AIR-INT-00140" origin="Created" priority="Mandatory" sima="False">
+      The FLUSH_CACHE service shall flush the instruction and/or data cache for the current partition.
+      <comment>IMA-SP cache services;</comment>
+      <tests>
+        <test description="FLUSH_CACHE test" name="TEST-DEF-80420" />
+      </tests>
+    </req>
+    <req method="Testing" name="Partition Cache Activation" nametag="AIR-INT-00150" origin="Created" priority="Mandatory" sima="False">
+      The CACHE_ACTIVATION service shall activate the cache for the current partition when cache is enabled at configuration level and cache has been deactivated with the CACHE_DEACTIVATION service;
+      <comment>IMA-SP cache services;</comment>
+      <tests>
+        <test name="TEST-DEF-80400" />
+        <test name="TEST-DEF-80401" />
+      </tests>
+    </req>
+    <req method="Testing" name="Partition Cache Deactivation" nametag="AIR-INT-00160" origin="Created" priority="Mandatory" sima="False">
+      The CACHE_DEACTIVATION service shall deactivate instruction and/or data cache for the current partition when cache is enabled at configuration level;
+      <comment>IMA-SP cache services;</comment>
+      <tests>
+        <test name="TEST-DEF-80400" />
+        <test name="TEST-DEF-80401" />
+      </tests>
+    </req>
+    <req method="Testing" name="Partition Cache Freeze" nametag="AIR-INT-00170" origin="Created" priority="Mandatory" sima="False">
+      The FREEZE_CACHE service shall freeze the instruction and/or data cache.
+      <comment>IMA-SP cache services;</comment>
+      <tests>
+        <test name="TEST-DEF-01570" />
+      </tests>
+    </req>
+    <req method="Testing" name="Partition Cache Unfreeze" nametag="AIR-INT-00180" origin="Created" priority="Mandatory" sima="False">
+      The UNFREEZE_CACHE service shall unfreeze the instruction and/or data cache.
+      <comment>IMA-SP cache services;</comment>
+      <tests>
+        <test name="TEST-DEF-80420" />
+      </tests>
+    </req>
+    <req method="Testing" name="Time Service" nametag="AIR-INT-00190" origin="Created" priority="Mandatory" sima="False">
+      AIR shall implement the GET_TIME time management service as specified in IMA-SP/D10 [AD.5];
+      <comment>Time management services.</comment>
+      <tests>
+        <test name="TEST-DEF-80210" />
+      </tests>
+    </req>
+    <req method="Testing" name="Time Service Functionality" nametag="AIR-INT-00200" origin="Created" priority="Mandatory" sima="False">
+      The GET_TIME time management service shall provide a global system time reference to the partition.
+      <comment>Time management services.</comment>
+      <tests>
+        <test name="TEST-DEF-80210" />
+      </tests>
+    </req>
+    <req method="Testing" name="Time Service Access" nametag="AIR-INT-00210" origin="Created" priority="Mandatory" sima="False">
+      The global system clock used by the GET_TIME service shall be common to all partitions and the partitioning kernel;
+      <comment>Time management services.</comment>
+      <tests>
+        <test name="TEST-DEF-80210" />
+      </tests>
+    </req>
+    <req method="Testing" name="Raise Application Error" nametag="AIR-INT-00220" origin="Created" priority="Mandatory" sima="True">
+      AIR shall implement the RAISE_APPLICATION_ERROR health monitoring management service as specified in IMA-SP/D10 [AD.5];
+      <comment>Health Monitoring related service;</comment>
+      <tests>
+        <test name="TEST-DEF-50220" description="Call RAISE_APPLICATION_ERROR and verify that the health monitor is called and the recovery action taken. " />
+      </tests>
+    </req>
+    <req method="Testing" name="Health Monitor Service" nametag="AIR-INT-00230" origin="Created" priority="Mandatory" sima="True">
+      The RAISE_APPLICATION_ERROR service shall allow the current partition to invoke an HM action;
+      <comment>Health Monitoring related service;</comment>
+      <tests>
+        <test name="TEST-DEF-50220" />
+      </tests>
+    </req>
+    <req method="Testing" name="Initialization Service" nametag="AIR-INT-00240" origin="Created" priority="Mandatory" sima="False">
+      AIR shall implement the TSAL_INIT initialization service as specified in IMA-SP/D10 [AD.5];
+      <comment>Abstraction Layer initialization;</comment>
+      <tests>
+        <test description="TSAL_INIT test" name="TEST-DEF-01590" />
+      </tests>
+    </req>
+    <req method="Testing" name="Abstraction Layer Initialization Timing" nametag="AIR-INT-00260" origin="Created" priority="Mandatory" sima="False">
+      The TSAL_INIT service shall be called before any other IMA-SP/D10 [AD.5] service;
+      <comment>Abstraction Layer initialization is mandatory;</comment>
+      <tests>
+        <test description="TSAL_INIT test" name="TEST-DEF-01590" />
+      </tests>
+    </req>
+  </section>
+  <section name="OPERATIONAL REQUIREMENTS">
+    <req method="Inspection" name="System Boot" nametag="AIR-OPER-00010" origin="Created" priority="Recommendation" sima="False">
+      The system should be able to boot up from a single image present in non volatile memory, containing the AIR partitioning kernel and the applications (partitions).
+      <comment>Attempt to simplify AIR boot procedure by using only a single image file.</comment>
+    </req>
+    <req method="Inspection" name="System Execution In RAM" nametag="AIR-OPER-00020" origin="Created" priority="Mandatory" sima="False">The single image file shall be loaded into and executed from RAM.</req>
+  </section>
+  <section name="DESIGN REQUIREMENTS AND IMPLEMENTATION CONSTRAINTS">
+    <req method="Analysis" name="Programming Language" nametag="AIR-IMPL-00010" origin="Created" priority="Recommendation" sima="False">
+      AIR should follow the SYSTEM V APPLICATION BINARY INTERFACE SPARC [RD.3] when applicable;
+      <comment>Maintain the used binary interfaces of AIR.</comment>
+    </req>
+    <req method="Analysis" name="AIR Library Independency" nametag="AIR-IMPL-00020" origin="Created" priority="Mandatory" sima="False">
+      AIR shall be independent from newlib/libc;
+      <comment>Maintain the library independency of AIR;</comment>
+    </req>
+  </section>
+  <section name="SOFTWARE CONFIGURATION REQUIREMENTS">
+    <req method="Inspection" name="ARINC 653 Configuration Compatibility" nametag="AIR-CONF-00010" origin="Created" priority="Mandatory" sima="True">
+      The configuration file shall be compliant with the format specified in ARINC 653 Part 1 Supplement 2 [RD.1] and ARINC 653 Part 2 [RD.2], with AIR specific extensions;
+      <comment>Ensure as possible AIR configuration compliance with ARINC 653 specification:</comment>
+    </req>
+    <req method="Inspection" name="ARINC 653 Configuration Format" nametag="AIR-CONF-00020" origin="Derived" priority="Mandatory" sima="True">
+      The specification shall be available as an XSD schema file, which is used to validate each configuration;
+      <comment>Ensure as possible AIR configuration compliance with ARINC 653 specification;</comment>
+      <parents>
+        <parent name="AIR-CONF-00010 " />
+      </parents>
+    </req>
+    <req method="Inspection" name="AIR Configuration Extension" nametag="AIR-CONF-00030" origin="Derived" priority="Mandatory" sima="False">
+      The configuration file shall feature the following information regarding each individual partition (if not already defined by the ARINC 653 standard):
+					-  Name
+					-  Memory requirements
+					-  Entry point
+					-  Authorized operations permissions(e.g. SET_A_PART_MODE)
+					-  Data cache status (Enabled/Disabled)
+					-  Code cache status (Enabled/Disabled)
+					-  Time reference (Global/Local)
+					-  Floating point support
+					-  I/O partition (Enabled/Disabled, Number)
+      <comment>Specify all configurable items of AIR to assert what is be set in the configuration extension to ARINC 653.</comment>
+      <parents>
+        <parent name="AIR-CONF-00010 " />
+      </parents>
+    </req>
+  </section>
+  <section name="ADAPTATION AND INSTALLATION REQUIREMENTS">
+    <req method="Testing" name="Host" nametag="AIR-INST-00010" origin="Created" priority="Mandatory" sima="False">
+      The result of compilation and linking of AIR with the application shall be an executable binary file.
+      <comment>The user could copy this binary file to the memory of the final target.</comment>
+      <comment>AIR shall be executable on the target hardware once loaded into memory;</comment>
+    </req>
+  </section>
+  <section name="DEMONSTRATOR REQUIREMENTS">
+    <req method="Testing" name="I/O partition interfaces" nametag="AIR-DEMO-00010" origin="Created" priority="Mandatory" sima="False">
+      The I/O partition shall provide interfaces with SpaceWire and Ethernet networks;
+      <comment>Spacewire, MIL-STD-1553B and Ethernet will be used in the demonstrator;</comment>
+    </req>
+    <req method="Analysis" name="I/O partition routing demonstration" nametag="AIR-DEMO-00020" origin="Created" priority="Mandatory" sima="False">
+      The I/O partition shall support configuration defined mappings between local ports and remote addresses. Data received on one side of the mapping shall be sent to the other.
+      <comment>This complies with the pseudo partition concept from ARINC 653;</comment>
+    </req>
+  </section>
+  <section name="VALIDATION REQUIREMENTS">
+    <req method="Inspection" name="Testing Name Rule " nametag="AIR-TEST-0010" origin="Created" priority="Mandatory" sima="False">
+      The test name shall be unique and follow this naming rule: TEST-DEF-XXXXX, where XXXXX is the test number
+      <comment>Standardization of used nomenclature during the VnV process;</comment>
+    </req>
+    <req method="Inspection" name="Cache " nametag="AIR-TEST-0020" origin="Created" priority="Mandatory" sima="False">
+      AIR shall use by default the cache for the NGMP processor;
+      <comment>Enforce usage of caches in VnV process;</comment>
+    </req>
+    <req method="Inspection" name="Execution Report Timestamps" nametag="AIR-TEST-0030" origin="Created" priority="Mandatory" sima="True">
+      The execution reports shall contain the time and date of the test;
+      <comment>For VnV, in order to ensure synchronization and awareness that tests were made on the latest version of source, the test must be time controlled;</comment>
+    </req>
+    <req method="Inspection" name="Execution Report Format" nametag="AIR-TEST-0050" origin="Created" priority="Mandatory" sima="True">
+      AIR test suits shall generate the execution report in a human readable format;
+      <comment>Ensure that generated output of tests is human understandable;</comment>
+    </req>
+    <req method="Inspection" name="Run Mode" nametag="AIR-TEST-0060" origin="Created" priority="Mandatory" sima="True">
+      It shall be possible to run the test suite from the command line;
+      <comment>Clarify the test suite accessibility.</comment>
+    </req>
+    <req method="Inspection" name="Sequential Batch" nametag="AIR-TEST-0070" origin="Created" priority="Mandatory" sima="True">
+      It shall be possible to run one or more tests sequentially;
+      <comment>Attempt to automate as possible the VnV process</comment>
+    </req>
+    <req method="Inspection" name="Concurrent Batch" nametag="AIR-TEST-0080" origin="Created" priority="Mandatory" sima="True">
+      It should be possible to run one or more tests in parallel on the simulator;
+      <comment>Attempt to automate as possible the VnV process;</comment>
+    </req>
+    <req method="Inspection" name="Test Pass/Fail Criteria" nametag="AIR-TEST-0090" origin="Created" priority="Mandatory" sima="True">
+      Test case shall pass successfully if all its steps are successful. One step is considered successful if the obtained output is equal to the expected output;
+      <comment>Ensure the test definition has a clear definition of the expected output;</comment>
+    </req>
+  </section>
+</root>

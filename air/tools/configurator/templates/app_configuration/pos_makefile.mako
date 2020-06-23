@@ -53,6 +53,7 @@ ${template.Rule('all', True, ['$(EXEC)', '$(OBJECT_FILES)', '$(CHDRS)'])}
 # Executale
 ${template.Rule('$(EXEC)', False, ['$(OBJECT_FILES)', '$(CHDRS)'])}
 ${'\t'}$(TARGET_LD)${'\\'}
+${'\t\t'}$(TARGET_LDFLAGS)${'\\'}
 ${'\t\t'}-nostdlib -nodefaultlibs -nostartfiles${'\\'}
 ${'\t\t'}-T${os.path.join('$(AIR_POS)', pos_config.name, 'include', 'linkcmds.ld')}${'\\'}
 ${'\t\t'}-Wl,--start-group${'\\'}

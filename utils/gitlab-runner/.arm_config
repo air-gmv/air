@@ -1,0 +1,13 @@
+(S'arm'
+p0
+S'zynqz1'
+p1
+I01
+I2
+(lp2
+S'bare'
+p3
+aS'rtems5'
+p4
+atp5
+.

@@ -1953,6 +1953,7 @@ the system traps on overflow.\n");
         printf ("\nA total of %d floating point exceptions were registered.\n",
             fpecount);
     printf ("END OF TEST.\n");
+    air_syscall_shutdown_module();
     return 0;
 }
 

@@ -117,15 +117,23 @@ ${'\t'}@($(SYMLINK) ${file} ${target})\
 ${'\t'}@($(RM) ${files})\
 </%def>
 
-<%def name="RunMakeInDir(dir, rule)">\
+<%def name="RunMakeInDir(recurse, dir, rule)">\
 <%
     import os
 %>\
 % if os.path.isdir(os.path.join(output_dir, dir)) and (os.path.isfile(os.path.join(output_dir, dir, 'Makefile') or  os.path.isfile(os.path.join(output_dir, dir, 'makefile')))):
+% if recurse:
+% if rule is not None:
+${'\t'}$(MAKE) -C ${dir} ${rule}\
+% else:
+${'\t'}$(MAKE) -C ${dir}\
+% endif
+% else:
 % if rule is not None:
 ${'\t'}make -C ${dir} ${rule}\
 % else:
 ${'\t'}make -C ${dir}\
+% endif
 % endif
 % endif
 </%def>

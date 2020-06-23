@@ -19,22 +19,22 @@ ${template.MakefileInc(True)}
 
 # All
 ${template.Rule('all', True, None)}
-${template.RunMakeInDir('common', None)}
+${template.RunMakeInDir(True, 'common', None)}
 % for i, partition in enumerate(app_configuration.partitions):
-${template.RunMakeInDir(partition.directory, 'all')}
+${template.RunMakeInDir(True, partition.directory, 'all')}
 % endfor
-${template.RunMakeInDir('config', 'all')}
+${template.RunMakeInDir(True, 'config', 'all')}
 
 # Clean
 ${template.Rule('clean', True, None)}
-${template.RunMakeInDir('common', 'clean')}
+${template.RunMakeInDir(True, 'common', 'clean')}
 % for i, partition in enumerate(app_configuration.partitions):
-${template.RunMakeInDir(partition.directory, 'clean')}
+${template.RunMakeInDir(True, partition.directory, 'clean')}
 % endfor
-${template.RunMakeInDir('config', 'clean')}
+${template.RunMakeInDir(True, 'config', 'clean')}
 
 # Distclean
 ${template.Rule('distclean', True, ['clean'])}
-${template.RunMakeInDir('config', 'distclean')}
+${template.RunMakeInDir(True, 'config', 'distclean')}
 ${'\t'}${os.path.join('$(AIR_TOOLS)', 'configurator clean')}
 

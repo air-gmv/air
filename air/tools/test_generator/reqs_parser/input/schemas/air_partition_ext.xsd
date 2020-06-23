@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema	xmlns:xs="http://www.w3.org/2001/XMLSchema" 	
+			targetNamespace="PartitionExt" 
+			xmlns="PartitionExt"
+			elementFormDefault="unqualified"> 
+			
+	<!-- ======================================================================= 
+	AIR partition extension elements  
+	======================================================================== -->
+	<xs:element name="air_partition_ext">
+		<xs:annotation>
+			<xs:documentation>
+				Partition level configuration for AIR systems:
+				- partition personality
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="supervisor" type="xs:boolean" />
+				<xs:element name="cache">
+					<xs:complexType>
+						<xs:attribute name="permission" type="air_cache_perm_type" use="required"/>
+						<xs:attribute name="data" 		type="air_cache_data_type" use="required"/>
+						<xs:attribute name="code" 		type="air_cache_code_type" use="required"/>						
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="tod_sync" 	type="xs:boolean" />
+				<xs:element name="localtime" 	type="xs:boolean" />
+				
+				<xs:element name="cache_control" 	type="xs:boolean" />
+				<xs:element name="fp_control" 		type="xs:boolean" />
+				<xs:element name="sched_control"	type="xs:boolean" />
+			</xs:sequence>		
+			<xs:attribute name="air_partition_personality" type="air_partition_personality_type" use="required"/>
+			<xs:attribute name="test" type="test_type" use="required"/>
+			<xs:attribute name="is_IOP" type="BooleanType"/>
+			<xs:attribute name="uses_middleware" type="BooleanType"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<!-- ======================================================================= 
+	type definitions for this extension  
+	======================================================================== -->	
+	<xs:simpleType name="air_partition_personality_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="RTEMSIMPR"/>
+			<xs:enumeration value="RTEMS481"/>
+			<xs:enumeration value="RTEMS481_AIRPEX"/>
+			<xs:enumeration value="RTEMSIMPR_IMASPEX"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="test_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NONE"/>
+			<xs:enumeration value="TEST_GMV_UNT"/>
+			<xs:enumeration value="TEST_GMV_INT"/>
+			<xs:enumeration value="TEST_GMV_VAL"/>
+			<xs:enumeration value="TEST_EDI_UNT"/>
+			<xs:enumeration value="TEST_EDI_INT"/>
+			<xs:enumeration value="TEST_EDI_VAL"/>
+		</xs:restriction>
+	</xs:simpleType>	
+	
+	<xs:simpleType name="SupervisorType">
+		<xs:restriction base="xs:boolean" />
+	</xs:simpleType>	
+
+	<xs:simpleType name="air_cache_perm_type">
+		<xs:restriction base="xs:boolean" />
+	</xs:simpleType>
+
+	<xs:simpleType name="air_cache_data_type">
+		<xs:restriction base="xs:boolean" />
+	</xs:simpleType>
+	
+	<xs:simpleType name="air_cache_code_type">
+		<xs:restriction base="xs:boolean" />
+	</xs:simpleType>
+	
+	<xs:simpleType name="BooleanType">
+		<xs:restriction base="xs:boolean" />
+	</xs:simpleType>	
+	
+</xs:schema>

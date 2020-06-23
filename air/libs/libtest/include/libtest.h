@@ -16,6 +16,7 @@
 
 #include <air.h>
 #include <stdarg.h>
+#include <pprintf.h>
 
 /**
  * @brief Size of the partition internal buffer
@@ -28,29 +29,8 @@
 /**
  * @brief Align address
  */
-#define ADDR_ALIGN(addr, align)     (((addr) + ((align) - 1)) & ~((align) - 1))
+#define ADDR_ALIGN(addr, align)     (((air_u32_t)(addr) + ((align) - 1)) & ~((align) - 1))
 
-#ifdef COLORS
-#define COLOR_KNRM                             "\x1B[0m"
-#define COLOR_KRED                             "\x1B[31m"
-#define COLOR_KGRN                             "\x1B[32m"
-#define COLOR_KYEL                             "\x1B[33m"
-#define COLOR_KBLU                             "\x1B[34m"
-#define COLOR_KMAG                             "\x1B[35m"
-#define COLOR_KCYN                             "\x1B[36m"
-#define COLOR_KWHT                             "\x1B[37m"
-#define COLOR_RESET                            "\033[0m"
-#else
-#define COLOR_KNRM                             ""
-#define COLOR_KRED                             ""
-#define COLOR_KGRN                             ""
-#define COLOR_KYEL                             ""
-#define COLOR_KBLU                             ""
-#define COLOR_KMAG                             ""
-#define COLOR_KCYN                             ""
-#define COLOR_KWHT                             ""
-#define COLOR_RESET                            ""
-#endif
 
 /**
  * @brief Test step announcement flags
@@ -67,10 +47,8 @@ typedef enum {
  * @brief Test step result
  */
 typedef enum {
-
-    FAILURE                 = 0x00,
-    SUCCESS                 = 0x01,
-
+    TEST_FAILURE                 = 0x00,
+    TEST_SUCCESS                 = 0x01,
 } test_result;
 
 
@@ -104,7 +82,13 @@ typedef struct {
 
 } test_control_t;
 
-extern void __test_step_report(char *, char *, int, test_result);
+extern void test_step_report(char *, int, char *, int, test_result);
+
+
+/**
+ * @brief Enables libtest debug prints
+ */
+void debug_libtest();
 
 /**
  * @brief Initializes the test partition
@@ -127,18 +111,6 @@ void control_partition_init(air_u32_t id, air_name_ptr_t shm_name);
  */
 air_u32_t test_step_announce(air_u32_t id, announce_flags flags);
 
-/**
- * @brief Reports the result of a test
- * @param cond test step condition
- */
-#define test_step_report(cond) \
-    do{\
-        if (!(cond)){\
-            __test_step_report(#cond, __FILE__, __LINE__, FAILURE);\
-        } else {\
-            __test_step_report(#cond, __FILE__, __LINE__, SUCCESS);\
-        }\
-    } while(0)
 
 /**
  * @brief Finish test partition
@@ -149,8 +121,5 @@ air_u32_t test_step_announce(air_u32_t id, announce_flags flags);
  */
 void test_finish(test_result result);
 
-
-
-void pprintf(const char *fmt , ...);
 
 #endif /* __LIBTEST_H_ */

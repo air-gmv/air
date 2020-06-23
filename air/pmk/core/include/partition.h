@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2014  GMVIS Skysoft S.A.
+ * Copyright (C) 2008-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -94,11 +94,13 @@ void pmk_partitions_init(void);
  * @param context current core context structure
  */
 void pmk_partition_start(pmk_partition_t *partition, core_context_t *context);
+
 /**
  * @brief Halts a partition
  * @param partition partition control structure
  */
 void pmk_partition_halt(pmk_partition_t *partition);
+
 /**
  * @brief Restarts a partition
  * @param partition partition control structure
@@ -117,23 +119,26 @@ void pmk_partition_reload(pmk_partition_t *partition);
  * @return partition configuration pointer if Id is valid, NULL otherwise
  */
 pmk_partition_t *pmk_get_partition_by_id(air_identifier_t pid);
+
 /**
  * @brief Get partition configuration by name
  * @param name partition name
  * @return partition configuration pointer if name is valid, NULL otherwise
  */
 pmk_partition_t *pmk_get_partition_by_name(air_name_ptr_t name);
+
 /**
  * @brief Setups a reload partition context
- * @param partition the partition to be reloaded
  * @param context the core context responsible for the reload
+ * @param partition the partition to be reloaded
  */
 void core_context_setup_reload_partition(
         core_context_t *context, pmk_partition_t *partition);
+
 /**
  * @brief Setups a core partition context
- * @param partition partition information
  * @param context core context
+ * @param partition partition information
  */
 void core_context_setup_partition(
         core_context_t *context, pmk_partition_t *partition);

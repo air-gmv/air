@@ -7,6 +7,10 @@
 *.out
 *.ralf
 *.txt
+*.bin
+*.gz
+*.img
+*.elf
 
 # Makefiles
 Makefile
@@ -24,7 +28,7 @@ b-*/
 # 'configure' generated files
 .config
 air/.air_config
-air/pmk/arch/sparc/include/asm_offsets.h
+air/pmk/arch/**/include/asm_offsets.h
 
 # Examples generated files
 air/examples/**/*.a
@@ -42,8 +46,69 @@ air/examples/**/rtems_config.h
 .*-swp
 tags
 
+# Doxygen output directory
+doc/
+
+#Netbeans
+nbproject
 
 # Eclipse
+# Created by https://www.gitignore.io/api/eclipse
+
+### Eclipse ###
+
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# PyDev specific (Python IDE for Eclipse)
+*.pydevproject
+
+# CDT-specific (C/C++ Development Tooling)
+.cproject
+
+# Java annotation processor (APT)
+.factorypath
+
+# PDT-specific (PHP Development Tools)
+.buildpath
+
+# sbteclipse plugin
+.target
+
+# Tern plugin
+.tern-project
+
+# TeXlipse plugin
+.texlipse
+
+# STS (Spring Tool Suite)
+.springBeans
+
+# Code Recommenders
+.recommenders/
+
+# Scala IDE specific (Scala & Java development for Eclipse)
+.cache-main
+.scala_dependencies
+.worksheet
+
+### Eclipse Patch ###
+# Eclipse Core
 .project
 
 #TASTE
@@ -55,3 +120,18 @@ oldI*
 
 #AIV
 aiv
+
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+
+# Annotation Processing
+.apt_generated
+
+
+# End of https://www.gitignore.io/api/eclipse
+
+/air/tools/configurator/nbproject/private/
+/air/examples/validation/TEST-DEF-00009/doit.sh
+/air/examples/validation/TEST-DEF-00009/testScp.sh
+/air/examples/validation/testsuite/
+/air/tools/test_generator/nbproject/private/

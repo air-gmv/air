@@ -7,25 +7,17 @@
  */
  
 #include <rtems.h>
- 
 #include <rtems/rtems/tasks.h> 
 #include <rtems/rtems/sem.h> 
 #include <rtems/rtems/clock.h> 
-
+#include <pprintf.h>
 #include <imaspex.h>
-
-#ifdef RTEMS48I
-	#include <pprintf.h>
-	#define printf(f_, ...) pprintf((f_), ##__VA_ARGS__)
-#endif
-
-
-
 
 #define TPS 200 /*ticks per second specified in the XML*/
 
 SAMPLING_PORT_ID_TYPE SEND_PORT;
 QUEUING_PORT_ID_TYPE qpid;
+int g_bp = 0;
 
 /*---------------------------------------------------------	
  *		function: test										*
@@ -39,9 +31,9 @@ void test(uintptr_t self_id) {
 	
 	RETURN_CODE_TYPE rc;
 	
-	while(1) {
-		printf ("Partition %d sending: %s..\n", self_id, message);
-		WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )message, 16, &rc );
+	for (int j=0; j <= 3; j++) {
+		printf ("Partition %d sending msg: %s..\n", self_id, message);
+		WRITE_SAMPLING_MESSAGE (SEND_PORT, (MESSAGE_ADDR_TYPE )message, 17, &rc );
 		if (NO_ERROR != rc) {
 			printf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
 		}
@@ -54,7 +46,9 @@ void test(uintptr_t self_id) {
 		message[15] = 0x30 + i;
 		
     printf ("Partition %d sending queuing: %s..\n", self_id, message);
-    SEND_QUEUING_MESSAGE(qpid, (MESSAGE_ADDR_TYPE )message, 16, INFINITE_TIME_VALUE, &rc );
+	g_bp = 10;
+
+    SEND_QUEUING_MESSAGE(qpid, (MESSAGE_ADDR_TYPE )message, 17, INFINITE_TIME_VALUE, &rc );
 		if (rc != NO_ERROR) {
 		    printf ("SEND_QUEUING_MESSAGE error %d\n", rc);
 		}
@@ -69,6 +63,7 @@ void test(uintptr_t self_id) {
 		
 		rtems_task_wake_after(0.6*TPS); 
 	}
+	air_syscall_shutdown_module();
 }
 
 
@@ -119,6 +114,7 @@ int entry_func() {
 	if (NO_ERROR != rc) {
 		printf("SET_PARTITION_MODE error %d\n", rc);
 	}
+	
 	
 	return RTEMS_SUCCESSFUL;
 }
