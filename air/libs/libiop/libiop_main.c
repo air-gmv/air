@@ -30,30 +30,28 @@ void iop_main_loop(void){
     rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time1);
     iop_debug("  IOP :: air-dev-cov times is %d %d\n", time2, time1);
 #endif
-    
+
     iop_physical_device_t *devs[usr_configuration.physical_devices.length];
     for(i =0; i < usr_configuration.physical_devices.length; i++){
-    	devs[i] = get_physical_device(i);
+        devs[i] = get_physical_device(i);
     }
-    
+
 
     for(;;)
     {
+        pre_dispatcher();
+        pre_router();
 
-    	pre_dispatcher();
-    	pre_router();
+        /* run all the device drivers writer and reader functions */
 
-		/* run all the device drivers writer and reader functions */
+        for(i = 0; i < usr_configuration.physical_devices.length; i++){
 
-    	for(i = 0; i < usr_configuration.physical_devices.length; i++){
-    		devs[i]->reader_task((air_uptr_t)devs[i]);
-    		devs[i]->writer_task((air_uptr_t)devs[i]);
+            devs[i]->writer_task((air_uptr_t)devs[i]);
+            devs[i]->reader_task((air_uptr_t)devs[i]);
+        }
 
-    	}
-
-
-    	pos_dispatcher();
-    	pos_router();
+        pos_dispatcher();
+        pos_router();
 
 #ifdef COVERAGE_ENABLED
         iop_debug("  IOP :: air-dev-cov checking time\n");

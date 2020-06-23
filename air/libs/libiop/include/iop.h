@@ -5,12 +5,12 @@
  * found in the file LICENSE in this distribution or at
  * air/LICENSE
  */
-/** 
+/**
  * @file
- * 
+ *
  * @author cdcs
  * @brief Defines the internal memory structures used by the IOP.
- */  
+ */
 
 
 #ifndef __IOP_H__
@@ -86,13 +86,13 @@ typedef struct {
  */
 typedef struct{
     iop_chain_node node;
-    
+
     iop_header_t header;
     void *payload;
 
     uint32_t header_size;
     uint32_t payload_size;
-    
+
 } iop_fragment_t;
 
 /**
@@ -279,9 +279,9 @@ typedef struct {
  * @brief structure used as an ioctl interface with the drivers
  */
 typedef struct {
-    unsigned int command; 		/**< ioctl command */
-    void *buffer;		  		/**< data needed for the ioctl command*/
-    unsigned int ioctl_return; 	/**< ioctl return code */
+    unsigned int command;         /**< ioctl command */
+    void *buffer;                  /**< data needed for the ioctl command*/
+    unsigned int ioctl_return;     /**< ioctl return code */
 } libio_ioctl_args_t;
 
 /**

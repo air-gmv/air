@@ -54,9 +54,9 @@ def Run(args, logger):
 
     # parse input args or prompt the user for configuration
     if args.config is None:
-        arch, bsp, fpu_enabled, cache_init, pos = prompt_configuration(logger)
+        arch, bsp, fpu_enabled, debug_monitor, pos = prompt_configuration(logger)
         # create the OS configuration object
-        os_configuration = air_configuration.Configuration(arch, bsp, fpu_enabled, cache_init, pos)
+        os_configuration = air_configuration.Configuration(arch, bsp, fpu_enabled, debug_monitor, pos)
     else:
         os_configuration = input_configuration(logger, args.config)
 
@@ -183,12 +183,14 @@ def prompt_configuration(logger):
         fpu_enabled = False
 
     # get debug monitor tool
-    opts = ['GRMON', 'DMON']
+    opts = ['GRMON', 'DMON', 'NONE']
     i = terminalutils.promptActions('Select debug monitor:', opts)
     if i == 0:
-        cache_init = 1
+        debug_monitor = 1
+    elif i == 2:
+        debug_monitor = 2;
     else:
-        cache_init = 0
+        debug_monitor = 0
 
     pos = []
     # Prompt to install RTOS
@@ -209,7 +211,7 @@ def prompt_configuration(logger):
             logging.warning ('Missing AIR POS : %s, name: %s', pos_path, pos_name)
             pass
 
-    return arch, bsp, fpu_enabled, cache_init, pos
+    return arch, bsp, fpu_enabled, debug_monitor, pos
 
 
 def input_configuration(logger, config):

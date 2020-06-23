@@ -123,4 +123,12 @@ extern pmk_sharedarea_t air_shared_area;
  */
 void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core);
 
+
+/**
+ * @brief IPC trap handler
+ * @param isf Executing stack frame
+ * @param core Executing core control structure
+ */
+void pmk_ipc_handler(void *isf, pmk_core_ctrl_t *core);
+
 #endif /* __WORKSPACE_H__ */

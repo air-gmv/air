@@ -13,6 +13,7 @@
 
 #include <air.h>
 #include <string.h>
+#include <rtems.h>
 
 char message[] = {
     0x48,0x65,0x6c,0x6c,0x6f,0x21,0x20,0x49,0x73,0x20,0x69,0x74,0x20,0x6d,0x65,
@@ -104,7 +105,7 @@ char message[] = {
  * @brief Partition entry point
  */
 void entry_point() {
-
+    int ticks_per_sec = 1000000 / air_syscall_get_us_per_tick();
     air_sharedmemory_t sharedmemory;
     air_partition_status_t partition;
 
@@ -121,8 +122,8 @@ void entry_point() {
 
         /* shutdown module */
         air_syscall_shutdown_module();
-        for (;;);
+        
     }
-
-    for (;;);
+    rtems_task_wake_after(ticks_per_sec/10);
+    air_syscall_shutdown_module();
 }

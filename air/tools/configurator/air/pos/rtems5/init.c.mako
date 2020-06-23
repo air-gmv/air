@@ -9,11 +9,38 @@ ${makoutils.cfileHeader("init.c", "Partition Initialization")}
 %if 'imaspex' in partition.libraries:
 #include <imaspex.h>
 %endif
+%if os_configuration.arch == "arm":
+#include <rtems/score/armv4.h>
+#include <libcpu/arm-cp15.h>
+%endif
 
 /**
  * @brief Partition entry point
  */
 extern int ${partition.entry_point}() __attribute__ ((weak));
+
+/**
+ * @brief Install the HM handler
+ */
+%if os_configuration.arch == "arm":
+void hm_handler_install(void *handler){
+    arm_cp15_set_exception_handler(ARM_EXCEPTION_DATA_ABORT, &_ARMV4_Exception_data_abort);
+    _ARMV4_Exception_data_abort_set_handler(handler);
+    arm_cp15_set_exception_handler(ARM_EXCEPTION_PREF_ABORT, &_ARMV4_Exception_prefetch_abort);
+    _ARMV4_Exception_prefetch_abort_set_handler(handler);
+    arm_cp15_set_exception_handler(ARM_EXCEPTION_UNDEF, &_ARMV4_Exception_prefetch_abort);
+    _ARMV4_Exception_prefetch_abort_set_handler(handler);
+}
+%else:
+void hm_handler_install(void *handler){
+
+    rtems_isr_entry isr_ignored;
+    rtems_interrupt_catch(
+            (rtems_isr_entry)handler,
+            AIR_IRQ_HM_EVENT,
+            &isr_ignored);
+}
+%endif 
 
 %if partition.iop is not None:
 /**
@@ -53,11 +80,7 @@ static void hm_isr_handler(void) {
 rtems_task Init(rtems_task_argument ignored) {
 
     /* register HM ISR handler */
-    rtems_isr_entry isr_ignored;
-    rtems_interrupt_catch(
-            (rtems_isr_entry)hm_isr_handler,
-            AIR_IRQ_HM_EVENT,
-            &isr_ignored);
+    hm_handler_install(hm_isr_handler);
 
     %if 'imaspex' in partition.libraries:
     /* initialize IMASPEX */
@@ -72,6 +95,10 @@ rtems_task Init(rtems_task_argument ignored) {
     if (${partition.entry_point} != NULL) {
         ${partition.entry_point}();
     }
+
+#ifdef COVERAGE_ENABLED
+    __gcov_exit();
+#endif
 
     rtems_task_delete(RTEMS_SELF);
 }
