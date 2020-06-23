@@ -28,7 +28,6 @@ void entry_point() {
 
         /* shutdown module */
         air_syscall_shutdown_module();
-        for (;;);
     }
 
     char *message = (char *)sharedmemory.address;
