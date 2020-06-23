@@ -40,13 +40,6 @@ typedef struct {
 #define pmk_get_from_list(type, list, index)    \
         &((type *)(list)->elements)[index]
 
-
-void *memset(void *, int, air_sz_t);
-void *memcpy(void *, const void *, air_sz_t);
-int strncmp(const char *, const char *, air_sz_t);
-
-
-
 #else /* ASM */
 
 /** @defgroup os_status_asm AIR-OS Status Code (ASM definitions)

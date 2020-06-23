@@ -377,13 +377,13 @@ shm:
     environment:
         name: SPARC LEON4
 
-########################
-#Tests for ARM         #
-########################
+#########################
+##Tests for ARM         #
+#########################
 
-##########################
-#Example Tests for ARM   #
-##########################
+###########################
+##Example Tests for ARM   #
+###########################
 
 00001_arm:
     stage: examples
@@ -413,9 +413,9 @@ hello_world_arm:
     environment:
         name: ARM ZYNQZ1
 
-########################
-#Unit Tests for ARM    #
-########################
+#########################
+##Unit Tests for ARM    #
+#########################
 
 00009_arm:
     stage: validation_tests
@@ -456,46 +456,44 @@ hello_world_arm:
    environment:
        name: ARM ZYNQZ1
 
+00021_arm: 
+   stage: validation_tests
+   tags: 
+       - arm-taste-debian1
+   script:
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00021
+       - cp $AIR/../utils/gitlab-runner/* .
+       - ./do_zynqz1_qemu.bash
+       - ./testcheck.py
+       - cd $AIR
+   environment:
+       name: ARM ZYNQZ1
 
+00022_arm: 
+   stage: validation_tests
+   tags: 
+       - arm-taste-debian1
+   script:
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00022
+       - cp $AIR/../utils/gitlab-runner/* .
+       - ./do_zynqz1_qemu.bash
+       - ./testcheck.py
+       - cd $AIR
+   environment:
+       name: ARM ZYNQZ1
 
-#00021_arm: 
-   #stage: validation_tests
-   #tags: 
-       #- arm-taste-debian1
-   #script:
-       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00021
-       #- cp $AIR/../utils/gitlab-runner/* .
-       #- ./do_zynqz1_qemu.bash
-       #- ./testcheck.py
-       #- cd $AIR
-   #environment:
-       #name: ARM ZYNQZ1
-
-#00022_arm: 
-   #stage: validation_tests
-   #tags: 
-       #- arm-taste-debian1
-   #script:
-       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00022
-       #- cp $AIR/../utils/gitlab-runner/* .
-       #- ./do_zynqz1_qemu.bash
-       #- ./testcheck.py
-       #- cd $AIR
-   #environment:
-       #name: ARM ZYNQZ1
-
-#00023_arm: 
-   #stage: validation_tests
-   #tags: 
-       #- arm-taste-debian1
-   #script:
-       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00023
-       #- cp $AIR/../utils/gitlab-runner/* .
-       #- ./do_zynqz1_qemu.bash
-       #- ./testcheck.py
-       #- cd $AIR
-   #environment:
-       #name: ARM ZYNQZ1
+00023_arm: 
+   stage: validation_tests
+   tags: 
+       - arm-taste-debian1
+   script:
+       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00023
+       - cp $AIR/../utils/gitlab-runner/* .
+       - ./do_zynqz1_qemu.bash
+       - ./testcheck.py
+       - cd $AIR
+   environment:
+       name: ARM ZYNQZ1
 
 00500_arm: 
    stage: validation_tests
