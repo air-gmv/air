@@ -4,3 +4,6 @@
 [submodule "air/pos/rtems5"]
 	path = air/pos/rtems5
 	url = https://spass-git-ext.gmv.com/AIR/rtems5.git
+[submodule "air/examples/private-example"]
+	path = air/examples/private-example
+	url = https://spass-git-ext.gmv.com/AIR/private-example.git
