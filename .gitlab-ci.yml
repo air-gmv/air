@@ -377,6 +377,18 @@ shm:
     environment:
         name: SPARC LEON4
 
+01590_sparc: 
+    stage: validation_tests
+    tags: 
+        - sparc-taste-debian1
+    script:
+        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01590
+        - cp $AIR/../utils/gitlab-runner/* .
+        - ./do_leon4_grmon.bash
+        - cd $AIR
+    environment:
+        name: SPARC LEON4
+
 #########################
 ##Tests for ARM         #
 #########################
