@@ -11,7 +11,7 @@
  * @brief Defines functionality of LIBC needed by AIR
  */
 
-#include "libc.h"
+#include <libc.h>
 
 /**
  * @brief Implementation of memory copy function
@@ -37,7 +37,7 @@ void *memcpy(void *destination , const void *source , size_t length)
         i_source = (int32_t*) b_source;
  
         /* copy 128 words at a time  */
-        while(i_len >= AIR_128SIZE)
+        while(i_len >= AIR_INT128SIZE)
         {
             *i_destination = *i_source;
             i_destination++;
@@ -55,7 +55,7 @@ void *memcpy(void *destination , const void *source , size_t length)
             i_destination++;
             i_source++;
 
-            i_len -= AIR_128SIZE;
+            i_len -= AIR_INT128SIZE;
         }
 
         /* copy 4 bytes at a time*/
@@ -156,7 +156,7 @@ void *memset(void *mem_pointer , int value , size_t length)
         }
 
         /* copy the aligned bytes */
-        while(n >= AIR_UINTPTSIZE * 4U)
+        while(length >= AIR_UINTPTSIZE * 4U)
         {
             *aligned_addr = buffer;
             aligned_addr++;
@@ -174,7 +174,7 @@ void *memset(void *mem_pointer , int value , size_t length)
         }
 
         /* copy the 4 bytes */
-        while(n >= AIR_UINTPTSIZE)
+        while(length >= AIR_UINTPTSIZE)
         {
             *aligned_addr = buffer;
             aligned_addr++;
