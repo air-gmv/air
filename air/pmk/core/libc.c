@@ -19,22 +19,22 @@
  * @param destination pointer memory are to write a copy
  * @param length amount of bytes to copy
  */
-void *memcpy(void *destination , const void *source , size_t length)
+void *memcpy(void *destination , const void *source , air_sz_t length)
 {
     /*byte pointers */
-    int8_t *b_destination = (int8_t *) destination;
-    const int8_t *b_source = source;
+    air_i8_t *b_destination = (air_i8_t *) destination;
+    const air_i8_t *b_source = source;
 
     /* integer pointers */
-    int32_t *i_destination;
-    const int32_t *i_source;
-    uint32_t i_len = (uint32_t) length;
+    air_i32_t *i_destination;
+    const air_i32_t *i_source;
+    air_u32_t i_len = (air_u32_t) length;
 
     if(((AIR_CHECK_LEN128(i_len)) == 0U) &&
-       ((AIR_MEM_ALIGN((uint32_t) source , (uint32_t) destination)) == 0))
+       ((AIR_MEM_ALIGN((air_u32_t) source , (air_u32_t) destination)) == 0))
     {
-        i_destination = (int32_t*) b_destination;
-        i_source = (int32_t*) b_source;
+        i_destination = (air_i32_t*) b_destination;
+        i_source = (air_i32_t*) b_source;
  
         /* copy 128 words at a time  */
         while(i_len >= AIR_INT128SIZE)
@@ -68,8 +68,8 @@ void *memcpy(void *destination , const void *source , size_t length)
         }
 
         /* remaining bytes pointer*/
-        b_destination = (int8_t*) i_destination;
-        b_source = (int8_t*) i_source;
+        b_destination = (air_i8_t*) i_destination;
+        b_source = (air_i8_t*) i_source;
     }
 
     /* copy remaining bytes */
@@ -90,10 +90,10 @@ void *memcpy(void *destination , const void *source , size_t length)
  * @param string2 String to compare with
  * @param n number of bytes to compare 
  */
-int strncmp(const char *string1 , const char *string2 , size_t n)
+int strncmp(const char *string1 , const char *string2 , air_sz_t n)
 {
-    int32_t result = 0;
-    uint32_t counter = 0U;
+    air_i32_t result = 0;
+    air_u32_t counter = 0U;
 
     /* jump while bytes are equal or untiln end of strin*/
     while(( counter < n ) && 
@@ -111,7 +111,7 @@ int strncmp(const char *string1 , const char *string2 , size_t n)
     else
     {
         /* return index in string of where diff occurs */
-        result = (int32_t) string1[counter] - (int32_t) string2[counter];
+        result = (air_i32_t) string1[counter] - (air_i32_t) string2[counter];
     }
     return result;
 }
@@ -122,28 +122,28 @@ int strncmp(const char *string1 , const char *string2 , size_t n)
  * @param value The value to set
  * @param length number of bytes to set the value in region 
  */
-void *memset(void *mem_pointer , int value , size_t length)
+void *memset(void *mem_pointer , int value , air_sz_t length)
 {
     /* pointers*/
-    int8_t *write_pointer = (int8_t *) mem_pointer;
-    uintptr_t *aligned_addr;
-    uint32_t unsign_var = (uint32_t) value & 0xffU;
+    air_i8_t *write_pointer = (air_i8_t *) mem_pointer;
+    air_uptr_t *aligned_addr;
+    air_u32_t unsign_var = (air_u32_t) value & 0xffU;
 
     /* iterator */
-    uint32_t i;
+    air_u32_t i;
 
     /* buffer  */
-    uint32_t buffer;
+    air_u32_t buffer;
 
     /* if length is not small and address is aligned */
     if(( AIR_CHECK_LENUINTPT(length) == 0U ) && ( AIR_ALIGN_UINT(mem_pointer) == 0U ))
     {
-        aligned_addr = (uintptr_t *) mem_pointer;
+        aligned_addr = (air_uptr_t *) mem_pointer;
 
         if(AIR_UINTPTSIZE == 4U)
         {
             /* copy to the buffer */
-            buffer = (uint32_t) ( ( unsign_var << 8U ) | unsign_var );
+            buffer = (air_u32_t) ( ( unsign_var << 8U ) | unsign_var );
             buffer = buffer | ( buffer << 16U );
         }
         else
@@ -170,7 +170,7 @@ void *memset(void *mem_pointer , int value , size_t length)
             *aligned_addr = buffer;
             aligned_addr++;
 
-            length -= (size_t) ( 4U * AIR_UINTPTSIZE );
+            length -= (air_sz_t) ( 4U * AIR_UINTPTSIZE );
         }
 
         /* copy the 4 bytes */
@@ -180,13 +180,13 @@ void *memset(void *mem_pointer , int value , size_t length)
             aligned_addr++;
             length -= AIR_UINTPTSIZE;
         }
-        write_pointer = (int8_t*) aligned_addr;
+        write_pointer = (air_i8_t*) aligned_addr;
     }
 
     /* copy the remaining bytes */
     while(length > 0U)
     {
-        *write_pointer = (int8_t) unsign_var;
+        *write_pointer = (air_i8_t) unsign_var;
         write_pointer++;
         length--;
     }
