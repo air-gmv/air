@@ -28,11 +28,11 @@
 /**
  * @brief macro definitions 
  */
-#define AIR_CHECK_LEN128(LEN)  ((LEN) < AIR_128SIZE)
-#define AIR_CHECK_LENUINTPT(LEN)  ((LEN) < AIR_UINTSIZE)
+#define AIR_CHECK_LEN128(LEN)  ((LEN) < AIR_INT128SIZE)
+#define AIR_CHECK_LENUINTPT(LEN)  ((LEN) < AIR_UINTPTSIZE)
 #define AIR_MEM_ALIGN(X, Y) \
   (((uint32_t)X & (sizeof (uint32_t) - 1U)) | ((uint32_t)Y & (sizeof (uint32_t) - 1U)))
-#define AIR_ALIGN_UINT(X) ((uintptr_t)X & (LBLOCKSIZE - 1))
+#define AIR_ALIGN_UINT(X) ((uintptr_t)X & (AIR_UINTPTSIZE - 1))
 
 void *memcpy(void *destination , const void *source , size_t length);
 int strncmp(const char *string1 , const char *string2 , size_t n);
