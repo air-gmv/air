@@ -121,5 +121,13 @@ air_u32_t test_step_announce(air_u32_t id, announce_flags flags);
  */
 void test_finish(test_result result);
 
+/**
+ * @brief Finish test partition but allow to continua execution
+ * @param result result of the test partition
+ *
+ * @note Passing SUCCESS as result after a test step fail will not mark the
+ *       test as successful
+ */
 
+void test_finish_and_continue(test_result result);
 #endif /* __LIBTEST_H_ */
