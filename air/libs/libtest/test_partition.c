@@ -162,3 +162,15 @@ void test_finish(test_result result) {
     partition_buffer->p_pass &= result;
     for (;;);
 }
+
+/**
+ * @brief Finish test partition
+ * @param result result of the test partition
+ *
+ * @note Passing SUCCESS as result after a test step fail will not mark the
+ *       test as successful
+ */
+void test_finish_and_continue(test_result result) {
+    partition_buffer->p_done = 1;
+    partition_buffer->p_pass &= result;
+}
