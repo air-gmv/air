@@ -25,8 +25,8 @@ default:
         - export AIR_POS=$AIR_INSTALL/pos
         - export RTEMS_MAKEFILE_PATH=$AIR_POS/rtems5/rtems5-install/sparc-rtems5/leon3
         - export PATH=$PATH:/opt/rtems-5.1-2019.07.25/bin
-        - export PATH=$PATH:/home/taste/work/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
-        - export PATH=/opt/rtems-5-arm/bin:$PATH
+        - export PATH=$PATH:/opt/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
+        - export PATH=/opt/rtems/5/bin:$PATH
         - git submodule sync --recursive
         - git submodule update --init --recursive
 
@@ -55,7 +55,7 @@ build_sparc:
 config_arm:
     stage: build
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         -  cp $AIR/../utils/gitlab-runner/.arm_config . 
         - ./configure -f .arm_config
@@ -63,7 +63,7 @@ config_arm:
 build_arm:
     stage: build
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - make clean # to be removed and used only on failure
         - make -j4
@@ -93,113 +93,113 @@ hello_sparc:
    environment:
        name: SPARC LEON4
 
-hm_sparc:
-    stage: examples
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/hm
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#hm_sparc:
+    #stage: examples
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/hm
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-bare_sparc:
-    stage: examples
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/bare_c
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#bare_sparc:
+    #stage: examples
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/bare_c
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-math:
-    stage: examples
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/math
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#math:
+    #stage: examples
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/math
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-ports:
-    stage: examples
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/ports
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#ports:
+    #stage: examples
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/ports
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-gcov5:
-    stage: examples
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/gcov5
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#gcov5:
+    #stage: examples
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/gcov5
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-paranoia:
-    stage: examples
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/testsuites/paranoia
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#paranoia:
+    #stage: examples
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/testsuites/paranoia
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-smp01:
-    stage: examples
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/testsuites/smp01
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#smp01:
+    #stage: examples
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/testsuites/smp01
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-smp02:
-    stage: examples
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/testsuites/smp02
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#smp02:
+    #stage: examples
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/testsuites/smp02
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-shm:
-    stage: examples
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/shm
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#shm:
+    #stage: examples
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/shm
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
 
 ########################
@@ -219,425 +219,425 @@ shm:
    environment:
        name: SPARC LEON4
 
-00010_sparc:
-   stage: validation_tests
-   tags: 
-       - sparc-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00010
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_leon4_grmon.bash
-       - cd $AIR
-   environment:
-       name: SPARC LEON4
+#00010_sparc:
+   #stage: validation_tests
+   #tags: 
+       #- sparc-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00010
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_leon4_grmon.bash
+       #- cd $AIR
+   #environment:
+       #name: SPARC LEON4
 
-00012_sparc:
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00012
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#00012_sparc:
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00012
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-00021_sparc: 
-   stage: validation_tests
-   tags: 
-       - sparc-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00021
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_leon4_grmon.bash
-       - cd $AIR
-   environment:
-       name: SPARC LEON4
+#00021_sparc: 
+   #stage: validation_tests
+   #tags: 
+       #- sparc-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00021
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_leon4_grmon.bash
+       #- cd $AIR
+   #environment:
+       #name: SPARC LEON4
 
-00022_sparc: 
-   stage: validation_tests
-   tags: 
-       - sparc-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00022
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_leon4_grmon.bash
-       - cd $AIR
-   environment:
-       name: SPARC LEON4
+#00022_sparc: 
+   #stage: validation_tests
+   #tags: 
+       #- sparc-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00022
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_leon4_grmon.bash
+       #- cd $AIR
+   #environment:
+       #name: SPARC LEON4
 
-00023_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00023
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#00023_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00023
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-00500_sparc: 
-   stage: validation_tests
-   tags: 
-       - sparc-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00500
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_leon4_grmon.bash
-       - cd $AIR
-   environment:
-       name: SPARC LEON4
+#00500_sparc: 
+   #stage: validation_tests
+   #tags: 
+       #- sparc-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00500
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_leon4_grmon.bash
+       #- cd $AIR
+   #environment:
+       #name: SPARC LEON4
 
-00510_sparc: 
-   stage: validation_tests
-   tags: 
-       - sparc-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00510
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_leon4_grmon.bash
-       - cd $AIR
-   environment:
-       name: SPARC LEON4
+#00510_sparc: 
+   #stage: validation_tests
+   #tags: 
+       #- sparc-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00510
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_leon4_grmon.bash
+       #- cd $AIR
+   #environment:
+       #name: SPARC LEON4
 
-00540_sparc: 
-   stage: validation_tests
-   tags: 
-       - sparc-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00540
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_leon4_grmon.bash
-       - cd $AIR
-   environment:
-       name: SPARC LEON4
+#00540_sparc: 
+   #stage: validation_tests
+   #tags: 
+       #- sparc-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00540
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_leon4_grmon.bash
+       #- cd $AIR
+   #environment:
+       #name: SPARC LEON4
 
-00560_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00560
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#00560_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00560
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-00600_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00600
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#00600_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00600
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-01390_sparc: 
-   stage: validation_tests
-   tags: 
-       - sparc-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-01390
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_leon4_grmon.bash
-       - cd $AIR
-   environment:
-       name: SPARC LEON4
+#01390_sparc: 
+   #stage: validation_tests
+   #tags: 
+       #- sparc-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01390
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_leon4_grmon.bash
+       #- cd $AIR
+   #environment:
+       #name: SPARC LEON4
 
-01561_sparc: 
-   stage: validation_tests
-   tags: 
-       - sparc-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-01561
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_leon4_grmon.bash
-       - cd $AIR
-   environment:
-       name: SPARC LEON4
+#01561_sparc: 
+   #stage: validation_tests
+   #tags: 
+       #- sparc-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01561
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_leon4_grmon.bash
+       #- cd $AIR
+   #environment:
+       #name: SPARC LEON4
 
-01570_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01570
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#01570_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01570
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-01590_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01590
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#01590_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01590
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-01610_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01610
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#01610_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01610
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-01620_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01620
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#01620_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01620
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-01650_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01650
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#01650_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01650
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-01730_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01730
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#01730_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01730
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-01740_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01740
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#01740_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01740
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-01750_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01750
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#01750_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01750
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
         
-01741_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01741
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#01741_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01741
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
         
-02100_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-02100
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#02100_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-02100
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-02101_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-02101
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#02101_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-02101
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
         
-02102_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-02102
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#02102_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-02102
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
         
-02105_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-02105
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#02105_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-02105
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
         
-02107_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-02107
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#02107_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-02107
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
         
-02108_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-02108
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#02108_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-02108
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
         
-80000_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-80000
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#80000_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-80000
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-80010_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-80010
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#80010_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-80010
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
         
-80060_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-80060
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#80060_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-80060
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
         
-80080_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-80080
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#80080_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-80080
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
         
-80300_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-80300
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#80300_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-80300
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
         
-80400_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-80400
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#80400_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-80400
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
         
-80401_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-80401
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#80401_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-80401
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
-80420_sparc: 
-    stage: validation_tests
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-80420
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_leon4_grmon.bash
-        - cd $AIR
-    environment:
-        name: SPARC LEON4
+#80420_sparc: 
+    #stage: validation_tests
+    #tags: 
+        #- sparc-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-80420
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ./do_leon4_grmon.bash
+        #- cd $AIR
+    #environment:
+        #name: SPARC LEON4
 
 #########################
 ##Tests for ARM         #
@@ -647,24 +647,24 @@ shm:
 ##Example Tests for ARM   #
 ###########################
 
-00001_arm:
-    stage: examples
-    tags: 
-        - arm-taste-debian1
-    script:
-        - cd $AIR/examples/private-example/private/arm_unit_tests/lionel
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ls
-        - ./do_zynqz1_qemu.bash
-        - ./testcheck.py
-        - cd $AIR
-    environment:
-        name: ARM ZYNQZ1
+#00001_arm:
+    #stage: examples
+    #tags: 
+        #- arm-taste-debian1
+    #script:
+        #- cd $AIR/examples/private-example/private/arm_unit_tests/lionel
+        #- cp $AIR/../utils/gitlab-runner/* .
+        #- ls
+        #- ./do_zynqz1_qemu.bash
+        #- ./testcheck.py
+        #- cd $AIR
+    #environment:
+        #name: ARM ZYNQZ1
 
 hello_world_arm:
     stage: examples
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/hello_world
         - cp $AIR/../utils/gitlab-runner/* .
@@ -682,7 +682,7 @@ hello_world_arm:
 00009_arm:
     stage: validation_tests
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-00009
         - cp $AIR/../utils/gitlab-runner/* .
@@ -692,129 +692,12 @@ hello_world_arm:
     environment:
         name: ARM ZYNQZ1
 
-00010_arm:
-   stage: validation_tests
-   tags: 
-       - arm-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00010
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_zynqz1_qemu.bash
-       - ./testcheck.py
-       - cd $AIR
-   environment:
-       name: ARM ZYNQZ1
-
-00012_arm:
-   stage: validation_tests
-   tags: 
-       - arm-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00012
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_zynqz1_qemu.bash
-       - ./testcheck.py
-       - cd $AIR
-   environment:
-       name: ARM ZYNQZ1
-
-00021_arm: 
-   stage: validation_tests
-   tags: 
-       - arm-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00021
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_zynqz1_qemu.bash
-       - ./testcheck.py
-       - cd $AIR
-   environment:
-       name: ARM ZYNQZ1
-
-00022_arm: 
-   stage: validation_tests
-   tags: 
-       - arm-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00022
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_zynqz1_qemu.bash
-       - ./testcheck.py
-       - cd $AIR
-   environment:
-       name: ARM ZYNQZ1
-
-00023_arm: 
-   stage: validation_tests
-   tags: 
-       - arm-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00023
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_zynqz1_qemu.bash
-       - ./testcheck.py
-       - cd $AIR
-   environment:
-       name: ARM ZYNQZ1
-
-00500_arm: 
-   stage: validation_tests
-   tags: 
-       - arm-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00500
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_zynqz1_qemu.bash
-       - ./testcheck.py
-       - cd $AIR
-   environment:
-       name: ARM ZYNQZ1
-
-00510_arm: 
-   stage: validation_tests
-   tags: 
-       - arm-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00510
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_zynqz1_qemu.bash
-       - ./testcheck.py
-       - cd $AIR
-   environment:
-       name: ARM ZYNQZ1
-
-00540_arm: 
-   stage: validation_tests
-   tags: 
-       - arm-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00540
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_zynqz1_qemu.bash
-       - ./testcheck.py
-       - cd $AIR
-   environment:
-       name: ARM ZYNQZ1
-
-00560_arm: 
-   stage: validation_tests
-   tags: 
-       - arm-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00560
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_zynqz1_qemu.bash
-       - ./testcheck.py
-       - cd $AIR
-   environment:
-       name: ARM ZYNQZ1
-
-#00600_arm: 
+#00010_arm:
    #stage: validation_tests
    #tags: 
        #- arm-taste-debian1
    #script:
-       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00600
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00010
        #- cp $AIR/../utils/gitlab-runner/* .
        #- ./do_zynqz1_qemu.bash
        #- ./testcheck.py
@@ -822,18 +705,135 @@ hello_world_arm:
    #environment:
        #name: ARM ZYNQZ1
 
-01390_arm: 
-   stage: validation_tests
-   tags: 
-       - arm-taste-debian1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-01390
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_zynqz1_qemu.bash
-       - ./testcheck.py
-       - cd $AIR
-   environment:
-       name: ARM ZYNQZ1
+#00012_arm:
+   #stage: validation_tests
+   #tags: 
+       #- arm-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00012
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_zynqz1_qemu.bash
+       #- ./testcheck.py
+       #- cd $AIR
+   #environment:
+       #name: ARM ZYNQZ1
+
+#00021_arm: 
+   #stage: validation_tests
+   #tags: 
+       #- arm-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00021
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_zynqz1_qemu.bash
+       #- ./testcheck.py
+       #- cd $AIR
+   #environment:
+       #name: ARM ZYNQZ1
+
+#00022_arm: 
+   #stage: validation_tests
+   #tags: 
+       #- arm-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00022
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_zynqz1_qemu.bash
+       #- ./testcheck.py
+       #- cd $AIR
+   #environment:
+       #name: ARM ZYNQZ1
+
+#00023_arm: 
+   #stage: validation_tests
+   #tags: 
+       #- arm-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00023
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_zynqz1_qemu.bash
+       #- ./testcheck.py
+       #- cd $AIR
+   #environment:
+       #name: ARM ZYNQZ1
+
+#00500_arm: 
+   #stage: validation_tests
+   #tags: 
+       #- arm-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00500
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_zynqz1_qemu.bash
+       #- ./testcheck.py
+       #- cd $AIR
+   #environment:
+       #name: ARM ZYNQZ1
+
+#00510_arm: 
+   #stage: validation_tests
+   #tags: 
+       #- arm-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00510
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_zynqz1_qemu.bash
+       #- ./testcheck.py
+       #- cd $AIR
+   #environment:
+       #name: ARM ZYNQZ1
+
+#00540_arm: 
+   #stage: validation_tests
+   #tags: 
+       #- arm-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00540
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_zynqz1_qemu.bash
+       #- ./testcheck.py
+       #- cd $AIR
+   #environment:
+       #name: ARM ZYNQZ1
+
+#00560_arm: 
+   #stage: validation_tests
+   #tags: 
+       #- arm-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00560
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_zynqz1_qemu.bash
+       #- ./testcheck.py
+       #- cd $AIR
+   #environment:
+       #name: ARM ZYNQZ1
+
+##00600_arm: 
+   ##stage: validation_tests
+   ##tags: 
+       ##- arm-taste-debian1
+   ##script:
+       ##- cd $AIR/examples/private-example/private/validation/TEST-DEF-00600
+       ##- cp $AIR/../utils/gitlab-runner/* .
+       ##- ./do_zynqz1_qemu.bash
+       ##- ./testcheck.py
+       ##- cd $AIR
+   ##environment:
+       ##name: ARM ZYNQZ1
+
+#01390_arm: 
+   #stage: validation_tests
+   #tags: 
+       #- arm-taste-debian1
+   #script:
+       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01390
+       #- cp $AIR/../utils/gitlab-runner/* .
+       #- ./do_zynqz1_qemu.bash
+       #- ./testcheck.py
+       #- cd $AIR
+   #environment:
+       #name: ARM ZYNQZ1
 
 #01561_arm: 
    #stage: validation_tests
