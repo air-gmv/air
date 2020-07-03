@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2014  GMVIS Skysoft S.A.
+ * Copyright (C) 2008-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -27,24 +27,6 @@
  * @{
  */
 
-/**
- * @brief Partition internal state enumeration
- */
-typedef enum {
-
-    /** Partition wasn't run yet                                            */
-    PMK_PARTITION_STATE_NOT_RUN                 = 0x0,
-    /** Partition is being initialized                                      */
-    PMK_PARTITION_STATE_INIT                    = 0x1,
-    /** Partition is being executed                                         */
-    PMK_PARTITION_STATE_RUNNING                 = 0x2,
-    /** Partition execution halted                                          */
-    PMK_PARTITION_STATE_HALTED                  = 0x3,
-    /** Partition is restarting                                             */
-    PMK_PARTITION_STATE_RESTARTING              = 0x4
-
-} pmk_partition_state_t;
-
 /** 
  * @brief Partition internal structure
  */
@@ -59,7 +41,7 @@ typedef struct {
     /** Partition initial cache state                                       */
     air_cache_e init_cache;
     /** Partition internal state                                            */
-    pmk_partition_state_t state;
+    pmk_partition_state_e state;
     /** Partition last clock tick                                           */
     air_clocktick_t last_clock_tick;
     /** Partition elapsed clock ticks                                       */
@@ -96,6 +78,8 @@ typedef struct {
     air_u64_t period;
     /** Current partition schedule duration                                 */
     air_u64_t duration;
+    /** Current partition schedule window identifier                        */
+    air_identifier_t window_id;
 
 } pmk_partition_t;
 
@@ -110,11 +94,13 @@ void pmk_partitions_init(void);
  * @param context current core context structure
  */
 void pmk_partition_start(pmk_partition_t *partition, core_context_t *context);
+
 /**
  * @brief Halts a partition
  * @param partition partition control structure
  */
 void pmk_partition_halt(pmk_partition_t *partition);
+
 /**
  * @brief Restarts a partition
  * @param partition partition control structure
@@ -133,23 +119,26 @@ void pmk_partition_reload(pmk_partition_t *partition);
  * @return partition configuration pointer if Id is valid, NULL otherwise
  */
 pmk_partition_t *pmk_get_partition_by_id(air_identifier_t pid);
+
 /**
  * @brief Get partition configuration by name
  * @param name partition name
  * @return partition configuration pointer if name is valid, NULL otherwise
  */
 pmk_partition_t *pmk_get_partition_by_name(air_name_ptr_t name);
+
 /**
  * @brief Setups a reload partition context
- * @param partition the partition to be reloaded
  * @param context the core context responsible for the reload
+ * @param partition the partition to be reloaded
  */
 void core_context_setup_reload_partition(
         core_context_t *context, pmk_partition_t *partition);
+
 /**
  * @brief Setups a core partition context
- * @param partition partition information
  * @param context core context
+ * @param partition partition information
  */
 void core_context_setup_partition(
         core_context_t *context, pmk_partition_t *partition);
