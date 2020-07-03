@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # =============================================================================
-#  Copyright (C) GMVIS Skysoft S.A., 2014-2019
+#  Copyright (C) GMVIS Skysoft S.A., 2014-2020
 # =============================================================================
 #   This file is part of the AIR Operating System configuration sub-system.
 #   The license and distribution terms for this file may be found in the file
@@ -18,16 +18,16 @@ import logging
 from sys import exit
 from utils.logger import Logger
 
-
 from localization.common import *
 from argparse import  ArgumentParser,  RawTextHelpFormatter
 
-__version__ 	= '4.2'
-__author__ 		= '$(AIR_RUNNER_USER), llgg, gmvs, lumm, pfnf'
+__version__ 	= '4.3'
+__author__ 		= '$(AIR_RUNNER_USER), llgg, gmvs, lumm, pfnf, bmgo'
 __app__			= os.path.basename(__file__)
 
 #Uncomment this for full debugging of an error and check configurator.log results
 # set level for logging.DEBUG for full info
+logging.basicConfig()
 #logging.basicConfig(filename='configurator.log', format='%(levelname)s:%(filename)s:%(funcName)s:%(lineno)d:%(message)s', filemode='w', level=logging.INFO)
 #logging.basicConfig(format='%(levelname)s:%(filename)s:%(funcName)s:%(lineno)d:%(message)s', filemode='w', level=logging.INFO)
 # we can set more attributes to log see https://docs.python.org/2/library/logging.html#logrecord-attributes

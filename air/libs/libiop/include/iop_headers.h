@@ -37,7 +37,7 @@ typedef struct {
 
 /**
  * @brief Ethernet protocol UDP header
- *  
+ *
  */
 typedef struct  {
     /* UDP Specific header. */
@@ -53,7 +53,7 @@ typedef struct  {
  */
 typedef union {
 
-    udp_header_t udp_header;  
+    udp_header_t udp_header;
 
 } __attribute__((packed)) protospec_header_t;
 
@@ -92,11 +92,15 @@ typedef struct  {
 }  __attribute__((packed)) eth_header_t;
 
 typedef struct {
-	uint8_t extended;		/* CANBUS extended id option */
-	uint8_t rtr;	 		/* Remote Transmission request */
-	uint8_t sshot;			/* Single shot option*/
-	uint32_t id;	/* Remote device identifier */
+    uint8_t extended;               /**< CANBUS extended id option */
+    uint8_t rtr;                    /**< Remote Transmission request */
+    uint8_t sshot;                  /**< Single shot option*/
+    uint32_t id;                    /**< Remote device identifier */
 } __attribute__((packed)) can_header_t;
+
+typedef struct {
+    uint32_t id;                    /**< Header */
+} __attribute__((packed)) uart_header_t;
 
 /**
  * @brief IOP generic header
@@ -107,7 +111,8 @@ typedef union {
     milstd_header_t milstd_hdr;     /**< MILSTD 1553b header        */
     spw_header_t spw_header;        /**< SPW header                 */
     eth_header_t eth_header;        /**< ETH header (ETH + IP + UDP/TCP ports)*/
-    can_header_t can_header;		/**< CAN frame header		    */
+    can_header_t can_header;        /**< CAN frame header            */
+    uart_header_t uart_header;      /**< UART header                 */
 
 } __attribute__((packed)) iop_header_t;
 

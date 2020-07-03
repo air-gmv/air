@@ -5,12 +5,11 @@
  * found in the file LICENSE in this distribution or at
  * air/LICENSE
  */
-/** 
+/**
  * @file sport.c
  * @author sfbs
  * @brief  ARINC653 sampling port interface implementation
  */
-
 #include <imaspex.h>
 
 extern int imaspex_tsal_init;
@@ -19,12 +18,12 @@ extern air_clocktick_t imaspex_ns_per_tick;
 /* ARINC 653 (PART 1) SAMPLING PORT SERVICES */
 /* -------------------------------------------------------------------------- */
 void CREATE_SAMPLING_PORT (
-	/*in */ SAMPLING_PORT_NAME_TYPE SAMPLING_PORT_NAME,
-	/*in */ MESSAGE_SIZE_TYPE MAX_MESSAGE_SIZE,
-	/*in */ PORT_DIRECTION_TYPE PORT_DIRECTION,
-	/*in */ SYSTEM_TIME_TYPE REFRESH_PERIOD,
-	/*out*/ SAMPLING_PORT_ID_TYPE *SAMPLING_PORT_ID,
-	/*out*/ RETURN_CODE_TYPE *RETURN_CODE ) {
+       /*in */ SAMPLING_PORT_NAME_TYPE      SAMPLING_PORT_NAME,
+       /*in */ MESSAGE_SIZE_TYPE            MAX_MESSAGE_SIZE,
+       /*in */ PORT_DIRECTION_TYPE          PORT_DIRECTION,
+       /*in */ SYSTEM_TIME_TYPE             REFRESH_PERIOD,
+       /*out*/ SAMPLING_PORT_ID_TYPE *      SAMPLING_PORT_ID,
+       /*out*/ RETURN_CODE_TYPE *           RETURN_CODE ) {
 
     /* check TSAL init */
     if (imaspex_tsal_init == 0){
@@ -36,7 +35,7 @@ void CREATE_SAMPLING_PORT (
     air_sampling_port_configuration_t config;
 
     config.max_message_size = MAX_MESSAGE_SIZE;
-    config.refresh_period = REFRESH_PERIOD / imaspex_ns_per_tick;
+    config.refresh_period = REFRESH_PERIOD / (air_u32_t) imaspex_ns_per_tick;
     config.port_direction = PORT_DIRECTION;
 
     /* create port via system call */
@@ -48,10 +47,10 @@ void CREATE_SAMPLING_PORT (
 }
 
 void WRITE_SAMPLING_MESSAGE (
-	/*in */ SAMPLING_PORT_ID_TYPE SAMPLING_PORT_ID,
-	/*in */ MESSAGE_ADDR_TYPE MESSAGE_ADDR, /* by reference */
-	/*in */ MESSAGE_SIZE_TYPE LENGTH,
-	/*out*/ RETURN_CODE_TYPE *RETURN_CODE ) {
+       /*in */ SAMPLING_PORT_ID_TYPE        SAMPLING_PORT_ID,
+       /*in */ MESSAGE_ADDR_TYPE            MESSAGE_ADDR, /* by reference */
+       /*in */ MESSAGE_SIZE_TYPE            LENGTH,
+       /*out*/ RETURN_CODE_TYPE *           RETURN_CODE ) {
 
     /* check TSAL init */
     if (imaspex_tsal_init == 0){
@@ -69,11 +68,11 @@ void WRITE_SAMPLING_MESSAGE (
 }
 
 void READ_SAMPLING_MESSAGE (
-	/*in */ SAMPLING_PORT_ID_TYPE SAMPLING_PORT_ID,
-	/*out*/ MESSAGE_ADDR_TYPE MESSAGE_ADDR,
-	/*out*/ MESSAGE_SIZE_TYPE *LENGTH,
-	/*out*/ VALIDITY_TYPE *VALIDITY,
-	/*out*/ RETURN_CODE_TYPE *RETURN_CODE) {
+       /*in */ SAMPLING_PORT_ID_TYPE        SAMPLING_PORT_ID,
+       /*out*/ MESSAGE_ADDR_TYPE            MESSAGE_ADDR,
+       /*out*/ MESSAGE_SIZE_TYPE *          LENGTH,
+       /*out*/ VALIDITY_TYPE *              VALIDITY,
+       /*out*/ RETURN_CODE_TYPE *           RETURN_CODE) {
 
     /* check TSAL init */
     if (imaspex_tsal_init == 0){
@@ -98,9 +97,9 @@ void READ_SAMPLING_MESSAGE (
 }
 
 void GET_SAMPLING_PORT_ID (
-	/*in */ SAMPLING_PORT_NAME_TYPE SAMPLING_PORT_NAME,
-	/*out*/ SAMPLING_PORT_ID_TYPE *SAMPLING_PORT_ID,
-	/*out*/ RETURN_CODE_TYPE *RETURN_CODE ) {
+       /*in */ SAMPLING_PORT_NAME_TYPE      SAMPLING_PORT_NAME,
+       /*out*/ SAMPLING_PORT_ID_TYPE *      SAMPLING_PORT_ID,
+       /*out*/ RETURN_CODE_TYPE *           RETURN_CODE ) {
 
     /* check TSAL init */
     if (imaspex_tsal_init == 0){
@@ -116,9 +115,9 @@ void GET_SAMPLING_PORT_ID (
 }
 
 void GET_SAMPLING_PORT_STATUS (
-	/*in */ SAMPLING_PORT_ID_TYPE SAMPLING_PORT_ID,
-	/*out*/ SAMPLING_PORT_STATUS_TYPE *SAMPLING_PORT_STATUS,
-	/*out*/ RETURN_CODE_TYPE *RETURN_CODE ) {
+       /*in */ SAMPLING_PORT_ID_TYPE        SAMPLING_PORT_ID,
+       /*out*/ SAMPLING_PORT_STATUS_TYPE *  SAMPLING_PORT_STATUS,
+       /*out*/ RETURN_CODE_TYPE *           RETURN_CODE ) {
 
     /* check TSAL init */
     if (imaspex_tsal_init == 0){
@@ -147,11 +146,11 @@ void GET_SAMPLING_PORT_STATUS (
 /* ARINC 653 (PART 2) SAMPLING PORT EXTENSION SERVICES */
 /* -------------------------------------------------------------------------- */
 void READ_UPDATED_SAMPLING_MESSAGE (
-	/*in */ SAMPLING_PORT_ID_TYPE	SAMPLING_PORT_ID,
-	/*in */ MESSAGE_ADDR_TYPE 		MESSAGE_ADDR,
-	/*out*/ MESSAGE_SIZE_TYPE 		*LENGTH,
-	/*out*/ UPDATED_TYPE			*UPDATED,
-	/*out*/ RETURN_CODE_TYPE 		*RETURN_CODE) {
+       /*in */ SAMPLING_PORT_ID_TYPE        SAMPLING_PORT_ID,
+       /*in */ MESSAGE_ADDR_TYPE            MESSAGE_ADDR,
+       /*out*/ MESSAGE_SIZE_TYPE *          LENGTH,
+       /*out*/ UPDATED_TYPE *               UPDATED,
+       /*out*/ RETURN_CODE_TYPE *           RETURN_CODE) {
 
     /* check TSAL init */
     if (imaspex_tsal_init == 0){
@@ -176,9 +175,9 @@ void READ_UPDATED_SAMPLING_MESSAGE (
 }
 
 void GET_SAMPLING_PORT_CURRENT_STATUS (
-	/*in */ SAMPLING_PORT_ID_TYPE 				SAMPLING_PORT_ID,
-	/*out*/ SAMPLING_PORT_CURRENT_STATUS_TYPE 	*SAMPLING_PORT_CURRENT_STATUS,
-	/*out*/ RETURN_CODE_TYPE 					*RETURN_CODE){
+       /*in */ SAMPLING_PORT_ID_TYPE        SAMPLING_PORT_ID,
+       /*out*/ SAMPLING_PORT_CURRENT_STATUS_TYPE *  SAMPLING_PORT_CURRENT_STATUS,
+       /*out*/ RETURN_CODE_TYPE *           RETURN_CODE){
 
     /* check TSAL init */
     if (imaspex_tsal_init == 0){
@@ -212,12 +211,12 @@ void GET_SAMPLING_PORT_CURRENT_STATUS (
 }
 
 void READ_SAMPLING_MESSAGE_CONDITIONAL (
-	/*in */ SAMPLING_PORT_ID_TYPE	SAMPLING_PORT_ID,
-	/*in */ SYSTEM_TIME_TYPE 		REF_TIME_STAMP,
-	/*in */ MESSAGE_ADDR_TYPE 		MESSAGE_ADDR,
-	/*out*/ MESSAGE_SIZE_TYPE 		*LENGTH,
-	/*out*/ SYSTEM_TIME_TYPE 		*TIME_STAMP,
-	/*out*/ RETURN_CODE_TYPE 		*RETURN_CODE) {
+       /*in */ SAMPLING_PORT_ID_TYPE        SAMPLING_PORT_ID,
+       /*in */ SYSTEM_TIME_TYPE             REF_TIME_STAMP,
+       /*in */ MESSAGE_ADDR_TYPE            MESSAGE_ADDR,
+       /*out*/ MESSAGE_SIZE_TYPE *          LENGTH,
+       /*out*/ SYSTEM_TIME_TYPE *           TIME_STAMP,
+       /*out*/ RETURN_CODE_TYPE  *          RETURN_CODE) {
 
     /* check TSAL init */
     if (imaspex_tsal_init == 0){

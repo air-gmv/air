@@ -5,9 +5,9 @@
  * found in the file LICENSE in this distribution or at
  * air/LICENSE
  */
-/** 
+/**
  * @file IOPinit.c
- * 
+ *
  * @author Cláudio Silva
  *
  * @brief IO Partition initialization procedures
@@ -219,7 +219,7 @@ static air_status_code_e iop_init_drivers(void){
  * @brief Initializes Queueing ports used for communication with other partitions
  *
  * Creates queueing ports with the paramaters obtained from the configuration.
- * The order in which the configuration is obatined is relevant to the 
+ * The order in which the configuration is obatined is relevant to the
  * behavior of the IOP. #iop_port_configuration
  */
 static air_status_code_e iop_init_ports() {
@@ -243,7 +243,7 @@ static air_status_code_e iop_init_ports() {
         /* check return code */
         if (p_rc != AIR_NO_ERROR && p_rc != AIR_NO_ACTION) {
             iop_debug("    - error %i creating port %s\n", p_rc, port->name);
-            rc = AIR_INTERNAL_ERROR;
+            rc = p_rc;
         }
     }
 
@@ -258,7 +258,6 @@ static air_status_code_e iop_init_ports() {
 air_status_code_e IOPinit() {
 
     iop_debug("Initializing IOP\n");
-
     /* initialize queues */
     iop_init_queues();
 
@@ -270,45 +269,45 @@ air_status_code_e IOPinit() {
         iop_raise_error(CANT_CREATE_PORT);
     }
 
+
     /* initialize Devices and respective routes */
     iop_init_devs();
-
 #ifdef IOP_MAIN_DEBUG
-	/* Pointer to amba bus structure*/
-	amba_confarea_t *amba_bus;
+    /* Pointer to amba bus structure*/
+    amba_confarea_t *amba_bus;
 
-	/*Get amba bus configuration*/
-	amba_bus = (amba_confarea_t *)air_syscall_get_ambaconf();;
-	iop_debug("amba_conf->ahbmst: %d\n", amba_bus->ahb_masters.count);
-	iop_debug("amba_conf->ahbslv: %d\n", amba_bus->ahb_slaves.count);
-	iop_debug("amba_conf->apbslv: %d\n", amba_bus->apb_slaves.count);
+    /*Get amba bus configuration*/
+    amba_bus = (amba_confarea_t *)air_syscall_get_ambaconf();;
+    iop_debug("amba_conf->ahbmst: %d\n", amba_bus->ahb_masters.count);
+    iop_debug("amba_conf->ahbslv: %d\n", amba_bus->ahb_slaves.count);
+    iop_debug("amba_conf->apbslv: %d\n", amba_bus->apb_slaves.count);
 
-	unsigned int conf;
-	int k;
-	for(k = 0; k < amba_bus->ahb_masters.count; k++)
-	{
-		/* get the configuration area */
-		conf = *(amba_bus->ahb_masters.addr[k]);
+    unsigned int conf;
+    int k;
+    for(k = 0; k < amba_bus->ahb_masters.count; k++)
+    {
+        /* get the configuration area */
+        conf = *(amba_bus->ahb_masters.addr[k]);
 
-		iop_debug("ahbmst:%d  AMBA VENDOR: 0x%x   AMBA DEV: 0x%x   conf: 0x%x\n",
-					k, ((conf >> 24) & 0xff), ((conf >> 12) & 0xfff), conf);
-	}
-	for(k = 0; k < amba_bus->ahb_slaves.count; k++)
-	{
-		/* get the configuration area */
-		conf = *(amba_bus->ahb_slaves.addr[k]);
-
-		iop_debug("ahbslv:%d  AMBA VENDOR: 0x%x   AMBA DEV: 0x%x   conf: 0x%x\n",
-					k, ((conf >> 24) & 0xff), ((conf >> 12) & 0xfff), conf);
+        iop_debug("ahbmst:%d  AMBA VENDOR: 0x%x   AMBA DEV: 0x%x   conf: 0x%x\n",
+                    k, ((conf >> 24) & 0xff), ((conf >> 12) & 0xfff), conf);
     }
-	for(k = 0; k < amba_bus->apb_slaves.count; k++)
-	{
-		/* get the configuration area */
-		conf = *(amba_bus->apb_slaves.addr[k]);
+    for(k = 0; k < amba_bus->ahb_slaves.count; k++)
+    {
+        /* get the configuration area */
+        conf = *(amba_bus->ahb_slaves.addr[k]);
 
-		iop_debug("apbslv:%d  AMBA VENDOR: 0x%x   AMBA DEV: 0x%x   conf: 0x%x\n",
-					k, ((conf >> 24) & 0xff), ((conf >> 12) & 0xfff), conf);
-	}
+        iop_debug("ahbslv:%d  AMBA VENDOR: 0x%x   AMBA DEV: 0x%x   conf: 0x%x\n",
+                    k, ((conf >> 24) & 0xff), ((conf >> 12) & 0xfff), conf);
+    }
+    for(k = 0; k < amba_bus->apb_slaves.count; k++)
+    {
+        /* get the configuration area */
+        conf = *(amba_bus->apb_slaves.addr[k]);
+
+        iop_debug("apbslv:%d  AMBA VENDOR: 0x%x   AMBA DEV: 0x%x   conf: 0x%x\n",
+                    k, ((conf >> 24) & 0xff), ((conf >> 12) & 0xfff), conf);
+    }
 #endif
 
     /* initialize Drivers*/
