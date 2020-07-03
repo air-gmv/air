@@ -1,0 +1,47 @@
+
+AIR-GEN-00020 -> Testing -> Inspection or source analysis
+Link D10 Interface Tests to AIR-GEN-00030
+AIR-GEN-00160 -> delete. Can be done with SU permissions
+TEST-DEF-08004 -> refactor
+TEST-DEF-08005 -> refactor
+TEST-DEF-00043 -> re-evaluate
+AIR-FUNC-02080 -> re-evaluate (change to source code analysis)
+AIR-FUNC-02250 -> re-evaluate
+AIR-FUNC-02270 -> Test Needs to be complemented. 
+AIR-FUNC-03090 -> Create a test for NULL pointers in system calls
+AIR-FUNC-03110 -> Source Code analysis
+AIR-FUNC-04010 -> Add inspection
+
+==========
+
+AIR-GEN-00160	
+ -> TEST-DEF-00600 
+
+TEST-DEF-80010	must be rewritten: The pmk_linkcmds_vars.h holds references to the text, data and bss sections of each partition.
+
+
+*** Deleted ****
+AIR-GEN-1060:
+<tests>
+  <test description="Other partition memory read" name="TEST-DEF-80000" />
+  <test description="Other partition memory" name="TEST-DEF-80010" />
+  <test description="Other partition memory" name="TEST-DEF-80020" />
+  <test description="Write access in text memory" name="TEST-DEF-80030" />
+  <test description="Jump into data area with valid or invalid" name="TEST-DEF-00620" />
+</tests>
+AIR-GEN-1065:
+<tests>
+  <test description="Static and Dynamic memory analysis" name="TEST-DEF-80040" />
+  <test description="User partition tries to write kernel" name="TEST-DEF-80810" />
+</tests>
+AIR-GEN-01070:
+<tests>
+  <test description="Partition execution window" name="TEST-DEF-00043" />
+</tests>
+
+=================================
+TOOLS
+=================================
+
+write <conditions> tags in reqs.xml with necessary conditions to validate
+process parents/related tag

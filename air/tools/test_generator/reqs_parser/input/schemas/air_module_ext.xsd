@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema	xmlns:xs="http://www.w3.org/2001/XMLSchema" 	
+			targetNamespace="ModExt" 			
+			elementFormDefault="unqualified"> 
+			
+	<!-- ======================================================================= 
+	AIR module extension elements  
+	======================================================================== -->			
+	<xs:element xmlns="ModExt" name="air_module_ext">
+		<xs:annotation>
+			<xs:documentation>
+				Module level configuration for AIR systems: 
+				- system ticks per second [1..1000]. 
+				- total system memory (in hexadecimal)
+			</xs:documentation>
+		</xs:annotation> 
+		<xs:complexType>
+			<xs:attribute 	name="air_ticks_per_second" 	
+							type="air_ticks_per_second_type" 	
+							use="required"/>
+			<xs:attribute	name="air_system_memory" 			
+							type="air_system_memory_type" 			
+							use="required"/>
+		</xs:complexType>		
+	</xs:element>
+		
+	
+	<!-- ======================================================================= 
+	type definitions for this extension  
+	======================================================================== -->
+	<xs:simpleType name="air_ticks_per_second_type">
+		<xs:restriction base="xs:positiveInteger">
+			<xs:maxInclusive value="1000"/>
+		</xs:restriction>
+	</xs:simpleType>	
+		
+	<xs:simpleType name="air_system_memory_type">
+		<xs:restriction base="xs:hexBinary">			
+		</xs:restriction>
+	</xs:simpleType>
+		
+</xs:schema>

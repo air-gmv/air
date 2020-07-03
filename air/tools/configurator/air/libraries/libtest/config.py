@@ -26,7 +26,8 @@ source_files = set(utils.flatten([
 
 # @brief Library Header files
 header_files = set(utils.flatten([
-        file_tools.getFilesByExtensions(os.path.join(SOURCE_LIBS_DIRECTORY, 'libtest'), ['.h']),
+        file_tools.getFilesByExtensions(
+                os.path.join(SOURCE_LIBS_DIRECTORY, 'libtest'), ['.h']),
 ]))
 
 # @brief Library dependencies

@@ -142,7 +142,7 @@ void pmk_apply_next_schedule(pmk_core_ctrl_t *core) {
         if (partition_schedule->action > PMK_SCHED_CHANGE_ACTION_IGNORE)
         {
             /* Only apply action for previously started partition in NORMAL mode*/
-            if(AIR_MODE_NORMAL == partition->mode && partition->state == PMK_PARTITION_STATE_RUNNING)
+            if(AIR_MODE_NORMAL == partition->mode && partition->state == AIR_PARTITION_STATE_READY)
             {
                 /* clear contexts */
                 for (j = 0; j < partition->cores; ++j) {
@@ -155,14 +155,14 @@ void pmk_apply_next_schedule(pmk_core_ctrl_t *core) {
                     /* change partition to IDLE */
                     case PMK_SCHED_CHANGE_ACTION_IDLE:
                         partition->start_condition = AIR_START_CONDITION_NORMAL;
-                        partition->state = PMK_PARTITION_STATE_HALTED;
+                        partition->state = AIR_PARTITION_STATE_HALTED;
                         partition->mode = AIR_MODE_IDLE;
                         break;
 
                     /* change partition to cold start */
                     case PMK_SCHED_CHANGE_ACTION_COLD_START:
                         partition->start_condition = AIR_START_CONDITION_NORMAL;
-                        partition->state = PMK_PARTITION_STATE_RESTARTING;
+                        partition->state = AIR_PARTITION_STATE_INIT;
                         partition->mode = AIR_MODE_COLD_START;
                         core_context_setup_reload_partition(&partition->context[0], partition);
                         break;
@@ -170,7 +170,7 @@ void pmk_apply_next_schedule(pmk_core_ctrl_t *core) {
                     /* change partition to warm start */
                     case PMK_SCHED_CHANGE_ACTION_WARM_START:
                         partition->start_condition = AIR_START_CONDITION_NORMAL;
-                        partition->state = PMK_PARTITION_STATE_RESTARTING;
+                        partition->state = AIR_PARTITION_STATE_INIT;
                         partition->mode = AIR_MODE_WARM_START;
                         core_context_setup_reload_partition(&partition->context[0], partition);
                         break;
@@ -258,20 +258,28 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
             partition = core->partition;
 
             /* get the current virtual core */
-            air_u32_t vcore_id = core_context_id(core->context);
+            vcore_id = core_context_id(core->context);
 
             /* store the current core partition context */
             if (!core_context_trashed(core->context)) {
+
                 core_context_save(core);
             }
 
             /* if the core is running a partition */
             if (partition != NULL) {
+                if(partition->state == AIR_PARTITION_STATE_RUNNING)
+                {
+                    partition->state = AIR_PARTITION_STATE_READY;
+                }
 
                 /* store last ticks */
                 partition->last_clock_tick = scheduler_ctrl.total_ticks;
 
-                /* un-map the current core */
+                /* Flag as not executing a Window */
+                partition->window_id = -1;
+
+                /* unmap the current core */
                 partition->core_mapping[vcore_id] = PMK_MAX_CORES;
             }
         }
@@ -326,7 +334,12 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
             /* set period start flag */
             if (core_schedule->windows[wnd_idx].period_start == 1) {
                 partition->events |= AIR_EVENT_PERIOD_START;
+            } else {
+                partition->events &= ~AIR_EVENT_PERIOD_START;
             }
+
+            /* set partition's current window identifier */
+            partition->window_id = core_schedule->windows[wnd_idx].id;
 
             /* set window start flag */
             partition->events |= AIR_EVENT_WINDOW_START;
@@ -341,12 +354,25 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
             core->context = &partition->context[vcore_id];
             partition->core_mapping[vcore_id] = core->idx;
 
-            /* check if partition is starting */
-            if (partition->state == PMK_PARTITION_STATE_INIT ||
-                partition->state == PMK_PARTITION_STATE_NOT_RUN) {
+            /* Update Partition State */
+            switch (partition->state){
 
-               pmk_partition_start(partition, core->context);
-               partition->last_clock_tick = scheduler_ctrl.total_ticks;
+                case(AIR_PARTITION_STATE_READY):
+                    if (core_context_id(core->context) == 0) {
+                        core_context_trashed(core->context) = 0;
+                        partition->state = AIR_PARTITION_STATE_RUNNING;
+                    }
+                    break;
+
+                case(AIR_PARTITION_STATE_NOT_RUN):
+
+                    pmk_partition_start(partition, core->context);
+                    partition->last_clock_tick = scheduler_ctrl.total_ticks;
+                    break;
+
+                default:
+                    /* STATE_HALTED or STATE_INIT*/
+                    break;
             }
 
             /* update partition global time */
@@ -414,4 +440,9 @@ pmk_schedule_t *pmk_get_schedule_by_name(air_name_ptr_t name) {
         }
     }
     return found;
+}
+
+air_clocktick_t pmk_get_schedule_total_ticks(void) {
+
+    return scheduler_ctrl.total_ticks;
 }

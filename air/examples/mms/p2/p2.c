@@ -12,10 +12,11 @@
 
 void entry_func() {
 
-    int id;
-    air_syscall_get_partition_id(NULL, &id);
+    air_partition_status_t status;
+
     while (1) {
-        pprintf("Partition %d: present in schedule A & B\n", id);
+        air_syscall_get_partition_status(-1, &status);
+        pprintf("Partition %d: present in schedule A & B Window %d\n", status.identifier, status.window_id);
         wake_after(50);
     }
 }

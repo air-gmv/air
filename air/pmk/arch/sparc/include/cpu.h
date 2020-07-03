@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014  GMVIS Skysoft S.A.
+ * Copyright (C) 2013-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -110,11 +110,13 @@ typedef sparc_interrupt_stack_frame_t interrupt_stack_frame_t;
  * @param id virtual core id;
  */
 void core_context_init(core_context_t *context, air_u32_t id);
+
 /**
  * @brief Setups an idle context
  * @param context the core context to be set as idle
  */
 void core_context_setup_idle(core_context_t *context);
+
 /**
  * @brief Get core context IPC message
  * @param context core context
@@ -122,6 +124,7 @@ void core_context_setup_idle(core_context_t *context);
  */
 #define core_context_get_ipc_message(context) \
         (context)->ipc_event
+
 /**
  * @brief Set core context IPC message
  * @param context core context
@@ -129,6 +132,7 @@ void core_context_setup_idle(core_context_t *context);
  */
 #define core_context_set_ipc_message(context, message) \
         (context)->ipc_event = (message)
+
 /**
  * @brief Set core context entry point
  * @param context core context
@@ -136,6 +140,7 @@ void core_context_setup_idle(core_context_t *context);
  */
 #define core_context_set_entry_point(context, entrypoint) \
         (context)->entry_point = (entrypoint)
+
 /**
  * @brief Get core context entry point
  * @param context core context
@@ -143,6 +148,7 @@ void core_context_setup_idle(core_context_t *context);
  */
 #define core_context_get_entry_point(context) \
         (void *)(context)->entry_point
+
 /**
  * @brief Sets the core context system state
  * @param context core context
@@ -150,6 +156,7 @@ void core_context_setup_idle(core_context_t *context);
  */
 #define core_context_get_system_state(context) \
         (context)->state
+
 /**
  * @brief Sets the core context system state
  * @param context core context
@@ -157,6 +164,7 @@ void core_context_setup_idle(core_context_t *context);
  */
 #define core_context_set_system_state(context, state) \
         (context)->state = (air_u32_t)(state)
+
 /**
  * @brief Flag an HM event on a core context
  * @param context core context
@@ -178,12 +186,14 @@ void core_context_remove_hm_event(core_context_t *context);
  */
 #define core_context_save(core) \
         sparc_core_context_save((void *)(core))
+
 /**
  * @brief Restores the core context
  * @param core_ctrl control control pointer
  */
 #define core_context_restore(core) \
         sparc_core_context_restore((void *)(core))
+
 /**
  * @brief Get the core context virtual core Id
  * @param context core context
@@ -191,6 +201,15 @@ void core_context_remove_hm_event(core_context_t *context);
  */
 #define core_context_id(context) \
         (context)->vcpu.id
+
+/**
+ * @brief Get the core context Table Base register
+ * @param context core context
+ * @return Table Base register of the context
+ */
+#define core_context_tbr(context) \
+        (context)->vcpu.tbr
+
 /**
  * @brief Check if the context is flagged as trashed
  * @param context Context to check

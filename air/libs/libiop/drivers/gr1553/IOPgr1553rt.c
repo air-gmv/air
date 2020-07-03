@@ -287,7 +287,7 @@ uint32_t gr1553rt_read(iop_device_driver_t *iop_dev, void *arg){
 	if(read == 0){
 		
 		/* EWOULDBLOCK */
-		status = AIR_UNSUCCESSFUL;
+		status = AIR_NO_ACTION;
 	}
 	
 	return status;

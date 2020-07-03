@@ -24,7 +24,11 @@ extern "C" {
 /**
  * @brief boolean value
  */
-typedef air_u32_t air_boolean;
+
+#define air_boolean_t _Bool
+#define false 0
+#define true 1
+
 /**
  * @brief Identifier type
  */
@@ -55,25 +59,22 @@ typedef char* air_message_ptr_t;
 typedef enum {
 
     AIR_NO_ERROR                = 0x00,
-    AIR_SUCCESSFUL              = 0x00,    /**<  request valid and operation performed */
-    AIR_NO_ACTION               = 0x01,    /**<  status of system unaffected by request */
-    AIR_NOT_AVAILABLE           = 0x02,    /**<  resource required by request unavailable */
-    AIR_INVALID_PARAM           = 0x03,    /**<  invalid parameter specified in request */
-    AIR_INVALID_CONFIG          = 0x04,    /**<  parameter incompatible with configuration */
-    AIR_INVALID_MODE            = 0x05,    /**<  request incompatible with current mode */
-    AIR_TIMED_OUT               = 0x06,    /**<  time-out tied up with request has expired */
-    AIR_INVALID_POINTER         = 0x07,    /**<  Invalid Memory Pointer            */
-    AIR_ERROR_MSGQUEUE_FULL     = 0x08,    /**<  Queueing port full                */
-    AIR_ERROR_MSGQUEUE_EMPTY    = 0x09,    /**<  Queueing port empty               */
-    AIR_ERROR_MAX_PORT_NUM      = 0x0A,    /**<  Maximum number of ports exceeded  */
-    AIR_INVALID_PORT_TYPE       = 0x0B,    /**<  Port has the wrong type           */
-    AIR_UNSUCCESSFUL            = 0x0C,
-    AIR_INTERNAL_ERROR          = 0x0D,
-    AIR_INVALID_SIZE            = 0x0E,
-    AIR_INVALID_ADDRESS         = 0x0F,
-    AIR_OUT_OF_MEMORY           = 0x10,
-    AIR_DEVICE_NOT_FOUND        = 0x11,    /**< Device not found                */
-    AIR_DEVICE_ERROR            = 0x12,
+    AIR_SUCCESSFUL              = 0x00, /**<  Request valid and operation performed     */
+    AIR_NO_ACTION               = 0x01, /**<  Status of system unaffected by request    */
+    AIR_NOT_AVAILABLE           = 0x02, /**<  Resource required by request unavailable  */
+    AIR_INVALID_PARAM           = 0x03, /**<  Invalid parameter specified in request    */
+    AIR_INVALID_CONFIG          = 0x04, /**<  Parameter incompatible with configuration */
+    AIR_INVALID_MODE            = 0x05, /**<  Request incompatible with current mode    */
+    AIR_TIMED_OUT               = 0x06, /**<  Time-out tied up with request has expired */
+    AIR_INVALID_POINTER         = 0x07, /**<  Invalid Memory Pointer                    */
+    AIR_ERROR_MSGQUEUE_FULL     = 0x08, /**<  Queueing port full                        */
+    AIR_ERROR_MSGQUEUE_EMPTY    = 0x09, /**<  Queueing port empty                       */
+    AIR_ERROR_MAX_PORT_NUM      = 0x0A, /**<  Maximum number of ports exceeded          */
+    AIR_INVALID_PORT_TYPE       = 0x0B, /**<  Port has the wrong type                   */
+    AIR_INVALID_SIZE            = 0x0C, /**< Invalid Size                               */
+    AIR_OUT_OF_MEMORY           = 0x0D, /**< Memory Could not be allocated              */
+    AIR_DEVICE_NOT_FOUND        = 0x0E, /**< Device not found                           */
+    AIR_DEVICE_ERROR            = 0x0F  /**< Device Specific Error Found                */
 
 } air_status_code_e;
 
@@ -82,10 +83,10 @@ typedef enum {
 #endif
 #ifdef ASM
 
-#define AIR_MODE_IDLE                                   0
-#define AIR_MODE_COLD_START                             1
-#define AIR_MODE_WARM_START                             2
-#define AIR_MODE_NORMAL                                 3
+#define AIR_MODE_IDLE                                0
+#define AIR_MODE_COLD_START                          1
+#define AIR_MODE_WARM_START                          2
+#define AIR_MODE_NORMAL                              3
 
 #define AIR_PERMISSION_FPU_CONTROL          0x00000001
 #define AIR_PERMISSION_CACHE_CONTROL        0x00000002
@@ -142,10 +143,27 @@ typedef enum {
 } air_start_condition_e;
 
 /**
- * @brief Partition system permissions flags
+ * @brief Partition state enumeration
  */
 typedef enum {
 
+    /** Partition hasn't run yet                                            */
+    AIR_PARTITION_STATE_NOT_RUN                 = 0x0,
+    /** Partition is initializing                                           */
+    AIR_PARTITION_STATE_INIT                    = 0x1,
+    /** Partition executing and enters STATE_READY at end of timeslot       */
+    AIR_PARTITION_STATE_RUNNING                 = 0x2,
+    /** Partition execution halted                                          */
+    AIR_PARTITION_STATE_HALTED                  = 0x3,
+    /** Partition will go to STATE_RUNNING at start of its next timeslot    */
+    AIR_PARTITION_STATE_READY                   = 0x4
+
+} pmk_partition_state_e;
+
+/**
+ * @brief Partition system permissions flags
+ */
+typedef enum {
 
     /** Floating Point unit control                                         */
     AIR_PERMISSION_FPU_CONTROL            = 1,
@@ -170,16 +188,26 @@ typedef enum {
  * @brief Partition Status structure
  */
 typedef struct {
-
-    air_identifier_t index;                 /**< Partition index              */
-    air_identifier_t window_id;             /**< Partition schedule window id */
-    air_clocktick_t period;                 /**< Partition schedule period    */
-    air_clocktick_t duration;               /**< Partition schedule duration  */
-    air_identifier_t identifier;            /**< Partition identifier         */
-    air_permissions_e permissions;          /**< Partition permissions        */
-    air_operating_mode_e operating_mode;    /**< Partition operating mode     */
-    air_start_condition_e start_condition;  /**< Partition start condition    */
-    air_u32_t restart_count;                 /**< Number of restarts           */
+    /** Partition index                                                     */
+    air_u32_t index;
+    /** Partition schedule window id (-1 if currently not executing window) */
+    air_identifier_t window_id;
+    /** Partition schedule period                                           */
+    air_clocktick_t period;
+    /** Partition schedule duration                                         */
+    air_clocktick_t duration;
+    /** Partition identifier                                                */
+    air_identifier_t identifier;
+    /** Partition permissions                                               */
+    air_permissions_e permissions;
+    /** Partition operating mode                                            */
+    air_operating_mode_e operating_mode;
+    /** Partition start condition                                           */
+    air_start_condition_e start_condition;
+    /** Partition current state                                             */
+    pmk_partition_state_e state;
+    /** Number of times the Partition has restarted                         */
+    air_u32_t restart_count;
 
 } air_partition_status_t;
 
@@ -212,7 +240,9 @@ air_status_code_e air_syscall_get_partition_status(
  * @param mode Operating Mode to be set
  * @return INVALID_CONFIG  - if no permissions
  *         INVALID_PARAM   - if invalid mode or target partition
- *         NO_ACTION       - if transition from normal to normal
+ *         INVALID_MODE    - if invalid transition
+ *         NO_ACTION       - if set current mode
+ *         NOT_AVAILABLE   - if partition is initializing
  *         NO_ERROR        - no error otherwise
  */
 air_status_code_e air_syscall_set_partition_mode(
@@ -224,6 +254,12 @@ air_status_code_e air_syscall_set_partition_mode(
  * @return Physical address if available to the partition, NULL otherwise
  */
 air_uptr_t air_syscall_get_physical_addr(air_uptr_t addr);
+
+/**
+ * @brief Finish Partition Execution on Current Window
+ * @note Partition execution only resumes at start of its next window
+ */
+void air_syscall_end_window(void);
 
 /** @} */
 
@@ -436,9 +472,9 @@ typedef struct {
 
     air_clocktick_t refresh_period;             /**< Port refresh period     */
     air_clocktick_t time_stamp;                 /**< Message time stamp      */
-    air_u32_t max_message_size;                  /**< Max number of messages  */
+    air_u32_t max_message_size;                 /**< Max number of messages  */
     air_port_direction_e port_direction;        /**< Port direction          */
-    air_u32_t port_discipline;                   /**< Port discipline         */
+    air_u32_t port_discipline;                  /**< Port discipline         */
     air_message_age_e message_age;              /**< Message age             */
     air_port_updated_e updated;                 /**< Message updated state   */
     air_message_validity_e last_msg_validity;   /**< Message validity        */
@@ -465,7 +501,7 @@ typedef struct {
     air_identifier_t id;                    /**< Shared Memory identifier   */
     air_memory_attributes_e permissions;    /**< Shared Memory attributes   */
     void *address;                          /**< Shared Memory bloc address */
-    air_sz_t size;                            /**< Shared Memory block size   */
+    air_sz_t size;                          /**< Shared Memory block size   */
 
 } air_sharedmemory_t;
 
@@ -632,7 +668,7 @@ air_state_e air_syscall_get_system_state(void);
 air_status_code_e air_syscall_set_system_state(air_state_e state);
 
 /**
- * @brief Get the lasted health-monitor event
+ * @brief Get the last health-monitor event
  * @param event Pointer to store the HM event
  */
 void air_syscall_get_hm_event(air_hm_event_t *event);
@@ -757,7 +793,7 @@ air_status_code_e air_syscall_boot_core(air_u32_t idx, void *entry_point);
  * @return INVALID_CONFIG  - if the partition doesn't have access to core idx,
  *         NO_ERROR        - otherwise
  */
-air_status_code_e air_syscall_set_tbr(air_u32_t idx);
+air_status_code_e air_syscall_copy_tbr(air_u32_t idx);
 /** @} */
 
 /**
@@ -781,8 +817,6 @@ air_status_code_e air_syscall_set_tbr(air_u32_t idx);
  */
 air_u32_t air_syscall_get_event(void);
 
-/** @} */
-
 
 /**
  * @brief Prints a partition character
@@ -790,6 +824,7 @@ air_u32_t air_syscall_get_event(void);
  */
 void air_syscall_putchar(char ch);
 
+#if DEBUG_MONITOR != 2
 /**
  * @brief Prints a partition buffer
  * @param buffer Buffer to be printed
@@ -797,7 +832,7 @@ void air_syscall_putchar(char ch);
  * @return Number of characters printed
  */
 air_u32_t air_syscall_print(char *str, air_sz_t len);
-
+#endif /* DEBUG_MONITOR != 2 */
 
 /**
  * @brief Shutdown module
@@ -806,7 +841,7 @@ void air_syscall_shutdown_module(void);
 
 /**
  * @brief Extract AMBA Plug & Play configuration area
- * @param ambaptr pointer to amba config area
+ * @return ambaptr pointer to amba config area
  */
 air_uptr_t air_syscall_get_ambaconf(void);
 
@@ -825,7 +860,7 @@ air_uptr_t air_syscall_get_ambaconf(void);
 #define AIR_SYSCALL_GET_P_ADDR                     (AIR_SYSCALL_ARCH_COUNT + 3 )
 #define AIR_SYSCALL_GET_NB_CORES                   (AIR_SYSCALL_ARCH_COUNT + 4 )
 #define AIR_SYSCALL_GET_CORE_ID                    (AIR_SYSCALL_ARCH_COUNT + 5 )
-#define AIR_SYSCALL_SET_TBR                        (AIR_SYSCALL_ARCH_COUNT + 6 )
+#define AIR_SYSCALL_COPY_TBR                       (AIR_SYSCALL_ARCH_COUNT + 6 )
 #define AIR_SYSCALL_BOOT_CORE                      (AIR_SYSCALL_ARCH_COUNT + 7 )
 #define AIR_SYSCALL_GET_US_PER_TICK                (AIR_SYSCALL_ARCH_COUNT + 8 )
 #define AIR_SYSCALL_GET_ELAPSED_TICKS              (AIR_SYSCALL_ARCH_COUNT + 9 )
@@ -857,6 +892,7 @@ air_uptr_t air_syscall_get_ambaconf(void);
 #define AIR_SYSCALL_FREEZE_CACHE                   (AIR_SYSCALL_ARCH_COUNT + 35)
 #define AIR_SYSCALL_FLUSH_CACHE                    (AIR_SYSCALL_ARCH_COUNT + 36)
 #define AIR_SYSCALL_GET_AMBACONF                   (AIR_SYSCALL_ARCH_COUNT + 37)
-#define AIR_SYSCALL_COUNT                          (AIR_SYSCALL_ARCH_COUNT + 38)
+#define AIR_SYSCALL_END_WINDOW                     (AIR_SYSCALL_ARCH_COUNT + 38)
+#define AIR_SYSCALL_COUNT                          (AIR_SYSCALL_ARCH_COUNT + 39)
 
 #endif /* __AIR_H__ */

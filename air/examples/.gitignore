@@ -1,0 +1,3 @@
+# Ignore bash files of gitlab runner 
+*.bash
+*.py

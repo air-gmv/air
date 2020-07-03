@@ -842,13 +842,13 @@ uint32_t greth_read(iop_device_driver_t *iop_dev, void *arg) {
 		} else {
 			/* We can't block waiting, so we return */
 			iop_debug("rx can't block\n");
-			return AIR_UNSUCCESSFUL;
+			return AIR_NO_ACTION;
 		}
     }
 
     if(count < 0){
         iop_debug("read error\n");
-        return AIR_INTERNAL_ERROR;
+        return AIR_DEVICE_ERROR;
     }
 
 	return AIR_SUCCESSFUL;

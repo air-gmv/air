@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011  GMVIS Skysoft S.A.
+ * Copyright (C) 2008-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -10,7 +10,6 @@
  * @author pfnf
  * @brief Simplified partition printf
  */
-
 #include <air.h>
 #include <pprintf.h>
 
@@ -44,19 +43,19 @@ static air_identifier_t partition_idx = 0;
  * @brief pprintf library initialization flag
  * @ingroup lib_pprintf
  */
-static air_boolean printf_inited = 0;
+static air_boolean_t printf_inited = false;
 
 /**
  * @brief pprintf partition color table
  * @ingroup lib_pprintf
  */
 static char partition_colors[][6] = {
-    "\x1b[33m\0",       /**< color yellow   */
-    "\x1b[32m\0",       /**< color green    */
-    "\x1b[31m\0",       /**< color red      */
-    "\x1b[34m\0",       /**< color blue     */
-    "\x1b[36m\0",       /**< color cyan     */
-    "\x1b[35m\0",       /**< color magenta  */
+    COLOR_KYELLOW,       /**< color yellow   */
+    COLOR_KGREEN,       /**< color green    */
+    COLOR_KRED,       /**< color red      */
+    COLOR_KBLUE,       /**< color blue     */
+    COLOR_KCYAN,       /**< color cyan     */
+    COLOR_KMAGENTA,       /**< color magenta  */
 };
 
 /**
@@ -289,4 +288,4 @@ void libpprintf_internal_pprintf(const char *fmt , ...) {
     va_start(ap , fmt);
     vpprintf(fmt , ap);
     va_end(ap);
-}
+}						  

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2019  GMVIS Skysoft S.A.
+ * Copyright (C) 2013-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -15,6 +15,7 @@
 #define __PMK_H__
 
 #include <air.h>
+#include <libc.h>
 #include <cpu.h>
 
 #ifndef ASM
@@ -25,7 +26,7 @@
  */
 typedef struct {
 
-    air_sz_t length;                      /**< length of the list             */
+    air_sz_t length;                    /**< length of the list             */
     void *elements;                     /**< elements in list               */
 
 } pmk_list_t;
@@ -40,18 +41,11 @@ typedef struct {
 #define pmk_get_from_list(type, list, index)    \
         &((type *)(list)->elements)[index]
 
-
-void *memset(void *, int, air_sz_t);
-void *memcpy(void *, const void *, air_sz_t);
-int strncmp(const char *, const char *, air_sz_t);
-
-
-
 #else /* ASM */
 
 /** @defgroup os_status_asm AIR-OS Status Code (ASM definitions)
  *  Status code definitions for assembly
- *  @note The must match the status code values defined in air.h
+ *  @note Must match the status code values defined in air.h
  *  @{
  */
 #define AIR_NO_ERROR                                             0x00
@@ -67,12 +61,9 @@ int strncmp(const char *, const char *, air_sz_t);
 #define AIR_ERROR_MSGQUEUE_EMPTY                                 0x09
 #define AIR_ERROR_MAX_PORT_NUM                                   0x0A
 #define AIR_INVALID_PORT_TYPE                                    0x0B
-#define AIR_UNSUCCESSFUL                                         0x0C
-#define AIR_INTERNAL_ERROR                                       0x0D
-#define AIR_INVALID_SIZE                                         0x0E
-#define AIR_INVALID_ADDRESS                                      0x0F
-#define AIR_OUT_OF_MEMORY                                        0x10
-#define AIR_DEVICE_NOT_FOUND                                     0x11
-#define AIR_DEVICE_ERROR                                         0x12
+#define AIR_INVALID_SIZE                                         0x0C
+#define AIR_OUT_OF_MEMORY                                        0x0D
+#define AIR_DEVICE_NOT_FOUND                                     0x0E
+#define AIR_DEVICE_ERROR                                         0x0F
 #endif /* ASM */
 #endif /* __PMK_H__ */
