@@ -1,0 +1,61 @@
+section, subsection, req, comment, note, test, testlink {
+	-moz-tab-size: 2;
+    -o-tab-size:   2;
+    tab-size:      2;
+	white-space:pre;
+}
+
+section {
+	display:block;
+	background-color:#FCFCFC;
+	font-family:verdana,helvetica,sans-serif;
+}
+
+subsection {
+	display:block;
+	margin:2em;
+}
+
+req {
+	display:block;
+	/*margin: 2em;*/
+}
+
+req:before {
+  content: attr(name);
+  color:#2222F0;
+}
+
+comment {
+	display:block;
+	/*margin: 2em;*/
+	background-color:#EFE1FF;
+}
+
+note {
+	display:block;
+	/*margin: 2em;*/
+	background-color:#CFE1FF;
+}
+
+test {
+	display	: block;
+	/*margin: 2em;*/
+	background-color	: #AAFFEE;
+}
+
+test:before {
+	content	: attr(test_id);
+	color	: #3333F0;
+}
+
+testlink {
+	display	: block;
+	/*margin: 2em;*/
+	background-color	: #AAFFEE;
+}
+
+test:before {
+	content	: attr(test_id);
+	color	: #3333F0;
+}

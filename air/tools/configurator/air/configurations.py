@@ -99,19 +99,19 @@ class Configuration(object):
     # @param self object pointer
     # @param arch target architecture
     # @param bsp target board support package
-    def __init__(self, arch, bsp, fpu_enabled, cache_init, pos_select):
+    def __init__(self, arch, bsp, fpu_enabled, debug_monitor, pos_select):
 
         self.arch = arch.lower()
         self.bsp = bsp.lower()
         self.fpu_enabled = fpu_enabled
-        self.cache_init = cache_init
+        self.debug_monitor = debug_monitor
         self.debug_mode = False
         #logging.info ('Initializing Configuration class architecture: %s, bsp: %s', self.arch, self.bsp)
 
         # get supported pos
         self.supported_pos = {}
         for pos in pos_select:
-            pos_path = os.path.join(air.POS_DIRECTORY, pos, 'config.py')
+            pos_path = os.path.join(air.POS_DIRECTORY, pos, 'config_' + bsp + '.py')
             module = imp.load_source(pos, pos_path)
             if not hasattr(module, 'supported_libraries'):
                 module.supported_libraries = []
@@ -267,6 +267,10 @@ class Configuration(object):
     def get_library_sources(self, lib_name):
         if lib_name == 'libair':
             return supported_architectures[self.arch][self.bsp].libair_sources
+        if lib_name == 'libiop':
+            sources = self.supported_libraries[lib_name].source_files
+            sources.update(self.supported_libraries['libiop'].iop_get_drivers_sources(self.get_iop_configuration().drivers))
+            return sources
         return self.supported_libraries[lib_name].source_files
 
     ##
@@ -275,6 +279,10 @@ class Configuration(object):
     def get_library_public_headers(self, lib_name):
         if lib_name == 'libair':
             return self.get_libair_headers()
+        if lib_name == 'libiop':
+            headers = set(utils.flatten(self.supported_libraries[lib_name].header_files))
+            headers.update(self.supported_libraries['libiop'].iop_get_drivers_headers(self.get_iop_configuration().drivers))
+            return headers
         return set(utils.flatten(self.supported_libraries[lib_name].header_files))
 
     ##
@@ -285,7 +293,9 @@ class Configuration(object):
             return self.get_kernel_headers()
         dependencies = self.get_library_list_of_dependencies(lib_name)
         if lib_name == 'libiop':
-            return set(utils.flatten([[self.supported_libraries[n].header_files for n in dependencies], self.get_kernel_headers()]))
+            headers = set(utils.flatten([[self.supported_libraries[n].header_files for n in dependencies], self.get_kernel_headers()]))
+            headers.update(self.supported_libraries['libiop'].iop_get_drivers_headers(self.get_iop_configuration().drivers))
+            return headers
         lib_air = self.get_libair_headers()
         return set(utils.flatten([[self.supported_libraries[n].header_files for n in dependencies], lib_air]))
 
@@ -543,7 +553,7 @@ def save_configuration(os_configuration, logger):
 
     try:
         fd = open(__OS_CONFIG_FILE__, 'w+')
-        pickle.dump((os_configuration.arch, os_configuration.bsp, os_configuration.fpu_enabled, os_configuration.cache_init, savepos), fd)
+        pickle.dump((os_configuration.arch, os_configuration.bsp, os_configuration.fpu_enabled, os_configuration.debug_monitor, savepos), fd)
         fd.close()
 
     except Exception, why:
@@ -562,8 +572,8 @@ def load_configuration(logger, config=__OS_CONFIG_FILE__):
     # try to load the configuration
     try:
         fd = open(config, 'r')
-        arch, bsp, fpu_enabled, cache_init, pos_select = pickle.load(fd)
-        os_configuration = Configuration(arch, bsp, fpu_enabled, cache_init, pos_select)
+        arch, bsp, fpu_enabled, debug_monitor, pos_select = pickle.load(fd)
+        os_configuration = Configuration(arch, bsp, fpu_enabled, debug_monitor, pos_select)
         fd.close()
         return os_configuration
     except: 

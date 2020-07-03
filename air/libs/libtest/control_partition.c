@@ -13,6 +13,7 @@
 #include <air.h>
 #include <libtest.h>
 
+
 /**
  * @brief Partition count
  */
@@ -39,6 +40,13 @@ static air_u32_t flush_partition_buffer(partition_buffer_t *p_buffer) {
 
     /* store the values locally */
     air_u32_t l_pos = p_buffer->l_pos;
+
+    if (p_buffer->p_done)
+        printf("TEST| STEP ID %04x ITERATION %03x| RESULT %x\n",
+                p_buffer->step_id,
+                p_buffer->iterations,
+                p_buffer->iterations,
+                p_buffer->p_pass);
 
     /* write to UART */
     while (p_buffer->r_pos != l_pos) {
@@ -70,7 +78,6 @@ void control_partition_init(air_u32_t id, air_name_ptr_t shm_name) {
     air_u32_t i;
     test_control = NULL;
     air_sharedmemory_t sharedmemory;
-
     /* get partition configuration */
     air_syscall_get_partition_status(-1, &partition);
 
@@ -78,42 +85,41 @@ void control_partition_init(air_u32_t id, air_name_ptr_t shm_name) {
     if (air_syscall_get_sharedmemory(shm_name, &sharedmemory) == AIR_NO_ERROR) {
 
         /* get control structures */
-        test_control = (test_control_t *)sharedmemory.address;
-        test_control->buffers = (partition_buffer_t *)ADDR_ALIGN(
-                (air_uptr_t)sharedmemory.address + sizeof(test_control_t),
+        test_control = (test_control_t *) sharedmemory.address;
+        test_control->buffers = (partition_buffer_t *) ADDR_ALIGN(
+                (air_uptr_t) sharedmemory.address + sizeof (test_control_t),
                 0x40);
 
         /* initialize each partition buffer */
         for (i = 0; i < partition.index + 1; ++i) {
             partition_buffer_t *p_buffer = &test_control->buffers[i];
-            p_buffer->l_pos  = 0;
-            p_buffer->w_pos  = 0;
-            p_buffer->r_pos  = 0;
+            p_buffer->l_pos = 0;
+            p_buffer->w_pos = 0;
+            p_buffer->r_pos = 0;
             p_buffer->p_done = 0;
             p_buffer->p_pass = 1;
             p_buffer->iterations = 0;
-            p_buffer->step_id   = ~0;
+            p_buffer->step_id = ~0;
         }
 
         /* get current partition buffer */
         partition_buffer = &test_control->buffers[partition.index];
 
         /* test header */
-        pprintf("+----[" COLOR_KMAG " %06i " COLOR_RESET "]----+\n", id);
-        flush_partition_buffer(partition_buffer);
+        pprintf("STARTING TEST [ %06i ]\n", id);
+        //flush_partition_buffer(partition_buffer);
 
         /* allow other partitions to continue */
         test_control->test_id = id;
         test_control->step_id = 0;
 
-    /* shared memory not available to run the test... */
+        /* shared memory not available to run the test... */
     } else {
 
         /* shutdown module */
         air_syscall_shutdown_module();
         for (;;);
     }
-
     /* loop to print the text results */
     while (1) {
 
@@ -128,10 +134,6 @@ void control_partition_init(air_u32_t id, air_name_ptr_t shm_name) {
 
             all_done &= p_buffer->p_done;
             all_pass &= p_buffer->p_pass;
-
-            if (flush_partition_buffer(p_buffer)) {
-                all_done = 0;
-            }
         }
 
         /* check if all test partitions are done */
@@ -140,12 +142,11 @@ void control_partition_init(air_u32_t id, air_name_ptr_t shm_name) {
             /* present the test final result */
             if (1 == all_pass) {
 
-                pprintf("+------[" COLOR_KGRN " OK " COLOR_RESET "]------+\n");
+                pprintf("END OF TEST ALL PASS\n");
             } else {
 
-                pprintf("+------[" COLOR_KRED " KO " COLOR_RESET "]------+\n");
+                pprintf("END OF TEST FAILURES DETECTED\n");
             }
-            flush_partition_buffer(partition_buffer);
 
             /* shutdown module */
             air_syscall_shutdown_module();
