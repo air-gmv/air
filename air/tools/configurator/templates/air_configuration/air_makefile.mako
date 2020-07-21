@@ -24,40 +24,40 @@ ${template.Rule('noconf', True, [ 'pmk', 'posnc', 'libs', 'tools' ])}
 
 # PMK
 ${template.Rule('pmk', True, None)}
-${template.RunMakeInDir(air.PMK_DIR_NAME, 'all')}
+${template.RunMakeInDir(False, air.PMK_DIR_NAME, 'all')}
 
 # POS
 ${template.Rule('pos', True, [ 'pmk' ])}
-${template.RunMakeInDir(air.POS_DIR_NAME, 'all')}
+${template.RunMakeInDir(True, air.POS_DIR_NAME, 'all')}
 
 # POS No Configure
 ${template.Rule('posnc', True, [ 'pmk' ])}
-${template.RunMakeInDir(air.POS_DIR_NAME, 'noconf')}
+${template.RunMakeInDir(True, air.POS_DIR_NAME, 'noconf')}
 
 # Libraries
 ${template.Rule('libs', True, [ 'pmk', 'pos' ])}
-${template.RunMakeInDir(air.LIBS_DIR_NAME, 'all')}
+${template.RunMakeInDir(True, air.LIBS_DIR_NAME, 'all')}
 
 # Tools
 ${template.Rule('tools', True, None)}
-${template.RunMakeInDir(os.path.join(air.TOOLS_DIR_NAME, 'partition_assembler'), 'all')}
+${template.RunMakeInDir(True, os.path.join(air.TOOLS_DIR_NAME, 'partition_assembler'), 'all')}
 ${template.SymLink(os.path.join('..', '..', 'tools', 'configurator', 'configurator.py'), os.path.join('$(AIR_TOOLS)', 'configurator'))}
 
 # Clean
 ${template.Rule('clean', True, None)}
 ${template.Remove(os.path.join('$(AIR_TOOLS)', 'configurator'))}
-${template.RunMakeInDir(air.LIBS_DIR_NAME, 'clean')}
-${template.RunMakeInDir(air.POS_DIR_NAME, 'clean')}
-${template.RunMakeInDir(air.PMK_DIR_NAME, 'clean')}
-${template.RunMakeInDir(os.path.join(air.TOOLS_DIR_NAME, 'partition_assembler'), 'clean')}
+${template.RunMakeInDir(True, air.LIBS_DIR_NAME, 'clean')}
+${template.RunMakeInDir(True, air.POS_DIR_NAME, 'clean')}
+${template.RunMakeInDir(True, air.PMK_DIR_NAME, 'clean')}
+${template.RunMakeInDir(True, os.path.join(air.TOOLS_DIR_NAME, 'partition_assembler'), 'clean')}
 ${template.Remove(air.INSTALL_DIRECTORY)}
 
 # Distclean
 ${template.Rule('distclean', True, None)}
-${template.RunMakeInDir(air.LIBS_DIR_NAME, 'distclean')}
-${template.RunMakeInDir(air.POS_DIR_NAME, 'distclean')}
-${template.RunMakeInDir(air.PMK_DIR_NAME, 'distclean')}
-${template.RunMakeInDir(os.path.join(air.TOOLS_DIR_NAME, 'partition_assembler'), 'distclean')}
+${template.RunMakeInDir(True, air.LIBS_DIR_NAME, 'distclean')}
+${template.RunMakeInDir(True, air.POS_DIR_NAME, 'distclean')}
+${template.RunMakeInDir(True, air.PMK_DIR_NAME, 'distclean')}
+${template.RunMakeInDir(True, os.path.join(air.TOOLS_DIR_NAME, 'partition_assembler'), 'distclean')}
 ${template.Remove(air.INSTALL_DIRECTORY)}
 ${template.Remove('Makefile')}
 ${template.Remove('Makefile.inc')}

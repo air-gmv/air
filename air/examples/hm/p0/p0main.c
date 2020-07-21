@@ -8,11 +8,7 @@
 
 #include <air.h>
 #include <rtems.h>
-#ifdef RTEMS48I
-    #include <pprintf.h>
-#else
-    #include <stdio.h>
-#endif
+#include <pprintf.h>
 
 int producer() {
 
@@ -43,19 +39,11 @@ int producer() {
 
     uint32_t tps = 1000000 / air_syscall_get_us_per_tick();
 
-    for (;;)
+    for (int i=0; i<3; i++)
     {
-      #ifdef RTEMS48I
-        pprintf("In partition PO loop\n");
-      #else
         printf("In partition PO loop\n");
-      #endif
         rtems_task_wake_after(tps/2);
-      #ifdef RTEMS48I
-        pprintf("P0 : Waking up %d\n", x);
-      #else
         printf("P0 : Waking up %d\n", x);
-      #endif
     }
 
     return AIR_SUCCESSFUL;

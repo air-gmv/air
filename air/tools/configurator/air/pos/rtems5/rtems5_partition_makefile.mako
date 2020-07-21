@@ -65,6 +65,7 @@ include $(PROJECT_ROOT)/make/leaf.cfg
 
 # built in libraries include files
 CPPFLAGS+=${'\\'}
+-DPMK_${os_configuration.arch.upper()}_${os_configuration.bsp.upper()}${'\\'}
 % if partition.is_system:
 -DPMK_MAX_CORES=${os_configuration.get_available_cores()}${'\\'}
 % for i, directory in enumerate(kernel_headers):
@@ -76,6 +77,9 @@ CPPFLAGS+=${'\\'}
 -I../common/${'\\'}
 -B../common/${'\\'}
 -DRTEMS5${'\\'}
+% if 'libcov' in partition.libraries:
+-fprofile-arcs -ftest-coverage -DCOVERAGE_ENABLED${'\\'}
+% endif
 ${template.LibraryIncludes(partition.libraries)}\
 
 # build LD falgs

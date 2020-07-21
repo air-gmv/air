@@ -36,7 +36,7 @@
     ((uint32_t)(get_header_size((buf)) + get_payload_size((buf))))
 
 void setup_iop_buffers(
-        iop_buffer_t *buffers, uint8_t *storage, uint32_t count);
+        iop_buffer_t *buffers, air_u8_t *storage, air_u32_t count);
 
 /**
  * @brief Copies an IOP buffer
@@ -92,7 +92,7 @@ iop_fragment_t *obtain_fragment(iop_chain_control *ctl);
  * @param queue List of wrappers
  * @param timeout Wrapper timeout
  */
-void update_queue_timers(iop_chain_control *queue, uint32_t timeout);
+void update_queue_timers(iop_chain_control *queue, air_u32_t timeout);
 
 /**
  * @brief Update expiration timers

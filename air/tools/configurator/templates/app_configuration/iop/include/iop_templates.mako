@@ -3,7 +3,7 @@
 /**
  * @brief Device Scheduling
  */
-static uint32_t reads_per_period[] = ${'\\'}
+static air_u32_t reads_per_period[] = ${'\\'}
     { \
 % for i, schedule in enumerate(iop_configuration.schedules):
 <%
@@ -34,6 +34,10 @@ ${CanHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
 	% for i, route in enumerate(pdevice.routes):
 ${MILHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
 	% endfor
+% elif pdevice.type =='UART':
+    % for i, route in enumerate(pdevice.routes):
+${UartHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
+    % endfor
 % endif
 };
 
@@ -41,7 +45,7 @@ ${MILHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
  * @brief Routes Scheduling
  */
 % for i, route in enumerate(pdevice.routes):
-static uint32_t route_schedule_${i}[${len(iop_configuration.schedules)}] = ${'\\'}
+static air_u32_t route_schedule_${i}[${len(iop_configuration.schedules)}] = ${'\\'}
 <%
     active = []
     for schedule in iop_configuration.schedules:
@@ -146,6 +150,14 @@ extern iop_port_t remote_ports[${len(iop_configuration.ports)}];
 			.address = ${int(header.address)},
 		}
 	}\
+</%def>
+
+<%def name="UartHeader(header)">\
+    {
+        .uart_header = {
+            .id    = ${int(header.uart_id)},
+        }
+    }\
 </%def>
 
 <%def name="IopBuffersStorage(size)">\

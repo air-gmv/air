@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (C) 2018-2020  GMVIS Skysoft S.A.
+
+  The license and distribution terms for this file may be
+  found in the file LICENSE in this distribution or at
+  air/LICENSE
+-->
+<IOPartition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="iop.xsd" version="1.0" date="2017-11-20" name="iop_can" request_number="64" time_to_live="5">
+	
+	<RemotePorts>
+		<Port Name="iop_receiver" LogicalDeviceId="1"/>
+		<Port Name="iop_receiver2" LogicalDeviceId="2"/>
+		<Port Name="iop_sender" />
+		<Port Name="iop_sender2" />
+	</RemotePorts>	
+	
+	<LogicalDevices>
+		<Device Id="1" Name="DESTINATION_DEVICE_NAME"/>
+		<Device Id="2" Name="DESTINATION_DEVICE_NAME2"/>
+	</LogicalDevices>
+		
+	<PhysicalDevices>
+		<Device Id="1" Device="CAN0" Baud="500" Code="0x00000000" Mask="0x00000000" Selection="0" Enable0="0" Enable1="0">
+			<PhysicalRoute Id="1" PortId="iop_sender">
+				<CanHeader Extended="true" Sshot="false" RTR="false" CanID="34"/>
+			</PhysicalRoute>		
+			<LogicalRoute Id="2" LogicalDeviceId="1">
+				<CanHeader Extended="false" Sshot="false" RTR="false" CanID="5"/> 
+			</LogicalRoute>
+		</Device>
+		<Device Id="0" Device="CAN1" Baud="250" Code="0x00000000" Mask="0x00000000" Selection="1" Enable0="0" Enable1="0">
+			<PhysicalRoute Id="3" PortId="iop_sender2">
+				<CanHeader Extended="true" Sshot="false" RTR="false" CanID="35"/>
+			</PhysicalRoute>		
+			<LogicalRoute Id="4" LogicalDeviceId="2">
+				<CanHeader Extended="false" Sshot="false" RTR="false" CanID="6"/> 
+			</LogicalRoute>
+		</Device>
+	</PhysicalDevices>
+
+	<ModuleSchedules>
+		<Schedule ScheduleIdentifier="1">
+		    <DevicesConfiguration>
+			    <Device DeviceId="1" Device="CAN0" Reads="1"/>
+			    <Device DeviceId="0" Device="CAN1" Reads="1"/>
+			</DevicesConfiguration>
+			<RoutesConfiguration>
+				<Route RouteId="1" Active="true"/>
+				<Route RouteId="2" Active="true"/>
+				<Route RouteId="3" Active="true"/>
+				<Route RouteId="4" Active="true"/>
+			</RoutesConfiguration>
+		</Schedule>
+	</ModuleSchedules>
+</IOPartition>
