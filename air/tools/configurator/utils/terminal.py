@@ -5,7 +5,6 @@
 __author__ = 'pfnf'
 
 from localization.common import *
-import logging
 
 PRINT_UTILS_COLORS = True
 
@@ -38,60 +37,7 @@ COLORS = { 'none'       	:    '',
 ## Gets the current terminal size
 # @return (Number of rows, Number of columns)
 def getTerminalSize():
-    import os, struct
-    def ioctl_GWINSZ(fd):
-        import fcntl, termios
-        return struct.unpack('hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234'))
-
-    # try stdin, stdout, stderr
-    def fromStd():
-        for fd in (0, 1, 2):
-            try:
-                return ioctl_GWINSZ(fd)
-            except:
-                logging.exception("Exception, See details below")
-                pass
-        return ()
-
-    # try os.ctermid()
-    def fromCtermId():
-        try:
-            fd = os.open(os.ctermid(), os.O_RDONLY)
-            try:
-                size = ioctl_GWINSZ(fd)
-                return
-            finally:
-                os.close(fd)
-        except:
-            logging.exception("Exception, See details below")
-            return ()
-
-    # try `stty size`
-    def fromStty():
-        try:
-            return tuple(int(x) for x in os.popen('stty size', 'r').read().split())
-        except:
-            logging.exception("Exception, See details below")
-            return ()
-
-    # try environment variables
-    def fromEnv():
-        try:
-            return tuple(int(os.getenv(var)) for var in ('LINES', 'COLUMNS'))
-        except:
-            logging.exception("Exception, See details below")
-            return ()
-
-    size = fromStd()
-    if len(size) == 2: return size
-    size = fromCtermId()
-    if len(size) == 2: return size
-    size = fromStty()
-    if len(size) == 2: return size
-    size = fromEnv()
-    if len(size) == 2: return size
-
-    # i give up. return default.
+    # Return default
     return (25, 80)
 
 ## Print colored text

@@ -133,11 +133,9 @@ void pmk_hm_isr_handler_module_level(pmk_core_ctrl_t *core,
 
 /**
  * @brief Health-Monitor handler for the Partition level
- * @param core_ctrl current core control structure
- * @param partition partition configuration structure pointer
+ * @param core current core control structure
  * @param state_id current core state id
- * @param error_
- * id current error id
+ * @param error_id current error id
  */
 void pmk_hm_isr_handler_partition_level(
         pmk_core_ctrl_t *core,
@@ -148,6 +146,8 @@ void pmk_hm_isr_handler_partition_level(
     core_context_t *context = core->context;
     pmk_partition_t *partition = core->partition;
     printk ("HM Partition %d state id %d, error id %d \n", partition->id, state_id, error_id);
+
+    partition->events |= AIR_EVENT_HEALTH_MONITOR;
 
     /* allow partition to be preempted */
     cpu_enable_preemption(flags);

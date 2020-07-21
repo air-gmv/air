@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Copyright (C) 2008-2020  GMVIS Skysoft S.A.
+
+  The license and distribution terms for this file may be
+  found in the file LICENSE in this distribution or at
+  air/LICENSE
+-->
+<ARINC_653_Module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ModuleName="iop_example">
+
+  <!-- Partition 3  -->  
+  <Partition PartitionIdentifier="3" PartitionName="iop" 
+    Criticality="LEVEL_A" EntryPoint="empty" SystemPartition="true">
+    <Sampling_Port Name="dsampling"
+      Direction="DESTINATION" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <Queuing_Port Name="squeuing" 
+      Direction="SOURCE" MaxMessageSize="1024" MaxNbMessages="32" />
+    <PartitionConfiguration Personality="Bare" IOP="iop.xml" Cores="1">
+        <Libs>LIBIOP</Libs>
+        <Devices></Devices>
+        <Cache>CODE; DATA</Cache>
+        <Memory Size="0x400000" />
+        <Permissions>
+          SUPERVISOR;
+        </Permissions>
+    </PartitionConfiguration>     
+  </Partition>
+
+  <!-- Partition 1 -->
+  <Partition PartitionIdentifier="1" PartitionName="sampling"
+    Criticality="LEVEL_A" EntryPoint="entry_func" SystemPartition="false">
+    <Sampling_Port Name="ssampling" 
+      Direction="SOURCE" MaxMessageSize="1024" RefreshRateSeconds="1.0"/>
+    <PartitionConfiguration Personality="RTEMS5" Cores="1">
+        <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
+        <Devices></Devices>
+        <Cache>CODE; DATA</Cache>
+        <Memory Size="0x400000" />
+        <Permissions>
+            FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+        </Permissions>
+    </PartitionConfiguration>
+  </Partition>
+  
+  <!-- Partition 2 -->
+  <Partition PartitionIdentifier="2" PartitionName="queuing"
+    Criticality="LEVEL_A" EntryPoint="entry_func"  SystemPartition="false">
+    <Queuing_Port  Name="dqueuing"
+      Direction="DESTINATION" MaxMessageSize="1024" MaxNbMessages="32" />
+    <PartitionConfiguration Personality="RTEMS5" Cores="1">
+        <Libs>LIBAIR; IMASPEX; LIBPRINTF</Libs>
+        <Devices></Devices>
+        <Cache>
+        	CODE; DATA
+        </Cache>
+        <Memory Size="0x400000" />
+        <Permissions>
+          FPU_CONTROL; CACHE_CONTROL; GLOBAL_TIME; SET_TOD; SET_PARTITION_MODE;
+        </Permissions>
+    </PartitionConfiguration>
+  </Partition>
+
+  <!-- Schedule 1 -->
+  <Module_Schedule ScheduleIdentifier="1" ScheduleName="schedule"
+    InitialModuleSchedule="true" MajorFrameSeconds="1.0">
+    <Partition_Schedule PartitionIdentifier="1" PartitionName="sampling" 
+      PeriodDurationSeconds="0.2" PeriodSeconds="1.0">
+      <Window_Schedule WindowIdentifier="1" PartitionPeriodStart="true" 
+        WindowDurationSeconds="0.2"  WindowStartSeconds="0.0"/>
+    </Partition_Schedule>
+     <Partition_Schedule PartitionIdentifier="2" PartitionName="queuing" 
+      PeriodDurationSeconds="0.2" PeriodSeconds="1.0">
+      <Window_Schedule WindowIdentifier="2" PartitionPeriodStart="true" 
+        WindowDurationSeconds="0.2" WindowStartSeconds="0.2"/>
+    </Partition_Schedule>
+    <Partition_Schedule PartitionIdentifier="3" PartitionName="iop" 
+      PeriodDurationSeconds="0.6" PeriodSeconds="1.0">
+      <Window_Schedule WindowIdentifier="3" PartitionPeriodStart="true" 
+        WindowDurationSeconds="0.6" WindowStartSeconds="0.4"/>
+    </Partition_Schedule>
+  </Module_Schedule>
+
+  <!-- Connection table  -->
+  <Connection_Table>
+    <Channel ChannelIdentifier="1" ChannelName="sampling">
+      <Source>
+        <Standard_Partition PartitionIdentifier="1" PartitionName="sampling" 
+          PortName="ssampling"/>
+      </Source>
+      <Destination>
+        <Standard_Partition PartitionIdentifier="3" PartitionName="iop" 
+          PortName="dsampling"/>
+      </Destination>
+    </Channel>
+    <Channel ChannelIdentifier="2" ChannelName="queuing">
+      <Source>
+        <Standard_Partition PartitionIdentifier="3" PartitionName="iop" 
+          PortName="squeuing"/>
+      </Source>
+      <Destination>
+        <Standard_Partition PartitionIdentifier="2" PartitionName="queuing" 
+          PortName="dqueuing"/>
+      </Destination>
+    </Channel>
+  </Connection_Table>
+  
+  <!-- Module configuration -->
+  <AIR_Configuration TicksPerSecond="200" RequiredCores="1"/>
+</ARINC_653_Module>

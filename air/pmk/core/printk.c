@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014  GMVIS Skysoft S.A.
+ * Copyright (C) 2008-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -11,6 +11,7 @@
  * @brief Contains function to print messages exclusively from the PMK
  */
 
+#if DEBUG_MONITOR != 2	
 #include <bsp.h>
 #include <printk.h>
 #include <stdarg.h>
@@ -199,7 +200,6 @@ void printk(const char *fmt , ...){
     vprintk(fmt , ap);
     va_end(ap);
 }
-
 void pmk_console_outbyte(char ch) {
 
     /* add \r before \n to prevent display errors */
@@ -210,3 +210,5 @@ void pmk_console_outbyte(char ch) {
     /* send byte to BSP console */
     bsp_console_outbyte(ch);
 } 
+
+#endif /* DEBUG_MONITOR != 2 */

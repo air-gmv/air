@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019  GMVIS Skysoft S.A.
+ * Copyright (C) 2008-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -11,13 +11,9 @@
 #include <rtems/rtems/tasks.h> 
 #include <rtems/rtems/sem.h> 
 #include <rtems/rtems/clock.h> 
+#include <pprintf.h>
 
 #include <imaspex.h>
-
-#ifdef RTEMS48I
-	#include <printf.h>
-#endif
-
 
 #define TPS 200 /*ticks per second specified in the XML*/
 

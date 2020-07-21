@@ -5,12 +5,12 @@
  * found in the file LICENSE in this distribution or at
  * air/LICENSE
  */
-/** 
+/**
  * @file support.c
- * 
+ *
  *  COPYRIGHT (c) 2011.
- *  GMV-SKYSOFT 
- * 
+ *  GMV-SKYSOFT
+ *
  * @author cdcs
  * @brief Provides support functions for handling requests and replies
  *
@@ -26,7 +26,7 @@
 #include <iop_support.h>
 
 void setup_iop_buffers(
-        iop_buffer_t *buffers, uint8_t *storage, uint32_t count) {
+        iop_buffer_t *buffers, air_u8_t *storage, air_u32_t count) {
 
     uint32_t i;
     for (i = 0; i < count; ++i) {
@@ -74,19 +74,18 @@ void release_fragment(iop_fragment_t *fragment) {
     fragment->header_size=0;
     fragment->payload_size=0;
     memset( &fragment->header, 0, sizeof(iop_header_t));
-   
+
     iop_chain_append(&usr_configuration.free_fragments, &fragment->node);
 }
 
 
 static inline iop_chain_node * obtain_node(iop_chain_control *ctl){
-    
+
     iop_chain_node *node = NULL;
     if (ctl != NULL) {
         /* get the node from the chain*/
         node = iop_chain_get(ctl);
     }
-
     /* Return the node*/
     return node;
 
@@ -104,7 +103,7 @@ iop_fragment_t *obtain_fragment(iop_chain_control *ctl){
     return (iop_fragment_t *)obtain_node(ctl);
 }
 
-void update_queue_timers(iop_chain_control *queue, uint32_t timeout) {
+void update_queue_timers(iop_chain_control *queue, air_u32_t timeout) {
 
     /* pointer to the next request wrapper */
     iop_wrapper_t *curr_wrapper, *next_wrapper;
@@ -136,7 +135,7 @@ void update_queue_timers(iop_chain_control *queue, uint32_t timeout) {
 
                 /* release the request wrapper */
                 release_wrapper(curr_wrapper);
-            
+
                 /* continue processing the new wrapper */
                 curr_wrapper = next_wrapper;
 
@@ -151,7 +150,7 @@ void update_queue_timers(iop_chain_control *queue, uint32_t timeout) {
     }
 }
 
-/** 
+/**
  * @brief iterates over all requests and replies wrappers currently being
  *        used and increments the timers of those requests/replies.
  *

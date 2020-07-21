@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2019  GMVIS Skysoft S.A.
+ * Copyright (C) 2008-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -38,7 +38,9 @@ int bsp_core_init(void) {
         amba_setup(&amba_confarea, LEON3_IO_AREA);
 
         rc |= clock_init();           /* initialize the clock               */
+#if DEBUG_MONITOR != 2		
         rc |= console_init();         /* initialize the console             */
+#endif /* DEBUG_MONITOR != 2	*/
         rc |= irqmp_init();           /* initialize the IRQASMP             */
     }
 
@@ -72,7 +74,7 @@ void bsp_core_ready(void) {
 
     /* primary core, will enable more BSP specific components */
     if (core_id == 0) {
-#if PMK_INIT_CACHE
+#if DEBUG_MONITOR
         /* initialize & configure L2 cache */
         if (l2cache_init() == 0) {
             l2cache_set_replacement_policy(MASTER_INDEX_0);
@@ -107,15 +109,11 @@ void bsp_segregation(pmk_partition_t *partition) {
             0x01000000,
             PMK_MMU_SR | PMK_MMU_SW | PMK_MMU_SE | PMK_MMU_CACHEABLE);
 
-    /**
-     * Map devices IO area
-     * @todo This is a security flaw, it must be fixed
-     */
     cpu_segregation_map_memory(
             partition->mmu_ctrl,
             (void *)0x80000000,
             (void *)0x80000000,
             0x80000000,
             1 << 24,
-            PMK_MMU_R | PMK_MMU_W | PMK_MMU_E | PMK_MMU_DEVICE);
+            PMK_MMU_SR | PMK_MMU_SW | PMK_MMU_SE | PMK_MMU_DEVICE);
 }

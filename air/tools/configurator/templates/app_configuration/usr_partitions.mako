@@ -52,6 +52,8 @@ pmk_partition_t usr_partition_table[USR_PARTITIONS] = ${'\\'}
     {   /* ${partition} */
         .id          = ${partition.id},
         .name        = "${partition.name}",
+        .state       = AIR_PARTITION_STATE_INIT,
+        .window_id   = -1, /*Default: No window assigned (-1)*/
 % if len(partition.permissions) > 0:
         .permissions = ${'\\'}
     % for j, permission in enumerate(partition.permissions):
@@ -72,6 +74,7 @@ pmk_partition_t usr_partition_table[USR_PARTITIONS] = ${'\\'}
         cache = 'AIR_CACHE_NONE'
 %>\
         .init_cache  = ${cache},
+        .events      = 0,
         .hm_table    = usr_hm_partition${i}_table,
         .mmap        = &usr_partitions_memmap[${i}],
         .elf         = &usr_partitions_data[${i}],

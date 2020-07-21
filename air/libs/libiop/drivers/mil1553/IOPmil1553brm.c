@@ -2,7 +2,7 @@
  * BRM driver
  *
  * COPYRIGHT (c) 2006  Gaisler Research
- * Copyright (C) 2011-2019  GMVIS Skysoft S.A.
+ * Copyright (C) 2011-2020  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE.RTEMS in this distribution or at
@@ -783,7 +783,7 @@ static air_status_code_e bm_init(brm_priv *brm) {
  *
  *  \return Status of the operation:
  *	   - AIR_INVALID_PARAM BRM device not found
- *     - AIR_INTERNAL_ERROR not possible to allocate resource
+ *     - AIR_OUT_OF_MEMORY not possible to allocate resource
  *     - AIR_SUCCESSFUL operation completed successfully
  *	
  **/
@@ -863,7 +863,7 @@ uint32_t brm_initialize(iop_device_driver_t *iop_dev, void *arg){
 				0,
 				&brm->dev_sem) != AIR_SUCCESSFUL ){
 		pprintf("BRM: Failed to create device semaphore\n");
-		return AIR_INTERNAL_ERROR;
+		return AIR_OUT_OF_MEMORY;
 	}
 #endif
 
@@ -924,7 +924,6 @@ uint32_t brm_initialize(iop_device_driver_t *iop_dev, void *arg){
  *  \param [in]  brm : driver internal struct
  *
  *  \return Status of the operation:
- *		- AIR_UNSUCCESSFUL if minor is invalid
  *		- AIR_NOT_AVAILABLE if the device is already open
  *		- AIR_SUCCESSFUL if the operation completed sucessfully
  *	
@@ -1254,9 +1253,9 @@ uint32_t brm_read(iop_device_driver_t *iop_dev, void *arg){
  *		- AIR_INVALID_CONFIG: Operation not permited in BM mode or the requested
  *        descriptor is invalid
  * 		- AIR_INVALID_SIZE: User data exceeds the maximum allowed by MilStd (64 bytes)
- * 		- AIR_INVALID_ADDRESS: Invalid header or data pointer
+ * 		- AIR_INVALID_PARAM: Invalid header or data pointer
  *		- AIR_NOT_AVAILABLE: Write buffers are full and we can't block waiting
- *		- AIR_UNSUCCESSFUL: Try Again Later
+ *		- AIR_NO_ACTION: Try Again Later
  *
  **/	
 uint32_t brm_write(iop_device_driver_t *iop_dev, void *arg){
@@ -1284,7 +1283,7 @@ uint32_t brm_write(iop_device_driver_t *iop_dev, void *arg){
 	
 	/* Verify if the user correctly provided data and header*/
 	if((get_payload(wrapper->buffer) == NULL) || (hdr == NULL)){
-		return AIR_INVALID_ADDRESS;
+		return AIR_INVALID_PARAM;
 	}
 	
 	/* check for any io errors*/
@@ -1341,7 +1340,7 @@ uint32_t brm_write(iop_device_driver_t *iop_dev, void *arg){
 			} else { /*< we can't block*/
 			
 				/* Translates to posix EBUSY */
-				return AIR_NOT_AVAILABLE;
+				return AIR_NO_ACTION;
 			}
 		}
 	}
@@ -1569,7 +1568,7 @@ air_status_code_e brm_control(brm_priv *brm, void *arg){
 				
 				/*did we find any error?*/
 				if ( brm->bc_list_fail ){
-					return AIR_UNSUCCESSFUL;
+					return AIR_DEVICE_ERROR;
 				}
 				
 				/*wait a while to see if the list has been completed*/
@@ -2139,7 +2138,7 @@ static air_status_code_e brm_bc_verify_command_status(uint32_t cw, uint32_t sw)
 	/* verify transfer status:  for now detect only ME bit */
 	if((((sw >> 10) & 0x3) != 0) || (cw & 0x1)){
 		
-		status = AIR_INTERNAL_ERROR;
+		status = AIR_DEVICE_ERROR;
 		
 		/* something has gone wrong with the transfer */
 		iop_raise_error(HW_PROBLEM);

@@ -83,7 +83,7 @@ uint32_t spw_router_initialize(iop_device_driver_t *iop_dev, void *arg)
 									
 	if (device_found != 1){
 	    ROUTER_DBG2("SPWRTR device not found...\n");
-		return AIR_INTERNAL_ERROR;
+		return AIR_DEVICE_NOT_FOUND;
 	}
 	
 	priv->regs = (struct router_regs *)0xFF880000;
@@ -98,18 +98,18 @@ uint32_t spw_router_initialize(iop_device_driver_t *iop_dev, void *arg)
 	priv->nports = priv->hwinfo.nports_spw + priv->hwinfo.nports_amba +
 			priv->hwinfo.nports_fifo;
 	if ( (priv->nports < 2) || (priv->nports > 32) ) {
-		ROUTER_DBG("AIR_INTERNAL_ERROR at priv->nports = %d\n", priv->nports);
-		return AIR_INTERNAL_ERROR;
+		ROUTER_DBG("AIR_INVALID_SIZE at priv->nports = %d\n", priv->nports);
+		return AIR_INVALID_SIZE;
 	}
 	
 	if ( router_we_set(priv, 0) ) {
-		ROUTER_DBG2("AIR_INTERNAL_ERROR at router_we_set\n");
-		return AIR_INTERNAL_ERROR;
+		ROUTER_DBG2("AIR_DEVICE_ERROR at router_we_set\n");
+		return AIR_DEVICE_ERROR;
 	}
 	
 	if ( router_config_set(priv, cfg) ) {
-		ROUTER_DBG2("AIR_INTERNAL_ERROR at router_config_set\n");
-		return AIR_INTERNAL_ERROR;
+		ROUTER_DBG2("AIR_NOT_AVAILABLE at router_config_set\n");
+		return AIR_NOT_AVAILABLE;
 	}
 	iop_debug("   Router config/status reg: 0x%x\n", REG_READ(&priv->regs->cfgsts));
 	
@@ -122,13 +122,13 @@ uint32_t spw_router_initialize(iop_device_driver_t *iop_dev, void *arg)
 	}
 	
 	if ( router_ps_set(priv, priv->ps) ) {
-		ROUTER_DBG2("AIR_INTERNAL_ERROR at router_ps_set\n");
-		return AIR_INTERNAL_ERROR;
+		ROUTER_DBG2("AIR_DEVICE_ERROR at router_ps_set\n");
+		return AIR_DEVICE_ERROR;
 	}
 	
 	if ( router_routes_set(priv, priv->routes) ) {
-		ROUTER_DBG2("AIR_INTERNAL_ERROR at router_routes_set\n");
-		return AIR_INTERNAL_ERROR;
+		ROUTER_DBG2("AIR_DEVICE_ERROR at router_routes_set\n");
+		return AIR_DEVICE_ERROR;
 	}
 
 	return AIR_SUCCESSFUL;
