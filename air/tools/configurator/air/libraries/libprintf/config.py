@@ -27,6 +27,9 @@ header_files = set(utils.flatten([
 ]))
 
 # @brief Library dependencies
+dependencies = ['libprintf']
+
+# @brief Library dependencies
 dependencies = []
 
 # @brief Custom Makefile

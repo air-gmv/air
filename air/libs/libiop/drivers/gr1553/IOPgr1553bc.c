@@ -309,7 +309,7 @@ static inline air_status_code_e bc_verify_command_status(uint32_t sw)
 {
 	/* verify transfer status */
 	if((sw & 0x7) != 0)
-		return AIR_INTERNAL_ERROR;
+		return AIR_DEVICE_ERROR;
 
 	return AIR_SUCCESSFUL;
 }

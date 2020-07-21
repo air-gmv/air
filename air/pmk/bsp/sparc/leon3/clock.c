@@ -27,13 +27,6 @@
 extern pmk_sharedarea_t air_shared_area;
 
 /**
- * @brief IPC trap handler
- * @param isf Executing stack frame
- * @param core Executing core control structure
- */
-void pmk_ipc_handler(void *isf, pmk_core_ctrl_t *core);
-
-/**
  * @brief Timer enable control bit
  * @ingroup bsp_leon_clock
  */
@@ -105,7 +98,7 @@ int clock_init(void) {
         /* get configuration registers and time interrupt number */
         timer_regs = (volatile timer_regmap_t *)timer_device.start;
         timer_ctrl.regs = (void *)timer_regs;
-        timer_ctrl.irq = ((timer_regs->status & 0xFC) >> 3) + 0x10;
+        timer_ctrl.irq = ((timer_regs->status & 0xF8) >> 3) + 0x10;
         timer_ctrl.frequency = (timer_regs->scaler_reload + 1) * 1000000;
         return 0;
     }

@@ -16,6 +16,7 @@
 #include <multicore.h>
 #include <segregation.h>
 #include <configurations.h>
+#include <schedule.h>
 
 
 air_status_code_e pmk_syscall_get_partition_id(
@@ -114,12 +115,14 @@ air_status_code_e pmk_syscall_get_partition_status(
     /* fill status structure */
     air_partition_status_t local_status;
     local_status.index = partition->idx;
+    local_status.window_id = partition->window_id;
     local_status.period = partition->period;
     local_status.duration = partition->duration;
     local_status.identifier = partition->id;
     local_status.permissions = partition->permissions;
     local_status.operating_mode = partition->mode;
     local_status.start_condition = partition->start_condition;
+    local_status.state = partition->state;
     local_status.restart_count = partition->restart_count;
 
     /* copy status to partition */
@@ -184,6 +187,12 @@ air_status_code_e pmk_syscall_set_partition_mode(
        return AIR_INVALID_MODE;
     }
 
+    /* Avoid any change while partition is initializing*/
+    if(AIR_PARTITION_STATE_INIT == partition->state){
+
+       return AIR_NOT_AVAILABLE;
+    }
+
     /* apply state to the partition */
     partition->mode = mode;
     switch (mode) {
@@ -191,8 +200,6 @@ air_status_code_e pmk_syscall_set_partition_mode(
         /* restart partition */
         case AIR_MODE_COLD_START:
         case AIR_MODE_WARM_START:
-            if(partition->state == PMK_PARTITION_STATE_RESTARTING)
-                break;
             pmk_partition_restart(partition);
             partition->start_condition = AIR_START_CONDITION_PARTITION_RESTART;
             break;
@@ -212,19 +219,49 @@ air_status_code_e pmk_syscall_set_partition_mode(
     return AIR_NO_ERROR;
 }
 
-void pmk_syscall_putchar(pmk_core_ctrl_t *core, char ch) {
+void pmk_syscall_end_window(pmk_core_ctrl_t *core) {
 
+    pmk_partition_t *partition = core->partition;
+
+    /* change partition state */
+    partition->state = AIR_PARTITION_STATE_READY;
+
+    /* store the current core partition context */
+    core_context_save(core);
+
+    /* update partition last ticks */
+    partition->last_clock_tick = pmk_get_schedule_total_ticks();
+
+    /* flag as not executing a Window */
+    partition->window_id = -1;
+
+    /* unmap the current core */
+    partition->core_mapping[core_context_id(core->context)] = PMK_MAX_CORES;
+
+    /* flag the switch */
+    core->partition_switch = 1;
+
+    /* unassign Partition to core */
+    core->partition = NULL;
+
+    /* ACTION: IDLE the core for the remainder of the window */
+    core->context = &pmk_core_idle_context[core->idx];
+}
+
+void pmk_syscall_putchar(pmk_core_ctrl_t *core, char ch) {
+#if DEBUG_MONITOR != 2
     /* allow partition to be preempted */
     cpu_preemption_flags_t flags;
     cpu_enable_preemption(flags);
-
     /* output character */
     pmk_console_outbyte(ch);
 
     /* disable preemption */
     cpu_disable_preemption(flags);
+#endif /* DEBUG_MONITOR != 2 */
 }
 
+#if DEBUG_MONITOR != 2
 air_u32_t pmk_syscall_print(pmk_core_ctrl_t *core, char *buffer, air_sz_t len) {
 
     cpu_preemption_flags_t flags;
@@ -233,7 +270,7 @@ air_u32_t pmk_syscall_print(pmk_core_ctrl_t *core, char *buffer, air_sz_t len) {
     /* allow partition to be preempted */
     cpu_enable_preemption(flags);
 
-    /* print buffer @todo needs optimization */
+    /* print buffer */
     char ch;
     air_u32_t count;
     for (count = 0; count < len; ++count) {
@@ -252,3 +289,4 @@ air_u32_t pmk_syscall_print(pmk_core_ctrl_t *core, char *buffer, air_sz_t len) {
     cpu_disable_preemption(flags);
     return count;
 }
+#endif /* DEBUG_MONITOR != 2 */
