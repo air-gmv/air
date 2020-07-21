@@ -15,10 +15,13 @@
 #include <bsp.h>
 #include <ipc.h>
 #include <ports.h>
-#include <printk.h>
 #include <barrier.h>
 #include <workspace.h>
 #include <configurations.h>
+
+#ifdef PMK_DEBUG
+#include <printk.h>
+#endif
 
 void pmk_partitions_init(void) {
 
@@ -51,8 +54,8 @@ void pmk_partitions_init(void) {
         /* initialize the partition reset count */
         partition->restart_count = 0;
 
-        /* initialize PMK internal partition state*/
-        partition->state = PMK_PARTITION_STATE_NOT_RUN;
+        /* initialize partition state*/
+        partition->state = AIR_PARTITION_STATE_NOT_RUN;
 
         /* allocate space for the partition context switch and virtual core */
         partition->context =
@@ -105,7 +108,7 @@ void pmk_partition_start(pmk_partition_t *partition, core_context_t *context) {
        /* set entry point from the ELF */
        core_context_set_entry_point(context, partition->elf->entry);
        /* set partition state to running */
-       partition->state = PMK_PARTITION_STATE_RUNNING;
+       partition->state = AIR_PARTITION_STATE_RUNNING;
    }
 
    /* setup the partition context */
@@ -141,7 +144,7 @@ void pmk_partition_halt(pmk_partition_t *partition) {
     }
 
     /* flag the partition as halted */
-    partition->state = PMK_PARTITION_STATE_HALTED;
+    partition->state = AIR_PARTITION_STATE_HALTED;
     return;
 }
 
@@ -154,7 +157,7 @@ void pmk_partition_restart(pmk_partition_t *partition) {
     air_u32_t i;
     air_u32_t vcpus = 0x00000000;
 
-    partition->state = PMK_PARTITION_STATE_RESTARTING;
+    partition->state = AIR_PARTITION_STATE_INIT;
 
     /*Identify all running vcpu*/
     for (i = 0; i < partition->cores; ++i)
@@ -185,14 +188,16 @@ void pmk_partition_restart(pmk_partition_t *partition) {
                 }
                 else
                 {
-                    if(1 << i  & (vcpus & (-vcpus)))
+                    if(1 << i  & (vcpus & (-vcpus))) {
                         core_context_setup_reload_partition(&partition->context[i], partition);
-                    else
+                    } else {
                         core_context_setup_idle(&partition->context[i]);
+                    }
                 }
             }
-            else
+            else {
                 core_context_setup_idle(&partition->context[i]);
+            }
         }
     }
     return;
@@ -206,16 +211,24 @@ void pmk_partition_reload(pmk_partition_t *partition) {
 
     cpu_preemption_flags_t flags = (0x0F << 8);
 
+#ifdef PMK_DEBUG
+    printk(" pmk_partition_reload\n");
+    printk("    partition: 0x%08x\n", partition);
+    printk("   partition->mmu_ctrl = 0x%08x, partition->mmap->v_addr = 0x%08x, phy_addr = 0x%08x\n",
+        partition->mmu_ctrl, partition->mmap->v_addr, cpu_get_physical_addr(partition->mmu_ctrl, partition->mmap->v_addr)
+    );
+#endif
+
     /* reload partition */
-    pmk_partition_load(partition->elf, cpu_get_physical_addr(partition->mmu_ctrl, partition->mmap->v_addr), partition->mmap->v_addr);
+    pmk_partition_load(partition->elf, partition->mmap->v_addr);
 
     cpu_disable_preemption(flags);
 
     /* increment the number of restarts */
     ++partition->restart_count;
 
-    /* flag it to initialize on the next scheduling point */
-    partition->state = PMK_PARTITION_STATE_INIT;
+    /* flag it to start on the next scheduling point */
+    partition->state = AIR_PARTITION_STATE_NOT_RUN;
 
     cpu_enable_preemption(flags);
 

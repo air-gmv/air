@@ -37,7 +37,7 @@ air_status_code_e validate_service_request(iop_wrapper_t *incoming){
 
     /* check incomming validity */
     if(incoming == NULL){
-        status = AIR_INVALID_ADDRESS;
+        status = AIR_INVALID_PARAM;
         return status;
     }
 
@@ -81,7 +81,7 @@ air_status_code_e process_service_request(iop_wrapper_t *incoming, int reply_add
 
     /* check if request is valid */
     if (NULL == incoming){
-        return AIR_INVALID_ADDRESS;
+        return AIR_INVALID_PARAM;
     }
 #if 0
     /* get service request that is included on our wrapper*/

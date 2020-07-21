@@ -13,7 +13,6 @@
 #define CONFIGURE_INIT
 #include <air.h>
 
-#define RTEMS48I
 
 #ifdef RTEMS48I
 	#include <pprintf.h>
@@ -38,24 +37,23 @@ static char *my_ctime( time_t t )
 void entry_point(void) 
 {
     int i=0;
-	while(i<15)
+	while(i<3)
 	{
-        
 
         #ifdef RTEMS48I
-            pprintf( "\n\n*** RTEMS48I HELLO WORLD TEST **********\n" );
+            pprintf( "\n\n*** RTEMS48I COVERAGE_ENABLED TEST **********\n" );
         #else
             struct timespec start;
             clock_gettime( CLOCK_REALTIME, &start );
 
-            printf( "\n\n*** RTEMS5 HELLO WORLD TEST **********\n" );
+            printf( "\n\n*** RTEMS5 COVERAGE_ENABLED TEST **********\n" );
             printf( "Time is : %s:%ld\n", my_ctime(start.tv_sec), start.tv_nsec);
-            
         #endif
-    i++;
+        i++;
         rtems_task_wake_after(10);
 
     }
+
 }
 
 

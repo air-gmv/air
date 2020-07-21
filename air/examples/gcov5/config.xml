@@ -5,12 +5,12 @@
   <Partition PartitionIdentifier="1" PartitionName="part0" 
     Criticality="LEVEL_A" EntryPoint="entry_point" SystemPartition="false">
     <PartitionConfiguration Personality="RTEMS5" Cores="1" Mode="source">
-        <Libs>LIBAIR; LIBPRINTF</Libs>
+        <Libs>LIBAIR; LIBPRINTF; LIBCOV</Libs>
         <Devices></Devices>
         <Cache>CODE; DATA</Cache>
         <Memory Size="0x900000" />
         <Permissions>
-          FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE;
+          FPU_CONTROL; GLOBAL_TIME; CACHE_CONTROL; SET_TOD; SET_PARTITION_MODE; MODULE_CONTROL;
         </Permissions>
     </PartitionConfiguration>
   </Partition>

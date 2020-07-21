@@ -80,6 +80,7 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     # Core files
     'core/error.c',
     'core/barrier.c',
+    'core/libc.c',
     'core/ipc.c',
     'core/multicore.c',
     'core/tod.c',
