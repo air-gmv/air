@@ -3,7 +3,7 @@ echo RTEMS5 test starting
 configure
 make clean && make
 ./testScp.bash
-script -c "sshpass -p $PASSWORD1 ssh -tt dtms@83.240.244.237 'bash -s' < target_cmds.bash" testresult.txt 
+script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s' < target_cmds.bash" testresult.txt 
 cmd="./testcheck.py"
 $cmd
 status=$?
@@ -20,7 +20,7 @@ echo RTEMS5 test ended
 #configure
 #make clean && make
 #./testScp.bash
-#script -c "sshpass -p $PASSWORD1 ssh -tt dtms@83.240.244.237 'bash -s' < target_cmds.bash" testresult.txt 
+#script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s' < target_cmds.bash" testresult.txt 
 #$cmd
 #status=$?
 #if [ $status -eq 0 ]; then

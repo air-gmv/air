@@ -1,9 +1,9 @@
 #!/bin/bash
 cd executable/
-sshpass -p $PASSWORD1 scp AIRAPP.exe dtms@83.240.244.237:~
+sshpass -p $PASSWORD2 scp AIRAPP.exe gitlabrunner@$KNOWLI:~
 cd ..
-sshpass -p $PASSWORD1 scp runAIRAPP.bash dtms@83.240.244.237:~
-sshpass -p $PASSWORD1 scp doTest.bash dtms@83.240.244.237:~
-sshpass -p $PASSWORD1 scp killgrmon.bash dtms@83.240.244.237:~
-sshpass -p $PASSWORD1 ssh dtms@83.240.244.237 'ls'
+sshpass -p $PASSWORD2 scp runAIRAPP.bash gitlabrunner@$KNOWLI:~
+sshpass -p $PASSWORD2 scp doTest.bash gitlabrunner@$KNOWLI:~
+sshpass -p $PASSWORD2 scp killgrmon.bash gitlabrunner@$KNOWLI:~
+sshpass -p $PASSWORD2 ssh gitlabrunner@$KNOWLI 'ls'
 
