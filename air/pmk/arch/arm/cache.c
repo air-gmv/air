@@ -15,11 +15,11 @@
 #include <cp15.h>
 
 void arm_instruction_cache_invalidate(void) {
-    arm_cp15_instruction_cache_invalidate();
+    air_arm_cp15_instruction_cache_invalidate();
 }
 
 void arm_data_cache_invalidate(void) {
-    air_u32_t clidr = arm_cp15_get_cache_level_id();
+    air_u32_t clidr = air_arm_cp15_get_cache_level_id();
     air_u32_t loc = (clidr >> 24U) & 0b111;
     air_u32_t level = 0;
 
@@ -34,7 +34,7 @@ void arm_data_cache_invalidate(void) {
 }
 
 void arm_data_cache_clean(void) {
-    air_u32_t clidr = arm_cp15_get_cache_level_id();
+    air_u32_t clidr = air_arm_cp15_get_cache_level_id();
     air_u32_t loc = (clidr >> 24U) & 0b111;
     air_u32_t level = 0;
 
@@ -49,11 +49,11 @@ void arm_data_cache_clean(void) {
 }
 
 void arm_tlb_invalidate(void) {
-    arm_cp15_tlb_invalidate();
+    air_arm_cp15_tlb_invalidate();
 }
 
 void arm_branch_predictor_invalidate(void) {
-    arm_cp15_branch_predictor_invalidate_all();
+    air_arm_cp15_branch_predictor_invalidate_all();
 }
 
 /**
@@ -64,9 +64,9 @@ air_u32_t arm_cache_get_size_id_for_level(air_u32_t level) {
 
     air_u32_t ccsidr;
 
-    arm_cp15_set_cache_size_selection(level);
+    air_arm_cp15_set_cache_size_selection(level);
     arm_instruction_synchronization_barrier();
-    ccsidr = arm_cp15_get_cache_size_id();
+    ccsidr = air_arm_cp15_get_cache_size_id();
 
     return ccsidr;
 }
@@ -129,7 +129,7 @@ void arm_cache_invalidate_level(air_u32_t level, air_u8_t InD) {
                 | (set << line_shift)
                 | (level << 1U);
 
-            arm_cp15_data_cache_invalidate_line_by_set_and_way(set_way);
+            air_arm_cp15_data_cache_invalidate_line_by_set_and_way(set_way);
         }
     }
 }
@@ -158,7 +158,7 @@ void arm_data_cache_clean_level(air_u32_t level) {
                 | (set << line_shift)
                 | (level << 1U);
 
-            arm_cp15_data_cache_clean_line_by_set_and_way(set_way);
+            air_arm_cp15_data_cache_clean_line_by_set_and_way(set_way);
         }
     }
 }

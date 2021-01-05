@@ -32,6 +32,7 @@ global(arm_restore_fpu)
     isb
     add     r0, #56
     ldm     r0!, {r4-r5}
+    orr     r4, #(ARM_VFP_FPEXC_ENABLE)
     vmsr    fpexc, r4
 
     tst.w   r4, #(1 << 30)

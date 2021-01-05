@@ -22,9 +22,9 @@ void arm_a9mpcore_start_hook(air_u32_t cpu_id) {
 
 #if PMK_SMP
     /* Enable cache coherency and cache/MMU maintenance broadcasts for this processor. */
-    air_u32_t actlr = arm_cp15_get_auxiliary_control();
+    air_u32_t actlr = air_arm_cp15_get_auxiliary_control();
     actlr |= CP15_ACTLR_SMP | CP15_ACTLR_FW;
-    arm_cp15_set_auxiliary_control(actlr);
+    air_arm_cp15_set_auxiliary_control(actlr);
 #endif
 
     arm_scu_invalidate(cpu_id);
