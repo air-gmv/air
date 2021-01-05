@@ -90,7 +90,7 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
         frame->r1 = (air_u32_t)((elapsed & 0xffffffff00000000) >> 32);
         break;
     case AIR_SYSCALL_GET_PARTITION_ID:
-        pmk_syscall_get_partition_id(core,
+        frame->r0 = pmk_syscall_get_partition_id(core,
                 (air_name_ptr_t)frame->r0,
                 (air_identifier_t *)frame->r1);
         break;
@@ -213,6 +213,9 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
         break;
     case AIR_SYSCALL_ARM_ACK_INT:
         frame->r0 = arm_syscall_acknowledge_int(core);
+        break;
+    case AIR_SYSCALL_ARM_END_INT:
+        arm_syscall_rett(core);
     default:
         break;
     }

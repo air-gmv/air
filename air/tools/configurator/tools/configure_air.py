@@ -182,15 +182,18 @@ def prompt_configuration(logger):
     else:
         fpu_enabled = False
 
-    # get debug monitor tool
-    opts = ['GRMON', 'DMON', 'NONE']
-    i = terminalutils.promptActions('Select debug monitor:', opts)
-    if i == 0:
-        debug_monitor = 1
-    elif i == 2:
-        debug_monitor = 2;
+    if arch == 'sparc':
+        # get debug monitor tool
+        opts = ['GRMON', 'DMON', 'NONE']
+        i = terminalutils.promptActions('Select debug monitor:', opts)
+        if i == 0:
+            debug_monitor = 1
+        elif i == 2:
+            debug_monitor = 2;
+        else:
+            debug_monitor = 0
     else:
-        debug_monitor = 0
+        debug_monitor = 1
 
     pos = []
     # Prompt to install RTOS

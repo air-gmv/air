@@ -64,43 +64,43 @@ __FORCE_INLINE static air_u32_t arm_cp15_get_level_of_coherency(air_u32_t clidr)
     return (clidr >> 24) & 0x7;
 }
 
-__FORCE_INLINE static void arm_cp15_instruction_cache_invalidate(void) {
+__FORCE_INLINE static void air_arm_cp15_instruction_cache_invalidate(void) {
     __asm__ volatile ("mcr p15, 0, r4, c7, c5, 0\n");
 }
 
-__FORCE_INLINE static air_u32_t arm_cp15_get_cache_level_id(void) {
+__FORCE_INLINE static air_u32_t air_arm_cp15_get_cache_level_id(void) {
     air_u32_t val;
     __asm__ volatile ("mrc p15, 1, %0, c0, c0, 1\n":"=r" (val));
     return val;
 }
 
-__FORCE_INLINE static air_u32_t arm_cp15_get_cache_size_id(void) {
+__FORCE_INLINE static air_u32_t air_arm_cp15_get_cache_size_id(void) {
     air_u32_t val;
     __asm__ volatile ("mrc p15, 1, %0, c0, c0, 0\n":"=r" (val));
     return val;
 }
 
 /* CSSELR */
-__FORCE_INLINE static void arm_cp15_set_cache_size_selection(air_u32_t val) {
+__FORCE_INLINE static void air_arm_cp15_set_cache_size_selection(air_u32_t val) {
     __asm__ volatile ("mcr p15, 2, %0, c0, c0, 0\n"::"r" (val));
 }
 
 /* Cache Clean by Set/Way DCCSW */
-__FORCE_INLINE static void arm_cp15_data_cache_clean_line_by_set_and_way(air_u32_t set_way) {
+__FORCE_INLINE static void air_arm_cp15_data_cache_clean_line_by_set_and_way(air_u32_t set_way) {
     __asm__ volatile ("mcr p15, 0, %0, c7, c10, 2\n"::"r" (set_way));
 }
 
-__FORCE_INLINE static void arm_cp15_data_cache_invalidate_line_by_set_and_way(air_u32_t set_way) {
+__FORCE_INLINE static void air_arm_cp15_data_cache_invalidate_line_by_set_and_way(air_u32_t set_way) {
     __asm__ volatile ("mcr p15, 0, %0, c7, c6, 2\n"::"r" (set_way));
 }
 
 /* BPIALL, Branch Predictor Invalidate All */
-__FORCE_INLINE static void arm_cp15_branch_predictor_invalidate_all(void) {
+__FORCE_INLINE static void air_arm_cp15_branch_predictor_invalidate_all(void) {
     __asm__ volatile ("mcr p15, 0, r4, c7, c5, 6\n");
 }
 
 /* TLBIALL, TLB Invalidate All */
-__FORCE_INLINE static void arm_cp15_tlb_invalidate(void) {
+__FORCE_INLINE static void air_arm_cp15_tlb_invalidate(void) {
     __asm__ volatile ("mcr p15, 0, r4, c8, c7, 0\n");
 }
 
@@ -122,18 +122,18 @@ __FORCE_INLINE static air_u32_t arm_cp15_get_multiprocessor_cpu_id(void) {
 #define CP15_ACTLR_ALLOC_IN_ONE_WAY (1U << 8)
 #define CP15_ACTLR_PARITY_ON (1U << 0)
 
-__FORCE_INLINE static air_u32_t arm_cp15_get_auxiliary_control(void) {
+__FORCE_INLINE static air_u32_t air_arm_cp15_get_auxiliary_control(void) {
     air_u32_t val;
     __asm__ volatile ("mrc p15, 0, %0, c1, c0, 1\n":"=r" (val)::"memory");
     return val;
 }
 
-__FORCE_INLINE static void arm_cp15_set_auxiliary_control(air_u32_t val) {
+__FORCE_INLINE static void air_arm_cp15_set_auxiliary_control(air_u32_t val) {
     __asm__ volatile ("mcr p15, 0, %0, c1, c0, 1\n"::"r" (val):"memory");
 }
 
 /* VBAR, Vector Base Address Register */
-__FORCE_INLINE static void arm_cp15_set_vector_base_address(void *start) {
+__FORCE_INLINE static void air_arm_cp15_set_vector_base_address(void *start) {
     __asm__ volatile ("mcr p15, 0, %0, c12, c0, 0\n"::"r" (start):"memory");
 }
 
@@ -147,7 +147,7 @@ __FORCE_INLINE static air_u32_t arm_cp15_get_translation_table_control(void) {
     return val;
 }
 
-__FORCE_INLINE static void arm_cp15_set_domain_access_control(air_u32_t val) {
+__FORCE_INLINE static void air_arm_cp15_set_domain_access_control(air_u32_t val) {
     __asm__ volatile ("mcr p15, 0, %0, c3, c0, 0\n"::"r" (val):"memory");
 }
 

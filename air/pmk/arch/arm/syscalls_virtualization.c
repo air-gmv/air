@@ -12,6 +12,7 @@
  */
 
 #include <svc.h>
+#include <printk.h>
 
 extern pmk_sharedarea_t air_shared_area;
 
@@ -65,7 +66,7 @@ air_u32_t arm_syscall_get_psr(pmk_core_ctrl_t *core) {
 }
 
 void arm_syscall_set_psr(pmk_core_ctrl_t *core, air_u32_t val) {
-
+/*
     if (((core->context->vcpu.psr) & ARM_PSR_MODE_MASK) != (val & ARM_PSR_MODE_MASK)){
 
         switch ((core->context->vcpu.psr) & ARM_PSR_MODE_MASK){
@@ -76,7 +77,7 @@ void arm_syscall_set_psr(pmk_core_ctrl_t *core, air_u32_t val) {
                 core->context->sp_irq = ((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->usr_sp;
                 break;
         }
-/*
+
         switch (val & ARM_PSR_MODE_MASK){
             case ARM_PSR_SVC:
                 ((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->usr_sp = core->context->sp_svc;
@@ -84,22 +85,16 @@ void arm_syscall_set_psr(pmk_core_ctrl_t *core, air_u32_t val) {
             case ARM_PSR_IRQ:
                 ((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->usr_sp = core->context->sp_irq;
                 break;
-        }*/
-    }
+
+    } }*/
 
     core->context->vcpu.psr = val;
 }
 
 void arm_syscall_rett(pmk_core_ctrl_t *core) {
+
     core->context->vcpu.psr &= ~(ARM_PSR_A | ARM_PSR_I);
     core->context->vgic.pmr = 255; //return the priority mask to initial state
-    if(((core->context->vcpu.psr) & ARM_PSR_MODE_MASK) == ARM_PSR_IRQ){
-        core->context->sp_irq = ((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->usr_sp;
-        ((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->usr_sp = core->context->sp_svc;
-        (core->context->vcpu.psr) |= ARM_PSR_MODE_MASK;
-        (core->context->vcpu.psr) &= ARM_PSR_SVC;
-    }
-
     //TODO: check if there are pending interrupts before returning to the partition;
 }
 

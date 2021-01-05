@@ -29,7 +29,6 @@ void hm_handler_install(void *handler){
     arm_cp15_set_exception_handler(ARM_EXCEPTION_PREF_ABORT, &_ARMV4_Exception_prefetch_abort);
     _ARMV4_Exception_prefetch_abort_set_handler(handler);
     arm_cp15_set_exception_handler(ARM_EXCEPTION_UNDEF, &_ARMV4_Exception_prefetch_abort);
-    _ARMV4_Exception_prefetch_abort_set_handler(handler);
 }
 %else:
 void hm_handler_install(void *handler){
