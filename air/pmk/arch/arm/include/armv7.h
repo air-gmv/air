@@ -57,14 +57,14 @@
 
 #define ARM_CORE_CONTEXT_TRASHED                1
 
-#define ARM_EXCEPTION_RESET                     0
-#define ARM_EXCEPTION_UNDEF                     1
-#define ARM_EXCEPTION_SWI                       2
-#define ARM_EXCEPTION_PREF_ABORT                3
-#define ARM_EXCEPTION_DATA_ABORT                4
-#define ARM_EXCEPTION_RESERVED                  5
-#define ARM_EXCEPTION_IRQ                       6
-#define ARM_EXCEPTION_FIQ                       7
+#define AIR_ARM_EXCEPTION_RESET                     0
+#define AIR_ARM_EXCEPTION_UNDEF                     1
+#define AIR_ARM_EXCEPTION_SWI                       2
+#define AIR_ARM_EXCEPTION_PREF_ABORT                3
+#define AIR_ARM_EXCEPTION_DATA_ABORT                4
+#define AIR_ARM_EXCEPTION_RESERVED                  5
+#define AIR_ARM_EXCEPTION_IRQ                       6
+#define AIR_ARM_EXCEPTION_FIQ                       7
 #define MAX_EXCEPTIONS                          8
 
 #else /* ASM */
@@ -75,14 +75,14 @@
  * \brief Possible exceptions identifiers
  */
 typedef enum {
-    ARM_EXCEPTION_RESET = 0,
-    ARM_EXCEPTION_UNDEF = 1,
-    ARM_EXCEPTION_SWI = 2,
-    ARM_EXCEPTION_PREF_ABORT = 3,
-    ARM_EXCEPTION_DATA_ABORT = 4,
-    ARM_EXCEPTION_RESERVED = 5,
-    ARM_EXCEPTION_IRQ = 6,
-    ARM_EXCEPTION_FIQ = 7
+    AIR_ARM_EXCEPTION_RESET = 0,
+    AIR_ARM_EXCEPTION_UNDEF = 1,
+    AIR_ARM_EXCEPTION_SWI = 2,
+    AIR_ARM_EXCEPTION_PREF_ABORT = 3,
+    AIR_ARM_EXCEPTION_DATA_ABORT = 4,
+    AIR_ARM_EXCEPTION_RESERVED = 5,
+    AIR_ARM_EXCEPTION_IRQ = 6,
+    AIR_ARM_EXCEPTION_FIQ = 7
 } arm_exception_e;
 
 /**
@@ -342,6 +342,9 @@ __FORCE_INLINE static void arm_disable_fpu(void) {
 __FORCE_INLINE static void arm_enable_fpu(void) {
     air_u32_t reg = 0;
     __asm__ volatile (
+            "mrc p15, 0, %0, c1, c1, 2\n"
+            "orr %0, %0, (0x3<<10)\n"
+            "mcr p15, 0, %0, c1, c1, 2\n"
             "ldr %0, =(0xF <<20)\n"
             "mcr p15, 0, %0, c1, c0, 2\n"
             "vmrs %0, FPEXC\n"

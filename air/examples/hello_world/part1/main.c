@@ -14,7 +14,13 @@
 #else
 #include <stdio.h>
 #include <string.h>
+#if defined(printf)
+#else
+#include <pprintf.h>
 #endif
+#endif
+
+
 
 #ifndef RTEMS48I
 static char *my_ctime( time_t t )
