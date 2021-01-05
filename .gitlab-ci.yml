@@ -650,7 +650,7 @@ shm:
 00001_arm:
     stage: examples
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/private-example/private/arm_unit_tests/lionel
         - cp $AIR/../utils/gitlab-runner/* .
@@ -695,7 +695,7 @@ hello_world_arm:
 #00010_arm:
    #stage: validation_tests
    #tags: 
-       #- arm-taste-debian1
+       #- ARM1
    #script:
        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00010
        #- cp $AIR/../utils/gitlab-runner/* .
@@ -708,7 +708,7 @@ hello_world_arm:
 #00012_arm:
    #stage: validation_tests
    #tags: 
-       #- arm-taste-debian1
+       #- ARM1
    #script:
        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00012
        #- cp $AIR/../utils/gitlab-runner/* .
@@ -721,7 +721,7 @@ hello_world_arm:
 00021_arm: 
    stage: validation_tests
    tags: 
-       - arm-taste-debian1
+       - ARM1
    script:
        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00021
        - cp $AIR/../utils/gitlab-runner/* .
@@ -734,7 +734,7 @@ hello_world_arm:
 00022_arm: 
    stage: validation_tests
    tags: 
-       - arm-taste-debian1
+       - ARM1
    script:
        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00022
        - cp $AIR/../utils/gitlab-runner/* .
@@ -747,7 +747,7 @@ hello_world_arm:
 00023_arm: 
    stage: validation_tests
    tags: 
-       - arm-taste-debian1
+       - ARM1
    script:
        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00023
        - cp $AIR/../utils/gitlab-runner/* .
@@ -760,7 +760,7 @@ hello_world_arm:
 00500_arm: 
    stage: validation_tests
    tags: 
-       - arm-taste-debian1
+       - ARM1
    script:
        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00500
        - cp $AIR/../utils/gitlab-runner/* .
@@ -773,7 +773,7 @@ hello_world_arm:
 00510_arm: 
    stage: validation_tests
    tags: 
-       - arm-taste-debian1
+       - ARM1
    script:
        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00510
        - cp $AIR/../utils/gitlab-runner/* .
@@ -786,7 +786,7 @@ hello_world_arm:
 #00540_arm: 
    #stage: validation_tests
    #tags: 
-       #- arm-taste-debian1
+       #- ARM1
    #script:
        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00540
        #- cp $AIR/../utils/gitlab-runner/* .
@@ -799,7 +799,7 @@ hello_world_arm:
 #00560_arm: 
    #stage: validation_tests
    #tags: 
-       #- arm-taste-debian1
+       #- ARM1
    #script:
        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00560
        #- cp $AIR/../utils/gitlab-runner/* .
@@ -812,7 +812,7 @@ hello_world_arm:
 ##00600_arm: 
    ##stage: validation_tests
    ##tags: 
-       ##- arm-taste-debian1
+       ##- ARM1
    ##script:
        ##- cd $AIR/examples/private-example/private/validation/TEST-DEF-00600
        ##- cp $AIR/../utils/gitlab-runner/* .
@@ -825,7 +825,7 @@ hello_world_arm:
 01390_arm: 
    stage: validation_tests
    tags: 
-       - arm-taste-debian1
+       - ARM1
    script:
        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01390
        - cp $AIR/../utils/gitlab-runner/* .
@@ -838,7 +838,7 @@ hello_world_arm:
 #01561_arm: 
    #stage: validation_tests
    #tags: 
-       #- arm-taste-debian1
+       #- ARM1
    #script:
        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01561
        #- cp $AIR/../utils/gitlab-runner/* .
@@ -851,7 +851,7 @@ hello_world_arm:
 #01570_arm: 
    #stage: validation_tests
    #tags: 
-       #- arm-taste-debian1
+       #- ARM1
    #script:
        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01570
        #- cp $AIR/../utils/gitlab-runner/* .
@@ -865,7 +865,7 @@ hello_world_arm:
 01590_arm: 
     stage: validation_tests
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01590
         - cp $AIR/../utils/gitlab-runner/* .
@@ -877,7 +877,7 @@ hello_world_arm:
 #01610_arm: 
     #stage: validation_tests
     #tags: 
-        #- arm-taste-debian1
+        #- ARM1
     #script:
         #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01610
         #- cp $AIR/../utils/gitlab-runner/* .
@@ -889,7 +889,7 @@ hello_world_arm:
 01620_arm: 
     stage: validation_tests
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01620
         - cp $AIR/../utils/gitlab-runner/* .
@@ -901,7 +901,7 @@ hello_world_arm:
 01650_arm: 
     stage: validation_tests
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01650
         - cp $AIR/../utils/gitlab-runner/* .
@@ -913,7 +913,7 @@ hello_world_arm:
 01730_arm: 
     stage: validation_tests
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01730
         - cp $AIR/../utils/gitlab-runner/* .
@@ -925,7 +925,7 @@ hello_world_arm:
 01740_arm: 
     stage: validation_tests
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01740
         - cp $AIR/../utils/gitlab-runner/* .
@@ -937,7 +937,7 @@ hello_world_arm:
 01750_arm: 
     stage: validation_tests
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01750
         - cp $AIR/../utils/gitlab-runner/* .
@@ -949,7 +949,7 @@ hello_world_arm:
 01741_arm: 
     stage: validation_tests
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01741
         - cp $AIR/../utils/gitlab-runner/* .
@@ -961,7 +961,7 @@ hello_world_arm:
 02100_arm: 
     stage: validation_tests
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-02100
         - cp $AIR/../utils/gitlab-runner/* .
@@ -973,7 +973,7 @@ hello_world_arm:
 02101_arm: 
     stage: validation_tests
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-02101
         - cp $AIR/../utils/gitlab-runner/* .
@@ -985,7 +985,7 @@ hello_world_arm:
 02102_arm: 
     stage: validation_tests
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-02102
         - cp $AIR/../utils/gitlab-runner/* .
@@ -997,7 +997,7 @@ hello_world_arm:
 02105_arm: 
     stage: validation_tests
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-02105
         - cp $AIR/../utils/gitlab-runner/* .
@@ -1009,7 +1009,7 @@ hello_world_arm:
 02107_arm: 
     stage: validation_tests
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-02107
         - cp $AIR/../utils/gitlab-runner/* .
@@ -1021,7 +1021,7 @@ hello_world_arm:
 02108_arm: 
     stage: validation_tests
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-02108
         - cp $AIR/../utils/gitlab-runner/* .
@@ -1033,7 +1033,7 @@ hello_world_arm:
 #80000_arm: 
     #stage: validation_tests
     #tags: 
-        #- arm-taste-debian1
+        #- ARM1
     #script:
         #- cd $AIR/examples/private-example/private/validation/TEST-DEF-80000
         #- cp $AIR/../utils/gitlab-runner/* .
@@ -1045,7 +1045,7 @@ hello_world_arm:
 #80010_arm: 
     #stage: validation_tests
     #tags: 
-        #- arm-taste-debian1
+        #- ARM1
     #script:
         #- cd $AIR/examples/private-example/private/validation/TEST-DEF-80010
         #- cp $AIR/../utils/gitlab-runner/* .
@@ -1057,7 +1057,7 @@ hello_world_arm:
 80060_arm: 
     stage: validation_tests
     tags: 
-        - arm-taste-debian1
+        - ARM1
     script:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-80060
         - cp $AIR/../utils/gitlab-runner/* .

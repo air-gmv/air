@@ -283,14 +283,14 @@ void arm_mmu_init(void) {
     arm_cp15_set_translation_table_control(ttbcr);
 
     air_u32_t dac = ((DAC_CLIENT) << (2 * DEFAULT_DOMAIN));
-    arm_cp15_set_domain_access_control(dac);
+    air_arm_cp15_set_domain_access_control(dac);
 
     air_u32_t sctlr = arm_cp15_get_system_control();
     sctlr &= ~(ARM_SCTLR_TRE | ARM_SCTLR_A);
     sctlr |= (ARM_SCTLR_AFE | ARM_SCTLR_Z);
     arm_cp15_set_system_control(sctlr);
 
-    arm_cp15_tlb_invalidate();
+    air_arm_cp15_tlb_invalidate();
 }
 
 void arm_mmu_disable(void) {
