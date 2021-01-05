@@ -29,18 +29,18 @@ air_uptr_t * arm_exception_handler(arm_interrupt_stack_frame_t *frame, pmk_core_
 
     switch(frame->exception_name) {
 
-        case ARM_EXCEPTION_UNDEF:
-        case ARM_EXCEPTION_PREF_ABORT:
-        case ARM_EXCEPTION_DATA_ABORT:
-        case ARM_EXCEPTION_FIQ:
+        case AIR_ARM_EXCEPTION_UNDEF:
+        case AIR_ARM_EXCEPTION_PREF_ABORT:
+        case AIR_ARM_EXCEPTION_DATA_ABORT:
+        case AIR_ARM_EXCEPTION_FIQ:
             ret = arm_hm_handler(frame, core);
             break;
 
-        case ARM_EXCEPTION_SWI:
+        case AIR_ARM_EXCEPTION_SWI:
             arm_svc_handler(frame, core);
             break;
 
-        case ARM_EXCEPTION_IRQ:
+        case AIR_ARM_EXCEPTION_IRQ:
             ret = arm_isr_handler(frame, core);
             break;
     }

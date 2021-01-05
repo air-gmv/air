@@ -246,8 +246,9 @@ air_u32_t air_syscall_acknowledge_int(void);
  */
 #define AIR_SYSCALL_ARCH_COUNT                          17
 
-//trcpse:
+
 #define AIR_SYSCALL_ARM_ACK_INT                         18
-//-----
+#define AIR_SYSCALL_ARM_END_INT                         19
+
 
 #endif /* AIR_ARCH_H_ */
