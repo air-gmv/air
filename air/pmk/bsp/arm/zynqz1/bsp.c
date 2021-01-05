@@ -165,7 +165,7 @@ void bsp_shutdown_core(pmk_core_ctrl_t *core_ctx) {
     /* 10. increase clock divider (0x3f) and slow down CPU clock */
     arm_set_cpu_clock_divisor(0x3f);
 
-    __asm__ volatile ("wfi");
+    while(1);
 
     return;
 }
