@@ -55,6 +55,7 @@ void core_context_init(core_context_t *context, air_u32_t id) {
     context->isf_pointer = context->idle_isf_pointer;
 
 #if PMK_FPU_SUPPORT
+    arm_enable_fpu();
     /* allocate space to hold an FPU context */
     //context->vfp_context = (arm_vfp_context_t *)pmk_workspace_alloc(sizeof(arm_vfp_context_t));
 #else
@@ -83,6 +84,7 @@ void core_context_init(core_context_t *context, air_u32_t id) {
             context->hm_event,
             context->hm_event + sizeof(pmk_hm_event_t));
 #endif
+
 }
 
 /**
@@ -154,7 +156,6 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
         if ((partition->permissions & AIR_PERMISSION_FPU_CONTROL) != 0) {
            //context->vfp_context->fpscr &=0xFFF8FFFF;
             isf->vfp_context.fpexc = (ARM_VFP_FPEXC_ENABLE);
-            arm_enable_fpu();
         } else {
             //context->vfp_context->fpexc = 0;
             isf->vfp_context.fpexc = 0;
@@ -173,9 +174,10 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
         /* setup the stack pointer of the partition */
         air_u32_t stack = (air_u32_t)partition->mmap->v_addr + (partition->mmap->size)/2;
         stack = (stack & ~(32 - 1));
-        context->sp_svc = stack - (336*4*15);
+        /*context->sp_svc = stack - (336*4*15);
         context->sp_irq = stack;
-        isf->usr_sp = context->sp_svc;
+        isf->usr_sp = context->sp_svc;*/
+        isf->usr_sp = stack;
 
         /*Enable virtual interrupts*/
         context->vgic.vm_ctrl = 1;

@@ -83,7 +83,7 @@ static inline void arm_set_vector_base(void) {
         air_u32_t ctrl;
 
         /* TODO Assumes every core has Security Extensions */
-        arm_cp15_set_vector_base_address((void *)pmk_trap_table);
+        air_arm_cp15_set_vector_base_address((void *)pmk_trap_table);
 
         ctrl = arm_cp15_get_system_control();
         ctrl &= ~ARM_SCTLR_V;
