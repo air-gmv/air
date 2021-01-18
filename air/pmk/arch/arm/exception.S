@@ -459,13 +459,13 @@ restore:
 
     pop     {r0-r12}
     dmb
-    add     sp, #20
+    add     sp, #12
 
 #if PMK_FPU_SUPPORT
     add     sp, #264
 #endif
 
-    b       return
+    rfe     sp!
 
 virtual:
     mov     lr, r0                          //puts return address in lr
@@ -514,5 +514,4 @@ virtual_return:
     dmb
     sub     sp, #52
 
-return:
     subs    pc, lr, #0
