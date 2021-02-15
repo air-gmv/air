@@ -57,8 +57,8 @@ config_arm:
     tags: 
         - ARM1
     script:
-        -  cp $AIR/../utils/gitlab-runner/.arm_config . 
-        - ./configure -f .arm_config
+        -  cp $AIR/../utils/gitlab-runner/.arm_zynqz1_config . 
+        - ./configure -f .arm_zynqz1_config
 
 build_arm:
     stage: build
