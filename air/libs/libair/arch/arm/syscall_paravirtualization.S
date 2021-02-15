@@ -81,7 +81,7 @@ global(air_syscall_get_irq_mask_register)
 
 global(air_syscall_set_irq_mask_register)
     svc     #(AIR_SYSCALL_ARM_SET_IRQ_MASK_REGISTER)
-
+    bx      lr
 //FUNC(air_syscall_set_irq_force_register)
 //  svc     #(AIR_SYSCALL_ARM_SET_IRQ_FORCE_REGISTER)
 
@@ -90,3 +90,6 @@ global(air_syscall_acknowledge_int)
     svc     #(AIR_SYSCALL_ARM_ACK_INT)
     bx      lr
 
+global(air_syscall_end_int)
+    svc     #(AIR_SYSCALL_ARM_END_INT)
+    bx      lr
