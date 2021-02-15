@@ -17,7 +17,7 @@ def iop_arch(config, partition):
     pass
 
 # Target Description
-description = "AIR OS for SPARC-LEON 4"
+description = "AIR OS for SPARC-LEON 4 - LAYSIM GR-740"
 
 # Target Number of cores
 cores = 4
@@ -130,8 +130,8 @@ permissions = [PERMISSION_SUPERVISOR, PERMISSION_FPU, PERMISSION_CACHE,PERMISSIO
                PERMISSION_SET_PARTITION, PERMISSION_GLOBAL_TIME, PERMISSION_MODULE]
 
 # memory map
-mmap = MMAP(kernel_space=[0x40000000, 0x01000000],
-            partition_space=[0x41000000, 0x10000000],
+mmap = MMAP(kernel_space=[0x00000000, 0x01000000],
+            partition_space=[0x01000000, 0x10000000],
             units=[1 << 12, 1 << 18, 1 << 24],
             default_unit=1 << 18)
 
