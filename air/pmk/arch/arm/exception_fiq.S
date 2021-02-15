@@ -46,7 +46,7 @@ global(exception_fiq)
 arm_save_context:
     stmia   r10!, {r0-r7}
     mov     r0, r10
-    mov     r7, #ARM_EXCEPTION_FIQ
+    mov     r7, #AIR_ARM_EXCEPTION_FIQ
     cpsid   aif, #ARM_PSR_SYS
     stmia   r0!, {r7-r14}
     cpsid   aif, #ARM_PSR_FIQ

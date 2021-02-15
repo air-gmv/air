@@ -93,12 +93,12 @@ air_uptr_t * arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t
 #endif
     }
 
-    if ((frame->usr_sp > (air_u32_t)(core->partition)->mmap->v_addr) && ((core->context->vcpu.psr & ARM_PSR_MODE_MASK) != ARM_PSR_IRQ))
-        core->context->sp_svc = frame->usr_sp;
-
     /* will it route to the partition */
     if (core->partition != NULL) {
-        ret = arm_partition_isr_handler(id, core);
+        air_u32_t mode = frame->ret_psr & ARM_PSR_MODE_MASK;
+        // only perform virtual handler if the previous mode was USR or SYS
+        if ( (mode == ARM_PSR_USR) || (mode == ARM_PSR_SYS))
+            ret = arm_partition_isr_handler(id, core);
     }
 
     arm_end_of_int(ack);
@@ -175,7 +175,7 @@ air_uptr_t * arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
             //the current interrupt priority is higher than the priority mask:
             if (((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) {
 
-                //vgic->pmr = ((vgic->ilist[id] >> 23) & 0x1f); //updates priority mask
+                vgic->pmr = ((vgic->ilist[id] >> 23) & 0x1f); //updates priority mask
 
                 vgic->hppir = vgic->rpr;
                 vgic->ilist[(vgic->iar & 0x3ff)] &= ~(1U << 29);
