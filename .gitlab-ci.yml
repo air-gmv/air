@@ -40,8 +40,8 @@ config_sparc:
     tags: 
         - sparc-taste-debian1
     script:
-        - cp $AIR/../utils/gitlab-runner/.sparc_config .
-        - ./configure -f .sparc_config
+        - cp $AIR/../utils/gitlab-runner/.sparc_leon4_config .
+        - ./configure -f .sparc_leon4_config
 
 build_sparc:
     stage: build
