@@ -38,6 +38,7 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
 
     air_error_e error_id;
     air_u32_t fsr = 0, far = 0;
+    air_u32_t psr;
 
     /**
      * \note After taking a Data Abort exception, the state of the exclusive monitors is UNKNOWN.
@@ -54,7 +55,7 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
      * spsr: SPSR
      * ret_addr: return addr
      */
-    case ARM_EXCEPTION_UNDEF:
+    case AIR_ARM_EXCEPTION_UNDEF:
 
         /* FPU Lazy Switching */
         if (arm_hm_undef_is_fpu(*(air_uptr_t *)frame->ret_addr, (frame->ret_psr & ARM_PSR_T))) {
@@ -73,7 +74,7 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
      * fsr: ifsr
      * far: ifar
      */
-    case ARM_EXCEPTION_PREF_ABORT:
+    case AIR_ARM_EXCEPTION_PREF_ABORT:
         error_id = AIR_VIOLATION_ERROR;
         fsr = arm_cp15_get_IFSR();
         far = arm_cp15_get_IFAR();
@@ -83,13 +84,13 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
      * fsr: dfsr
      * far: dfar
      */
-    case ARM_EXCEPTION_DATA_ABORT:
+    case AIR_ARM_EXCEPTION_DATA_ABORT:
         error_id = AIR_SEGMENTATION_ERROR;
         fsr = arm_cp15_get_DFSR();
         far = arm_cp15_get_DFAR();
         break;
 
-    case ARM_EXCEPTION_FIQ:
+    case AIR_ARM_EXCEPTION_FIQ:
         error_id = AIR_IO_ERROR;
         fsr = frame->ret_psr;
         far = frame->ret_addr;
@@ -108,8 +109,13 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
             hm_id, fsr, far, (int)frame->ret_addr);
 #endif
 
+    psr = core->context->vcpu.psr; 
+    core->context->vcpu.psr |= ARM_PSR_I;   //disable virtual interrupts
+
     pmk_hm_isr_handler(error_id);
 
+    core->context->vcpu.psr = psr;          //restore virtual psr
+   
     if (!core->context->trash)
         ret = arm_partition_hm_handler(hm_id, core);
 
@@ -117,6 +123,7 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
     if (ret != NULL)
         printk("hm_handler ret = 0x%x\n", (int)ret);
 #endif
+
     return ret;
 }
 
@@ -130,7 +137,6 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
 static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
 
     arm_virtual_cpu_t *vcpu = &core->context->vcpu;
-
     air_uptr_t *vbar = vcpu->vbar;
     if (vbar == NULL) return NULL;
 
@@ -141,11 +147,10 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
 
     arm_interrupt_stack_frame_t *frame = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
 
-    if ((frame->usr_sp > (air_u32_t)(core->partition)->mmap->v_addr) && ((core->context->vcpu.psr & ARM_PSR_MODE_MASK) != ARM_PSR_IRQ))
-        core->context->sp_svc = frame->usr_sp;
+    /*if ((frame->usr_sp > (air_u32_t)(core->partition)->mmap->v_addr) && ((core->context->vcpu.psr & ARM_PSR_MODE_MASK) != ARM_PSR_IRQ))
+        core->context->sp_svc = frame->usr_sp;*/
 
     if (!psr_a) {
-
         pmk_hm_event_t *hm_event = (pmk_hm_event_t *)core->context->hm_event;
         if (hm_event->nesting > 0) {
 
@@ -158,14 +163,23 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
 
             case AIR_UNIMPLEMENTED_ERROR:
                 ret_addr = vbar + 1;
+                if(((frame->ret_psr) & ARM_PSR_T) != 0)
+                    frame->ret_addr+=2;
+                else
+                    frame->ret_addr+=4;
                 break;
 
             case AIR_VIOLATION_ERROR:
                 ret_addr = vbar + 3;
+                frame->ret_addr+=4;
                 break;
 
             case AIR_SEGMENTATION_ERROR:
                 ret_addr = vbar + 4;
+                if(((frame->ret_psr) & ARM_PSR_T) != 0)
+                    frame->ret_addr+=2;
+                else
+                    frame->ret_addr+=4;
                 break;
 
             case AIR_IO_ERROR:
@@ -180,8 +194,11 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
                 arm_restore_fpu(frame);
                 arm_syscall_rett(core);
                 ret_addr = vbar + 1;
+                if(((frame->ret_psr) & ARM_PSR_T) != 0)
+                    frame->ret_addr+=2;
+                else
+                    frame->ret_addr+=4;
                 break;
-
             case AIR_ARITHMETIC_ERROR: //overflow
             case AIR_DIVISION_BY_0_ERROR: // /0
             default:
