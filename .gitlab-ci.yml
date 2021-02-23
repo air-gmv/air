@@ -70,7 +70,7 @@ build_sparc_leon4:
 
 # Test code for laysim, since it uses the same runner as the ZYNQZ1
 config_sparc_gr740:
-    stage: gr740
+    stage: build
     tags: 
         - ARM1
     script:
@@ -78,7 +78,7 @@ config_sparc_gr740:
         - ./configure -f .sparc_gr740_config
 
 build_sparc_gr740:
-    stage: gr740
+    stage: build
     tags: 
         - ARM1
     script:
