@@ -51,21 +51,38 @@ build_sparc_leon4:
         - make clean
         - make -j4
 
-#Build for ARM
-config_arm_zynqz1:
-    stage: build
-    tags: 
-        - ARM1
-    script:
-        -  cp $AIR/../utils/gitlab-runner/.arm_zynqz1_config . 
-        - ./configure -f .arm_zynqz1_config
+# #Build for ARM
+# config_arm_zynqz1:
+#     stage: build
+#     tags: 
+#         - ARM1
+#     script:
+#         -  cp $AIR/../utils/gitlab-runner/.arm_zynqz1_config . 
+#         - ./configure -f .arm_zynqz1_config
 
-build_arm_zynqz1:
-    stage: build
+# build_arm_zynqz1:
+#     stage: build
+#     tags: 
+#         - ARM1
+#     script:
+#         - make clean # to be removed and used only on failure
+#         - make -j4
+
+# Test code for laysim, since it uses the same runner as the ZYNQZ1
+config_sparc_gr740:
+    stage: gr740
     tags: 
         - ARM1
     script:
-        - make clean # to be removed and used only on failure
+        - cp $AIR/../utils/gitlab-runner/.sparc_gr740_config .
+        - ./configure -f .sparc_gr740_config
+
+build_sparc_gr740:
+    stage: gr740
+    tags: 
+        - ARM1
+    script:
+        - make clean
         - make -j4
 
 #clean_build_arm:
@@ -647,421 +664,421 @@ shm_sparc_leon4:
 ##Example Tests for ARM   #
 ###########################
 
-00001_arm_zynqz1:
-    stage: examples
-    tags: 
-        - ARM1
-    script:
-        - cd $AIR/examples/private-example/private/arm_unit_tests/lionel
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ls
-        - ./do_zynqz1_qemu.bash
-        - ./testcheck.py
-        - cd $AIR
-    environment:
-        name: ARM ZYNQZ1
+# 00001_arm_zynqz1:
+#     stage: examples
+#     tags: 
+#         - ARM1
+#     script:
+#         - cd $AIR/examples/private-example/private/arm_unit_tests/lionel
+#         - cp $AIR/../utils/gitlab-runner/* .
+#         - ls
+#         - ./do_zynqz1_qemu.bash
+#         - ./testcheck.py
+#         - cd $AIR
+#     environment:
+#         name: ARM ZYNQZ1
 
-hello_world_arm_zynqz1:
-    stage: examples
-    tags: 
-        - ARM1
-    script:
-        - cd $AIR/examples/hello_world
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ls
-        - ./do_zynqz1_qemu.bash
-        - ./testcheck.py
-        - cd $AIR
-    environment:
-        name: ARM ZYNQZ1
+# hello_world_arm_zynqz1:
+#     stage: examples
+#     tags: 
+#         - ARM1
+#     script:
+#         - cd $AIR/examples/hello_world
+#         - cp $AIR/../utils/gitlab-runner/* .
+#         - ls
+#         - ./do_zynqz1_qemu.bash
+#         - ./testcheck.py
+#         - cd $AIR
+#     environment:
+#         name: ARM ZYNQZ1
 
-#########################
-##Unit Tests for ARM    #
-#########################
+# #########################
+# ##Unit Tests for ARM    #
+# #########################
 
-#00009_arm:
-    #stage: validation_tests
-    #tags: 
-        #- ARM1
-    #script:
-        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00009
-        #- cp $AIR/../utils/gitlab-runner/* .
-        #- ./do_zynqz1_qemu.bash
-        #- ./testcheck.py
-        #- cd $AIR
-    #environment:
-        #name: ARM ZYNQZ1
+# #00009_arm:
+#     #stage: validation_tests
+#     #tags: 
+#         #- ARM1
+#     #script:
+#         #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00009
+#         #- cp $AIR/../utils/gitlab-runner/* .
+#         #- ./do_zynqz1_qemu.bash
+#         #- ./testcheck.py
+#         #- cd $AIR
+#     #environment:
+#         #name: ARM ZYNQZ1
 
-#00010_arm:
-   #stage: validation_tests
-   #tags: 
-       #- ARM1
-   #script:
-       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00010
-       #- cp $AIR/../utils/gitlab-runner/* .
-       #- ./do_zynqz1_qemu.bash
-       #- ./testcheck.py
-       #- cd $AIR
-   #environment:
-       #name: ARM ZYNQZ1
+# #00010_arm:
+#    #stage: validation_tests
+#    #tags: 
+#        #- ARM1
+#    #script:
+#        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00010
+#        #- cp $AIR/../utils/gitlab-runner/* .
+#        #- ./do_zynqz1_qemu.bash
+#        #- ./testcheck.py
+#        #- cd $AIR
+#    #environment:
+#        #name: ARM ZYNQZ1
 
-#00012_arm:
-   #stage: validation_tests
-   #tags: 
-       #- ARM1
-   #script:
-       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00012
-       #- cp $AIR/../utils/gitlab-runner/* .
-       #- ./do_zynqz1_qemu.bash
-       #- ./testcheck.py
-       #- cd $AIR
-   #environment:
-       #name: ARM ZYNQZ1
+# #00012_arm:
+#    #stage: validation_tests
+#    #tags: 
+#        #- ARM1
+#    #script:
+#        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00012
+#        #- cp $AIR/../utils/gitlab-runner/* .
+#        #- ./do_zynqz1_qemu.bash
+#        #- ./testcheck.py
+#        #- cd $AIR
+#    #environment:
+#        #name: ARM ZYNQZ1
 
-00021_arm_zynqz1: 
-   stage: validation_tests
-   tags: 
-       - ARM1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00021
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_zynqz1_qemu.bash
-       - ./testcheck.py
-       - cd $AIR
-   environment:
-       name: ARM ZYNQZ1
-
-00022_arm_zynqz1: 
-   stage: validation_tests
-   tags: 
-       - ARM1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00022
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_zynqz1_qemu.bash
-       - ./testcheck.py
-       - cd $AIR
-   environment:
-       name: ARM ZYNQZ1
-
-00023_arm_zynqz1: 
-   stage: validation_tests
-   tags: 
-       - ARM1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00023
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_zynqz1_qemu.bash
-       - ./testcheck.py
-       - cd $AIR
-   environment:
-       name: ARM ZYNQZ1
-
-00500_arm_zynqz1: 
-   stage: validation_tests
-   tags: 
-       - ARM1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00500
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_zynqz1_qemu.bash
-       - ./testcheck.py
-       - cd $AIR
-   environment:
-       name: ARM ZYNQZ1
-
-00510_arm_zynqz1: 
-   stage: validation_tests
-   tags: 
-       - ARM1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-00510
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_zynqz1_qemu.bash
-       - ./testcheck.py
-       - cd $AIR
-   environment:
-       name: ARM ZYNQZ1
-
-#00540_arm: 
-   #stage: validation_tests
-   #tags: 
-       #- ARM1
-   #script:
-       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00540
-       #- cp $AIR/../utils/gitlab-runner/* .
-       #- ./do_zynqz1_qemu.bash
-       #- ./testcheck.py
-       #- cd $AIR
-   #environment:
-       #name: ARM ZYNQZ1
-
-#00560_arm: 
-   #stage: validation_tests
-   #tags: 
-       #- ARM1
-   #script:
-       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00560
-       #- cp $AIR/../utils/gitlab-runner/* .
-       #- ./do_zynqz1_qemu.bash
-       #- ./testcheck.py
-       #- cd $AIR
-   #environment:
-       #name: ARM ZYNQZ1
-
-##00600_arm: 
-   ##stage: validation_tests
-   ##tags: 
-       ##- ARM1
-   ##script:
-       ##- cd $AIR/examples/private-example/private/validation/TEST-DEF-00600
-       ##- cp $AIR/../utils/gitlab-runner/* .
-       ##- ./do_zynqz1_qemu.bash
-       ##- ./testcheck.py
-       ##- cd $AIR
-   ##environment:
-       ##name: ARM ZYNQZ1
-
-01390_arm_zynqz1: 
-   stage: validation_tests
-   tags: 
-       - ARM1
-   script:
-       - cd $AIR/examples/private-example/private/validation/TEST-DEF-01390
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_zynqz1_qemu.bash
-       - ./testcheck.py
-       - cd $AIR
-   environment:
-       name: ARM ZYNQZ1
-
-#01561_arm: 
-   #stage: validation_tests
-   #tags: 
-       #- ARM1
-   #script:
-       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01561
-       #- cp $AIR/../utils/gitlab-runner/* .
-       #- ./do_zynqz1_qemu.bash
-       #- ./testcheck.py
-       #- cd $AIR
-   #environment:
-       #name: ARM ZYNQZ1
-
-#01570_arm: 
-   #stage: validation_tests
-   #tags: 
-       #- ARM1
-   #script:
-       #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01570
-       #- cp $AIR/../utils/gitlab-runner/* .
-       #- ./do_zynqz1_qemu.bash
-       #- ./testcheck.py
-       #- cd $AIR
-   #environment:
-       #name: ARM ZYNQZ1
-
-
-#01590_arm: 
+# 00021_arm_zynqz1: 
 #    stage: validation_tests
 #    tags: 
 #        - ARM1
 #    script:
-#        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01590
+#        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00021
 #        - cp $AIR/../utils/gitlab-runner/* .
 #        - ./do_zynqz1_qemu.bash
+#        - ./testcheck.py
 #        - cd $AIR
 #    environment:
 #        name: ARM ZYNQZ1
 
-#01610_arm: 
-    #stage: validation_tests
-    #tags: 
-        #- ARM1
-    #script:
-        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01610
-        #- cp $AIR/../utils/gitlab-runner/* .
-        #- ./do_zynqz1_qemu.bash
-        #- cd $AIR
-    #environment:
-        #name: ARM ZYNQZ1
-
-01620_arm_zynqz1: 
-    stage: validation_tests
-    tags: 
-        - ARM1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01620
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_zynqz1_qemu.bash
-        - cd $AIR
-    environment:
-        name: ARM ZYNQZ1
-
-01650_arm_zynqz1: 
-    stage: validation_tests
-    tags: 
-        - ARM1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01650
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_zynqz1_qemu.bash
-        - cd $AIR
-    environment:
-        name: ARM ZYNQZ1
-
-01730_arm_zynqz1: 
-    stage: validation_tests
-    tags: 
-        - ARM1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01730
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_zynqz1_qemu.bash
-        - cd $AIR
-    environment:
-        name: ARM ZYNQZ1
-
-01740_arm_zynqz1: 
-    stage: validation_tests
-    tags: 
-        - ARM1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01740
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_zynqz1_qemu.bash
-        - cd $AIR
-    environment:
-        name: ARM ZYNQZ1
-
-01750_arm_zynqz1: 
-    stage: validation_tests
-    tags: 
-        - ARM1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01750
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_zynqz1_qemu.bash
-        - cd $AIR
-    environment:
-        name: ARM ZYNQZ1
-        
-#01741_arm: 
+# 00022_arm_zynqz1: 
 #    stage: validation_tests
 #    tags: 
 #        - ARM1
 #    script:
-#        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01741
+#        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00022
 #        - cp $AIR/../utils/gitlab-runner/* .
 #        - ./do_zynqz1_qemu.bash
+#        - ./testcheck.py
 #        - cd $AIR
 #    environment:
 #        name: ARM ZYNQZ1
-        
-02100_arm_zynqz1: 
-    stage: validation_tests
-    tags: 
-        - ARM1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-02100
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_zynqz1_qemu.bash
-        - cd $AIR
-    environment:
-        name: ARM ZYNQZ1
 
-02101_arm_zynqz1: 
-    stage: validation_tests
-    tags: 
-        - ARM1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-02101
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_zynqz1_qemu.bash
-        - cd $AIR
-    environment:
-        name: ARM ZYNQZ1
-        
-02102_arm_zynqz1: 
-    stage: validation_tests
-    tags: 
-        - ARM1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-02102
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_zynqz1_qemu.bash
-        - cd $AIR
-    environment:
-        name: ARM ZYNQZ1
-        
-02105_arm_zynqz1: 
-    stage: validation_tests
-    tags: 
-        - ARM1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-02105
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_zynqz1_qemu.bash
-        - cd $AIR
-    environment:
-        name: ARM ZYNQZ1
-        
-02107_arm_zynqz1: 
-    stage: validation_tests
-    tags: 
-        - ARM1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-02107
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_zynqz1_qemu.bash
-        - cd $AIR
-    environment:
-        name: ARM ZYNQZ1
-        
-02108_arm_zynqz1: 
-    stage: validation_tests
-    tags: 
-        - ARM1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-02108
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_zynqz1_qemu.bash
-        - cd $AIR
-    environment:
-        name: ARM ZYNQZ1
-        
-#80000_arm: 
-    #stage: validation_tests
-    #tags: 
-        #- ARM1
-    #script:
-        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-80000
-        #- cp $AIR/../utils/gitlab-runner/* .
-        #- ./do_zynqz1_qemu.bash
-        #- cd $AIR
-    #environment:
-        #name: ARM ZYNQZ1
+# 00023_arm_zynqz1: 
+#    stage: validation_tests
+#    tags: 
+#        - ARM1
+#    script:
+#        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00023
+#        - cp $AIR/../utils/gitlab-runner/* .
+#        - ./do_zynqz1_qemu.bash
+#        - ./testcheck.py
+#        - cd $AIR
+#    environment:
+#        name: ARM ZYNQZ1
 
-#80010_arm: 
-    #stage: validation_tests
-    #tags: 
-        #- ARM1
-    #script:
-        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-80010
-        #- cp $AIR/../utils/gitlab-runner/* .
-        #- ./do_zynqz1_qemu.bash
-        #- cd $AIR
-    #environment:
-        #name: ARM ZYNQZ1
+# 00500_arm_zynqz1: 
+#    stage: validation_tests
+#    tags: 
+#        - ARM1
+#    script:
+#        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00500
+#        - cp $AIR/../utils/gitlab-runner/* .
+#        - ./do_zynqz1_qemu.bash
+#        - ./testcheck.py
+#        - cd $AIR
+#    environment:
+#        name: ARM ZYNQZ1
+
+# 00510_arm_zynqz1: 
+#    stage: validation_tests
+#    tags: 
+#        - ARM1
+#    script:
+#        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00510
+#        - cp $AIR/../utils/gitlab-runner/* .
+#        - ./do_zynqz1_qemu.bash
+#        - ./testcheck.py
+#        - cd $AIR
+#    environment:
+#        name: ARM ZYNQZ1
+
+# #00540_arm: 
+#    #stage: validation_tests
+#    #tags: 
+#        #- ARM1
+#    #script:
+#        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00540
+#        #- cp $AIR/../utils/gitlab-runner/* .
+#        #- ./do_zynqz1_qemu.bash
+#        #- ./testcheck.py
+#        #- cd $AIR
+#    #environment:
+#        #name: ARM ZYNQZ1
+
+# #00560_arm: 
+#    #stage: validation_tests
+#    #tags: 
+#        #- ARM1
+#    #script:
+#        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-00560
+#        #- cp $AIR/../utils/gitlab-runner/* .
+#        #- ./do_zynqz1_qemu.bash
+#        #- ./testcheck.py
+#        #- cd $AIR
+#    #environment:
+#        #name: ARM ZYNQZ1
+
+# ##00600_arm: 
+#    ##stage: validation_tests
+#    ##tags: 
+#        ##- ARM1
+#    ##script:
+#        ##- cd $AIR/examples/private-example/private/validation/TEST-DEF-00600
+#        ##- cp $AIR/../utils/gitlab-runner/* .
+#        ##- ./do_zynqz1_qemu.bash
+#        ##- ./testcheck.py
+#        ##- cd $AIR
+#    ##environment:
+#        ##name: ARM ZYNQZ1
+
+# 01390_arm_zynqz1: 
+#    stage: validation_tests
+#    tags: 
+#        - ARM1
+#    script:
+#        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01390
+#        - cp $AIR/../utils/gitlab-runner/* .
+#        - ./do_zynqz1_qemu.bash
+#        - ./testcheck.py
+#        - cd $AIR
+#    environment:
+#        name: ARM ZYNQZ1
+
+# #01561_arm: 
+#    #stage: validation_tests
+#    #tags: 
+#        #- ARM1
+#    #script:
+#        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01561
+#        #- cp $AIR/../utils/gitlab-runner/* .
+#        #- ./do_zynqz1_qemu.bash
+#        #- ./testcheck.py
+#        #- cd $AIR
+#    #environment:
+#        #name: ARM ZYNQZ1
+
+# #01570_arm: 
+#    #stage: validation_tests
+#    #tags: 
+#        #- ARM1
+#    #script:
+#        #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01570
+#        #- cp $AIR/../utils/gitlab-runner/* .
+#        #- ./do_zynqz1_qemu.bash
+#        #- ./testcheck.py
+#        #- cd $AIR
+#    #environment:
+#        #name: ARM ZYNQZ1
+
+
+# #01590_arm: 
+# #    stage: validation_tests
+# #    tags: 
+# #        - ARM1
+# #    script:
+# #        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01590
+# #        - cp $AIR/../utils/gitlab-runner/* .
+# #        - ./do_zynqz1_qemu.bash
+# #        - cd $AIR
+# #    environment:
+# #        name: ARM ZYNQZ1
+
+# #01610_arm: 
+#     #stage: validation_tests
+#     #tags: 
+#         #- ARM1
+#     #script:
+#         #- cd $AIR/examples/private-example/private/validation/TEST-DEF-01610
+#         #- cp $AIR/../utils/gitlab-runner/* .
+#         #- ./do_zynqz1_qemu.bash
+#         #- cd $AIR
+#     #environment:
+#         #name: ARM ZYNQZ1
+
+# 01620_arm_zynqz1: 
+#     stage: validation_tests
+#     tags: 
+#         - ARM1
+#     script:
+#         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01620
+#         - cp $AIR/../utils/gitlab-runner/* .
+#         - ./do_zynqz1_qemu.bash
+#         - cd $AIR
+#     environment:
+#         name: ARM ZYNQZ1
+
+# 01650_arm_zynqz1: 
+#     stage: validation_tests
+#     tags: 
+#         - ARM1
+#     script:
+#         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01650
+#         - cp $AIR/../utils/gitlab-runner/* .
+#         - ./do_zynqz1_qemu.bash
+#         - cd $AIR
+#     environment:
+#         name: ARM ZYNQZ1
+
+# 01730_arm_zynqz1: 
+#     stage: validation_tests
+#     tags: 
+#         - ARM1
+#     script:
+#         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01730
+#         - cp $AIR/../utils/gitlab-runner/* .
+#         - ./do_zynqz1_qemu.bash
+#         - cd $AIR
+#     environment:
+#         name: ARM ZYNQZ1
+
+# 01740_arm_zynqz1: 
+#     stage: validation_tests
+#     tags: 
+#         - ARM1
+#     script:
+#         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01740
+#         - cp $AIR/../utils/gitlab-runner/* .
+#         - ./do_zynqz1_qemu.bash
+#         - cd $AIR
+#     environment:
+#         name: ARM ZYNQZ1
+
+# 01750_arm_zynqz1: 
+#     stage: validation_tests
+#     tags: 
+#         - ARM1
+#     script:
+#         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01750
+#         - cp $AIR/../utils/gitlab-runner/* .
+#         - ./do_zynqz1_qemu.bash
+#         - cd $AIR
+#     environment:
+#         name: ARM ZYNQZ1
         
-80060_arm_zynqz1: 
-    stage: validation_tests
-    tags: 
-        - ARM1
-    script:
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-80060
-        - cp $AIR/../utils/gitlab-runner/* .
-        - ./do_zynqz1_qemu.bash
-        - cd $AIR
-    environment:
-        name: ARM ZYNQZ1
+# #01741_arm: 
+# #    stage: validation_tests
+# #    tags: 
+# #        - ARM1
+# #    script:
+# #        - cd $AIR/examples/private-example/private/validation/TEST-DEF-01741
+# #        - cp $AIR/../utils/gitlab-runner/* .
+# #        - ./do_zynqz1_qemu.bash
+# #        - cd $AIR
+# #    environment:
+# #        name: ARM ZYNQZ1
+        
+# 02100_arm_zynqz1: 
+#     stage: validation_tests
+#     tags: 
+#         - ARM1
+#     script:
+#         - cd $AIR/examples/private-example/private/validation/TEST-DEF-02100
+#         - cp $AIR/../utils/gitlab-runner/* .
+#         - ./do_zynqz1_qemu.bash
+#         - cd $AIR
+#     environment:
+#         name: ARM ZYNQZ1
+
+# 02101_arm_zynqz1: 
+#     stage: validation_tests
+#     tags: 
+#         - ARM1
+#     script:
+#         - cd $AIR/examples/private-example/private/validation/TEST-DEF-02101
+#         - cp $AIR/../utils/gitlab-runner/* .
+#         - ./do_zynqz1_qemu.bash
+#         - cd $AIR
+#     environment:
+#         name: ARM ZYNQZ1
+        
+# 02102_arm_zynqz1: 
+#     stage: validation_tests
+#     tags: 
+#         - ARM1
+#     script:
+#         - cd $AIR/examples/private-example/private/validation/TEST-DEF-02102
+#         - cp $AIR/../utils/gitlab-runner/* .
+#         - ./do_zynqz1_qemu.bash
+#         - cd $AIR
+#     environment:
+#         name: ARM ZYNQZ1
+        
+# 02105_arm_zynqz1: 
+#     stage: validation_tests
+#     tags: 
+#         - ARM1
+#     script:
+#         - cd $AIR/examples/private-example/private/validation/TEST-DEF-02105
+#         - cp $AIR/../utils/gitlab-runner/* .
+#         - ./do_zynqz1_qemu.bash
+#         - cd $AIR
+#     environment:
+#         name: ARM ZYNQZ1
+        
+# 02107_arm_zynqz1: 
+#     stage: validation_tests
+#     tags: 
+#         - ARM1
+#     script:
+#         - cd $AIR/examples/private-example/private/validation/TEST-DEF-02107
+#         - cp $AIR/../utils/gitlab-runner/* .
+#         - ./do_zynqz1_qemu.bash
+#         - cd $AIR
+#     environment:
+#         name: ARM ZYNQZ1
+        
+# 02108_arm_zynqz1: 
+#     stage: validation_tests
+#     tags: 
+#         - ARM1
+#     script:
+#         - cd $AIR/examples/private-example/private/validation/TEST-DEF-02108
+#         - cp $AIR/../utils/gitlab-runner/* .
+#         - ./do_zynqz1_qemu.bash
+#         - cd $AIR
+#     environment:
+#         name: ARM ZYNQZ1
+        
+# #80000_arm: 
+#     #stage: validation_tests
+#     #tags: 
+#         #- ARM1
+#     #script:
+#         #- cd $AIR/examples/private-example/private/validation/TEST-DEF-80000
+#         #- cp $AIR/../utils/gitlab-runner/* .
+#         #- ./do_zynqz1_qemu.bash
+#         #- cd $AIR
+#     #environment:
+#         #name: ARM ZYNQZ1
+
+# #80010_arm: 
+#     #stage: validation_tests
+#     #tags: 
+#         #- ARM1
+#     #script:
+#         #- cd $AIR/examples/private-example/private/validation/TEST-DEF-80010
+#         #- cp $AIR/../utils/gitlab-runner/* .
+#         #- ./do_zynqz1_qemu.bash
+#         #- cd $AIR
+#     #environment:
+#         #name: ARM ZYNQZ1
+        
+# 80060_arm_zynqz1: 
+#     stage: validation_tests
+#     tags: 
+#         - ARM1
+#     script:
+#         - cd $AIR/examples/private-example/private/validation/TEST-DEF-80060
+#         - cp $AIR/../utils/gitlab-runner/* .
+#         - ./do_zynqz1_qemu.bash
+#         - cd $AIR
+#     environment:
+#         name: ARM ZYNQZ1
