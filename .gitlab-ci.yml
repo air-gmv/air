@@ -95,9 +95,9 @@ build_sparc_gr740:
 #    when: on_failure
 
 
-##########################
-#Example Tests for SPARC #
-##########################
+################################
+#Example Tests for SPARC LEON4 #
+################################
 hello_world_sparc_leon4:
    stage: examples
    tags: 
@@ -218,6 +218,21 @@ shm_sparc_leon4:
     environment:
         name: SPARC LEON4
 
+################################
+#Example Tests for SPARC GR740 #
+################################
+
+hello_world_sparc_gr740:
+   stage: examples
+   tags: 
+       - sparc-taste-debian1
+   script:
+       - cd $AIR/examples/hello_world
+       - cp $AIR/../utils/gitlab-runner/* .
+       - ./do_gr740_laysim.bash
+       - cd $AIR
+   environment:
+       name: SPARC GR740
 
 ########################
 #Unit Tests for SPARC  #
