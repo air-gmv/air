@@ -15,15 +15,9 @@
  *  @brief Initializes IOP support features (send/receive queues, mms, configuration devices, ports)
  *
  */
-void init_iopsupport(void);
+void init_iopsupport(air_u32_t);
 
-/**
- *  @return AIR_SUCCESSFUL if the operation was completed correctly
- *
- *  @brief Opens all physical devices in configuration
- *
- */
-air_status_code_e open_alldevices(void);
+void iop_init_devs(iop_logical_device_t *ldev, iop_physical_device_t *pdev);
 
 /**
  *  @return AIR_SUCCESSFUL if the operation was completed correctly
@@ -31,15 +25,7 @@ air_status_code_e open_alldevices(void);
  *  @brief Opens physical device
  *
  */
-air_status_code_e open_device(unsigned int dev_id);
-
-/**
- *  @return AIR_SUCCESSFUL if the operation was completed correctly
- *
- *  @brief Closes all physical devices in configuration
- *
- */
-air_status_code_e close_alldevices(void);
+air_status_code_e open_device(iop_physical_device_t *pdev);
 
 /**
  *  @return AIR_SUCCESSFUL if the operation was completed correctly
@@ -47,7 +33,7 @@ air_status_code_e close_alldevices(void);
  *  @brief Closes physical device
  *
  */
-air_status_code_e close_device(unsigned int dev_id);
+air_status_code_e close_device(iop_physical_device_t *pdev);
 
 /**
  *  @return AIR_SUCCESSFUL if the operation was completed correctly
@@ -58,7 +44,7 @@ air_status_code_e close_device(unsigned int dev_id);
  *  @brief Writes message to logical device and logical route specified.
  *
  */
-air_status_code_e write_to_device(int dev_id, int route_id, char* buffer, unsigned int len);
+air_status_code_e write_to_device(iop_logical_device_t *dev, int route_id, char* buffer, int len);
 
 /**
  *  @return AIR_SUCCESSFUL if the operation was completed correctly
@@ -69,7 +55,7 @@ air_status_code_e write_to_device(int dev_id, int route_id, char* buffer, unsign
  *  @brief Reads message from device.
  *
  */
-air_status_code_e read_from_device(int dev_id, int* route_id, char* buffer, unsigned int* len);
+air_status_code_e read_from_device(iop_physical_device_t *dev, int* route_id, char* buffer, unsigned int* len);
     
     
 #endif
