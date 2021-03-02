@@ -25,7 +25,7 @@ class airParser(a653parser):
     # @param self object pointer
     # @param os_configuration current OS configuration
     # @param logger logger
-    def __init__(self, os_configuration, logger):
+    def __init__(self, os_configuration, logger, no_iop_file):
 
         # initialize base class
         super(airParser, self).__init__(logger)
@@ -37,7 +37,7 @@ class airParser(a653parser):
         self.core_count = 1
         self.ticks_per_second = 100
         self.shared_memory = []
-
+        self.no_iop_file = no_iop_file
     ##
     # @brief Parse module extensions
     def parse_module_extensions(self, xml_node):
@@ -694,8 +694,13 @@ class airParser(a653parser):
             partition.iop = None
             if len(partition.iop_file):
                 self.logger.event(1, "PARSING IOP")
-                partition.iop = IOParser(self.os_configuration, partition, self, self.logger)
+                partition.iop = IOParser(self.os_configuration, partition, self, self.logger, self.no_iop_file)
                 partition.iop.parse(partition.iop_file)
+            else:
+                if 'libiop' in partition.libraries and self.no_iop_file:
+                    self.logger.event(1, "PARSING IOP")
+                    partition.iop = IOParser(self.os_configuration, partition, self, self.logger, self.no_iop_file)
+
 
     def parse_shared_memory(self, xml_node):
 
