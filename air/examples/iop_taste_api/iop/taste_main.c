@@ -4,7 +4,7 @@
 
 #include <imaspex.h>
 
-void IOP_TASTE(){
+void IOPextern(){
     
     
     unsigned char msg[1024]="empty\0";
