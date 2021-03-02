@@ -30,6 +30,7 @@ def InputArgs(arg_parser, logger):
     arg_parser.add_argument('-dm', '--debug_mode', dest='debug_mode', action='store_const', const=True, default=False)
     arg_parser.add_argument('-kfs', '--keep-files-silent', dest='keep_files_silent', action='store_const', const=True, default=False)
     arg_parser.add_argument('-ks', '--kernel_space', nargs=1, type=lambda x: hex(int(x,0)) , dest='kernel_space', action='store', default=None, choices =[hex(x*0x1000000) for x in  range(0x1, 0xc0)], help='Kernel space size in hex format, ex: 0x200000', metavar='')
+    arg_parser.add_argument('--no-iop-file', dest='no_iop_file', action='store_const', const=True, default=False)
 
 ## @brief Show installation information
 def ShowInstallInfo(logger):
@@ -88,7 +89,7 @@ def Run(args, os_configuration, logger):
     # parse module
     from parsers.air.parser import airParser
 
-    app_configuration = airParser(os_configuration, logger)
+    app_configuration = airParser(os_configuration, logger, args.no_iop_file)
     app_configuration.parse(args.xml_file)
     # sanity check
     if logger.total_errors > 0:
@@ -142,7 +143,7 @@ def Run(args, os_configuration, logger):
 
         # if is an IOP
         if partition.iop is not None:
-            configure_iop(os_configuration, app_configuration, partition, temp_directory, logger)
+            configure_iop(os_configuration, app_configuration, partition, temp_directory, logger, args.no_iop_file)
 
     # generate configuration files
     logger.event(0, LOG_EVENT_APP_CONFIG)
@@ -208,7 +209,7 @@ def Run(args, os_configuration, logger):
     fileutils.safeRemoveDirectory(temp_directory)
 
 
-def configure_iop(os_configuration, app_configuration, partition, temp_directory, logger):
+def configure_iop(os_configuration, app_configuration, partition, temp_directory, logger, no_iop_file):
 
     iop_configuration = partition.iop
 
@@ -220,36 +221,40 @@ def configure_iop(os_configuration, app_configuration, partition, temp_directory
         ]
 
     # physical device files
-    for i, device in enumerate(iop_configuration.physical_devices):
-        makoutils.applyMAKOTemplate(
-            os.path.join(air.APP_TEMPLATES_DIRECTORY, 'iop', device.parser[3]),
-            os.path.join(temp_directory, partition.directory, 'iop_physical_device_{0}.c'.format(device.id)),
-            dict(app_configuration=app_configuration, os_configuration=os_configuration,
+    if not no_iop_file:
+        for i, device in enumerate(iop_configuration.physical_devices):
+            makoutils.applyMAKOTemplate(
+                os.path.join(air.APP_TEMPLATES_DIRECTORY, 'iop', device.parser[3]),
+                os.path.join(temp_directory, partition.directory, 'iop_physical_device_{0}.c'.format(device.id)),
+                dict(app_configuration=app_configuration, os_configuration=os_configuration,
                  iop_configuration=iop_configuration, device=device),
-            logger, template_includes)
+                logger, template_includes)
 
     # logical device files
-    for i, device in enumerate(iop_configuration.logical_devices):
-        makoutils.applyMAKOTemplate(
-            os.path.join(air.APP_TEMPLATES_DIRECTORY, 'iop', 'iop_logical_device.mako'),
-            os.path.join(temp_directory, partition.directory, 'iop_logical_device_{0}.c'.format(device.id)),
-            dict(app_configuration=app_configuration, os_configuration=os_configuration,
+    if not no_iop_file:
+        for i, device in enumerate(iop_configuration.logical_devices):
+            makoutils.applyMAKOTemplate(
+                os.path.join(air.APP_TEMPLATES_DIRECTORY, 'iop', 'iop_logical_device.mako'),
+                os.path.join(temp_directory, partition.directory, 'iop_logical_device_{0}.c'.format(device.id)),
+                dict(app_configuration=app_configuration, os_configuration=os_configuration,
                  iop_configuration=iop_configuration, device=device),
-            logger, template_includes)
+                logger, template_includes)
 
     # ports
-    makoutils.applyMAKOTemplate(
-        os.path.join(air.APP_TEMPLATES_DIRECTORY, 'iop', 'iop_ports.mako'),
-        os.path.join(temp_directory, partition.directory, 'iop_ports.c'),
-        dict(app_configuration=app_configuration, os_configuration=os_configuration, iop_configuration=iop_configuration),
-        logger, template_includes)
+    if not no_iop_file:
+        makoutils.applyMAKOTemplate(
+            os.path.join(air.APP_TEMPLATES_DIRECTORY, 'iop', 'iop_ports.mako'),
+            os.path.join(temp_directory, partition.directory, 'iop_ports.c'),
+            dict(app_configuration=app_configuration, os_configuration=os_configuration, iop_configuration=iop_configuration),
+            logger, template_includes)
 
     # generic
-    makoutils.applyMAKOTemplate(
-        os.path.join(air.APP_TEMPLATES_DIRECTORY, 'iop', 'iop_config.mako'),
-        os.path.join(temp_directory, partition.directory, 'iop_config.c'),
-        dict(app_configuration=app_configuration, os_configuration=os_configuration, iop_configuration=iop_configuration),
-        logger, template_includes)
+    if not no_iop_file:
+        makoutils.applyMAKOTemplate(
+            os.path.join(air.APP_TEMPLATES_DIRECTORY, 'iop', 'iop_config.mako'),
+            os.path.join(temp_directory, partition.directory, 'iop_config.c'),
+            dict(app_configuration=app_configuration, os_configuration=os_configuration, iop_configuration=iop_configuration),
+            logger, template_includes)
 
 
 def convertMemoryPermissions(permissions_str):
