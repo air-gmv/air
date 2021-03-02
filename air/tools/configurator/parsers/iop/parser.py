@@ -21,7 +21,7 @@ from parsers.a653.definitions import *
 class IOParser(object):
 
     ##
-    def __init__(self, os_configuration, partition = None, a653parser = None, logger = None):
+    def __init__(self, os_configuration, partition = None, a653parser = None, logger = None, no_iop_file = False):
 
         self.logical_devices    = []
         self.physical_devices   = []
@@ -38,6 +38,7 @@ class IOParser(object):
         # air & IOP configuration
         self.os_configuration = os_configuration
         self.iop_configuration = os_configuration.get_iop_configuration()
+        self.no_iop_file = no_iop_file
 
     def get_logical_device(self, ld_id):
 
