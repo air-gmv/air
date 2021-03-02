@@ -18,7 +18,11 @@ extern int ${partition.entry_point}() __attribute__ ((weak));
 /**
  * @brief IOP initialization
  */
+%if partition.iop.no_iop_file:
+extern air_status_code_e IOPextern();
+%else:
 extern air_status_code_e IOPinit();
+%endif
 %endif
 
 %if partition.hm_callback:
@@ -64,7 +68,11 @@ int main(void) {
 
     %if partition.iop is not None:
     /* initialize IOP */
+    %if partition.iop.no_iop_file:
+    IOPextern();
+    %else:
     IOPinit();
+    %endif
     %endif
 
     /* call entry point */
