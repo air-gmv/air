@@ -279,7 +279,7 @@ air_status_code_e write_to_device(int dev_id, int route_id, char* buffer, unsign
     /* check if an empty wrapper was available */
     if (wrapper == NULL) {
         iop_raise_error(NO_REQUESTS);
-        rc = AIR_UNSUCCESSFUL;
+        rc = AIR_DEVICE_ERROR;
         return rc;
     }
     
@@ -302,7 +302,7 @@ air_status_code_e write_to_device(int dev_id, int route_id, char* buffer, unsign
     } else {
         /* release the wrapper */
         release_wrapper(wrapper);
-        rc = AIR_UNSUCCESSFUL;
+        rc = AIR_DEVICE_ERROR;
     }
     
     return rc;
