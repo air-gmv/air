@@ -147,8 +147,14 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
 
     arm_interrupt_stack_frame_t *frame = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
 
-    /*if ((frame->usr_sp > (air_u32_t)(core->partition)->mmap->v_addr) && ((core->context->vcpu.psr & ARM_PSR_MODE_MASK) != ARM_PSR_IRQ))
-        core->context->sp_svc = frame->usr_sp;*/
+    //if previous mode is user or system, and the virtual mode is SVC, update the virtual psr and SVC SP
+    if (((frame->ret_psr & ARM_PSR_MODE_MASK) == ARM_PSR_USR) || ((frame->ret_psr & ARM_PSR_MODE_MASK) == ARM_PSR_SYS)){
+         if ((vcpu->psr & ARM_PSR_MODE_MASK) == ARM_PSR_SVC){
+             vcpu->psr &= ~(ARM_PSR_MODE_MASK);
+             vcpu->psr |= ARM_PSR_IRQ;
+             core->context->sp_svc = frame->usr_sp;
+         }
+    }
 
     if (!psr_a) {
         pmk_hm_event_t *hm_event = (pmk_hm_event_t *)core->context->hm_event;
