@@ -122,6 +122,7 @@ air_uptr_t * arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
 
     arm_virtual_cpu_t *vcpu = &core->context->vcpu;
     arm_virtual_gic_t *vgic = &core->context->vgic;
+    arm_interrupt_stack_frame_t *frame = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
 
     air_u32_t psr = vcpu->psr;
     air_u32_t psr_i = ((psr & ARM_PSR_I) >> 7);
@@ -185,9 +186,12 @@ air_uptr_t * arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
                 vgic->rpr = ((vgic->ilist[id] >> 23) & 0x1f);
 
                 vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
-                if ((vcpu->psr & ARM_PSR_MODE_MASK) != ARM_PSR_IRQ){
-                    vcpu->psr |= ARM_PSR_MODE_MASK;
-                    vcpu->psr &= ARM_PSR_IRQ;
+                if (((frame->ret_psr & ARM_PSR_MODE_MASK) == ARM_PSR_USR) || ((frame->ret_psr & ARM_PSR_MODE_MASK) == ARM_PSR_SYS)){
+                     if ((vcpu->psr & ARM_PSR_MODE_MASK) != ARM_PSR_IRQ){
+                         vcpu->psr &= ~(ARM_PSR_MODE_MASK);
+                         vcpu->psr |= ARM_PSR_IRQ;
+                         core->context->sp_svc = frame->usr_sp;
+                     }
                 }
 
                 ret = vbar + 6;
