@@ -23,7 +23,7 @@
 #include <ddr.h>
 #include <printk.h>
 
-
+static pmk_barrier_t initialization_barrier;
 /**
  * \warning
  * Care should be taken that no shared levels are invalidated by secondary CPUs
@@ -65,6 +65,10 @@ void bsp_start_hook(void) {
 air_u32_t bsp_core_init(void) {
 
     air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
+
+    if(cpu_id != 0)
+        pmk_barrier_wait(&initialization_barrier, bsp_get_core_id());
+
     arm_a9mpcore_start_hook(cpu_id);
     arm_set_vector_base();
 
