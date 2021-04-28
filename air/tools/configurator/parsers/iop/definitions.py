@@ -8,7 +8,7 @@ UART= 'UART'
 
 SUPPORTED_DEVICES    = {    SPW : ['GRSPW'],
                             MIL : ['GRMIL', 'BRM1553'],
-                            ETH : ['GRETH'],
+                            ETH : ['GRETH', 'XETH'],
                             RTR : ['SPWRTR'],
                             CAN : ['GRCAN', 'XCAN'],
                             UART: ['XUART']   }
