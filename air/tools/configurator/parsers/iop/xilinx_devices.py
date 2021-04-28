@@ -8,6 +8,14 @@ from definitions import *
 from utils.parser import str2int
 from localization.logger import *
 
+
+
+XETH_IP                = 'Ip'
+XETH_MAC               = 'MAC'
+XETH_TXD               = 'TXD'
+XETH_RXD               = 'RXD'
+XETH_READS             = 'Reads'
+
 UART_CORE               = 'UartCore'
 UART_BAUD               = 'Baud'
 UART_PARITY             = 'Parity'
@@ -26,6 +34,34 @@ VALID_DATABITS          = [ parserutils.str2int, lambda x : 5 < x <= 8 ]
 VALID_STOPBITS          = [ parserutils.str2int, lambda x : 0 < x <= 2 ]
 VALID_PARITY            = [ str, lambda x : x in ['E', 'O', 'S', 'M', 'N'] ]
 VALID_DATABYTES         = [ parserutils.str2int, lambda x : 0 < x <= 64 ]
+
+
+
+# XETH physical device setup
+class XETHPhySetup(object):
+
+    def __init__(self):
+        self.id         = 0
+        self.ip         = ''            # ip address
+        self.mac        = ''            # mac address
+        self.txd_count  = 0             # number of tx descriptors
+        self.rxd_count  = 0             # number of rx descriptors
+
+
+    def details(self):
+        return 'XETH Physical Device Setup (Mac: {0} Ip: {1} TXD - {2} RXD - {3})'\
+        .format(':'.join(self.mac), '.'.join(self.ip), self.txd_count, self.rxd_count)
+
+# XETH Schedule device setup
+class XETHSchSetup(object):
+
+    def __init__(self):
+        self.device = None
+        self.reads  = ''            	# number of reads per period
+
+    def details(self):
+        return 'XETH Schedule Setup (Reads - {0})'.format(self.reads)
+
 
 
 # UART physical device setup
@@ -52,6 +88,9 @@ class UARTSchSetup(object):
     def details(self):
         return 'UART Schedule Setup (Reads - {0})'.format(self.reads)
 
+
+
+# CAN physical device setup
 class CANPhySetup:
 
     def __init__(self):
@@ -61,6 +100,7 @@ class CANPhySetup:
     def details(self):
         return 'CAN Physical Device Setup with Baud: {0}'.format(self.baud)
 
+# CAN Schedule device setup
 class CANSchSetup:
 
     def __init__(self):
@@ -69,6 +109,52 @@ class CANSchSetup:
 
     def details(self):
         return 'CAN Schedule Setup with {0} reads per period'.format(self.reads)
+
+
+
+## XETH physical device setup
+# @param iop_parser IOP parser object
+# @param xml XML setup node
+# @param pdevice current physical device
+def phy_xeth(iop_parser, xml, pdevice):
+
+    # clear previous errors and warnings
+    iop_parser.logger.clear_errors(0)
+
+    # parse setup
+    setup           = XETHPhySetup()
+    setup.id        = pdevice.minor
+    setup.ip        = xml.parse_attr(XETH_IP, VALID_IP, True, iop_parser.logger)
+    setup.mac       = xml.parse_attr(XETH_MAC, VALID_MAC, True, iop_parser.logger)
+    setup.txd_count = xml.parse_attr(XETH_TXD, VALID_XD, True, iop_parser.logger)
+    setup.rxd_count = xml.parse_attr(XETH_RXD, VALID_XD, True, iop_parser.logger)
+
+    # sanity check
+    if iop_parser.logger.check_errors(): return False
+    pdevice.setup = setup
+    return True
+
+## XETH schedule device setup
+# @param iop_parser IOP parser object
+# @param xml XML setup node
+# @param pdevice current physical device
+def sch_xeth(iop_parser, xml, pdevice):
+
+    # clear previous errors and warnings
+    iop_parser.logger.clear_errors(0)
+
+    # parse setup
+    setup       = XETHSchSetup()
+    setup.reads = xml.parse_attr(XETH_READS, VALID_READS, True, iop_parser.logger)
+
+    # sanity check
+    if iop_parser.logger.check_errors(): return None
+
+    # parse complete
+    setup.device = pdevice
+    return setup
+
+
 
 ## UART physical device setup
 # @param iop_parser IOP parser object
@@ -112,6 +198,8 @@ def sch_xuart(iop_parser, xml, pdevice):
     # parse complete
     setup.device = pdevice
     return setup
+
+
 
 ## CAN physical device setup
 # @param iop_parser IOP parser object
