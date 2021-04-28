@@ -35,6 +35,9 @@ $(patsubst %.S,$(TARGET_BUILD)/%.o,$(TARGET_SOURCES)))
 
 TARGET_CPPFLAGS+=${'\\'}
 -DPMK_MAX_CORES=${os_configuration.get_available_cores()}${'\\'}
+%if os_configuration.arch == "arm":
+-DCPU_LITTLE_ENDIAN${'\\'}
+%endif
 ${template.get_headers_directories(target_headers)}\
 
 LIBRARY_HEADERS=${'\\'}

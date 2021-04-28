@@ -35,6 +35,9 @@ $(patsubst %.S,$(TARGET_BUILD)/%.o,$(SOURCE_FILES)))
 TARGET_CPPFLAGS+=${'\\'}
 % if partition.is_system:
 -DPMK_MAX_CORES=${os_configuration.get_available_cores()}${'\\'}
+%if os_configuration.arch == "arm":
+-DCPU_LITTLE_ENDIAN${'\\'}
+%endif
 % for i, directory in enumerate(kernel_headers):
 -I${directory}${'\\'}
 % endfor
