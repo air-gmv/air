@@ -400,7 +400,7 @@ uint32_t eth_fragment_packet(iop_wrapper_t *wrapper)
     }
 
     frag->header.eth_header.ipoffset[0] |= 0x20; /*set MF flag*/
-    frag->header.eth_header.len = 1500; /*TODO 1500 why? define this*/
+    frag->header.eth_header.len = HTONS(1500); /*TODO 1500 why? define this*/
     frag->header.eth_header.ipchksum = 0;
     frag->header.eth_header.ipchksum = ~eth_ipv4_chksum((uint8_t *)&frag->header);
     frag->payload_size = 1514 - frag->header_size; /*TODO 1514 again..*/
@@ -443,7 +443,7 @@ uint32_t eth_fragment_packet(iop_wrapper_t *wrapper)
         /*Calculate fragment header specifics*/
         frag->header.eth_header.ipoffset[0] |= ((185 * i) & 0x1F00) >> 8;
         frag->header.eth_header.ipoffset[1] |= ((185 * i) & 0x00FF);
-        frag->header.eth_header.len = IPV4_HDR_SIZE + frag->payload_size;
+        frag->header.eth_header.len = HTONS(IPV4_HDR_SIZE + frag->payload_size);
         frag->header.eth_header.ipchksum = 0;
         frag->header.eth_header.ipchksum = ~eth_ipv4_chksum((uint8_t *)&frag->header);
 
