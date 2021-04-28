@@ -30,14 +30,14 @@
 /**
  * @brief Convert to Network order
  * @param val Value do convert
- * @return Value in big endian notation
+ * @return Value in little endian notation for ARM (little endian) architectures,
+ *         Value in big endian notation for SPARC (big endian) architectures.
  */
-/*#if CPU_BIG_ENDIAN
-#define HTONS(val)      (val)
-#else
+#ifdef CPU_LITTLE_ENDIAN
 #define HTONS(val)      ((((val) >> 8) & 0x00FF) | (((val) << 8) & 0xFF00))
-#endif*/
+#else
 #define HTONS(val)      (val)
+#endif
 
 /**
  * @brief
