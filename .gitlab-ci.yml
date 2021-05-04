@@ -85,6 +85,23 @@ build_sparc_leon3:
         - make clean
         - make -j4
 
+#Build SPARC TSIM
+config_sparc_tsim:
+    stage: build
+    tags: 
+        - sparc-taste-debian1
+    script:
+        - cp $AIR/../utils/gitlab-runner/.sparc_tsim_config .
+        - ./configure -f .sparc_tsim_config
+
+build_sparc_tsim:
+    stage: build
+    tags: 
+        - sparc-taste-debian1
+    script:
+        - make clean
+        - make -j4
+
 # Test code for laysim, since it uses the same runner as the ZYNQZ1
 # config_sparc_gr740:
 #     stage: build
