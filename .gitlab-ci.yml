@@ -69,21 +69,21 @@ build_sparc_leon4:
 #         - make -j4
 
 # Test code for laysim, since it uses the same runner as the ZYNQZ1
-config_sparc_gr740:
-    stage: build
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - cp $AIR/../utils/gitlab-runner/.sparc_gr740_config .
-        - ./configure -f .sparc_gr740_config
+# config_sparc_gr740:
+#     stage: build
+#     tags: 
+#         - sparc-taste-debian1
+#     script:
+#         - cp $AIR/../utils/gitlab-runner/.sparc_gr740_config .
+#         - ./configure -f .sparc_gr740_config
 
-build_sparc_gr740:
-    stage: build
-    tags: 
-        - sparc-taste-debian1
-    script:
-        - make clean
-        - make -j4
+# build_sparc_gr740:
+#     stage: build
+#     tags: 
+#         - sparc-taste-debian1
+#     script:
+#         - make clean
+#         - make -j4
 
 #clean_build_arm:
 #    tags: 
@@ -222,17 +222,17 @@ shm_sparc_leon4:
 #Example Tests for SPARC GR740 #
 ################################
 
-hello_world_sparc_gr740:
-   stage: examples
-   tags: 
-       - sparc-taste-debian1
-   script:
-       - cd $AIR/examples/hello_world
-       - cp $AIR/../utils/gitlab-runner/* .
-       - ./do_gr740_laysim.bash
-       - cd $AIR
-   environment:
-       name: SPARC GR740
+# hello_world_sparc_gr740:
+#    stage: examples
+#    tags: 
+#        - sparc-taste-debian1
+#    script:
+#        - cd $AIR/examples/hello_world
+#        - cp $AIR/../utils/gitlab-runner/* .
+#        - ./do_gr740_laysim.bash
+#        - cd $AIR
+#    environment:
+#        name: SPARC GR740
 
 ########################
 #Unit Tests for SPARC  #
