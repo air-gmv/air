@@ -34,7 +34,7 @@ default:
 #Cronological order of jobs to be done
 #To be divided in the future in multiple VMs
 
-#Build SPARC
+#Build SPARC LEON4
 config_sparc_leon4:
     stage: build
     tags: 
@@ -66,6 +66,23 @@ build_arm_zynqz1:
         - ARM1
     script:
         - make clean # to be removed and used only on failure
+        - make -j4
+
+#Build SPARC LEON3
+config_sparc_leon3:
+    stage: build
+    tags: 
+        - sparc-taste-debian1
+    script:
+        - cp $AIR/../utils/gitlab-runner/.sparc_leon3_config .
+        - ./configure -f .sparc_leon3_config
+
+build_sparc_leon3:
+    stage: build
+    tags: 
+        - sparc-taste-debian1
+    script:
+        - make clean
         - make -j4
 
 # Test code for laysim, since it uses the same runner as the ZYNQZ1
