@@ -1,0 +1,17 @@
+(S'sparc'
+p0
+S'laysim_gr740'
+p1
+I01
+I1
+(lp2
+S'rtems48i'
+p3
+aS'posixrtems5'
+p4
+aS'bare'
+p5
+aS'rtems5'
+p6
+atp7
+.
