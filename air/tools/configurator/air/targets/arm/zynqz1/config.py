@@ -82,6 +82,8 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     'bsp/arm/zynqz1/triple_timer.c',
     'bsp/arm/zynqz1/uart.c',
     'bsp/arm/zynqz1/slcr.c',
+    'bsp/arm/zynqz1/xilinx/xil_assert.c',
+    'bsp/arm/zynqz1/xilinx/xil_io.c',
     # Core files
     'core/error.c',
     'core/barrier.c',
@@ -150,7 +152,7 @@ arch_configure = air_arm.get_arm_configuration
 # IOP devices and definitions
 iop = IOP(defines=[],
           devices=['xeth0', 'xeth1', 'xuart0','xuart1', 'xcan0'],
-          drivers=['xeth', 'xuart', 'xilinx_hal'],
+          drivers=['xeth', 'xuart', 'xcan'],
           alias=dict(eth0='xeth0', eth1='xeth1', uart0='xuart0', uart1='xuart1', can0 = 'xcan0'),
           arch=iop_arch)
 
