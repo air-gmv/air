@@ -875,18 +875,18 @@ hello_world_arm_zynqz1:
 #    #environment:
 #        #name: ARM ZYNQZ1
 
-# ##00600_arm: 
-#    ##stage: validation_tests
-#    ##tags: 
-#        ##- ARM1
-#    ##script:
-#        ##- cd $AIR/examples/private-example/private/validation/TEST-DEF-00600
-#        ##- cp $AIR/../utils/gitlab-runner/* .
-#        ##- ./do_zynqz1_qemu.bash
-#        ##- ./testcheck.py
-#        ##- cd $AIR
-#    ##environment:
-#        ##name: ARM ZYNQZ1
+00600_arm_zynqz1: 
+    stage: validation_tests
+    tags: 
+        - ARM1
+    script:
+        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00600
+        - cp $AIR/../utils/gitlab-runner/* .
+        - ./do_zynqz1_qemu.bash
+        - ./testcheck.py
+        - cd $AIR
+    environment:
+        name: ARM ZYNQZ1
 
 01390_arm_zynqz1: 
    stage: validation_tests
