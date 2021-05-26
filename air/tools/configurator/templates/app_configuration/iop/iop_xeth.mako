@@ -60,7 +60,6 @@ static iop_eth_device_t device_configuration = ${'\\'}
 {
     /* device configuration */
     .dev        = {
-
         .driver         = (void *)&xeth_driver,
         .init           = iop_xeth_init,
         .open           = iop_xeth_open,
