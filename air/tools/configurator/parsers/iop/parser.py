@@ -393,6 +393,12 @@ class IOParser(object):
             xml_header = xml.parse_tag(UARTHEADER, 1, 1, self.logger)
             if self.logger.check_errors(): return None
             return self.parse_uart_header(xml_header)
+            
+        # device of sd type
+        elif pdevice.type == SD:
+            xml_header = xml.parse_tag(SDHEADER, 1, 1, self.logger)
+            if self.logger.check_errors(): return None
+            return self.parse_sd_header(xml_header)
 
         # device of mil-std-1553 type
         elif pdevice.type == MIL:
@@ -439,7 +445,7 @@ class IOParser(object):
 
     ## Parse CANBUS Header
     # @param self object pointer
-    # @param xml SpaceWire Header xml node
+    # @param xml Can Header xml node
     def parse_can_header(self, xml):
 
         # clear previous errors and warning
@@ -458,7 +464,7 @@ class IOParser(object):
 
     ## Parse UARTBUS Header
     # @param self object pointer
-    # @param xml SpaceWire Header xml node
+    # @param xml Uart Header xml node
     def parse_uart_header(self, xml):
 
         # clear previous errors and warning
@@ -467,6 +473,23 @@ class IOParser(object):
         # parse attributes
         header = UartHeader()
         header.uart_id = xml.parse_attr(UARTHEADER_ID, VALID_ID, True, self.logger)
+
+        # sanity check
+        if self.logger.check_errors(): return False
+        return header
+        
+    ## Parse SDBUS Header
+    # @param self object pointer
+    # @param xml SD Header xml node
+    def parse_sd_header(self, xml):
+
+        # clear previous errors and warning
+        self.logger.clear_errors(3)
+
+        # parse attributes
+        header = SdHeader()
+        header.size = xml.parse_attr(SDHEADER_SIZE, VALID_SD_FILE_SIZE, True, self.logger)
+        header.file = xml.parse_attr(SDHEADER_FILE, VALID_STR, True, self.logger)
 
         # sanity check
         if self.logger.check_errors(): return False

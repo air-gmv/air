@@ -14,7 +14,9 @@
 #ifndef __IOP_HEADERS_H__
 #define __IOP_HEADERS_H__
 
+
 #include <stdint.h>
+
 
 /**
  * @brief SPW Header
@@ -25,6 +27,7 @@ typedef struct  {
 
 }  __attribute__((packed)) spw_header_t;
 
+
 /**
  * @brief MilStd1553b header
  */
@@ -34,6 +37,7 @@ typedef struct {
     uint8_t address;      /**< Subaddress */
 
 } __attribute__((packed)) milstd_header_t;
+
 
 /**
  * @brief Ethernet protocol UDP header
@@ -66,6 +70,7 @@ typedef struct {
 
 } __attribute__((packed)) ethproto_header_t;
 
+
 /**
  * @brief Eth header (Eth + IP + UDP/TCP port header)
  */
@@ -91,6 +96,7 @@ typedef struct  {
 
 }  __attribute__((packed)) eth_header_t;
 
+
 typedef struct {
     uint8_t extended;               /**< CANBUS extended id option */
     uint8_t rtr;                    /**< Remote Transmission request */
@@ -98,9 +104,17 @@ typedef struct {
     uint32_t id;                    /**< Remote device identifier */
 } __attribute__((packed)) can_header_t;
 
+
 typedef struct {
     uint32_t id;                    /**< Header */
 } __attribute__((packed)) uart_header_t;
+
+
+typedef struct {
+	uint32_t size;
+	uint8_t file[30];
+} __attribute__((packed)) sd_header_t;
+
 
 /**
  * @brief IOP generic header
@@ -113,6 +127,7 @@ typedef union {
     eth_header_t eth_header;        /**< ETH header (ETH + IP + UDP/TCP ports)*/
     can_header_t can_header;        /**< CAN frame header            */
     uart_header_t uart_header;      /**< UART header                 */
+    sd_header_t sd_header;  		/**< SD header                   */
 
 } __attribute__((packed)) iop_header_t;
 
