@@ -19,4 +19,5 @@ iop_supported_devices = {
     'GRMIL'     : [ MIL,    gaisler.phy_gr1553b,    gaisler.sch_gr1553b,    'iop_gr1553b.mako'],
     'XUART'     : [ UART,   xilinx.phy_xuart,       xilinx.sch_xuart,       'iop_xuart.mako'],
     'XCAN'      : [ CAN,    xilinx.phy_xcan,        xilinx.sch_xcan,        'iop_xcan.mako'],
+    'XSD'       : [ SD,     xilinx.phy_xsd,         xilinx.sch_xsd,         'iop_xsd.mako'],
 }
