@@ -4,6 +4,8 @@
 # @brief AIR OS for ARM Zynq Z1
 
 __author__ = 'lumm'
+__modified__ = 'ttao'
+
 
 from air import *
 import utils
@@ -117,7 +119,6 @@ kernel_headers = set(utils.flatten([
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'core'), ['.h', '.ld']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'arch', 'arm'), ['.h', '.ld']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'shared'), ['.h', '.ld']),
-    file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'xilinx'), ['.h', '.ld']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'zynqz1'), ['.h', '.ld']),
 ]))
 
@@ -151,9 +152,9 @@ arch_configure = air_arm.get_arm_configuration
 
 # IOP devices and definitions
 iop = IOP(defines=[],
-          devices=['xeth0', 'xeth1', 'xuart0','xuart1', 'xcan0'],
-          drivers=['xeth', 'xuart', 'xcan'],
-          alias=dict(eth0='xeth0', eth1='xeth1', uart0='xuart0', uart1='xuart1', can0 = 'xcan0'),
+          devices=['xeth0', 'xeth1', 'xuart0','xuart1', 'xcan0', 'xsd0', 'xsd1'],
+          drivers=['xeth', 'xuart', 'xcan', 'xsd'],
+          alias=dict(eth0='xeth0', eth1='xeth1', uart0='xuart0', uart1='xuart1', can0 = 'xcan0', sd0='xsd0', sd1='xsd1'),
           arch=iop_arch)
 
 # AIR application arch config
