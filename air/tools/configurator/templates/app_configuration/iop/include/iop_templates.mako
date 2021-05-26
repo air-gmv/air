@@ -38,6 +38,10 @@ ${MILHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
     % for i, route in enumerate(pdevice.routes):
 ${UartHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
     % endfor
+% elif pdevice.type =='SD':
+    % for i, route in enumerate(pdevice.routes):
+${SdHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
+    % endfor
 % endif
 };
 
@@ -69,7 +73,7 @@ static iop_physical_route_t physical_routes[${len(pdevice.routes)}] =${'\\'}
 };
 
 /**
- * @brief Pysical Device configuration
+ * @brief Physical Device configuration
  */
 iop_physical_device_t physical_device_${pdevice.id} =${'\\'}
 {
@@ -117,7 +121,7 @@ extern iop_port_t remote_ports[${len(iop_configuration.ports)}];
     {
         .eth_header = {
             .dst_ip      = { ${','.join(header.ip)} },
-            .dst_mac     = { ${','.join(['0x{0}'.format(o) for o in header.mac ])}},
+            .dst_mac     = { ${','.join(['0x{0}'.format(o) for o in header.mac])}},
             .proto_header.dst_port    = HTONS(${header.port}),
             .proto_header.src_port    = HTONS(${header.port})
         }
@@ -156,6 +160,15 @@ extern iop_port_t remote_ports[${len(iop_configuration.ports)}];
     {
         .uart_header = {
             .id    = ${int(header.uart_id)},
+        }
+    }\
+</%def>
+
+<%def name="SdHeader(header)">\
+    {
+        .sd_header = {
+            .size	= "${header.size}",
+            .file	= "${header.file}",
         }
     }\
 </%def>
