@@ -1,20 +1,26 @@
 
-SPW = 'SPW'
-MIL = 'MIL'
-ETH = 'ETH'
-RTR = 'SPWRTR'
-CAN = 'CAN'
-UART= 'UART'
+SPW  = 'SPW'
+MIL  = 'MIL'
+ETH  = 'ETH'
+RTR  = 'SPWRTR'
+CAN  = 'CAN'
+UART = 'UART'
+SD   = 'SD'
+
+
 
 SUPPORTED_DEVICES    = {    SPW : ['GRSPW'],
                             MIL : ['GRMIL', 'BRM1553'],
                             ETH : ['GRETH', 'XETH'],
                             RTR : ['SPWRTR'],
                             CAN : ['GRCAN', 'XCAN'],
-                            UART: ['XUART']   }
+                            UART: ['XUART'],
+                            SD  : ['XSD']	}
+
+
 
 IOP_PORT_TYPE        = { 'SamplingPort' : 'IOP_SAMPLING_PORT',
-                        'QueuingPort'  : 'IOP_QUEUING_PORT'   }
+                         'QueuingPort'  : 'IOP_QUEUING_PORT'   }
 
 
 
@@ -33,12 +39,16 @@ PHYSICAL_DEVICE_ID              = 'Id'
 PHYSICAL_DEVICE_NAME            = 'Device'
 PHYSICAL_DEVICE_PATTERN         = '(?P<type>[a-zA-Z]{1,})(?P<minor>[0-9]{1})'
 
+
 ROUTE_PHYSICAL                  = 'PhysicalRoute'
 ROUTE_LOGICAL                   = 'LogicalRoute'
 ROUTE_ID                        = 'Id'
 
+
 ROUTE_PHYSICAL_PORT             = 'PortId'
 ROUTE_LOGICAL_DEVICE            = 'LogicalDeviceId'
+
+
 
 #MIL LIST
 MILLIST                         = 'MILList'
@@ -53,6 +63,7 @@ MILSLOTTIME                     = 'Time'
 MILSLOADDRTX                    = 'AddrTx'
 MILSLOSUBADDRTX                 = 'SubAddrTx'
 
+
 # Top Level Nodes
 IOPARTITION                     = 'IOPartition'
 
@@ -64,6 +75,7 @@ SCHEDULING_ROUTE_ACTIVE         = 'Active'
 SCHEDULING_DEVICE               = 'DevicesConfiguration/Device'
 SCHEDULING_DEVICE_ID            = 'DeviceId'
 
+
 #Top level attributes
 DATE_ATTR                       = 'date'
 NAME_ATTR                       = 'name'
@@ -71,15 +83,19 @@ REQUEST_NUMBER_ATTR             = 'request_number'
 TIME_TO_LIVE_ATTR               = 'time_to_live'
 VERSION_ATTR                    = 'version'
 
+
+
 # ETH Header
 ETHHEADER                       = 'EthHeader'
 ETHHEADER_IP                    = 'Ip'
 ETHHEADER_MAC                   = 'MAC'
 ETHHEADER_PORT                  = 'Port'
 
+
 #SPW Header
 SPWHEADER                       = 'SpwHeader'
 SPWHEADER_ADDRESS               = 'Address'
+
 
 #CANBUS Header
 CANHEADER                       = 'CanHeader'
@@ -88,14 +104,24 @@ CANHEADER_SSHOT                 = 'Sshot'
 CANHEADER_RTR                   = 'RTR'
 CANHEADER_ID                    = 'CanID'
 
+
 #MIL Header
 MILHEADER                       = 'MILHeader'
 MIL_ADDR                        = 'Addr'
 MIL_SUBADDR                     = 'SubAddr'
 
+
 #UART Header
 UARTHEADER                      = 'UartHeader'
 UARTHEADER_ID                   = 'UartID'
+
+
+#SD Header
+SDHEADER                        = 'SdHeader'
+SDHEADER_SIZE                   = 'Size'
+SDHEADER_FILE                   = 'File'
+
+
 
 import utils.parser as parserutils
 
@@ -111,6 +137,7 @@ VALID_DECIMAL_TYPE      = [ parserutils.str2int, lambda x : x >= 0 ]
 VALID_BOOLEAN_TYPE      = [ parserutils.str2bool, lambda x : isinstance(x, bool) ]
 VALID_DIRECTION_TYPE    = [ str, lambda x : x in [ REMOTE_PORT_SRC, REMOTE_PORT_DST] ]
 VALID_ID                = [ parserutils.str2int, lambda x: x > 0]
+VALID_SD_FILE_SIZE      = [ parserutils.str2int, lambda x: x >= 0]
 VALID_MASK_CODE         = [ lambda x: str(x).strip().split(':'), lambda x: len(x) == 4]
 VALID_MILMJFRAME_TYPE   = [ parserutils.str2int, lambda x : 0 <= x <= 10000000 ]
 VALID_MILADDR_TYPE      = [ parserutils.str2int, lambda x : 0 <= x <= 31 ]
@@ -131,6 +158,7 @@ ETH_HEADER_STR          = 'Ethernet Header (Mac: {0}, Ip: {1}, Port: {2})'
 SPW_HEADER_STR          = 'SpaceWire Header (Address: {0})'
 CAN_HEADER_STR          = 'Canbus Header (extended: {0}, SShot: {1}, Rtr: {2}, CanId: {3})'
 UART_HEADER_STR         = 'Uart Header (UartID: {0})'
+SD_HEADER_STR           = 'SD Header (Size: {0}, File: {1})'
 MIL_HEADER_STR          = 'MIL-STD-1553 Header (ADDR: {0}, SUBADDR: {1})'
 MIL_LIST_STR            = 'MIL LIST (Id: {0})'
 MIL_SLOT_STR            = 'MIL SLOT (Id: {0} Type:{1} ADDR: {2}, SUBADDR: {3})'
@@ -138,6 +166,8 @@ REMOTE_PORT_STR         = 'Remote Port (Name: {0})'
 ROUTE_STR               = 'Route (Id: {0})'
 ROUTE_PHYSICAL_STR      = 'Physical Route (Id: {0})'
 ROUTE_LOGICAL_STR       = 'Logical Route (Id: {0})'
+
+
 
 ## Logical Device
 class LogicalDevice(object):
@@ -162,6 +192,7 @@ class LogicalDevice(object):
 
     def details(self):
         return self.__str__()
+
 
 ## Physical Device
 class PhysicalDevice(object):
@@ -189,6 +220,7 @@ class PhysicalDevice(object):
     def details(self):
         return self.__str__()
 
+
 ## Physical Route
 class RoutePhysical(object):
 
@@ -212,6 +244,7 @@ class RoutePhysical(object):
     def details(self):
         return self.__str__()
 
+
 ## Logical Route
 class RouteLogical(object):
 
@@ -234,6 +267,7 @@ class RouteLogical(object):
 
     def details(self):
         return self.__str__()
+
 
 ## Route Schedule
 class RouteSchedule(object):
@@ -261,6 +295,7 @@ class RouteSchedule(object):
     def details(self):
         return self.__str__()
 
+
 ## MIL List
 class MILList(object):
 
@@ -283,6 +318,7 @@ class MILList(object):
 
     def details(self):
         return self.__str__()
+
 
 ## MIL Slot
 class MILSlot(object):
@@ -313,6 +349,7 @@ class MILSlot(object):
     def details(self):
         return self.__str__()
 
+
 ## Ethernet Header
 class EthHeader(object):
 
@@ -337,6 +374,7 @@ class EthHeader(object):
     def details(self):
         return self.__str__()
 
+
 ## SpaceWire Header
 class SpwHeader(object):
 
@@ -359,8 +397,10 @@ class SpwHeader(object):
     def details(self):
         return self.__str__()
 
+
 ## CANBUS Header
 class CanHeader(object):
+
     def __init__(self):
         self.extended = False
         self.sshot = False
@@ -387,6 +427,7 @@ class CanHeader(object):
 
 ## MIL-STD-1553 Header
 class MILHeader(object):
+
     def __init__(self):
         self.desc = 0
         self.address = 0
@@ -411,8 +452,8 @@ class MILHeader(object):
 
 ## UARTBUS Header
 class UartHeader(object):
-    def __init__(self):
 
+    def __init__(self):
         self.uart_id = 0
 
     def __eq__(self, other):
@@ -431,3 +472,26 @@ class UartHeader(object):
     def details(self):
         return self.__str__()
 
+
+## SD Header
+class SdHeader(object):
+
+    def __init__(self):
+    	self.size = 0
+        self.file = ''
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and \
+               self.file == other.file
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __str__(self):
+        return SD_HEADER_STR.format(self.size, self.file)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def details(self):
+        return self.__str__()

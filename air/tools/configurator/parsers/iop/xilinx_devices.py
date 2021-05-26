@@ -1,8 +1,10 @@
-## @package parsers.iop.ti_devices
+## @package parsers.iop.xilinx_devices
 #  @author cpse
 #  @brief Functions to parse xilinx devices
 
 __author__ = 'trcpse'
+__modified__ = 'ttao'
+
 
 from definitions import *
 from utils.parser import str2int
@@ -26,6 +28,12 @@ UART_DATABYTES          = 'DataBytes'
 
 CANBUS_BAUD             = 'Baud'
 
+XSD_FORMAT              = 'Format'
+XSD_NUMBER_FILES        = 'Number_Files'
+XSD_READS               = 'Reads'
+
+
+
 VALID_XD                = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
 VALID_READS             = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
 VALID_UART_BAUD         = [ parserutils.str2int, lambda x : 0 < x <= 921600 ]
@@ -34,7 +42,8 @@ VALID_DATABITS          = [ parserutils.str2int, lambda x : 5 < x <= 8 ]
 VALID_STOPBITS          = [ parserutils.str2int, lambda x : 0 < x <= 2 ]
 VALID_PARITY            = [ str, lambda x : x in ['E', 'O', 'S', 'M', 'N'] ]
 VALID_DATABYTES         = [ parserutils.str2int, lambda x : 0 < x <= 64 ]
-
+VALID_FORMAT            = [ parserutils.str2int, lambda x : 0 <= x <= 1 ]
+VALID_NUMBER_FILES      = [ parserutils.str2int, lambda x : 0 < x <= 40 ]
 
 
 # XETH physical device setup
@@ -109,6 +118,29 @@ class CANSchSetup:
 
     def details(self):
         return 'CAN Schedule Setup with {0} reads per period'.format(self.reads)
+
+
+# XSD physical device setup
+class XSDPhySetup(object):
+
+    def __init__(self):
+        self.id = 0
+        self.format = 0
+        self.number_files = 0
+
+    def details(self):
+        return 'XSD Physical Device Setup (Id: {0}, Format: {1}, Number_Files: {2})'\
+        .format(self.id, self.format, self.number_files)
+
+# XSD Schedule device setup
+class XSDSchSetup(object):
+
+    def __init__(self):
+        self.device = None
+        self.reads  = ''            	# number of reads per period
+
+    def details(self):
+        return 'XSD Schedule Setup (Reads - {0})'.format(self.reads)
 
 
 
@@ -232,6 +264,48 @@ def sch_xcan(iop_parser, xml, pdevice):
     # parse setup
     setup       = CANSchSetup()
     setup.reads = xml.parse_attr(UART_READS, VALID_READS, True, iop_parser.logger)
+
+    # sanity check
+    if iop_parser.logger.check_errors(): return None
+
+    # parse complete
+    setup.device = pdevice
+    return setup
+
+
+
+## XSD physical device setup
+# @param iop_parser IOP parser object
+# @param xml XML setup node
+# @param pdevice current physical device
+def phy_xsd(iop_parser, xml, pdevice):
+
+    # clear previous errors and warnings
+    iop_parser.logger.clear_errors(0)
+
+    # parse setup
+    setup           	= XSDPhySetup()
+    setup.id        	= pdevice.minor
+    setup.format    	= xml.parse_attr(XSD_FORMAT, VALID_FORMAT, True, iop_parser.logger)
+    setup.number_files   = xml.parse_attr(XSD_NUMBER_FILES, VALID_NUMBER_FILES, True, iop_parser.logger)
+
+    # sanity check
+    if iop_parser.logger.check_errors(): return False
+    pdevice.setup = setup
+    return True
+
+## XSD schedule device setup
+# @param iop_parser IOP parser object
+# @param xml XML setup node
+# @param pdevice current physical device
+def sch_xsd(iop_parser, xml, pdevice):
+
+    # clear previous errors and warnings
+    iop_parser.logger.clear_errors(0)
+
+    # parse setup
+    setup       = XSDSchSetup()
+    setup.reads = xml.parse_attr(XSD_READS, VALID_READS, True, iop_parser.logger)
 
     # sanity check
     if iop_parser.logger.check_errors(): return None
