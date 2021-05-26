@@ -156,6 +156,15 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
          }
     }
 
+    //determine whether faulty instruction is 16 or 32bit in order to define the offset
+    air_u32_t ret_offset;
+    air_u32_t instr= *(air_uptr_t *)frame->ret_addr;
+    if( (((frame->ret_psr) & ARM_PSR_T) != 0) && ((instr & 0xF800) < 0xE800)) //see armv7 reference manual, A6.1
+        ret_offset=2;
+    else
+        ret_offset=4;
+
+    //if virtual aborts are enabled, go to virtual exception handler
     if (!psr_a) {
         pmk_hm_event_t *hm_event = (pmk_hm_event_t *)core->context->hm_event;
         if (hm_event->nesting > 0) {
@@ -169,10 +178,7 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
 
             case AIR_UNIMPLEMENTED_ERROR:
                 ret_addr = vbar + 1;
-                if(((frame->ret_psr) & ARM_PSR_T) != 0)
-                    frame->ret_addr+=2;
-                else
-                    frame->ret_addr+=4;
+                frame->ret_addr+=ret_offset;
                 break;
 
             case AIR_VIOLATION_ERROR:
@@ -182,10 +188,7 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
 
             case AIR_SEGMENTATION_ERROR:
                 ret_addr = vbar + 4;
-                if(((frame->ret_psr) & ARM_PSR_T) != 0)
-                    frame->ret_addr+=2;
-                else
-                    frame->ret_addr+=4;
+                frame->ret_addr+=ret_offset;
                 break;
 
             case AIR_IO_ERROR:
@@ -200,10 +203,7 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
                 arm_restore_fpu(frame);
                 arm_syscall_rett(core);
                 ret_addr = vbar + 1;
-                if(((frame->ret_psr) & ARM_PSR_T) != 0)
-                    frame->ret_addr+=2;
-                else
-                    frame->ret_addr+=4;
+                frame->ret_addr+=ret_offset;
                 break;
             case AIR_ARITHMETIC_ERROR: //overflow
             case AIR_DIVISION_BY_0_ERROR: // /0
