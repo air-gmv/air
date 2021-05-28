@@ -110,10 +110,21 @@ typedef struct {
 } __attribute__((packed)) uart_header_t;
 
 
+/**
+ * @brief SD Header.
+ */
 typedef struct {
 	uint32_t size;
 	uint8_t file[30];
 } __attribute__((packed)) sd_header_t;
+
+
+/**
+ * @brief ADC Header.
+ */
+typedef struct {
+	uint32_t id;
+} __attribute__((packed)) adc_header_t;
 
 
 /**
@@ -128,6 +139,7 @@ typedef union {
     can_header_t can_header;        /**< CAN frame header            */
     uart_header_t uart_header;      /**< UART header                 */
     sd_header_t sd_header;  		/**< SD header                   */
+    adc_header_t adc_header;  		/**< ADC header                  */
 
 } __attribute__((packed)) iop_header_t;
 

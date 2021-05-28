@@ -20,6 +20,8 @@ ${iop_template.CanHeader(route.header)}${',' if i < len(device.routes) - 1 else 
 ${iop_template.MILHeader(route.header)}${',' if i < len(device.routes) - 1 else ''}
 	% elif route.device.type == 'SD':
 ${iop_template.SdHeader(route.header)}${',' if i < len(device.routes) - 1 else ''}
+	% elif route.device.type == 'ADC':
+${iop_template.AdcHeader(route.header)}${',' if i < len(device.routes) - 1 else ''}
 	% endif
 % endfor
 };
