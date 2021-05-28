@@ -6,6 +6,7 @@ RTR  = 'SPWRTR'
 CAN  = 'CAN'
 UART = 'UART'
 SD   = 'SD'
+ADC  = 'ADC'
 
 
 
@@ -15,6 +16,7 @@ SUPPORTED_DEVICES    = {    SPW : ['GRSPW'],
                             RTR : ['SPWRTR'],
                             CAN : ['GRCAN', 'XCAN'],
                             UART: ['XUART'],
+                            ADC : ['XADC'],
                             SD  : ['XSD']	}
 
 
@@ -122,6 +124,11 @@ SDHEADER_SIZE                   = 'Size'
 SDHEADER_FILE                   = 'File'
 
 
+#ADC Header
+ADCHEADER                      = 'AdcHeader'
+ADCHEADER_ID                   = 'AdcId'
+
+
 
 import utils.parser as parserutils
 
@@ -159,6 +166,7 @@ SPW_HEADER_STR          = 'SpaceWire Header (Address: {0})'
 CAN_HEADER_STR          = 'Canbus Header (extended: {0}, SShot: {1}, Rtr: {2}, CanId: {3})'
 UART_HEADER_STR         = 'Uart Header (UartID: {0})'
 SD_HEADER_STR           = 'SD Header (Size: {0}, File: {1})'
+ADC_HEADER_STR          = 'Adc Header (AdcId: {0})'
 MIL_HEADER_STR          = 'MIL-STD-1553 Header (ADDR: {0}, SUBADDR: {1})'
 MIL_LIST_STR            = 'MIL LIST (Id: {0})'
 MIL_SLOT_STR            = 'MIL SLOT (Id: {0} Type:{1} ADDR: {2}, SUBADDR: {3})'
@@ -489,6 +497,29 @@ class SdHeader(object):
 
     def __str__(self):
         return SD_HEADER_STR.format(self.size, self.file)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def details(self):
+        return self.__str__()
+
+
+## ADC Header
+class AdcHeader(object):
+
+    def __init__(self):
+        self.id = 0
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and \
+            self.id == other.id
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __str__(self):
+        return ADC_HEADER_STR.format(self.id)
 
     def __repr__(self):
         return self.__str__()

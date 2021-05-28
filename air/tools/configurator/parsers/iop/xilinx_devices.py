@@ -32,6 +32,8 @@ XSD_FORMAT              = 'Format'
 XSD_NUMBER_FILES        = 'Number_Files'
 XSD_READS               = 'Reads'
 
+XADC_READS              = 'Reads'
+
 
 
 VALID_XD                = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
@@ -141,6 +143,26 @@ class XSDSchSetup(object):
 
     def details(self):
         return 'XSD Schedule Setup (Reads - {0})'.format(self.reads)
+
+
+# ADC physical device setup
+class XADCPhySetup(object):
+
+    def __init__(self):
+        self.id = 0
+
+    def details(self):
+        return 'XADC Physical Device Setup (AdcId: {0})'.format(self.id)
+
+# ADC Schedule device setup
+class XADCSchSetup(object):
+
+    def __init__(self):
+        self.device = None
+        self.reads  = ''            	# number of reads per period
+
+    def details(self):
+        return 'XADC Schedule Setup (Reads - {0})'.format(self.reads)
 
 
 
@@ -306,6 +328,46 @@ def sch_xsd(iop_parser, xml, pdevice):
     # parse setup
     setup       = XSDSchSetup()
     setup.reads = xml.parse_attr(XSD_READS, VALID_READS, True, iop_parser.logger)
+
+    # sanity check
+    if iop_parser.logger.check_errors(): return None
+
+    # parse complete
+    setup.device = pdevice
+    return setup
+
+
+
+## XADC physical device setup
+# @param iop_parser IOP parser object
+# @param xml XML setup node
+# @param pdevice current physical device
+def phy_xadc(iop_parser, xml, pdevice):
+
+    # clear previous errors and warnings
+    iop_parser.logger.clear_errors(0)
+
+    # parse setup
+    setup           	= XADCPhySetup()
+    setup.id        	= pdevice.minor
+
+    # sanity check
+    if iop_parser.logger.check_errors(): return False
+    pdevice.setup = setup
+    return True
+
+## XADC schedule device setup
+# @param iop_parser IOP parser object
+# @param xml XML setup node
+# @param pdevice current physical device
+def sch_xadc(iop_parser, xml, pdevice):
+
+    # clear previous errors and warnings
+    iop_parser.logger.clear_errors(0)
+
+    # parse setup
+    setup       = XADCSchSetup()
+    setup.reads = xml.parse_attr(XADC_READS, VALID_READS, True, iop_parser.logger)
 
     # sanity check
     if iop_parser.logger.check_errors(): return None

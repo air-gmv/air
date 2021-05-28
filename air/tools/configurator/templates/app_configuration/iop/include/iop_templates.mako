@@ -42,6 +42,10 @@ ${UartHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
     % for i, route in enumerate(pdevice.routes):
 ${SdHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
     % endfor
+% elif pdevice.type =='ADC':
+    % for i, route in enumerate(pdevice.routes):
+${AdcHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
+    % endfor
 % endif
 };
 
@@ -167,8 +171,16 @@ extern iop_port_t remote_ports[${len(iop_configuration.ports)}];
 <%def name="SdHeader(header)">\
     {
         .sd_header = {
-            .size	= "${header.size}",
+            .size	=  ${int(header.size)},
             .file	= "${header.file}",
+        }
+    }\
+</%def>
+
+<%def name="AdcHeader(header)">\
+    {
+        .adc_header = {
+            .id    = ${int(header.id)},
         }
     }\
 </%def>
