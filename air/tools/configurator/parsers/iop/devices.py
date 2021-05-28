@@ -20,4 +20,5 @@ iop_supported_devices = {
     'XUART'     : [ UART,   xilinx.phy_xuart,       xilinx.sch_xuart,       'iop_xuart.mako'],
     'XCAN'      : [ CAN,    xilinx.phy_xcan,        xilinx.sch_xcan,        'iop_xcan.mako'],
     'XSD'       : [ SD,     xilinx.phy_xsd,         xilinx.sch_xsd,         'iop_xsd.mako'],
+    'XADC'      : [ ADC,    xilinx.phy_xadc,        xilinx.sch_xadc,        'iop_xadc.mako'],
 }
