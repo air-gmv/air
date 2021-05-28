@@ -17,7 +17,6 @@
 
 
 
-
 void xsd_copy_header(iop_physical_device_t *iop_dev, iop_wrapper_t *wrapper, iop_header_t *header) {
 
     iop_buffer_t *iop_buf = wrapper->buffer;
@@ -29,7 +28,6 @@ void xsd_copy_header(iop_physical_device_t *iop_dev, iop_wrapper_t *wrapper, iop
 
     memcpy(get_header(iop_buf), header, iop_buf->header_size);
 }
-
 
 
 
@@ -45,4 +43,3 @@ uint32_t xsd_compare_header(iop_wrapper_t *wrapper, iop_header_t *header) {
 
     return 0;
 }
-
