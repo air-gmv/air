@@ -400,6 +400,12 @@ class IOParser(object):
             if self.logger.check_errors(): return None
             return self.parse_sd_header(xml_header)
 
+        # device of adc type
+        elif pdevice.type == ADC:
+            xml_header = xml.parse_tag(ADCHEADER, 1, 1, self.logger)
+            if self.logger.check_errors(): return None
+            return self.parse_adc_header(xml_header)
+
         # device of mil-std-1553 type
         elif pdevice.type == MIL:
             xml_header = xml.parse_tag(MILHEADER, 1, 1, self.logger)
@@ -478,7 +484,7 @@ class IOParser(object):
         if self.logger.check_errors(): return False
         return header
         
-    ## Parse SDBUS Header
+    ## Parse SD Header
     # @param self object pointer
     # @param xml SD Header xml node
     def parse_sd_header(self, xml):
@@ -490,6 +496,22 @@ class IOParser(object):
         header = SdHeader()
         header.size = xml.parse_attr(SDHEADER_SIZE, VALID_SD_FILE_SIZE, True, self.logger)
         header.file = xml.parse_attr(SDHEADER_FILE, VALID_STR, True, self.logger)
+
+        # sanity check
+        if self.logger.check_errors(): return False
+        return header
+
+    ## Parse ADC Header
+    # @param self object pointer
+    # @param xml ADC Header xml node
+    def parse_adc_header(self, xml):
+
+        # clear previous errors and warning
+        self.logger.clear_errors(3)
+
+        # parse attributes
+        header = AdcHeader()
+        header.id = xml.parse_attr(ADCHEADER_ID, VALID_ID, True, self.logger)
 
         # sanity check
         if self.logger.check_errors(): return False
