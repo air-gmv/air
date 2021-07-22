@@ -32,7 +32,8 @@ class Logger(object):
     def __del__(self):
 
         if not self.silent:
-            terminalutils.pprint('\n')
+            print('\n')
+            #terminalutils.pprint('\n')
 
     ##
     # @brief Outputs an event
@@ -84,8 +85,10 @@ class Logger(object):
         self.total_errors += 1
         self.logger.error(fmt)
         if not self.silent:
-            terminalutils.pprint('{0}~r{1}~n'.format(
+            print('{0}~r{1}~n'.format(
                 ' ' * (LEVEL_BASE if self.level == 1 else LEVEL_BASE + (self.level - 1) * LEVEL_WIDTH), fmt), *args)
+            #terminalutils.pprint('{0}~r{1}~n'.format(
+            #    ' ' * (LEVEL_BASE if self.level == 1 else LEVEL_BASE + (self.level - 1) * LEVEL_WIDTH), fmt), *args)
 
     ##
     # @brief Check for logged errors and clear them
@@ -138,7 +141,7 @@ class Logger1:
         if logfile:
             try:
                 self.fd = open(logfile, 'w+')
-            except IOError, why:
+            except IOError as why:
                 self.fd = None
                 self.to_stdin = True
                 self.write(1, '{0}'.format(why), 'warning')

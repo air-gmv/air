@@ -556,7 +556,7 @@ def save_configuration(os_configuration, logger):
         pickle.dump((os_configuration.arch, os_configuration.bsp, os_configuration.fpu_enabled, os_configuration.debug_monitor, savepos), fd)
         fd.close()
 
-    except Exception, why:
+    except Exception as why:
         logger.error("Error saving the OS configuration - {0}".format(str(why)))
 
 ##
