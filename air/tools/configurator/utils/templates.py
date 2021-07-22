@@ -47,7 +47,7 @@ def applyMAKOTemplate(template_file, output_file, template_args, logger, lookup_
 
     # create output file
     #fileutils.safeMakedirs(os.path.dirname(output_file))
-    os.makedirs(os.path.dirname(output_file))
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
     try:
         fd = open(output_file, 'w')
         fd.write(file_ctx)
