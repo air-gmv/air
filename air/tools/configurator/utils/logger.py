@@ -44,8 +44,10 @@ class Logger(object):
     def event(self, level, fmt, *args):
         self.logger.info(fmt)
         if not self.silent:
-            terminalutils.pprint('\n{0}~b{1}~n\n'.format(
+            print('\n{0}~b{1}~n\n'.format(
                 ' ' * (LEVEL_BASE if level == 1 else LEVEL_BASE + (level - 1) * LEVEL_WIDTH), fmt), *args)
+            #terminalutils.pprint('\n{0}~b{1}~n\n'.format(
+            #    ' ' * (LEVEL_BASE if level == 1 else LEVEL_BASE + (level - 1) * LEVEL_WIDTH), fmt), *args)
         self.level = level + 1
 
     ##
@@ -58,8 +60,10 @@ class Logger(object):
         self.logger.debug(fmt)
         if not self.silent:
             color = 'c'
-            terminalutils.pprint('{0}~{1}{2}~n'.format(
+            print('{0}~{1}{2}~n'.format(
                 ' ' * (LEVEL_BASE if level == 1 else LEVEL_BASE + (level - 1) * LEVEL_WIDTH), color, fmt), *args)
+            #terminalutils.pprint('{0}~{1}{2}~n'.format(
+            #    ' ' * (LEVEL_BASE if level == 1 else LEVEL_BASE + (level - 1) * LEVEL_WIDTH), color, fmt), *args)
         self.level = level + 1
 
     ##

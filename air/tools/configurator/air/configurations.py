@@ -552,8 +552,8 @@ def save_configuration(os_configuration, logger):
         savepos.append(os_configuration.supported_pos[pos].name.lower())
 
     try:
-        fd = open(__OS_CONFIG_FILE__, 'w+')
-        pickle.dump((os_configuration.arch, os_configuration.bsp, os_configuration.fpu_enabled, os_configuration.debug_monitor, savepos), fd)
+        fd = open(__OS_CONFIG_FILE__, 'wb+') #because pickle.dump writes in binary 
+        pickle.dump( (os_configuration.arch, os_configuration.bsp, os_configuration.fpu_enabled, os_configuration.debug_monitor, savepos), fd)
         fd.close()
 
     except Exception as why:
