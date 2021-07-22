@@ -201,7 +201,7 @@ def prompt_configuration(logger):
     promptx = 'Install All RTOS ?'
     all_rtos = terminalutils.promptActions(promptx, opts)
     pos_names = [x for x in sorted(os.listdir(air.POS_DIRECTORY))
-                 if os.path.isdir(os.path.join(air.POS_DIRECTORY, x)) and x != 'shared']
+                 if os.path.isdir(os.path.join(air.POS_DIRECTORY, x)) and x != 'shared' and x!= '__pycache__']
     for pos_name in pos_names:
         try:
             i = 0
