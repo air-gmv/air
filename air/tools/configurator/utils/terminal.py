@@ -157,7 +157,7 @@ def promptActions(prompt, actions, default = -1):
 
     # Wait for a valid option
     while True:
-        ans = raw_input('').lower()
+        ans = input('').lower()
 
         # Check if the option is valid
         for i, opt in enumerate(options):

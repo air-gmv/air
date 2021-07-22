@@ -162,17 +162,17 @@ def prompt_configuration(logger):
     opts = air_configuration.supported_architectures.keys()
     if len(opts) > 0:
         i = terminalutils.promptActions('Select the target architecture:', opts)
-        arch = opts[i]
+        arch = list(opts)[i] #dickt_keys object is not subscriptable, must change to a list
     else:
-        arch = opts[0]
+        arch = list(opts)[0]
 
     # get the supported BSP
     opts = air_configuration.supported_architectures[arch].keys()
     if len(opts) > 0:
         i = terminalutils.promptActions('Select the target board support package:', opts)
-        bsp = opts[i]
+        bsp = list(opts)[i]
     else:
-        bsp = opts[0]
+        bsp = list(opts)[0]
 
     # get the FPU enabled
     opts = ['Enabled', 'Disabled']
