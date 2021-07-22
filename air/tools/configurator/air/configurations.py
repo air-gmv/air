@@ -30,14 +30,15 @@ def get_available_targets():
 
     targets = {}
     architectures = [x for x in os.listdir(AIR_TARGETS)
-                     if os.path.isdir(os.path.join(AIR_TARGETS, x)) and x != 'shared']
-
+                     if os.path.isdir(os.path.join(AIR_TARGETS, x)) and x != 'shared' and x!= '__pycache__'] 
+    
+    
     for arch_name in architectures:
 
         bsp = {}
         arch_path = os.path.join(AIR_TARGETS, arch_name)
         board_support_packages = [x for x in os.listdir(arch_path)
-                                  if os.path.isdir(os.path.join(arch_path, x)) and x != 'shared']
+                                  if os.path.isdir(os.path.join(arch_path, x)) and x != 'shared' and x!= '__pycache__']
         for bsp_name in board_support_packages:
 
             target_str = '{0}-{1}'.format(arch_name.lower(), bsp_name.lower())
@@ -71,7 +72,7 @@ def get_available_libraries():
     }
 
     libs_names = [x for x in os.listdir(AIR_LIBRARIES)
-                  if os.path.isdir(os.path.join(AIR_LIBRARIES, x)) and x != 'shared']
+                  if os.path.isdir(os.path.join(AIR_LIBRARIES, x)) and x != 'shared' and x!= '__pycache__']
 
     for lib_name in libs_names:
         try:
@@ -571,7 +572,7 @@ def load_configuration(logger, config=__OS_CONFIG_FILE__):
 
     # try to load the configuration
     try:
-        fd = open(config, 'r')
+        fd = open(config, 'rb')
         arch, bsp, fpu_enabled, debug_monitor, pos_select = pickle.load(fd)
         os_configuration = Configuration(arch, bsp, fpu_enabled, debug_monitor, pos_select)
         fd.close()
