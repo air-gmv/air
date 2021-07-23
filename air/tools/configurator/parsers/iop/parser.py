@@ -189,8 +189,8 @@ class IOParser(object):
 
         # check if a parser for that device is available
         if pdevice.type not in iop_supported_devices.keys():
-            print pdevice.type
-            print iop_supported_devices.keys()
+            print(pdevice.type)
+            print(iop_supported_devices.keys())
             self.logger.error(LOG_UNSUPPORTED_DEVICE, xml.sourceline, pdevice.device)
             return False
 
