@@ -46,7 +46,7 @@ AIR supports the following paravirtualized RTOS versions
 - BARE OS (Metal-bare)
 
 AIR paravirtualized RTOS are obtained via git submodules. For example to use AIR 
-RTEMS 5 version please execute in *air_repo/air*
+RTEMS 5 version please execute in root folder of the repository.
 
     git submodule init air/pos/rtems5
     git submodule update
