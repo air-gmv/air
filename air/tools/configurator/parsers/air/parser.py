@@ -123,7 +123,7 @@ class airParser(a653parser):
         # get system state XML nodes
         if len(xml_node) > 0:
             xml_node = xml_node[0]
-            xml_system_state_nodes = xml_node.parse_tag(HM_STATE_ENTRY, 0, sys.maxint, self.logger)
+            xml_system_state_nodes = xml_node.parse_tag(HM_STATE_ENTRY, 0, sys.maxsize, self.logger)
             for xml_system_state_node in xml_system_state_nodes:
 
                 # clear previous errors
@@ -156,7 +156,7 @@ class airParser(a653parser):
                 self.logger.information(1, system_state.details())
 
                 # get error level XML nodes
-                xml_error_level_nodes = xml_system_state_node.parse_tag(HM_ERROR_LEVEL, 0, sys.maxint, self.logger)
+                xml_error_level_nodes = xml_system_state_node.parse_tag(HM_ERROR_LEVEL, 0, sys.maxsize, self.logger)
                 for xml_error_level_node in xml_error_level_nodes:
 
                     # clear previous errors
@@ -273,7 +273,7 @@ class airParser(a653parser):
 
         # get system state XML nodes
         if len(xml_node) > 0:
-            xml_system_state_nodes = xml_node.parse_tag(HM_STATE_ENTRY, 0, sys.maxint, self.logger)
+            xml_system_state_nodes = xml_node.parse_tag(HM_STATE_ENTRY, 0, sys.maxsize, self.logger)
             for xml_system_state_node in xml_system_state_nodes:
 
                 # clear previous errors
@@ -317,7 +317,7 @@ class airParser(a653parser):
                 self.logger.information(1, target_system_state.details())
 
                 # get error action XML nodes
-                xml_error_action_nodes = xml_system_state_node.parse_tag(HM_ERROR_ACTION, 0, sys.maxint, self.logger)
+                xml_error_action_nodes = xml_system_state_node.parse_tag(HM_ERROR_ACTION, 0, sys.maxsize, self.logger)
                 for xml_error_action_node in xml_error_action_nodes:
 
                     # clear previous errors
@@ -406,7 +406,6 @@ class airParser(a653parser):
     def parse_partition_extensions(self, xml, partition):
 
         rc = True
-        print ("Parsing extensions!!!!!!!!!!!!")
 
         # clear previous errors
         self.logger.clear_errors(1)
@@ -541,7 +540,7 @@ class airParser(a653parser):
             window.cores = [0]
 
         # get extensions nodes
-        xml_child_nodes = xml_node.parse_tag(WINDOW_EXTENSION, 0, sys.maxint, self.logger)
+        xml_child_nodes = xml_node.parse_tag(WINDOW_EXTENSION, 0, sys.maxsize, self.logger)
         for xml_extension_node in xml_child_nodes:
 
             wid = xml_extension_node.parse_attr(WINDOW_EXTENSION_ID, VALID_IDENTIFIER_TYPE, True, self.logger)
@@ -684,7 +683,7 @@ class airParser(a653parser):
 
         # parse shared memory areas
         self.logger.event(1, LOG_EVENT_SHARED_MEMORY)
-        xml_partitions = xml.parse_tag(SHM_EXTENSION, 0, sys.maxint, self.logger)
+        xml_partitions = xml.parse_tag(SHM_EXTENSION, 0, sys.maxsize, self.logger)
         for xml_node in xml_partitions: self.parse_shared_memory(xml_node)
         self.compute_shared_memory_addresses()
 
@@ -725,7 +724,7 @@ class airParser(a653parser):
 
         # parse partition access nodes
         rc = True
-        xml_child_nodes = xml_node.parse_tag(SHM_EXTENSION_PARTITION, 1, sys.maxint, self.logger)
+        xml_child_nodes = xml_node.parse_tag(SHM_EXTENSION_PARTITION, 1, sys.maxsize, self.logger)
         for xml_child_node in xml_child_nodes:
             rc &= self.parse_shared_memory_partitions(xml_child_node, shm)
 

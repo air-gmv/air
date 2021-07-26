@@ -21,8 +21,7 @@ from xml.etree.ElementTree import XMLParser
 class XMLCustomParser(XMLParser):
     def _start(self, *args, **kwargs):
         element = super(self.__class__, self)._start(*args, **kwargs)
-        print ("Executou o START!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
+        
         # Add Source Line
         element.sourceline = self._parser.CurrentLineNumber
 
@@ -210,11 +209,8 @@ def xmlOpen(xmlFile, logger, xmlSchema = None):
     # Open the xml file
     try:
         from xml.etree import cElementTree
-        print ("Start parse!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         eTree = cElementTree.parse(xmlFile, parser = XMLCustomParser())
-        print ("Get root!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         xml = eTree.getroot()
-        print ("End parse!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         # Remove classname from tags nodes
         for xmlNode in xml.getiterator(): xmlNode.tag = xmlNode.tag.split('}', 1)[-1]
 

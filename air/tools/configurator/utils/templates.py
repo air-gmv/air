@@ -7,7 +7,7 @@ __author__ = 'pfnf'
 import os
 import utils
 #import file as fileutils
-import terminal as terminalutils
+import utils.terminal as terminalutils
 from mako import exceptions as mako_exceptions
 from mako.template import Template as mako_template
 from mako.lookup import TemplateLookup as mako_template_lookup

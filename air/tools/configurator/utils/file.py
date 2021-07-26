@@ -7,7 +7,7 @@ import shutil
 import fnmatch
 import re
 import utils
-import terminal as terminalutils
+import utils.terminal as terminalutils
 import logging
 
 from hashlib import sha256
@@ -154,18 +154,18 @@ def safeMultiFileCopy(src, dst, errors = None):
 # @param file_path File os.path
 # @return Hexadecimal SHA256 hash string
 def genFileS256Hash(file_path):
-
+    
     # Open file
     try:
-        fd = open(file_path, 'r+')
+        fd = open(file_path, 'rb+')
     except:
         logging.exception("Exception, See details below")
         return ''
-
     # Create hash
     hasher = sha256()
     buf = fd.read(65536)
     while len(buf) > 0:
+        #update function receives binary objects
         hasher.update(buf)
         buf = fd.read(65536)
     fd.close()
