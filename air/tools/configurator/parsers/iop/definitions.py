@@ -485,7 +485,7 @@ class UartHeader(object):
 class SdHeader(object):
 
     def __init__(self):
-    	self.size = 0
+        self.size = 0
         self.file = ''
 
     def __eq__(self, other):

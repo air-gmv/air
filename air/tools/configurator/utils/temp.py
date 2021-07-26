@@ -125,7 +125,7 @@ def safeMakeDir(directory, logger):
         if not path.exists(directory): makedirs(directory)
 
     # Error creating directory
-    except Exception, why:
+    except Exception as why:
         logger.write(1, '{0}'.format(why), LOGGER_ERROR)
         logger.errorFlag = True
 
@@ -152,7 +152,7 @@ def safeFileCopy(src, dst, logger, force = False, followDefault = False):
                 try:
                     copy2(src, dst)
                     logger.write(1, FILE_COPY_OK.format(dst))
-                except Exception, why:
+                except Exception as why:
                     logger.write(1, str(why), LOGGER_ERROR)
                     logger.errorFlag = True
 
@@ -180,7 +180,7 @@ def safeFileCopy(src, dst, logger, force = False, followDefault = False):
     # Just try to copy the file
     try:
         copy2(src, dst)
-    except Exception, why:
+    except Exception as why:
         logger.write(1, str(why), LOGGER_ERROR)
         logger.errorFlag = True
 
@@ -216,7 +216,7 @@ def safeMultiFileCopy(src, dst, logger, force = False, removeSrc = True, followD
 def safeRemove(file, logger):
     try:
         remove(file)
-    except Exception, why:
+    except Exception as why:
         logger.write(1, str(why), LOGGER_ERROR)
 
 
@@ -230,7 +230,7 @@ def createFromMakoTemplate(input, output, v_dict, logger):
     # Mako template load
     try:
         mytemplate = Template(filename = input)
-    except Exception, why:
+    except Exception as why:
         logger.error(str(why))
         return
 

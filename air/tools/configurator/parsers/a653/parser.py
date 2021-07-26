@@ -9,7 +9,7 @@ import sys
 import utils
 import utils.xml_parser as xml_parser
 
-from definitions import *
+from parsers.a653.definitions import *
 from localization.logger import *
 
 ## A656 XML module parser
