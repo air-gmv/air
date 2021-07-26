@@ -10,12 +10,12 @@ from localization.logger import *
 
 # python
 from os import path
-from sys import maxint
+from sys import maxsize as maxint
 
 
 
-from devices import *
-from definitions import *
+from parsers.iop.devices import *
+from parsers.iop.definitions import *
 from parsers.a653.definitions import *
 
 class IOParser(object):

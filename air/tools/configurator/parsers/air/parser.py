@@ -9,7 +9,8 @@ import air
 import utils
 import utils.parser as parserutils
 
-from definitions import *
+from parsers.air.definitions import *
+#from definitions import *
 from localization.logger import *
 from parsers.a653.definitions import *
 from parsers.iop.parser import IOParser
