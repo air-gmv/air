@@ -4,7 +4,7 @@
 import sys
 sys.path.append('../../configurator')
 
-from sys import maxint
+from sys import maxsize as maxint
 from utils.xml_parser import xmlOpen
 from utils.logger import Logger1
 import re
