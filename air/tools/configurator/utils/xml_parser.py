@@ -19,8 +19,8 @@ from os import path
 #   also binds to of the lib functions as methods of element
 from xml.etree.ElementTree import XMLParser
 class XMLCustomParser(XMLParser):
-    def _start_list(self, *args, **kwargs):
-        element = XMLParser._start_list(self, *args, **kwargs)
+    def _start(self, *args, **kwargs):
+        element = XMLParser._start(self, *args, **kwargs)
 
         # Add Source Line
         element.sourceline = self._parser.CurrentLineNumber
@@ -64,7 +64,7 @@ def xmlSchemaValidation(xml_file, xml_schema, logger):
             logger.write(1, 'XML passed the schema validation!', 'green')
             return True
 
-    except Exception, why:
+    except Exception as why:
         logger.write(1, str(why), LOGGER_ERROR)
         return False
 
@@ -214,7 +214,7 @@ def xmlOpen(xmlFile, logger, xmlSchema = None):
         for xmlNode in xml.getiterator(): xmlNode.tag = xmlNode.tag.split('}', 1)[-1]
 
     # Handle Exception
-    except Exception, why:
+    except Exception as why:
         logger.error("Unexpected error opening '{0}': {1}", xmlFile, str(why))
         return None
 
@@ -244,7 +244,7 @@ def xmlSchemaValidation(xml_file, xml_schema, errors):
         else:
             return True
 
-    except Exception, why:
+    except Exception as why:
         return False
 
 
