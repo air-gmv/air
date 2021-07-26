@@ -104,12 +104,12 @@ class a653parser(object):
 
         # parse partition ports
         #  - queuing ports
-        xml_ports = xml_node.parse_tag(QUEUING_PORT, 0, sys.maxint, self.logger)
+        xml_ports = xml_node.parse_tag(QUEUING_PORT, 0, sys.maxsize, self.logger)
         for xml_port in xml_ports:
             rc &= self.parse_queuing_port(xml_port, partition)
 
         # - sampling ports
-        xml_ports = xml_node.parse_tag(SAMPLING_PORT, 0, sys.maxint, self.logger)
+        xml_ports = xml_node.parse_tag(SAMPLING_PORT, 0, sys.maxsize, self.logger)
         for xml_port in xml_ports:
             rc &= self.parse_sampling_port(xml_port, partition)
 
@@ -230,7 +230,7 @@ class a653parser(object):
 
         # parse partition schedules
         rc = True
-        xml_child_nodes = xml_node.parse_tag(PARTITION_SCHEDULE, 1, sys.maxint, self.logger)
+        xml_child_nodes = xml_node.parse_tag(PARTITION_SCHEDULE, 1, sys.maxsize, self.logger)
         for xml_child_node in xml_child_nodes:
             rc &= self.parse_partition_schedule(xml_child_node, schedule)
 
@@ -294,7 +294,7 @@ class a653parser(object):
 
         # parse execution windows
         rc = True
-        xml_child_nodes = xml_node.parse_tag(WINDOW, 1, sys.maxint, self.logger)
+        xml_child_nodes = xml_node.parse_tag(WINDOW, 1, sys.maxsize, self.logger)
         for xml_child_node in xml_child_nodes:
             rc &= self.parse_execution_window(xml_child_node, schedule, partition_schedule)
 
@@ -415,12 +415,12 @@ class a653parser(object):
         self.logger.information(1, channel.details())
 
         # parse source ports
-        xml_src_nodes   = xml.parse_tag(CHANNEL_SRC, 1, sys.maxint, self.logger)
+        xml_src_nodes   = xml.parse_tag(CHANNEL_SRC, 1, sys.maxsize, self.logger)
         for xml_node in xml_src_nodes:
             rc &= self.parse_channel_ports(xml_node, channel, PORT_SOURCE)
 
         # parse destination ports
-        xml_dst_nodes = xml.parse_tag(CHANNEL_DST, 1, sys.maxint, self.logger)
+        xml_dst_nodes = xml.parse_tag(CHANNEL_DST, 1, sys.maxsize, self.logger)
         for xml_node in xml_dst_nodes:
             rc &= self.parse_channel_ports(xml_node, channel, PORT_DESTINATION)
 
@@ -495,7 +495,7 @@ class a653parser(object):
         self.logger.clear_errors(1)
 
         # get port nodes
-        xml_nodes = xml.parse_tag(CHANNEL_STANDARD_PARTITION, 1, sys.maxint, self.logger)
+        xml_nodes = xml.parse_tag(CHANNEL_STANDARD_PARTITION, 1, sys.maxsize, self.logger)
 
         # sanity check
         if self.logger.check_errors(): return False
@@ -577,18 +577,18 @@ class a653parser(object):
 
         # parse partitions
         self.logger.event(0, LOG_EVENT_PARTITIONS)
-        xml_partitions = xml.parse_tag(PARTITION, 1, sys.maxint, self.logger)
+        xml_partitions = xml.parse_tag(PARTITION, 1, sys.maxsize, self.logger)
         for xml_node in xml_partitions: self.parse_partition(xml_node)
 
         # parse schedule
         self.logger.event(0, LOG_EVENT_SCHEDULES)
-        xml_schedules = xml.parse_tag(SCHEDULE, 1, sys.maxint, self.logger)
+        xml_schedules = xml.parse_tag(SCHEDULE, 1, sys.maxsize, self.logger)
         for xml_node in xml_schedules: self.parse_schedule(xml_node, len(xml_schedules) > 1)
 
         # parse partitions health-monitor configuration
         if self.system_hm_table:
             self.logger.event(0, LOG_EVENT_PARTITIONS_HM)
-            xml_partitions_hm = xml.parse_tag(PARTITION_HM, 0, sys.maxint, self.logger)
+            xml_partitions_hm = xml.parse_tag(PARTITION_HM, 0, sys.maxsize, self.logger)
             for xml_node in xml_partitions_hm: self.parse_hm_table(xml_node, PARTITION_LEVEL)
 
         # complete HM tables
@@ -599,7 +599,7 @@ class a653parser(object):
         xml_connection_table = xml.parse_tag(CONNECTION_TABLE, 0, 1, self.logger)
         if len(xml_connection_table) > 0:
             xml_connection_table = xml_connection_table[0]
-            xml_channels = xml_connection_table.parse_tag(CHANNEL, 0, sys.maxint, self.logger)
+            xml_channels = xml_connection_table.parse_tag(CHANNEL, 0, sys.maxsize, self.logger)
             for xml_node in xml_channels: self.parse_channel(xml_node)
 
         # assign global index to the ports and check for unused ports
