@@ -5,7 +5,7 @@
 
 from time import asctime
 from textwrap import TextWrapper
-import terminal as terminalutils
+import utils.terminal as terminalutils
 import logging
 
 LEVEL_BASE				                    = 4     # Base level indentation
@@ -32,8 +32,8 @@ class Logger(object):
     def __del__(self):
 
         if not self.silent:
-            print('\n')
-            #terminalutils.pprint('\n')
+            #print('\n')
+            terminalutils.pprint('\n')
 
     ##
     # @brief Outputs an event
@@ -44,10 +44,10 @@ class Logger(object):
     def event(self, level, fmt, *args):
         self.logger.info(fmt)
         if not self.silent:
-            print('\n{0}~b{1}~n\n'.format(
-                ' ' * (LEVEL_BASE if level == 1 else LEVEL_BASE + (level - 1) * LEVEL_WIDTH), fmt), *args)
-            #terminalutils.pprint('\n{0}~b{1}~n\n'.format(
+            #print('\n{0}~b{1}~n\n'.format(
             #    ' ' * (LEVEL_BASE if level == 1 else LEVEL_BASE + (level - 1) * LEVEL_WIDTH), fmt), *args)
+            terminalutils.pprint('\n{0}~b{1}~n\n'.format(
+                ' ' * (LEVEL_BASE if level == 1 else LEVEL_BASE + (level - 1) * LEVEL_WIDTH), fmt), *args)
         self.level = level + 1
 
     ##
@@ -60,10 +60,10 @@ class Logger(object):
         self.logger.debug(fmt)
         if not self.silent:
             color = 'c'
-            print('{0}~{1}{2}~n'.format(
-                ' ' * (LEVEL_BASE if level == 1 else LEVEL_BASE + (level - 1) * LEVEL_WIDTH), color, fmt), *args)
-            #terminalutils.pprint('{0}~{1}{2}~n'.format(
+            #print('{0}~{1}{2}~n'.format(
             #    ' ' * (LEVEL_BASE if level == 1 else LEVEL_BASE + (level - 1) * LEVEL_WIDTH), color, fmt), *args)
+            terminalutils.pprint('{0}~{1}{2}~n'.format(
+                ' ' * (LEVEL_BASE if level == 1 else LEVEL_BASE + (level - 1) * LEVEL_WIDTH), color, fmt), *args)
         self.level = level + 1
 
     ##
@@ -89,10 +89,10 @@ class Logger(object):
         self.total_errors += 1
         self.logger.error(fmt)
         if not self.silent:
-            print('{0}~r{1}~n'.format(
-                ' ' * (LEVEL_BASE if self.level == 1 else LEVEL_BASE + (self.level - 1) * LEVEL_WIDTH), fmt), *args)
-            #terminalutils.pprint('{0}~r{1}~n'.format(
+            #print('{0}~r{1}~n'.format(
             #    ' ' * (LEVEL_BASE if self.level == 1 else LEVEL_BASE + (self.level - 1) * LEVEL_WIDTH), fmt), *args)
+            terminalutils.pprint('{0}~r{1}~n'.format(
+                ' ' * (LEVEL_BASE if self.level == 1 else LEVEL_BASE + (self.level - 1) * LEVEL_WIDTH), fmt), *args)
 
     ##
     # @brief Check for logged errors and clear them
