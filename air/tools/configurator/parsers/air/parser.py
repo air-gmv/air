@@ -406,6 +406,7 @@ class airParser(a653parser):
     def parse_partition_extensions(self, xml, partition):
 
         rc = True
+        print ("Parsing extensions!!!!!!!!!!!!")
 
         # clear previous errors
         self.logger.clear_errors(1)

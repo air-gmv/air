@@ -27,7 +27,7 @@ keep_files = False
 #  @param header header to look for
 #  @param n number of lines to search
 #  @return list of files
-def findFiles(pwd, extension, header, n = 10):
+def findFiles(pwd, extension, header, n = 10000):
 
     files = []
     for f in os.listdir(pwd):

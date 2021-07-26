@@ -6,13 +6,13 @@ __author__ = 'pfnf'
 
 import os
 import types
-
+import sys
 
 from localization.common import *
 from localization.logger import *
 from subprocess import Popen, PIPE
 from os import path
-
+sys.modules['_elementtree'] = None
 
 ## Evil monkey patch hack to include the current line in XMLParser
 #   shameless stolen from lxml package :P
@@ -20,7 +20,8 @@ from os import path
 from xml.etree.ElementTree import XMLParser
 class XMLCustomParser(XMLParser):
     def _start(self, *args, **kwargs):
-        element = XMLParser._start(self, *args, **kwargs)
+        element = super(self.__class__, self)._start(*args, **kwargs)
+        print ("Executou o START!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
         # Add Source Line
         element.sourceline = self._parser.CurrentLineNumber
@@ -31,6 +32,8 @@ class XMLCustomParser(XMLParser):
         element.parse_text = types.MethodType(xmlParseText, element)
 
         return element
+    
+
 
 ## Performs a XML syntactic validation using xmllint
 # @param xml_file Path to the XML file
@@ -207,9 +210,11 @@ def xmlOpen(xmlFile, logger, xmlSchema = None):
     # Open the xml file
     try:
         from xml.etree import cElementTree
+        print ("Start parse!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         eTree = cElementTree.parse(xmlFile, parser = XMLCustomParser())
+        print ("Get root!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         xml = eTree.getroot()
-
+        print ("End parse!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         # Remove classname from tags nodes
         for xmlNode in xml.getiterator(): xmlNode.tag = xmlNode.tag.split('}', 1)[-1]
 
