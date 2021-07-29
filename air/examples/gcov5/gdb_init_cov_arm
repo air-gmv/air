@@ -1,0 +1,26 @@
+set print pretty on
+set pagination off
+set confirm off
+set print elements 0
+tar extended-remote :1234
+file executable/AIRAPP.exe
+
+define auto-cov
+    symbol-file $arg0
+    hb base.c:110
+    commands
+        silent
+        set $filename = tmp->info->filename
+        set $dataBegin = buffer
+        set $dataEnd = buffer + bytesNeeded
+        eval "dump binary memory %s 0x%lx 0x%lx", tmp->info->filename, $dataBegin, $dataEnd
+        echo dump binary memory $filename $dataBegin $dataEnd
+        echo \n
+        c
+    end
+    b air_syscall_shutdown_module
+    commands
+        quit
+    end
+    c
+end

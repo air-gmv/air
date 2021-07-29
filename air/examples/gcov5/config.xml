@@ -29,5 +29,5 @@
 
   
   <!-- Module configuration -->
-  <AIR_Configuration TicksPerSecond="200" RequiredCores="2"/>
+  <AIR_Configuration TicksPerSecond="200" RequiredCores="1"/>
 </ARINC_653_Module>
