@@ -77,6 +77,9 @@ CPPFLAGS+=${'\\'}
 -I../common/${'\\'}
 -B../common/${'\\'}
 -DRTEMS5${'\\'}
+% if 'libcov' in partition.libraries:
+-fprofile-arcs -ftest-coverage -DCOVERAGE_ENABLED${'\\'}
+%endif
 -B$(AIR_POS)/rtems5/rtems5/cpukit/score/cpu/arm/include/${'\\'}
 ${template.LibraryIncludes(partition.libraries)}\
 
