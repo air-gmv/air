@@ -1,10 +1,10 @@
 
 
 
-from definitions import *
-import gaisler_devices as gaisler
-import ti_devices as ti
-import xilinx_devices as xilinx
+from parsers.iop.definitions import *
+import parsers.iop.gaisler_devices as gaisler
+import parsers.iop.ti_devices as ti
+import parsers.iop.xilinx_devices as xilinx
 
 ## List of devices supported by the IOP configurator
 iop_supported_devices = {

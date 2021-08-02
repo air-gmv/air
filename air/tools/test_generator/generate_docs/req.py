@@ -6,7 +6,7 @@ sys.path.append('../../configurator')
 
 from utils.logger import *
 from utils.xml_parser import *
-from sys import maxint
+from sys import maxsize as maxint
 from lxml import etree
 from sys import exit
 import re

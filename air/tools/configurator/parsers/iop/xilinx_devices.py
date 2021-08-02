@@ -6,7 +6,7 @@ __author__ = 'trcpse'
 __modified__ = 'ttao'
 
 
-from definitions import *
+from parsers.iop.definitions import *
 from utils.parser import str2int
 from localization.logger import *
 

@@ -7,7 +7,7 @@ __author__ = 'pfnf'
 __modified__ = 'lumm'
 __modified__ ='gmvs'
 
-from definitions import *
+from parsers.iop.definitions import *
 from utils.parser import str2int
 from localization.logger import *
 

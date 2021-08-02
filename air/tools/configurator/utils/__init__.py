@@ -14,7 +14,7 @@ WORKING_DIRECTORY                   = path.abspath(getcwd())
 def flatten(lst):
     result = []
     for el in lst:
-        if hasattr(el, "__iter__") and not isinstance(el, basestring):
+        if hasattr(el, "__iter__") and not isinstance(el, str):
             result.extend(flatten(el))
         else:
             result.append(el)

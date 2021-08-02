@@ -7,7 +7,7 @@ import shutil
 import fnmatch
 import re
 import utils
-import terminal as terminalutils
+import utils.terminal as terminalutils
 import logging
 
 from hashlib import sha256
@@ -27,7 +27,7 @@ keep_files = False
 #  @param header header to look for
 #  @param n number of lines to search
 #  @return list of files
-def findFiles(pwd, extension, header, n = 10):
+def findFiles(pwd, extension, header, n = 10000):
 
     files = []
     for f in os.listdir(pwd):
@@ -50,7 +50,7 @@ def safeMakedirs(dir_path, logger = None):
 
     try:
         os.makedirs(dir_path)
-    except Exception, why:
+    except Exception as why:
         if logger is not None:
             logger.error(str(why))
 
@@ -60,7 +60,7 @@ def safeRemoveFile(file_path, logger = None):
 
     try:
         os.remove(file_path)
-    except Exception, why:
+    except Exception as why:
         if logger is not None:
             logger.error(str(why))
 
@@ -69,7 +69,7 @@ def safeRemoveDirectory(dir_path, logger = None):
     try:
         from shutil import rmtree
         rmtree(dir_path)
-    except Exception, why:
+    except Exception as why:
         if logger is not None:
             logger.error(str(why))
 
@@ -122,7 +122,7 @@ def safeFileCopy(src, dst, errors = None):
     try:
         copy2(src, dst)
         return True
-    except Exception, why:
+    except Exception as why:
         if errors: errors.append(str(why))
         return False
 
@@ -154,18 +154,18 @@ def safeMultiFileCopy(src, dst, errors = None):
 # @param file_path File os.path
 # @return Hexadecimal SHA256 hash string
 def genFileS256Hash(file_path):
-
+    
     # Open file
     try:
-        fd = open(file_path, 'r+')
+        fd = open(file_path, 'rb+')
     except:
         logging.exception("Exception, See details below")
         return ''
-
     # Create hash
     hasher = sha256()
     buf = fd.read(65536)
     while len(buf) > 0:
+        #update function receives binary objects
         hasher.update(buf)
         buf = fd.read(65536)
     fd.close()
@@ -210,7 +210,7 @@ def saveFileRecord(file_name, record):
     # Create record file
     try:
         fd = open(file_name, 'w')
-    except Exception, why:
+    except Exception as why:
         return False
 
     for key in record.keys():
@@ -284,7 +284,7 @@ def createCleaningRecord(directory, record, logger):
     # Create record file
     try:
         fd = open(record, 'w')
-    except Exception, why:
+    except Exception as why:
         return False
 
     # Write record data
@@ -306,7 +306,7 @@ def runCleaningRecord(record, logger, followDefault = False):
     try:
         with open(record) as f:
             contents = f.readlines()
-    except Exception, why:
+    except Exception as why:
         return False
 
     directories = []
