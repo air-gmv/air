@@ -6,8 +6,8 @@ __author__ = 'pfnf'
 
 import os
 import utils
-import file as fileutils
-import terminal as terminalutils
+#import file as fileutils
+import utils.terminal as terminalutils
 from mako import exceptions as mako_exceptions
 from mako.template import Template as mako_template
 from mako.lookup import TemplateLookup as mako_template_lookup
@@ -25,7 +25,7 @@ def applyMAKOTemplate(template_file, output_file, template_args, logger, lookup_
         lookup = mako_template_lookup(directories=lookup_dirs, default_filters=['decode.utf8'],
                                       input_encoding='utf-8', output_encoding='utf-8')
         template = mako_template(filename = template_file, lookup = lookup)
-    except Exception, why:
+    except Exception as why:
         logger.error(str(why))
         return
 
@@ -46,7 +46,8 @@ def applyMAKOTemplate(template_file, output_file, template_args, logger, lookup_
         return
 
     # create output file
-    fileutils.safeMakedirs(os.path.dirname(output_file))
+    #fileutils.safeMakedirs(os.path.dirname(output_file))
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
     try:
         fd = open(output_file, 'w')
         fd.write(file_ctx)

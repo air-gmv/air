@@ -10,12 +10,12 @@ from localization.logger import *
 
 # python
 from os import path
-from sys import maxint
+from sys import maxsize as maxint
 
 
 
-from devices import *
-from definitions import *
+from parsers.iop.devices import *
+from parsers.iop.definitions import *
 from parsers.a653.definitions import *
 
 class IOParser(object):
@@ -189,8 +189,8 @@ class IOParser(object):
 
         # check if a parser for that device is available
         if pdevice.type not in iop_supported_devices.keys():
-            print pdevice.type
-            print iop_supported_devices.keys()
+            print(pdevice.type)
+            print(iop_supported_devices.keys())
             self.logger.error(LOG_UNSUPPORTED_DEVICE, xml.sourceline, pdevice.device)
             return False
 
@@ -576,7 +576,7 @@ class IOParser(object):
             rc = self.parse_schedule_devices(xml, route_schedule)
 
             # parse active routes
-            xml_routes = xml.parse_tag(SCHEDULING_ROUTE, 0, sys.maxint, self.logger)
+            xml_routes = xml.parse_tag(SCHEDULING_ROUTE, 0, sys.maxsize, self.logger)
             for xml_node in xml_routes:
                 rc &= self.parse_schedule_routes(xml_node, route_schedule)
             # sanity check
@@ -678,22 +678,22 @@ class IOParser(object):
 
         # parse logical devices
         self.logger.event(1, LOG_EVENT_IOP_LDEVICES)
-        xml_ldevices = xml.parse_tag(LOGICAL_DEVICE, 0, sys.maxint, self.logger)
+        xml_ldevices = xml.parse_tag(LOGICAL_DEVICE, 0, sys.maxsize, self.logger)
         for xml_node in xml_ldevices: self.parse_logical_device(xml_node)
 
         # parse remote ports
         self.logger.event(1, LOG_EVENT_IOP_REMOTE_PORTS)
-        xml_rports = xml.parse_tag(REMOTE_PORT, 0, sys.maxint, self.logger)
+        xml_rports = xml.parse_tag(REMOTE_PORT, 0, sys.maxsize, self.logger)
         for xml_node in xml_rports: self.parse_remote_port(xml_node)
 
         # parse physical devices
         self.logger.event(1, LOG_EVENT_IOP_PDEVICES)
-        xml_pdevices = xml.parse_tag(PHYSICAL_DEVICE, 0, sys.maxint, self.logger)
+        xml_pdevices = xml.parse_tag(PHYSICAL_DEVICE, 0, sys.maxsize, self.logger)
         for xml_node in xml_pdevices: self.parse_physical_device(xml_node)
 
         # parse scheduling
         self.logger.event(1, LOG_EVENT_IOP_SCHEDULE)
-        xml_schedules = xml.parse_tag(SCHEDULING, 1, sys.maxint, self.logger)
+        xml_schedules = xml.parse_tag(SCHEDULING, 1, sys.maxsize, self.logger)
         for xml_node in xml_schedules: self.parse_schedule(xml_node)
 
         # define IOP port index
