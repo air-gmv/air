@@ -56,8 +56,8 @@ def partition_mmu_tables(table, v_addr, n, size, unit):
 
     while size > 0 and i < level_entries - 1:
 
-        i = partition_mmu_get_index(n, v_addr)
-
+        i = int(partition_mmu_get_index(n, v_addr))
+        
         if table[i] is None:
             table[i] = [256, 64, 64][n] * [ None ]
 
