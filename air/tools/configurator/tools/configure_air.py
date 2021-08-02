@@ -162,17 +162,17 @@ def prompt_configuration(logger):
     opts = air_configuration.supported_architectures.keys()
     if len(opts) > 0:
         i = terminalutils.promptActions('Select the target architecture:', opts)
-        arch = opts[i]
+        arch = list(opts)[i] #dickt_keys object is not subscriptable, must change to a list
     else:
-        arch = opts[0]
+        arch = list(opts)[0]
 
     # get the supported BSP
     opts = air_configuration.supported_architectures[arch].keys()
     if len(opts) > 0:
         i = terminalutils.promptActions('Select the target board support package:', opts)
-        bsp = opts[i]
+        bsp = list(opts)[i]
     else:
-        bsp = opts[0]
+        bsp = list(opts)[0]
 
     # get the FPU enabled
     opts = ['Enabled', 'Disabled']
@@ -201,7 +201,7 @@ def prompt_configuration(logger):
     promptx = 'Install All RTOS ?'
     all_rtos = terminalutils.promptActions(promptx, opts)
     pos_names = [x for x in sorted(os.listdir(air.POS_DIRECTORY))
-                 if os.path.isdir(os.path.join(air.POS_DIRECTORY, x)) and x != 'shared']
+                 if os.path.isdir(os.path.join(air.POS_DIRECTORY, x)) and x != 'shared' and x!= '__pycache__']
     for pos_name in pos_names:
         try:
             i = 0
