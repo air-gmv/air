@@ -7,3 +7,6 @@
 [submodule "air/examples/private-example"]
 	path = air/examples/private-example
 	url = $(AIR_GIT_REMOTE_URL)/AIR/private-example.git
+[submodule "air/tools/air-gui"]
+	path = air/tools/air-gui
+	url = $(AIR_GIT_REMOTE_URL)/AIR/air-gui.git
