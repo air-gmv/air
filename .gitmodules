@@ -7,3 +7,6 @@
 [submodule "air/examples/private-example"]
 	path = air/examples/private-example
 	url = https://spass-git-ext.gmv.com/AIR/private-example.git
+[submodule "air/tools/air-gui"]
+	path = air/tools/air-gui
+	url = https://spass-git-ext.gmv.com/AIR/air-gui.git
