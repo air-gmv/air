@@ -1,0 +1,25 @@
+{
+    "AIR root folder": "/home/taste/air-dev/air", 
+    "air options": {
+        "FPU": "Enabled", 
+        "RTOS": [
+            "bare"
+        ], 
+        "arch type": "SPARC", 
+        "compiled": true, 
+        "debug monitor": "GRMON", 
+        "target bsp": "Laysim_gr740"
+    }, 
+    "app folder": "/home/taste/air-dev/air/examples/bare_c", 
+    "partitions": [
+        "p0"
+    ], 
+    "remote board": {
+        "ip": "127.0.0.1", 
+        "port": "3121"
+    }, 
+    "remote machine": {
+        "ip": "82.154.102.123", 
+        "user": "avos"
+    }
+}
