@@ -1,4 +1,4 @@
-# Welcome to AIR v5.5.2
+# Welcome to AIR v5.6.0
 
 AIR has a user manual at https://gmvdrive.gmv.com/index.php/s/eScXCAybbecmT9b
 
@@ -6,8 +6,8 @@ You have two ways of getting AIR
 1) AIR is intregrated in TASTE toolchain available at  https://taste.tuxfamily.org/
 2) Download from repository (email to airproduct@gmv.com to register)
 
-Below is an examplo on installing and using AIR.
-This example is usu SPARC target, if ARM read section 4.2.1 of user manual.
+Below is an example on installing and using AIR.
+This example is use SPARC target, if ARM read section 4.2.1 of user manual.
 To install AIR after cloning from git, you should do the following:
 
 ## 1 - Install RTEMS toolchain for RTEMS 5
@@ -52,9 +52,14 @@ RTEMS 5 version please execute in root folder of the repository.
     git submodule update
 
 ## 3 - Using AIR configurator tool
+
+From here you can use AIR GUI, by executing On *air_repo/air* :
+    ./air-gui 
+
+Alternatively if you prefer command line, do the following step:
 On *air_repo/air* execute
 
-    ./configure
+    ./configure 
 
 Configurator interface will enquire the user for options (architecture, BSP, FPU, Cache, Debugger, RTOS). For example
 
@@ -74,7 +79,7 @@ make
 
 
 ## 4- Build an example ready to run on a target board
-Then go to any example inside *air_repo/air/examples*
+If not using the GUI, go to any example inside *air_repo/air/examples*
 
 Execute
 
@@ -90,8 +95,8 @@ Executing
 
 will create the respective binary in the created *executables* folder.
 
-## 5 - Updating AIR repo to AIR v5.4.0 and configurator v4.3
-Since configurator v4.2 the RTOS paravirtualized versions are obtained via git submodules.
+## 5 - Updating AIR repo to AIR v5.6.0 and configurator v4.3
+Since configurator v4.3 the RTOS paravirtualized versions are obtained via git submodules.
 Pulling new AIR content into old AIR repo will generate conflicts. To get a new clean
 AIR repo please execute (please backup any working folder)
 
