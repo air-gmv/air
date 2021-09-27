@@ -291,6 +291,7 @@ air_u32_t iop_xeth_read(iop_device_driver_t *iop_dev, void *arg) {
         // Clean Buffer Descriptor Ownership Bit
         xs->rx_bd[xs->rx_ptr].addr &= 0xFFFFFFFE;
 
+        xs->rx_bd[xs->rx_ptr].config &= 0xFFFFFE00;
 
         // Increment Buffer Descriptor Pointer
         xs->rx_ptr = (xs->rx_ptr + 1) % device->rx_count;
@@ -328,6 +329,9 @@ air_u32_t iop_xeth_write(iop_device_driver_t *iop_dev, void *arg) {
 
 
     // Complete and Enable the Buffer Descriptor
+    xs->tx_bd[xs->tx_ptr].config = 0x0;
+    if(xs->tx_ptr == device->tx_count-1)
+        xs->tx_bd[xs->tx_ptr].config = 0x40000000;
     xs->tx_bd[xs->tx_ptr].config |= frag->header_size + frag->payload_size;
     xs->tx_bd[xs->tx_ptr].config |= 0x8000;
     xs->tx_bd[xs->tx_ptr].config &= ~0x80000000;
