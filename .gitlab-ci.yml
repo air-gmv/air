@@ -264,6 +264,18 @@ spw_sparc_leon4:
     environment:
         name: SPARC LEON4
 
+eth_sparc_leon4:
+    stage: examples
+    tags: 
+        - sparc-taste-debian3
+    script:
+        - cd $AIR/examples/iop/iop_ethernet_cicd
+        - cp $AIR/../utils/gitlab-runner/* .
+        - ./do_leon4_grmon_eth.bash
+        - cd $AIR
+    environment:
+        name: SPARC LEON4
+
 ################################
 #Example Tests for SPARC GR740 #
 ################################
