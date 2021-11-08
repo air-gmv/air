@@ -14,7 +14,7 @@
             slots_time += device.setup.millist[0].slot[i].time
         if (device.setup.millist[0].majorframe > slots_time):
             #We need to add dummy commands. How many with max timing of 262140us?
-            dummy_slots = ((device.setup.millist[0].majorframe) - slots_time) / 262140 
+            dummy_slots = int(((device.setup.millist[0].majorframe) - slots_time) / 262140 )
             dummy_time = ((device.setup.millist[0].majorframe) - slots_time) - 262140 * dummy_slots
             if dummy_time:
                 init_nb_cmd = len(device.setup.millist[0].slot) + (dummy_slots + 1) + 1
