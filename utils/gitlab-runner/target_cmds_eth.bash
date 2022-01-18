@@ -3,6 +3,7 @@ wall << EFO
 The Automatic Test of gitlab will try run test on board N2X
 EFO
 
+<<<<<<< HEAD
 ps -uax | grep grmon
 lockfile -s 5 -r 5 /var/lock/gr740.grmonlock || exit 1
 rm -f /var/lock/gr740.grmonlock
@@ -15,3 +16,9 @@ killall sleep
 killall -9 grmon
 killall killgrmon.bash
 exit
+=======
+nohup ./doTest.bash &
+./host_test.py
+
+cat nohup.out
+>>>>>>> parent of bef52188... Removed nohup and switched to background running + wait command
