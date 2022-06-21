@@ -39,7 +39,7 @@ typedef struct xsd_struct{
 	FIL fil[MAX_NUM_FILES];
 	char filename[MAX_NUM_FILES][MAX_FILENAME_SIZE];
 	unsigned short file_opened[MAX_NUM_FILES];
-	unsigned short append_byte[MAX_NUM_FILES];
+	unsigned long append_byte[MAX_NUM_FILES];
 	unsigned short skip_open;
 	unsigned short open_for_read;
 
