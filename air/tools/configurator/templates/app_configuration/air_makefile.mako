@@ -58,8 +58,8 @@ ${'\t'}# Link Everything
 ${'\t'}$(TARGET_LD)${'\\'}
 ${'\t\t'}-nostdlib -nodefaultlibs -nostartfiles${'\\'}
 ${'\t\t'}-Tlinkcmds.ld${'\\'}
-${'\t\t'}-Wl,--build-id=none${'\\'}
-${'\t\t'}-Wl,--start-group${'\\'}
+${'\t\t'}--build-id=none${'\\'}
+${'\t\t'}--start-group${'\\'}
 ${'\t\t'}-L$(AIR_PMK)/${'\\'}
 ${'\t\t'}$(TARGET_BUILD)/pmk.a${'\\'}
 ${'\t\t'}$(TARGET_BUILD)/libc.a${'\\'}
@@ -72,7 +72,7 @@ ${'\t\t'}$(TARGET_BUILD)/usr_sharedmemory.o${'\\'}
 ${'\t\t'}$(TARGET_BUILD)/usr_schedules.o${'\\'}
 ${'\t\t'}$(TARGET_BUILD)/usr_partitions.o${'\\'}
 ${'\t\t'}$(TARGET_BUILD)/usr_partitions_data.o${'\\'}
-${'\t\t'}-Wl,--end-group${'\\'}
+${'\t\t'}--end-group${'\\'}
 ${'\t\t'}-o $(AIR_APP)
 
 # Assemble the partition ELFs into the configurations

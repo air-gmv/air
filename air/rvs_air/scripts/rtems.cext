@@ -1,0 +1,10 @@
+add_header :
+====
+typedef int _Bool;
+====
+
+error_recovery : warning "err_atomic_op_needs_trivial_copy"
+error_recovery : warning "err_atomic_op_needs_atomic_int_or_ptr"
+error_recovery : warning "err_atomic_op_bitwise_needs_atomic_int"
+error_recovery : warning "err_invalid_decl_spec_combination"
+
