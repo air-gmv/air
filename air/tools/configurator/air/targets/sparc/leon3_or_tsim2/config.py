@@ -26,13 +26,13 @@ cores = 1
 kernel_compiler = dict(
 	CC="sparc-rtems5-gcc --pipe ",
 	CXX="sparc-rtems5-g++ --pipe ",
-	LD="sparc-rtems5-gcc --pipe ",
+	LD="sparc-rtems5-ld",
 	AR="sparc-rtems5-ar",
 	RANLIB="sparc-rtems5-ranlib",
 	CFLAGS="",
 	CPPFLAGS="-mcpu=leon3 -mflat -g -fno-builtin -nodefaultlibs -O2 -Wall",
 	CXXFLAGS="",
-	LDFLAGS="-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar",
+	LDFLAGS="--gc-sections --wrap=printf --wrap=puts --wrap=putchar",
 	ARFLAGS="ruv"
 )
 
@@ -40,13 +40,13 @@ kernel_compiler = dict(
 kernel_compiler_no_fpu = dict(
 	CC="sparc-rtems5-gcc --pipe ",
 	CXX="sparc-rtems5-g++ --pipe ",
-	LD="sparc-rtems5-gcc --pipe ",
+	LD="sparc-rtems5-ld",
 	AR="sparc-rtems5-ar",
 	RANLIB="sparc-rtems5-ranlib",
 	CFLAGS="",
 	CPPFLAGS="-mcpu=leon3 -msoft-float -mflat -g -fno-builtin -nodefaultlibs -O2 -Wall",
 	CXXFLAGS="",
-    LDFLAGS="-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar",
+    LDFLAGS="--gc-sections --wrap=printf --wrap=puts --wrap=putchar",
 	ARFLAGS="ruv"
 )
 

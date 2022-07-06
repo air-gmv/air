@@ -59,18 +59,17 @@ ${'\t'}$(TARGET_LD)${'\\'}
 ${'\t\t'}$(TARGET_LDFLAGS)${'\\'}
 ${'\t\t'}-nostdlib -nodefaultlibs -nostartfiles${'\\'}
 ${'\t\t'}-T${os.path.join('$(AIR_POS)', pos_config.name, 'include', 'linkcmds.ld')}${'\\'}
-${'\t\t'}-Wl,--start-group${'\\'}
-${'\t\t'}-Wl,--build-id=none${'\\'}
+${'\t\t'}--start-group${'\\'}
+${'\t\t'}--build-id=none${'\\'}
 % if partition.is_system:
 ${'\t\t'}$(AIR_PMK)/pmk.a${'\\'}
 % endif
 ${'\t\t'}${os.path.join('$(AIR_POS)', pos_config.name, '{0}.a'.format(pos_config.name))}${'\\'}
-${'\t\t'}-lgcc -lc -lm${'\\'}
 % for i, libname in enumerate(partition.libraries):
 ${'\t\t'}${os.path.join('$(AIR_LIBS)', libname.lower(), '{0}.a'.format(libname.lower()))}${'\\'}
 % endfor
 ${'\t\t'}$(OBJECT_FILES)${'\\'}
-${'\t\t'}-Wl,--end-group${'\\'}
+${'\t\t'}--end-group${'\\'}
 ${'\t\t'}-o $(EXEC)
 
 # Clean

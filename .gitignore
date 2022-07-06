@@ -135,3 +135,10 @@ aiv
 /air/examples/validation/TEST-DEF-00009/testScp.sh
 /air/examples/validation/testsuite/
 /air/tools/test_generator/nbproject/private/
+
+# RVS Intermediate and autogen files
+air/rvs_air/intermediate/**
+air/rvs_air/results/**
+air/air.rvsprj.data
+air/rvsdriver.log
+air/air.rvsprj.data
