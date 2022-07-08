@@ -35,9 +35,7 @@ kernel_compiler = dict(
     CPPFLAGS="-g -c -fno-builtin -nodefaultlibs -Wall -march=armv7-a -mthumb \
 -mfpu=neon -mfloat-abi=hard -mtune=cortex-a9",
     CXXFLAGS="",
-    LDFLAGS="--gc-sections --wrap=printf --wrap=puts \
---wrap=putchar -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard \
--mtune=cortex-a9",
+    LDFLAGS="--gc-sections --wrap=printf --wrap=puts --wrap=putchar",
     ARFLAGS="ruv"
 )
 
@@ -52,8 +50,7 @@ kernel_compiler_no_fpu = dict(
     CPPFLAGS="-g -c -fno-builtin -nodefaultlibs -Wall -march=armv7-a -mthumb \
 -mtune=cortex-a9",
     CXXFLAGS="",
-    LDFLAGS="--gc-sections --wrap=printf --wrap=puts \
---wrap=putchar -march=armv7-a -mthumb -mtune=cortex-a9",
+    LDFLAGS="--gc-sections --wrap=printf --wrap=puts --wrap=putchar",
     ARFLAGS="ruv"
 )
 
