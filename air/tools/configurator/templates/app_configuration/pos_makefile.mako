@@ -55,6 +55,9 @@ ${template.Rule('all', True, ['$(EXEC)', '$(OBJECT_FILES)', '$(CHDRS)'])}
 
 # Executale
 ${template.Rule('$(EXEC)', False, ['$(OBJECT_FILES)', '$(CHDRS)'])}
+${'\t'}@($(CP) `$(TARGET_CC) -print-file-name=libgcc.a $(TARGET_CPPFLAGS)`  $(TARGET_BUILD)/libgcc.a)
+${'\t'}@($(CP) `$(TARGET_CC) -print-file-name=libc.a $(TARGET_CPPFLAGS)`  $(TARGET_BUILD)/libc.a)
+${'\t'}@($(CP) `$(TARGET_CC) -print-file-name=libm.a $(TARGET_CPPFLAGS)`  $(TARGET_BUILD)/libm.a)
 ${'\t'}$(TARGET_LD)${'\\'}
 ${'\t\t'}$(TARGET_LDFLAGS)${'\\'}
 ${'\t\t'}-nostdlib -nodefaultlibs -nostartfiles${'\\'}
@@ -63,6 +66,9 @@ ${'\t\t'}--start-group${'\\'}
 ${'\t\t'}--build-id=none${'\\'}
 % if partition.is_system:
 ${'\t\t'}$(AIR_PMK)/pmk.a${'\\'}
+${'\t\t'}$(TARGET_BUILD)/libc.a${'\\'}
+${'\t\t'}$(TARGET_BUILD)/libgcc.a${'\\'}
+${'\t\t'}$(TARGET_BUILD)/libm.a${'\\'}
 % endif
 ${'\t\t'}${os.path.join('$(AIR_POS)', pos_config.name, '{0}.a'.format(pos_config.name))}${'\\'}
 % for i, libname in enumerate(partition.libraries):
