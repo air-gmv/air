@@ -346,9 +346,9 @@
       </commandlines>
       <compiler-wrapper>
         <wrapper wrapper-name="gcc_wrap">
-          <path-to-original>/opt/rtems/5.1/bin/sparc-rtems5-gcc</path-to-original>
+          <path-to-original>/opt/rtems-5.1-2019.07.25/bin/sparc-rtems5-gcc</path-to-original>
           <rsp-enabled>true</rsp-enabled>
-          <path-to-linker>/opt/rtems/5.1/bin/sparc-rtems5-ld</path-to-linker>
+          <path-to-linker>/opt/rtems-5.1-2019.07.25/bin/sparc-rtems5-ld</path-to-linker>
         </wrapper>
         <cache-argument-triggers>
           <cache-argument-trigger>
@@ -363,9 +363,9 @@
           </rvslib-link-trigger>
         </rvslib-link-triggers>
         <wrapper wrapper-name="ld_wrap">
-          <path-to-original>/opt/rtems/5.1/bin/sparc-rtems5-ld</path-to-original>
+          <path-to-original>/opt/rtems-5.1-2019.07.25/bin/sparc-rtems5-ld</path-to-original>
           <rsp-enabled>true</rsp-enabled>
-          <path-to-compiler>/opt/rtems/5.1/bin/sparc-rtems5-gcc</path-to-compiler>
+          <path-to-compiler>/opt/rtems-5.1-2019.07.25/bin/sparc-rtems5-gcc</path-to-compiler>
         </wrapper>
       </compiler-wrapper>
       <instrumentation>
