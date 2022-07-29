@@ -1,0 +1,11 @@
+# Load Binary
+load ./executable/AIRAPP.exe
+
+# Run
+run
+
+# Memory dump to file after running
+memdump rvs_all_data32_array 16384 ./memdump.bin
+
+# quit
+quit
