@@ -47,16 +47,17 @@ AIR supports the following paravirtualized RTOS versions
 - RTEMS 5
 - BARE OS (Metal-bare)
 
-AIR paravirtualized RTOS are obtained via git submodules. For example to use AIR 
-RTEMS 5 version please execute in root folder of the repository.
+AIR paravirtualized RTOS and AIR GUI are obtained via git submodules. For example to use AIR 
+RTEMS 5 version and AIR GUI please execute in root folder of the repository.
 
     git submodule init air/pos/rtems5
+    git submodule init air/tools/air-gui
     git submodule update
 
 ## 3 - Using AIR configurator tool
 
-From here you can use AIR GUI, by executing On *air_repo/air* :
-    ./air-gui 
+From here you can use AIR GUI, by executing On *air_repo/air/tools/air-gui/* :
+    ./launch.sh
 
 Alternatively if you prefer command line, do the following step:
 On *air_repo/air* execute
