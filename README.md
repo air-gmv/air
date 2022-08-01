@@ -27,6 +27,8 @@ Currently supported toolchain version : rtems-5.1-2019.07.25
 AIR configure requires python-mako, if not installed execute (in case of Debian)
 
     sudo apt-get install python-mako
+    sudo apt install python3-tk
+    sudo apt install python3-venv
 
 Clone AIR repo for example in */home/taste/work/*
 
