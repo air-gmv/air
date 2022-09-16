@@ -13,9 +13,9 @@ make
 cd ../hm
 configure
 make
-cd ../math
-configure
-make
+# cd ../math
+# configure
+# make
 cd ../ports
 configure
 make
@@ -67,9 +67,9 @@ make
 cd ../TEST-DEF-01390
 configure
 make
-cd ../TEST-DEF-01561
-configure
-make
+# cd ../TEST-DEF-01561
+# configure
+# make
 cd ../TEST-DEF-01570
 configure
 make
@@ -125,9 +125,6 @@ cd ../TEST-DEF-80080
 configure
 make
 cd ../TEST-DEF-80300
-configure
-make
-cd ../TEST-DEF-01750
 configure
 make
 cd ../TEST-DEF-80400
