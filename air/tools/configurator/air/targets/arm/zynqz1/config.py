@@ -28,16 +28,14 @@ cores = 2
 kernel_compiler = dict(
     CC="arm-rtems5-gcc --pipe",
     CXX="arm-rtems5-g++ --pipe",
-    LD="arm-rtems5-gcc --pipe",
+    LD="arm-rtems5-ld",
     AR="arm-rtems5-ar",
     RANLIB="arm-rtems5-ranlib",
     CFLAGS="",
     CPPFLAGS="-g -c -fno-builtin -nodefaultlibs -Wall -march=armv7-a -mthumb \
 -mfpu=neon -mfloat-abi=hard -mtune=cortex-a9",
     CXXFLAGS="",
-    LDFLAGS="-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts \
--Wl,--wrap=putchar -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard \
--mtune=cortex-a9",
+    LDFLAGS="--gc-sections --wrap=printf --wrap=puts --wrap=putchar",
     ARFLAGS="ruv"
 )
 
@@ -45,15 +43,14 @@ kernel_compiler = dict(
 kernel_compiler_no_fpu = dict(
     CC="arm-rtems5-gcc --pipe",
     CXX="arm-rtems5-g++ --pipe",
-    LD="arm-rtems5-gcc --pipe",
+    LD="arm-rtems5-ld",
     AR="arm-rtems5-ar",
     RANLIB="arm-rtems5-ranlib",
     CFLAGS="",
     CPPFLAGS="-g -c -fno-builtin -nodefaultlibs -Wall -march=armv7-a -mthumb \
 -mtune=cortex-a9",
     CXXFLAGS="",
-    LDFLAGS="-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts \
--Wl,--wrap=putchar -march=armv7-a -mthumb -mtune=cortex-a9",
+    LDFLAGS="--gc-sections --wrap=printf --wrap=puts --wrap=putchar",
     ARFLAGS="ruv"
 )
 
