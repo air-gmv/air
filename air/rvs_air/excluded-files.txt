@@ -1,0 +1,4 @@
+**/pmk/arch/sparc/asm_offsets.c
+**/pos/rtems5/**
+**/tools/**
+**/examples/**
