@@ -312,6 +312,13 @@
           <dataset-id>42</dataset-id>
           <dataset-name>TEST-DEF-80420</dataset-name>
         </data-file>
+        <data-file>
+          <file-names>./examples/ports/memdump.bin</file-names>
+          <file-format>map</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>43</dataset-id>
+          <dataset-name>ports</dataset-name>
+        </data-file>
       </data-files>
       <export-ref>unmanaged-coverage</export-ref>
       <explicit-files-list>@{{${{data-folder}}explicit-files.txt}}</explicit-files-list>
