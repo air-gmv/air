@@ -28,6 +28,56 @@ hello_world_arm_zynqz1:
         - $UTILS/runQemu.bash executable/AIRAPP.exe
         - *check-and-publish
 
+ARM-TEST-DEF-00009:
+    stage: validation_tests
+    tags: 
+        - ARM
+    script:
+        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00009
+        - *build-executable
+        - $UTILS/runQemu.bash executable/AIRAPP.exe
+        - *check-and-publish
+
+ARM-TEST-DEF-00010:
+    stage: validation_tests
+    tags: 
+        - ARM
+    script:
+        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00010
+        - *build-executable
+        - $UTILS/runQemu.bash executable/AIRAPP.exe
+        - *check-and-publish
+
+ARM-TEST-DEF-00012:
+    stage: validation_tests
+    tags: 
+        - ARM
+    script:
+        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00012
+        - *build-executable
+        - $UTILS/runQemu.bash executable/AIRAPP.exe
+        - *check-and-publish
+        
+ARM-TEST-DEF-00021:
+    stage: validation_tests
+    tags: 
+        - ARM
+    script:
+        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00021
+        - *build-executable
+        - $UTILS/runQemu.bash executable/AIRAPP.exe
+        - *check-and-publish
+
+ARM-TEST-DEF-00022:
+    stage: validation_tests
+    tags: 
+        - ARM
+    script:
+        - cd $AIR/examples/private-example/private/validation/TEST-DEF-00022
+        - *build-executable
+        - $UTILS/runQemu.bash executable/AIRAPP.exe
+        - *check-and-publish
+
 # # # #########################
 # # # ##Unit Tests for ARM    #
 # # # #########################
