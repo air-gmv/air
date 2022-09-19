@@ -16,7 +16,9 @@
 #include <isr.h>
 #include <parameters.h>
 #include <configurations.h>
-#ifdef PMK_DEBUG
+#include <debugger.h>
+
+#ifdef DEBUG
 #include <printk.h>
 #endif
 
@@ -36,7 +38,10 @@ void arm_init_global_timer(void) {
     air_u32_t autoinc = (air_u32_t)( (freq * us_per_tick) / ((prescaler + 1)) - 1 );
     GT->autoinc = autoinc;
 
-#ifdef PMK_DEBUG
+#ifdef DEBUG
+
+    pmk_change_debug_info(CLOCK_INIT, 0);
+
     printk("\n :: Global Timer initialization\n"
             "    global_timer_t at 0x%x\n"
             "    GT ctrl = 0x%08x\n"
