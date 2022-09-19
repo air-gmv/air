@@ -20,7 +20,6 @@
 #include <clock.h>
 #include <irqmp.h>
 #include <configurations.h>
-#include <debugger.h>
 
 /**
  * @brief AIR shared area (defined in multicore.c)
@@ -103,10 +102,6 @@ int clock_init(void) {
         timer_ctrl.frequency = (timer_regs->scaler_reload + 1) * 1000000;
         return 0;
     }
-
-#ifdef DEBUG
-    pmk_change_debug_info(CLOCK_INIT, 0);
-#endif
 
     return 1;
 }
