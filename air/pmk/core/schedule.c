@@ -23,7 +23,6 @@
 #include <multicore.h>
 #include <workspace.h>
 #include <configurations.h>
-#include <debugger.h>
 
 /**
  * @brief Module schedule control
@@ -239,9 +238,6 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
     if (core->partition != NULL && core_context_id(core->context) == 0) {
         core->partition->events |= AIR_EVENT_CLOCKTICK;
         ++core->partition->elapsed_ticks;
-#ifdef DEBUG
-        //pmk_set_trace(TICKS1, core->partition->elapsed_ticks);
-#endif
     }
 
     /* partition context switch is required*/
@@ -268,10 +264,6 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
             if (!core_context_trashed(core->context)) {
 
                 core_context_save(core);
-
-/*		#ifdef DEBUG
-		  pmk_update_part_ticks((air_u8_t) partition->idx, (air_u8_t) core->idx);
-		#endif*/
             }
 
             /* if the core is running a partition */
@@ -290,7 +282,6 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
                 /* unmap the current core */
                 partition->core_mapping[vcore_id] = PMK_MAX_CORES;
             }
-
         }
 
         /* check if this switch is the end of a MTF */
@@ -326,11 +317,6 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core) {
         /* get core partition */
         partition = core_schedule->windows[wnd_idx].partition;
         core->partition = partition;
-
-#ifdef DEBUG
-	pmk_update_part_ticks((air_u8_t) partition->idx, (air_u8_t) core->idx);
-#endif
-
 
         /* setup the partition context */
         if (partition != NULL) {
@@ -458,10 +444,5 @@ pmk_schedule_t *pmk_get_schedule_by_name(air_name_ptr_t name) {
 
 air_clocktick_t pmk_get_schedule_total_ticks(void) {
 
-#ifdef DEBUG
-    pmk_change_debug_info(TICKS0, scheduler_ctrl.total_ticks);
-#endif
-    
     return scheduler_ctrl.total_ticks;
-    
 }
