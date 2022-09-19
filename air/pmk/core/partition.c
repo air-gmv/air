@@ -18,8 +18,6 @@
 #include <barrier.h>
 #include <workspace.h>
 #include <configurations.h>
-#include <debugger.h>
-
 
 #ifdef PMK_DEBUG
 #include <printk.h>
@@ -84,11 +82,9 @@ void pmk_partitions_init(void) {
         pmk_partition_ports_init(partition);
     }
 
-#ifdef DEBUG
-    //pmk_workspace_debug();
-    pmk_init_part_array((air_u8_t) list->length);
+#ifdef PMK_DEBUG
+    pmk_workspace_debug();
 #endif
-
     return;
 }
 
@@ -255,7 +251,6 @@ pmk_partition_t *pmk_get_partition_by_id(air_identifier_t pid) {
             found = partition;
         }
     }
-    
     return found;
 }
 
