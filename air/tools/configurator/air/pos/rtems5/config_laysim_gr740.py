@@ -48,7 +48,7 @@ makefile = os.path.join(POS_DIRECTORY, 'rtems5', 'rtems5_makefile.mako')
 makefile_inc = [
     "RTEMS5_DIRECTORY=rtems5",
     "RTEMS5_TARGET=sparc-rtems5",
-    "RTEMS5_BSP=leon3",
+    "RTEMS5_BSP=gr740",
     "ifeq ($(RVS_ENABLED),1)",
     "TARGET_CC=/usr/local/pkg/RVS/v3.14/integration_resources/compiler_wrappers/gcc/gcc_wrap",
     "TARGET_LD=/usr/local/pkg/RVS/v3.14/integration_resources/compiler_wrappers/gcc/ld_wrap",
