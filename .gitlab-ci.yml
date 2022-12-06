@@ -112,6 +112,7 @@ report-export:
     tags:
         - SPARC
         - RVS
+        - sparc-taste-debian1
     script:
         - $UTILS/check_central_server.bash;
         - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --report --export
