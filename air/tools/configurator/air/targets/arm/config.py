@@ -55,7 +55,7 @@ def partition_mmu_tables(table, v_addr, n, size, unit):
 
     while size > 0 and i < level_entries - 1:
 
-        i = partition_mmu_get_index(v_addr, n)
+        i = int(partition_mmu_get_index(v_addr, n))
 
         if unit < level_unit:
 
