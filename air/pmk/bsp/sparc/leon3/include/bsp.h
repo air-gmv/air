@@ -57,15 +57,15 @@ static inline air_u32_t bsp_get_core_id(void) {
 * @brief Detect board's silicon revision number
 */
 static inline air_u32_t bsp_get_revision_version(void){
-    // Read MPSTAT register. 32 bits at location 0x010.
 #ifdef PMK_DEBUG
     printk("Detecting GR740 Revision... ");
 #endif
-    air_u32_t* mpstat = (air_u32_t*) 0x010 ;
-    // Isolate 25th bit which contains an indicaiton on the silicon revision version.
+    /* Read MPSTAT register for Internal controler 1 */
+    air_u32_t* mpstat = (air_u32_t*) 0xFF904010 ;
+    /* Isolate 26th bit which contains an indicaiton on the silicon revision version */
     air_u32_t revision_version = (*mpstat >> 26) & 1 ;
 #ifdef PMK_DEBUG
-    printk("%d\n", revision_version);
+    printk("%d ", revision_version);
 #endif
     return revision_version ;
 }
