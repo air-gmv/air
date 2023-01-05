@@ -14,7 +14,9 @@ LAYSIM-hello-world:
         - SPARC
         - LAYSIM
     script:
-        - cd $AIR/examples/hello_world
+        - cd $AIR
+        - ./configure -f ../utils/gitlab-runner/.sparc_gr740_config
+        - cd examples/hello_world
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - *check-and-publish
@@ -25,7 +27,9 @@ LAYSIM-bare_c:
         - SPARC
         - LAYSIM
     script:
-        - cd $AIR/examples/bare_c
+        - cd $AIR
+        - ./configure -f ../utils/gitlab-runner/.sparc_gr740_config
+        - cd examples/bare_c
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - *check-and-publish
@@ -36,7 +40,9 @@ LAYSIM-hm:
         - SPARC
         - LAYSIM
     script:
-        - cd $AIR/examples/hm
+        - cd $AIR
+        - ./configure -f ../utils/gitlab-runner/.sparc_gr740_config
+        - cd examples/hm
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - *check-and-publish
@@ -58,7 +64,9 @@ LAYSIM-ports:
         - SPARC
         - LAYSIM
     script:
-        - cd $AIR/examples/ports
+        - cd $AIR
+        - ./configure -f ../utils/gitlab-runner/.sparc_gr740_config
+        - cd examples/ports
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - *check-and-publish
@@ -69,7 +77,9 @@ LAYSIM-shm:
         - SPARC
         - LAYSIM
     script:
-        - cd $AIR/examples/shm
+        - cd $AIR
+        - ./configure -f ../utils/gitlab-runner/.sparc_gr740_config
+        - cd examples/shm
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - *check-and-publish
@@ -80,7 +90,9 @@ LAYSIM-paranoia:
         - SPARC
         - LAYSIM
     script:
-        - cd $AIR/examples/testsuites/paranoia
+        - cd $AIR
+        - ./configure -f ../utils/gitlab-runner/.sparc_gr740_config
+        - cd examples/testsuites/paranoia
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - *check-and-publish
@@ -91,7 +103,9 @@ LAYSIM-smp01:
         - SPARC
         - LAYSIM
     script:
-        - cd $AIR/examples/testsuites/smp01
+        - cd $AIR
+        - ./configure -f ../utils/gitlab-runner/.sparc_gr740_config
+        - cd examples/testsuites/smp01
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - *check-and-publish
@@ -102,7 +116,9 @@ LAYSIM-smp02:
         - SPARC
         - LAYSIM
     script:
-        - cd $AIR/examples/testsuites/smp02
+        - cd $AIR
+        - ./configure -f ../utils/gitlab-runner/.sparc_gr740_config
+        - cd examples/testsuites/smp02
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - *check-and-publish
