@@ -39,7 +39,7 @@ default:
 
         - export RTEMS410=/opt/rtems-4.10/bin
         - export PATH=$PATH:$RTEMS410
-        - export RTEMS_MAKEFILE_PATH=$AIR_POS/rtems5/rtems5-install/sparc-rtems5/leon3
+        - export RTEMS_MAKEFILE_PATH=$AIR_POS/rtems5/rtems5-install/sparc-rtems5/gr740
         - export PATH=$PATH:/opt/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
 
         - export DISPLAY=:99
