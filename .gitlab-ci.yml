@@ -60,6 +60,8 @@ RVS-prepare-build:
     script:
         - sed -i 's/\.\/rvs_air\/scripts\/build.bash/\.\/rvs_air\/scripts\/build-tools.bash/g' air.rvsprj
         - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --prepare --build;
+        - rm -rf $AIR/install/pos/rtems5/rtems5-build
+        - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash;
 
 
