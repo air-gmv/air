@@ -6,9 +6,6 @@ include:
     - '.gitlab-ci-tests.yml'
     - '.gitlab-ci-tests-arm.yml'
 
-variables:
-    GIT_CLEAN_FLAGS: none
-
 stages:
     - prepare-build
     - examples
