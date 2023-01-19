@@ -160,7 +160,7 @@ LAYSIM-TEST-DEF-00021:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-00021
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make clean
         - *check-and-publish
 
 LAYSIM-TEST-DEF-00022:
@@ -172,7 +172,7 @@ LAYSIM-TEST-DEF-00022:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-00022
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make tclean
         - *check-and-publish
 
 LAYSIM-TEST-DEF-00023:
@@ -184,7 +184,7 @@ LAYSIM-TEST-DEF-00023:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-00023
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make clean
         - *check-and-publish
 
 LAYSIM-TEST-DEF-00500:
@@ -279,7 +279,7 @@ LAYSIM-TEST-DEF-01570:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01570
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make clean
         - *check-and-publish
 
 LAYSIM-TEST-DEF-01590:
@@ -291,7 +291,7 @@ LAYSIM-TEST-DEF-01590:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01590
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make clean
         - *check-and-publish
 
 LAYSIM-TEST-DEF-01610:
@@ -303,7 +303,7 @@ LAYSIM-TEST-DEF-01610:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01610
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make clean
         - *check-and-publish
 
 LAYSIM-TEST-DEF-01650:
@@ -315,7 +315,7 @@ LAYSIM-TEST-DEF-01650:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01650
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make clean
         - *check-and-publish
 
 LAYSIM-TEST-DEF-01730:
@@ -363,7 +363,7 @@ LAYSIM-TEST-DEF-01750:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-01750
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make clean
         - *check-and-publish
 
 LAYSIM-TEST-DEF-02100:
@@ -515,7 +515,7 @@ LAYSIM-TEST-DEF-80401:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-80401
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make clean
         - *check-and-publish
 
 LAYSIM-TEST-DEF-80420:
@@ -527,7 +527,7 @@ LAYSIM-TEST-DEF-80420:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-80420
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make clean
         - *check-and-publish
 
 
