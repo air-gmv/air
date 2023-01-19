@@ -46,8 +46,6 @@ default:
 
         - export UTILS=$AIR/../utils/gitlab-runner
 
-    after_script:
-        - find ~/state/ -maxdepth 1 -type d -mmin +120 -exec rm -rf {} \;
 
 RVS-prepare-build:
     stage: prepare-build
@@ -55,8 +53,17 @@ RVS-prepare-build:
         - SPARC
         - RVS
     script:
-        - sed -i 's/\.\/rvs_air\/scripts\/build.bash/\.\/rvs_air\/scripts\/build-tools.bash/g' air.rvsprj
+        - sed -i 's/\.\/rvs_air\/scripts\/build.bash/\.\/rvs_air\/scripts\/build-ci.bash/g' air.rvsprj
         - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --prepare --build;
+        - $UTILS/publish_to_central_server.bash;
+
+RVS-pos-tools:
+    stage: prepare-build
+    tags:
+        - SPARC
+    script:
+        - ./configure -f ../utils/gitlab-runner/.sparc_gr740_config
+        - make pos tools
         - rm -rf $AIR/install/pos/rtems5/rtems5-build
         - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash;
