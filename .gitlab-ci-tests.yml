@@ -100,7 +100,7 @@ LAYSIM-smp01:
         - cd $AIR/examples/testsuites/smp01
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make clean
         - *check-and-publish
 
 LAYSIM-smp02:
@@ -112,7 +112,7 @@ LAYSIM-smp02:
         - cd $AIR/examples/testsuites/smp02
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make clean
         - *check-and-publish
 
 LAYSIM-TEST-DEF-00009:
