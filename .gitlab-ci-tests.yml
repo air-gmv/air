@@ -172,7 +172,7 @@ LAYSIM-TEST-DEF-00022:
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-00022
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make tclean
+        - make clean
         - *check-and-publish
 
 LAYSIM-TEST-DEF-00023:
