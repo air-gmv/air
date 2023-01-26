@@ -193,7 +193,7 @@ extern iop_port_t remote_ports[${len(iop_configuration.ports)}];
     {
         .gpio_header = {
             .pin          = ${header.pin},
-            .write        = ${header.write},
+            .write = ${int(header.write)},
         }
     }\
 </%def>
