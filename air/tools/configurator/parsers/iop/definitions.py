@@ -174,7 +174,7 @@ CAN_HEADER_STR          = 'Canbus Header (extended: {0}, SShot: {1}, Rtr: {2}, C
 UART_HEADER_STR         = 'Uart Header (UartID: {0})'
 SD_HEADER_STR           = 'SD Header (Size: {0}, File: {1})'
 ADC_HEADER_STR          = 'Adc Header (AdcId: {0})'
-GPIO_HEADER_STR         = 'Gpio Header (Pin: {0}, Direction: {1})'
+GPIO_HEADER_STR         = 'Gpio Header (Pin: {0}, Write: {1})'
 MIL_HEADER_STR          = 'MIL-STD-1553 Header (ADDR: {0}, SUBADDR: {1})'
 MIL_LIST_STR            = 'MIL LIST (Id: {0})'
 MIL_SLOT_STR            = 'MIL SLOT (Id: {0} Type:{1} ADDR: {2}, SUBADDR: {3})'
@@ -540,6 +540,7 @@ class GPIOHeader(object):
 
     def __init__(self):
         self.id = 0
+        self.write = False
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and \
