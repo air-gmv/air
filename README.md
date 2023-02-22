@@ -42,9 +42,21 @@ Add the *air_repo/air* to the PATH env variable, we recommend doing the followin
 RTEMS 5 tool chain should be in the PATH, e.g:
     `export PATH=$PATH:/opt/rtems/5/bin` 
 
+Board support package available depend from the chosen architecture :
+    SPARC   
+        - laysim_gr740 
+        - leon4    
+        - leon3_or_tsim2 
+        - tsim 
+    ARM  
+        - zynqz1
+
+Floating Point Unit option can be enabled/disabled. 
+
 AIR supports the following paravirtualized RTOS versions
 - RTEMS 4.8i (Edisoft)
 - RTEMS 5
+- POSIX RTEMS 5
 - BARE OS (Metal-bare)
 
 AIR paravirtualized RTOS and AIR GUI are obtained via git submodules. For example to use AIR 
