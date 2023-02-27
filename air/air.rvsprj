@@ -336,6 +336,82 @@
       </code-injection>
       <generate-rvd-stage>prepare</generate-rvd-stage>
     </integration>
+    <integration integration-name="arm-pmk-coverage">
+      <testing-framework-mode>unmanaged</testing-framework-mode>
+      <integration-strategy>wrapper</integration-strategy>
+      <analysis-ref>coverage</analysis-ref>
+      <target-ref>arm</target-ref>
+      <generate-rvd-method>managed</generate-rvd-method>
+      <collection-method>map</collection-method>
+      <data-files>
+        <data-file>
+          <file-names>./rvs_map.bin</file-names>
+          <file-format>map</file-format>
+          <target-metrics>auto</target-metrics>
+        </data-file>
+        <data-file>
+          <file-names>${{config-folder}}examples/bare_c/test.bin</file-names>
+          <file-format>map</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-name>bare_c</dataset-name>
+          <dataset-id>1</dataset-id>
+        </data-file>
+        <data-file>
+          <file-names>./examples/hello_world/test.bin</file-names>
+          <file-format>map</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>3</dataset-id>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-00009/test.bin</file-names>
+          <file-format>map</file-format>
+          <target-metrics>coverage</target-metrics>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-00010/test.bin</file-names>
+          <file-format>map</file-format>
+          <target-metrics>coverage</target-metrics>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-00012/test.bin</file-names>
+          <file-format>map</file-format>
+          <target-metrics>coverage</target-metrics>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-00021/test.bin</file-names>
+          <file-format>map</file-format>
+          <target-metrics>coverage</target-metrics>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-00022/test.bin</file-names>
+          <file-format>map</file-format>
+          <target-metrics>coverage</target-metrics>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-00023/test.bin</file-names>
+          <file-format>map</file-format>
+          <target-metrics>coverage</target-metrics>
+        </data-file>
+      </data-files>
+      <export-ref>arm-coverage-unmanaged</export-ref>
+      <entry-points>"at function pmk_init()"</entry-points>
+      <code-injection>
+        <inline-library-locations>
+          <inline-library-location inline-library-location-name="default">
+            <inject-points>"in file.glob '**pmk/arch/arm/isr.c**' at start"</inject-points>
+            <target-files-pattern>*.c</target-files-pattern>
+          </inline-library-location>
+          <inline-library-location inline-library-location-name="&quot;in file.glob '**pmk/arch/arm/isr.c**' at start&quot;"/>
+          <inline-library-location inline-library-location-name="test">
+            <inject-points>"in file.glob '**pmk/arch/arm/atomic.c**' at start"</inject-points>
+            <target-files-pattern>*c</target-files-pattern>
+          </inline-library-location>
+        </inline-library-locations>
+      </code-injection>
+      <exit-points>"at function arm_pll_shutdown()" "at function bsp_shutdown_core(in core_ctx as pointer pmk_core_ctrl_t)" "at function pmk_fatal_error(in code as pmk_error_e, in func as pointer const char, in file as pointer const char, in line as int)" "at function pmk_module_shutdown(in core as pointer pmk_core_ctrl_t)"</exit-points>
+      <explicit-files-list>@{{${{data-folder}}explicit-files.txt}}</explicit-files-list>
+      <excluded-files-list>@{{${{data-folder}}excluded-files.txt}}</excluded-files-list>
+    </integration>
   </integrations>
   <analyses>
     <analysis analysis-name="coverage">
@@ -353,9 +429,9 @@
       </commandlines>
       <compiler-wrapper>
         <wrapper wrapper-name="gcc_wrap">
-          <path-to-original>/opt/rtems-5.1-2019.07.25/bin/sparc-rtems5-gcc</path-to-original>
+          <path-to-original>sparc-rtems5-gcc</path-to-original>
           <rsp-enabled>true</rsp-enabled>
-          <path-to-linker>/opt/rtems-5.1-2019.07.25/bin/sparc-rtems5-ld</path-to-linker>
+          <path-to-linker>sparc-rtems5-ld</path-to-linker>
         </wrapper>
         <cache-argument-triggers>
           <cache-argument-trigger>
@@ -370,9 +446,66 @@
           </rvslib-link-trigger>
         </rvslib-link-triggers>
         <wrapper wrapper-name="ld_wrap">
-          <path-to-original>/opt/rtems-5.1-2019.07.25/bin/sparc-rtems5-ld</path-to-original>
+          <path-to-original>sparc-rtems5-ld</path-to-original>
           <rsp-enabled>true</rsp-enabled>
-          <path-to-compiler>/opt/rtems-5.1-2019.07.25/bin/sparc-rtems5-gcc</path-to-compiler>
+          <path-to-compiler>sparc-rtems5-gcc</path-to-compiler>
+        </wrapper>
+      </compiler-wrapper>
+      <instrumentation>
+        <c>
+          <c-extension>${{scripts-folder}}rtems.cext</c-extension>
+        </c>
+      </instrumentation>
+      <map>
+        <map-size>16384</map-size>
+      </map>
+    </target>
+    <target target-name="arm">
+      <commandlines>
+        <clean-commandline>./rvs_air/scripts/clean.bash</clean-commandline>
+        <build-commandline>./rvs_air/scripts/build-arm.bash</build-commandline>
+        <working-folder>.</working-folder>
+        <run-commandline>./rvs_air/scripts/run_qemu.bash</run-commandline>
+      </commandlines>
+      <compiler-wrapper>
+        <wrapper wrapper-name="gcc_wrap">
+          <path-to-original>arm-rtems5-gcc</path-to-original>
+          <rsp-enabled>true</rsp-enabled>
+          <path-to-linker>arm-rtems5-ld</path-to-linker>
+        </wrapper>
+        <cache-argument-triggers>
+          <cache-argument-trigger>
+            <cache-argument-trigger-arg-pattern>-c</cache-argument-trigger-arg-pattern>
+          </cache-argument-trigger>
+        </cache-argument-triggers>
+        <rvslib-link-triggers>
+          <rvslib-link-condition-state>or</rvslib-link-condition-state>
+          <rvslib-link-trigger>
+            <rvslib-link-trigger-arg-pattern>-o</rvslib-link-trigger-arg-pattern>
+            <rvslib-link-trigger-value-pattern>**.o</rvslib-link-trigger-value-pattern>
+            <rvslib-link-trigger-option-type>any</rvslib-link-trigger-option-type>
+          </rvslib-link-trigger>
+          <rvslib-link-trigger>
+            <rvslib-link-trigger-arg-pattern>-o</rvslib-link-trigger-arg-pattern>
+            <rvslib-link-trigger-value-pattern>**.exe</rvslib-link-trigger-value-pattern>
+            <rvslib-link-trigger-option-type>any</rvslib-link-trigger-option-type>
+          </rvslib-link-trigger>
+          <rvslib-link-trigger>
+            <rvslib-link-trigger-arg-pattern>**-L</rvslib-link-trigger-arg-pattern>
+            <rvslib-link-trigger-value-pattern>**.o</rvslib-link-trigger-value-pattern>
+          </rvslib-link-trigger>
+          <rvslib-link-trigger>
+            <rvslib-link-trigger-arg-pattern>**-L</rvslib-link-trigger-arg-pattern>
+            <rvslib-link-trigger-value-pattern>**.a</rvslib-link-trigger-value-pattern>
+          </rvslib-link-trigger>
+          <rvslib-link-trigger>
+            <rvslib-link-trigger-value-pattern>AIRAPP.exe</rvslib-link-trigger-value-pattern>
+          </rvslib-link-trigger>
+        </rvslib-link-triggers>
+        <wrapper wrapper-name="ld_wrap">
+          <path-to-original>arm-rtems5-ld</path-to-original>
+          <rsp-enabled>true</rsp-enabled>
+          <path-to-compiler>arm-rtems5-gcc</path-to-compiler>
         </wrapper>
       </compiler-wrapper>
       <instrumentation>
@@ -396,6 +529,12 @@
         <export-format>srchtml</export-format>
         <export-file>rvs_air/results/pmk_coverage.htm</export-file>
         <split-datasets>true</split-datasets>
+      </export-section>
+    </export>
+    <export export-name="arm-coverage-unmanaged">
+      <export-section>
+        <metric>coverage</metric>
+        <export-format>txt</export-format>
       </export-section>
     </export>
   </exports>
