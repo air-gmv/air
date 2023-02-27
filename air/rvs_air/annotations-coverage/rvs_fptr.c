@@ -1,0 +1,1 @@
+/* RVS function pointer pragmas */
