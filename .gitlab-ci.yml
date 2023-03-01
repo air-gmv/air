@@ -28,7 +28,7 @@ default:
         - cd $STATE_FOLDER
         - cd air
         
-        - export AIR=`pwd`
+        - export AIR=$STATE_FOLDER/air/
         - export PATH=$PATH:$AIR
         - export AIR_INSTALL=$AIR/install
         - export AIR_PMK=$AIR_INSTALL/pmk
