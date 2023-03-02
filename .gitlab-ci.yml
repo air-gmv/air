@@ -46,7 +46,6 @@ default:
 
         - export UTILS=$AIR/../utils/gitlab-runner
 
-
 RVS-prepare-build:
     stage: prepare-build
     tags:
