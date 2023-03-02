@@ -6,9 +6,6 @@ include:
     - '.gitlab-ci-tests.yml'
     - '.gitlab-ci-tests-arm.yml'
 
-variables:
-    GIT_CLEAN_FLAGS: none
-
 stages:
     - prepare-build
     - examples
@@ -31,7 +28,7 @@ default:
         - cd $STATE_FOLDER
         - cd air
         
-        - export AIR=`pwd`
+        - export AIR=$STATE_FOLDER/air/
         - export PATH=$PATH:$AIR
         - export AIR_INSTALL=$AIR/install
         - export AIR_PMK=$AIR_INSTALL/pmk
@@ -55,10 +52,11 @@ RVS-prepare-build:
         - SPARC
         - RVS
     script:
-        - sed -i 's/\.\/rvs_air\/scripts\/build.bash/\.\/rvs_air\/scripts\/build-tools.bash/g' air.rvsprj
+        - sed -i 's/\.\/rvs_air\/scripts\/build.bash/\.\/rvs_air\/scripts\/build-ci.bash/g' air.rvsprj
         - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --prepare --build;
+        - rm -rf $AIR/install/pos/rtems5/rtems5-build
+        - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash;
-
 
 #Build SPARC LEON4
 build_sparc_leon4:
