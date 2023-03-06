@@ -56,7 +56,12 @@ public_header_files = {
 makefile = None
 
 # @brief List of lines to be add to Makefile.inc
-makefile_inc = []
+makefile_inc = [
+    "ifeq ($(RVS_ENABLED),1)",
+    "TARGET_CC=/usr/local/pkg/RVS/v3.14/integration_resources/compiler_wrappers/gcc/gcc_wrap",
+    "TARGET_LD=/usr/local/pkg/RVS/v3.14/integration_resources/compiler_wrappers/gcc/ld_wrap",
+    "endif",
+]
 
 # @brief List of application partition templates
 partition_templates = [
