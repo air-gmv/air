@@ -212,7 +212,7 @@ def xmlOpen(xmlFile, logger, xmlSchema = None):
         eTree = cElementTree.parse(xmlFile, parser = XMLCustomParser())
         xml = eTree.getroot()
         # Remove classname from tags nodes
-        for xmlNode in xml.getiterator(): xmlNode.tag = xmlNode.tag.split('}', 1)[-1]
+        for xmlNode in xml.iter(): xmlNode.tag = xmlNode.tag.split('}', 1)[-1]
 
     # Handle Exception
     except Exception as why:
