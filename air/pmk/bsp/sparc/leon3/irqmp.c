@@ -260,7 +260,18 @@ void irqmp_boot_core(air_u32_t core_id, void *entry_point) {
 
     /* boot core */
     irqasmp.regs[0]->start_addr[core_id] = (air_u32_t)entry_point;
+    
+    /* Multiprocessing status register change depending the silicon revision version */
+    air_u32_t revision_nb = bsp_get_revision_version();
+
+	if(revision_nb == 0)
+	{
+    /* using boot field */
     irqasmp.regs[0]->boot |= ((1 << core_id) & 0xF);
+	}else{
+    /* using mpstat field */
+    irqasmp.regs[0]->mpstat = 1U << core_id;
+	}
     return;
 }
 
