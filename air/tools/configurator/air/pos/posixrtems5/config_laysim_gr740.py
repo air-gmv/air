@@ -45,12 +45,12 @@ makefile = os.path.join(POS_DIRECTORY, 'posixrtems5', 'rtems5_makefile.mako')
 # RTEMS_DIRECTORY is  necessary only for lbiop
 makefile_inc = [
     "RTEMS5_TARGET=sparc-rtems5",
-    "RTEMS5_BSP=leon3",
+    "RTEMS5_BSP=gr740",
 ]
 
 # @brief List of application partition templates
 partition_templates = [
-    os.path.join(POS_DIRECTORY, 'posixrtems5', 'rtems5_partition_makefile.mako'),    # POS makefile
+    os.path.join(POS_DIRECTORY, 'rtems5', 'rtems5_partition_makefile_gr740.mako'),    # POS makefile
     os.path.join(POS_DIRECTORY, 'posixrtems5', 'init.c.mako'),
     os.path.join(POS_DIRECTORY, 'posixrtems5', 'rtems_config.h.mako'),
 ]
