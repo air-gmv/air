@@ -22,7 +22,7 @@ default:
         
         - if [[ -z $WEEKLY_CLEANUP ]] ;
             then rm -rf $HOME/state/* $HOME/builds/* ;
-            echo "CLEANING UP VM....."
+            echo "CLEANING UP VM....." ;
             fi ;
         - if ! test -f git-clean.lock; 
             then touch git-clean.lock; 
