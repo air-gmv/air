@@ -22,7 +22,7 @@ default:
         
         - if [[ -z $WEEKLY_CLEANUP]] ;
             then rm -rf $HOME/state/* $HOME/builds/* ;
-            fi 
+            fi ;
         - if ! test -f git-clean.lock; 
             then touch git-clean.lock; 
             fi
