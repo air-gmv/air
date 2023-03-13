@@ -21,22 +21,27 @@ default:
         - export GIT_SSL_NO_VERIFY=1
 
         - if ! [[ -z $WEEKLY_CLEANUP ]] ;
-            then rm -rf $HOME/state/* ;
-            echo "CLEANING UP VM....." ;
+            then 
+                rm -rf $HOME/state/* ;
+                echo "CLEANING UP VM....." ;
             fi ;
 
         - if ! test -f git-clean.lock; 
-            then touch git-clean.lock; 
+            then 
+                touch git-clean.lock; 
             fi
         - if ! $(grep -Fxq $CI_COMMIT_SHORT_SHA git-clean.lock); 
-            then git clean -ffdx && git submodule foreach --recursive git clean -ffdx && echo $CI_COMMIT_SHORT_SHA > git-clean.lock; 
-            git submodule update --init --recursive; 
-            git submodule sync --recursive; 
+            then 
+                git clean -ffdx && git submodule foreach --recursive git clean -ffdx && echo $CI_COMMIT_SHORT_SHA > git-clean.lock; 
+                git submodule update --init --recursive; 
+                git submodule sync --recursive; 
             fi
         - if ! test -d $STATE_FOLDER ; 
-            then (mkdir -p $STATE_FOLDER || true) && ./utils/gitlab-runner/check_central_server.bash ; 
+            then 
+                (mkdir -p $STATE_FOLDER || true) && ./utils/gitlab-runner/check_central_server.bash ; 
+            else 
+                ./utils/gitlab-runner/check_central_server.bash ;
             fi;
-        - ./utils/gitlab-runner/check_central_server.bash ;
 
         - while test -e /tmp/rsync-"$CI_COMMIT_SHORT_SHA".lock; 
             do sleep 1; 
