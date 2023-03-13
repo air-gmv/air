@@ -19,8 +19,7 @@ default:
 
         - export STATE_FOLDER=$HOME/state/$CI_COMMIT_SHA
         - export GIT_SSL_NO_VERIFY=1
-        - echo "$WEEKLY_CLEANUP"
-        - if [[ -z $WEEKLY_CLEANUP ]] ;
+        - if ! [[ -z $WEEKLY_CLEANUP ]] ;
             then rm -rf $HOME/state/* $HOME/builds/* ;
             echo "CLEANING UP VM....." ;
             fi ;
