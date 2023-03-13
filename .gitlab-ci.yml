@@ -33,10 +33,11 @@ default:
             git submodule update --init --recursive; 
             git submodule sync --recursive; 
             fi
-        - ./utils/gitlab-runner/check_central_server.bash ;
         - if ! test -d $STATE_FOLDER ; 
             then (mkdir -p $STATE_FOLDER || true) && ./utils/gitlab-runner/check_central_server.bash ; 
             fi;
+        - ./utils/gitlab-runner/check_central_server.bash ;
+
         - while test -e /tmp/rsync-"$CI_COMMIT_SHORT_SHA".lock; 
             do sleep 1; 
             done;        
