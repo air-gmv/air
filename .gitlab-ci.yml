@@ -20,12 +20,6 @@ default:
         - export STATE_FOLDER=$HOME/state/$CI_COMMIT_SHA
         - export GIT_SSL_NO_VERIFY=1
 
-        - if ! [[ -z $WEEKLY_CLEANUP ]] ;
-            then 
-                rm -rf $HOME/state/* ;
-                echo "CLEANING UP VM....." ;
-            fi ;
-
         - if ! test -f git-clean.lock; 
             then 
                 touch git-clean.lock; 
