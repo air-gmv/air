@@ -34,7 +34,8 @@ XSD_READS               = 'Reads'
 
 XADC_READS              = 'Reads'
 
-XGPIO_READS              = 'Reads'
+XGPIO_READS             = 'Reads'
+XGPIO_MASK              = 'Mask'
 
 
 
@@ -48,6 +49,7 @@ VALID_PARITY            = [ str, lambda x : x in ['E', 'O', 'S', 'M', 'N'] ]
 VALID_DATABYTES         = [ parserutils.str2int, lambda x : 0 < x <= 64 ]
 VALID_FORMAT            = [ parserutils.str2int, lambda x : 0 <= x <= 1 ]
 VALID_NUMBER_FILES      = [ parserutils.str2int, lambda x : 0 < x <= 40 ]
+VALID_GPIO_MASK         = [ parserutils.str2int, lambda x : 0 <= x <= 4294967295 ]
 
 
 # XETH physical device setup
@@ -171,9 +173,10 @@ class XGPIOPhySetup(object):
 
     def __init__(self):
         self.port = 0
+        self.mask = 0
 
     def details(self):
-        return 'XGPIO Physical Device Setup (GpioId: {0})'.format(self.id)
+        return 'XGPIO Physical Device Setup (GpioId: {0} Write Mask: {1})'.format(self.port, self.mask)
 
 # GPIO Schedule device setup
 class XGPIOSchSetup(object):
@@ -408,6 +411,7 @@ def phy_xgpio(iop_parser, xml, pdevice):
     # parse setup
     setup               = XGPIOPhySetup()
     setup.id            = pdevice.minor
+    setup.mask          = xml.parse_attr(XGPIO_MASK, VALID_GPIO_MASK, True, iop_parser.logger)
 
     # sanity check
     if iop_parser.logger.check_errors(): return False

@@ -28,6 +28,7 @@ typedef struct {
     iop_device_driver_t dev;
 
     uint8_t port;
+    uint32_t writeMask;
 
 } iop_gpio_device_t;
 

@@ -50,6 +50,10 @@ ${AdcHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
     % for i, route in enumerate(pdevice.routes):
 ${TmeHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
     % endfor
+% elif pdevice.type =='GPIO':
+    % for i, route in enumerate(pdevice.routes):
+${GpioHeader(route.header)}${',' if i < len(pdevice.routes) -1 else ''}
+    % endfor
 % endif
 };
 
@@ -192,8 +196,7 @@ extern iop_port_t remote_ports[${len(iop_configuration.ports)}];
 <%def name="GpioHeader(header)">\
     {
         .gpio_header = {
-            .pin          = ${header.pin},
-            .write = ${int(header.write)},
+            .pin   = ${header.pin},
         }
     }\
 </%def>
