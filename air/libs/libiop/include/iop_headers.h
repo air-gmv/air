@@ -138,8 +138,7 @@ typedef struct {
  * @brief GPIO Header.
  */
 typedef struct {
-    uint32_t pin;
-    uint8_t write;          /**<  */
+    uint8_t pin;
 } __attribute__((packed)) gpio_header_t;
 
 
