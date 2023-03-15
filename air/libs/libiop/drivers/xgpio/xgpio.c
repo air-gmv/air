@@ -8,7 +8,7 @@
 /**
  * \file
  * \author lumm
- * \brief CAN driver adaptar for LIBIOP
+ * \brief GPIO driver adapted for LIBIOP
  */
 
 #include <xgpio.h>
@@ -29,25 +29,32 @@ air_u32_t iop_gpio_init(iop_device_driver_t *iop_dev, void *arg) {
     air_u8_t mode = 0;
     // XCanPs *canInstPtr = &xilCanPsInst;
     XGpioPs_Config *ConfigPtr;
+
+    air_u32_t writeMask = ~(device->writeMask);
     
-    iop_debug(" GPIO :: device initializing\n");
+    iop_debug("  :: xGPIO :: device initializing... ");
 
     ConfigPtr = XGpioPs_LookupConfig(GPIO_DEVICE_ID);
     if (ConfigPtr == NULL) {
 
-        iop_debug(" GPIO :: device does not exist\n");
+        iop_debug("ERROR: device does not exist\n");
         ret = AIR_INVALID_CONFIG;
 
     } else {
 
         status = XGpioPs_CfgInitialize(gpioInstPtr, ConfigPtr, ConfigPtr->BaseAddr);
         if (status != XST_SUCCESS) {
-            iop_debug(" :: GPIO :: device could not be initialized\n");
+            iop_debug(" ERROR: device could not be initialized\n");
             ret = AIR_IO_ERROR;
         }
+    } else {
+        iop_debug(" Success.\n");
     }
 
-    if (ret == AIR_SUCCESSFUL) iop_debug(" GPIO :: device initialized\n");
+    iop_debug("  :: xGPIO :: Setting pin directions (Value:0x%04x)\n", writeMask);
+    XGpioPs_SetDirection(gpioInstPtr, (u8) 0, writeMask);
+    
+    if (ret == AIR_SUCCESSFUL) iop_debug("  :: xGPIO :: device initialized\n");
 
     return ret;
 }
@@ -60,10 +67,9 @@ air_u32_t iop_gpio_read(iop_device_driver_t *iop_dev, void *arg) {
     air_u32_t ret = AIR_SUCCESSFUL;
 
     air_i32_t status;
-    gpio_header_t header;
+    gpio_header_t *header;
 
-    static air_u32_t readValue;
-
+    air_u32_t readValue=58;
     if (arg == NULL) {
 
         ret = AIR_INVALID_PARAM;
@@ -88,11 +94,19 @@ air_u32_t iop_gpio_read(iop_device_driver_t *iop_dev, void *arg) {
                 iop_buffer->header_off = 0;
                 iop_buffer->header_size = iop_buffer->payload_off = sizeof(gpio_header_t);
                 iop_buffer->payload_size = sizeof(readValue);
-                readValue = 1;
 
-                memcpy(get_header(iop_buffer), &header, get_header_size(iop_buffer));
+                header = (gpio_header_t *)get_header(iop_buffer);
+                iop_debug("  :: xGPIO :: iop_gpio_read: Reading pin#%d (%x)\n", header->pin, &header);
+                if (header->pin > 32) // TODO: Change pin limit depending on BSP
+                {
+                    iop_debug("  :: xGPIO :: iop_gpio_read: Error: Trying to read beyond valid pin number\n");
+                    ret = AIR_INVALID_CONFIG;
+                    return;
+                }
+                readValue = XGpioPs_ReadPin(gpioInstPtr, header->pin);
                 memcpy(get_payload(iop_buffer), &readValue, get_payload_size(iop_buffer));
 
+                iop_debug("  :: xGPIO :: iop_gpio_read :: SUCCESS: %04x\n", readValue);
                 ret = AIR_SUCCESSFUL;
             } else {
                 ret = AIR_NO_ACTION;
@@ -114,7 +128,6 @@ air_u32_t iop_gpio_write(iop_device_driver_t *iop_dev, void *arg) {
 
     air_i32_t status;
     gpio_header_t *header;
-//    XCanPs *canInstPtr = &xilCanPsInst; CAN ::
 
     static air_u32_t writeValue;
 
@@ -137,25 +150,24 @@ air_u32_t iop_gpio_write(iop_device_driver_t *iop_dev, void *arg) {
 
             header = (gpio_header_t *)get_header(iop_buffer);
 
-            iop_debug("  :: xGPIO :: header :: pin # = %d, write = %d\n",
-                header->pin, header->write);
-
-            if (header->write == 0) // Error if pin is set to read
+            iop_debug("  :: xGPIO :: header :: pin # = %d\n",
+                header->pin);
+            if ( ((device->writeMask >> header->pin) && 0x1) == 0) // Error if pin is set to read
             {
                 iop_debug("  :: xGPIO :: Error: Trying to write a read-only pin\n");
                 ret = AIR_INVALID_CONFIG;
                 return;
             }
-            else if (header->pin > 117)
+            if (header->pin > 32) // TODO: Change pin limit depending on BSP
             {
-                iop_debug("  :: xGPIO :: Error: Trying to beyond valid pin number\n");
+                iop_debug("  :: xGPIO :: Error: Trying to write beyond valid pin number\n");
                 ret = AIR_INVALID_CONFIG;
                 return;
             }
-
             memcpy(&writeValue, get_payload(iop_buffer), get_payload_size(iop_buffer));
+            iop_debug("  :: xGPIO :: payload: 0x%04x size: %d\n", writeValue, get_payload_size(iop_buffer));
 
-            XGpioPs_WritePin(gpioInstPtr, header->pin, writeValue);
+            XGpioPs_WritePin(gpioInstPtr, header->pin, (uint32_t) writeValue);
             iop_debug("  :: xGPIO :: iop_gpio_write successful transmit\n");
         }
     }
