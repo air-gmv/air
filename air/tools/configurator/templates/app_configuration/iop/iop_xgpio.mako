@@ -40,6 +40,8 @@ static iop_gpio_device_t device_configuration = ${'\\'}
         .read            = iop_gpio_read,
         .write           = iop_gpio_write,
     },
+    .port  = ${device.setup.port},
+    .writeMask  = ${device.setup.mask},
 };
 
 ${iop_template.PhysicalDevice(iop_configuration, device, device_functions)}\
