@@ -552,7 +552,6 @@ class IOParser(object):
         # parse attributes
         header = GPIOHeader()
         header.pin = xml.parse_attr(GPIO_PIN, VALID_ID, True, self.logger)
-        header.write = xml.parse_attr(GPIO_WRITE, VALID_BOOLEAN_TYPE, True, self.logger)
 
         # sanity check
         if self.logger.check_errors(): return False
