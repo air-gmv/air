@@ -21,7 +21,7 @@ from utils.logger import Logger
 from localization.common import *
 from argparse import  ArgumentParser,  RawTextHelpFormatter
 
-__version__ 	= '4.3'
+__version__ 	= '4.4'
 __author__ 		= '$(AIR_RUNNER_USER), llgg, gmvs, lumm, pfnf, bmgo'
 __app__			= os.path.basename(__file__)
 
