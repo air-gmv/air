@@ -41,6 +41,9 @@ uint32_t gpio_compare_header(
         iop_wrapper_t *wrapper,
         iop_header_t *header);
 
+void gpio_prebuild_header(
+        gpio_header_t *header);
+
 void gpio_writer(air_uptr_t arg);
 void gpio_reader(air_uptr_t arg);
 
