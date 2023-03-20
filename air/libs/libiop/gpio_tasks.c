@@ -99,7 +99,7 @@ void gpio_reader(air_uptr_t arg) {
 
             /* We received something lets make it
              * available to higher level */
-            iop_debug("  :: gpio-read pin \n", driver-);
+            iop_debug("  :: gpio-read pin \n", driver);
             iop_chain_append(&pdev->rcvqueue, &wrapper->node);
             wrapper = NULL;
         }
