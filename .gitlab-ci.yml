@@ -1,10 +1,12 @@
 # First version for AIR main source code
 # Executed in TASTE VM centralized in 192.19.13.167
-# author: $(AIR_RUNNER_USER) @GMV 2020
+# author: $(AIR_RUNNER_USER) @GMV 2020, edited by huca@GMV 2023
 
 include:
-    - '.gitlab-ci-tests.yml'
-    - '.gitlab-ci-tests-arm.yml'
+    - 'gitlab-ci/.gitlab-ci-build.yml'
+    - 'gitlab-ci/.gitlab-ci-examples.yml'
+    - 'gitlab-ci/.gitlab-ci-validation.yml'
+    - 'gitlab-ci/.gitlab-ci-report.yml'
 
 stages:
     - prepare-build
@@ -12,6 +14,9 @@ stages:
     - validation_tests
     - report
 
+variables: 
+        GIT_SUBMODULE_STRATEGY : recursive
+       
 default:
     retry: 1
     before_script:
@@ -20,16 +25,21 @@ default:
         - export STATE_FOLDER=$HOME/state/$CI_COMMIT_SHA
         - export GIT_SSL_NO_VERIFY=1
 
+        - git config --global credential.helper store
+        - echo "https://huca:${CI_JOB_TOKEN}@gitlab.com" > ~/.git-credentials
+
         - if ! test -f git-clean.lock; 
             then 
                 touch git-clean.lock; 
             fi
+
         - if ! $(grep -Fxq $CI_COMMIT_SHORT_SHA git-clean.lock); 
             then 
                 git clean -ffdx && git submodule foreach --recursive git clean -ffdx && echo $CI_COMMIT_SHORT_SHA > git-clean.lock; 
                 git submodule update --init --recursive; 
                 git submodule sync --recursive; 
             fi
+            
         - if ! test -d $STATE_FOLDER ; 
             then 
                 (mkdir -p $STATE_FOLDER || true) && ./utils/gitlab-runner/check_central_server.bash ; 
@@ -62,77 +72,57 @@ default:
 
         - export UTILS=$AIR/../utils/gitlab-runner
 
-RVS-prepare-build:
-    stage: prepare-build
-    tags:
-        - SPARC
-        - RVS
-    script:
-        - sed -i 's/\.\/rvs_air\/scripts\/build.bash/\.\/rvs_air\/scripts\/build-ci.bash/g' air.rvsprj
-        - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --prepare --build;
-        - rm -rf $AIR/install/pos/rtems5/rtems5-build
-        - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
-        - $UTILS/publish_to_central_server.bash;
+# .pre are jobs ran before any other job in the pipeline
+# These jobs are used to check the state of VMs and to performn any specific VM action such as a cleanup.
+# ARM and TASTE 1 are not allowed to fail since they are the only one with RVS license.
+.pre_job-template : 
+    stage : .pre
+    variables : 
+        GIT_STRATEGY : none # Prevents the cloning of the repository 
+    allow_failure: true
+    before_script : 
+        - ''                # Prevents the before_script from running
+    script : 
+        -   if ! [[ -z $CLEANUP ]] ;
+            then 
+                rm -rf /home/gitlab-runner/state/* ;
+            fi 
 
-#Build SPARC LEON4
-build_sparc_leon4:
-    stage: prepare-build
-    tags: 
-        - OTHER
-    script:
-        - cd $CI_PROJECT_DIR/air
-        - cp ./../utils/gitlab-runner/.sparc_leon4_config .
-        - ./configure -f .sparc_leon4_config
-        - make clean
-        - make -j4
+# ARM
+ARM1_init : 
+    extends : .pre_job-template
+    allow_failure : false
+    tags : 
+        - ARM1
 
-#Build SPARC LEON3
-build_sparc_leon3:
-    stage: prepare-build
-    tags: 
-        - OTHER
-    script:
-        - cd $CI_PROJECT_DIR/air
-        - cp ./../utils/gitlab-runner/.sparc_leon3_config .
-        - ./configure -f .sparc_leon3_config
-        - make clean
-        - make -j4
+ARM2_init : 
+    extends : .pre_job-template
+    tags : 
+        - ARM2
 
-#Build SPARC TSIM
-build_sparc_tsim:
-    stage: prepare-build
-    tags: 
-        - OTHER
-    script:
-        - cd $CI_PROJECT_DIR/air
-        - cp ./../utils/gitlab-runner/.sparc_tsim_config .
-        - ./configure -f .sparc_tsim_config
-        - make clean
-        - make -j4
+ARM3_init : 
+    extends : .pre_job-template
+    tags : 
+        - ARM3
 
-prepare-build-arm:
-    stage: prepare-build
-    tags:
-        - ARM
-    script:
-        - ./rvs_air/scripts/build-tools-arm.bash
-        - $UTILS/publish_to_central_server.bash
-
-report-export:
-    stage: report
-    tags:
-        - SPARC
-        - RVS
+# TASTE
+TASTE1_init :
+    extends : .pre_job-template
+    allow_failure : false
+    tags : 
         - sparc-taste-debian1
-    script:
-        - $UTILS/check_central_server.bash;
-        - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --report --export
-        - rsync -avrh ../* $CI_PROJECT_DIR/
-        - rm -rf $STATE_FOLDER
-    artifacts:
-        name: "$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
-        paths:
-            - $(pwd)/air/rvs_air/results/air-coverage-unmanaged-coverage-coverage.txt
-            - $(pwd)/air/rvs_air/results/pmk_coverage.htm
-            - $(pwd)/air/rvs_air/results/pmk_coverage_files/*
-        expire_in: 1 week
+
+TASTE2_init :
+    extends : .pre_job-template
+    tags : 
+        - sparc-taste-debian2
+
+TASTE3_init :
+    extends : .pre_job-template
+    tags : 
+        - sparc-taste-debian3
+    
+
+
+
+

@@ -9,12 +9,18 @@
 # author $(AIR_RUNNER_USER)
 
 import sys
+import os 
+
+# empty file ?
+if os.stat("testresult.txt").st_size == 0 : # empty file
+    print("Test text dump file is empty, failing test")
+    sys.exit(-1)
 
 with open("testresult.txt",'r') as f:
     text = f.read()
-    # f.close()
+    
+error_list = ["FAILURES DETECTED", "Killed", "| FAILED" , "giving up on", "could not load", "not found", "failed", "HM P","FAILED"]
 
-error_list = ["FAILURES DETECTED", "Killed", "| FAILED" , "giving up on", "could not load", "not found", "failed", "HM P"]
 test_ok = True
 
 for word in error_list:
