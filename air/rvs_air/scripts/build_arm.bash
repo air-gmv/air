@@ -1,14 +1,12 @@
 #!/bin/bash
-#./configure -f ../utils/gitlab-runner/.arm_zynqz1_config
-./configure -f .air_config
+# This script is used to build AIR and build one simple example, this allows to generate the files rvs.o and rvs_map.o that are then included in the archive pmk.a using the script build_arm_example.bash
+./configure -f ../utils/gitlab-runner/.arm_zynqz1_config
 make tools
 make libs 
 make pmk
 make pos
-cd /home/hugo/air-dev/air/examples/hello_world
-configure
-make
-cd ../bare_c
+
+cd $AIR/air-dev/air/examples/bare_c
 configure
 make
 #cd ../private-example/private/validation/TEST-DEF-00009

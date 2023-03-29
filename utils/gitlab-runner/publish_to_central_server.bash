@@ -6,7 +6,7 @@ PC=$(uname -n)
 function write() {
 	
 	if test $PC != "$1" ; then
-			rsync -azvrh $STATE_FOLDER gitlab-runner@$2:~/state/
+			rsync -azvrhq --stats $STATE_FOLDER gitlab-runner@$2:~/state/
 			echo "Published files to main server."
 	fi
 
