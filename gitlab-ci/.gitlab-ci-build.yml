@@ -1,0 +1,99 @@
+# Gitlab CICD script for build stage
+# Author huca@GMV 2023
+
+# Build ARM ZYNQZ1
+ARM-ZYNQZ1-build:
+    stage: prepare-build
+    retry: 1
+    tags:
+        - ARM
+    needs : 
+        - ARM2_init
+        - ARM3_init
+    script:
+        - cd $CI_PROJECT_DIR/air
+        - cp ./../utils/gitlab-runner/.arm_zynqz1_config .
+        - ./configure -f .arm_zynqz1_config
+        - make clean
+        - make -j4
+
+# ARM RVS PMK Instrumentation
+RVS-ARM-ZYNQZ1-prepare-build:
+    stage: prepare-build
+    retry: 1
+    tags:
+        - ARM
+        - RVS
+    needs : 
+        - ARM1_init
+    script:
+        - sed -i 's/\.\/rvs_air\/scripts\/build_arm.bash/\.\/rvs_air\/scripts\/build_arm-ci.bash/g' air.rvsprj
+        - rvsdriver --project $AIR/air.rvsprj --integration arm-pmk-coverage --prepare --build
+        - bash $AIR/rvs_air/scripts/build_arm_pmk_archive-ci.bash
+        - rm -rf $AIR/install/pos/rtems5/rtems5-build
+        - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
+        - $UTILS/publish_to_central_server.bash
+
+# SPARC RVS PMK Instrumentation 
+RVS-SPARC-LAYSIM-prepare-build:
+    stage: prepare-build
+    retry: 1
+    tags:
+        - SPARC
+        - RVS
+    needs : 
+        - TASTE1_init
+    script:
+        - sed -i 's/\.\/rvs_air\/scripts\/build.bash/\.\/rvs_air\/scripts\/build-ci.bash/g' air.rvsprj
+        - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --prepare --build
+        - rm -rf $AIR/install/pos/rtems5/rtems5-build
+        - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
+        - $UTILS/publish_to_central_server.bash
+
+# Build SPARC LEON4
+SPARC-LEON4-build:
+    stage: prepare-build
+    retry: 1
+    tags: 
+        - OTHER
+    needs : 
+        - TASTE2_init
+        - TASTE3_init
+    script:
+        - cd $CI_PROJECT_DIR/air
+        - cp ./../utils/gitlab-runner/.sparc_leon4_config .
+        - ./configure -f .sparc_leon4_config
+        - make clean
+        - make -j4
+
+# Build SPARC LEON3
+SPARC-LEON3-build:
+    stage: prepare-build
+    retry: 1
+    tags: 
+        - OTHER
+    needs : 
+        - TASTE2_init
+        - TASTE3_init
+    script:
+        - cd $CI_PROJECT_DIR/air
+        - cp ./../utils/gitlab-runner/.sparc_leon3_config .
+        - ./configure -f .sparc_leon3_config
+        - make clean
+        - make -j4
+
+# Build SPARC TSIM
+SPARC-TSIM-build:
+    stage: prepare-build
+    retry: 1
+    tags: 
+        - OTHER
+    needs : 
+        - TASTE2_init
+        - TASTE3_init
+    script:
+        - cd $CI_PROJECT_DIR/air
+        - cp ./../utils/gitlab-runner/.sparc_tsim_config .
+        - ./configure -f .sparc_tsim_config
+        - make clean
+        - make -j4
