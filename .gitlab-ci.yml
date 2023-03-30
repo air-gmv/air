@@ -14,9 +14,13 @@ stages:
     - validation_tests
     - report
 
-variables: 
+variables:
         GIT_SUBMODULE_STRATEGY : recursive
-       
+        GIT_STRATEGY : clone
+        GIT_ASKPASS: /bin/echo
+        GIT_HTTP_USERNAME: huca
+        GIT_HTTP_PASSWORD: $CI_JOB_TOKEN
+
 default:
     retry: 1
     before_script:
@@ -26,7 +30,7 @@ default:
         - export GIT_SSL_NO_VERIFY=1
 
         - git config --global credential.helper store
-        - echo "https://huca:${CI_JOB_TOKEN}@gitlab.com" > ~/.git-credentials
+        - echo "https://huca:${CI_JOB_TOKEN}@$(AIR_GIT_REMOTE_HOSTNAME)" > ~/.git-credentials
 
         - if ! test -f git-clean.lock; 
             then 
