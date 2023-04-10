@@ -248,9 +248,10 @@ __FORCE_INLINE static void arm_cp15_setup_Per_CPU(air_u32_t cpu_id)
     __asm__ volatile("ldr %[rx], =air_shared_area\n"
                      "ldr %[rx], [%[rx], %[offset]]\n"
                      "add %[rx], %[rx], %[id], lsl #5\n"
+                     "add %[rx], %[rx], %[id], lsl #3\n"
                      "mcr p15, 0, %[rx], c13, c0, 4\n"
-                     : [ rx ] "=&r"(val)
-                     : [ id ] "r"(cpu_id), [ offset ] "r"(offset)
+                     : [rx] "=&r" (val)
+                     : [id] "r" (cpu_id), [offset] "r" (offset)
                      : "memory");
 }
 

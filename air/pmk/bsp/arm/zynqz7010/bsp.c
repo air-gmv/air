@@ -23,7 +23,6 @@
 #include <ddr.h>
 #include <printk.h>
 
-static pmk_barrier_t initialization_barrier;
 /**
  * \warning
  * Care should be taken that no shared levels are invalidated by secondary CPUs
@@ -66,8 +65,8 @@ air_u32_t bsp_core_init(void) {
 
     air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
 
-    if(cpu_id != 0)
-        pmk_barrier_wait(&initialization_barrier, bsp_get_core_id());
+ //   if(cpu_id != 0)
+ //       bsp_wait_for_event();
 
     arm_a9mpcore_start_hook(cpu_id);
     arm_set_vector_base();
@@ -81,13 +80,15 @@ air_u32_t bsp_core_init(void) {
 #if DEBUG_MONITOR != 2
         arm_setup_uart(0, 115200);
 #endif /* DEBUG_MONITOR != 2	*/
+
+        arm_peripheral_soft_reset();
+
     }
 
 #ifdef PMK_DEBUG
     printk("start! bsp_core_init::cpu_id = %d\n", cpu_id);
 #endif
 
-    arm_peripheral_soft_reset();
     gic_init(cpu_id);
     arm_mmu_init();
 
@@ -127,7 +128,7 @@ void bsp_boot_core(air_u32_t cpu_id, void *entry_point) {
         volatile air_uptr_t *start_addr = (air_uptr_t *)0xfffffff0;
         arm_data_synchronization_barrier();
         arm_instruction_synchronization_barrier();
-        *start_addr = (air_u32_t)0x00100020;
+        *start_addr = (air_u32_t)entry_point;
         arm_data_synchronization_barrier();
         arm_instruction_synchronization_barrier();
         bsp_send_event();
