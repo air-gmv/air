@@ -142,3 +142,6 @@ air/rvs_air/results/**
 air/air.rvsprj.data
 air/rvsdriver.log
 air/air.rvsprj.data
+
+#VS Code
+.vscode/
