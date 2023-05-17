@@ -14,7 +14,10 @@
 #ifndef BSP_SEGREGATION_H_
 #define BSP_SEGREGATION_H_
 
+#ifndef PMK_ARM_ULTRASCALE96V2_A53
 #include <a9mpcore.h>
+#endif /* PMK_ARM_ULTRASCALE96V2_A53 */
+
 #include <workspace.h>
 
 void bsp_segregation(pmk_partition_t *partition);
