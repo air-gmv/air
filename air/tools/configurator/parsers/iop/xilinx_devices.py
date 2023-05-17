@@ -34,6 +34,9 @@ XSD_READS               = 'Reads'
 
 XADC_READS              = 'Reads'
 
+XGPIO_READS             = 'Reads'
+XGPIO_MASK              = 'Mask'
+
 
 
 VALID_XD                = [ parserutils.str2int, lambda x : 0 < x <= 2048 ]
@@ -46,6 +49,7 @@ VALID_PARITY            = [ str, lambda x : x in ['E', 'O', 'S', 'M', 'N'] ]
 VALID_DATABYTES         = [ parserutils.str2int, lambda x : 0 < x <= 64 ]
 VALID_FORMAT            = [ parserutils.str2int, lambda x : 0 <= x <= 1 ]
 VALID_NUMBER_FILES      = [ parserutils.str2int, lambda x : 0 < x <= 40 ]
+VALID_GPIO_MASK         = [ parserutils.str2int, lambda x : 0 <= x <= 4294967295 ]
 
 
 # XETH physical device setup
@@ -164,7 +168,25 @@ class XADCSchSetup(object):
     def details(self):
         return 'XADC Schedule Setup (Reads - {0})'.format(self.reads)
 
+# GPIO physical device setup
+class XGPIOPhySetup(object):
 
+    def __init__(self):
+        self.port = 0
+        self.mask = 0
+
+    def details(self):
+        return 'XGPIO Physical Device Setup (GpioId: {0} Write Mask: {1})'.format(self.port, self.mask)
+
+# GPIO Schedule device setup
+class XGPIOSchSetup(object):
+
+    def __init__(self):
+        self.port = 0
+        self.reads  = ''                # number of reads per period
+
+    def details(self):
+        return 'XGPIO Schedule Setup (Reads - {0})'.format(self.reads)
 
 ## XETH physical device setup
 # @param iop_parser IOP parser object
@@ -351,6 +373,7 @@ def phy_xadc(iop_parser, xml, pdevice):
     setup           	= XADCPhySetup()
     setup.id        	= pdevice.minor
 
+
     # sanity check
     if iop_parser.logger.check_errors(): return False
     pdevice.setup = setup
@@ -368,6 +391,45 @@ def sch_xadc(iop_parser, xml, pdevice):
     # parse setup
     setup       = XADCSchSetup()
     setup.reads = xml.parse_attr(XADC_READS, VALID_READS, True, iop_parser.logger)
+
+    # sanity check
+    if iop_parser.logger.check_errors(): return None
+
+    # parse complete
+    setup.device = pdevice
+    return setup
+
+## XGPIO physical device setup
+# @param iop_parser IOP parser object
+# @param xml XML setup node
+# @param pdevice current physical device
+def phy_xgpio(iop_parser, xml, pdevice):
+
+    # clear previous errors and warnings
+    iop_parser.logger.clear_errors(0)
+
+    # parse setup
+    setup               = XGPIOPhySetup()
+    setup.id            = pdevice.minor
+    setup.mask          = xml.parse_attr(XGPIO_MASK, VALID_GPIO_MASK, True, iop_parser.logger)
+
+    # sanity check
+    if iop_parser.logger.check_errors(): return False
+    pdevice.setup = setup
+    return True
+
+## XGPIO schedule device setup
+# @param iop_parser IOP parser object
+# @param xml XML setup node
+# @param pdevice current physical device
+def sch_xgpio(iop_parser, xml, pdevice):
+
+    # clear previous errors and warnings
+    iop_parser.logger.clear_errors(0)
+
+    # parse setup
+    setup       = XGPIOSchSetup()
+    setup.reads = xml.parse_attr(XGPIO_READS, VALID_READS, True, iop_parser.logger)
 
     # sanity check
     if iop_parser.logger.check_errors(): return None

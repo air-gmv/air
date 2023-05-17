@@ -320,7 +320,7 @@
           <dataset-name>ports</dataset-name>
         </data-file>
       </data-files>
-      <export-ref>unmanaged-coverage</export-ref>
+      <export-ref>sparc-unmanaged-coverage</export-ref>
       <explicit-files-list>@{{${{data-folder}}explicit-files.txt}}</explicit-files-list>
       <excluded-files-list>@{{${{data-folder}}excluded-files.txt}}</excluded-files-list>
       <entry-points>"at function pmk_init()"</entry-points>
@@ -335,6 +335,146 @@
         <manual-ipoint-injection-enabled>false</manual-ipoint-injection-enabled>
       </code-injection>
       <generate-rvd-stage>prepare</generate-rvd-stage>
+    </integration>
+    <integration integration-name="arm-pmk-coverage">
+      <testing-framework-mode>unmanaged</testing-framework-mode>
+      <integration-strategy>wrapper</integration-strategy>
+      <analysis-ref>coverage</analysis-ref>
+      <target-ref>arm</target-ref>
+      <generate-rvd-method>managed</generate-rvd-method>
+      <collection-method>map</collection-method>
+      <data-files>
+        <data-file>
+          <file-names>./rvs_map.bin</file-names>
+          <file-format>map</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>1</dataset-id>
+          <dataset-name>rvs_map</dataset-name>
+        </data-file>
+        <data-file>
+          <file-names>${{config-folder}}examples/bare_c/memdump.bin</file-names>
+          <file-format>map</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>2</dataset-id>
+          <dataset-name>bare_c</dataset-name>
+        </data-file>
+        <data-file>
+          <file-names>${{config-folder}}examples/hello_world/memdump.bin</file-names>
+          <file-format>map</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>3</dataset-id>
+          <dataset-name>hello_world</dataset-name>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-00023/memdump.bin</file-names>
+          <file-format>map</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>4</dataset-id>
+          <dataset-name>TEST-DEF-00023</dataset-name>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-00500/memdump.bin</file-names>
+          <file-format>map</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>5</dataset-id>
+          <dataset-name>TEST-DEF-00500</dataset-name>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-00510/memdump.bin</file-names>
+          <file-format>covmap</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>6</dataset-id>
+          <dataset-name>TEST-DEF-00510</dataset-name>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-00600/memdump.bin</file-names>
+          <file-format>covmap</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>7</dataset-id>
+          <dataset-name>TEST-DEF-00600</dataset-name>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-01390/memdump.bin</file-names>
+          <file-format>covmap</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>8</dataset-id>
+          <dataset-name>TEST-DEF-01390</dataset-name>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-01620/memdump.bin</file-names>
+          <file-format>covmap</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>9</dataset-id>
+          <dataset-name>TEST-DEF-01620</dataset-name>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-01630/memdump.bin</file-names>
+          <file-format>covmap</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>10</dataset-id>
+          <dataset-name>TEST-DEF-01630</dataset-name>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-01650/memdump.bin</file-names>
+          <file-format>covmap</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>11</dataset-id>
+          <dataset-name>TEST-DEF-01650</dataset-name>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-01730/memdump.bin</file-names>
+          <file-format>covmap</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>12</dataset-id>
+          <dataset-name>TEST-DEF-01730</dataset-name>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-01740/memdump.bin</file-names>
+          <file-format>covmap</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>13</dataset-id>
+          <dataset-name>TEST-DEF-01740</dataset-name>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-01750/memdump.bin</file-names>
+          <file-format>covmap</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>14</dataset-id>
+          <dataset-name>TEST-DEF-1750</dataset-name>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-80060/memdump.bin</file-names>
+          <file-format>covmap</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>15</dataset-id>
+          <dataset-name>TEST-DEF-80060</dataset-name>
+        </data-file>
+        <data-file>
+          <file-names>./examples/private-example/private/validation/TEST-DEF-80300/memdump.bin</file-names>
+          <file-format>covmap</file-format>
+          <target-metrics>coverage</target-metrics>
+          <dataset-id>16</dataset-id>
+          <dataset-name>TEST-DEF-80300</dataset-name>
+        </data-file>
+      </data-files>
+      <export-ref>arm-unmanaged-coverage</export-ref>
+      <entry-points>"at function pmk_init()"</entry-points>
+      <code-injection>
+        <inline-library-locations>
+          <inline-library-location inline-library-location-name="default">
+            <inject-points>"in file.glob '**pmk/arch/arm/isr.c**' at start"</inject-points>
+            <target-files-pattern>*.c</target-files-pattern>
+          </inline-library-location>
+          <inline-library-location inline-library-location-name="&quot;in file.glob '**pmk/arch/arm/isr.c**' at start&quot;"/>
+          <inline-library-location inline-library-location-name="test">
+            <inject-points>"in file.glob '**pmk/arch/arm/atomic.c**' at start"</inject-points>
+            <target-files-pattern>*c</target-files-pattern>
+          </inline-library-location>
+        </inline-library-locations>
+      </code-injection>
+      <exit-points>"at function arm_pll_shutdown()" "at function bsp_shutdown_core(in core_ctx as pointer pmk_core_ctrl_t)" "at function pmk_fatal_error(in code as pmk_error_e, in func as pointer const char, in file as pointer const char, in line as int)" "at function pmk_module_shutdown(in core as pointer pmk_core_ctrl_t)"</exit-points>
+      <explicit-files-list>@{{${{data-folder}}explicit-files.txt}}</explicit-files-list>
+      <excluded-files-list>@{{${{data-folder}}excluded-files.txt}}</excluded-files-list>
     </integration>
   </integrations>
   <analyses>
@@ -353,9 +493,9 @@
       </commandlines>
       <compiler-wrapper>
         <wrapper wrapper-name="gcc_wrap">
-          <path-to-original>/opt/rtems-5.1-2019.07.25/bin/sparc-rtems5-gcc</path-to-original>
+          <path-to-original>sparc-rtems5-gcc</path-to-original>
           <rsp-enabled>true</rsp-enabled>
-          <path-to-linker>/opt/rtems-5.1-2019.07.25/bin/sparc-rtems5-ld</path-to-linker>
+          <path-to-linker>sparc-rtems5-ld</path-to-linker>
         </wrapper>
         <cache-argument-triggers>
           <cache-argument-trigger>
@@ -370,9 +510,66 @@
           </rvslib-link-trigger>
         </rvslib-link-triggers>
         <wrapper wrapper-name="ld_wrap">
-          <path-to-original>/opt/rtems-5.1-2019.07.25/bin/sparc-rtems5-ld</path-to-original>
+          <path-to-original>sparc-rtems5-ld</path-to-original>
           <rsp-enabled>true</rsp-enabled>
-          <path-to-compiler>/opt/rtems-5.1-2019.07.25/bin/sparc-rtems5-gcc</path-to-compiler>
+          <path-to-compiler>sparc-rtems5-gcc</path-to-compiler>
+        </wrapper>
+      </compiler-wrapper>
+      <instrumentation>
+        <c>
+          <c-extension>${{scripts-folder}}rtems.cext</c-extension>
+        </c>
+      </instrumentation>
+      <map>
+        <map-size>16384</map-size>
+      </map>
+    </target>
+    <target target-name="arm">
+      <commandlines>
+        <clean-commandline>./rvs_air/scripts/clean.bash</clean-commandline>
+        <build-commandline>./rvs_air/scripts/build_arm.bash</build-commandline>
+        <working-folder>.</working-folder>
+        <run-commandline>./rvs_air/scripts/run_qemu.bash</run-commandline>
+      </commandlines>
+      <compiler-wrapper>
+        <wrapper wrapper-name="gcc_wrap">
+          <path-to-original>arm-rtems5-gcc</path-to-original>
+          <rsp-enabled>true</rsp-enabled>
+          <path-to-linker>arm-rtems5-ld</path-to-linker>
+        </wrapper>
+        <cache-argument-triggers>
+          <cache-argument-trigger>
+            <cache-argument-trigger-arg-pattern>-c</cache-argument-trigger-arg-pattern>
+          </cache-argument-trigger>
+        </cache-argument-triggers>
+        <rvslib-link-triggers>
+          <rvslib-link-condition-state>or</rvslib-link-condition-state>
+          <rvslib-link-trigger>
+            <rvslib-link-trigger-arg-pattern>-o</rvslib-link-trigger-arg-pattern>
+            <rvslib-link-trigger-value-pattern>**.o</rvslib-link-trigger-value-pattern>
+            <rvslib-link-trigger-option-type>any</rvslib-link-trigger-option-type>
+          </rvslib-link-trigger>
+          <rvslib-link-trigger>
+            <rvslib-link-trigger-arg-pattern>-o</rvslib-link-trigger-arg-pattern>
+            <rvslib-link-trigger-value-pattern>**.exe</rvslib-link-trigger-value-pattern>
+            <rvslib-link-trigger-option-type>any</rvslib-link-trigger-option-type>
+          </rvslib-link-trigger>
+          <rvslib-link-trigger>
+            <rvslib-link-trigger-arg-pattern>**-L</rvslib-link-trigger-arg-pattern>
+            <rvslib-link-trigger-value-pattern>**.o</rvslib-link-trigger-value-pattern>
+          </rvslib-link-trigger>
+          <rvslib-link-trigger>
+            <rvslib-link-trigger-arg-pattern>**-L</rvslib-link-trigger-arg-pattern>
+            <rvslib-link-trigger-value-pattern>**.a</rvslib-link-trigger-value-pattern>
+          </rvslib-link-trigger>
+          <rvslib-link-trigger>
+            <rvslib-link-trigger-value-pattern>AIRAPP.exe</rvslib-link-trigger-value-pattern>
+          </rvslib-link-trigger>
+        </rvslib-link-triggers>
+        <wrapper wrapper-name="ld_wrap">
+          <path-to-original>arm-rtems5-ld</path-to-original>
+          <rsp-enabled>true</rsp-enabled>
+          <path-to-compiler>arm-rtems5-gcc</path-to-compiler>
         </wrapper>
       </compiler-wrapper>
       <instrumentation>
@@ -386,7 +583,7 @@
     </target>
   </targets>
   <exports>
-    <export export-name="unmanaged-coverage">
+    <export export-name="sparc-unmanaged-coverage">
       <export-section>
         <metric>coverage</metric>
         <export-format>txt</export-format>
@@ -394,8 +591,20 @@
       <export-section>
         <metric>coverage</metric>
         <export-format>srchtml</export-format>
-        <export-file>rvs_air/results/pmk_coverage.htm</export-file>
+        <export-file>${{integration//results-folder}}${{integration//report-name}}-${{export-name}}-${{metric}}.${{export-file-extension}}</export-file>
         <split-datasets>true</split-datasets>
+      </export-section>
+    </export>
+    <export export-name="arm-unmanaged-coverage">
+      <export-section>
+        <metric>coverage</metric>
+        <export-format>txt</export-format>
+        <split-datasets>false</split-datasets>
+      </export-section>
+      <export-section>
+        <metric>coverage</metric>
+        <export-format>srchtml</export-format>
+        <split-datasets>false</split-datasets>
       </export-section>
     </export>
   </exports>

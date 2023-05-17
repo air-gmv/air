@@ -128,6 +128,21 @@ typedef struct {
 
 
 /**
+ * @brief TME Header.
+ */
+typedef struct {
+	uint32_t vc;
+} __attribute__((packed)) tme_header_t;
+
+/**
+ * @brief GPIO Header.
+ */
+typedef struct {
+    uint8_t pin;
+} __attribute__((packed)) gpio_header_t;
+
+
+/**
  * @brief IOP generic header
  *
  * This header is a union of all supported headers
@@ -140,6 +155,8 @@ typedef union {
     uart_header_t uart_header;      /**< UART header                 */
     sd_header_t sd_header;  		/**< SD header                   */
     adc_header_t adc_header;  		/**< ADC header                  */
+    tme_header_t tme_header;  		/**< TME header                  */
+    gpio_header_t gpio_header;      /**< GPIO header                  */
 
 } __attribute__((packed)) iop_header_t;
 
