@@ -18,7 +18,7 @@
 #include <bsp_console.h>
 #include <slcr.h>
 
-#define UART(port) ((uart_t *)(XPAR_PS7_UART_0_BASEADDR + port*0x1000))
+#define UART(port) ((uart_t *)(XPAR_PSU_UART_0_BASEADDR + port*0x10000))
 air_u32_t arm_uart_debug_port = 0;
 
 void arm_setup_uart(air_u32_t port, air_u32_t BaudRate) {
