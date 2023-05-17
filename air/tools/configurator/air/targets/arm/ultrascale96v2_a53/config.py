@@ -70,17 +70,17 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     'arch/arm/svc.c',
     'arch/arm/syscalls_virtualization.c',
     # BSP files
-    'bsp/arm/shared/a9mpcore.c',
-    'bsp/arm/zynqz1/bsp.c',
-    'bsp/arm/zynqz1/gic.c',
-    'bsp/arm/zynqz1/global_timer.c',
-    'bsp/arm/zynqz1/ipc.c',
-    'bsp/arm/zynqz1/segregation.c',
-    'bsp/arm/zynqz1/triple_timer.c',
-    'bsp/arm/zynqz1/uart.c',
-    'bsp/arm/zynqz1/slcr.c',
-    'bsp/arm/zynqz1/xilinx/xil_assert.c',
-    'bsp/arm/zynqz1/xilinx/xil_io.c',
+    # 'bsp/arm/shared/a9mpcore.c',
+    'bsp/arm/ultrascale96v2_a53/bsp.c',
+    'bsp/arm/ultrascale96v2_a53/gic.c',
+    'bsp/arm/ultrascale96v2_a53/global_timer.c',
+    'bsp/arm/ultrascale96v2_a53/ipc.c',
+    'bsp/arm/ultrascale96v2_a53/segregation.c',
+    'bsp/arm/ultrascale96v2_a53/triple_timer.c',
+    'bsp/arm/ultrascale96v2_a53/uart.c',
+    'bsp/arm/ultrascale96v2_a53/slcr.c',
+    'bsp/arm/ultrascale96v2_a53/xilinx/xil_assert.c',
+    # 'bsp/arm/ultrascale96v2_a53/xilinx/xil_io.c',
     # Core files
     'core/error.c',
     'core/barrier.c',
@@ -110,18 +110,26 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
 ]]
 
 # kernel headers
-kernel_headers = set(utils.flatten([
+kernel_h_list = utils.flatten([
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'core'), ['.h', '.ld']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'arch', 'arm'), ['.h', '.ld']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'shared'), ['.h', '.ld']),
-    file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'zynqz1'), ['.h', '.ld']),
-]))
+    file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'ultrascale96v2_a53'), ['.h', '.ld']),
+])
+
+# Remove the a9mpcore.h file from the kernel headers because it is not needed for the a53
+for h in kernel_h_list:
+    if h.endswith("a9mpcore.h"):
+        kernel_h_list.remove(h)
+        break
+
+kernel_headers = set(kernel_h_list)
 
 # Lib AIR sources
 libair_sources = set(utils.flatten([
     file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'core'), ['.c']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'arch', 'arm'), ['.c', '.S']),
-    file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'zynqz1'), ['.c', '.S']),
+    file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'ultrascale96v2_a53'), ['.c', '.S']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'shared'), ['.c', '.S']),
 ]))
 
