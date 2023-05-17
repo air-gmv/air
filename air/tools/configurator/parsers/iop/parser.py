@@ -406,6 +406,12 @@ class IOParser(object):
             if self.logger.check_errors(): return None
             return self.parse_adc_header(xml_header)
 
+        # device of gpio type
+        elif pdevice.type == GPIO:
+            xml_header = xml.parse_tag(GPIOHEADER, 1, 1, self.logger)
+            if self.logger.check_errors(): return None
+            return self.parse_gpio_header(xml_header)
+
         # device of mil-std-1553 type
         elif pdevice.type == MIL:
             xml_header = xml.parse_tag(MILHEADER, 1, 1, self.logger)
@@ -534,6 +540,22 @@ class IOParser(object):
         if self.logger.check_errors(): return False
         return header
 
+
+    ## Parse GPIO Header
+    # @param self object pointer
+    # @param xml mil Header xml node
+    def parse_gpio_header(self, xml):
+
+        # clear previous errors and warning
+        self.logger.clear_errors(3)
+
+        # parse attributes
+        header = GPIOHeader()
+        header.pin = xml.parse_attr(GPIO_PIN, VALID_ID, True, self.logger)
+
+        # sanity check
+        if self.logger.check_errors(): return False
+        return header
 
     def parse_schedule(self, xml):
 

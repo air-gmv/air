@@ -1,12 +1,12 @@
 [submodule "air/pos/rtems48i"]
 	path = air/pos/rtems48i
-	url = $(AIR_GIT_REMOTE_URL)/AIR/rtems48i.git
+	url = https://$(AIR_GIT_REMOTE_HOSTNAME)/AIR/rtems48i.git
 [submodule "air/pos/rtems5"]
 	path = air/pos/rtems5
-	url = $(AIR_GIT_REMOTE_URL)/AIR/rtems5.git
+	url = https://$(AIR_GIT_REMOTE_HOSTNAME)/AIR/rtems5.git
 [submodule "air/examples/private-example"]
 	path = air/examples/private-example
-	url = $(AIR_GIT_REMOTE_URL)/AIR/private-example.git
+	url = https://$(AIR_GIT_REMOTE_HOSTNAME)/AIR/private-example.git
 [submodule "air/tools/air-gui"]
 	path = air/tools/air-gui
-	url = $(AIR_GIT_REMOTE_URL)/AIR/air-gui.git
+	url = https://$(AIR_GIT_REMOTE_HOSTNAME)/AIR/air-gui.git

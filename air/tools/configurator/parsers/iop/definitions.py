@@ -7,6 +7,7 @@ CAN  = 'CAN'
 UART = 'UART'
 SD   = 'SD'
 ADC  = 'ADC'
+GPIO = 'GPIO'
 
 
 
@@ -17,7 +18,8 @@ SUPPORTED_DEVICES    = {    SPW : ['GRSPW'],
                             CAN : ['GRCAN', 'XCAN'],
                             UART: ['XUART'],
                             ADC : ['XADC'],
-                            SD  : ['XSD']	}
+                            SD  : ['XSD'],
+                            GPIO: ['XGPIO']	}
 
 
 
@@ -128,6 +130,10 @@ SDHEADER_FILE                   = 'File'
 ADCHEADER                      = 'AdcHeader'
 ADCHEADER_ID                   = 'AdcId'
 
+#GPIO Header
+GPIOHEADER                     = 'GpioHeader'
+GPIO_PIN                       = 'Pin'
+
 
 
 import utils.parser as parserutils
@@ -143,7 +149,7 @@ VALID_FLOAT_TYPE        = [ parserutils.str2float, lambda x : x >= 0 ]
 VALID_DECIMAL_TYPE      = [ parserutils.str2int, lambda x : x >= 0 ]
 VALID_BOOLEAN_TYPE      = [ parserutils.str2bool, lambda x : isinstance(x, bool) ]
 VALID_DIRECTION_TYPE    = [ str, lambda x : x in [ REMOTE_PORT_SRC, REMOTE_PORT_DST] ]
-VALID_ID                = [ parserutils.str2int, lambda x: x > 0]
+VALID_ID                = [ parserutils.str2int, lambda x: x >= 0]
 VALID_SD_FILE_SIZE      = [ parserutils.str2int, lambda x: x >= 0]
 VALID_MASK_CODE         = [ lambda x: str(x).strip().split(':'), lambda x: len(x) == 4]
 VALID_MILMJFRAME_TYPE   = [ parserutils.str2int, lambda x : 0 <= x <= 10000000 ]
@@ -167,6 +173,7 @@ CAN_HEADER_STR          = 'Canbus Header (extended: {0}, SShot: {1}, Rtr: {2}, C
 UART_HEADER_STR         = 'Uart Header (UartID: {0})'
 SD_HEADER_STR           = 'SD Header (Size: {0}, File: {1})'
 ADC_HEADER_STR          = 'Adc Header (AdcId: {0})'
+GPIO_HEADER_STR         = 'Gpio Header (Pin: {0})'
 MIL_HEADER_STR          = 'MIL-STD-1553 Header (ADDR: {0}, SUBADDR: {1})'
 MIL_LIST_STR            = 'MIL LIST (Id: {0})'
 MIL_SLOT_STR            = 'MIL SLOT (Id: {0} Type:{1} ADDR: {2}, SUBADDR: {3})'
@@ -520,6 +527,28 @@ class AdcHeader(object):
 
     def __str__(self):
         return ADC_HEADER_STR.format(self.id)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def details(self):
+        return self.__str__()
+
+## GPIO Header
+class GPIOHeader(object):
+
+    def __init__(self):
+        self.pin = 0
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and \
+            self.id == other.id
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __str__(self):
+        return GPIO_HEADER_STR.format(self.pin)
 
     def __repr__(self):
         return self.__str__()
