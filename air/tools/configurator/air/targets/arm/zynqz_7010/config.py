@@ -19,7 +19,7 @@ def iop_arch(config, partition):
     pass
 
 # Target Description
-description = "AIR OS for ARM-ZYNQ Z1"
+description = "AIR OS for ARM-ZYNQ Z7010"
 
 # Target Number of cores
 cores = 2
