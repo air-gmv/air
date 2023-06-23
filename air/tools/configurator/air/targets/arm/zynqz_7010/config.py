@@ -1,5 +1,5 @@
 ##
-# @package air.targets.arm.zynqz1
+# @package air.targets.arm.zynqz7010
 # @author lumm
 # @brief AIR OS for ARM Zynq Z1
 
@@ -73,16 +73,16 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     'arch/arm/syscalls_virtualization.c',
     # BSP files
     'bsp/arm/shared/a9mpcore.c',
-    'bsp/arm/zynqz1/bsp.c',
-    'bsp/arm/zynqz1/gic.c',
-    'bsp/arm/zynqz1/global_timer.c',
-    'bsp/arm/zynqz1/ipc.c',
-    'bsp/arm/zynqz1/segregation.c',
-    'bsp/arm/zynqz1/triple_timer.c',
-    'bsp/arm/zynqz1/uart.c',
-    'bsp/arm/zynqz1/slcr.c',
-    'bsp/arm/zynqz1/xilinx/xil_assert.c',
-    'bsp/arm/zynqz1/xilinx/xil_io.c',
+    'bsp/arm/zynqz7010/bsp.c',
+    'bsp/arm/zynqz7010/gic.c',
+    'bsp/arm/zynqz7010/global_timer.c',
+    'bsp/arm/zynqz7010/ipc.c',
+    'bsp/arm/zynqz7010/segregation.c',
+    'bsp/arm/zynqz7010/triple_timer.c',
+    'bsp/arm/zynqz7010/uart.c',
+    'bsp/arm/zynqz7010/slcr.c',
+    'bsp/arm/zynqz7010/xilinx/xil_assert.c',
+    'bsp/arm/zynqz7010/xilinx/xil_io.c',
     # Core files
     'core/error.c',
     'core/barrier.c',
@@ -116,14 +116,14 @@ kernel_headers = set(utils.flatten([
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'core'), ['.h', '.ld']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'arch', 'arm'), ['.h', '.ld']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'shared'), ['.h', '.ld']),
-    file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'zynqz1'), ['.h', '.ld']),
+    file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'zynqz7010'), ['.h', '.ld']),
 ]))
 
 # Lib AIR sources
 libair_sources = set(utils.flatten([
     file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'core'), ['.c']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'arch', 'arm'), ['.c', '.S']),
-    file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'zynqz1'), ['.c', '.S']),
+    file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'zynqz7010'), ['.c', '.S']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'shared'), ['.c', '.S']),
 ]))
 
