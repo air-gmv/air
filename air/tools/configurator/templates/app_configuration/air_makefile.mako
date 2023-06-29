@@ -40,6 +40,7 @@ OBJECT_FILES=$(patsubst %.c,$(TARGET_BUILD)/%.o,${'\\'}
 
 TARGET_CPPFLAGS+=${'\\'}
 -DPMK_MAX_CORES=${os_configuration.get_available_cores()}${'\\'}
+-DPMK_${os_configuration.arch.upper()}${'\\'}
 -DPMK_${os_configuration.arch.upper()}_${os_configuration.bsp.upper()}${'\\'}
 -fno-zero-initialized-in-bss${'\\'}
 -I./${'\\'}
