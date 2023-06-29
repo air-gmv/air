@@ -35,6 +35,7 @@ $(patsubst %.S,$(TARGET_BUILD)/%.o,$(TARGET_SOURCES)))
 
 TARGET_CPPFLAGS+=${'\\'}
 -DPMK_MAX_CORES=${os_configuration.get_available_cores()}${'\\'}
+-DPMK_${os_configuration.arch.upper()}${'\\'}
 -DPMK_${os_configuration.arch.upper()}_${os_configuration.bsp.upper()}${'\\'}
 ${template.get_headers_directories(target_headers)}\
 
