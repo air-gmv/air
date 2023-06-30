@@ -1,3 +1,9 @@
+# Copyright (C) 2014-2023  GMVIS Skysoft S.A.
+#
+# The license and distribution terms for this file may be
+# found in the file LICENSE in this distribution or at
+# https://github.com/air-gmv/air/tree/master/LICENSE
+
 # Gitlab CICD script for report stage
 # Author huca@GMV 2023
 
