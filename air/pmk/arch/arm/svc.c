@@ -26,6 +26,8 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
 
     air_u32_t svc_id;
     air_u64_t elapsed = 0;
+    air_clocktick_t us_per_tick = 0;
+    
     int psri= core->context->vcpu.psr;
 
     if (frame->ret_psr & ARM_PSR_T) {
@@ -82,7 +84,9 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
         break;
 //  arm_svc_install_handler(AIR_SYSCALL_BOOT_CORE, );
     case AIR_SYSCALL_GET_US_PER_TICK:
-        frame->r0 = pmk_get_usr_us_per_tick();
+        us_per_tick = pmk_get_usr_us_per_tick();
+        frame->r0 = (air_u32_t)(us_per_tick & 0xffffffff);
+        frame->r1 = (air_u32_t)((us_per_tick & 0xffffffff00000000) >> 32);
         break;
     case AIR_SYSCALL_GET_ELAPSED_TICKS:
         elapsed = arm_syscall_get_elapsed_ticks(core);
