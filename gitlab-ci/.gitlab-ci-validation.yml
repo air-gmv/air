@@ -180,7 +180,7 @@ ARM-QEMU-TEST-DEF-80060:
 #    variables :
 #      EXAMPLE : "TEST-DEF-80300"
 
- ARM-QEMU-TEST-DEF-80390:
+ARM-QEMU-TEST-DEF-80390:
     extends : .ARM-QEMU-validation-template
     variables :
       EXAMPLE : "TEST-DEF-80390"
