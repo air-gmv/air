@@ -29,16 +29,19 @@
  */
 void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) {
 
-    air_u32_t svc_id;
-    air_u64_t elapsed = 0;
-    int psri= core->context->vcpu.psr;
+    // Declare and initialize local variables
+    air_u32_t svc_id;  // SVC ID extracted from the instruction
+    air_u64_t elapsed = 0;  // Elapsed time
+    int psri = core->context->vcpu.psr;  // Processor Status Register (PSR) value
 
+    // Determine the SVC ID based on the instruction
     if (frame->ret_psr & ARM_PSR_T) {
         svc_id = ( *((air_uptr_t *)(frame->ret_addr - 2)) & 0xff );
     } else {
         svc_id = ( *((air_uptr_t *)(frame->ret_addr - 4)) & 0xffffff );
     }
 
+    // Handle different SVC IDs
     switch (svc_id) {
         
     case AIR_SYSCALL_ARM_DISABLE_INTERRUPTS:
@@ -77,7 +80,6 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
         // Get the value of the IRQ mask register
         frame->r0 = arm_syscall_get_irq_mask_register(core);
         break;
-
     case AIR_SYSCALL_ARM_SET_TBR:
         // Set the value of the Time Base Register (TBR)
         arm_syscall_set_tbr(core, frame->r0);
@@ -109,91 +111,112 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
         break;
     case AIR_SYSCALL_GET_PARTITION_ID:
         // Get the partition ID based on the name and identifier
-        frame->r0 = pmk_syscall_get_partition_id(core, (air_name_ptr_t)frame->r0, (air_identifier_t *)frame->r1);
+        frame->r0 = pmk_syscall_get_partition_id(core, 
+            (air_name_ptr_t)frame->r0, 
+            (air_identifier_t *)frame->r1);
         break;
     case AIR_SYSCALL_GET_PARTITION_STATUS:
         // Get the status of a partition based on its identifier
-        frame->r0 = (air_u32_t)pmk_syscall_get_partition_status(core, (air_identifier_t)frame->r0, (air_partition_status_t *)frame->r1);
+        frame->r0 = (air_u32_t)pmk_syscall_get_partition_status(core, 
+            (air_identifier_t)frame->r0, 
+            (air_partition_status_t *)frame->r1);
         break;
     case AIR_SYSCALL_SET_PARTITION_MODE:
         // Set the operating mode of a partition based on its identifier
-        frame->r0 = (air_u32_t)pmk_syscall_set_partition_mode(core, (air_identifier_t)frame->r0, (air_operating_mode_e)frame->r1);
+        frame->r0 = (air_u32_t)pmk_syscall_set_partition_mode(core, 
+            (air_identifier_t)frame->r0, 
+            (air_operating_mode_e)frame->r1);
         break;
     case AIR_SYSCALL_GET_SCHEDULE_ID:
         // Get the schedule ID based on the name and identifier
-        frame->r0 = (air_u32_t)pmk_syscall_get_schedule_id(core, (air_name_ptr_t)frame->r0, (air_identifier_t *)frame->r1);
+        frame->r0 = (air_u32_t)pmk_syscall_get_schedule_id(core, 
+            (air_name_ptr_t)frame->r0, 
+            (air_identifier_t *)frame->r1);
         break;
-case AIR_SYSCALL_GET_SCHEDULE_STATUS:
-    // Get the status of the current schedule
-    frame->r0 = (air_u32_t)pmk_syscall_get_schedule_status(core, 
-        (air_schedule_status_t *)frame->r0);
-    break;
-case AIR_SYSCALL_SET_SCHEDULE:
-    // Set the current schedule based on its identifier
-    frame->r0 = (air_u32_t)pmk_syscall_set_schedule(core, 
-        (air_identifier_t)frame->r0);
-    break;
-case AIR_SYSCALL_GET_TIME_OF_DAY:
-    // Get the current time of day
-    frame->r0 = (air_u32_t)pmk_syscall_get_tod(core, 
-        (air_time_t *)frame->r0);
-    break;
-case AIR_SYSCALL_SET_TIME_OF_DAY:
-    // Set the current time of day
-    frame->r0 = (air_u32_t)pmk_syscall_set_tod(core, 
-        (air_time_t *)frame->r0);
-    break;
-case AIR_SYSCALL_GET_PORT_ID:
-    // Get the port ID based on the port type, name, and identifier
-    frame->r0 = (air_u32_t)pmk_syscall_get_port_id(core, 
-        (air_port_type_e)frame->r0, 
-        (air_name_ptr_t)frame->r1, 
-        (air_identifier_t *)frame->r2);
-    break;
-case AIR_SYSCALL_CREATE_PORT:
-    // Create a new port based on the port type, name, data pointer, and identifier
-    frame->r0 = (air_u32_t)pmk_syscall_create_port(core, 
-        (air_port_type_e)frame->r0, 
-        (air_name_ptr_t)frame->r1, 
-        frame->r2, 
-        (air_identifier_t *)frame->r3);
-    break;
-case AIR_SYSCALL_GET_PORT_STATUS:
-    // Get the status of a port based on its identifier
-    frame->r0 = (air_u32_t)pmk_syscall_get_port_status(core, 
-        (air_identifier_t)frame->r0, 
-        (air_port_status_t *)frame->r1);
-    break;
-    
+
     case AIR_SYSCALL_GET_SCHEDULE_STATUS:
         // Get the status of the current schedule
-        frame->r0 = (air_u32_t)pmk_syscall_get_schedule_status(core, (air_schedule_status_t *)frame->r0);
+        frame->r0 = (air_u32_t)pmk_syscall_get_schedule_status(core, 
+            (air_schedule_status_t *)frame->r0);
         break;
     case AIR_SYSCALL_SET_SCHEDULE:
         // Set the current schedule based on its identifier
-        frame->r0 = (air_u32_t)pmk_syscall_set_schedule(core, (air_identifier_t)frame->r0);
+        frame->r0 = (air_u32_t)pmk_syscall_set_schedule(core, 
+            (air_identifier_t)frame->r0);
         break;
     case AIR_SYSCALL_GET_TIME_OF_DAY:
         // Get the current time of day
-        frame->r0 = (air_u32_t)pmk_syscall_get_tod(core, (air_time_t *)frame->r0);
+        frame->r0 = (air_u32_t)pmk_syscall_get_tod(core, 
+            (air_time_t *)frame->r0);
         break;
     case AIR_SYSCALL_SET_TIME_OF_DAY:
         // Set the current time of day
-        frame->r0 = (air_u32_t)pmk_syscall_set_tod(core, (air_time_t *)frame->r0);
+        frame->r0 = (air_u32_t)pmk_syscall_set_tod(core, 
+            (air_time_t *)frame->r0);
         break;
     case AIR_SYSCALL_GET_PORT_ID:
         // Get the port ID based on the port type, name, and identifier
-        frame->r0 = (air_u32_t)pmk_syscall_get_port_id(core, (air_port_type_e)frame->r0, (air_name_ptr_t)frame->r1, (air_identifier_t *)frame->r2);
+        frame->r0 = (air_u32_t)pmk_syscall_get_port_id(core, 
+            (air_port_type_e)frame->r0, 
+            (air_name_ptr_t)frame->r1, 
+            (air_identifier_t *)frame->r2);
         break;
     case AIR_SYSCALL_CREATE_PORT:
         // Create a new port based on the port type, name, data pointer, and identifier
-        frame->r0 = (air_u32_t)pmk_syscall_create_port(core, (air_port_type_e)frame->r0, (air_name_ptr_t)frame->r1, frame->r2, (air_identifier_t *)frame->r3);
+        frame->r0 = (air_u32_t)pmk_syscall_create_port(core, 
+            (air_port_type_e)frame->r0, 
+            (air_name_ptr_t)frame->r1, 
+            frame->r2, 
+            (air_identifier_t *)frame->r3);
         break;
     case AIR_SYSCALL_GET_PORT_STATUS:
         // Get the status of a port based on its identifier
-        frame->r0 = (air_u32_t)pmk_syscall_get_port_status(core, (air_identifier_t)frame->r0, (air_port_status_t *)frame->r1);
-        break;        
-case AIR_SYSCALL_READ_PORT:
+        frame->r0 = (air_u32_t)pmk_syscall_get_port_status(core, 
+            (air_identifier_t)frame->r0, 
+            (air_port_status_t *)frame->r1);
+        break;
+    case AIR_SYSCALL_GET_SCHEDULE_STATUS:
+        // Get the status of the current schedule
+        frame->r0 = (air_u32_t)pmk_syscall_get_schedule_status(core, 
+            (air_schedule_status_t *)frame->r0);
+        break;
+    case AIR_SYSCALL_SET_SCHEDULE:
+        // Set the current schedule based on its identifier
+        frame->r0 = (air_u32_t)pmk_syscall_set_schedule(core, 
+            (air_identifier_t)frame->r0);
+        break;
+    case AIR_SYSCALL_GET_TIME_OF_DAY:
+        // Get the current time of day
+        frame->r0 = (air_u32_t)pmk_syscall_get_tod(core, 
+            (air_time_t *)frame->r0);
+        break;
+    case AIR_SYSCALL_SET_TIME_OF_DAY:
+        // Set the current time of day
+        frame->r0 = (air_u32_t)pmk_syscall_set_tod(core, 
+            (air_time_t *)frame->r0);
+        break;
+    case AIR_SYSCALL_GET_PORT_ID:
+        // Get the port ID based on the port type, name, and identifier
+        frame->r0 = (air_u32_t)pmk_syscall_get_port_id(core, 
+            (air_port_type_e)frame->r0, 
+            (air_name_ptr_t)frame->r1, 
+            (air_identifier_t *)frame->r2);
+        break;
+    case AIR_SYSCALL_CREATE_PORT:
+        // Create a new port based on the port type, name, data pointer, and identifier
+        frame->r0 = (air_u32_t)pmk_syscall_create_port(core, 
+            (air_port_type_e)frame->r0, 
+            (air_name_ptr_t)frame->r1, 
+            frame->r2, 
+            (air_identifier_t *)frame->r3);
+        break;
+    case AIR_SYSCALL_GET_PORT_STATUS:
+        // Get the status of a port based on its identifier
+        frame->r0 = (air_u32_t)pmk_syscall_get_port_status(core, 
+            (air_identifier_t)frame->r0, 
+            (air_port_status_t *)frame->r1);
+        break;
+    case AIR_SYSCALL_READ_PORT:
         // Read from a port based on the port type, identifier, buffer, buffer size, and user stack pointer
         frame->r0 = (air_u32_t)pmk_syscall_read_port(
             core,
@@ -268,6 +291,6 @@ case AIR_SYSCALL_READ_PORT:
         break;
     default:
         break;    
-
+    } // switch
     return;
 }
