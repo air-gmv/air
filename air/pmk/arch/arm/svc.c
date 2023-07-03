@@ -166,7 +166,7 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
         frame->r0 = (air_u32_t)pmk_syscall_create_port(core, 
             (air_port_type_e)frame->r0, 
             (air_name_ptr_t)frame->r1, 
-            frame->r2, 
+            (void *)frame->r2, 
             (air_identifier_t *)frame->r3);
         break;
     case AIR_SYSCALL_GET_PORT_STATUS:
