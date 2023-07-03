@@ -96,17 +96,19 @@ static inline air_u32_t pmk_get_usr_configured_cores(void) {
  * @brief Get the number of configured micro-seconds per tick
  * @return Number of micro-seconds per tick
  */
-static inline air_u32_t pmk_get_usr_us_per_tick(void) {
+static inline  air_clocktick_t pmk_get_usr_us_per_tick(void) {
     return pmk_configuration->us_per_tick;
 }
+
 
 /**
  * @brief Get the number of configured nano-seconds per tick
  * @return Number of nano-seconds per tick
  */
-static inline air_u32_t pmk_get_usr_ns_per_tick(void) {
+static inline  air_clocktick_t pmk_get_usr_ns_per_tick(void) {
     return pmk_configuration->us_per_tick * 1000;
 }
+
 
 /**
  * @brief Gets the Health-Monitor System State table

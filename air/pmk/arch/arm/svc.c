@@ -99,10 +99,14 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
     case AIR_SYSCALL_GET_CORE_ID:
         // Get the ID of the current core
         frame->r0 = arm_syscall_get_core_id(core);
-        break;        
+        break;                
+      case AIR_SYSCALL_GET_US_PER_TICK:
         // Get the number of microseconds per tick
-        frame->r0 = pmk_get_usr_us_per_tick();
+        us_per_tick = pmk_get_usr_us_per_tick();
+        frame->r0 = (air_u32_t)(us_per_tick & 0xffffffff);
+        frame->r1 = (air_u32_t)((us_per_tick & 0xffffffff00000000) >> 32);
         break;
+
     case AIR_SYSCALL_GET_ELAPSED_TICKS:
         // Get the elapsed ticks since system start
         elapsed = arm_syscall_get_elapsed_ticks(core);
