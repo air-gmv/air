@@ -1,11 +1,5 @@
-# Copyright (C) 2014-2023  GMVIS Skysoft S.A.
-#
-# The license and distribution terms for this file may be
-# found in the file LICENSE in this distribution or at
-# https://github.com/air-gmv/air/tree/master/LICENSE
- 
 # Gitlab CICD script for validation stage
-# Author $(AIR_RUNNER_USER), jmda, huca@GMV 2023
+# Author huca@GMV 2023
 
 .build-executable: &build-executable
     - $AIR/configure
@@ -177,11 +171,6 @@ ARM-QEMU-TEST-DEF-80060:
 #    extends : .ARM-QEMU-validation-template
 #    variables :
 #      EXAMPLE : "TEST-DEF-80300"
-
-ARM-QEMU-TEST-DEF-80390:
-    extends : .ARM-QEMU-validation-template
-    variables :
-      EXAMPLE : "TEST-DEF-80390"
 
 # ARM-QEMU-TEST-DEF-80400:
 #    extends : .ARM-QEMU-validation-template
@@ -369,11 +358,6 @@ SPARC-LAYSIM-TEST-DEF-80300:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-80300"
-
-SPARC-LAYSIM-TEST-DEF-80390:
-    extends : .SPARC-LAYSIM-validation-template
-    variables : 
-      EXAMPLE : "TEST-DEF-80390"
 
 SPARC-LAYSIM-TEST-DEF-80400:
     extends : .SPARC-LAYSIM-validation-template
