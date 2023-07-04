@@ -32,7 +32,8 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
     // Declare and initialize local variables
     air_u32_t svc_id;  // SVC ID extracted from the instruction
     air_u64_t elapsed = 0;  // Elapsed time
-    int psri = core->context->vcpu.psr;  // Processor Status Register (PSR) value
+    int psri = core->context->vcpu.psr; // Processor Status Register(PSR) value
+    air_clocktick_t us_per_tick = 0; // Get the number of microseconds per tick
 
     // Determine the SVC ID based on the instruction
     if (frame->ret_psr & ARM_PSR_T) {
