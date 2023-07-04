@@ -16,13 +16,15 @@ Execute the following:
 
 ```
 git clone git://git.rtems.org/rtems-source-builder.git rsb
+git checkout 5
 cd rsb
 ./source-builder/sb-check
 cd rtems
 ../source-builder/sb-set-builder --prefix=/opt/rtems/5 5/rtems-sparc
 ```
-
 Currently supported toolchain version : rtems-5.1-2019.07.25
+
+It maybe needed texinfo package, install by executing "sudo apt-get install texinfo" or similar command.
 
 
 ## 2 - Configure and build AIR
