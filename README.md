@@ -1,10 +1,10 @@
-# Welcome to AIR v5.6.1
+# Welcome to AIR v5.6.1b
 
 AIR has a user manual that you can request by e-mailing airproduct@gmv.com
 
 You have two ways of getting AIR
 1) Download from github at https://github.com/air-gmv/air
-2) AIR is intregrated in TASTE toolchain available at  https://taste.tuxfamily.org/
+2) AIR is intregrated in TASTE toolchain available at  https://taste.tuxfamily.org/ inside ~/tool-src/air folder.
 
 Below is an example on installing and using AIR.
 This example is use SPARC target, if ARM read section 4.2.1 of user manual.
