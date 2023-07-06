@@ -132,10 +132,15 @@ ARM-QEMU-TEST-DEF-01740:
     variables :
       EXAMPLE : "TEST-DEF-01740"
 
-# ARM-QEMU-TEST-DEF-01741:
-#    extends : .ARM-QEMU-validation-template
-#    variables :
-#      EXAMPLE : "TEST-DEF-00009"
+ARM-QEMU-TEST-DEF-01741:
+   extends : .ARM-QEMU-validation-template
+   variables :
+     EXAMPLE : "TEST-DEF-01741"
+
+ARM-QEMU-TEST-DEF-01742:
+   extends : .ARM-QEMU-validation-template
+   variables :
+     EXAMPLE : "TEST-DEF-01742"
 
 ARM-QEMU-TEST-DEF-01750:
     extends : .ARM-QEMU-validation-template
