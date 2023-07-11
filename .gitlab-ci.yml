@@ -15,12 +15,12 @@ stages:
     - report
 
 variables:
-        GIT_SUBMODULE_STRATEGY : recursive
-        GIT_STRATEGY : clone
-        GIT_ASKPASS: /bin/echo
-        GIT_HTTP_USERNAME: huca
-        GIT_HTTP_PASSWORD: $CI_JOB_TOKEN
-        COMMIT_TYPE: ""
+    GIT_SUBMODULE_STRATEGY : recursive
+    GIT_STRATEGY : clone
+    GIT_ASKPASS: /bin/echo
+    GIT_HTTP_USERNAME: huca
+    GIT_HTTP_PASSWORD: $CI_JOB_TOKEN
+    COMMIT_TYPE: ""
 
 default:
     retry: 1
@@ -81,6 +81,7 @@ default:
         # commit types can be: ARM, SPARC or BOTH
         - COMMIT_MESSAGE=$(git log --format=%B -n 1 $CI_COMMIT_SHA)
         - COMMIT_PREFIX=$(echo $COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
+        - echo "Commit Type $COMMIT_TYPE"
 
 # .pre are jobs ran before any other job in the pipeline
 # These jobs are used to check the state of VMs and to performn any specific VM action such as a cleanup.
@@ -131,11 +132,3 @@ TASTE3_init :
     extends : .pre_job-template
     tags : 
         - sparc-taste-debian3
-
-test:
-  script:
-    - echo "Commit Type: $COMMIT_TYPE"
-  artifacts:
-    paths:
-      - commit_type.log  
-
