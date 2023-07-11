@@ -81,8 +81,7 @@ default:
         # commit types can be: ARM, SPARC or BOTH
         - COMMIT_MESSAGE=$(git log --format=%B -n 1 $CI_COMMIT_SHA)
         - COMMIT_PREFIX=$(echo $COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
-        - echo "Commit Prefix: $COMMIT_PREFIX"
-        
+
 # .pre are jobs ran before any other job in the pipeline
 # These jobs are used to check the state of VMs and to performn any specific VM action such as a cleanup.
 # ARM and TASTE 1 are not allowed to fail since they are the only one with RVS license.
@@ -134,6 +133,6 @@ TASTE3_init :
         - sparc-taste-debian3
     
 
-
-
+script:
+  - echo "Commit Prefix: $COMMIT_PREFIX"
 
