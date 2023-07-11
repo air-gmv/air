@@ -80,8 +80,9 @@ default:
         # extract commit type from commit message
         # commit types can be: ARM, SPARC or BOTH
         - COMMIT_MESSAGE=$(git log --format=%B -n 1 $CI_COMMIT_SHA)
-        - COMMIT_PREFIX=$(echo $COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
+        - COMMIT_TYPE=$(echo $COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
         - echo "Commit Type $COMMIT_TYPE"
+
 
 # .pre are jobs ran before any other job in the pipeline
 # These jobs are used to check the state of VMs and to performn any specific VM action such as a cleanup.
