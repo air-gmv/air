@@ -131,8 +131,6 @@ TASTE3_init :
     extends : .pre_job-template
     tags : 
         - sparc-taste-debian3
-    
 
-script:
-  - echo "Commit Prefix: $COMMIT_PREFIX"
+  
 
