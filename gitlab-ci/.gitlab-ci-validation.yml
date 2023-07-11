@@ -87,6 +87,11 @@ ARM-QEMU-TEST-DEF-00600:
     variables :
       EXAMPLE : "TEST-DEF-00600"
 
+ARM-QEMU-TEST-DEF-01210:
+    extends : .ARM-QEMU-validation-template
+    variables :
+      EXAMPLE : "TEST-DEF-01210"
+
 ARM-QEMU-TEST-DEF-01390:
     extends : .ARM-QEMU-validation-template
     variables :
@@ -258,7 +263,12 @@ SPARC-LAYSIM-TEST-DEF-00600:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-00600"
-        
+
+SPARC-LAYSIM-TEST-DEF-01210:
+    extends : .SPARC-LAYSIM-validation-template
+    variables : 
+      EXAMPLE : "TEST-DEF-01210"
+
 SPARC-LAYSIM-TEST-DEF-01390:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
