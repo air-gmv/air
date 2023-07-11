@@ -20,6 +20,7 @@ variables:
         GIT_ASKPASS: /bin/echo
         GIT_HTTP_USERNAME: huca
         GIT_HTTP_PASSWORD: $CI_JOB_TOKEN
+        COMMIT_TYPE: ""
 
 default:
     retry: 1
@@ -76,6 +77,12 @@ default:
 
         - export UTILS=$AIR/../utils/gitlab-runner
 
+        # extract commit type from commit message
+        # commit types can be: ARM, SPARC or BOTH
+        - COMMIT_MESSAGE=$(git log --format=%B -n 1 $CI_COMMIT_SHA)
+        - COMMIT_PREFIX=$(echo $COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
+        - echo "Commit Prefix: $COMMIT_PREFIX"
+        
 # .pre are jobs ran before any other job in the pipeline
 # These jobs are used to check the state of VMs and to performn any specific VM action such as a cleanup.
 # ARM and TASTE 1 are not allowed to fail since they are the only one with RVS license.
