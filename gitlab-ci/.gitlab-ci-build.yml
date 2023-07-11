@@ -11,7 +11,6 @@ ARM-ZYNQZ1-build:
         - ARM2_init
         - ARM3_init
     script:
-        - echo "Commit Prefix: $COMMIT_PREFIX"
         - cd $CI_PROJECT_DIR/air
         - cp ./../utils/gitlab-runner/.arm_zynqz1_config .
         - ./configure -f .arm_zynqz1_config

@@ -132,5 +132,10 @@ TASTE3_init :
     tags : 
         - sparc-taste-debian3
 
-  
+test:
+  script:
+    - echo "Commit Type: $COMMIT_TYPE"
+  artifacts:
+    paths:
+      - commit_type.log  
 
