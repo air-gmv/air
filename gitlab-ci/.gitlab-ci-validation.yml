@@ -22,7 +22,7 @@
         - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
         - *check-and-publish
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_JOB_NAME =~ /ARM/' 
 
 #00001_arm_zynqz1:
 #    stage: examples
@@ -211,7 +211,7 @@ ARM-QEMU-TEST-DEF-80060:
         - make distclean -i # Ignore distclean errors
         - *check-and-publish
   rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/' 
 
 SPARC-LAYSIM-TEST-DEF-00009:
     extends : .SPARC-LAYSIM-validation-template
