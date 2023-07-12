@@ -21,9 +21,6 @@
         - *build-executable
         - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
         - *check-and-publish
-    rules:
-        - if: ($COMMIT_TYPE == "ARM") && ($CI_JOB_NAME =~ /ARM/)
-          when: on_success
 
 #00001_arm_zynqz1:
 #    stage: examples
