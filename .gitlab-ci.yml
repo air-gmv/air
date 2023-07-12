@@ -78,9 +78,9 @@ default:
         - export UTILS=$AIR/../utils/gitlab-runner
 
         # extract commit type from commit message
-        - COMMIT_MESSAGE=$(git log --format=%B -n 1 $CI_COMMIT_SHA)
-        - echo "Commit Message $COMMIT_MESSAGE"
-        - COMMIT_TYPE=$(echo $COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
+        #- COMMIT_MESSAGE=$(git log --format=%B -n 1 $CI_COMMIT_SHA)
+        #- echo "Commit Message $COMMIT_MESSAGE"
+        #- COMMIT_TYPE=$(echo $COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
         - echo "Commit Type $COMMIT_TYPE"
 
         - echo "Job Name $CI_JOB_NAME"
@@ -136,3 +136,10 @@ TASTE3_init :
     extends : .pre_job-template
     tags : 
         - sparc-taste-debian3
+
+commit_type:
+    script:
+        - COMMIT_MESSAGE=$(git log --format=%B -n 1 $CI_COMMIT_SHA)
+        - echo "Commit Message $COMMIT_MESSAGE"
+        - COMMIT_TYPE=$(echo $COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
+        - echo "Commit Type $COMMIT_TYPE"
