@@ -31,7 +31,6 @@ variables:
         - COMMIT_TYPE=$(echo $COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
         - echo "Commit Type $COMMIT_TYPE"
 
-
 default:
     retry: 1
     before_script:
