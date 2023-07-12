@@ -16,10 +16,8 @@ ARM-ZYNQZ1-build:
         - ./configure -f .arm_zynqz1_config
         - make clean
         - make -j4
-    variables:
-        COMMIT_TYPE_PATTERN: '/$COMMIT_TYPE/'
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_JOB_NAME =~ $COMMIT_TYPE_PATTERN'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_JOB_NAME =~ /ARM/'
 
 # ARM RVS PMK Instrumentation
 RVS-ARM-ZYNQZ1-prepare-build:
@@ -38,7 +36,7 @@ RVS-ARM-ZYNQZ1-prepare-build:
         - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_JOB_NAME =~ /ARM/'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_JOB_NAME =~ /ARM/' 
 
 # SPARC RVS PMK Instrumentation 
 RVS-SPARC-LAYSIM-prepare-build:
