@@ -30,7 +30,7 @@ You may need the texinfo package, which can be installed by executing sudo apt-g
 ## 2 - Configure and build AIR
 AIR configuration requires python-mako. If it is not installed, execute the following commands (for Debian):
 
-    sudo apt-get install python-mako
+    sudo apt-get install python3-mako
     sudo apt install python3-tk
     sudo apt install python3-venv
 
