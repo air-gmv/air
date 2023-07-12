@@ -34,7 +34,7 @@ RVS-ARM-ZYNQZ1-prepare-build:
         - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash
     rules:
-        - if: $CI_COMMIT_MESSAGE =~ /^\[ARM]/
+        - if: $CI_COMMIT_MESSAGE =~ /^\[ARM\]/
           when: on_success
 
 # SPARC RVS PMK Instrumentation 
@@ -53,7 +53,7 @@ RVS-SPARC-LAYSIM-prepare-build:
         - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash
     rules:
-        - if: $CI_COMMIT_MESSAGE =~ /^\[SPARC]/
+        - if: $CI_COMMIT_MESSAGE =~ /^\[SPARC\]/
           when: on_success
 
 
