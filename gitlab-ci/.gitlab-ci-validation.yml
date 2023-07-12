@@ -21,6 +21,9 @@
         - *build-executable
         - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
         - *check-and-publish
+    rules:
+        - if: $COMMIT_TYPE == "ARM" && $CI_JOB_NAME =~ /ARM/ # && $COMMIT_TYPE != ""
+          when: on_success
 
 #00001_arm_zynqz1:
 #    stage: examples
@@ -208,190 +211,124 @@ ARM-QEMU-TEST-DEF-80060:
         - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - make distclean -i # Ignore distclean errors
         - *check-and-publish
+  rules:
+        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
+          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-00009:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-00009"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-00010:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-00010"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-00012:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-00012"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-00021:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-00021"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-00022:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-00022"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-00023:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-00023"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-00500:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-00500"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-00510:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-00510"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-00540:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-00540"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-00560:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-00560"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-00600:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-00600"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-01210:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-01210"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-01390:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-01390"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
         
 SPARC-LAYSIM-TEST-DEF-01561:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-00010"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-01570:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-01570"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-01590:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-01590"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-01610:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-01610"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-01650:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-01650"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-01730:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-01730"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-01740:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-01740"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-01741:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-01741"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-01750:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-01750"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-02100:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-02100"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 # laysim-TEST-DEF-02101:
 #    extends : .SPARC-LAYSIM-validation-template
@@ -422,62 +359,38 @@ SPARC-LAYSIM-TEST-DEF-80000:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-80000"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-80010:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-80010"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-80060:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-80060"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-80080:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-80080"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-80300:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-80300"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-80400:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-80400"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-80401:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-80401"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-TEST-DEF-80420:
     extends : .SPARC-LAYSIM-validation-template
     variables : 
       EXAMPLE : "TEST-DEF-80420"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success

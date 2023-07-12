@@ -17,7 +17,7 @@ ARM-ZYNQZ1-build:
         - make clean
         - make -j4
     rules:
-        - if: $CI_JOB_NAME =~ $COMMIT_TYPE && $COMMIT_TYPE != ""
+        - if: $COMMIT_TYPE == "ARM" && $CI_JOB_NAME =~ /ARM/ && $COMMIT_TYPE != ""
           when: on_success
 
 # ARM RVS PMK Instrumentation
@@ -37,7 +37,7 @@ RVS-ARM-ZYNQZ1-prepare-build:
         - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash
     rules:
-        - if: '$CI_JOB_NAME =~ $COMMIT_TYPE'
+        - if: $COMMIT_TYPE == "ARM" && $CI_JOB_NAME =~ /ARM/ && $COMMIT_TYPE != ""
           when: on_success
 
 # SPARC RVS PMK Instrumentation 
@@ -56,7 +56,7 @@ RVS-SPARC-LAYSIM-prepare-build:
         - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash
     rules:
-        - if: '$CI_JOB_NAME =~ $COMMIT_TYPE' # && $COMMIT_TYPE != ""
+        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ && $COMMIT_TYPE != ""
           when: on_success
 
 # Build SPARC LEON4
@@ -74,6 +74,9 @@ SPARC-LEON4-build:
         - ./configure -f .sparc_leon4_config
         - make clean
         - make -j4
+    rules:
+        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ && $COMMIT_TYPE != ""
+          when: on_success
 
 # Build SPARC LEON3
 SPARC-LEON3-build:
@@ -90,6 +93,9 @@ SPARC-LEON3-build:
         - ./configure -f .sparc_leon3_config
         - make clean
         - make -j4
+    rules:
+        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ && $COMMIT_TYPE != ""
+          when: on_success
 
 # Build SPARC TSIM
 SPARC-TSIM-build:
@@ -106,3 +112,6 @@ SPARC-TSIM-build:
         - ./configure -f .sparc_tsim_config
         - make clean
         - make -j4
+    rules:
+        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ && $COMMIT_TYPE != ""
+          when: on_success

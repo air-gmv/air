@@ -48,6 +48,9 @@ ARM-report-export:
             - $CI_PROJECT_DIR/air/rvs_air/results/air-coverage-arm-unmanaged-coverage-coverage.html
             - $CI_PROJECT_DIR/air/rvs_air/results/air-coverage-arm-unmanaged-coverage-coverage_files/*
         expire_in: 1 week
+    rules:
+        - if: $COMMIT_TYPE == "ARM" && $CI_JOB_NAME =~ /ARM/ # && $COMMIT_TYPE != ""
+          when: on_success
 
 #RVS-merge-report :
 #    stage : report 
