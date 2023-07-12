@@ -22,6 +22,9 @@
         - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true 
         - make distclean
         - *check-and-publish
+    rules:
+        - if: $COMMIT_TYPE == "ARM" && $CI_JOB_NAME =~ /ARM/ && $COMMIT_TYPE != ""
+          when: on_success
 
 ARM-QEMU-hello_world:
     extends : .ARM-QEMU-example-template
@@ -45,46 +48,34 @@ ARM-QEMU-bare_c:
         - laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - make distclean
         - *check-and-publish
+    rules:
+        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
+          when: on_success
 
 SPARC-LAYSIM-hello-world:
     extends : .SPARC-LAYSIM-example-template
     variables : 
         EXAMPLE : "hello_world"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-bare_c:
     extends : .SPARC-LAYSIM-example-template
     variables : 
         EXAMPLE : "bare_c"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
     
 SPARC-LAYSIM-hm:
     extends : .SPARC-LAYSIM-example-template
     variables : 
         EXAMPLE : "hm"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-ports:
     extends : .SPARC-LAYSIM-example-template
     variables : 
         EXAMPLE : "ports"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-shm:
     extends : .SPARC-LAYSIM-example-template
     variables : 
         EXAMPLE : "shm"
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-paranoia:
     extends : .SPARC-LAYSIM-example-template
@@ -95,10 +86,6 @@ SPARC-LAYSIM-paranoia:
         - *build-executable
         - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - *check-and-publish
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
-
 
 SPARC-LAYSIM-smp01:
     extends : .SPARC-LAYSIM-example-template
@@ -109,9 +96,6 @@ SPARC-LAYSIM-smp01:
         - *build-executable
         - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - *check-and-publish
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 SPARC-LAYSIM-smp02:
     extends : .SPARC-LAYSIM-example-template
@@ -122,9 +106,6 @@ SPARC-LAYSIM-smp02:
         - *build-executable
         - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - *check-and-publish
-    rules:
-        - if: $COMMIT_TYPE == "SPARC" && $CI_JOB_NAME =~ /SPARC/ # && $COMMIT_TYPE != ""
-          when: on_success
 
 # laysim-math:
 #    extends : .SPARC-LAYSIM-example-template
