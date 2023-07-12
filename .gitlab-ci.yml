@@ -113,7 +113,7 @@ default:
         -   if ! [[ -z $CLEANUP ]] ;
             then 
                 rm -rf /home/gitlab-runner/state/* ;
-            fi 
+            fi
 
 # ARM
 ARM1_init : 
