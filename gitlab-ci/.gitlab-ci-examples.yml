@@ -22,6 +22,9 @@
         - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true 
         - make distclean
         - *check-and-publish
+    rules:
+        - if: ($COMMIT_TYPE == "ARM") && ($CI_JOB_NAME =~ /ARM/)
+          when: on_success
 
 ARM-QEMU-hello_world:
     extends : .ARM-QEMU-example-template
