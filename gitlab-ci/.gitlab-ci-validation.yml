@@ -21,6 +21,8 @@
         - *build-executable
         - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
         - *check-and-publish
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
 
 #00001_arm_zynqz1:
 #    stage: examples
@@ -208,6 +210,8 @@ ARM-QEMU-TEST-DEF-80060:
         - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - make distclean -i # Ignore distclean errors
         - *check-and-publish
+  rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
 
 SPARC-LAYSIM-TEST-DEF-00009:
     extends : .SPARC-LAYSIM-validation-template
