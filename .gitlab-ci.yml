@@ -20,7 +20,7 @@ variables:
     GIT_ASKPASS: /bin/echo
     GIT_HTTP_USERNAME: huca
     GIT_HTTP_PASSWORD: $CI_JOB_TOKEN
-    COMMIT_TYPE: ""
+    COMMIT_TYPE: $(echo $(git log --format=%B -n 1 $CI_COMMIT_SHA) | sed -n 's/^\[\(.*\)\].*$/\1/p')
 
 default:
     retry: 1
@@ -136,10 +136,3 @@ TASTE3_init :
     extends : .pre_job-template
     tags : 
         - sparc-taste-debian3
-
-commit_type:
-    script:
-        - COMMIT_MESSAGE=$(git log --format=%B -n 1 $CI_COMMIT_SHA)
-        - echo "Commit Message $COMMIT_MESSAGE"
-        - COMMIT_TYPE=$(echo $COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
-        - echo "Commit Type $COMMIT_TYPE"
