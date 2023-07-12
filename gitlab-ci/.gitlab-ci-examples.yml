@@ -23,7 +23,7 @@
         - make distclean
         - *check-and-publish
     rules:
-        - if: $COMMIT_TYPE == "ARM" && $CI_JOB_NAME =~ /ARM/ && $COMMIT_TYPE != ""
+        - if: $COMMIT_TYPE == "ARM" && $CI_JOB_NAME =~ /ARM/ # && $COMMIT_TYPE != ""
           when: on_success
 
 ARM-QEMU-hello_world:
