@@ -9,7 +9,7 @@ include:
     - 'gitlab-ci/.gitlab-ci-report.yml'
 
 stages:
-    - set-variables
+    #- set-variables
     - prepare-build
     - examples
     - validation_tests
@@ -23,7 +23,7 @@ variables:
     GIT_HTTP_PASSWORD: $CI_JOB_TOKEN
     COMMIT_TYPE: ""
 
-set_commit_type:
+.set_commit_type:
     stage: set-variables
     script:
         - COMMIT_MESSAGE=$(git log --format=%B -n 1 $CI_COMMIT_SHA)
@@ -88,13 +88,15 @@ default:
         - export UTILS=$AIR/../utils/gitlab-runner
 
         # extract commit type from commit message
-        #- COMMIT_MESSAGE=$(git log --format=%B -n 1 $CI_COMMIT_SHA)
-        #- echo "Commit Message $COMMIT_MESSAGE"
-        #- COMMIT_TYPE=$(echo $COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
+        - COMMIT_MESSAGE=$(git log --format=%B -n 1 $CI_COMMIT_SHA)
+        - echo "Commit Message $COMMIT_MESSAGE"
+        - COMMIT_TYPE=$(echo $COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
         - echo "Commit Type $COMMIT_TYPE"
 
         - echo "Job Name $CI_JOB_NAME"
-        - if [[ $CI_JOB_NAME == *"$COMMIT_TYPE"* ]]; then echo "This job follows the commit type"; fi
+        - if [[ $CI_JOB_NAME == *"$COMMIT_TYPE"* ]] && [ ! -z "$COMMIT_TYPE" ]; 
+            then echo "This job follows the commit type"; 
+          fi
 
 
 # .pre are jobs ran before any other job in the pipeline
