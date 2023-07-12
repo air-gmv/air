@@ -16,6 +16,8 @@ ARM-ZYNQZ1-build:
         - ./configure -f .arm_zynqz1_config
         - make clean
         - make -j4
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
 
 # ARM RVS PMK Instrumentation
 RVS-ARM-ZYNQZ1-prepare-build:
@@ -70,6 +72,8 @@ SPARC-LEON4-build:
         - ./configure -f .sparc_leon4_config
         - make clean
         - make -j4
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
 
 # Build SPARC LEON3
 SPARC-LEON3-build:
@@ -86,6 +90,8 @@ SPARC-LEON3-build:
         - ./configure -f .sparc_leon3_config
         - make clean
         - make -j4
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
 
 # Build SPARC TSIM
 SPARC-TSIM-build:
@@ -102,3 +108,5 @@ SPARC-TSIM-build:
         - ./configure -f .sparc_tsim_config
         - make clean
         - make -j4
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
