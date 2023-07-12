@@ -17,7 +17,7 @@ ARM-ZYNQZ1-build:
         - make clean
         - make -j4
     rules:
-        - if: $COMMIT_TYPE == "ARM" && $CI_JOB_NAME =~ /ARM/ # && $COMMIT_TYPE != ""
+        - if: $CI_JOB_NAME =~ /$COMMIT_TYPE/ # && $COMMIT_TYPE != ""
           when: on_success
 
 # ARM RVS PMK Instrumentation
