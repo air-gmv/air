@@ -21,15 +21,6 @@ variables:
     GIT_ASKPASS: /bin/echo
     GIT_HTTP_USERNAME: huca
     GIT_HTTP_PASSWORD: $CI_JOB_TOKEN
-    COMMIT_TYPE: ""
-
-.set_commit_type:
-    stage: set-variables
-    script:
-        - COMMIT_MESSAGE=$(git log --format=%B -n 1 $CI_COMMIT_SHA)
-        - echo "Commit Message $COMMIT_MESSAGE"
-        - COMMIT_TYPE=$(echo $COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
-        - echo "Commit Type $COMMIT_TYPE"
 
 default:
     retry: 1
