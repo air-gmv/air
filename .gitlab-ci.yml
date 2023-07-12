@@ -80,6 +80,8 @@ default:
         # extract commit type from commit message
         # commit types can be: ARM, SPARC or BOTH
         - COMMIT_MESSAGE=$(git log --format=%B -n 1 $CI_COMMIT_SHA)
+        - echo "Commit Message $COMMIT_MESSAGE"
+        - echo "Job Name $CI_JOB_NAME"
         - COMMIT_TYPE=$(echo $COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
         - echo "Commit Type $COMMIT_TYPE"
 
