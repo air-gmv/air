@@ -6,14 +6,14 @@ include:
     - 'gitlab-ci/.gitlab-ci-build.yml'
     - 'gitlab-ci/.gitlab-ci-examples.yml'
     - 'gitlab-ci/.gitlab-ci-validation.yml'
-    - 'gitlab-ci/.gitlab-ci-report.yml'
+#    - 'gitlab-ci/.gitlab-ci-report.yml'
 
 stages:
     #- set-variables
     - prepare-build
     - examples
     - validation_tests
-    - report
+#    - report
 
 variables:
     GIT_SUBMODULE_STRATEGY : recursive
