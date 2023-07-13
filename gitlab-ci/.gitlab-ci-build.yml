@@ -17,7 +17,9 @@ ARM-ZYNQZ1-build:
         - make clean
         - make -j4
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_JOB_NAME =~ /ARM/'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/' 
+          when: never 
+        - when: on_success
 
 # ARM RVS PMK Instrumentation
 RVS-ARM-ZYNQZ1-prepare-build:
@@ -36,7 +38,10 @@ RVS-ARM-ZYNQZ1-prepare-build:
         - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_JOB_NAME =~ /ARM/' 
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/' 
+          when: never 
+          # assuming merge reqs will never have [SPARC] in their commit message
+        - when: on_success
 
 # SPARC RVS PMK Instrumentation 
 RVS-SPARC-LAYSIM-prepare-build:
@@ -54,6 +59,7 @@ RVS-SPARC-LAYSIM-prepare-build:
         - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash
     rules:
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
         - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/'
 
 
@@ -73,6 +79,7 @@ SPARC-LEON4-build:
         - make clean
         - make -j4
     rules:
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
         - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/'
 
 # Build SPARC LEON3
@@ -91,6 +98,7 @@ SPARC-LEON3-build:
         - make clean
         - make -j4
     rules:
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
         - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/'
 
 # Build SPARC TSIM
@@ -109,4 +117,5 @@ SPARC-TSIM-build:
         - make clean
         - make -j4
     rules:
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
         - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/'
