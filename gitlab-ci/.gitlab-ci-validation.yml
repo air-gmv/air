@@ -201,17 +201,13 @@ ARM-QEMU-TEST-DEF-80060:
 #    variables :
 #      EXAMPLE : "TEST-DEF-00009"
 
-display_variable:
-  stage: validation_tests
-  script:
-    - echo "The value of TEST_NUMBER is $TEST_NUMBER"
-
 # SPARC
 .SPARC-LAYSIM-validation-template:
   stage : validation_tests
   needs : ["SPARC-LAYSIM-hello-world"] # ,"SPARC-LAYSIM-bare_c","SPARC-LAYSIM-hm","SPARC-LAYSIM-ports","SPARC-LAYSIM-shm","SPARC-LAYSIM-paranoia","SPARC-LAYSIM-smp01","SPARC-LAYSIM-smp02"]
   tags :  ["SPARC","LAYSIM"]
   script : 
+        - echo "The value of TEST_NUMBER is $TEST_NUMBER"
         - cd $AIR/examples/private-example/private/validation/$EXAMPLE
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
