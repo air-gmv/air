@@ -92,9 +92,6 @@ default:
             then 
                 rm -rf /home/gitlab-runner/state/* ;
             fi
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_JOB_NAME =~ /ARM/'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /TASTE/'
 
 # ARM
 ARM1_init : 
@@ -102,16 +99,28 @@ ARM1_init :
     allow_failure : false
     tags : 
         - ARM1
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/' 
+          when: never 
+        - when: on_success
 
 ARM2_init : 
     extends : .pre_job-template
     tags : 
         - ARM2
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/' 
+          when: never 
+        - when: on_success
 
 ARM3_init : 
     extends : .pre_job-template
     tags : 
         - ARM3
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/' 
+          when: never 
+        - when: on_success
 
 # TASTE
 TASTE1_init :
@@ -119,13 +128,23 @@ TASTE1_init :
     allow_failure : false
     tags : 
         - sparc-taste-debian1
+    rules:
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /TASTE/'
+
 
 TASTE2_init :
     extends : .pre_job-template
     tags : 
         - sparc-taste-debian2
+    rules:
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /TASTE/'
 
 TASTE3_init :
     extends : .pre_job-template
     tags : 
         - sparc-taste-debian3
+    rules:
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /TASTE/'
