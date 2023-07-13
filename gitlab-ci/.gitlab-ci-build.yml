@@ -40,7 +40,7 @@ RVS-ARM-ZYNQZ1-prepare-build:
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/' 
           when: never 
-          # assuming merge reqs will never have [SPARC] in their commit message 
+          # assuming merge reqs will never have [SPARC] in their commit message
         - when: on_success
 
 # SPARC RVS PMK Instrumentation 
