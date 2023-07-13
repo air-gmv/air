@@ -80,7 +80,7 @@ default:
         - COMMIT_MESSAGE=$(git log --format=%B -n 1 $CI_COMMIT_SHA)
         - echo "Commit message $COMMIT_MESSAGE"
         - echo "$CI_COMMIT_MESSAGE"
-        - FIVE_DIGITS=$(echo $COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
+        - FIVE_DIGITS=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
         - echo "Extracted five digits $FIVE_DIGITS"
 
 # .pre are jobs ran before any other job in the pipeline
