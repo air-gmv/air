@@ -79,7 +79,7 @@ default:
         - export UTILS=$AIR/../utils/gitlab-runner
 
         - COMMIT_MESSAGE=$(git log --format=%B -n 1 $CI_COMMIT_SHA)
-        - TEST_NUMBER=$(echo $COMMIT_MESSAGE | grep -Eq '[0-9]{7}')
+        - TEST_NUMBER=$(echo $COMMIT_MESSAGE | grep -Eq '[0-9]{5}')
         - echo "Test number $TEST_NUMBER"
 
 # .pre are jobs ran before any other job in the pipeline
