@@ -213,9 +213,11 @@ ARM-QEMU-TEST-DEF-80060:
         - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - make distclean -i # Ignore distclean errors
         - *check-and-publish
+  variables:
+    REGEX: /$TEST_NUMBER/
   rules:
         - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $TEST_NUMBER != "" && $CI_JOB_NAME =~ /$TEST_NUMBER/' 
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $TEST_NUMBER != "" && $CI_JOB_NAME =~ $REGEX' 
       #  - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $TEST_NUMBER == ""' 
 
 SPARC-LAYSIM-TEST-DEF-00009:
