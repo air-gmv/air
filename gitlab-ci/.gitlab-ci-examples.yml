@@ -68,45 +68,45 @@ SPARC-LAYSIM-hm:
     variables : 
         EXAMPLE : "hm"
 
-# SPARC-LAYSIM-ports:
-#     extends : .SPARC-LAYSIM-example-template
-#     variables : 
-#         EXAMPLE : "ports"
+SPARC-LAYSIM-ports:
+    extends : .SPARC-LAYSIM-example-template
+    variables : 
+        EXAMPLE : "ports"
 
-# SPARC-LAYSIM-shm:
-#     extends : .SPARC-LAYSIM-example-template
-#     variables : 
-#         EXAMPLE : "shm"
+SPARC-LAYSIM-shm:
+    extends : .SPARC-LAYSIM-example-template
+    variables : 
+        EXAMPLE : "shm"
 
-# SPARC-LAYSIM-paranoia:
-#     extends : .SPARC-LAYSIM-example-template
-#     variables : 
-#         EXAMPLE : "paranoia"
-#     script :
-#         - cd $AIR/examples/testsuites/$EXAMPLE
-#         - *build-executable
-#         - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-#         - *check-and-publish
+SPARC-LAYSIM-paranoia:
+    extends : .SPARC-LAYSIM-example-template
+    variables : 
+        EXAMPLE : "paranoia"
+    script :
+        - cd $AIR/examples/testsuites/$EXAMPLE
+        - *build-executable
+        - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        - *check-and-publish
 
-# SPARC-LAYSIM-smp01:
-#     extends : .SPARC-LAYSIM-example-template
-#     variables : 
-#         EXAMPLE : "smp01"
-#     script :
-#         - cd $AIR/examples/testsuites/$EXAMPLE
-#         - *build-executable
-#         - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-#         - *check-and-publish
+SPARC-LAYSIM-smp01:
+    extends : .SPARC-LAYSIM-example-template
+    variables : 
+        EXAMPLE : "smp01"
+    script :
+        - cd $AIR/examples/testsuites/$EXAMPLE
+        - *build-executable
+        - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        - *check-and-publish
 
-# SPARC-LAYSIM-smp02:
-#     extends : .SPARC-LAYSIM-example-template
-#     variables : 
-#         EXAMPLE : "smp02"
-#     script :
-#         - cd $AIR/examples/testsuites/$EXAMPLE
-#         - *build-executable
-#         - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-#         - *check-and-publish
+SPARC-LAYSIM-smp02:
+    extends : .SPARC-LAYSIM-example-template
+    variables : 
+        EXAMPLE : "smp02"
+    script :
+        - cd $AIR/examples/testsuites/$EXAMPLE
+        - *build-executable
+        - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        - *check-and-publish
 
 # laysim-math:
 #    extends : .SPARC-LAYSIM-example-template
