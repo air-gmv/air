@@ -201,6 +201,11 @@ ARM-QEMU-TEST-DEF-80060:
 #    variables :
 #      EXAMPLE : "TEST-DEF-00009"
 
+display_variable:
+  stage: validation_tests
+  script:
+    - echo "The value of TEST_NUMBER is $TEST_NUMBER"
+
 # SPARC
 .SPARC-LAYSIM-validation-template:
   stage : validation_tests
