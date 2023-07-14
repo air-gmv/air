@@ -76,7 +76,7 @@ default:
 
         - export UTILS=$AIR/../utils/gitlab-runner
 
-        - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
+        #- export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
 
 # .pre are jobs ran before any other job in the pipeline
 # These jobs are used to check the state of VMs and to performn any specific VM action such as a cleanup.
