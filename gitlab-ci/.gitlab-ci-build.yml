@@ -1,8 +1,11 @@
 # Gitlab CICD script for build stage
 # Author huca@GMV 2023
 
+variables:
+  - TEST_NUMBER: ""
+
 set-variables:
-    stage: set-variables
+    stage: prepare-build
     script: 
         - TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
 
@@ -36,7 +39,6 @@ RVS-ARM-ZYNQZ1-prepare-build:
     needs : 
         - ARM1_init
     script:
-        - echo "The value of TEST_NUMBER is $TEST_NUMBER"
         - sed -i 's/\.\/rvs_air\/scripts\/build_arm.bash/\.\/rvs_air\/scripts\/build_arm-ci.bash/g' air.rvsprj
         - rvsdriver --project $AIR/air.rvsprj --integration arm-pmk-coverage --prepare --build
         - bash $AIR/rvs_air/scripts/build_arm_pmk_archive-ci.bash
@@ -60,6 +62,7 @@ RVS-SPARC-LAYSIM-prepare-build:
         - TASTE1_init
         - set-variables
     script:
+        - echo "The value of TEST_NUMBER is $TEST_NUMBER"
         - sed -i 's/\.\/rvs_air\/scripts\/build.bash/\.\/rvs_air\/scripts\/build-ci.bash/g' air.rvsprj
         - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --prepare --build
         - rm -rf $AIR/install/pos/rtems5/rtems5-build
