@@ -9,7 +9,7 @@ include:
 #    - 'gitlab-ci/.gitlab-ci-report.yml'
 
 stages:
-    #- set-variables
+    - set-variables
     - prepare-build
     - examples
     - validation_tests
@@ -21,7 +21,6 @@ variables:
     GIT_ASKPASS: /bin/echo
     GIT_HTTP_USERNAME: huca
     GIT_HTTP_PASSWORD: $CI_JOB_TOKEN
-    TEST_NUMBER: ""
 
 default:
     retry: 1
@@ -77,8 +76,6 @@ default:
         - export PATH=/opt/laysim-gr740:$PATH
 
         - export UTILS=$AIR/../utils/gitlab-runner
-
-        - TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
 
 # .pre are jobs ran before any other job in the pipeline
 # These jobs are used to check the state of VMs and to performn any specific VM action such as a cleanup.
