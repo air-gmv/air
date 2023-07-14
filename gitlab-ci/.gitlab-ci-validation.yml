@@ -215,88 +215,48 @@ ARM-QEMU-TEST-DEF-80060:
         - *check-and-publish
   variables:
         TEST_NUMBERS: "/00001|00009|00010|00012|00021|00022|00023|00500|00510|00540|00560|00600|01210|01390|01561|01570|01590|01610|01620|01630|01650|01730|01740|01741|01742|01750|02100|02101|02102|02105|02107|02108|80000|80010|80060|80080|80300|80400|80401|80420/"
-        TEST_00001: "/00001/"
-        TEST_00009: "/00009/"
-        TEST_00010: "/00010/"
-        TEST_00012: "/00012/"
-        TEST_00021: "/00021/"
-        TEST_00022: "/00022/"
-        TEST_00023: "/00023/"
-        TEST_00500: "/00500/"
-        TEST_00510: "/00510/"
-        TEST_00540: "/00540/"
-        TEST_00560: "/00560/"
-        TEST_00600: "/00600/"
-        TEST_01210: "/01210/"
-        TEST_01390: "/01390/"
-        TEST_01561: "/01561/"
-        TEST_01570: "/01570/"
-        TEST_01590: "/01590/"
-        TEST_01610: "/01610/"
-        TEST_01620: "/01620/"
-        TEST_01630: "/01630/"
-        TEST_01650: "/01650/"
-        TEST_01730: "/01730/"
-        TEST_01740: "/01740/"
-        TEST_01741: "/01741/"
-        TEST_01742: "/01742/"
-        TEST_01750: "/01750/"
-        TEST_02100: "/02100/"
-        TEST_02101: "/02101/"
-        TEST_02102: "/02102/"
-        TEST_02105: "/02105/"
-        TEST_02107: "/02107/"
-        TEST_02108: "/02108/"
-        TEST_80000: "/80000/"
-        TEST_80010: "/80010/"
-        TEST_80060: "/80060/"
-        TEST_80080: "/80080/"
-        TEST_80300: "/80300/"
-        TEST_80400: "/80400/"
-        TEST_80401: "/80401/"
-        TEST_80420: "/80420/"
   rules:
         - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_00001 && $CI_JOB_NAME =~ $TEST_00001'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_00009 && $CI_JOB_NAME =~ $TEST_00009'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_00010 && $CI_JOB_NAME =~ $TEST_00010'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_00012 && $CI_JOB_NAME =~ $TEST_00012'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_00021 && $CI_JOB_NAME =~ $TEST_00021'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_00022 && $CI_JOB_NAME =~ $TEST_00022'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_00023 && $CI_JOB_NAME =~ $TEST_00023'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_00500 && $CI_JOB_NAME =~ $TEST_00500'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_00510 && $CI_JOB_NAME =~ $TEST_00510'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_00540 && $CI_JOB_NAME =~ $TEST_00540'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_00560 && $CI_JOB_NAME =~ $TEST_00560'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_00600 && $CI_JOB_NAME =~ $TEST_00600'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_01210 && $CI_JOB_NAME =~ $TEST_01210'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_01390 && $CI_JOB_NAME =~ $TEST_01390'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_01561 && $CI_JOB_NAME =~ $TEST_01561'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_01570 && $CI_JOB_NAME =~ $TEST_01570'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_01590 && $CI_JOB_NAME =~ $TEST_01590'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_01610 && $CI_JOB_NAME =~ $TEST_01610'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_01620 && $CI_JOB_NAME =~ $TEST_01620'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_01630 && $CI_JOB_NAME =~ $TEST_01630'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_01650 && $CI_JOB_NAME =~ $TEST_01650'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_01730 && $CI_JOB_NAME =~ $TEST_01730'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_01740 && $CI_JOB_NAME =~ $TEST_01740'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_01741 && $CI_JOB_NAME =~ $TEST_01741'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_01742 && $CI_JOB_NAME =~ $TEST_01742'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_01750 && $CI_JOB_NAME =~ $TEST_01750'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_02100 && $CI_JOB_NAME =~ $TEST_02100'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_02101 && $CI_JOB_NAME =~ $TEST_02101'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_02102 && $CI_JOB_NAME =~ $TEST_02102'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_02105 && $CI_JOB_NAME =~ $TEST_02105'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_02107 && $CI_JOB_NAME =~ $TEST_02107'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_02108 && $CI_JOB_NAME =~ $TEST_02108'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_80000 && $CI_JOB_NAME =~ $TEST_80000'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_80010 && $CI_JOB_NAME =~ $TEST_80010'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_80060 && $CI_JOB_NAME =~ $TEST_80060'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_80080 && $CI_JOB_NAME =~ $TEST_80080'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_80300 && $CI_JOB_NAME =~ $TEST_80300'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_80400 && $CI_JOB_NAME =~ $TEST_80400'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_80401 && $CI_JOB_NAME =~ $TEST_80401'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ $TEST_80420 && $CI_JOB_NAME =~ $TEST_80420' 
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(00001\)/" && $CI_JOB_NAME =~ "/00001/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(00009\)/" && $CI_JOB_NAME =~ "/00009/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(00010\)/" && $CI_JOB_NAME =~ "/00010/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(00012\)/" && $CI_JOB_NAME =~ "/00012/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(00021\)/" && $CI_JOB_NAME =~ "/00021/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(00022\)/" && $CI_JOB_NAME =~ "/00022/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(00023\)/" && $CI_JOB_NAME =~ "/00023/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(00500\)/" && $CI_JOB_NAME =~ "/00500/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(00510\)/" && $CI_JOB_NAME =~ "/00510/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(00540\)/" && $CI_JOB_NAME =~ "/00540/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(00560\)/" && $CI_JOB_NAME =~ "/00560/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(00600\)/" && $CI_JOB_NAME =~ "/00600/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(01210\)/" && $CI_JOB_NAME =~ "/01210/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(01390\)/" && $CI_JOB_NAME =~ "/01390/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(01561\)/" && $CI_JOB_NAME =~ "/01561/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(01570\)/" && $CI_JOB_NAME =~ "/01570/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(01590\)/" && $CI_JOB_NAME =~ "/01590/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(01610\)/" && $CI_JOB_NAME =~ "/01610/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(01620\)/" && $CI_JOB_NAME =~ "/01620/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(01630\)/" && $CI_JOB_NAME =~ "/01630/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(01650\)/" && $CI_JOB_NAME =~ "/01650/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(01730\)/" && $CI_JOB_NAME =~ "/01730/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(01740\)/" && $CI_JOB_NAME =~ "/01740/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(01741\)/" && $CI_JOB_NAME =~ "/01741/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(01742\)/" && $CI_JOB_NAME =~ "/01742/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(01750\)/" && $CI_JOB_NAME =~ "/01750/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(02100\)/" && $CI_JOB_NAME =~ "/02100/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(02101\)/" && $CI_JOB_NAME =~ "/02101/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(02102\)/" && $CI_JOB_NAME =~ "/02102/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(02105\)/" && $CI_JOB_NAME =~ "/02105/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(02107\)/" && $CI_JOB_NAME =~ "/02107/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(02108\)/" && $CI_JOB_NAME =~ "/02108/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(80000\)/" && $CI_JOB_NAME =~ "/80000/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(80010\)/" && $CI_JOB_NAME =~ "/80010/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(80060\)/" && $CI_JOB_NAME =~ "/80060/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(80080\)/" && $CI_JOB_NAME =~ "/80080/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(80300\)/" && $CI_JOB_NAME =~ "/80300/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(80400\)/" && $CI_JOB_NAME =~ "/80400/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(80401\)/" && $CI_JOB_NAME =~ "/80401/"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE =~ "/\(80420\)/" && $CI_JOB_NAME =~ "/80420/"' 
       #  - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /SPARC/ && $CI_COMMIT_MESSAGE !~ $TEST_NUMBERS' 
 
 SPARC-LAYSIM-TEST-DEF-00009:
