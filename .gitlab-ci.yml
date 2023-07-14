@@ -9,7 +9,6 @@ include:
 #    - 'gitlab-ci/.gitlab-ci-report.yml'
 
 stages:
-    - set-variables
     - prepare-build
     - examples
     - validation_tests
