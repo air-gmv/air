@@ -3,20 +3,22 @@
 # author: $(AIR_RUNNER_USER) @GMV 2020, edited by huca@GMV 2023
 
 include:
-    - 'gitlab-ci/.gitlab-ci-build.yml'
-    - 'gitlab-ci/.gitlab-ci-examples.yml'
-    - 'gitlab-ci/.gitlab-ci-validation.yml'
-    - 'gitlab-ci/.gitlab-ci-report.yml'
+    - 'gitlab-ci-copy/.gitlab-ci-pre.yml'
+    - 'gitlab-ci-copy/.gitlab-ci-build.yml'
+    - 'gitlab-ci-copy/.gitlab-ci-examples.yml'
+    - 'gitlab-ci-copy/.gitlab-ci-validation.yml'
+    - 'gitlab-ci-copy/.gitlab-ci-report.yml'
 
 stages:
-    - prepare-build
+    - .pre
+    - build
     - examples
     - validation_tests
     - report
 
 variables:
-    GIT_SUBMODULE_STRATEGY : recursive
-    GIT_STRATEGY : clone
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_STRATEGY: clone
     GIT_ASKPASS: /bin/echo
     GIT_HTTP_USERNAME: huca
     GIT_HTTP_PASSWORD: $CI_JOB_TOKEN
@@ -44,11 +46,11 @@ default:
                 git submodule sync --recursive; 
             fi
             
-        - if ! test -d $STATE_FOLDER ; 
+        - if ! test -d $STATE_FOLDER; 
             then 
-                (mkdir -p $STATE_FOLDER || true) && ./utils/gitlab-runner/check_central_server.bash ; 
+                (mkdir -p $STATE_FOLDER || true) && ./utils/gitlab-runner/check_central_server.bash; 
             else 
-                ./utils/gitlab-runner/check_central_server.bash ;
+                ./utils/gitlab-runner/check_central_server.bash;
             fi;
 
         - while test -e /tmp/rsync-"$CI_COMMIT_SHORT_SHA".lock; 
@@ -78,74 +80,5 @@ default:
 
         #- export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
 
-# .pre are jobs ran before any other job in the pipeline
-# These jobs are used to check the state of VMs and to performn any specific VM action such as a cleanup.
-# ARM and TASTE 1 are not allowed to fail since they are the only one with RVS license.
-.pre_job-template : 
-    stage : .pre
-    variables : 
-        GIT_STRATEGY : none # Prevents the cloning of the repository 
-    allow_failure: true
-    before_script : 
-        - ''                # Prevents the before_script from running
-    script : 
-        -   if ! [[ -z $CLEANUP ]] ;
-            then 
-                rm -rf /home/gitlab-runner/state/* ;
-            fi
 
-# ARM
-ARM1_init : 
-    extends : .pre_job-template
-    allow_failure : false
-    tags : 
-        - ARM1
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/' 
-          when: never 
-        - when: on_success
-
-ARM2_init : 
-    extends : .pre_job-template
-    tags : 
-        - ARM2
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/' 
-          when: never 
-        - when: on_success
-
-ARM3_init : 
-    extends : .pre_job-template
-    tags : 
-        - ARM3
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/' 
-          when: never 
-        - when: on_success
-
-# TASTE
-TASTE1_init :
-    extends : .pre_job-template
-    allow_failure : false
-    tags : 
-        - sparc-taste-debian1
-    rules:
-        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /TASTE/'
-
-
-TASTE2_init :
-    extends : .pre_job-template
-    tags : 
-        - sparc-taste-debian2
-    rules:
-        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /TASTE/'
-
-TASTE3_init :
-    extends : .pre_job-template
-    tags : 
-        - sparc-taste-debian3
-    rules:
-        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /TASTE/'
+        
