@@ -99,8 +99,8 @@ SPARC-LEON3-build:
         - ./configure -f .sparc_leon3_config
         - make clean
         - make -j4
-    #rules:
-    #    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 # Build SPARC TSIM
 # SPARC-TSIM-build:
