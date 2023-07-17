@@ -67,15 +67,15 @@ TASTE3_init:
     rules:
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
-generate-config:
-    stage: pre
-    script:
-        - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
-        - ./generate-test TEST_NUMBER
-        - cat test.yml
-    artifacts:
-        paths:
-            - test.yml
-    rules:
-        - if:
+#generate-config:
+#    stage: pre
+#    script:
+#        - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
+#        - ./generate-test TEST_NUMBER
+#        - cat test.yml
+#    artifacts:
+#        paths:
+#            - test.yml
+#    rules:
+#        - if:
 
