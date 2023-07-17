@@ -3,11 +3,11 @@
 # author: $(AIR_RUNNER_USER) @GMV 2020, edited by huca@GMV 2023
 
 include:
-    - 'gitlab-ci-copy/.gitlab-ci-pre.yml'
-    - 'gitlab-ci-copy/.gitlab-ci-build.yml'
-    - 'gitlab-ci-copy/.gitlab-ci-examples.yml'
-    - 'gitlab-ci-copy/.gitlab-ci-validation.yml'
-    - 'gitlab-ci-copy/.gitlab-ci-report.yml'
+    - 'gitlab-ci/.gitlab-ci-pre.yml'
+    - 'gitlab-ci/.gitlab-ci-build.yml'
+    - 'gitlab-ci/.gitlab-ci-examples.yml'
+    - 'gitlab-ci/.gitlab-ci-validation.yml'
+    - 'gitlab-ci/.gitlab-ci-report.yml'
 
 stages:
     - .pre
