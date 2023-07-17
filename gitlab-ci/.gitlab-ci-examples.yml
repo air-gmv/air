@@ -29,22 +29,18 @@
     rules:
         - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_JOB_NAME =~ /hello\-world$/'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /hello\-world$/'
 
 ARM-QEMU-hello_world:
     extends: .ARM-QEMU-example-template
     variables: 
         EXAMPLE: "hello_world"
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /^\[SPARC\]/'
 
 ARM-QEMU-bare_c:
     extends: .ARM-QEMU-example-template
     variables: 
         EXAMPLE: "bare_c"
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /^\[SPARC\]/'
 
 # SPARC
 .SPARC-LAYSIM-example-template:
@@ -64,13 +60,12 @@ ARM-QEMU-bare_c:
     rules:
         - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /hello\-world$/'
 
 SPARC-LAYSIM-hello-world:
     extends: .SPARC-LAYSIM-example-template
     variables: 
         EXAMPLE: "hello_world"
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
 
 SPARC-LAYSIM-bare_c:
     extends: .SPARC-LAYSIM-example-template
@@ -101,8 +96,6 @@ SPARC-LAYSIM-paranoia:
         - *build-executable
         - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - *check-and-publish
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
 
 SPARC-LAYSIM-smp01:
     extends: .SPARC-LAYSIM-example-template
