@@ -39,8 +39,8 @@ RVS-ARM-ZYNQZ1-build:
         - $UTILS/publish_to_central_server.bash
     rules:
         - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /^\[SPARC\]/' 
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
+        - if: '$CI_COMMIT_MESSAGE !~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /^\[SPARC\]/' 
 
 # SPARC RVS PMK Instrumentation 
 RVS-SPARC-LAYSIM-build:
@@ -60,7 +60,7 @@ RVS-SPARC-LAYSIM-build:
         - $UTILS/publish_to_central_server.bash
     rules:
         - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
 
 # Build SPARC LEON4
 SPARC-LEON4-build:
