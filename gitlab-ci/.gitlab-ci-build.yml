@@ -9,9 +9,9 @@ ARM-ZYNQZ1-build:
         - ARM
     needs: 
         - ARM2_init
-          optional: true
+          
         - ARM3_init
-          optional: true
+          
     script:
         - cd $CI_PROJECT_DIR/air
         - cp ./../utils/gitlab-runner/.arm_zynqz1_config .
@@ -21,7 +21,6 @@ ARM-ZYNQZ1-build:
     rules:
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
        
-
 # ARM RVS PMK Instrumentation
 RVS-ARM-ZYNQZ1-build:
     stage: build
@@ -71,9 +70,9 @@ SPARC-LEON4-build:
         - OTHER
     needs: 
         - TASTE2_init
-          optional: true
+          
         - TASTE3_init
-          optional: true
+          
     script:
         - cd $CI_PROJECT_DIR/air
         - cp ./../utils/gitlab-runner/.sparc_leon4_config .
@@ -91,9 +90,9 @@ SPARC-LEON3-build:
         - OTHER
     needs: 
         - TASTE2_init
-          optional: true
+          
         - TASTE3_init
-          optional: true
+          
     script:
         - cd $CI_PROJECT_DIR/air
         - cp ./../utils/gitlab-runner/.sparc_leon3_config .
