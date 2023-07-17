@@ -15,9 +15,9 @@
 .ARM-QEMU-example-template:
     stage: examples
     needs: 
-        - RVS-ARM-ZYNQZ1-build
+        - job: RVS-ARM-ZYNQZ1-build
           optional: true
-        - ARM-ZYNQZ1-build
+        - job: ARM-ZYNQZ1-build
           optional: true
     tags:  ["ARM"]
     script: 
@@ -50,9 +50,9 @@ ARM-QEMU-bare_c:
 .SPARC-LAYSIM-example-template:
     stage: examples
     needs: 
-        - RVS-SPARC-LAYSIM-build
+        - job: RVS-SPARC-LAYSIM-build
           optional: true
-        - SPARC-LEON4-build
+        - job: SPARC-LEON4-build
           optional: true
     tags:  ["SPARC","LAYSIM"]
     script:

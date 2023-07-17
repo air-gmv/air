@@ -8,10 +8,10 @@ ARM-ZYNQZ1-build:
     tags:
         - ARM
     needs: 
-        - ARM2_init
-          
-        - ARM3_init
-          
+        - job: ARM2_init
+          optional: true
+        - job: ARM3_init
+          optional: true
     script:
         - cd $CI_PROJECT_DIR/air
         - cp ./../utils/gitlab-runner/.arm_zynqz1_config .
@@ -69,10 +69,10 @@ SPARC-LEON4-build:
     tags: 
         - OTHER
     needs: 
-        - TASTE2_init
-          
-        - TASTE3_init
-          
+        - job: TASTE2_init
+          optional: true
+        - job: TASTE3_init
+          optional: true
     script:
         - cd $CI_PROJECT_DIR/air
         - cp ./../utils/gitlab-runner/.sparc_leon4_config .
@@ -89,10 +89,10 @@ SPARC-LEON3-build:
     tags: 
         - OTHER
     needs: 
-        - TASTE2_init
-          
-        - TASTE3_init
-          
+        - job: TASTE2_init
+          optional: true
+        - job: TASTE3_init
+          optional: true
     script:
         - cd $CI_PROJECT_DIR/air
         - cp ./../utils/gitlab-runner/.sparc_leon3_config .
