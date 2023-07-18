@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Access the variable passed as command-line argument
+# Access the variables passed as command-line arguments
 TEST_NUMBER=$1
 AIR=$2
 
-# Logic to generate the YAML content
+# Generate the YAML content
 cat > test.yml <<EOF
 
 .SPARC-LAYSIM-validation-template:
