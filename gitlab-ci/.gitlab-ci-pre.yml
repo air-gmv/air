@@ -78,4 +78,4 @@ generate-config:
         paths:
             - test.yml
     rules:
-        - if: "$CI_COMMIT_MESSAGE =~ /\d{5}/"
+        - if: "$CI_COMMIT_MESSAGE =~ '/\\(\\d{5}\\)/'"
