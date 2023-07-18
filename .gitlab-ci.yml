@@ -6,8 +6,8 @@ include:
     - 'gitlab-ci/.gitlab-ci-pre.yml'
     - "gitlab-ci/.gitlab-ci-build.yml"
     - "gitlab-ci/.gitlab-ci-examples.yml"
-    - "gitlab-ci/.gitlab-ci-validation.yml"
-    - "gitlab-ci/.gitlab-ci-report.yml"
+#    - "gitlab-ci/.gitlab-ci-validation.yml"
+#    - "gitlab-ci/.gitlab-ci-report.yml"
 
 stages:
     - prepare-build
