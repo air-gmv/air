@@ -89,8 +89,10 @@ SPARC-LEON3-build:
     tags: 
         - OTHER
     needs: 
-        - TASTE2_init
-        - TASTE3_init
+        - job: TASTE2_init
+          optional: true
+        - job: TASTE3_init
+          optional: true
     script:
         - cd $CI_PROJECT_DIR/air
         - cp ./../utils/gitlab-runner/.sparc_leon3_config .
@@ -98,7 +100,8 @@ SPARC-LEON3-build:
         - make clean
         - make -j4
     rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"' 
+        - if: '$CI_PIPELINE_SOURCE == "push"' 
+          when: never
 
 # Build SPARC TSIM
 # SPARC-TSIM-build:
