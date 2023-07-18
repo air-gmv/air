@@ -4,10 +4,10 @@
 # .pre are jobs ran before any other job in the pipeline
 # These jobs are used to check the state of VMs and to performn any specific VM action such as a cleanup.
 # ARM and TASTE 1 are not allowed to fail since they are the only one with RVS license.
-.pre-job-template: 
+.pre-job-template:
     stage: .pre
-    variables: 
-        GIT_STRATEGY: none # Prevents the cloning of the repository 
+    variables:
+        GIT_STRATEGY: none # Prevents the cloning of the repository
     allow_failure: true
     before_script: 
         - ''               # Prevents the before_script from running
@@ -18,27 +18,27 @@
             fi
 
 # ARM
-ARM1_init: 
+ARM1_init:
     extends: .pre-job-template
     allow_failure: false
-    tags: 
+    tags:
         - ARM1
     rules:
         - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
         - if: '$CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
         - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
-        - if: '$CI_COMMIT_MESSAGE !~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /^\[SPARC\]/' 
+        - if: '$CI_COMMIT_MESSAGE !~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /^\[SPARC\]/'
 
-ARM2_init: 
+ARM2_init:
     extends: .pre-job-template
-    tags: 
+    tags:
         - ARM2
     rules:
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
-ARM3_init: 
+ARM3_init:
     extends: .pre-job-template
-    tags: 
+    tags:
         - ARM3
     rules:
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
@@ -47,28 +47,27 @@ ARM3_init:
 TASTE1_init:
     extends: .pre-job-template
     allow_failure: false
-    tags: 
+    tags:
         - sparc-taste-debian1
     rules:
         - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
         - if: '$CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
         - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
 
-
 TASTE2_init:
     extends: .pre-job-template
-    tags: 
+    tags:
         - sparc-taste-debian2
     rules:
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 TASTE3_init:
     extends: .pre-job-template
-    tags: 
+    tags:
         - sparc-taste-debian3
     rules:
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
-
+        
 #generate-config:
 #    stage: .pre
 #    script:
