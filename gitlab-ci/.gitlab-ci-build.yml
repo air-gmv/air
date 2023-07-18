@@ -89,10 +89,8 @@ SPARC-LEON3-build:
     tags: 
         - OTHER
     needs: 
-        - job: TASTE2_init
-          optional: true
-        - job: TASTE3_init
-          optional: true
+        - TASTE2_init
+        - TASTE3_init
     script:
         - cd $CI_PROJECT_DIR/air
         - cp ./../utils/gitlab-runner/.sparc_leon3_config .
