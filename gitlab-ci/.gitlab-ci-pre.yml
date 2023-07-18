@@ -25,6 +25,7 @@ ARM1_init:
         - ARM1
     rules:
         - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
         - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
         - if: '$CI_COMMIT_MESSAGE !~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /^\[SPARC\]/' 
 
@@ -50,6 +51,7 @@ TASTE1_init:
         - sparc-taste-debian1
     rules:
         - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
         - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
 
 
