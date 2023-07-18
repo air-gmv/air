@@ -1,4 +1,4 @@
-# Gitlab CICD script for pre stage
+# Gitlab CICD script for .pre stage
 # Author huca@GMV 2023
 
 # .pre are jobs ran before any other job in the pipeline
@@ -76,6 +76,4 @@ TASTE3_init:
 #    artifacts:
 #        paths:
 #            - test.yml
-#    rules:
-#        - if:
 

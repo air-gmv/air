@@ -3,7 +3,7 @@
 
 # Build ARM ZYNQZ1
 ARM-ZYNQZ1-build:
-    stage: build
+    stage: prepare-build
     retry: 1
     tags:
         - ARM
@@ -23,7 +23,7 @@ ARM-ZYNQZ1-build:
        
 # ARM RVS PMK Instrumentation
 RVS-ARM-ZYNQZ1-build:
-    stage: build
+    stage: prepare-build
     retry: 1
     tags:
         - ARM
@@ -44,7 +44,7 @@ RVS-ARM-ZYNQZ1-build:
 
 # SPARC RVS PMK Instrumentation 
 RVS-SPARC-LAYSIM-build:
-    stage: build
+    stage: prepare-build
     retry: 1
     tags:
         - SPARC
@@ -64,7 +64,7 @@ RVS-SPARC-LAYSIM-build:
 
 # Build SPARC LEON4
 SPARC-LEON4-build:
-    stage: build
+    stage: prepare-build
     retry: 1
     tags: 
         - OTHER
@@ -84,7 +84,7 @@ SPARC-LEON4-build:
 
 # Build SPARC LEON3
 SPARC-LEON3-build:
-    stage: build
+    stage: prepare-build
     retry: 1
     tags: 
         - OTHER
@@ -99,13 +99,12 @@ SPARC-LEON3-build:
         - ./configure -f .sparc_leon3_config
         - make clean
         - make -j4
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "push"' 
-          when: never
+#    rules:
+#        - if: '$CI_PIPELINE_SOURCE == "schedule"' 
 
 # Build SPARC TSIM
 # SPARC-TSIM-build:
-#     stage: build
+#     stage: prepare-build
 #     retry: 1
 #     tags: 
         - OTHER

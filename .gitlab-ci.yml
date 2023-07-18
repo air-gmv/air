@@ -11,7 +11,7 @@ include:
 
 stages:
     - .pre
-    - build
+    - prepare-build
     - examples
     - validation_tests
     - report
