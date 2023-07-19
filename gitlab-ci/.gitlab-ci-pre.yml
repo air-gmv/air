@@ -73,9 +73,11 @@ generate-config:
     script:
         - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
         - ls
-        - chmod +x /gitlab-ci/generate-test
-        - ./gitlab-ci/generate-test.sh AIR TEST_NUMBER
-        - cat test.yml
+        - cd ..
+        - ls
+        #- chmod +x /gitlab-ci/generate-test.sh
+        #- ./gitlab-ci/generate-test.sh AIR TEST_NUMBER
+        #- cat test.yml
     artifacts:
         paths:
             - test.yml
