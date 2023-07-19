@@ -75,7 +75,7 @@ generate-config:
         - cd ..
         - ls
         - cd gitlab-ci; ls; cd ..
-        - chmod +x /gitlab-ci/generate-test.sh
+        - chmod +x gitlab-ci/generate-test.sh
         - ./gitlab-ci/generate-test.sh AIR TEST_NUMBER
         - ls
         - cat test.yml
