@@ -76,6 +76,7 @@ generate-config:
         - cd ..
         - chmod +x gitlab-ci/generate-test.sh
         - ./gitlab-ci/generate-test.sh $AIR $UTILS $ARCH $TEST_NUMBER
+        - ls
         - cat test.yml
     artifacts:
         paths:
