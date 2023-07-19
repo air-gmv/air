@@ -122,20 +122,6 @@ SPARC-LAYSIM-smp02:
         - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - *check-and-publish
 
-trigger-test:
-    stage: examples
-    needs: 
-        - job: ARM-QEMU-hello_world
-          optional: true
-        - job: ARM-QEMU-bare_c
-          optional: true
-        - job: SPARC-LAYSIM-hello-world
-          optional: true
-    trigger:
-        include:
-            - artifact: $CI_PROJECT_DIR/test.yml
-              job: generate-config
-
 # laysim-math:
 #    extends: .SPARC-LAYSIM-example-template
 #    variables: 
