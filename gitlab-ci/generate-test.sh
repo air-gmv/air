@@ -18,7 +18,7 @@ cat > test.yml <<EOF
         - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
         - *check-and-publish
     rules:
-        - if: "$ARCH == "ARM""
+        - if: "$ARCH == ARM"
 
 .SPARC-LAYSIM-validation-template:
   stage: validation_tests
@@ -32,12 +32,12 @@ cat > test.yml <<EOF
         - make distclean -i # Ignore distclean errors
         - *check-and-publish
   rules:
-        - if: "$ARCH == "SPARC""
+        - if: "$ARCH == SPARC"
 
 ARM-QEMU-TEST-DEF-$TEST_NUMBER:
     extends: .ARM-QEMU-validation-template  
 
 SPARC-LAYSIM-TEST-DEF-$TEST_NUMBER:
     extends: .SPARC-LAYSIM-validation-template
-
+    
 EOF
