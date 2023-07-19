@@ -34,7 +34,7 @@ cat > test.yml <<EOF
         - echo "The value of TEST_NUMBER is $TEST_NUMBER"
         - cd $AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
         - *build-executable
-        - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - make distclean -i # Ignore distclean errors
         - *check-and-publish
   rules:
