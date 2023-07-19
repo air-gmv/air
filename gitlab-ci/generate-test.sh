@@ -3,8 +3,7 @@
 # Access the variables passed as command-line arguments
 AIR=$1
 UTILS=$2
-ARCH=$3
-TEST_NUMBER=$4
+TEST_NUMBER=$3
 
 # Generate the YAML content
 cat > test.yml <<EOF
@@ -29,7 +28,7 @@ cat > test.yml <<EOF
       - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
       - *check-and-publish
   rules:
-      - if: $ARCH == "ARM"
+      - if: '\$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
 
 .SPARC-LAYSIM-validation-template:
   stage: validation_tests
@@ -43,7 +42,7 @@ cat > test.yml <<EOF
         - make distclean -i # Ignore distclean errors
         - *check-and-publish
   rules:
-        - if: $ARCH == "SPARC"
+        - if: '\$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
 
 ARM-QEMU-TEST-DEF-$TEST_NUMBER:
     extends: .ARM-QEMU-validation-template  
