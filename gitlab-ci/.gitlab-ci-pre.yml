@@ -71,13 +71,11 @@ TASTE3_init:
 generate-config:
     stage: .pre
     script:
+        - export ARCH=$(echo $CI_COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
         - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
-        - cd ..
-        - ls
-        - cd gitlab-ci; ls; cd ..
+        - cd ..; cd gitlab-ci; ls; cd ..
         - chmod +x gitlab-ci/generate-test.sh
-        - ./gitlab-ci/generate-test.sh AIR TEST_NUMBER
-        - ls
+        - ./gitlab-ci/generate-test.sh $AIR $UTILS $ARCH $TEST_NUMBER
         - cat test.yml
         - cd air
     artifacts:
