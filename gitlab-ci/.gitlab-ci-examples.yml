@@ -124,6 +124,13 @@ SPARC-LAYSIM-smp02:
 
 trigger-test:
     stage: examples
+    needs: 
+        - job: ARM-QEMU-hello_world
+          optional: true
+        - job: ARM-QEMU-bare_c
+          optional: true
+        - job: SPARC-LAYSIM-hello-world
+          optional: true
     trigger:
         include:
             - artifact: $CI_PROJECT_DIR/test.yml

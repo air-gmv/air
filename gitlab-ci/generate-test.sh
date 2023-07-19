@@ -19,8 +19,6 @@ cat > test.yml <<EOF
     - $UTILS/publish_example.bash
 
 .ARM-QEMU-validation-template:
-  stage: validation_tests
-  needs: ["ARM-QEMU-hello_world","ARM-QEMU-bare_c"]
   tags:  ["ARM"]
   script: 
       - cd $AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
@@ -31,8 +29,6 @@ cat > test.yml <<EOF
       - if: '\$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
 
 .SPARC-LAYSIM-validation-template:
-  stage: validation_tests
-  needs: ["SPARC-LAYSIM-hello-world"] # ,"SPARC-LAYSIM-bare_c","SPARC-LAYSIM-hm","SPARC-LAYSIM-ports","SPARC-LAYSIM-shm","SPARC-LAYSIM-paranoia","SPARC-LAYSIM-smp01","SPARC-LAYSIM-smp02"]
   tags:  ["SPARC","LAYSIM"]
   script: 
         - echo "The value of TEST_NUMBER is $TEST_NUMBER"
