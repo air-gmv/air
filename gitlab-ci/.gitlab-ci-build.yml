@@ -104,6 +104,23 @@ SPARC-LEON3-build:
     rules:
         - if: '$CI_PIPELINE_SOURCE == "schedule"' 
 
+generate-config:
+    stage: prepare-build
+    script:
+        - export ARCH=$(echo $CI_COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
+        - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
+        - cd ..
+        - chmod +x gitlab-ci/generate-test.sh
+        - ./gitlab-ci/generate-test.sh $AIR $UTILS $ARCH $TEST_NUMBER
+        - ls
+        - cat test.yml
+    artifacts:
+        paths:
+            - test.yml
+    rules:
+        - if: "$CI_COMMIT_MESSAGE =~ '/\\(\\d{5}\\)/'" 
+
+
 # Build SPARC TSIM
 # SPARC-TSIM-build:
 #     stage: prepare-build
