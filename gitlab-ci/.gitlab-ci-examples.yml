@@ -126,7 +126,7 @@ trigger-test:
     stage: examples
     trigger:
         include:
-            - artifact: air/test.yml
+            - artifact: test.yml
               job: generate-config
 
 # laysim-math:
