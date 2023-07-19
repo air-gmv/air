@@ -78,6 +78,6 @@ generate-config:
         - cat test.yml
     artifacts:
         paths:
-            - test.yml
+            - air/test.yml
     rules:
         - if: "$CI_COMMIT_MESSAGE =~ '/\\(\\d{5}\\)/'" 
