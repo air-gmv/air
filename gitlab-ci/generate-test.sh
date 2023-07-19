@@ -8,17 +8,28 @@ TEST_NUMBER=$4
 
 # Generate the YAML content
 cat > test.yml <<EOF
+
+.build-executable: &build-executable
+    - $AIR/configure
+    - make clean
+    - make
+    - if ! test -f ./executable/AIRAPP.exe; then echo "Executable doens\'t exist." && exit 1; fi
+
+.check-and-publish: &check-and-publish
+    - $AIR/../utils/gitlab-runner/testcheck.py
+    - $UTILS/publish_example.bash
+
 .ARM-QEMU-validation-template:
-    stage: validation_tests
-    needs: ["ARM-QEMU-hello_world","ARM-QEMU-bare_c"]
-    tags:  ["ARM"]
-    script: 
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
-        - *build-executable
-        - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
-        - *check-and-publish
-    rules:
-        - if: "$ARCH == ARM"
+  stage: validation_tests
+  needs: ["ARM-QEMU-hello_world","ARM-QEMU-bare_c"]
+  tags:  ["ARM"]
+  script: 
+      - cd $AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
+      - *build-executable
+      - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
+      - *check-and-publish
+  rules:
+      - if: "$ARCH == ARM"
 
 .SPARC-LAYSIM-validation-template:
   stage: validation_tests
@@ -39,5 +50,5 @@ ARM-QEMU-TEST-DEF-$TEST_NUMBER:
 
 SPARC-LAYSIM-TEST-DEF-$TEST_NUMBER:
     extends: .SPARC-LAYSIM-validation-template
-    
+
 EOF
