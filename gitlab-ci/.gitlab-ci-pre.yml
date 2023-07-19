@@ -76,8 +76,12 @@ generate-config:
         - ls
         - cd gitlab-ci
         - ls
-        #- chmod +x /gitlab-ci/generate-test.sh
-        #- ./gitlab-ci/generate-test.sh AIR TEST_NUMBER
+        - chmod +x generate-test.sh
+        - ./generate-test.sh AIR TEST_NUMBER
+        - ls
+        - cd ..
+        - ls
+        - cd air
         #- cat test.yml
         #- cd air
     artifacts:
