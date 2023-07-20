@@ -2,9 +2,6 @@
 # Executed in TASTE VM centralized in 192.19.13.167
 # author: $(AIR_RUNNER_USER) @GMV 2020, edited by huca@GMV 2023
 
-.push-template:
-
-
 include:
     - local: gitlab-ci/push/.gitlab-ci-pre.yml
       rules:
