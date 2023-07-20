@@ -80,6 +80,7 @@ default:
       - *check-and-publish
   rules:
       - if: '\$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
+      - if: '\$CI_COMMIT_MESSAGE !~ /^\[SPARC\]/'
 
 .SPARC-LAYSIM-validation-template:
   tags:  ["SPARC","LAYSIM"]
