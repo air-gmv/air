@@ -77,4 +77,4 @@ generate-test-yml:
         paths:
             - $CI_PROJECT_DIR/test.yml
     rules:
-        - if: "$CI_COMMIT_MESSAGE =~ '/\\(\\d{5}\\)/'" # message has five consecutive digits
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/' # message has five consecutive digits
