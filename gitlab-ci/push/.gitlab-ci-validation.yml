@@ -23,7 +23,7 @@
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
         - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
-        - if: '$CI_COMMIT_MESSAGE !~ /^\[(ALL|ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
 
 #00001_arm_zynqz1: 
 #    stage: examples

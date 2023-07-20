@@ -26,7 +26,7 @@
         - *check-and-publish
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/ && $CI_JOB_NAME =~ /(hello\_world|bare\_c)$/'
-        - if: '$CI_COMMIT_MESSAGE !~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /(hello\_world|bare\_c)$/'
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_JOB_NAME =~ /(hello\_world|bare\_c)$/'
 
 ARM-QEMU-hello_world:
     extends: .ARM-QEMU-example-template
