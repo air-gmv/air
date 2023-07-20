@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# Access the variables passed as command-line arguments
-AIR=$1
-UTILS=$2
-TEST_NUMBER=$3
+# Access the variable passed as command-line argument
+TEST_NUMBER=$1
 
 # Generate the YAML content
 cat > test.yml <<EOF
@@ -64,21 +62,21 @@ default:
         - export UTILS=\$AIR/../utils/gitlab-runner
 
 .build-executable: &build-executable
-    - $AIR/configure
+    - \$AIR/configure
     - make clean
     - make
     - if ! test -f ./executable/AIRAPP.exe; then echo "Executable doens\'t exist." && exit 1; fi
 
 .check-and-publish: &check-and-publish
-    - $AIR/../utils/gitlab-runner/testcheck.py
-    - $UTILS/publish_example.bash
+    - \$AIR/../utils/gitlab-runner/testcheck.py
+    - \$UTILS/publish_example.bash
 
 .ARM-QEMU-validation-template:
   tags:  ["ARM"]
   script: 
-      - cd $AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
+      - cd \$AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
       - *build-executable
-      - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
+      - (\$UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
       - *check-and-publish
   rules:
       - if: '\$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
@@ -87,9 +85,9 @@ default:
   tags:  ["SPARC","LAYSIM"]
   script: 
         - echo "The value of TEST_NUMBER is $TEST_NUMBER"
-        - cd $AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
+        - cd \$AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
         - *build-executable
-        - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        - laysim-gr740-mmu-cli -batch \$AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - make distclean -i # Ignore distclean errors
         - *check-and-publish
   rules:
