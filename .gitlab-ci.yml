@@ -3,25 +3,12 @@
 # author: $(AIR_RUNNER_USER) @GMV 2020, edited by huca@GMV 2023
 
 include:
-    - local: gitlab-ci/push/.gitlab-ci-pre.yml
+    - local: "gitlab-ci/push/*"
       rules:
         - if: $CI_PIPELINE_SOURCE == "push"
-    - local: "gitlab-ci/push/.gitlab-ci-build.yml"
+    - local: "gitlab-ci/merge_request/*"
       rules:
-        - if: $CI_PIPELINE_SOURCE == "push"
-    - local: "gitlab-ci/push/.gitlab-ci-examples.yml"
-      rules:
-        - if: $CI_PIPELINE_SOURCE == "push"
-    - local: "gitlab-ci/push/.gitlab-ci-tests.yml"
-      rules:
-        - if: $CI_PIPELINE_SOURCE == "push"
-    - local: "gitlab-ci/push/.gitlab-ci-validation.yml"
-      rules:
-        - if: $CI_PIPELINE_SOURCE == "push"
-    - local: "gitlab-ci/push/.gitlab-ci-report.yml"
-      rules:
-        - if: $CI_PIPELINE_SOURCE == "push"
-
+        - if: $CI_PIPELINE_SOURCE == "merge_request"
 stages:
     - prepare-build
     - examples
