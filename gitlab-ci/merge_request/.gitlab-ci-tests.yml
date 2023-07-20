@@ -1,8 +1,0 @@
-trigger-test:
-    stage: validation_tests
-    trigger:
-        include:
-            - artifact: $CI_PROJECT_DIR/test.yml
-              job: generate-config
-    rules:
-        - if: "$CI_COMMIT_MESSAGE =~ '/\\(\\d{5}\\)/'" 
