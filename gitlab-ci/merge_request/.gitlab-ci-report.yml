@@ -21,9 +21,6 @@ SPARC-report-export:
             - $CI_PROJECT_DIR/air/rvs_air/results/air-coverage-sparc-unmanaged-coverage-coverage.html 
             - $CI_PROJECT_DIR/air/rvs_air/results/air-coverage-sparc-unmanaged-coverage-coverage_files/*
         expire_in: 1 week
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 ARM-report-export:
     stage: report
@@ -48,9 +45,6 @@ ARM-report-export:
             - $CI_PROJECT_DIR/air/rvs_air/results/air-coverage-arm-unmanaged-coverage-coverage.html
             - $CI_PROJECT_DIR/air/rvs_air/results/air-coverage-arm-unmanaged-coverage-coverage_files/*
         expire_in: 1 week
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 #RVS-merge-report :
 #    stage : report 

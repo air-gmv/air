@@ -23,25 +23,16 @@ ARM1_init:
     allow_failure: false
     tags:
         - ARM1
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
-        - if: '$CI_COMMIT_MESSAGE !~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /^\[SPARC\]/'
 
 ARM2_init:
     extends: .pre-job-template
     tags:
         - ARM2
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 ARM3_init:
     extends: .pre-job-template
     tags:
         - ARM3
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 # TASTE
 TASTE1_init:
@@ -49,38 +40,13 @@ TASTE1_init:
     allow_failure: false
     tags:
         - sparc-taste-debian1
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
 
 TASTE2_init:
     extends: .pre-job-template
     tags:
         - sparc-taste-debian2
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 TASTE3_init:
     extends: .pre-job-template
     tags:
         - sparc-taste-debian3
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
-
-generate-config:
-    stage: .pre
-    script:
-        - export ARCH=$(echo $CI_COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
-        - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
-        - cd ..
-        - chmod +x gitlab-ci/generate-test.sh
-        - ./gitlab-ci/generate-test.sh $TEST_NUMBER
-        - ls
-        - cat test.yml
-        - mv test.yml $CI_PROJECT_DIR
-    artifacts:
-        paths:
-            - $CI_PROJECT_DIR/test.yml
-    rules:
-        - if: "$CI_COMMIT_MESSAGE =~ '/\\(\\d{5}\\)/'" 

@@ -2,7 +2,7 @@
 # Author huca@GMV 2023
 
 # Build ARM ZYNQZ1
-ARM-ZYNQZ1-build:
+.ARM-ZYNQZ1-build:
     stage: prepare-build
     retry: 1
     tags:
@@ -18,8 +18,6 @@ ARM-ZYNQZ1-build:
         - ./configure -f .arm_zynqz1_config
         - make clean
         - make -j4
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 # ARM RVS PMK Instrumentation
 RVS-ARM-ZYNQZ1-build:
@@ -37,11 +35,6 @@ RVS-ARM-ZYNQZ1-build:
         - rm -rf $AIR/install/pos/rtems5/rtems5-build
         - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
-        - if: '$CI_COMMIT_MESSAGE !~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /^\[SPARC\]/'
 
 # SPARC RVS PMK Instrumentation
 RVS-SPARC-LAYSIM-build:
@@ -59,13 +52,9 @@ RVS-SPARC-LAYSIM-build:
         - rm -rf $AIR/install/pos/rtems5/rtems5-build
         - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
 
 # Build SPARC LEON4
-SPARC-LEON4-build:
+.SPARC-LEON4-build:
     stage: prepare-build
     retry: 1
     tags:
@@ -81,11 +70,9 @@ SPARC-LEON4-build:
         - ./configure -f .sparc_leon4_config
         - make clean
         - make -j4
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 # Build SPARC LEON3
-SPARC-LEON3-build:
+.SPARC-LEON3-build:
     stage: prepare-build
     retry: 1
     tags:
@@ -101,8 +88,6 @@ SPARC-LEON3-build:
         - ./configure -f .sparc_leon3_config
         - make clean
         - make -j4
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"' 
 
 # Build SPARC TSIM
 # SPARC-TSIM-build:
