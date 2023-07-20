@@ -2,24 +2,24 @@
 # Author huca@GMV 2023
 
 # Build ARM ZYNQZ1
-ARM-ZYNQZ1-build:
-    stage: prepare-build
-    retry: 1
-    tags:
-        - ARM
-    needs:
-        - job: ARM2_init
-          optional: true
-        - job: ARM3_init
-          optional: true
-    script:
-        - cd $CI_PROJECT_DIR/air
-        - cp ./../utils/gitlab-runner/.arm_zynqz1_config .
-        - ./configure -f .arm_zynqz1_config
-        - make clean
-        - make -j4
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
+#ARM-ZYNQZ1-build:
+#    stage: prepare-build
+#    retry: 1
+#    tags:
+#        - ARM
+#    needs:
+#        - job: ARM2_init
+#          optional: true
+#        - job: ARM3_init
+#          optional: true
+#    script:
+#        - cd $CI_PROJECT_DIR/air
+#        - cp ./../utils/gitlab-runner/.arm_zynqz1_config .
+#        - ./configure -f .arm_zynqz1_config
+#        - make clean
+#        - make -j4
+#    rules:
+#        - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 # ARM RVS PMK Instrumentation
 RVS-ARM-ZYNQZ1-build:
@@ -38,10 +38,8 @@ RVS-ARM-ZYNQZ1-build:
         - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash
     rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
-        - if: '$CI_COMMIT_MESSAGE !~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /^\[SPARC\]/'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
+        - if: '$CI_COMMIT_MESSAGE !~ /^\[SPARC\]/' # message does not start with [SPARC]
 
 # SPARC RVS PMK Instrumentation
 RVS-SPARC-LAYSIM-build:
@@ -60,49 +58,47 @@ RVS-SPARC-LAYSIM-build:
         - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash
     rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
 
 # Build SPARC LEON4
-SPARC-LEON4-build:
-    stage: prepare-build
-    retry: 1
-    tags:
-        - OTHER
-    needs:
-        - job: TASTE2_init
-          optional: true
-        - job: TASTE3_init
-          optional: true
-    script:
-        - cd $CI_PROJECT_DIR/air
-        - cp ./../utils/gitlab-runner/.sparc_leon4_config .
-        - ./configure -f .sparc_leon4_config
-        - make clean
-        - make -j4
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
+#SPARC-LEON4-build:
+#    stage: prepare-build
+#    retry: 1
+#    tags:
+#        - OTHER
+#    needs:
+#        - job: TASTE2_init
+#          optional: true
+#        - job: TASTE3_init
+#          optional: true
+#    script:
+#        - cd $CI_PROJECT_DIR/air
+#        - cp ./../utils/gitlab-runner/.sparc_leon4_config .
+#        - ./configure -f .sparc_leon4_config
+#        - make clean
+#        - make -j4
+#    rules:
+#        - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 # Build SPARC LEON3
-SPARC-LEON3-build:
-    stage: prepare-build
-    retry: 1
-    tags:
-        - OTHER
-    needs:
-        - job: TASTE2_init
-          optional: true
-        - job: TASTE3_init
-          optional: true
-    script:
-        - cd $CI_PROJECT_DIR/air
-        - cp ./../utils/gitlab-runner/.sparc_leon3_config .
-        - ./configure -f .sparc_leon3_config
-        - make clean
-        - make -j4
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"' 
+#SPARC-LEON3-build:
+#    stage: prepare-build
+#    retry: 1
+#    tags:
+#        - OTHER
+#    needs:
+#        - job: TASTE2_init
+#          optional: true
+#        - job: TASTE3_init
+#          optional: true
+#    script:
+#        - cd $CI_PROJECT_DIR/air
+#        - cp ./../utils/gitlab-runner/.sparc_leon3_config .
+#        - ./configure -f .sparc_leon3_config
+#        - make clean
+#        - make -j4
+#    rules:
+#        - if: '$CI_PIPELINE_SOURCE == "schedule"' 
 
 # Build SPARC TSIM
 # SPARC-TSIM-build:

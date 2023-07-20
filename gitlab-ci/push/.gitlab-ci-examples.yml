@@ -17,8 +17,6 @@
     needs: 
         - job: RVS-ARM-ZYNQZ1-build
           optional: true
-        - job: ARM-ZYNQZ1-build
-          optional: true
     tags:  ["ARM"]
     script: 
         - cd $AIR/examples/$EXAMPLE
@@ -27,14 +25,8 @@
         - make distclean
         - *check-and-publish
     rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ALL\]/ && $CI_JOB_NAME =~ /hello\_world$/'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ALL\]/ && $CI_JOB_NAME =~ /bare\_c$/'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_JOB_NAME =~ /hello\_world$/'
-        - if: '$CI_COMMIT_MESSAGE !~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /hello\_world$/'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_JOB_NAME =~ /bare\_c$/'
-        - if: '$CI_COMMIT_MESSAGE !~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /bare\_c$/'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/ && $CI_JOB_NAME =~ /(hello\_world|bare\_c)$/'
+        - if: '$CI_COMMIT_MESSAGE !~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /(hello\_world|bare\_c)$/'
 
 ARM-QEMU-hello_world:
     extends: .ARM-QEMU-example-template
@@ -62,10 +54,7 @@ ARM-QEMU-bare_c:
         - make distclean
         - *check-and-publish
     rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ALL\]/ && $CI_JOB_NAME =~ /hello\_world$/'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_JOB_NAME =~ /hello\_world$/'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/ && $CI_JOB_NAME =~ /(hello\_world|bare\_c)$/'
 
 SPARC-LAYSIM-hello_world:
     extends: .SPARC-LAYSIM-example-template

@@ -24,24 +24,22 @@ ARM1_init:
     tags:
         - ARM1
     rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
-        - if: '$CI_COMMIT_MESSAGE !~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /^\[SPARC\]/'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
+        - if: '$CI_COMMIT_MESSAGE !~ /^\[SPARC\]/' # message does not start with [SPARC]
 
-ARM2_init:
-    extends: .pre-job-template
-    tags:
-        - ARM2
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
+#ARM2_init:
+#    extends: .pre-job-template
+#    tags:
+#        - ARM2
+#    rules:
+#        - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
-ARM3_init:
-    extends: .pre-job-template
-    tags:
-        - ARM3
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
+#ARM3_init:
+#    extends: .pre-job-template
+#    tags:
+#        - ARM3
+#    rules:
+#        - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 # TASTE
 TASTE1_init:
@@ -50,32 +48,28 @@ TASTE1_init:
     tags:
         - sparc-taste-debian1
     rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
 
-TASTE2_init:
-    extends: .pre-job-template
-    tags:
-        - sparc-taste-debian2
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
+#TASTE2_init:
+#    extends: .pre-job-template
+#    tags:
+#        - sparc-taste-debian2
+#    rules:
+#        - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
-TASTE3_init:
-    extends: .pre-job-template
-    tags:
-        - sparc-taste-debian3
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
+#TASTE3_init:
+#    extends: .pre-job-template
+#    tags:
+#        - sparc-taste-debian3
+#    rules:
+#        - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
-generate-config:
+generate-test-yml:
     stage: .pre
     script:
-        - export ARCH=$(echo $CI_COMMIT_MESSAGE | sed -n 's/^\[\(.*\)\].*$/\1/p')
         - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
-        - cd ..
-        - chmod +x gitlab-ci/generate-test.sh
-        - ./gitlab-ci/generate-test.sh $TEST_NUMBER
+        - chmod +x ../gitlab-ci/push/generate-test.sh
+        - ./../gitlab-ci/push/generate-test.sh $TEST_NUMBER
         - ls
         - cat test.yml
         - mv test.yml $CI_PROJECT_DIR
@@ -83,4 +77,4 @@ generate-config:
         paths:
             - $CI_PROJECT_DIR/test.yml
     rules:
-        - if: "$CI_COMMIT_MESSAGE =~ '/\\(\\d{5}\\)/'" 
+        - if: "$CI_COMMIT_MESSAGE =~ '/\\(\\d{5}\\)/'" # message has five consecutive digits
