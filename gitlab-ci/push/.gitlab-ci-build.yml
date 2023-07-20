@@ -39,7 +39,7 @@ RVS-ARM-ZYNQZ1-build:
         - $UTILS/publish_to_central_server.bash
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
-        - if: '$CI_COMMIT_MESSAGE !~ /^\[SPARC\]/' # message does not start with [SPARC]
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
 
 # SPARC RVS PMK Instrumentation
 RVS-SPARC-LAYSIM-build:

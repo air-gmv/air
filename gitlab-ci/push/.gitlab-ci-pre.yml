@@ -25,7 +25,7 @@ ARM1_init:
         - ARM1
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
-        - if: '$CI_COMMIT_MESSAGE !~ /^\[SPARC\]/' # message does not start with [SPARC]
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/' # message does not have [...]
 
 #ARM2_init:
 #    extends: .pre-job-template
@@ -77,4 +77,5 @@ generate-test-yml:
         paths:
             - $CI_PROJECT_DIR/test.yml
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/' # message has five consecutive digits
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
