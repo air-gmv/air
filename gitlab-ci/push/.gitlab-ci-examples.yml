@@ -114,4 +114,4 @@ SPARC-LAYSIM-smp02:
 # laysim-math:
 #    extends: .SPARC-LAYSIM-example-template
 #    variables: 
-#        EXAMPLE: "math" 
+#        EXAMPLE: "math"
