@@ -85,7 +85,6 @@ default:
 .SPARC-LAYSIM-validation-template:
   tags:  ["SPARC","LAYSIM"]
   script: 
-        - echo "The value of TEST_NUMBER is $TEST_NUMBER"
         - cd \$AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
         - *build-executable
         - laysim-gr740-mmu-cli -batch \$AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
