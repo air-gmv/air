@@ -14,6 +14,7 @@
     script: 
         -   if ! [[ -z $CLEANUP ]] ;
             then 
+                echo "Cleaning up...";
                 rm -rf /home/gitlab-runner/state/* ;
             fi
 
@@ -27,19 +28,21 @@ ARM1_init:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/' # message does not have [...]
 
-.ARM2_init:
+ARM2_init:
     extends: .pre-job-template
     tags:
         - ARM2
     rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/' # message does not have [...]
 
-.ARM3_init:
+ARM3_init:
     extends: .pre-job-template
     tags:
         - ARM3
     rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/' # message does not have [...]
 
 # TASTE
 TASTE1_init:
