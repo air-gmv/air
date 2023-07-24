@@ -10,19 +10,6 @@
         GIT_STRATEGY: clone # Prevents the cloning of the repository
     allow_failure: true
     retry: 1
-    script: 
-        -   if ! [[ -z $CLEANUP ]] ;
-            then 
-                echo "Cleaning up...";
-                rm -rf /home/gitlab-runner/state/* ;
-            fi
-
-# ARM
-ARM1_init:
-    extends: .pre-job-template
-    allow_failure: false
-    tags:
-        - ARM1
     before_script: 
         #- ''               # Prevents the before_script from running
         - sleep $(($RANDOM % 2)).$RANDOM
@@ -54,7 +41,20 @@ ARM1_init:
 
         - while test -e /tmp/rsync-"$CI_COMMIT_SHORT_SHA".lock; 
             do sleep 1; 
-            done;        
+            done; 
+    script: 
+        -   if ! [[ -z $CLEANUP ]] ;
+            then 
+                echo "Cleaning up...";
+                rm -rf /home/gitlab-runner/state/* ;
+            fi
+
+# ARM
+ARM1_init:
+    extends: .pre-job-template
+    allow_failure: false
+    tags:
+        - ARM1   
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/' # message does not have [...]
@@ -63,19 +63,6 @@ ARM2_init:
     extends: .pre-job-template
     tags:
         - ARM2
-    needs:
-        - ARM1_init
-    before_script:
-        - sleep $(($RANDOM % 2)).$RANDOM
-        - export STATE_FOLDER=$HOME/state/$CI_COMMIT_SHA
-
-        - if ! test -d $STATE_FOLDER; 
-            then 
-                (mkdir -p $STATE_FOLDER || true) && ./utils/gitlab-runner/check_central_server.bash; 
-            else 
-                ./utils/gitlab-runner/check_central_server.bash;
-            fi;
-    rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/' # message does not have [...]
 
@@ -83,18 +70,6 @@ ARM3_init:
     extends: .pre-job-template
     tags:
         - ARM3
-    needs:
-        - ARM1_init
-    before_script:
-        - sleep $(($RANDOM % 2)).$RANDOM
-        - export STATE_FOLDER=$HOME/state/$CI_COMMIT_SHA
-        
-        - if ! test -d $STATE_FOLDER; 
-            then 
-                (mkdir -p $STATE_FOLDER || true) && ./utils/gitlab-runner/check_central_server.bash; 
-            else 
-                ./utils/gitlab-runner/check_central_server.bash;
-            fi;
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/' # message does not have [...]
