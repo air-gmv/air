@@ -82,6 +82,8 @@ ARM1_init:
 
 ARM2_init:
     extends: .pre-job-template
+    needs: 
+        - ARM1_init
     tags:
         - ARM2
     rules:
@@ -90,6 +92,8 @@ ARM2_init:
 
 ARM3_init:
     extends: .pre-job-template
+    needs: 
+        - ARM2_init
     tags:
         - ARM3
     rules:
