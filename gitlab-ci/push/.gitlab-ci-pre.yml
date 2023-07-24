@@ -11,7 +11,7 @@
     allow_failure: true
     retry: 1
     before_script: 
-        - ''               # Prevents the before_script from running
+        - ''               # Prevents the before_script from running 
     script: 
         -   if ! [[ -z $CLEANUP ]] ;
             then 
