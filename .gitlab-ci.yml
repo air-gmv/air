@@ -22,13 +22,6 @@ default:
         - sleep $(($RANDOM % 2)).$RANDOM
         - export STATE_FOLDER=$HOME/state/$CI_COMMIT_SHA
 
-        - if ! test -d $STATE_FOLDER; 
-            then 
-                (mkdir -p $STATE_FOLDER || true) && ./utils/gitlab-runner/check_central_server.bash; 
-            else 
-                ./utils/gitlab-runner/check_central_server.bash;
-            fi;
-
         - cd $STATE_FOLDER
         - cd air
         
@@ -51,6 +44,7 @@ default:
         - export UTILS=$AIR/../utils/gitlab-runner
 
 variables:
+    GIT_STRATEGY: fetch
     GIT_SUBMODULE_STRATEGY: recursive
     GIT_ASKPASS: /bin/echo
     GIT_HTTP_USERNAME: huca

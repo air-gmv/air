@@ -15,8 +15,6 @@
 .ARM-QEMU-example-template:
     stage: examples
     tags:  ["ARM"]
-    variables:
-        GIT_STRATEGY: fetch
     script:
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
