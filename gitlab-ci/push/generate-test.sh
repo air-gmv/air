@@ -12,22 +12,6 @@ default:
         - sleep \$((\$RANDOM % 2)).\$RANDOM
 
         - export STATE_FOLDER=\$HOME/state/\$CI_COMMIT_SHA
-        - export GIT_SSL_NO_VERIFY=1
-
-        - git config --global credential.helper store
-        - echo "https://huca:\${CI_JOB_TOKEN}@$(AIR_GIT_REMOTE_HOSTNAME)" > ~/.git-credentials
-
-        - if ! test -f git-clean.lock; 
-            then 
-                touch git-clean.lock; 
-            fi
-
-        - if ! \$(grep -Fxq \$CI_COMMIT_SHORT_SHA git-clean.lock); 
-            then 
-                git clean -ffdx && git submodule foreach --recursive git clean -ffdx && echo \$CI_COMMIT_SHORT_SHA > git-clean.lock; 
-                git submodule update --init --recursive; 
-                git submodule sync --recursive; 
-            fi
             
         - if ! test -d \$STATE_FOLDER; 
             then 
@@ -35,11 +19,7 @@ default:
             else 
                 ./utils/gitlab-runner/check_central_server.bash;
             fi;
-
-        - while test -e /tmp/rsync-"\$CI_COMMIT_SHORT_SHA".lock; 
-            do sleep 1; 
-            done;        
-
+            
         - cd \$STATE_FOLDER
         - cd air
         
