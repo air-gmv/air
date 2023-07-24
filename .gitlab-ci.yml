@@ -9,6 +9,7 @@ include:
     - local: "gitlab-ci/merge_request/*.yml"
       rules:
         - if: $CI_PIPELINE_SOURCE == "merge_request"
+
 stages:
     - prepare-build
     - examples
@@ -17,7 +18,6 @@ stages:
 
 variables:
     GIT_SUBMODULE_STRATEGY: recursive
-    GIT_STRATEGY: fetch
     GIT_ASKPASS: /bin/echo
     GIT_HTTP_USERNAME: huca
     GIT_HTTP_PASSWORD: $CI_JOB_TOKEN

@@ -26,8 +26,18 @@ RVS-ARM-ZYNQZ1-build:
     tags:
         - ARM
         - RVS
+    variables:
+        GIT_STRATEGY: fetch
     script:
         - export STATE_FOLDER=$HOME/state/$CI_COMMIT_SHA
+
+        - if ! test -d $STATE_FOLDER; 
+            then 
+                (mkdir -p $STATE_FOLDER || true) && ./utils/gitlab-runner/check_central_server.bash; 
+            else 
+                ./utils/gitlab-runner/check_central_server.bash;
+            fi;
+
         - cd $STATE_FOLDER
         - cd air
         
