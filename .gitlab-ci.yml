@@ -17,7 +17,7 @@ stages:
 
 variables:
     GIT_SUBMODULE_STRATEGY: recursive
-    GIT_STRATEGY: clone
+    GIT_STRATEGY: fetch
     GIT_ASKPASS: /bin/echo
     GIT_HTTP_USERNAME: huca
     GIT_HTTP_PASSWORD: $CI_JOB_TOKEN
