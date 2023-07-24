@@ -63,6 +63,7 @@ ARM2_init:
     extends: .pre-job-template
     tags:
         - ARM2
+    rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/' # message does not have [...]
 
