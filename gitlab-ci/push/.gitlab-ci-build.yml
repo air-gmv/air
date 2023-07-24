@@ -27,7 +27,7 @@ RVS-ARM-ZYNQZ1-build:
         - ARM
         - RVS
     needs:
-        - ARM1_init
+        - ARM3_init
     script:
         - export STATE_FOLDER=$HOME/state/$CI_COMMIT_SHA
         - cd $STATE_FOLDER
