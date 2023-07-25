@@ -3,7 +3,7 @@
 # author: $(AIR_RUNNER_USER) @GMV 2020, edited by huca@GMV 2023
 
 include:
-    - local: "gitlab-ci/push/*.yml"
+    - local: "gitlab-ci/merge_request/*.yml"
       rules:
         - if: $CI_PIPELINE_SOURCE == "push"
     - local: "gitlab-ci/merge_request/*.yml"
