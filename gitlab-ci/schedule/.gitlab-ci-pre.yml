@@ -18,32 +18,30 @@
                 echo "Cleaning up...";
                 rm -rf /home/gitlab-runner/state/* ;
             fi
+    rules:
+        # message starts with [ALL] or [ARM]
+        - if: '$CI_JOB_NAME =~ /^ARM/ && $CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/'
+        # message does not have [...]
+        - if: '$CI_JOB_NAME =~ /^ARM/ && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
+        # message starts with [ALL] or [SPARC]
+        - if: '$CI_JOB_NAME =~ /^SPARC/ && $CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/'
 
 # ARM
 ARM1_init:
     extends: .pre-job-template
     allow_failure: false
     tags:
-        - ARM1   
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
-        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/' # message does not have [...]
+        - ARM1
 
 ARM2_init:
     extends: .pre-job-template
     tags:
         - ARM2
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
-        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/' # message does not have [...]
 
 ARM3_init:
     extends: .pre-job-template
     tags:
         - ARM3
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
-        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/' # message does not have [...]
 
 # TASTE
 TASTE1_init:
@@ -51,22 +49,16 @@ TASTE1_init:
     allow_failure: false
     tags:
         - sparc-taste-debian1
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
 
 .TASTE2_init:
     extends: .pre-job-template
     tags:
         - sparc-taste-debian2
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 .TASTE3_init:
     extends: .pre-job-template
     tags:
         - sparc-taste-debian3
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 generate-test-yml:
     stage: .pre
