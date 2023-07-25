@@ -7,24 +7,15 @@
 .pre-job-template:
     stage: .pre
     variables:
-        GIT_STRATEGY: none # Prevents the cloning of the repository 
+        GIT_STRATEGY: none # Prevents the cloning of the repository
     allow_failure: true
-    retry: 1
     before_script: 
-        - ''               # Prevents the before_script from running 
+        - ''               # Prevents the before_script from running
     script: 
         -   if ! [[ -z $CLEANUP ]] ;
             then 
-                echo "Cleaning up...";
                 rm -rf /home/gitlab-runner/state/* ;
             fi
-    rules:
-        # message starts with [ALL] or [ARM]
-        - if: '$CI_JOB_NAME =~ /^ARM/ && $CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/'
-        # message does not have [...]
-        - if: '$CI_JOB_NAME =~ /^ARM/ && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
-        # message starts with [ALL] or [SPARC]
-        - if: '$CI_JOB_NAME =~ /^SPARC/ && $CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/'
 
 # ARM
 ARM1_init:
@@ -50,26 +41,12 @@ TASTE1_init:
     tags:
         - sparc-taste-debian1
 
-.TASTE2_init:
+TASTE2_init:
     extends: .pre-job-template
     tags:
         - sparc-taste-debian2
 
-.TASTE3_init:
+TASTE3_init:
     extends: .pre-job-template
     tags:
         - sparc-taste-debian3
-
-generate-test-yml:
-    stage: .pre
-    script:
-        - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
-        - chmod +x ../gitlab-ci/push/generate-test.sh
-        - ./../gitlab-ci/push/generate-test.sh $TEST_NUMBER
-        - mv test.yml $CI_PROJECT_DIR
-    artifacts:
-        paths:
-            - $CI_PROJECT_DIR/test.yml
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
-        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
