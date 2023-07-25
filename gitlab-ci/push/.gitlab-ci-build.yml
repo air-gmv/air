@@ -90,6 +90,20 @@ RVS-SPARC-LAYSIM-build:
         - make clean
         - make -j4
 
+generate-test-yml:
+    stage: prepare-build
+    script:
+        - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
+        - chmod +x ../gitlab-ci/push/generate-test.sh
+        - ./../gitlab-ci/push/generate-test.sh $TEST_NUMBER
+        - mv test.yml $CI_PROJECT_DIR
+    artifacts:
+        paths:
+            - $CI_PROJECT_DIR/test.yml
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
+
 # Build SPARC TSIM
 # SPARC-TSIM-build:
 #     stage: prepare-build
