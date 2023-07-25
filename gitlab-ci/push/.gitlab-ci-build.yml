@@ -26,8 +26,6 @@ RVS-ARM-ZYNQZ1-build:
     tags:
         - ARM
         - RVS
-    needs:
-        - ARM1_init
     script:
         - sed -i 's/\.\/rvs_air\/scripts\/build_arm.bash/\.\/rvs_air\/scripts\/build_arm-ci.bash/g' air.rvsprj
         - rvsdriver --project $AIR/air.rvsprj --integration arm-pmk-coverage --prepare --build
