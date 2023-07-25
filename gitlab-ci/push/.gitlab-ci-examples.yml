@@ -22,6 +22,8 @@
         - make distclean
         - *check-and-publish
     rules:
+        - if: '$CI_PIPELINE_SOURCE == "merge_request"'
+        - if: '$CI_PIPELINE_SOURCE == "schedule"'
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/ && $CI_JOB_NAME =~ /(hello\_world|bare\_c)$/'
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_JOB_NAME =~ /(hello\_world|bare\_c)$/'
 
@@ -46,6 +48,8 @@ ARM-QEMU-bare_c:
         - make distclean
         - *check-and-publish
     rules:
+        - if: '$CI_PIPELINE_SOURCE == "merge_request"'
+        - if: '$CI_PIPELINE_SOURCE == "schedule"'
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/ && $CI_JOB_NAME =~ /(hello\_world|bare\_c)$/'
 
 SPARC-LAYSIM-hello_world:
