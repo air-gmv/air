@@ -104,7 +104,7 @@ generate-test-yml:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
 
-# Build SPARC TSIM
+# Build SPARC TSIM 
 # SPARC-TSIM-build:
 #     stage: prepare-build
 #     retry: 1
