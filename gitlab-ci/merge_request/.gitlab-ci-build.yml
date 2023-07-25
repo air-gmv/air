@@ -89,7 +89,7 @@ RVS-SPARC-LAYSIM-build:
         - make clean
         - make -j4
 
-# Build SPARC TSIM 
+# Build SPARC TSIM
 # SPARC-TSIM-build:
 #     stage: prepare-build
 #     retry: 1
