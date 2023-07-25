@@ -9,6 +9,9 @@ include:
     - local: "gitlab-ci/merge_request/*.yml"
       rules:
         - if: $CI_PIPELINE_SOURCE == "merge_request"
+    - local: "gitlab-ci/schedule/*.yml"
+      rules:
+        - if: $CI_PIPELINE_SOURCE == "schedule"
     - local: "gitlab-ci/.gitlab-ci-validation.yml"
 
 stages:
