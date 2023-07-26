@@ -1,0 +1,8 @@
+TASTE3_init:
+    tags:
+        - sparc-taste-debian3
+    script: 
+        -   if ! [[ -z $CLEANUP ]] ;
+            then 
+                rm -rf /home/gitlab-runner/state/* ;
+            fi
