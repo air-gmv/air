@@ -2,14 +2,16 @@
 # Author huca@GMV 2023
 
 # Build ARM ZYNQZ1
-ARM-ZYNQZ1-build:
+.ARM-ZYNQZ1-build:
     stage: prepare-build
     retry: 1
     tags:
         - ARM
-    needs : 
-        - ARM2_init
-        - ARM3_init
+    needs:
+        - job: ARM2_init
+          optional: true
+        - job: ARM3_init
+          optional: true
     script:
         - cd $CI_PROJECT_DIR/air
         - cp ./../utils/gitlab-runner/.arm_zynqz1_config .
@@ -18,14 +20,12 @@ ARM-ZYNQZ1-build:
         - make -j4
 
 # ARM RVS PMK Instrumentation
-RVS-ARM-ZYNQZ1-prepare-build:
+RVS-ARM-ZYNQZ1-build:
     stage: prepare-build
     retry: 1
     tags:
         - ARM
         - RVS
-    needs : 
-        - ARM1_init
     script:
         - sed -i 's/\.\/rvs_air\/scripts\/build_arm.bash/\.\/rvs_air\/scripts\/build_arm-ci.bash/g' air.rvsprj
         - rvsdriver --project $AIR/air.rvsprj --integration arm-pmk-coverage --prepare --build
@@ -33,32 +33,38 @@ RVS-ARM-ZYNQZ1-prepare-build:
         - rm -rf $AIR/install/pos/rtems5/rtems5-build
         - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
 
-# SPARC RVS PMK Instrumentation 
-RVS-SPARC-LAYSIM-prepare-build:
+# SPARC RVS PMK Instrumentation
+RVS-SPARC-LAYSIM-build:
     stage: prepare-build
     retry: 1
     tags:
         - SPARC
         - RVS
-    needs : 
-        - TASTE1_init
     script:
+        - echo "The value of TEST_NUMBER is $TEST_NUMBER"
         - sed -i 's/\.\/rvs_air\/scripts\/build.bash/\.\/rvs_air\/scripts\/build-ci.bash/g' air.rvsprj
         - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --prepare --build
         - rm -rf $AIR/install/pos/rtems5/rtems5-build
         - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
 
 # Build SPARC LEON4
-SPARC-LEON4-build:
+.SPARC-LEON4-build:
     stage: prepare-build
     retry: 1
-    tags: 
+    tags:
         - OTHER
-    needs : 
-        - TASTE2_init
-        - TASTE3_init
+    needs:
+        - job: TASTE2_init
+          optional: true
+        - job: TASTE3_init
+          optional: true
     script:
         - cd $CI_PROJECT_DIR/air
         - cp ./../utils/gitlab-runner/.sparc_leon4_config .
@@ -67,14 +73,16 @@ SPARC-LEON4-build:
         - make -j4
 
 # Build SPARC LEON3
-SPARC-LEON3-build:
+.SPARC-LEON3-build:
     stage: prepare-build
     retry: 1
-    tags: 
+    tags:
         - OTHER
-    needs : 
-        - TASTE2_init
-        - TASTE3_init
+    needs:
+        - job: TASTE2_init
+          optional: true
+        - job: TASTE3_init
+          optional: true
     script:
         - cd $CI_PROJECT_DIR/air
         - cp ./../utils/gitlab-runner/.sparc_leon3_config .
@@ -82,18 +90,32 @@ SPARC-LEON3-build:
         - make clean
         - make -j4
 
-# Build SPARC TSIM
-SPARC-TSIM-build:
+generate-test-yml:
     stage: prepare-build
-    retry: 1
-    tags: 
-        - OTHER
-    needs : 
-        - TASTE2_init
-        - TASTE3_init
     script:
-        - cd $CI_PROJECT_DIR/air
-        - cp ./../utils/gitlab-runner/.sparc_tsim_config .
-        - ./configure -f .sparc_tsim_config
-        - make clean
-        - make -j4
+        - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
+        - chmod +x ../gitlab-ci/push/generate-test.sh
+        - ./../gitlab-ci/push/generate-test.sh $TEST_NUMBER
+        - mv test.yml $CI_PROJECT_DIR
+    artifacts:
+        paths:
+            - $CI_PROJECT_DIR/test.yml
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
+
+# Build SPARC TSIM
+# SPARC-TSIM-build:
+#     stage: prepare-build
+#     retry: 1
+#     tags: 
+#        - OTHER
+#     needs: 
+#        - TASTE2_init
+#        - TASTE3_init
+#     script:
+#         - cd $CI_PROJECT_DIR/air
+#         - cp ./../utils/gitlab-runner/.sparc_tsim_config .
+#         - ./configure -f .sparc_tsim_config
+#         - make clean
+#         - make -j4
