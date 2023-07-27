@@ -26,14 +26,13 @@ variables:
     GIT_ASKPASS: /bin/echo
     GIT_HTTP_USERNAME: huca
     GIT_HTTP_PASSWORD: $CI_JOB_TOKEN
-    STATE_FOLDER: $HOME/state/$CI_COMMIT_SHA
 
 default:
     retry: 1
     before_script:
         - sleep $(($RANDOM % 2)).$RANDOM
 
-        #- export STATE_FOLDER=$HOME/state/$CI_COMMIT_SHA
+        - export STATE_FOLDER=$HOME/state/$CI_COMMIT_SHA
         - export GIT_SSL_NO_VERIFY=1
 
         - git config --global credential.helper store
