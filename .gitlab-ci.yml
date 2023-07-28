@@ -26,8 +26,8 @@ variables:
     GIT_ASKPASS: /bin/echo
     GIT_HTTP_USERNAME: huca
     GIT_HTTP_PASSWORD: $CI_JOB_TOKEN
-    
-    STATE_FOLDER: /home/gitlab-runner/$CI_COMMIT_SHA
+
+    #STATE_FOLDER: /home/gitlab-runner/$CI_COMMIT_SHA
     GIT_SSL_NO_VERIFY: 1
 
 default:
@@ -35,9 +35,8 @@ default:
     before_script:
         - sleep $(($RANDOM % 2)).$RANDOM
 
-        #- export STATE_FOLDER=$HOME/state/$CI_COMMIT_SHA
+        - export STATE_FOLDER=$HOME/state/$CI_COMMIT_SHA
         - echo "State folder $STATE_FOLDER"
-        - export GIT_SSL_NO_VERIFY=1
 
         - git config --global credential.helper store
         - echo "https://huca:${CI_JOB_TOKEN}@$(AIR_GIT_REMOTE_HOSTNAME)" > ~/.git-credentials
