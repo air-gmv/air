@@ -86,48 +86,17 @@ default:
 
         - export UTILS=$AIR/../utils/gitlab-runner
 
-# .pre are jobs ran before any other job in the pipeline
-# These jobs are used to check the state of VMs and to performn any specific VM action such as a cleanup.
-# ARM and TASTE 1 are not allowed to fail since they are the only one with RVS license.
-.pre-job-template:
-    stage: .pre
-    variables:
-        GIT_STRATEGY: none # Prevents the cloning of the repository
-    allow_failure: true
-    before_script: 
-        - ''               # Prevents the before_script from running
-    script: 
-        -   if ! [[ -z $CLEANUP ]] ;
-            then 
-                rm -rf /home/gitlab-runner/state/* ;
-            fi
-
-# ARM
-ARM1_init:
-    extends: .pre-job-template
-    allow_failure: false
-    tags:
-        - ARM1
-
-ARM2_init:
-    extends: .pre-job-template
-    tags:
-        - ARM2
-
-ARM3_init:
-    extends: .pre-job-template
-    tags:
-        - ARM3
-
-# TASTE
-TASTE1_init:
-    extends: .pre-job-template
-    allow_failure: false
-    tags:
-        - sparc-taste-debian1
-
-TASTE2_init:
-    extends: .pre-job-template
-    tags:
-        - sparc-taste-debian2
+generate-test-yml:
+    stage: prepare-build
+    script:
+        - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
+        - chmod +x ../gitlab-ci/push/generate-test.sh
+        - ./../gitlab-ci/push/generate-test.sh $TEST_NUMBER
+        - mv test.yml $CI_PROJECT_DIR
+    artifacts:
+        paths:
+            - $CI_PROJECT_DIR/test.yml
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[(ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
 
