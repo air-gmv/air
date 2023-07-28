@@ -12,7 +12,7 @@ include:
     - local: "gitlab-ci/schedule/*.yml"
       rules:
         - if: $CI_PIPELINE_SOURCE == "schedule"
-    - local: "gitlab-ci-validation.yml"
+    - local: "gitlab-ci/gitlab-ci-validation.yml"
 
 stages:
     - .pre
