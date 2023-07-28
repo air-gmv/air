@@ -33,6 +33,9 @@ default:
         - sleep $(($RANDOM % 2)).$RANDOM
 
         - export STATE_FOLDER=$HOME/state/$CI_COMMIT_SHA
+        - export TEST=$CI_PROJECT_DIR/state/$CI_COMMIT_SHA
+        - echo "State folder $STATE_FOLDER"
+        - echo "Test $TEST"
         - export GIT_SSL_NO_VERIFY=1
 
         - git config --global credential.helper store
