@@ -50,3 +50,13 @@ TASTE3_init:
     extends: .pre-job-template
     tags:
         - sparc-taste-debian3
+
+test 1/2:
+    stage: .pre
+    script:
+        - echo "Test 1/2"
+
+test 2/2:
+    stage: .pre
+    script:
+        - echo "Test 2/2"
