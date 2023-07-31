@@ -11,12 +11,10 @@
     allow_failure: true
     before_script: 
         - ''               # Prevents the before_script from running
-    script: 
-        -   if ! [[ -z $CLEANUP ]] ;
-            then 
-                rm -rf /home/gitlab-runner/state/* ;
-            fi
-
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/ && $CI_JOB_NAME =~ /^ARM/'
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_JOB_NAME =~ /^ARM/'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/ && $CI_JOB_NAME =~ /^TASTE/'
 # ARM
 ARM1_init:
     extends: .pre-job-template
@@ -50,13 +48,3 @@ TASTE3_init:
     extends: .pre-job-template
     tags:
         - sparc-taste-debian3
-
-test 1/2:
-    stage: .pre
-    script:
-        - echo "Test 1/2"
-
-test 2/2:
-    stage: .pre
-    script:
-        - echo "Test 2/2"
