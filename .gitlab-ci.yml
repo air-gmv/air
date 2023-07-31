@@ -54,7 +54,7 @@ default:
         #        git clean -ffdx && git submodule foreach --recursive git clean -ffdx && echo $CI_COMMIT_SHORT_SHA > git-clean.lock; 
         #        git submodule update --init --recursive; 
         #        git submodule sync --recursive; 
-        #    fi 
+        #    fi
             
         - if ! test -d $STATE_FOLDER; 
             then 
