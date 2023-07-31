@@ -18,7 +18,6 @@ include:
         - if: $CI_PIPELINE_SOURCE == "merge_request"
         - if: $CI_PIPELINE_SOURCE == "schedule"
 
-
 stages:
     - .pre
     - prepare-build
@@ -36,7 +35,6 @@ variables:
 
     STATE_FOLDER: /home/gitlab-runner/state/$CI_COMMIT_SHA
     AIR: $STATE_FOLDER/air/
-    
 
 default:
     retry: 1
@@ -91,17 +89,10 @@ default:
 
         - export UTILS=$AIR/../utils/gitlab-runner
 
-generate-test-yml:
-    stage: prepare-build
+placeholder:
+    stage: .pre
     script:
-        - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
-        - chmod +x ../gitlab-ci/push/generate-test.sh
-        - ./../gitlab-ci/push/generate-test.sh $TEST_NUMBER
-        - mv test.yml $CI_PROJECT_DIR
-    artifacts:
-        paths:
-            - $CI_PROJECT_DIR/test.yml
+        - echo "This job's only purpose is to be the only visible job in the pipeline editor to avoid erroneous syntax errors."
     rules:
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[(ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
+        - when: never
 
