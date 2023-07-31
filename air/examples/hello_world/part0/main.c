@@ -44,12 +44,12 @@ void entry_point(void)
             rtems_clock_get_uptime( &start );
 
             pprintf( "\n\n*** RTEMS48I HELLO WORLD TEST **********\n" );
-            pprintf( "Time is %ld:%9ld", (long)start.tv_sec, start.tv_nsec);
+            pprintf( "Change example");
         #else
             clock_gettime( CLOCK_MONOTONIC, &start );
 
             printf( "\n\n*** RTEMS5 HELLO WORLD TEST **********\n" );
-            printf( "Time is : %s:%9ld\n", my_ctime(start.tv_sec), start.tv_nsec);
+            printf( "Change example");
         #endif
 
         rtems_task_wake_after(ticks_per_sec/10);
