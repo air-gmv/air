@@ -26,7 +26,7 @@ stages:
     - report
 
 variables:
-    GIT_STRATEGY: clone
+    GIT_STRATEGY: fetch
     GIT_SUBMODULE_STRATEGY: recursive
     GIT_ASKPASS: /bin/echo
     GIT_HTTP_USERNAME: huca
