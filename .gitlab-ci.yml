@@ -2,18 +2,27 @@
 # Executed in TASTE VM centralized in 192.19.13.167
 # author: $(AIR_RUNNER_USER) @GMV 2020, edited by huca@GMV 2023
 
+.default_rules:
+    rules:
+        - if: "$CI_COMMIT_BEFORE_SHA == 0000000000000000000000000000000000000000"
+          when: never
+
 include:
     - local: "gitlab-ci/push/*.yml"
       rules:
+        - !reference [.default_rules, rules]
         - if: $CI_PIPELINE_SOURCE == "push"
     - local: "gitlab-ci/merge_request/*.yml"
       rules:
+        - !reference [.default_rules, rules]
         - if: $CI_PIPELINE_SOURCE == "merge_request"
     - local: "gitlab-ci/schedule/*.yml"
       rules:
+        - !reference [.default_rules, rules]
         - if: $CI_PIPELINE_SOURCE == "schedule"
     - local: "gitlab-ci/.gitlab-ci-validation.yml"
       rules:
+        - !reference [.default_rules, rules]
         - if: $CI_PIPELINE_SOURCE == "push"
         - if: $CI_PIPELINE_SOURCE == "merge_request"
         - if: $CI_PIPELINE_SOURCE == "schedule"

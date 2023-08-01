@@ -8,8 +8,8 @@ SPARC-report-export:
         - RVS
         - sparc-taste-debian1
     script:
-        - $UTILS/check_central_server.bash
-        - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --report --export
+        - $UTILS/check_central_server.bash # Check main server
+        - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --report --export # Generate report
         - mv $AIR/rvs_air/results/air-coverage.rvd $AIR/rvs_air/results/air-sparc-coverage.rvd
         - rsync -avrhq ../* $CI_PROJECT_DIR/
     artifacts:
@@ -28,8 +28,8 @@ ARM-report-export:
         - ARM1
         - RVS
     script:
-        - $UTILS/check_central_server.bash
-        - rvsdriver --project $AIR/air.rvsprj --integration arm-pmk-coverage --report --export
+        - $UTILS/check_central_server.bash # Check main server
+        - rvsdriver --project $AIR/air.rvsprj --integration arm-pmk-coverage --report --export # Generate report
         - mv $AIR/rvs_air/results/air-coverage.rvd $AIR/rvs_air/results/air-arm-coverage.rvd
         - mv $AIR/rvs_air/results/air-coverage-sparc-unmanaged-coverage-coverage.txt $AIR/rvs_air/results/air-coverage-arm-unmanaged-coverage-coverage.txt
         - mv $AIR/rvs_air/results/air-coverage-sparc-unmanaged-coverage-coverage.html $AIR/rvs_air/results/air-coverage-arm-unmanaged-coverage-coverage.html
