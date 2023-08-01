@@ -44,10 +44,7 @@ RVS-SPARC-LAYSIM-build:
     tags:
         - SPARC
         - RVS
-    needs:
-        - ARM1_init
     script:
-        - echo "The value of TEST_NUMBER is $TEST_NUMBER"
         - sed -i 's/\.\/rvs_air\/scripts\/build.bash/\.\/rvs_air\/scripts\/build-ci.bash/g' air.rvsprj
         - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --prepare --build
         - rm -rf $AIR/install/pos/rtems5/rtems5-build
