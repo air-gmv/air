@@ -88,10 +88,4 @@ default:
 
         - export UTILS=$AIR/../utils/gitlab-runner
 
-placeholder:
-    stage: .pre
-    script:
-        - echo "This job's only purpose is to be the only visible job in the pipeline editor to avoid erroneous syntax errors."
-    rules:
-        - when: never
 
