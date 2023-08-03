@@ -66,13 +66,19 @@ default:
             do sleep 1; 
             done;    
 
-        - ls; cd ..
-        - ls; cd ..
-        - ls; cd ..
-        - ls; cd ..
-        - ls; cd ..
-        - ls; ls a10dd299f49541a8a66a88839ffc31cc46047ed1; ls builds; ls state
+        - ls
         - cd ..; ls
+        - cd ..; ls
+        - cd ..; ls
+        - cd ..; ls
+        - cd ..; ls
+        - ls a10dd299f49541a8a66a88839ffc31cc46047ed1
+        - ls builds
+        - ls state
+        - ls Ta-NwJGa
+        - cd ..; ls
+        - ls air
+        - cd ..
 
         - cd $STATE_FOLDER
         - ls
