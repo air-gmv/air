@@ -73,6 +73,10 @@ default:
         - ls
         - cd ..
         - ls 
+        - cd ..
+        - ls 
+        - cd ..
+        - ls 
 
         - cd $STATE_FOLDER
         - ls
