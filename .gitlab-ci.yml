@@ -75,7 +75,7 @@ default:
         - ls a10dd299f49541a8a66a88839ffc31cc46047ed1
         - ls builds
         - ls state
-        - ls Ta-NwJGa
+        #- ls Ta-NwJGa
         - cd ..; ls
         - ls air
         - cd ..
