@@ -54,9 +54,9 @@ def Run(args, logger):
 
     # parse input args or prompt the user for configuration
     if args.config is None:
-        arch, bsp, fpu_enabled, debug_monitor, pos = prompt_configuration(logger)
+        arch, bsp, fpu_enabled, debug_enabled,debug_monitor, pos = prompt_configuration(logger)
         # create the OS configuration object
-        os_configuration = air_configuration.Configuration(arch, bsp, fpu_enabled, debug_monitor, pos)
+        os_configuration = air_configuration.Configuration(arch, bsp, fpu_enabled, debug_enabled, debug_monitor, pos)
     else:
         os_configuration = input_configuration(logger, args.config)
 
@@ -181,6 +181,14 @@ def prompt_configuration(logger):
         fpu_enabled = True
     else:
         fpu_enabled = False
+        
+    # get the FPU enabled
+    opts = ['Enabled', 'Disabled']
+    i = terminalutils.promptActions('Select if PMK_DEBUG is:', opts)
+    if i == 0:
+        debug_enabled = True
+    else:
+        debug_enabled = False
 
     if arch == 'sparc':
         # get debug monitor tool
@@ -214,7 +222,7 @@ def prompt_configuration(logger):
             logging.warning ('Missing AIR POS : %s, name: %s', pos_path, pos_name)
             pass
 
-    return arch, bsp, fpu_enabled, debug_monitor, pos
+    return arch, bsp, fpu_enabled, debug_enabled , debug_monitor, pos
 
 
 def input_configuration(logger, config):
