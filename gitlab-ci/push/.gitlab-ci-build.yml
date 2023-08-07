@@ -51,7 +51,7 @@ RVS-SPARC-LAYSIM-build:
         - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC] 
 
 # Build SPARC LEON4
 .SPARC-LEON4-build:
