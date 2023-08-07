@@ -197,14 +197,17 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
                 break;
 
             case AIR_FLOAT_ERROR:
+#if PMK_FPU_SUPPORT
                 //core->context->vfp_context->fpexc|=ARM_VFP_FPEXC_ENABLE;
                 frame->vfp_context.fpexc|=ARM_VFP_FPEXC_ENABLE;
+#endif
                 //arm_restore_fpu(core->context->vfp_context);
                 arm_restore_fpu(frame);
                 arm_syscall_rett(core);
                 ret_addr = vbar + 1;
                 frame->ret_addr+=ret_offset;
                 break;
+    
             case AIR_ARITHMETIC_ERROR: //overflow
             case AIR_DIVISION_BY_0_ERROR: // /0
             default:
