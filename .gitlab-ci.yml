@@ -29,12 +29,17 @@ variables:
     GIT_STRATEGY: fetch
     GIT_SUBMODULE_STRATEGY: recursive
     GIT_ASKPASS: /bin/echo
-    GIT_HTTP_USERNAME_var: $GIT_HTTP_USERNAME
     GIT_HTTP_PASSWORD: $CI_JOB_TOKEN
     GIT_SSL_NO_VERIFY: 1
 
     STATE_FOLDER: /home/gitlab-runner/state/$CI_COMMIT_SHA
     AIR: $STATE_FOLDER/air/
+    AIR_INSTALL: $AIR/install
+    AIR_PMK: $AIR_INSTALL/pmk
+    AIR_POS: $AIR_INSTALL/pos
+    RTEMS410: /opt/rtems-4.10/bin
+    DISPLAY: :99
+    UTILS: $AIR/../utils/gitlab-runner
 
 default:
     retry: 1
@@ -42,9 +47,7 @@ default:
         - sleep $(($RANDOM % 2)).$RANDOM
 
         - git config --global credential.helper store
-        - echo "added variable $GIT_HTTP_USERNAME"
-        - echo "added variable $GIT_HTTP_USERNAME_var"
-        - echo "https://huca:${CI_JOB_TOKEN}@$(AIR_GIT_REMOTE_HOSTNAME)" > ~/.git-credentials
+        - echo "https://${GIT_HTTP_USERNAME}:${CI_JOB_TOKEN}@$(AIR_GIT_REMOTE_HOSTNAME)" > ~/.git-credentials
 
         #- if ! test -f git-clean.lock; 
         #    then 
@@ -68,27 +71,29 @@ default:
             do sleep 1; 
             done;    
 
-        - cd $STATE_FOLDER
-        - cd air
+        - cd $AIR
+
+        #- cd $STATE_FOLDER
+        #- cd air
         
         - export PATH=$PATH:$AIR
         - echo $PATH
-        - export AIR_INSTALL=$AIR/install
-        - export AIR_PMK=$AIR_INSTALL/pmk
-        - export AIR_POS=$AIR_INSTALL/pos
+        #- export AIR_INSTALL=$AIR/install
+        #- export AIR_PMK=$AIR_INSTALL/pmk
+        #- export AIR_POS=$AIR_INSTALL/pos
 
-        - export RTEMS410=/opt/rtems-4.10/bin
+        #- export RTEMS410=/opt/rtems-4.10/bin
         - export PATH=$PATH:$RTEMS410
         - echo $PATH
         - export RTEMS_MAKEFILE_PATH=$AIR_POS/rtems5/rtems5-install/sparc-rtems5/gr740
         - export PATH=$PATH:/opt/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
 
-        - export DISPLAY=:99
+        #- export DISPLAY=:99
         - export PATH=/opt/rtems/5/bin:$PATH
         - export PATH=/opt/rtems-5.1-2019.07.25/bin:$PATH
         - export PATH=/opt/laysim-gr740:$PATH
 
-        - export UTILS=$AIR/../utils/gitlab-runner
+        #- export UTILS=$AIR/../utils/gitlab-runner
 
 placeholder:
     stage: .pre
