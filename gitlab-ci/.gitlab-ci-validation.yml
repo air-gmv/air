@@ -234,6 +234,8 @@ ARM-QEMU-TEST-DEF-80060:
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
+  timeout: 20 seconds
+
 
 SPARC-LAYSIM-TEST-DEF-00009:
     extends: .SPARC-LAYSIM-validation-template
