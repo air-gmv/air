@@ -36,7 +36,8 @@ trigger-test:
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
-
+    timeout: 5 seconds
+    
 #00001_arm_zynqz1: 
 #    stage: examples
 #    tags: 
@@ -234,7 +235,6 @@ ARM-QEMU-TEST-DEF-80060:
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
-  timeout: 5 seconds
 
 
 SPARC-LAYSIM-TEST-DEF-00009:
