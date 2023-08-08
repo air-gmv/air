@@ -20,7 +20,7 @@
         - make -j4
 
 # ARM RVS PMK Instrumentation
-.RVS-ARM-ZYNQZ1-build:
+RVS-ARM-ZYNQZ1-build:
     stage: prepare-build
     retry: 1
     tags:
