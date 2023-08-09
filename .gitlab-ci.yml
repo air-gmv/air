@@ -38,7 +38,6 @@ variables:
     AIR_PMK: $AIR_INSTALL/pmk
     AIR_POS: $AIR_INSTALL/pos
     RTEMS410: /opt/rtems-4.10/bin
-    DISPLAY: :99
     UTILS: $AIR/../utils/gitlab-runner
 
 default:
@@ -88,7 +87,7 @@ default:
         - export RTEMS_MAKEFILE_PATH=$AIR_POS/rtems5/rtems5-install/sparc-rtems5/gr740
         - export PATH=$PATH:/opt/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
 
-        #- export DISPLAY=:99
+        - export DISPLAY=:99
         - export PATH=/opt/rtems/5/bin:$PATH
         - export PATH=/opt/rtems-5.1-2019.07.25/bin:$PATH
         - export PATH=/opt/laysim-gr740:$PATH
