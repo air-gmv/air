@@ -6,7 +6,6 @@
     - make clean
     - make
     - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
-    - cp executable/AIRAPP.exe $CI_PROJECT_DIR
 
 .check-and-publish: &check-and-publish
 #    - $AIR/../utils/gitlab-runner/testcheck.py
@@ -49,9 +48,13 @@ ARM-QEMU-bare_c:
     script:
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
-        - laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
-        - *check-and-publish
+        - sshpass -p "$KNOWLI_PASSWORD" scp /executable/AIRAPP.exe trdjlf@$KNOWLI:/home/trdjlf
+        - sshpass -p $KNOWLI_PASSWORD ssh trdjlf@$KNOWLI 'board-commands.sh load_run.sh'
+    
+
+        #- laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        #- make distclean
+        #- *check-and-publish
     rules:
         - if: '$CI_PIPELINE_SOURCE == "merge_request"'
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
