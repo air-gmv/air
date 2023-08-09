@@ -48,8 +48,8 @@ ARM-QEMU-bare_c:
     script:
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
-        - ls -l /executable/
-        - sshpass -p "$KNOWLI_PASSWORD" scp /executable/AIRAPP.exe trdjlf@$KNOWLI:/home/trdjlf
+        - cd executable; ls
+        - sshpass -p "$KNOWLI_PASSWORD" scp AIRAPP.exe trdjlf@$KNOWLI:/home/trdjlf
         - sshpass -p "$KNOWLI_PASSWORD" ssh trdjlf@$KNOWLI 'ls -l /home/trdjlf/'
         - sshpass -p $KNOWLI_PASSWORD ssh trdjlf@$KNOWLI 'board-commands.sh load_run.sh'
     
