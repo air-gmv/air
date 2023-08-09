@@ -5,10 +5,8 @@
     - $AIR/configure
     - make clean
     - make
-    - ls
-    - cd ..; ls
-    - cd ..; ls
     - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
+    - cp executable/AIRAPP.exe $CI_PROJECT_DIR
 
 .check-and-publish: &check-and-publish
 #    - $AIR/../utils/gitlab-runner/testcheck.py
@@ -30,6 +28,9 @@
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/ && $CI_JOB_NAME =~ /(hello\_world|bare\_c)$/'
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_JOB_NAME =~ /(hello\_world|bare\_c)$/'
     timeout: 5 minutes
+    artifacts:
+        paths:
+            - $CI_PROJECT_DIR/AIRAPP.exe
 
 ARM-QEMU-hello_world:
     extends: .ARM-QEMU-example-template
