@@ -49,6 +49,7 @@ ARM-QEMU-bare_c:
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
         - cd executable; ls
+        - sshpass -V
         - sshpass -p $KNOWLI_PASSWORD scp AIRAPP.exe trdjlf@$KNOWLI:/home/trdjlf && echo "File transfer successful." || echo "File transfer failed."
         - sshpass -p $KNOWLI_PASSWORD ssh trdjlf@$KNOWLI "/opt/grmon-pro-2.0.92/bin//board-commands.sh load_run.sh"
 
