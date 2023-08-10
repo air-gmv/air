@@ -49,10 +49,8 @@ ARM-QEMU-bare_c:
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
         - cd executable; ls
-        - sshpass -p "$KNOWLI_PASSWORD" scp AIRAPP.exe trdjlf@$KNOWLI:/home/trdjlf
-        - sshpass -p "$KNOWLI_PASSWORD" ssh trdjlf@$KNOWLI 'ls -l /home/trdjlf/'
-        - sshpass -p $KNOWLI_PASSWORD ssh trdjlf@$KNOWLI 'board-commands.sh load_run.sh'
-    
+        - sshpass -p $KNOWLI_PASSWORD scp AIRAPP.exe trdjlf@$KNOWLI:/home/trdjlf && echo "File transfer successful." || echo "File transfer failed."
+        - sshpass -p $KNOWLI_PASSWORD ssh trdjlf@$KNOWLI "/opt/grmon-pro-2.0.92/bin//board-commands.sh load_run.sh"
 
         #- laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         #- make distclean
