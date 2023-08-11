@@ -44,7 +44,7 @@ ARM-report-export:
             - $CI_PROJECT_DIR/air/rvs_air/results/air-coverage-arm-unmanaged-coverage-coverage_files/*
         expire_in: 1 week
 
-.RVS-merge-report :
+.RVS-merge-report:
     stage: report 
     tags:
         - ARM
