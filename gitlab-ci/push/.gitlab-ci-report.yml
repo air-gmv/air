@@ -44,21 +44,21 @@ ARM-report-export:
             - $CI_PROJECT_DIR/air/rvs_air/results/air-coverage-arm-unmanaged-coverage-coverage_files/*
         expire_in: 1 week
 
-#RVS-merge-report :
-#    stage : report 
-#    tags :
-#        - ARM
-#        - ARM1
-#   needs :
-#       - ARM-report-export
-#       - SPARC-report-export
-#   script :
-#       - rsync -avzrhq gitlab-runner@$(AIR_SPARC_1_IP):$AIR/rvs_air/results/ $AIR/rvs_air/results/
-#       - rvdutils $AIR/rvs_air/results/air-arm-coverage.rvd --merge-coverage $AIR/rvs_air/results/air-sparc-coverage.rvd
-#   artifacts:
-#       name: "$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-MERGE"
-#       paths:
-#           - $CI_PROJECT_DIR/air/rvs_air/results/air-arm-pmk-coverage-unmanaged-coverage.txt
-#           - $CI_PROJECT_DIR/air/rvs_air/results/arm-pmk_coverage.htm
-#           - $CI_PROJECT_DIR/air/rvs_air/results/arm-pmk_coverage_files/*
-#       expire_in: 1 week
+.RVS-merge-report :
+    stage: report 
+    tags:
+        - ARM
+        - ARM1
+    needs:
+       - ARM-report-export
+       - SPARC-report-export
+    script:
+       - rsync -avzrhq gitlab-runner@$(AIR_SPARC_1_IP):$AIR/rvs_air/results/ $AIR/rvs_air/results/
+       - rvdutils $AIR/rvs_air/results/air-arm-coverage.rvd --merge-coverage $AIR/rvs_air/results/air-sparc-coverage.rvd
+    artifacts:
+       name: "$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-MERGE"
+       paths:
+           - $CI_PROJECT_DIR/air/rvs_air/results/air-arm-pmk-coverage-unmanaged-coverage.txt
+           - $CI_PROJECT_DIR/air/rvs_air/results/arm-pmk_coverage.htm
+           - $CI_PROJECT_DIR/air/rvs_air/results/arm-pmk_coverage_files/*
+       expire_in: 1 week
