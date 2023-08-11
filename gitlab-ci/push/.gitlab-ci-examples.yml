@@ -48,13 +48,12 @@ ARM-QEMU-bare_c:
     script:
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
-        #- cd executable
-        #- sshpass -p $PASSWORD2 scp AIRAPP.exe gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - sshpass -p $PASSWORD2 scp executable/AIRAPP.exe gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
         #- sshpass -p $PASSWORD2 ssh gitlabrunner@$KNOWLI "/opt/grmon-pro-2.0.92/bin//board-commands.sh load_run.sh"
-        #- script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s' < target_cmds_eth.bash" testresult.txt 
+        - script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s' < target_cmds_eth.bash" testresult.txt 
 
-        - laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        #- laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        #- make distclean
         - *check-and-publish
 
         - cat testresult.txt
