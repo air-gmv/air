@@ -107,7 +107,7 @@ changes_job_1:
         - echo "Change job 1"
     rules:
         - changes:
-            - "!gitlab-ci/merge_request/*"
+            - "gitlab-ci/merge_request/*"
           when: on_success
 
 changes_job_2:
@@ -116,5 +116,5 @@ changes_job_2:
         - echo "Change job 2"
     rules:
         - changes:
-            - "!gitlab-ci/push/*"
+            - "gitlab-ci/push/*"
           when: on_success
