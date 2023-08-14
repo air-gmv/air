@@ -96,10 +96,25 @@ default:
 
 placeholder:
     stage: .pre
-    tags:
-        - ARM
     script:
         - echo "This job's only purpose is to be the only visible job in the pipeline editor to avoid erroneous syntax errors."
     rules:
         - when: never
 
+changes_job_1:
+    stage: .pre
+    script:
+        - echo "Change job 1"
+    rules:
+        - changes:
+            - "!gitlab-ci/merge_request/*"
+          when: on_success
+
+changes_job_2:
+    stage: .pre
+    script:
+        - echo "Change job 2"
+    rules:
+        - changes:
+            - "!gitlab-ci/push/*"
+          when: on_success
