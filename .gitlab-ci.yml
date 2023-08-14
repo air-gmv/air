@@ -113,5 +113,5 @@ changes_job_2:
         - echo "Change job 2"
     except:
         changes:
-            - "gitlab-ci/merge/*"
+            - "gitlab-ci/merge_request/*"
 
