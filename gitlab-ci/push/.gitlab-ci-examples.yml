@@ -52,7 +52,7 @@ ARM-QEMU-bare_c:
         - sshpass -p $PASSWORD2 scp $UTILS/gdb_arm_rvs_coverage-ci gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
 
         #- sshpass -p $PASSWORD2 ssh gitlabrunner@$KNOWLI "/opt/grmon-pro-2.0.92/bin//board-commands.sh load_run.sh"
-        - script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s' < target_cmds_eth.bash" testresult.txt 
+        - script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s' < target_cmds_eth_sparc.bash" testresult.txt 
 
         #- laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         #- make distclean
