@@ -38,7 +38,7 @@ RVS-ARM-ZYNQZ1-build:
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
 
 # SPARC RVS PMK Instrumentation
-.RVS-SPARC-LAYSIM-build:
+RVS-SPARC-LAYSIM-build:
     stage: prepare-build
     retry: 1
     tags:
