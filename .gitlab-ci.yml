@@ -76,14 +76,12 @@ default:
         #- cd air
         
         - export PATH=$PATH:$AIR
-        - echo $PATH
         #- export AIR_INSTALL=$AIR/install
         #- export AIR_PMK=$AIR_INSTALL/pmk
         #- export AIR_POS=$AIR_INSTALL/pos
 
         #- export RTEMS410=/opt/rtems-4.10/bin
         - export PATH=$PATH:$RTEMS410
-        - echo $PATH
         - export RTEMS_MAKEFILE_PATH=$AIR_POS/rtems5/rtems5-install/sparc-rtems5/gr740
         - export PATH=$PATH:/opt/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
 
@@ -105,16 +103,15 @@ changes_job_1:
     stage: .pre
     script:
         - echo "Change job 1"
-    rules:
-        - changes:
-            - "gitlab-ci/merge_request/*"
-          when: on_success
+    except:
+        changes:
+            - "gitlab-ci/push/*"
 
 changes_job_2:
     stage: .pre
     script:
         - echo "Change job 2"
-    rules:
-        - changes:
-            - "gitlab-ci/push/*"
-          when: on_success
+    except:
+        changes:
+            - "gitlab-ci/merge/*"
+
