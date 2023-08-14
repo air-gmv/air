@@ -51,7 +51,7 @@ ARM-QEMU-bare_c:
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
         - sshpass -p $PASSWORD2 scp executable/AIRAPP.exe gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
-        - sshpass -p $PASSWORD2 scp $UTILS/gdb_arm_rvs_coverage-ci gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - sshpass -p $PASSWORD2 scp $UTILS/gdb_sparc_rvs_coverage-ci gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
         - sshpass -p $PASSWORD2 scp $UTILS/target_cmds_eth_sparc.bash gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
 
         #- sshpass -p $PASSWORD2 ssh gitlabrunner@$KNOWLI "/opt/grmon-pro-2.0.92/bin//board-commands.sh load_run.sh"
