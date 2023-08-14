@@ -5,10 +5,10 @@ EFO
 
 ps -uax | grep grmon
 killall -9 grmon
-nohup /opt/grmon-pro-2.0.92/bin//board-commands.sh runAIRAPP.bash &
-./host_test.py
+#nohup /opt/grmon-pro-2.0.92/bin//board-commands.sh runAIRAPP.bash &
+#./host_test.py
 
-cat nohup.out
+#cat nohup.out
 
 /opt/grmon-pro-2.0.92/bin/grmon -u -nb -eth 192.168.0.30 -gdb -c runAIRAPP.bash -echo &
 
