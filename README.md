@@ -16,15 +16,24 @@ Execute the following commands:
 
 ```
 git clone git://git.rtems.org/rtems-source-builder.git rsb
-git checkout 5
 cd rsb
+git checkout 5
 ./source-builder/sb-check
 cd rtems
 ../source-builder/sb-set-builder --prefix=/opt/rtems/5 5/rtems-sparc
 ```
 Currently supported toolchain version : rtems-5.1-2019.07.25
 
-You may need the texinfo package, which can be installed by executing sudo apt-get install texinfo or a similar command.
+### Troubleshooting installation problems:
+
+ - You may need the texinfo package, which can be installed by executing sudo apt-get install texinfo or a similar command.
+
+ - If the environment is not correctly set up, there might be missing Ubuntu dependencies. Run the following command to install the packages: `sudo apt install build-essential g++ gdb unzip pax bison flex texinfo python3-dev python-is-python3 libpython2-dev libncurses5-dev zlib1g-dev ninja-build pkg-config`
+
+- If build fails with the message 
+	>*prefix is not writable: /opt/rtems/5*
+
+	, run again with `sudo`. For more info check https://docs.rtems.org/branches/master/user/start/prefixes.html .
 
 
 ## 2 - Configure and build AIR
