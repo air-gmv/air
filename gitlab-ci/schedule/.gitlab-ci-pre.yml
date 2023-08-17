@@ -7,8 +7,7 @@
 .pre-job-template:
     stage: .pre
     variables:
-        GIT_STRATEGY: none # Prevents the cloning of the repository
-    allow_failure: true
+        GIT_STRATEGY: clone # Prevents the cloning of the repository
     before_script: 
         - ''               # Prevents the before_script from running
     script: 
@@ -18,35 +17,37 @@
             fi
 
 # ARM
-ARM1_init:
+.ARM1_init:
     extends: .pre-job-template
-    allow_failure: false
     tags:
         - ARM1
 
-ARM2_init:
+.ARM2_init:
     extends: .pre-job-template
+    allow_failure: true
     tags:
         - ARM2
 
-ARM3_init:
+.ARM3_init:
     extends: .pre-job-template
+    allow_failure: true
     tags:
         - ARM3
 
 # TASTE
 TASTE1_init:
     extends: .pre-job-template
-    allow_failure: false
     tags:
         - sparc-taste-debian1
 
 TASTE2_init:
     extends: .pre-job-template
+    allow_failure: true
     tags:
         - sparc-taste-debian2
 
 TASTE3_init:
     extends: .pre-job-template
+    allow_failure: true
     tags:
         - sparc-taste-debian3
