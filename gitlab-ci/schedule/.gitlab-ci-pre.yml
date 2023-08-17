@@ -10,11 +10,11 @@
         GIT_STRATEGY: clone # Prevents the cloning of the repository
     before_script: 
         - ''               # Prevents the before_script from running
-    script: 
-        -   if ! [[ -z $CLEANUP ]] ;
-            then 
-                rm -rf /home/gitlab-runner/state/* ;
-            fi
+    script:
+        - echo "Scheduled pipeline running..." 
+        - if ! [[ -z $CLEANUP ]]; then 
+            rm -rf /home/gitlab-runner/state/* ;
+          fi
 
 # ARM
 .ARM1_init:
