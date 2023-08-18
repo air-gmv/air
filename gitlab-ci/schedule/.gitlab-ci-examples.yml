@@ -7,7 +7,7 @@
     - make
     - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
     #- cp executable/AIRAPP.exe /home/gitlab-runner
-    - sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin /home/gitlab-runner/
+    
 
 .check-and-publish: &check-and-publish
 #    - $AIR/../utils/gitlab-runner/testcheck.py
@@ -49,14 +49,11 @@
     script:
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
-        - sshpass -p $PASSWORD2 scp executable/AIRAPP.exe gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
-        - sshpass -p $PASSWORD2 scp $UTILS/gdb_sparc_rvs_coverage-ci.gdb gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
-        - sshpass -p $PASSWORD2 scp $UTILS/target_cmds_eth_sparc.bash gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
-
-        - sshpass -p $PASSWORD2 ssh gitlabrunner@$KNOWLI "/opt/grmon-pro-2.0.92/bin//board-commands.sh load_run.sh"
+        #- sshpass -p $PASSWORD2 scp executable/AIRAPP.exe gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        #- sshpass -p $PASSWORD2 scp $UTILS/gdb_sparc_rvs_coverage-ci.gdb gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        #- sshpass -p $PASSWORD2 scp $UTILS/target_cmds_eth_sparc.bash gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
         #- script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash'" testresult.txt
-
-
+        - sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin /home/gitlab-runner/
         - *check-and-publish
     rules:
         - if: '$CI_JOB_NAME =~ /(bare\_c)$/'
