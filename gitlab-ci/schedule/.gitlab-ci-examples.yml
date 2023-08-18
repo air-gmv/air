@@ -7,7 +7,7 @@
     - make
     - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
     #- cp executable/AIRAPP.exe /home/gitlab-runner
-    - cp /home/gitlabrunner/memdump.bin extracted_memdump.bin
+    - sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin /home/gitlab-runner/
 
 .check-and-publish: &check-and-publish
 #    - $AIR/../utils/gitlab-runner/testcheck.py
