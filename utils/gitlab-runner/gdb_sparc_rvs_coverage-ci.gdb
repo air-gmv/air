@@ -3,9 +3,10 @@ set pagination off
 set confirm off
 set print elements 0
 
-target remote localhost:1234
+target extended-remote :1234
+load
 tbreak RVS_Output
-continue 
+run
 dump memory memdump.bin &rvs_all_data32_array &rvs_all_data32_array+1
 kill
 quit
