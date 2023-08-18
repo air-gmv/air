@@ -54,14 +54,12 @@
         #- sshpass -p $PASSWORD2 scp $UTILS/target_cmds_eth_sparc.bash gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
         #- script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash'" testresult.txt
         
-        - sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $AIR/examples/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
+        #- sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $AIR/examples/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
+        - laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - make distclean
         - *check-and-publish
     rules:
         - if: '$CI_JOB_NAME =~ /(bare\_c)$/'
-    artifacts:
-        paths:
-            - extracted_memdump.bin
     timeout: 10 minutes
 
 SPARC-LAYSIM-hello_world:
