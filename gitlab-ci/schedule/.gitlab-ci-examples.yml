@@ -6,7 +6,8 @@
     - make clean
     - make
     - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
-    - cp executable/AIRAPP.exe /home/gitlab-runner
+    #- cp executable/AIRAPP.exe /home/gitlab-runner
+    - cp /home/gitlabrunner/memdump.bin extracted_memdump.bin
 
 .check-and-publish: &check-and-publish
 #    - $AIR/../utils/gitlab-runner/testcheck.py
@@ -55,9 +56,13 @@
         - sshpass -p $PASSWORD2 ssh gitlabrunner@$KNOWLI "/opt/grmon-pro-2.0.92/bin//board-commands.sh load_run.sh"
         #- script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash'" testresult.txt
 
+
         - *check-and-publish
     rules:
         - if: '$CI_JOB_NAME =~ /(bare\_c)$/'
+    artifacts:
+        paths:
+            - extracted_memdump.bin
     timeout: 10 minutes
 
 SPARC-LAYSIM-hello_world:
