@@ -43,9 +43,7 @@
 # SPARC
 .SPARC-LAYSIM-example-template:
     stage: examples
-    #tags:  ["SPARC","LAYSIM"]
-    tags:
-        - sparc-taste-debian2
+    tags:  ["SPARC","LAYSIM"]
     script:
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
