@@ -46,7 +46,6 @@
     #tags:  ["SPARC","LAYSIM"]
     tags:
         - sparc-taste-debian1
-        - sparc-taste-debian3
     script:
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
