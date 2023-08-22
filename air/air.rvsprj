@@ -67,7 +67,6 @@
           <dataset-id>7</dataset-id>
           <dataset-name>smp02</dataset-name>
         </data-file>
-        <!--
         <data-file>
           <file-names>./examples/private-example/private/validation/TEST-DEF-00009/memdump.bin</file-names>
           <file-format>map</file-format>
@@ -320,7 +319,6 @@
           <dataset-id>43</dataset-id>
           <dataset-name>ports</dataset-name>
         </data-file>
-        -->
       </data-files>
       <export-ref>sparc-unmanaged-coverage</export-ref>
       <explicit-files-list>@{{${{data-folder}}explicit-files.txt}}</explicit-files-list>

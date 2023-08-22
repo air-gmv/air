@@ -31,6 +31,7 @@
         - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
         - *check-and-publish
     rules:
+        - when: never
         - if: '$CI_PIPELINE_SOURCE == "merge_request"'
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
