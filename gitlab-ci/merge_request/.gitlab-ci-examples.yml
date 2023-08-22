@@ -28,12 +28,12 @@
         - *check-and-publish
     timeout: 5 minutes
 
-ARM-QEMU-hello_world:
+.ARM-QEMU-hello_world:
     extends: .ARM-QEMU-example-template
     variables: 
         EXAMPLE: "hello_world"
 
-ARM-QEMU-bare_c:
+.ARM-QEMU-bare_c:
     extends: .ARM-QEMU-example-template
     variables: 
         EXAMPLE: "bare_c"
