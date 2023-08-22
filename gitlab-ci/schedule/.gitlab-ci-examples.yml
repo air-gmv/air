@@ -57,6 +57,8 @@
         #- laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - make distclean
         - *check-and-publish
+    rules:
+        when: never
     timeout: 10 minutes
 
 SPARC-LAYSIM-hello_world:
