@@ -20,17 +20,23 @@
 ARM1_init:
     extends: .pre-job-template
     tags: ["ARM1"]
+    rules:
+        - when: never
 
 ARM2_init:
     extends: .pre-job-template
     allow_failure: true
     tags: ["ARM2"]
+    rules:
+        - when: never
 
 ARM3_init:
     extends: .pre-job-template
     allow_failure: true
     tags: ["ARM3"]
-
+    rules:
+        - when: never
+        
 # TASTE
 TASTE1_init:
     extends: .pre-job-template
