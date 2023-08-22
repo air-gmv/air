@@ -58,7 +58,7 @@
         - make distclean
         - *check-and-publish
     rules:
-        when: never
+        - when: never
     timeout: 10 minutes
 
 SPARC-LAYSIM-hello_world:
