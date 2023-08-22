@@ -21,7 +21,7 @@ SPARC-report-export:
             - $CI_PROJECT_DIR/air/rvs_air/results/air-coverage-sparc-unmanaged-coverage-coverage_files/*
         expire_in: 1 week
 
-ARM-report-export:
+.ARM-report-export:
     stage: report
     tags:
         - ARM
