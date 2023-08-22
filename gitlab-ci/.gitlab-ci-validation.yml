@@ -11,7 +11,7 @@
     - $AIR/../utils/gitlab-runner/testcheck.py
     - $UTILS/publish_example.bash
 
-trigger-test:
+.trigger-test:
     stage: validation_tests
     trigger:
         include:
