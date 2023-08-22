@@ -4,14 +4,7 @@
 # Build ARM ZYNQZ1
 .ARM-ZYNQZ1-build:
     stage: prepare-build
-    retry: 1
-    tags:
-        - ARM
-    needs:
-        - job: ARM2_init
-          optional: true
-        - job: ARM3_init
-          optional: true
+    tags: ["ARM"]
     script:
         - cd $CI_PROJECT_DIR/air
         - cp ./../utils/gitlab-runner/.arm_zynqz1_config .
@@ -20,12 +13,10 @@
         - make -j4
 
 # ARM RVS PMK Instrumentation
-.RVS-ARM-ZYNQZ1-build:
+RVS-ARM-ZYNQZ1-build:
     stage: prepare-build
-    retry: 1
-    tags:
-        - ARM
-        - RVS
+    tags: ["ARM", "RVS"]
+    needs: ["ARM1_init"]
     script:
         - sed -i 's/\.\/rvs_air\/scripts\/build_arm.bash/\.\/rvs_air\/scripts\/build_arm-ci.bash/g' air.rvsprj
         - rvsdriver --project $AIR/air.rvsprj --integration arm-pmk-coverage --prepare --build
@@ -37,10 +28,8 @@
 # SPARC RVS PMK Instrumentation
 RVS-SPARC-LAYSIM-build:
     stage: prepare-build
-    retry: 1
-    tags:
-        - SPARC
-        - RVS
+    tags: ["SPARC", "RVS"]
+    needs: ["TASTE1_init"]
     script:
         - sed -i 's/\.\/rvs_air\/scripts\/build.bash/\.\/rvs_air\/scripts\/build-ci.bash/g' air.rvsprj
         - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --prepare --build
@@ -51,14 +40,7 @@ RVS-SPARC-LAYSIM-build:
 # Build SPARC LEON4
 .SPARC-LEON4-build:
     stage: prepare-build
-    retry: 1
-    tags:
-        - OTHER
-    needs:
-        - job: TASTE2_init
-          optional: true
-        - job: TASTE3_init
-          optional: true
+    tags: ["OTHER"]
     script:
         - cd $CI_PROJECT_DIR/air
         - cp ./../utils/gitlab-runner/.sparc_leon4_config .
@@ -69,14 +51,7 @@ RVS-SPARC-LAYSIM-build:
 # Build SPARC LEON3
 .SPARC-LEON3-build:
     stage: prepare-build
-    retry: 1
-    tags:
-        - OTHER
-    needs:
-        - job: TASTE2_init
-          optional: true
-        - job: TASTE3_init
-          optional: true
+    tags: ["OTHER"]
     script:
         - cd $CI_PROJECT_DIR/air
         - cp ./../utils/gitlab-runner/.sparc_leon3_config .
@@ -87,12 +62,7 @@ RVS-SPARC-LAYSIM-build:
 # Build SPARC TSIM
 # SPARC-TSIM-build:
 #     stage: prepare-build
-#     retry: 1
-#     tags: 
-#        - OTHER
-#     needs: 
-#        - TASTE2_init
-#        - TASTE3_init
+#     tags: ["OTHER"]
 #     script:
 #         - cd $CI_PROJECT_DIR/air
 #         - cp ./../utils/gitlab-runner/.sparc_tsim_config .
