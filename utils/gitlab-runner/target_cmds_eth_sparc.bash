@@ -1,7 +1,7 @@
 #!/bin/bash
-wall << EFO
-The Automatic Test of gitlab will try run test on board GR740
-EFO
+#wall << EFO
+#The Automatic Test of gitlab will try run test on board GR740
+#EFO
 
 ps -uax | grep grmon
 killall -9 grmon
