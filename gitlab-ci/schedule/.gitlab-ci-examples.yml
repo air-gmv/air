@@ -16,12 +16,8 @@
 # ARM 
 .ARM-QEMU-example-template:
     stage: examples
-    needs: 
-        - job: RVS-ARM-ZYNQZ1-build
-          optional: true
-        - job: ARM-ZYNQZ1-build
-          optional: true
-    tags:  ["ARM"]
+    tags: ["ARM"]
+    needs: ["RVS-ARM-ZYNQZ1-build"]
     script: 
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
@@ -43,9 +39,8 @@
 # SPARC
 .SPARC-LAYSIM-example-template:
     stage: examples
-    #tags:  ["SPARC","LAYSIM"]
-    tags:
-        - sparc-taste-debian1
+    tags: ["sparc-taste-debian1"]
+    needs: ["RVS-SPARC-LAYSIM-build"]
     script:
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
@@ -91,7 +86,13 @@ SPARC-LAYSIM-paranoia:
     script:
         - cd $AIR/examples/testsuites/$EXAMPLE
         - *build-executable
-        - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        - sshpass -p $PASSWORD2 scp executable/AIRAPP.exe gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - sshpass -p $PASSWORD2 scp $UTILS/gdb_sparc_rvs_coverage-ci.gdb gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - sshpass -p $PASSWORD2 scp $UTILS/target_cmds_eth_sparc.bash gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash'" testresult.txt
+        - sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $AIR/examples/testsuites/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
+        #- laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        - make distclean
         - *check-and-publish
 
 SPARC-LAYSIM-smp01:
@@ -101,7 +102,13 @@ SPARC-LAYSIM-smp01:
     script:
         - cd $AIR/examples/testsuites/$EXAMPLE
         - *build-executable
-        - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        - sshpass -p $PASSWORD2 scp executable/AIRAPP.exe gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - sshpass -p $PASSWORD2 scp $UTILS/gdb_sparc_rvs_coverage-ci.gdb gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - sshpass -p $PASSWORD2 scp $UTILS/target_cmds_eth_sparc.bash gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash'" testresult.txt
+        - sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $AIR/examples/testsuites/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
+        #- laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        - make distclean
         - *check-and-publish
 
 SPARC-LAYSIM-smp02:
@@ -111,7 +118,13 @@ SPARC-LAYSIM-smp02:
     script:
         - cd $AIR/examples/testsuites/$EXAMPLE
         - *build-executable
-        - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        - sshpass -p $PASSWORD2 scp executable/AIRAPP.exe gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - sshpass -p $PASSWORD2 scp $UTILS/gdb_sparc_rvs_coverage-ci.gdb gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - sshpass -p $PASSWORD2 scp $UTILS/target_cmds_eth_sparc.bash gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash'" testresult.txt
+        - sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $AIR/examples/testsuites/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
+        #- laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        - make distclean
         - *check-and-publish
 
 # laysim-math:

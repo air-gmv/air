@@ -1,32 +1,9 @@
 # Gitlab CICD script for report stage
 # Author huca@GMV 2023
 
-SPARC-report-export:
-    stage: report
-    tags:
-        - SPARC
-        - RVS
-        - sparc-taste-debian1
-    script:
-        - $UTILS/check_central_server.bash # Check main server
-        - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --report --export # Generate report
-        - mv $AIR/rvs_air/results/air-coverage.rvd $AIR/rvs_air/results/air-sparc-coverage.rvd
-        - rsync -avrhq ../* $CI_PROJECT_DIR/
-    artifacts:
-        name: "$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-SPARC"
-        paths:
-            - $CI_PROJECT_DIR/air/rvs_air/results/air-sparc-coverage.rvd
-            - $CI_PROJECT_DIR/air/rvs_air/results/air-coverage-sparc-unmanaged-coverage-coverage.txt
-            - $CI_PROJECT_DIR/air/rvs_air/results/air-coverage-sparc-unmanaged-coverage-coverage.html 
-            - $CI_PROJECT_DIR/air/rvs_air/results/air-coverage-sparc-unmanaged-coverage-coverage_files/*
-        expire_in: 1 week
-
 .ARM-report-export:
     stage: report
-    tags:
-        - ARM
-        - ARM1
-        - RVS
+    tags: ["ARM", "ARM1", "RVS"]
     script:
         - $UTILS/check_central_server.bash # Check main server
         - rvsdriver --project $AIR/air.rvsprj --integration arm-pmk-coverage --report --export # Generate report
@@ -44,15 +21,28 @@ SPARC-report-export:
             - $CI_PROJECT_DIR/air/rvs_air/results/air-coverage-arm-unmanaged-coverage-coverage_files/*
         expire_in: 1 week
 
-.RVS-merge-report :
-    stage : report 
-    tags :
-        - ARM
-        - ARM1
-    needs :
-       - ARM-report-export
-       - SPARC-report-export
-    script :
+SPARC-report-export:
+    stage: report
+    tags: ["SPARC", "RVS", "sparc-taste-debian1"]
+    script:
+        - $UTILS/check_central_server.bash # Check main server
+        - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --report --export # Generate report
+        - mv $AIR/rvs_air/results/air-coverage.rvd $AIR/rvs_air/results/air-sparc-coverage.rvd
+        - rsync -avrhq ../* $CI_PROJECT_DIR/
+    artifacts:
+        name: "$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA-SPARC"
+        paths:
+            - $CI_PROJECT_DIR/air/rvs_air/results/air-sparc-coverage.rvd
+            - $CI_PROJECT_DIR/air/rvs_air/results/air-coverage-sparc-unmanaged-coverage-coverage.txt
+            - $CI_PROJECT_DIR/air/rvs_air/results/air-coverage-sparc-unmanaged-coverage-coverage.html 
+            - $CI_PROJECT_DIR/air/rvs_air/results/air-coverage-sparc-unmanaged-coverage-coverage_files/*
+        expire_in: 1 week
+
+.RVS-merge-report:
+    stage: report 
+    tags: ["ARM", "ARM1"]
+    needs: ["ARM-report-export", "SPARC-report-export"]
+    script:
        - rsync -avzrhq gitlab-runner@$(AIR_SPARC_1_IP):$AIR/rvs_air/results/ $AIR/rvs_air/results/
        - rvdutils $AIR/rvs_air/results/air-arm-coverage.rvd --merge-coverage $AIR/rvs_air/results/air-sparc-coverage.rvd
     artifacts:

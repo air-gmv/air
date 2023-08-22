@@ -14,12 +14,8 @@
 # ARM 
 .ARM-QEMU-example-template:
     stage: examples
-    needs: 
-        - job: RVS-ARM-ZYNQZ1-build
-          optional: true
-        - job: ARM-ZYNQZ1-build
-          optional: true
-    tags:  ["ARM"]
+    tags: ["ARM"]
+    needs: ["RVS-ARM-ZYNQZ1-build"]
     script: 
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
@@ -28,12 +24,12 @@
         - *check-and-publish
     timeout: 5 minutes
 
-.ARM-QEMU-hello_world:
+ARM-QEMU-hello_world:
     extends: .ARM-QEMU-example-template
     variables: 
         EXAMPLE: "hello_world"
 
-.ARM-QEMU-bare_c:
+ARM-QEMU-bare_c:
     extends: .ARM-QEMU-example-template
     variables: 
         EXAMPLE: "bare_c"
@@ -41,19 +37,15 @@
 # SPARC
 .SPARC-LAYSIM-example-template:
     stage: examples
-    needs: 
-        - job: RVS-SPARC-LAYSIM-build
-          optional: true
-        - job: SPARC-LEON4-build
-          optional: true
-    tags:  ["SPARC","LAYSIM"]
+    tags: ["SPARC","LAYSIM"]
+    needs: ["RVS-SPARC-LAYSIM-build"]
     script:
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
         - laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - make distclean
         - *check-and-publish
-    timeout: 5 minutes
+    timeout: 10 minutes
 
 SPARC-LAYSIM-hello_world:
     extends: .SPARC-LAYSIM-example-template
