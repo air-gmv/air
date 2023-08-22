@@ -11,7 +11,7 @@
     - $AIR/../utils/gitlab-runner/testcheck.py
     - $UTILS/publish_example.bash
 
-.trigger-test:
+trigger-test:
     stage: validation_tests
     trigger:
         include:
@@ -237,54 +237,95 @@ ARM-QEMU-TEST-DEF-80060:
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
   timeout: 5 minutes
 
+.SPARC-LAYSIM-schedule-validation-template:
+  stage: validation_tests
+ #needs: ["SPARC-LAYSIM-hello_world"] # ,"SPARC-LAYSIM-bare_c","SPARC-LAYSIM-hm","SPARC-LAYSIM-ports","SPARC-LAYSIM-shm","SPARC-LAYSIM-paranoia","SPARC-LAYSIM-smp01","SPARC-LAYSIM-smp02"]
+  tags:
+        - sparc-taste-debian1
+  script: 
+        - cd $AIR/examples/private-example/private/validation/$EXAMPLE
+        - *build-executable
+        - sshpass -p $PASSWORD2 scp executable/AIRAPP.exe gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - sshpass -p $PASSWORD2 scp $UTILS/gdb_sparc_rvs_coverage-ci.gdb gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - sshpass -p $PASSWORD2 scp $UTILS/target_cmds_eth_sparc.bash gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash'" testresult.txt
+        - sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $AIR/examples/private-example/private/validation/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
+        #- laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        - make distclean -i
+        - *check-and-publish
+  rules:
+        - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  timeout: 5 minutes
+
+
 SPARC-LAYSIM-TEST-DEF-00009:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-00009"
 
 SPARC-LAYSIM-TEST-DEF-00010:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-00010"
 
 SPARC-LAYSIM-TEST-DEF-00012:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-00012"
 
 SPARC-LAYSIM-TEST-DEF-00021:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-00021"
 
 SPARC-LAYSIM-TEST-DEF-00022:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-00022"
 
 SPARC-LAYSIM-TEST-DEF-00023:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-00023"
 
 SPARC-LAYSIM-TEST-DEF-00500:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-00500"
 
 SPARC-LAYSIM-TEST-DEF-00510:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-00510"
       NUMBER: "00510"
 
 SPARC-LAYSIM-TEST-DEF-00540:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-00540"
 
 SPARC-LAYSIM-TEST-DEF-00560:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-00560"
 
@@ -299,126 +340,176 @@ SPARC-LAYSIM-TEST-DEF-01200:
       EXAMPLE : "TEST-DEF-01200"
 
 SPARC-LAYSIM-TEST-DEF-01210:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-01210"
 
 SPARC-LAYSIM-TEST-DEF-01390:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-01390"
         
 SPARC-LAYSIM-TEST-DEF-01561:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-00010"
 
 SPARC-LAYSIM-TEST-DEF-01570:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-01570"
 
 SPARC-LAYSIM-TEST-DEF-01590:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-01590"
 
 SPARC-LAYSIM-TEST-DEF-01610:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-01610"
 
 SPARC-LAYSIM-TEST-DEF-01650:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-01650"
 
 SPARC-LAYSIM-TEST-DEF-01730:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-01730"
 
 SPARC-LAYSIM-TEST-DEF-01740:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-01740"
 
 SPARC-LAYSIM-TEST-DEF-01741:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-01741"
 
 SPARC-LAYSIM-TEST-DEF-01750:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-01750"
 
 SPARC-LAYSIM-TEST-DEF-02100:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-02100"
 
 # laysim-TEST-DEF-02101:
-#    extends: .SPARC-LAYSIM-validation-template
+#    extends:
+#      - .SPARC-LAYSIM-validation-template
+#      - .SPARC-LAYSIM-schedule-validation-template
 #    variables: 
 #      EXAMPLE: "TEST-DEF-2101"
 
 # laysim-TEST-DEF-02102:
-#    extends: .SPARC-LAYSIM-validation-template
+#    extends:
+#      - .SPARC-LAYSIM-validation-template
+#      - .SPARC-LAYSIM-schedule-validation-template
 #    variables: 
 #      EXAMPLE: "TEST-DEF-02102"
 
 # laysim-TEST-DEF-02105:
-#    extends: .SPARC-LAYSIM-validation-template
+#    extends:
+#      - .SPARC-LAYSIM-validation-template
+#      - .SPARC-LAYSIM-schedule-validation-template
 #    variables: 
 #      EXAMPLE: "TEST-DEF-02105"
 
 # laysim-TEST-DEF-02107:
-#    extends: .SPARC-LAYSIM-validation-template
+#    extends:
+#      - .SPARC-LAYSIM-validation-template
+#      - .SPARC-LAYSIM-schedule-validation-template
 #    variables: 
 #      EXAMPLE: "TEST-DEF-02107"
 
 # laysim-TEST-DEF-02108:
-#    extends: .SPARC-LAYSIM-validation-template
+#    extends:
+#      - .SPARC-LAYSIM-validation-template
+#      - .SPARC-LAYSIM-schedule-validation-template
 #    variables: 
 #      EXAMPLE: "TEST-DEF-02108"
 
 SPARC-LAYSIM-TEST-DEF-80000:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-80000"
 
 SPARC-LAYSIM-TEST-DEF-80010:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-80010"
 
 SPARC-LAYSIM-TEST-DEF-80060:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-80060"
 
 SPARC-LAYSIM-TEST-DEF-80080:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-80080"
 
 SPARC-LAYSIM-TEST-DEF-80300:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-80300"
 
 SPARC-LAYSIM-TEST-DEF-80400:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-80400"
 
 SPARC-LAYSIM-TEST-DEF-80401:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-80401"
 
 SPARC-LAYSIM-TEST-DEF-80420:
-    extends: .SPARC-LAYSIM-validation-template
+    extends:
+      - .SPARC-LAYSIM-validation-template
+      - .SPARC-LAYSIM-schedule-validation-template
     variables: 
       EXAMPLE: "TEST-DEF-80420"
