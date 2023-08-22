@@ -50,7 +50,7 @@
         - script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash'" testresult.txt
         - sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $AIR/examples/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
         #- laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make distclean -i
         - *check-and-publish
     timeout: 10 minutes
 
@@ -92,7 +92,7 @@ SPARC-LAYSIM-paranoia:
         - script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash'" testresult.txt
         - sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $AIR/examples/testsuites/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
         #- laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make distclean -i
         - *check-and-publish
 
 SPARC-LAYSIM-smp01:
@@ -108,7 +108,7 @@ SPARC-LAYSIM-smp01:
         - script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash'" testresult.txt
         - sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $AIR/examples/testsuites/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
         #- laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make distclean -i
         - *check-and-publish
 
 SPARC-LAYSIM-smp02:
@@ -124,7 +124,7 @@ SPARC-LAYSIM-smp02:
         - script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash'" testresult.txt
         - sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $AIR/examples/testsuites/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
         #- laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make distclean -i
         - *check-and-publish
 
 # laysim-math:
