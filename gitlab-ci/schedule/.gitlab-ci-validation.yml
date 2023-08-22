@@ -208,7 +208,7 @@ ARM-QEMU-TEST-DEF-80060:
 # SPARC
 .SPARC-LAYSIM-validation-template:
   stage: validation_tests
-  tags: ["SPARC","LAYSIM"]
+  tags: ["sparc-taste-debian1"]
   needs: ["RVS-SPARC-LAYSIM-build"]
   script: 
         - cd $AIR/examples/private-example/private/validation/$EXAMPLE
