@@ -12,23 +12,20 @@
         - ''               # Prevents the before_script from running
     script:
         - echo "Cloning repository into runner"
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/ && $CI_JOB_NAME =~ /^ARM/'
-        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_JOB_NAME =~ /^ARM/'
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/ && $CI_JOB_NAME =~ /^TASTE/'
+
 # ARM
-ARM1_init:
+.ARM1_init:
     extends: .pre-job-template
     tags:
         - ARM1
 
-ARM2_init:
+.ARM2_init:
     extends: .pre-job-template
     allow_failure: true
     tags:
         - ARM2
 
-ARM3_init:
+.ARM3_init:
     extends: .pre-job-template
     allow_failure: true
     tags:

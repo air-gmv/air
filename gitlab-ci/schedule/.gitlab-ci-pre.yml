@@ -7,7 +7,7 @@
 .pre-job-template:
     stage: .pre
     variables:
-        GIT_STRATEGY: clone # Prevents the cloning of the repository
+        GIT_STRATEGY: clone 
     before_script: 
         - ''               # Prevents the before_script from running
     script:
