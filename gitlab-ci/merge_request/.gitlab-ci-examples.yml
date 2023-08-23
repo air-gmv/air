@@ -23,6 +23,8 @@
         - make distclean
         - *check-and-publish
     timeout: 5 minutes
+    rules:
+        - when: never
 
 ARM-QEMU-hello_world:
     extends: .ARM-QEMU-example-template

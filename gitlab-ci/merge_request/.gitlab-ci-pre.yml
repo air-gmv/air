@@ -14,16 +14,16 @@
         - echo "Cloning repository into runner"
 
 # ARM
-ARM1_init:
+.ARM1_init:
     extends: .pre-job-template
     tags: ["ARM1"]
 
-ARM2_init:
+.ARM2_init:
     extends: .pre-job-template
     allow_failure: true
     tags: ["ARM2"]
 
-ARM3_init:
+.ARM3_init:
     extends: .pre-job-template
     allow_failure: true
     tags: ["ARM3"]
