@@ -2,18 +2,18 @@
 # Author huca@GMV 2023
 
 # Build ARM ZYNQZ1
-.ARM-ZYNQZ1-build:
+ARM-ZYNQZ1-build:
     stage: prepare-build
     tags: ["ARM"]
     script:
         - cd $CI_PROJECT_DIR/air
-        - cp ./../utils/gitlab-runner/.arm_zynqz1_config .
+        - cp $UTILS/gitlab-runner/.arm_zynqz1_config .
         - ./configure -f .arm_zynqz1_config
         - make clean
         - make -j4
 
 # ARM RVS PMK Instrumentation
-RVS-ARM-ZYNQZ1-build:
+.RVS-ARM-ZYNQZ1-build:
     stage: prepare-build
     tags: ["ARM", "RVS"]
     needs: ["ARM1_init"]
