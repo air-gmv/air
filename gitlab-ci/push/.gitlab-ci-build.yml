@@ -7,7 +7,7 @@ ARM-ZYNQZ1-build:
     tags: ["ARM"]
     script:
         - cd $CI_PROJECT_DIR/air
-        - cp $UTILS/gitlab-runner/.arm_zynqz1_config .
+        - cp $UTILS/.arm_zynqz1_config .
         - ./configure -f .arm_zynqz1_config
         - make clean
         - make -j4
