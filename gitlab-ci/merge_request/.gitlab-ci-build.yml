@@ -13,7 +13,7 @@
         - make -j4
 
 # ARM RVS PMK Instrumentation
-RVS-ARM-ZYNQZ1-build:
+.RVS-ARM-ZYNQZ1-build:
     stage: prepare-build
     tags: ["ARM", "RVS"]
     needs: ["ARM1_init"]
