@@ -41,7 +41,7 @@ variables:
     AIR_PMK: $AIR_INSTALL/pmk
     AIR_POS: $AIR_INSTALL/pos
     RTEMS410: /opt/rtems-4.10/bin
-    UTILS: $AIR/../utils/gitlab-runner
+    UTILS: $STATE_FOLDER/utils/gitlab-runner
 
 default:
     retry: 1
