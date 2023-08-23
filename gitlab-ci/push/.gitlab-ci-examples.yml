@@ -14,7 +14,7 @@
 # ARM 
 .ARM-QEMU-example-template:
     stage: examples
-    tags:  ["ARM"]
+    tags: ["ARM1"]
     #needs: ["RVS-ARM-ZYNQZ1-build"]
     script:
         - cd $AIR/examples/$EXAMPLE
@@ -41,7 +41,7 @@ ARM-QEMU-bare_c:
 # SPARC
 .SPARC-LAYSIM-example-template:
     stage: examples
-    tags:  ["SPARC","LAYSIM"]
+    tags: ["SPARC","LAYSIM"]
     needs: ["RVS-SPARC-LAYSIM-build"]
     script:
         - cd $AIR/examples/$EXAMPLE
