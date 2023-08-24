@@ -22,7 +22,7 @@
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
 
 # ARM
-.ARM-QEMU-validation-template:
+ARM-QEMU-validation-test:
     stage: validation_tests
     tags: ["ARM"]
     needs: ["RVS-ARM-ZYNQZ1-build"]
@@ -37,6 +37,13 @@
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
     timeout: 5 minutes
+    parallel:
+      matrix:
+        variables:
+          EXAMPLE:
+            - "TEST-DEF-00023"
+            - "TEST-DEF-00500"
+            - "TEST-DEF-00510"
 
 #00001_arm_zynqz1: 
 #    stage: examples
@@ -53,170 +60,6 @@
 #    variables:
 #      EXAMPLE: "TEST-DEF-00009"
 
-# ARM-QEMU-TEST-DEF-00010:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-00009"
-
-# ARM-QEMU-TEST-DEF-00012:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-00009"
-
-# ARM-QEMU-TEST-DEF-00021:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-00009"
-
-# ARM-QEMU-TEST-DEF-00022:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-00009"
-
-ARM-QEMU-TEST-DEF-00023:
-    extends: .ARM-QEMU-validation-template
-    variables:
-      EXAMPLE: "TEST-DEF-00023"
-
-ARM-QEMU-TEST-DEF-00500:
-    extends: .ARM-QEMU-validation-template
-    variables:
-      EXAMPLE: "TEST-DEF-00500"
-
-ARM-QEMU-TEST-DEF-00510:
-    extends: .ARM-QEMU-validation-template
-    variables:
-      EXAMPLE: "TEST-DEF-00510"
-
-# ARM-QEMU-TEST-DEF-00540:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-00009"
-
-# ARM-QEMU-TEST-DEF-00560:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-00009"
-
-ARM-QEMU-TEST-DEF-00600:
-    extends: .ARM-QEMU-validation-template
-    variables:
-      EXAMPLE: "TEST-DEF-00600"
-
-ARM-QEMU-TEST-DEF-01200:
-    extends : .ARM-QEMU-validation-template
-    variables :
-      EXAMPLE : "TEST-DEF-01200"
-
-ARM-QEMU-TEST-DEF-01210:
-    extends: .ARM-QEMU-validation-template
-    variables:
-      EXAMPLE: "TEST-DEF-01210"
-
-ARM-QEMU-TEST-DEF-01390:
-    extends: .ARM-QEMU-validation-template
-    variables:
-      EXAMPLE: "TEST-DEF-01390"
-
-# ARM-QEMU-TEST-DEF-01570:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-00009"
-
-# ARM-QEMU-TEST-DEF-01590:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-00009"
-
-# ARM-QEMU-TEST-DEF-01610:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-00009"
-
-ARM-QEMU-TEST-DEF-01620:
-    extends: .ARM-QEMU-validation-template
-    variables:
-      EXAMPLE: "TEST-DEF-01620"
-
-ARM-QEMU-TEST-DEF-01630:
-    extends: .ARM-QEMU-validation-template
-    variables:
-      EXAMPLE: "TEST-DEF-01630"
-
-ARM-QEMU-TEST-DEF-01650:
-    extends: .ARM-QEMU-validation-template
-    variables:
-      EXAMPLE: "TEST-DEF-01650"
-
-ARM-QEMU-TEST-DEF-01730:
-    extends: .ARM-QEMU-validation-template
-    variables:
-      EXAMPLE: "TEST-DEF-01730"
-
-ARM-QEMU-TEST-DEF-01740:
-    extends: .ARM-QEMU-validation-template
-    variables:
-      EXAMPLE: "TEST-DEF-01740"
-
-ARM-QEMU-TEST-DEF-01741:
-   extends: .ARM-QEMU-validation-template
-   variables:
-     EXAMPLE: "TEST-DEF-01741"
-
-ARM-QEMU-TEST-DEF-01742:
-   extends: .ARM-QEMU-validation-template
-   variables:
-     EXAMPLE: "TEST-DEF-01742"
-
-ARM-QEMU-TEST-DEF-01750:
-    extends: .ARM-QEMU-validation-template
-    variables:
-      EXAMPLE: "TEST-DEF-01750"
-
-# ARM-QEMU-TEST-DEF-02100:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-00009"
-
-# ARM-QEMU-TEST-DEF-80000:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-00009"
-
-# ARM-QEMU-TEST-DEF-80010:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-00009"
-
-ARM-QEMU-TEST-DEF-80060:
-    extends: .ARM-QEMU-validation-template
-    variables:
-      EXAMPLE: "TEST-DEF-80060"
-
-# ARM-QEMU-TEST-DEF-80080:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-00009"
-
-# ARM-QEMU-TEST-DEF-80300:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-80300"
-
-# ARM-QEMU-TEST-DEF-80400:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-00009"
-
-# ARM-QEMU-TEST-DEF-80401:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-00009"
-
-# ARM-QEMU-TEST-DEF-80420:
-#    extends: .ARM-QEMU-validation-template
-#    variables:
-#      EXAMPLE: "TEST-DEF-00009"
 
 # SPARC
 .SPARC-LAYSIM-validation-template:
