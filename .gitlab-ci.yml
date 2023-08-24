@@ -15,9 +15,9 @@ include:
       rules:
         - if: $CI_PIPELINE_SOURCE == "schedule"
 
-    #- local: "gitlab-ci/.gitlab-ci-validation.yml"
-    #  rules:
-    #    - if: $CI_PIPELINE_SOURCE == "push"
+    - local: "gitlab-ci/.gitlab-ci-validation.yml"
+      rules:
+        - if: $CI_PIPELINE_SOURCE == "push"
     #    - if: $CI_PIPELINE_SOURCE == "merge_request"
     #    - if: $CI_PIPELINE_SOURCE == "schedule"
 
@@ -27,7 +27,6 @@ stages:
     - examples
     - validation_tests
     - report
-    - test
 
 variables:
     GIT_STRATEGY: fetch
