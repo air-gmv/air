@@ -2,15 +2,6 @@
 # Executed in TASTE VM centralized in 192.19.13.167
 # author: $(AIR_RUNNER_USER) @GMV 2020, edited by huca@GMV 2023
 
-generate-test-jobs:
-    stage: .pre
-    script:
-        - cat ../gitlab-ci/.gitlab-ci-validation.yml
-        - chmod +x ../gitlab-ci/push/generate-jobs.sh
-        - ./../gitlab-ci/push/generate-jobs.sh
-        - cat ../gitlab-ci/.gitlab-ci-validation.yml
-
-
 include:
     - local: "gitlab-ci/push/*.yml"
       rules:
