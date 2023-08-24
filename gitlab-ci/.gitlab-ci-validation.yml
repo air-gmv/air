@@ -39,7 +39,6 @@ ARM-QEMU-validation-test:
     timeout: 5 minutes
     parallel:
       matrix:
-        variables:
           EXAMPLE:
             - "TEST-DEF-00023"
             - "TEST-DEF-00500"
