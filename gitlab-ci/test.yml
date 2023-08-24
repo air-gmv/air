@@ -1,5 +1,5 @@
 .SPARC-LAYSIM-validation-template:
-  stage: validation_tests
+  stage: test
   tags: ["SPARC","LAYSIM"]
   needs: ["RVS-SPARC-LAYSIM-build"]
   script: 
