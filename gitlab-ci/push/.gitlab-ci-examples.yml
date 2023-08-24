@@ -46,7 +46,7 @@ SPARC-LAYSIM-example:
           fi
         - *build-executable
         - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - make distclean -i
         - *check-and-publish
     #rules:
     #    - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/ && $EXAMPLE =~ /(hello\_world|bare\_c)$/'
