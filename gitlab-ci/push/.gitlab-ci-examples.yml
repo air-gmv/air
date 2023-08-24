@@ -12,7 +12,7 @@
     - $UTILS/publish_example.bash
 
 # ARM 
-ARM-QEMU-example-template:
+ARM-QEMU-example:
     stage: examples
     tags: ["ARM1"]
     needs: ["RVS-ARM-ZYNQZ1-build"]
@@ -34,7 +34,7 @@ ARM-QEMU-example-template:
             - "bare_c"
 
 # SPARC
-SPARC-LAYSIM-example-template:
+SPARC-LAYSIM-example:
     stage: examples
     tags: ["SPARC","LAYSIM"]
     needs: ["RVS-SPARC-LAYSIM-build"]
@@ -49,7 +49,7 @@ SPARC-LAYSIM-example-template:
         - make distclean
         - *check-and-publish
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/ && $CI_JOB_NAME =~ /(hello\_world|bare\_c)$/'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/ && $EXAMPLE =~ /(hello\_world|bare\_c)$/'
     timeout: 5 minutes
     parallel:
       matrix:
