@@ -1,28 +1,37 @@
-.ARM-QEMU-validation-template:
-    stage: validation_tests
-    tags: ["ARM"]
-    needs: ["RVS-ARM-ZYNQZ1-build"]
-    script: 
-        - cd $AIR/examples/private-example/private/validation/$EXAMPLE
-        - *build-executable
-        - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
-        - *check-and-publish
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request"'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
-    timeout: 5 minutes
+.SPARC-LAYSIM-validation-template:
+  stage: test
+  tags: ["SPARC","LAYSIM"]
+  needs: ["RVS-SPARC-LAYSIM-build"]
+  script: 
+    - cd $AIR/examples/private-example/private/validation/$EXAMPLE
+    - *build-executable
+    - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+    - make distclean -i # Ignore distclean errors 
+    - *check-and-publish
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request"'
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
+  timeout: 5 minutes
 
-ARM-QEMU-TEST-DEF:
-    extends: .ARM-QEMU-validation-template
-    parallel:
-      matrix:
-        - EXAMPLE:
-            - TEST-DEF-00023
-            - TEST-DEF-00510
+EXAMPLES:
+  - "TEST-DEF-80000"
+  - "TEST-DEF-80010"
+  - "TEST-DEF-80060"
 
-temp_job:
-  stage: validation_tests
+.SPARE-LAYSIM-JOBS:
+  extends: .SPARC-LAYSIM-validation-template
   script:
-    - echo "here"
+    - echo "Running validation for $EXAMPLE"
+  rules:
+    - exists:
+        - .SPARC-LAYSIM-validation-template
+  variables:
+    EXAMPLE: ""
+
+.SPARE-LAYSIM-TEST-DEF:
+  extends: .SPARE-LAYSIM-JOBS
+  script:
+    - echo "Running validation for $EXAMPLE"
+  variables:
+    EXAMPLE: $EXAMPLE
