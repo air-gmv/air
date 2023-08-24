@@ -63,10 +63,9 @@ default:
         #        git submodule sync --recursive; 
         #    fi 
             
-        - if ! test -d $STATE_FOLDER; 
-            then 
-                (mkdir -p $STATE_FOLDER || true)
-            fi;
+        - if ! test -d $STATE_FOLDER; then 
+            (mkdir -p $STATE_FOLDER || true)
+          fi;
         - ./utils/gitlab-runner/check_central_server.bash;
 
         - while test -e /tmp/rsync-"$CI_COMMIT_SHORT_SHA".lock; 

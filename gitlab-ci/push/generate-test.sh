@@ -12,34 +12,18 @@ default:
         - sleep \$((\$RANDOM % 2)).\$RANDOM
 
         - export STATE_FOLDER=\$HOME/state/\$CI_COMMIT_SHA
+        - export AIR=\$STATE_FOLDER/air/
+        - export UTILS=\$AIR/../utils/gitlab-runner
             
-        - if ! test -d \$STATE_FOLDER; 
-            then 
-                (mkdir -p \$STATE_FOLDER || true) && ./utils/gitlab-runner/check_central_server.bash; 
-            else 
-                ./utils/gitlab-runner/check_central_server.bash;
-            fi;
+        - if ! test -d \$STATE_FOLDER; then 
+            (mkdir -p \$STATE_FOLDER || true)
+          fi;
+        - ./utils/gitlab-runner/check_central_server.bash;
             
         - cd \$STATE_FOLDER
         - cd air
+    
         
-        - export AIR=\$STATE_FOLDER/air/
-        - export PATH=\$PATH:\$AIR
-        - export AIR_INSTALL=\$AIR/install
-        - export AIR_PMK=\$AIR_INSTALL/pmk
-        - export AIR_POS=\$AIR_INSTALL/pos
-
-        - export RTEMS410=/opt/rtems-4.10/bin
-        - export PATH=\$PATH:\$RTEMS410
-        - export RTEMS_MAKEFILE_PATH=\$AIR_POS/rtems5/rtems5-install/sparc-rtems5/gr740
-        - export PATH=\$PATH:/opt/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
-
-        - export DISPLAY=:99
-        - export PATH=/opt/rtems/5/bin:\$PATH
-        - export PATH=/opt/rtems-5.1-2019.07.25/bin:\$PATH
-        - export PATH=/opt/laysim-gr740:\$PATH
-
-        - export UTILS=\$AIR/../utils/gitlab-runner
 
 .build-executable: &build-executable
     - \$AIR/configure
@@ -51,8 +35,8 @@ default:
     - \$AIR/../utils/gitlab-runner/testcheck.py
     - \$UTILS/publish_example.bash
 
-.ARM-QEMU-validation-template:
-  tags:  ["ARM"]
+ARM-QEMU-TEST-DEF-$TEST_NUMBER:
+  tags: ["ARM"]
   script: 
       - cd \$AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
       - *build-executable
@@ -62,8 +46,8 @@ default:
       - if: '\$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
       - if: '\$CI_COMMIT_MESSAGE !~ /^\[SPARC\]/'
 
-.SPARC-LAYSIM-validation-template:
-  tags:  ["SPARC","LAYSIM"]
+SPARC-LAYSIM-TEST-DEF-$TEST_NUMBER:
+  tags: ["SPARC","LAYSIM"]
   script: 
         - cd \$AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
         - *build-executable
@@ -72,11 +56,5 @@ default:
         - *check-and-publish
   rules:
         - if: '\$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
-
-ARM-QEMU-TEST-DEF-$TEST_NUMBER:
-    extends: .ARM-QEMU-validation-template  
-
-SPARC-LAYSIM-TEST-DEF-$TEST_NUMBER:
-    extends: .SPARC-LAYSIM-validation-template
 
 EOF
