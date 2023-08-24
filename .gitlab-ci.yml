@@ -3,7 +3,7 @@
 # author: $(AIR_RUNNER_USER) @GMV 2020, edited by huca@GMV 2023
 
 generate-test-jobs:
-    stage: prepare-build
+    stage: .pre
     script:
         - cat ../gitlab-ci/.gitlab-ci-validation.yml
         - chmod +x ../gitlab-ci/push/generate-jobs.sh
