@@ -39,10 +39,10 @@ ARM-QEMU-validation-test:
     timeout: 5 minutes
     parallel:
       matrix:
-          EXAMPLE:
-            - "TEST-DEF-00023"
-            - "TEST-DEF-00500"
-            - "TEST-DEF-00510"
+        - EXAMPLE:
+          - "TEST-DEF-00023"
+          - "TEST-DEF-00500"
+          - "TEST-DEF-00510"
 
 #00001_arm_zynqz1: 
 #    stage: examples
