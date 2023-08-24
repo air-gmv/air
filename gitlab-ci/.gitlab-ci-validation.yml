@@ -86,7 +86,7 @@ ARM-QEMU-validation-test:
 #        - *check-and-publish
 
 # SPARC
-SPARC-LAYSIM-validation-template:
+SPARC-LAYSIM-validation-test:
   stage: validation_tests
   tags: ["SPARC","LAYSIM"]
   needs: ["RVS-SPARC-LAYSIM-build"]
