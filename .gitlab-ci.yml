@@ -27,6 +27,7 @@ stages:
     - examples
     - validation_tests
     - report
+    - test
 
 variables:
     GIT_STRATEGY: fetch
