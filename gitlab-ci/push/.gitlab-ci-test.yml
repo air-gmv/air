@@ -1,4 +1,4 @@
-.ARM-QEMU-validation-template:
+ARM-QEMU-validation-test:
     stage: test
     tags: ["ARM"]
     needs: ["RVS-ARM-ZYNQZ1-build"]
@@ -13,13 +13,10 @@
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
     timeout: 5 minutes
-
-
-ARM-QEMU-TEST-DEF:
-    extends: .ARM-QEMU-validation-template
     matrix:
       variables:
         EXAMPLE:
           - "TEST-DEF-00023"
           - "TEST-DEF-00500"
           - "TEST-DEF-00510"
+    
