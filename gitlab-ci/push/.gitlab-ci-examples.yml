@@ -12,7 +12,7 @@
     - $UTILS/publish_example.bash
 
 # ARM 
-.ARM-QEMU-example-template:
+ARM-QEMU-example-template:
     stage: examples
     tags: ["ARM1"]
     needs: ["RVS-ARM-ZYNQZ1-build"]
@@ -34,7 +34,7 @@
             - "bare_c"
 
 # SPARC
-.SPARC-LAYSIM-example-template:
+SPARC-LAYSIM-example-template:
     stage: examples
     tags: ["SPARC","LAYSIM"]
     needs: ["RVS-SPARC-LAYSIM-build"]
