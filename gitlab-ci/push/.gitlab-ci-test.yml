@@ -35,3 +35,8 @@ EXAMPLES:
     - echo "Running validation for $EXAMPLE"
   variables:
     EXAMPLE: $EXAMPLE
+
+temp_job:
+  stage: test
+  script:
+    - echo "here"
