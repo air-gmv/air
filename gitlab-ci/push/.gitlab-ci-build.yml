@@ -75,8 +75,17 @@ generate-test-yml:
         paths:
             - $CI_PROJECT_DIR/test.yml
     rules:
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[(ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
+
+generate-test-jobs:
+    stage: prepare-build
+    script:
+        - cat ../gitlab-ci/.gitlab-ci-validation.yml
+        - chmod +x ../gitlab-ci/push/generate-jobs.sh
+        - ./../gitlab-ci/push/generate-jobs.sh
+        - cat ../gitlab-ci/.gitlab-ci-validation.yml
+
 
 # Build SPARC TSIM 
 # SPARC-TSIM-build:
