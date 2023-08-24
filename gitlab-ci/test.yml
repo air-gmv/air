@@ -21,3 +21,8 @@ ARM-QEMU-TEST-DEF:
         - EXAMPLE:
             - TEST-DEF-00023
             - TEST-DEF-00510
+
+temp_job:
+  stage: validation_tests
+  script:
+    - echo "here"
