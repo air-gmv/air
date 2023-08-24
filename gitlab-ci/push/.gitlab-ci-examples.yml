@@ -48,8 +48,8 @@ SPARC-LAYSIM-example:
         - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - make distclean
         - *check-and-publish
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/ && $EXAMPLE =~ /(hello\_world|bare\_c)$/'
+    #rules:
+    #    - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/ && $EXAMPLE =~ /(hello\_world|bare\_c)$/'
     timeout: 5 minutes
     parallel:
       matrix:
