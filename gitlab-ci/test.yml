@@ -17,7 +17,7 @@
 ARM-QEMU-TEST-DEF:
     extends: .ARM-QEMU-validation-template
     parallel:
-    matrix:
-      - EXAMPLE:
-          - TEST-DEF-00023
-          - TEST-DEF-00510
+      matrix:
+        - EXAMPLE:
+            - TEST-DEF-00023
+            - TEST-DEF-00510
