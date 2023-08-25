@@ -49,7 +49,7 @@ SPARC-LAYSIM-example:
         - make distclean -i
         - *check-and-publish
     #rules:
-    #    - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/ && $EXAMPLE =~ /(hello\_world|bare\_c)$/'
+    #    - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/ && $EXAMPLE =~ /(hello\_world|bare\_c)$/' 
     timeout: 5 minutes
     parallel:
       matrix:
