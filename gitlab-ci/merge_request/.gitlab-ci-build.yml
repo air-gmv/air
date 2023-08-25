@@ -24,8 +24,6 @@ RVS-ARM-ZYNQZ1-build:
         - rm -rf $AIR/install/pos/rtems5/rtems5-build
         - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
         - $UTILS/publish_to_central_server.bash
-    rules:
-        - when: never
 
 # SPARC RVS PMK Instrumentation
 RVS-SPARC-LAYSIM-build:
