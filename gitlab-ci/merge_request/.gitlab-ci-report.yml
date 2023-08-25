@@ -3,7 +3,7 @@
 
 ARM-report-export:
     stage: report
-    tags: ["ARM", "ARM1", "sparc-taste-debian1"]
+    tags: ["ARM", "ARM1", "RVS"]
     script:
         - $UTILS/check_central_server.bash # Check main server
         - rvsdriver --project $AIR/air.rvsprj --integration arm-pmk-coverage --report --export # Generate report
