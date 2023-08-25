@@ -1,7 +1,7 @@
 # Gitlab CICD script for report stage
 # Author huca@GMV 2023
 
-.ARM-report-export:
+ARM-report-export:
     stage: report
     tags: ["ARM", "ARM1", "RVS"]
     script:
