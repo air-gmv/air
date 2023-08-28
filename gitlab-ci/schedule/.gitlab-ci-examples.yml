@@ -5,108 +5,61 @@
     - $AIR/configure
     - make clean
     - make
-    - if ! test -f ./executable/AIRAPP.exe; then echo "Executable doens\'t exist." && exit 1; fi
+    - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
+    #- cp executable/AIRAPP.exe /home/gitlab-runner
+    
 
 .check-and-publish: &check-and-publish
-#    - $AIR/../utils/gitlab-runner/testcheck.py
+#    - $AIR/../utils/gitlab-runner/testcheck.py 
     - $UTILS/publish_example.bash
 
 # ARM 
-.ARM-QEMU-example-template:
+ARM-QEMU:
     stage: examples
-    needs: 
-        - job: RVS-ARM-ZYNQZ1-build
-          optional: true
-        - job: ARM-ZYNQZ1-build
-          optional: true
-    tags:  ["ARM"]
+    tags: ["ARM"]
+    needs: ["RVS-ARM-ZYNQZ1-build"]
     script: 
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
         - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true 
         - make distclean
         - *check-and-publish
-
-ARM-QEMU-hello_world:
-    extends: .ARM-QEMU-example-template
-    variables: 
-        EXAMPLE: "hello_world"
-
-ARM-QEMU-bare_c:
-    extends: .ARM-QEMU-example-template
-    variables: 
-        EXAMPLE: "bare_c"
+    timeout: 10 minutes
+    parallel:
+      matrix:
+        - EXAMPLE:
+            - "hello_world"
+            - "bare_c"
 
 # SPARC
-.SPARC-LAYSIM-example-template:
+SPARC-LAYSIM:
     stage: examples
-    needs: 
-        - job: RVS-SPARC-LAYSIM-build
-          optional: true
-        - job: SPARC-LEON4-build
-          optional: true
-    tags:  ["SPARC","LAYSIM"]
+    tags: ["sparc-taste-debian1"]
+    needs: ["RVS-SPARC-LAYSIM-build"]
     script:
-        - cd $AIR/examples/$EXAMPLE
+        - TEST_DIR=$(if [[ "$EXAMPLE" == "paranoia" || "$EXAMPLE" == "smp01" || "$EXAMPLE" == "smp02" ]]; then echo "$AIR/examples/testsuites/$EXAMPLE"; else echo "$AIR/examples/$EXAMPLE"; fi)
+        - cd $TEST_DIR
         - *build-executable
-        - laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean
+        - sshpass -p $PASSWORD2 scp executable/AIRAPP.exe gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - sshpass -p $PASSWORD2 scp $UTILS/gdb_sparc_rvs_coverage-ci.gdb gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - sshpass -p $PASSWORD2 scp $UTILS/target_cmds_eth_sparc.bash gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+        - script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash'" testresult.txt
+        - sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $TEST_DIR && echo "File transfer successful." || echo "File transfer failed."
+        #- laysim-gr740-mmu-cli -batch ../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        - make distclean -i
         - *check-and-publish
-
-SPARC-LAYSIM-hello_world:
-    extends: .SPARC-LAYSIM-example-template
-    variables: 
-        EXAMPLE: "hello_world"
-
-SPARC-LAYSIM-bare_c:
-    extends: .SPARC-LAYSIM-example-template
-    variables: 
-        EXAMPLE: "bare_c"
-    
-SPARC-LAYSIM-hm:
-    extends: .SPARC-LAYSIM-example-template
-    variables: 
-        EXAMPLE: "hm"
-
-SPARC-LAYSIM-ports:
-    extends: .SPARC-LAYSIM-example-template
-    variables: 
-        EXAMPLE: "ports"
-
-SPARC-LAYSIM-shm:
-    extends: .SPARC-LAYSIM-example-template
-    variables: 
-        EXAMPLE: "shm"
-
-SPARC-LAYSIM-paranoia:
-    extends: .SPARC-LAYSIM-example-template
-    variables: 
-        EXAMPLE: "paranoia"
-    script:
-        - cd $AIR/examples/testsuites/$EXAMPLE
-        - *build-executable
-        - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - *check-and-publish
-
-SPARC-LAYSIM-smp01:
-    extends: .SPARC-LAYSIM-example-template
-    variables: 
-        EXAMPLE: "smp01"
-    script:
-        - cd $AIR/examples/testsuites/$EXAMPLE
-        - *build-executable
-        - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - *check-and-publish
-
-SPARC-LAYSIM-smp02:
-    extends: .SPARC-LAYSIM-example-template
-    variables: 
-        EXAMPLE: "smp02"
-    script:
-        - cd $AIR/examples/testsuites/$EXAMPLE
-        - *build-executable
-        - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - *check-and-publish
+    timeout: 10 minutes
+    parallel:
+      matrix:
+        - EXAMPLE:
+            - "hello_world"
+            - "bare_c"
+            - "hm"
+            - "ports"
+            - "shm"
+            - "paranoia"
+            - "smp01"
+            - "smp02"
 
 # laysim-math:
 #    extends: .SPARC-LAYSIM-example-template

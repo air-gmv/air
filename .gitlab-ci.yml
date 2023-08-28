@@ -6,12 +6,20 @@ include:
     - local: "gitlab-ci/push/*.yml"
       rules:
         - if: $CI_PIPELINE_SOURCE == "push"
+
     - local: "gitlab-ci/merge_request/*.yml"
       rules:
         - if: $CI_PIPELINE_SOURCE == "merge_request"
+
     - local: "gitlab-ci/schedule/*.yml"
       rules:
         - if: $CI_PIPELINE_SOURCE == "schedule"
+
+    #- local: "gitlab-ci/.gitlab-ci-validation.yml"
+    #  rules:
+    #    - if: $CI_PIPELINE_SOURCE == "push"
+    #    - if: $CI_PIPELINE_SOURCE == "merge_request"
+    #    - if: $CI_PIPELINE_SOURCE == "schedule"
 
 stages:
     - .pre
@@ -21,56 +29,60 @@ stages:
     - report
 
 variables:
-    GIT_STRATEGY: clone
+    GIT_STRATEGY: fetch
     GIT_SUBMODULE_STRATEGY: recursive
     GIT_ASKPASS: /bin/echo
-    GIT_HTTP_USERNAME: huca
     GIT_HTTP_PASSWORD: $CI_JOB_TOKEN
+    GIT_SSL_NO_VERIFY: 1
+
+    STATE_FOLDER: /home/gitlab-runner/state/$CI_COMMIT_SHA
+    AIR: $STATE_FOLDER/air/
+    AIR_INSTALL: $AIR/install
+    AIR_PMK: $AIR_INSTALL/pmk
+    AIR_POS: $AIR_INSTALL/pos
+    RTEMS410: /opt/rtems-4.10/bin
+    UTILS: $STATE_FOLDER/utils/gitlab-runner
 
 default:
     retry: 1
     before_script:
         - sleep $(($RANDOM % 2)).$RANDOM
 
-        - export STATE_FOLDER=$HOME/state/$CI_COMMIT_SHA
-        - export GIT_SSL_NO_VERIFY=1
-
         - git config --global credential.helper store
-        - echo "https://huca:${CI_JOB_TOKEN}@$(AIR_GIT_REMOTE_HOSTNAME)" > ~/.git-credentials
+        - echo "https://${GIT_HTTP_USERNAME}:${CI_JOB_TOKEN}@$(AIR_GIT_REMOTE_HOSTNAME)" > ~/.git-credentials
 
-        - if ! test -f git-clean.lock; 
-            then 
-                touch git-clean.lock; 
-            fi
+        #- if ! test -f git-clean.lock; 
+        #    then 
+        #        touch git-clean.lock; 
+        #    fi
 
-        - if ! $(grep -Fxq $CI_COMMIT_SHORT_SHA git-clean.lock); 
-            then 
-                git clean -ffdx && git submodule foreach --recursive git clean -ffdx && echo $CI_COMMIT_SHORT_SHA > git-clean.lock; 
-                git submodule update --init --recursive; 
-                git submodule sync --recursive; 
-            fi
+        #- if ! $(grep -Fxq $CI_COMMIT_SHORT_SHA git-clean.lock); 
+        #    then 
+        #        git clean -ffdx && git submodule foreach --recursive git clean -ffdx && echo $CI_COMMIT_SHORT_SHA > git-clean.lock; 
+        #        git submodule update --init --recursive; 
+        #        git submodule sync --recursive; 
+        #    fi 
             
-        - if ! test -d $STATE_FOLDER; 
-            then 
-                (mkdir -p $STATE_FOLDER || true) && ./utils/gitlab-runner/check_central_server.bash; 
-            else 
-                ./utils/gitlab-runner/check_central_server.bash;
-            fi;
+        - if ! test -d $STATE_FOLDER; then 
+            (mkdir -p $STATE_FOLDER || true)
+          fi;
+        - ./utils/gitlab-runner/check_central_server.bash;
 
         - while test -e /tmp/rsync-"$CI_COMMIT_SHORT_SHA".lock; 
             do sleep 1; 
-            done;        
+            done;    
 
-        - cd $STATE_FOLDER
-        - cd air
+        - cd $AIR
+
+        #- cd $STATE_FOLDER
+        #- cd air
         
-        - export AIR=$STATE_FOLDER/air/
         - export PATH=$PATH:$AIR
-        - export AIR_INSTALL=$AIR/install
-        - export AIR_PMK=$AIR_INSTALL/pmk
-        - export AIR_POS=$AIR_INSTALL/pos
+        #- export AIR_INSTALL=$AIR/install
+        #- export AIR_PMK=$AIR_INSTALL/pmk
+        #- export AIR_POS=$AIR_INSTALL/pos
 
-        - export RTEMS410=/opt/rtems-4.10/bin
+        #- export RTEMS410=/opt/rtems-4.10/bin
         - export PATH=$PATH:$RTEMS410
         - export RTEMS_MAKEFILE_PATH=$AIR_POS/rtems5/rtems5-install/sparc-rtems5/gr740
         - export PATH=$PATH:/opt/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
@@ -80,50 +92,28 @@ default:
         - export PATH=/opt/rtems-5.1-2019.07.25/bin:$PATH
         - export PATH=/opt/laysim-gr740:$PATH
 
-        - export UTILS=$AIR/../utils/gitlab-runner
+        #- export UTILS=$AIR/../utils/gitlab-runner
 
-# .pre are jobs ran before any other job in the pipeline
-# These jobs are used to check the state of VMs and to performn any specific VM action such as a cleanup.
-# ARM and TASTE 1 are not allowed to fail since they are the only one with RVS license.
-.pre-job-template:
+placeholder:
     stage: .pre
-    variables:
-        GIT_STRATEGY: none # Prevents the cloning of the repository
-    allow_failure: true
-    before_script: 
-        - ''               # Prevents the before_script from running
-    script: 
-        -   if ! [[ -z $CLEANUP ]] ;
-            then 
-                rm -rf /home/gitlab-runner/state/* ;
-            fi
+    script:
+        - echo "This job's only purpose is to be the only visible job in the pipeline editor to avoid erroneous syntax errors."
+    rules:
+        - when: never
 
-# ARM
-ARM1_init:
-    extends: .pre-job-template
-    allow_failure: false
-    tags:
-        - ARM1
+.changes_job_1:
+    stage: .pre
+    script:
+        - echo "This job does not execute when the push folder has changed"
+    except:
+        changes:
+            - "gitlab-ci/push/*"
 
-ARM2_init:
-    extends: .pre-job-template
-    tags:
-        - ARM2
-
-ARM3_init:
-    extends: .pre-job-template
-    tags:
-        - ARM3
-
-# TASTE
-TASTE1_init:
-    extends: .pre-job-template
-    allow_failure: false
-    tags:
-        - sparc-taste-debian1
-
-TASTE2_init:
-    extends: .pre-job-template
-    tags:
-        - sparc-taste-debian2
+.changes_job_2:
+    stage: .pre
+    script:
+        - echo "This job does not execute when the merge folder has changed"
+    except:
+        changes:
+            - "gitlab-ci/merge_request/*"
 
