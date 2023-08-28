@@ -7,14 +7,11 @@
 .pre-job-template:
     stage: .pre
     variables:
-        GIT_STRATEGY: clone 
+        GIT_STRATEGY: clone
     before_script: 
         - ''               # Prevents the before_script from running
     script:
-        - echo "Scheduled pipeline running..." 
-        - if ! [[ -z $CLEANUP ]]; then 
-            rm -rf /home/gitlab-runner/state/* ;
-          fi
+        - echo "Cloning repository into runner"
 
 # ARM
 ARM1_init:
@@ -23,14 +20,12 @@ ARM1_init:
 
 ARM2_init:
     extends: .pre-job-template
-    allow_failure: true
     tags: ["ARM2"]
 
 ARM3_init:
     extends: .pre-job-template
-    allow_failure: true
     tags: ["ARM3"]
-        
+
 # TASTE
 TASTE1_init:
     extends: .pre-job-template
@@ -38,10 +33,8 @@ TASTE1_init:
 
 TASTE2_init:
     extends: .pre-job-template
-    allow_failure: true
     tags: ["sparc-taste-debian2"]
 
 TASTE3_init:
     extends: .pre-job-template
-    allow_failure: true
     tags: ["sparc-taste-debian3"]
