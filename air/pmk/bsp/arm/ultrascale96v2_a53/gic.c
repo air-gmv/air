@@ -7,7 +7,7 @@
  */
 /**
  * \file gic.c
- * \author lumm
+ * \author ansi
  * \brief Interrupt Controller routines.
  * SGIs are always enabled on the Zynq board, and writes and reads to the
  * Set-Enable Register (ICDISER) Clear-Enable Register (ICDICER) are
@@ -62,10 +62,16 @@ void gic_init(air_u32_t cpu_id) {
         arm_int_set_target(id, TARGET_DEFAULT);
     }
 
-    /* See the gicv1 for an indepth explanation of the following fields */
+    /* See the gicv2 architecture specification for an indepth explanation of the following fields */
     air_u32_t int_mask = 0xff; /* all interrupts accepted */
+    
+    // Setting a mask provides an interrupt priotity filter.
+    // Only interrupts with higher priority than the mask are signaled to the processor.
     arm_set_int_mask(int_mask);
 
+    // The group priority field is used to determine interrupt preemption
+    // Interrupt preemption is the signaling of higher priority 
+    // pending interrupts to a target processor before an active interrupt completes.
     arm_set_ic_cpu_preemption(PREEMPTION(MAX_NESTING_LEVEL));
 
     air_u32_t iccicr = ICCICR_ENABLE_GRP0;//(ICCICR_FIQ_EN | ICCICR_ENABLE_GRP1 | ICCICR_ENABLE_GRP0);
@@ -86,7 +92,7 @@ void arm_generate_swi(air_u32_t cpu_filter,
     if (cpu_filter == ARM_SGI_TARGET_LIST && cpu_list == 0)
         return;
 
-    ICD->icdsgir =
+    ICD->gicd_sgir =
             (ARM_SGI_TARGET(cpu_filter) |
             ARM_SGI_TARGET_MASK(cpu_list) |
             (nonsecure << 15) |
