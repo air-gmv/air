@@ -23,13 +23,11 @@ default:
         - cd \$STATE_FOLDER
         - cd air
     
-        
-
 .build-executable: &build-executable
     - \$AIR/configure
     - make clean
     - make
-    - if ! test -f ./executable/AIRAPP.exe; then echo "Executable doens\'t exist." && exit 1; fi
+    - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
 
 .check-and-publish: &check-and-publish
     - \$AIR/../utils/gitlab-runner/testcheck.py
