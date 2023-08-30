@@ -93,7 +93,7 @@ SPARC-LAYSIM-validation-test:
   script: 
         - cd $AIR/examples/private-example/private/validation/$EXAMPLE
         - *build-executable
-        - laysim-gr740-mmu-cli -batch ../../../../../rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - make distclean -i # Ignore distclean errors
         - *check-and-publish
   rules:
