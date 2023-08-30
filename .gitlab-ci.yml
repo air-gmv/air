@@ -19,7 +19,7 @@ include:
     #  rules:
     #    - if: $CI_PIPELINE_SOURCE == "push"
     #    - if: $CI_PIPELINE_SOURCE == "merge_request"
-    #    - if: $CI_PIPELINE_SOURCE == "schedule" 
+    #    - if: $CI_PIPELINE_SOURCE == "schedule"  
 
 stages:
     - .pre
