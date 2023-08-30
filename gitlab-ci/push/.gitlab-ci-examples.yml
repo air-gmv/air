@@ -24,8 +24,8 @@ ARM-QEMU:
         - make distclean
         - *check-and-publish
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/ && $EXAMPLE =~ /(hello\_world|bare\_c)$/'
-        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $EXAMPLE =~ /(hello\_world|bare\_c)$/'
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/'
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
     timeout: 5 minutes
     parallel:
       matrix:
@@ -49,19 +49,19 @@ SPARC-LAYSIM:
         - make distclean -i
         - *check-and-publish
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/ && $EXAMPLE =~ /(hello\_world|bare\_c)$/' 
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' 
     timeout: 5 minutes
     parallel:
       matrix:
         - EXAMPLE:
             - "hello_world"
             - "bare_c"
-            - "hm"
-            - "ports"
-            - "shm"
-            - "paranoia"
-            - "smp01"
-            - "smp02"
+            #- "hm"
+            #- "ports"
+            #- "shm"
+            #- "paranoia"
+            #- "smp01"
+            #- "smp02"
 
 # laysim-math:
 #    extends: .SPARC-LAYSIM-example-template
