@@ -672,7 +672,7 @@ def run_shell_script(directory_to_check, progress_bar, include_comments, delete_
         directory = directory_to_check
 
     # Modify this part to run your shell script
-    shell_script_path = "run_cppcheck.py"
+    shell_script_path = "utils/misraivoso/run_cppcheck.py"
 
     shell_script_command = f"python3 {shell_script_path} {directory} --src-file-list '{src_file_list}'"
     # Get the value of the include_comments_var
@@ -680,7 +680,7 @@ def run_shell_script(directory_to_check, progress_bar, include_comments, delete_
     try:
         subprocess.run(shell_script_command, shell=True, check=True)
         if delete_comments == 1:
-            xml_path = "output/cppcheck_out.xml"
+            xml_path = "utils/misraivoso/output/cppcheck_out.xml"
             snippets = extract_code_snippets(xml_path)
             if (flags == 0):
                 progress_bar["value"] = 15
@@ -692,7 +692,7 @@ def run_shell_script(directory_to_check, progress_bar, include_comments, delete_
             else:
                 print("\nCheck and report executed successfully.\n")
         elif include_comments == 1:
-            xml_path = "output/cppcheck_out.xml"
+            xml_path = "utils/misraivoso/output/cppcheck_out.xml"
             snippets = extract_code_snippets(xml_path)
             if (flags == 0):
                 progress_bar["value"] = 15
@@ -1127,7 +1127,7 @@ def run_correction(source_directory, report_file, progress, flags):
 def run_with_flags(source_directory, include_comments, delete_comments, cppcheck, correction, src_file_list, flags):
 
     progress_bar = 0
-    xml_path = "output/cppcheck_out.xml"
+    xml_path = "utils/misraivoso/output/cppcheck_out.xml"
     if cppcheck or correction:
         run_shell_script(source_directory, progress_bar,
                          include_comments, delete_comments, src_file_list, flags)

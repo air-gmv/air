@@ -148,8 +148,8 @@ def analyse(output_folder):
 
 parser = argparse.ArgumentParser(description='Run cppcheck.')
 parser.add_argument('source', type=str, help='main source code folder')
-parser.add_argument('--configuration', default="configuration.hjson", type=str, help='configuration file')
-parser.add_argument('--output', default="output",type=str, help='output path')
+parser.add_argument('--configuration', default="utils/misraivoso/configuration.hjson", type=str, help='configuration file')
+parser.add_argument('--output', default="utils/misraivoso/output",type=str, help='output path')
 parser.add_argument('--exclude', default=None, type=str, help='exclude file (files or path to exclude), one file path per line')
 parser.add_argument('--src-file-list', default=None, type=str, help='source file list to be checked individually instead of full main source folder')
 args = parser.parse_args()
