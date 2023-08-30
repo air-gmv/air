@@ -1,0 +1,11 @@
+// Example of configuration file, flags shall be updated depending on the proyect
+{
+    "CPPCHECK_FLAGS":
+    [
+        "--enable=all"
+    ]
+    "PREPROCESSOR_FLAGS":
+    [
+        "-DINLINE=__inline__"
+    ]
+}
