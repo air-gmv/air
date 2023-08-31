@@ -51,7 +51,7 @@ default:
         - git config --global credential.helper store
         - echo "https://${GIT_HTTP_USERNAME}:${CI_JOB_TOKEN}@$(AIR_GIT_REMOTE_HOSTNAME)" > ~/.git-credentials
 
-        #- if ! test -f git-clean.lock; 
+        #- if ! test -f git-clean.lock;
         #    then 
         #        touch git-clean.lock; 
         #    fi
