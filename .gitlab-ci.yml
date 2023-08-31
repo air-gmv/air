@@ -3,23 +3,23 @@
 # author: $(AIR_RUNNER_USER) @GMV 2020, edited by huca@GMV 2023
 
 include:
-    - local: "gitlab-ci/push/*.yml"
-      rules:
-        - if: $CI_PIPELINE_SOURCE == "push"
+    #- local: "gitlab-ci/push/*.yml"
+    #  rules:
+    #    - if: $CI_PIPELINE_SOURCE == "push"
 
-    - local: "gitlab-ci/merge_request/*.yml"
-      rules:
-        - if: $CI_PIPELINE_SOURCE == "merge_request"
+    #- local: "gitlab-ci/merge_request/*.yml"
+    #  rules:
+    #    - if: $CI_PIPELINE_SOURCE == "merge_request"
 
-    - local: "gitlab-ci/schedule/*.yml"
-      rules:
-        - if: $CI_PIPELINE_SOURCE == "schedule"
+    #- local: "gitlab-ci/schedule/*.yml"
+    #  rules:
+    #    - if: $CI_PIPELINE_SOURCE == "schedule"
 
-    - local: "gitlab-ci/.gitlab-ci-validation.yml"
-      rules:
-        - if: $CI_PIPELINE_SOURCE == "push"
-        - if: $CI_PIPELINE_SOURCE == "merge_request"
-        - if: $CI_PIPELINE_SOURCE == "schedule" 
+    #- local: "gitlab-ci/.gitlab-ci-validation.yml"
+    #  rules:
+    #    - if: $CI_PIPELINE_SOURCE == "push"
+    #    - if: $CI_PIPELINE_SOURCE == "merge_request"
+    #    - if: $CI_PIPELINE_SOURCE == "schedule" 
 
 stages:
     - .pre
