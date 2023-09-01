@@ -7,9 +7,8 @@ ARM-ZYNQZ1-build:
     tags: ["ARM1"]
     needs: ["ARM1_init"]
     script:
-        - cd $CI_PROJECT_DIR/air
         - cp $UTILS/.arm_zynqz1_config .
-        - ./configure -f $UTILS/gitlab-runner/.arm_zynqz1_config
+        - ./configure -f .arm_zynqz1_config
         - make pmk
         - make libs
         - make pos
