@@ -1,0 +1,1459 @@
+<?xml version="1.0"?>
+<dumps>
+  <platform name="Native" char_bit="8" short_bit="16" int_bit="32" long_bit="64" long_long_bit="64" pointer_bit="64"/>
+  <rawtokens>
+    <file index="0" name="air/examples/posix/p0/msg_box.c"/>
+    <file index="1" name="air/examples/posix/p0/msg_box.h"/>
+    <file index="2" name="air/examples/posix/p0/utils.h"/>
+    <tok fileIndex="0" linenr="1" column="1" str="/**x * msg_box.c: implement a basic message box of size 1, with messagex *            overwritingx*/"/>
+    <tok fileIndex="0" linenr="6" column="1" str="#"/>
+    <tok fileIndex="0" linenr="6" column="2" str="include"/>
+    <tok fileIndex="0" linenr="6" column="10" str="&lt;stdlib.h&gt;"/>
+    <tok fileIndex="0" linenr="7" column="1" str="#"/>
+    <tok fileIndex="0" linenr="7" column="2" str="include"/>
+    <tok fileIndex="0" linenr="7" column="10" str="&lt;string.h&gt;"/>
+    <tok fileIndex="0" linenr="8" column="1" str="#"/>
+    <tok fileIndex="0" linenr="8" column="2" str="include"/>
+    <tok fileIndex="0" linenr="8" column="10" str="&quot;assert.h&quot;"/>
+    <tok fileIndex="0" linenr="10" column="1" str="#"/>
+    <tok fileIndex="0" linenr="10" column="2" str="include"/>
+    <tok fileIndex="0" linenr="10" column="10" str="&quot;msg_box.h&quot;"/>
+    <tok fileIndex="0" linenr="11" column="1" str="#"/>
+    <tok fileIndex="0" linenr="11" column="2" str="include"/>
+    <tok fileIndex="0" linenr="11" column="10" str="&quot;utils.h&quot;"/>
+    <tok fileIndex="0" linenr="13" column="1" str="/*****************************************************************************/"/>
+    <tok fileIndex="0" linenr="14" column="1" str="msg_box"/>
+    <tok fileIndex="0" linenr="14" column="9" str="msg_box_init"/>
+    <tok fileIndex="0" linenr="14" column="21" str="("/>
+    <tok fileIndex="0" linenr="14" column="22" str="const"/>
+    <tok fileIndex="0" linenr="14" column="28" str="unsigned"/>
+    <tok fileIndex="0" linenr="14" column="37" str="elt_size"/>
+    <tok fileIndex="0" linenr="14" column="45" str=")"/>
+    <tok fileIndex="0" linenr="14" column="47" str="{"/>
+    <tok fileIndex="0" linenr="15" column="5" str="msg_box"/>
+    <tok fileIndex="0" linenr="15" column="13" str="mbox"/>
+    <tok fileIndex="0" linenr="15" column="17" str=";"/>
+    <tok fileIndex="0" linenr="17" column="5" str="/* Allocate message box */"/>
+    <tok fileIndex="0" linenr="18" column="5" str="if"/>
+    <tok fileIndex="0" linenr="18" column="8" str="("/>
+    <tok fileIndex="0" linenr="18" column="9" str="!"/>
+    <tok fileIndex="0" linenr="18" column="10" str="("/>
+    <tok fileIndex="0" linenr="18" column="11" str="mbox"/>
+    <tok fileIndex="0" linenr="18" column="15" str="="/>
+    <tok fileIndex="0" linenr="18" column="16" str="("/>
+    <tok fileIndex="0" linenr="18" column="17" str="msg_box"/>
+    <tok fileIndex="0" linenr="18" column="24" str=")"/>
+    <tok fileIndex="0" linenr="18" column="25" str="malloc"/>
+    <tok fileIndex="0" linenr="18" column="31" str="("/>
+    <tok fileIndex="0" linenr="18" column="32" str="sizeof"/>
+    <tok fileIndex="0" linenr="18" column="38" str="("/>
+    <tok fileIndex="0" linenr="18" column="39" str="struct"/>
+    <tok fileIndex="0" linenr="18" column="46" str="s_msg_box"/>
+    <tok fileIndex="0" linenr="18" column="55" str=")"/>
+    <tok fileIndex="0" linenr="18" column="56" str=")"/>
+    <tok fileIndex="0" linenr="18" column="57" str=")"/>
+    <tok fileIndex="0" linenr="18" column="58" str=")"/>
+    <tok fileIndex="0" linenr="19" column="7" str="return"/>
+    <tok fileIndex="0" linenr="19" column="14" str="0"/>
+    <tok fileIndex="0" linenr="19" column="15" str=";"/>
+    <tok fileIndex="0" linenr="21" column="5" str="/* Allocate buffer */"/>
+    <tok fileIndex="0" linenr="22" column="5" str="if"/>
+    <tok fileIndex="0" linenr="22" column="8" str="("/>
+    <tok fileIndex="0" linenr="22" column="9" str="!"/>
+    <tok fileIndex="0" linenr="22" column="10" str="("/>
+    <tok fileIndex="0" linenr="22" column="11" str="("/>
+    <tok fileIndex="0" linenr="22" column="12" str="*"/>
+    <tok fileIndex="0" linenr="22" column="13" str="mbox"/>
+    <tok fileIndex="0" linenr="22" column="17" str=")"/>
+    <tok fileIndex="0" linenr="22" column="18" str="."/>
+    <tok fileIndex="0" linenr="22" column="19" str="buf"/>
+    <tok fileIndex="0" linenr="22" column="22" str="="/>
+    <tok fileIndex="0" linenr="22" column="23" str="("/>
+    <tok fileIndex="0" linenr="22" column="24" str="char"/>
+    <tok fileIndex="0" linenr="22" column="29" str="*"/>
+    <tok fileIndex="0" linenr="22" column="30" str=")"/>
+    <tok fileIndex="0" linenr="22" column="31" str="malloc"/>
+    <tok fileIndex="0" linenr="22" column="37" str="("/>
+    <tok fileIndex="0" linenr="22" column="38" str="elt_size"/>
+    <tok fileIndex="0" linenr="22" column="46" str=")"/>
+    <tok fileIndex="0" linenr="22" column="47" str=")"/>
+    <tok fileIndex="0" linenr="22" column="48" str=")"/>
+    <tok fileIndex="0" linenr="23" column="7" str="return"/>
+    <tok fileIndex="0" linenr="23" column="14" str="0"/>
+    <tok fileIndex="0" linenr="23" column="15" str=";"/>
+    <tok fileIndex="0" linenr="25" column="5" str="("/>
+    <tok fileIndex="0" linenr="25" column="6" str="*"/>
+    <tok fileIndex="0" linenr="25" column="7" str="mbox"/>
+    <tok fileIndex="0" linenr="25" column="11" str=")"/>
+    <tok fileIndex="0" linenr="25" column="12" str="."/>
+    <tok fileIndex="0" linenr="25" column="13" str="empty"/>
+    <tok fileIndex="0" linenr="25" column="19" str="="/>
+    <tok fileIndex="0" linenr="25" column="21" str="true"/>
+    <tok fileIndex="0" linenr="25" column="25" str=";"/>
+    <tok fileIndex="0" linenr="26" column="5" str="("/>
+    <tok fileIndex="0" linenr="26" column="6" str="*"/>
+    <tok fileIndex="0" linenr="26" column="7" str="mbox"/>
+    <tok fileIndex="0" linenr="26" column="11" str=")"/>
+    <tok fileIndex="0" linenr="26" column="12" str="."/>
+    <tok fileIndex="0" linenr="26" column="13" str="elt_size"/>
+    <tok fileIndex="0" linenr="26" column="21" str="="/>
+    <tok fileIndex="0" linenr="26" column="22" str="elt_size"/>
+    <tok fileIndex="0" linenr="26" column="30" str=";"/>
+    <tok fileIndex="0" linenr="28" column="5" str="CHECK_NZ"/>
+    <tok fileIndex="0" linenr="28" column="14" str="("/>
+    <tok fileIndex="0" linenr="28" column="15" str="pthread_mutex_init"/>
+    <tok fileIndex="0" linenr="28" column="33" str="("/>
+    <tok fileIndex="0" linenr="28" column="34" str="&amp;"/>
+    <tok fileIndex="0" linenr="28" column="35" str="("/>
+    <tok fileIndex="0" linenr="28" column="36" str="("/>
+    <tok fileIndex="0" linenr="28" column="37" str="*"/>
+    <tok fileIndex="0" linenr="28" column="38" str="mbox"/>
+    <tok fileIndex="0" linenr="28" column="42" str=")"/>
+    <tok fileIndex="0" linenr="28" column="43" str="."/>
+    <tok fileIndex="0" linenr="28" column="44" str="mutex"/>
+    <tok fileIndex="0" linenr="28" column="49" str=")"/>
+    <tok fileIndex="0" linenr="28" column="50" str=","/>
+    <tok fileIndex="0" linenr="28" column="51" str="0"/>
+    <tok fileIndex="0" linenr="28" column="52" str=")"/>
+    <tok fileIndex="0" linenr="28" column="53" str=")"/>
+    <tok fileIndex="0" linenr="28" column="54" str=";"/>
+    <tok fileIndex="0" linenr="29" column="5" str="CHECK_NZ"/>
+    <tok fileIndex="0" linenr="29" column="14" str="("/>
+    <tok fileIndex="0" linenr="29" column="15" str="pthread_cond_init"/>
+    <tok fileIndex="0" linenr="29" column="32" str="("/>
+    <tok fileIndex="0" linenr="29" column="33" str="&amp;"/>
+    <tok fileIndex="0" linenr="29" column="34" str="("/>
+    <tok fileIndex="0" linenr="29" column="35" str="("/>
+    <tok fileIndex="0" linenr="29" column="36" str="*"/>
+    <tok fileIndex="0" linenr="29" column="37" str="mbox"/>
+    <tok fileIndex="0" linenr="29" column="41" str=")"/>
+    <tok fileIndex="0" linenr="29" column="42" str="."/>
+    <tok fileIndex="0" linenr="29" column="43" str="not_empty"/>
+    <tok fileIndex="0" linenr="29" column="52" str=")"/>
+    <tok fileIndex="0" linenr="29" column="53" str=","/>
+    <tok fileIndex="0" linenr="29" column="55" str="0"/>
+    <tok fileIndex="0" linenr="29" column="56" str=")"/>
+    <tok fileIndex="0" linenr="29" column="57" str=")"/>
+    <tok fileIndex="0" linenr="29" column="58" str=";"/>
+    <tok fileIndex="0" linenr="31" column="5" str="return"/>
+    <tok fileIndex="0" linenr="31" column="12" str="mbox"/>
+    <tok fileIndex="0" linenr="31" column="16" str=";"/>
+    <tok fileIndex="0" linenr="32" column="1" str="}"/>
+    <tok fileIndex="0" linenr="34" column="1" str="/*****************************************************************************/"/>
+    <tok fileIndex="0" linenr="35" column="1" str="int"/>
+    <tok fileIndex="0" linenr="35" column="5" str="msg_box_receive"/>
+    <tok fileIndex="0" linenr="35" column="20" str="("/>
+    <tok fileIndex="0" linenr="35" column="21" str="msg_box"/>
+    <tok fileIndex="0" linenr="35" column="29" str="mbox"/>
+    <tok fileIndex="0" linenr="35" column="33" str=","/>
+    <tok fileIndex="0" linenr="35" column="35" str="char"/>
+    <tok fileIndex="0" linenr="35" column="40" str="*"/>
+    <tok fileIndex="0" linenr="35" column="41" str="buf"/>
+    <tok fileIndex="0" linenr="35" column="44" str=")"/>
+    <tok fileIndex="0" linenr="35" column="46" str="{"/>
+    <tok fileIndex="0" linenr="37" column="3" str="CHECK_NZ"/>
+    <tok fileIndex="0" linenr="37" column="12" str="("/>
+    <tok fileIndex="0" linenr="37" column="13" str="pthread_mutex_lock"/>
+    <tok fileIndex="0" linenr="37" column="32" str="("/>
+    <tok fileIndex="0" linenr="37" column="33" str="&amp;"/>
+    <tok fileIndex="0" linenr="37" column="34" str="("/>
+    <tok fileIndex="0" linenr="37" column="35" str="*"/>
+    <tok fileIndex="0" linenr="37" column="36" str="mbox"/>
+    <tok fileIndex="0" linenr="37" column="40" str=")"/>
+    <tok fileIndex="0" linenr="37" column="41" str="."/>
+    <tok fileIndex="0" linenr="37" column="42" str="mutex"/>
+    <tok fileIndex="0" linenr="37" column="47" str=")"/>
+    <tok fileIndex="0" linenr="37" column="48" str=")"/>
+    <tok fileIndex="0" linenr="37" column="49" str=";"/>
+    <tok fileIndex="0" linenr="37" column="52" str="/* Enter critical section */"/>
+    <tok fileIndex="0" linenr="39" column="3" str="while"/>
+    <tok fileIndex="0" linenr="39" column="9" str="("/>
+    <tok fileIndex="0" linenr="39" column="10" str="("/>
+    <tok fileIndex="0" linenr="39" column="11" str="*"/>
+    <tok fileIndex="0" linenr="39" column="12" str="mbox"/>
+    <tok fileIndex="0" linenr="39" column="16" str=")"/>
+    <tok fileIndex="0" linenr="39" column="17" str="."/>
+    <tok fileIndex="0" linenr="39" column="18" str="empty"/>
+    <tok fileIndex="0" linenr="39" column="23" str=")"/>
+    <tok fileIndex="0" linenr="39" column="25" str="{"/>
+    <tok fileIndex="0" linenr="40" column="5" str="/* Wait until the message box has a message */"/>
+    <tok fileIndex="0" linenr="41" column="5" str="CHECK_NZ"/>
+    <tok fileIndex="0" linenr="41" column="14" str="("/>
+    <tok fileIndex="0" linenr="41" column="15" str="pthread_cond_wait"/>
+    <tok fileIndex="0" linenr="41" column="33" str="("/>
+    <tok fileIndex="0" linenr="41" column="34" str="&amp;"/>
+    <tok fileIndex="0" linenr="41" column="35" str="("/>
+    <tok fileIndex="0" linenr="41" column="36" str="*"/>
+    <tok fileIndex="0" linenr="41" column="37" str="mbox"/>
+    <tok fileIndex="0" linenr="41" column="41" str=")"/>
+    <tok fileIndex="0" linenr="41" column="42" str="."/>
+    <tok fileIndex="0" linenr="41" column="43" str="not_empty"/>
+    <tok fileIndex="0" linenr="41" column="52" str=","/>
+    <tok fileIndex="0" linenr="41" column="54" str="&amp;"/>
+    <tok fileIndex="0" linenr="41" column="55" str="("/>
+    <tok fileIndex="0" linenr="41" column="56" str="*"/>
+    <tok fileIndex="0" linenr="41" column="57" str="mbox"/>
+    <tok fileIndex="0" linenr="41" column="61" str=")"/>
+    <tok fileIndex="0" linenr="41" column="62" str="."/>
+    <tok fileIndex="0" linenr="41" column="63" str="mutex"/>
+    <tok fileIndex="0" linenr="41" column="68" str=")"/>
+    <tok fileIndex="0" linenr="41" column="69" str=")"/>
+    <tok fileIndex="0" linenr="41" column="70" str=";"/>
+    <tok fileIndex="0" linenr="42" column="3" str="}"/>
+    <tok fileIndex="0" linenr="44" column="3" str="/* Copy the message */"/>
+    <tok fileIndex="0" linenr="45" column="3" str="memcpy"/>
+    <tok fileIndex="0" linenr="45" column="9" str="("/>
+    <tok fileIndex="0" linenr="45" column="10" str="buf"/>
+    <tok fileIndex="0" linenr="45" column="13" str=","/>
+    <tok fileIndex="0" linenr="45" column="14" str="("/>
+    <tok fileIndex="0" linenr="45" column="15" str="*"/>
+    <tok fileIndex="0" linenr="45" column="16" str="mbox"/>
+    <tok fileIndex="0" linenr="45" column="20" str=")"/>
+    <tok fileIndex="0" linenr="45" column="21" str="."/>
+    <tok fileIndex="0" linenr="45" column="22" str="buf"/>
+    <tok fileIndex="0" linenr="45" column="25" str=","/>
+    <tok fileIndex="0" linenr="45" column="26" str="("/>
+    <tok fileIndex="0" linenr="45" column="27" str="*"/>
+    <tok fileIndex="0" linenr="45" column="28" str="mbox"/>
+    <tok fileIndex="0" linenr="45" column="32" str=")"/>
+    <tok fileIndex="0" linenr="45" column="33" str="."/>
+    <tok fileIndex="0" linenr="45" column="34" str="elt_size"/>
+    <tok fileIndex="0" linenr="45" column="42" str=")"/>
+    <tok fileIndex="0" linenr="45" column="43" str=";"/>
+    <tok fileIndex="0" linenr="46" column="3" str="("/>
+    <tok fileIndex="0" linenr="46" column="4" str="*"/>
+    <tok fileIndex="0" linenr="46" column="5" str="mbox"/>
+    <tok fileIndex="0" linenr="46" column="9" str=")"/>
+    <tok fileIndex="0" linenr="46" column="10" str="."/>
+    <tok fileIndex="0" linenr="46" column="11" str="empty"/>
+    <tok fileIndex="0" linenr="46" column="17" str="="/>
+    <tok fileIndex="0" linenr="46" column="19" str="true"/>
+    <tok fileIndex="0" linenr="46" column="23" str=";"/>
+    <tok fileIndex="0" linenr="48" column="3" str="CHECK_NZ"/>
+    <tok fileIndex="0" linenr="48" column="12" str="("/>
+    <tok fileIndex="0" linenr="48" column="13" str="pthread_mutex_unlock"/>
+    <tok fileIndex="0" linenr="48" column="34" str="("/>
+    <tok fileIndex="0" linenr="48" column="35" str="&amp;"/>
+    <tok fileIndex="0" linenr="48" column="36" str="("/>
+    <tok fileIndex="0" linenr="48" column="37" str="*"/>
+    <tok fileIndex="0" linenr="48" column="38" str="mbox"/>
+    <tok fileIndex="0" linenr="48" column="42" str=")"/>
+    <tok fileIndex="0" linenr="48" column="43" str="."/>
+    <tok fileIndex="0" linenr="48" column="44" str="mutex"/>
+    <tok fileIndex="0" linenr="48" column="49" str=")"/>
+    <tok fileIndex="0" linenr="48" column="50" str=")"/>
+    <tok fileIndex="0" linenr="48" column="51" str=";"/>
+    <tok fileIndex="0" linenr="48" column="53" str="/* Leave critical section */"/>
+    <tok fileIndex="0" linenr="49" column="3" str="return"/>
+    <tok fileIndex="0" linenr="49" column="10" str="("/>
+    <tok fileIndex="0" linenr="49" column="11" str="*"/>
+    <tok fileIndex="0" linenr="49" column="12" str="mbox"/>
+    <tok fileIndex="0" linenr="49" column="16" str=")"/>
+    <tok fileIndex="0" linenr="49" column="17" str="."/>
+    <tok fileIndex="0" linenr="49" column="18" str="elt_size"/>
+    <tok fileIndex="0" linenr="49" column="26" str=";"/>
+    <tok fileIndex="0" linenr="50" column="1" str="}"/>
+    <tok fileIndex="0" linenr="52" column="1" str="/*****************************************************************************/"/>
+    <tok fileIndex="0" linenr="53" column="1" str="int"/>
+    <tok fileIndex="0" linenr="53" column="5" str="msg_box_send"/>
+    <tok fileIndex="0" linenr="53" column="17" str="("/>
+    <tok fileIndex="0" linenr="53" column="18" str="msg_box"/>
+    <tok fileIndex="0" linenr="53" column="26" str="mbox"/>
+    <tok fileIndex="0" linenr="53" column="30" str=","/>
+    <tok fileIndex="0" linenr="53" column="32" str="const"/>
+    <tok fileIndex="0" linenr="53" column="38" str="char"/>
+    <tok fileIndex="0" linenr="53" column="43" str="*"/>
+    <tok fileIndex="0" linenr="53" column="44" str="buf"/>
+    <tok fileIndex="0" linenr="53" column="47" str=")"/>
+    <tok fileIndex="0" linenr="53" column="49" str="{"/>
+    <tok fileIndex="0" linenr="54" column="3" str="CHECK_NZ"/>
+    <tok fileIndex="0" linenr="54" column="12" str="("/>
+    <tok fileIndex="0" linenr="54" column="13" str="pthread_mutex_lock"/>
+    <tok fileIndex="0" linenr="54" column="32" str="("/>
+    <tok fileIndex="0" linenr="54" column="33" str="&amp;"/>
+    <tok fileIndex="0" linenr="54" column="34" str="("/>
+    <tok fileIndex="0" linenr="54" column="35" str="*"/>
+    <tok fileIndex="0" linenr="54" column="36" str="mbox"/>
+    <tok fileIndex="0" linenr="54" column="40" str=")"/>
+    <tok fileIndex="0" linenr="54" column="41" str="."/>
+    <tok fileIndex="0" linenr="54" column="42" str="mutex"/>
+    <tok fileIndex="0" linenr="54" column="47" str=")"/>
+    <tok fileIndex="0" linenr="54" column="48" str=")"/>
+    <tok fileIndex="0" linenr="54" column="49" str=";"/>
+    <tok fileIndex="0" linenr="54" column="52" str="/* Enter critical section */"/>
+    <tok fileIndex="0" linenr="56" column="3" str="/* Copy the message */"/>
+    <tok fileIndex="0" linenr="57" column="3" str="memcpy"/>
+    <tok fileIndex="0" linenr="57" column="9" str="("/>
+    <tok fileIndex="0" linenr="57" column="10" str="("/>
+    <tok fileIndex="0" linenr="57" column="11" str="*"/>
+    <tok fileIndex="0" linenr="57" column="12" str="mbox"/>
+    <tok fileIndex="0" linenr="57" column="16" str=")"/>
+    <tok fileIndex="0" linenr="57" column="17" str="."/>
+    <tok fileIndex="0" linenr="57" column="18" str="buf"/>
+    <tok fileIndex="0" linenr="57" column="21" str=","/>
+    <tok fileIndex="0" linenr="57" column="22" str="buf"/>
+    <tok fileIndex="0" linenr="57" column="25" str=","/>
+    <tok fileIndex="0" linenr="57" column="26" str="("/>
+    <tok fileIndex="0" linenr="57" column="27" str="*"/>
+    <tok fileIndex="0" linenr="57" column="28" str="mbox"/>
+    <tok fileIndex="0" linenr="57" column="32" str=")"/>
+    <tok fileIndex="0" linenr="57" column="33" str="."/>
+    <tok fileIndex="0" linenr="57" column="34" str="elt_size"/>
+    <tok fileIndex="0" linenr="57" column="42" str=")"/>
+    <tok fileIndex="0" linenr="57" column="43" str=";"/>
+    <tok fileIndex="0" linenr="58" column="3" str="("/>
+    <tok fileIndex="0" linenr="58" column="4" str="*"/>
+    <tok fileIndex="0" linenr="58" column="5" str="mbox"/>
+    <tok fileIndex="0" linenr="58" column="9" str=")"/>
+    <tok fileIndex="0" linenr="58" column="10" str="."/>
+    <tok fileIndex="0" linenr="58" column="11" str="empty"/>
+    <tok fileIndex="0" linenr="58" column="16" str="="/>
+    <tok fileIndex="0" linenr="58" column="17" str="false"/>
+    <tok fileIndex="0" linenr="58" column="22" str=";"/>
+    <tok fileIndex="0" linenr="60" column="3" str="/* Awake one task waiting for a message */"/>
+    <tok fileIndex="0" linenr="61" column="3" str="CHECK_NZ"/>
+    <tok fileIndex="0" linenr="61" column="12" str="("/>
+    <tok fileIndex="0" linenr="61" column="13" str="pthread_cond_signal"/>
+    <tok fileIndex="0" linenr="61" column="33" str="("/>
+    <tok fileIndex="0" linenr="61" column="34" str="&amp;"/>
+    <tok fileIndex="0" linenr="61" column="35" str="("/>
+    <tok fileIndex="0" linenr="61" column="36" str="*"/>
+    <tok fileIndex="0" linenr="61" column="37" str="mbox"/>
+    <tok fileIndex="0" linenr="61" column="41" str=")"/>
+    <tok fileIndex="0" linenr="61" column="42" str="."/>
+    <tok fileIndex="0" linenr="61" column="43" str="not_empty"/>
+    <tok fileIndex="0" linenr="61" column="52" str=")"/>
+    <tok fileIndex="0" linenr="61" column="53" str=")"/>
+    <tok fileIndex="0" linenr="61" column="54" str=";"/>
+    <tok fileIndex="0" linenr="63" column="3" str="CHECK_NZ"/>
+    <tok fileIndex="0" linenr="63" column="12" str="("/>
+    <tok fileIndex="0" linenr="63" column="13" str="pthread_mutex_unlock"/>
+    <tok fileIndex="0" linenr="63" column="34" str="("/>
+    <tok fileIndex="0" linenr="63" column="35" str="&amp;"/>
+    <tok fileIndex="0" linenr="63" column="36" str="("/>
+    <tok fileIndex="0" linenr="63" column="37" str="*"/>
+    <tok fileIndex="0" linenr="63" column="38" str="mbox"/>
+    <tok fileIndex="0" linenr="63" column="42" str=")"/>
+    <tok fileIndex="0" linenr="63" column="43" str="."/>
+    <tok fileIndex="0" linenr="63" column="44" str="mutex"/>
+    <tok fileIndex="0" linenr="63" column="49" str=")"/>
+    <tok fileIndex="0" linenr="63" column="50" str=")"/>
+    <tok fileIndex="0" linenr="63" column="51" str=";"/>
+    <tok fileIndex="0" linenr="63" column="53" str="/* Leave critical section */"/>
+    <tok fileIndex="0" linenr="64" column="3" str="return"/>
+    <tok fileIndex="0" linenr="64" column="10" str="("/>
+    <tok fileIndex="0" linenr="64" column="11" str="*"/>
+    <tok fileIndex="0" linenr="64" column="12" str="mbox"/>
+    <tok fileIndex="0" linenr="64" column="16" str=")"/>
+    <tok fileIndex="0" linenr="64" column="17" str="."/>
+    <tok fileIndex="0" linenr="64" column="18" str="elt_size"/>
+    <tok fileIndex="0" linenr="64" column="26" str=";"/>
+    <tok fileIndex="0" linenr="65" column="1" str="}"/>
+    <tok fileIndex="0" linenr="67" column="1" str="/*****************************************************************************/"/>
+    <tok fileIndex="0" linenr="68" column="1" str="void"/>
+    <tok fileIndex="0" linenr="68" column="6" str="msg_box_delete"/>
+    <tok fileIndex="0" linenr="68" column="20" str="("/>
+    <tok fileIndex="0" linenr="68" column="21" str="msg_box"/>
+    <tok fileIndex="0" linenr="68" column="29" str="mbox"/>
+    <tok fileIndex="0" linenr="68" column="33" str=")"/>
+    <tok fileIndex="0" linenr="68" column="35" str="{"/>
+    <tok fileIndex="0" linenr="69" column="3" str="pthread_cond_destroy"/>
+    <tok fileIndex="0" linenr="69" column="23" str="("/>
+    <tok fileIndex="0" linenr="69" column="24" str="&amp;"/>
+    <tok fileIndex="0" linenr="69" column="25" str="("/>
+    <tok fileIndex="0" linenr="69" column="26" str="*"/>
+    <tok fileIndex="0" linenr="69" column="27" str="mbox"/>
+    <tok fileIndex="0" linenr="69" column="31" str=")"/>
+    <tok fileIndex="0" linenr="69" column="32" str="."/>
+    <tok fileIndex="0" linenr="69" column="33" str="not_empty"/>
+    <tok fileIndex="0" linenr="69" column="42" str=")"/>
+    <tok fileIndex="0" linenr="69" column="43" str=";"/>
+    <tok fileIndex="0" linenr="70" column="3" str="pthread_mutex_lock"/>
+    <tok fileIndex="0" linenr="70" column="21" str="("/>
+    <tok fileIndex="0" linenr="70" column="22" str="&amp;"/>
+    <tok fileIndex="0" linenr="70" column="23" str="("/>
+    <tok fileIndex="0" linenr="70" column="24" str="*"/>
+    <tok fileIndex="0" linenr="70" column="25" str="mbox"/>
+    <tok fileIndex="0" linenr="70" column="29" str=")"/>
+    <tok fileIndex="0" linenr="70" column="30" str="."/>
+    <tok fileIndex="0" linenr="70" column="31" str="mutex"/>
+    <tok fileIndex="0" linenr="70" column="36" str=")"/>
+    <tok fileIndex="0" linenr="70" column="37" str=";"/>
+    <tok fileIndex="0" linenr="71" column="3" str="free"/>
+    <tok fileIndex="0" linenr="71" column="7" str="("/>
+    <tok fileIndex="0" linenr="71" column="8" str="("/>
+    <tok fileIndex="0" linenr="71" column="9" str="*"/>
+    <tok fileIndex="0" linenr="71" column="10" str="mbox"/>
+    <tok fileIndex="0" linenr="71" column="14" str=")"/>
+    <tok fileIndex="0" linenr="71" column="15" str="."/>
+    <tok fileIndex="0" linenr="71" column="16" str="buf"/>
+    <tok fileIndex="0" linenr="71" column="19" str=")"/>
+    <tok fileIndex="0" linenr="71" column="20" str=";"/>
+    <tok fileIndex="0" linenr="72" column="3" str="pthread_mutex_unlock"/>
+    <tok fileIndex="0" linenr="72" column="23" str="("/>
+    <tok fileIndex="0" linenr="72" column="24" str="&amp;"/>
+    <tok fileIndex="0" linenr="72" column="25" str="("/>
+    <tok fileIndex="0" linenr="72" column="26" str="*"/>
+    <tok fileIndex="0" linenr="72" column="27" str="mbox"/>
+    <tok fileIndex="0" linenr="72" column="31" str=")"/>
+    <tok fileIndex="0" linenr="72" column="32" str="."/>
+    <tok fileIndex="0" linenr="72" column="33" str="mutex"/>
+    <tok fileIndex="0" linenr="72" column="38" str=")"/>
+    <tok fileIndex="0" linenr="72" column="39" str=";"/>
+    <tok fileIndex="0" linenr="73" column="3" str="pthread_mutex_destroy"/>
+    <tok fileIndex="0" linenr="73" column="24" str="("/>
+    <tok fileIndex="0" linenr="73" column="25" str="&amp;"/>
+    <tok fileIndex="0" linenr="73" column="26" str="("/>
+    <tok fileIndex="0" linenr="73" column="27" str="*"/>
+    <tok fileIndex="0" linenr="73" column="28" str="mbox"/>
+    <tok fileIndex="0" linenr="73" column="32" str=")"/>
+    <tok fileIndex="0" linenr="73" column="33" str="."/>
+    <tok fileIndex="0" linenr="73" column="34" str="mutex"/>
+    <tok fileIndex="0" linenr="73" column="39" str=")"/>
+    <tok fileIndex="0" linenr="73" column="40" str=";"/>
+    <tok fileIndex="0" linenr="74" column="3" str="free"/>
+    <tok fileIndex="0" linenr="74" column="7" str="("/>
+    <tok fileIndex="0" linenr="74" column="8" str="mbox"/>
+    <tok fileIndex="0" linenr="74" column="12" str=")"/>
+    <tok fileIndex="0" linenr="74" column="13" str=";"/>
+    <tok fileIndex="0" linenr="75" column="1" str="}"/>
+    <tok fileIndex="0" linenr="77" column="1" str="/*****************************************************************************/"/>
+    <tok fileIndex="0" linenr="78" column="1" str="#"/>
+    <tok fileIndex="0" linenr="78" column="2" str="ifdef"/>
+    <tok fileIndex="0" linenr="78" column="8" str="__TEST__"/>
+    <tok fileIndex="0" linenr="79" column="1" str="int"/>
+    <tok fileIndex="0" linenr="79" column="5" str="main"/>
+    <tok fileIndex="0" linenr="79" column="10" str="("/>
+    <tok fileIndex="0" linenr="79" column="11" str="void"/>
+    <tok fileIndex="0" linenr="79" column="15" str=")"/>
+    <tok fileIndex="0" linenr="79" column="17" str="{"/>
+    <tok fileIndex="0" linenr="80" column="3" str="char"/>
+    <tok fileIndex="0" linenr="80" column="8" str="c"/>
+    <tok fileIndex="0" linenr="80" column="10" str="="/>
+    <tok fileIndex="0" linenr="80" column="12" str="&apos;a&apos;"/>
+    <tok fileIndex="0" linenr="80" column="15" str=","/>
+    <tok fileIndex="0" linenr="80" column="17" str="d"/>
+    <tok fileIndex="0" linenr="80" column="18" str=";"/>
+    <tok fileIndex="0" linenr="81" column="3" str="msg_box"/>
+    <tok fileIndex="0" linenr="81" column="11" str="mbox"/>
+    <tok fileIndex="0" linenr="81" column="16" str="="/>
+    <tok fileIndex="0" linenr="81" column="18" str="msg_box_init"/>
+    <tok fileIndex="0" linenr="81" column="31" str="("/>
+    <tok fileIndex="0" linenr="81" column="32" str="sizeof"/>
+    <tok fileIndex="0" linenr="81" column="39" str="("/>
+    <tok fileIndex="0" linenr="81" column="40" str="char"/>
+    <tok fileIndex="0" linenr="81" column="44" str=")"/>
+    <tok fileIndex="0" linenr="81" column="45" str=")"/>
+    <tok fileIndex="0" linenr="81" column="46" str=";"/>
+    <tok fileIndex="0" linenr="82" column="3" str="int"/>
+    <tok fileIndex="0" linenr="82" column="7" str="e"/>
+    <tok fileIndex="0" linenr="82" column="9" str="="/>
+    <tok fileIndex="0" linenr="82" column="11" str="msg_box_send"/>
+    <tok fileIndex="0" linenr="82" column="24" str="("/>
+    <tok fileIndex="0" linenr="82" column="25" str="mbox"/>
+    <tok fileIndex="0" linenr="82" column="29" str=","/>
+    <tok fileIndex="0" linenr="82" column="31" str="&amp;"/>
+    <tok fileIndex="0" linenr="82" column="32" str="c"/>
+    <tok fileIndex="0" linenr="82" column="33" str=")"/>
+    <tok fileIndex="0" linenr="82" column="34" str=";"/>
+    <tok fileIndex="0" linenr="83" column="3" str="printf"/>
+    <tok fileIndex="0" linenr="83" column="10" str="("/>
+    <tok fileIndex="0" linenr="83" column="11" str="&quot;msg_box_send: %d\n&quot;"/>
+    <tok fileIndex="0" linenr="83" column="31" str=","/>
+    <tok fileIndex="0" linenr="83" column="33" str="e"/>
+    <tok fileIndex="0" linenr="83" column="34" str=")"/>
+    <tok fileIndex="0" linenr="83" column="35" str=";"/>
+    <tok fileIndex="0" linenr="84" column="3" str="e"/>
+    <tok fileIndex="0" linenr="84" column="5" str="="/>
+    <tok fileIndex="0" linenr="84" column="7" str="msg_box_receive"/>
+    <tok fileIndex="0" linenr="84" column="23" str="("/>
+    <tok fileIndex="0" linenr="84" column="24" str="mbox"/>
+    <tok fileIndex="0" linenr="84" column="28" str=","/>
+    <tok fileIndex="0" linenr="84" column="30" str="&amp;"/>
+    <tok fileIndex="0" linenr="84" column="31" str="d"/>
+    <tok fileIndex="0" linenr="84" column="32" str=")"/>
+    <tok fileIndex="0" linenr="84" column="33" str=";"/>
+    <tok fileIndex="0" linenr="85" column="3" str="printf"/>
+    <tok fileIndex="0" linenr="85" column="10" str="("/>
+    <tok fileIndex="0" linenr="85" column="11" str="&quot;Read %c\n&quot;"/>
+    <tok fileIndex="0" linenr="85" column="22" str=","/>
+    <tok fileIndex="0" linenr="85" column="24" str="d"/>
+    <tok fileIndex="0" linenr="85" column="25" str=")"/>
+    <tok fileIndex="0" linenr="85" column="26" str=";"/>
+    <tok fileIndex="0" linenr="86" column="3" str="return"/>
+    <tok fileIndex="0" linenr="86" column="10" str="0"/>
+    <tok fileIndex="0" linenr="86" column="11" str=";"/>
+    <tok fileIndex="0" linenr="87" column="1" str="}"/>
+    <tok fileIndex="0" linenr="88" column="1" str="#"/>
+    <tok fileIndex="0" linenr="88" column="2" str="endif"/>
+    <tok fileIndex="0" linenr="88" column="8" str="/* __TEST__ */"/>
+  </rawtokens>
+  <suppressions>
+  </suppressions>
+<dump cfg="INLINE=__inline__">
+  <standards>
+    <c version="c11"/>
+    <cpp version="c++20"/>
+  </standards>
+  <directivelist>
+    <directive file="air/examples/posix/p0/msg_box.c" linenr="6" str="#include &lt;stdlib.h&gt;"/>
+    <directive file="air/examples/posix/p0/msg_box.c" linenr="7" str="#include &lt;string.h&gt;"/>
+    <directive file="air/examples/posix/p0/msg_box.c" linenr="8" str="#include &quot;assert.h&quot;"/>
+    <directive file="air/examples/posix/p0/msg_box.c" linenr="10" str="#include &quot;msg_box.h&quot;"/>
+    <directive file="air/examples/posix/p0/msg_box.c" linenr="11" str="#include &quot;utils.h&quot;"/>
+    <directive file="air/examples/posix/p0/msg_box.c" linenr="78" str="#ifdef __TEST__"/>
+    <directive file="air/examples/posix/p0/msg_box.c" linenr="88" str="#endif"/>
+    <directive file="air/examples/posix/p0/msg_box.h" linenr="6" str="#ifndef _MSG_BOX_H_"/>
+    <directive file="air/examples/posix/p0/msg_box.h" linenr="7" str="#define _MSG_BOX_H_"/>
+    <directive file="air/examples/posix/p0/msg_box.h" linenr="9" str="#include &lt;pthread.h&gt;"/>
+    <directive file="air/examples/posix/p0/msg_box.h" linenr="10" str="#include &lt;stdbool.h&gt;"/>
+    <directive file="air/examples/posix/p0/msg_box.h" linenr="48" str="#endif"/>
+    <directive file="air/examples/posix/p0/utils.h" linenr="1" str="#ifndef __UTILS_H__"/>
+    <directive file="air/examples/posix/p0/utils.h" linenr="2" str="#define __UTILS_H__"/>
+    <directive file="air/examples/posix/p0/utils.h" linenr="4" str="#include &lt;stdio.h&gt;"/>
+    <directive file="air/examples/posix/p0/utils.h" linenr="5" str="#include &lt;time.h&gt;"/>
+    <directive file="air/examples/posix/p0/utils.h" linenr="10" str="#define CHECK_NZ(X) if ((X) != 0) { printf (&quot;%s %d:\n&quot;, __FILE__, __LINE__); perror (&quot;[ERROR]&quot;); }"/>
+    <directive file="air/examples/posix/p0/utils.h" linenr="18" str="#endif"/>
+  </directivelist>
+  <macro-usage>
+    <macro name="CHECK_NZ" file="air/examples/posix/p0/utils.h" line="10" column="9" usefile="air/examples/posix/p0/msg_box.c" useline="28" usecolumn="5" is-known-value="true"/>
+    <macro name="CHECK_NZ" file="air/examples/posix/p0/utils.h" line="10" column="9" usefile="air/examples/posix/p0/msg_box.c" useline="29" usecolumn="5" is-known-value="true"/>
+    <macro name="CHECK_NZ" file="air/examples/posix/p0/utils.h" line="10" column="9" usefile="air/examples/posix/p0/msg_box.c" useline="37" usecolumn="3" is-known-value="true"/>
+    <macro name="CHECK_NZ" file="air/examples/posix/p0/utils.h" line="10" column="9" usefile="air/examples/posix/p0/msg_box.c" useline="41" usecolumn="5" is-known-value="true"/>
+    <macro name="CHECK_NZ" file="air/examples/posix/p0/utils.h" line="10" column="9" usefile="air/examples/posix/p0/msg_box.c" useline="48" usecolumn="3" is-known-value="true"/>
+    <macro name="CHECK_NZ" file="air/examples/posix/p0/utils.h" line="10" column="9" usefile="air/examples/posix/p0/msg_box.c" useline="54" usecolumn="3" is-known-value="true"/>
+    <macro name="CHECK_NZ" file="air/examples/posix/p0/utils.h" line="10" column="9" usefile="air/examples/posix/p0/msg_box.c" useline="61" usecolumn="3" is-known-value="true"/>
+    <macro name="CHECK_NZ" file="air/examples/posix/p0/utils.h" line="10" column="9" usefile="air/examples/posix/p0/msg_box.c" useline="63" usecolumn="3" is-known-value="true"/>
+    <macro name="__FILE__" file="" line="1" column="1" usefile="air/examples/posix/p0/msg_box.c" useline="28" usecolumn="5" is-known-value="false"/>
+    <macro name="__FILE__" file="" line="1" column="1" usefile="air/examples/posix/p0/msg_box.c" useline="29" usecolumn="5" is-known-value="false"/>
+    <macro name="__FILE__" file="" line="1" column="1" usefile="air/examples/posix/p0/msg_box.c" useline="37" usecolumn="3" is-known-value="false"/>
+    <macro name="__FILE__" file="" line="1" column="1" usefile="air/examples/posix/p0/msg_box.c" useline="41" usecolumn="5" is-known-value="false"/>
+    <macro name="__FILE__" file="" line="1" column="1" usefile="air/examples/posix/p0/msg_box.c" useline="48" usecolumn="3" is-known-value="false"/>
+    <macro name="__FILE__" file="" line="1" column="1" usefile="air/examples/posix/p0/msg_box.c" useline="54" usecolumn="3" is-known-value="false"/>
+    <macro name="__FILE__" file="" line="1" column="1" usefile="air/examples/posix/p0/msg_box.c" useline="61" usecolumn="3" is-known-value="false"/>
+    <macro name="__FILE__" file="" line="1" column="1" usefile="air/examples/posix/p0/msg_box.c" useline="63" usecolumn="3" is-known-value="false"/>
+    <macro name="__LINE__" file="" line="1" column="1" usefile="air/examples/posix/p0/msg_box.c" useline="28" usecolumn="5" is-known-value="false"/>
+    <macro name="__LINE__" file="" line="1" column="1" usefile="air/examples/posix/p0/msg_box.c" useline="29" usecolumn="5" is-known-value="false"/>
+    <macro name="__LINE__" file="" line="1" column="1" usefile="air/examples/posix/p0/msg_box.c" useline="37" usecolumn="3" is-known-value="false"/>
+    <macro name="__LINE__" file="" line="1" column="1" usefile="air/examples/posix/p0/msg_box.c" useline="41" usecolumn="5" is-known-value="false"/>
+    <macro name="__LINE__" file="" line="1" column="1" usefile="air/examples/posix/p0/msg_box.c" useline="48" usecolumn="3" is-known-value="false"/>
+    <macro name="__LINE__" file="" line="1" column="1" usefile="air/examples/posix/p0/msg_box.c" useline="54" usecolumn="3" is-known-value="false"/>
+    <macro name="__LINE__" file="" line="1" column="1" usefile="air/examples/posix/p0/msg_box.c" useline="61" usecolumn="3" is-known-value="false"/>
+    <macro name="__LINE__" file="" line="1" column="1" usefile="air/examples/posix/p0/msg_box.c" useline="63" usecolumn="3" is-known-value="false"/>
+  </macro-usage>
+  <tokenlist>
+    <token id="0x558318cdd530" file="air/examples/posix/p0/msg_box.h" linenr="12" column="9" str="struct" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318e1a1b0" file="air/examples/posix/p0/msg_box.h" linenr="12" column="16" str="s_msg_box" scope="0x558318b2a180" type="name" type-scope="0x558318d97360"/>
+    <token id="0x558318ce8230" file="air/examples/posix/p0/msg_box.h" linenr="12" column="26" str="{" scope="0x558318d97360" link="0x558318e161e0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318aa67b0" file="air/examples/posix/p0/msg_box.h" linenr="13" column="3" str="char" scope="0x558318d97360" type="name" astParent="0x558318c911d0"/>
+    <token id="0x558318c911d0" file="air/examples/posix/p0/msg_box.h" linenr="13" column="8" str="*" scope="0x558318d97360" type="op" isArithmeticalOp="true" astOperand1="0x558318aa67b0" astOperand2="0x558318d81ea0"/>
+    <token id="0x558318d81ea0" file="air/examples/posix/p0/msg_box.h" linenr="13" column="9" str="buf" scope="0x558318d97360" type="name" varId="1" variable="0x558318b5b3f0" astParent="0x558318c911d0" valueType-type="char" valueType-sign="signed" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318b20010" file="air/examples/posix/p0/msg_box.h" linenr="13" column="12" str=";" scope="0x558318d97360"/>
+    <token id="0x558318db1790" file="air/examples/posix/p0/msg_box.h" linenr="14" column="3" str="bool" scope="0x558318d97360" type="name"/>
+    <token id="0x558318daa470" file="air/examples/posix/p0/msg_box.h" linenr="14" column="8" str="empty" scope="0x558318d97360" type="name" varId="2" variable="0x558318ac0950" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318ce87d0" file="air/examples/posix/p0/msg_box.h" linenr="14" column="13" str=";" scope="0x558318d97360"/>
+    <token id="0x558318ddd690" file="air/examples/posix/p0/msg_box.h" linenr="15" column="3" str="pthread_mutex_t" scope="0x558318d97360" type="name"/>
+    <token id="0x558318ce8850" file="air/examples/posix/p0/msg_box.h" linenr="15" column="19" str="mutex" scope="0x558318d97360" type="name" varId="3" variable="0x558318d945a0"/>
+    <token id="0x558318d709f0" file="air/examples/posix/p0/msg_box.h" linenr="15" column="24" str=";" scope="0x558318d97360"/>
+    <token id="0x558318b61070" file="air/examples/posix/p0/msg_box.h" linenr="16" column="3" str="pthread_cond_t" scope="0x558318d97360" type="name"/>
+    <token id="0x558318cdb5a0" file="air/examples/posix/p0/msg_box.h" linenr="16" column="18" str="not_empty" scope="0x558318d97360" type="name" varId="4" variable="0x558318afb6d0"/>
+    <token id="0x558318aed130" file="air/examples/posix/p0/msg_box.h" linenr="16" column="27" str=";" scope="0x558318d97360"/>
+    <token id="0x558318ccc6c0" file="air/examples/posix/p0/msg_box.h" linenr="18" column="3" str="int" scope="0x558318d97360" type="name" isUnsigned="true" isImplicitInt="true"/>
+    <token id="0x558318d234c0" file="air/examples/posix/p0/msg_box.h" linenr="18" column="12" str="elt_size" scope="0x558318d97360" type="name" varId="5" variable="0x558318cd0cc0" values="0x558318cb96d0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318afefb0" file="air/examples/posix/p0/msg_box.h" linenr="18" column="20" str=";" scope="0x558318d97360"/>
+    <token id="0x558318e161e0" file="air/examples/posix/p0/msg_box.h" linenr="19" column="1" str="}" scope="0x558318d97360" link="0x558318ce8230"/>
+    <token id="0x558318b761f0" file="air/examples/posix/p0/msg_box.h" linenr="19" column="0" str=";" scope="0x558318b2a180"/>
+    <token id="0x558318ce6fb0" file="air/examples/posix/p0/msg_box.h" linenr="21" column="1" str="struct" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318b3a540" file="air/examples/posix/p0/msg_box.h" linenr="21" column="0" str="s_msg_box" scope="0x558318b2a180" type="name" type-scope="0x558318d97360"/>
+    <token id="0x558318d80c60" file="air/examples/posix/p0/msg_box.h" linenr="21" column="0" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true"/>
+    <token id="0x558318dd4f90" file="air/examples/posix/p0/msg_box.h" linenr="21" column="9" str="msg_box_init" scope="0x558318b2a180" type="name" function="0x558318ce5c90"/>
+    <token id="0x558318cdb520" file="air/examples/posix/p0/msg_box.h" linenr="21" column="21" str="(" scope="0x558318b2a180" link="0x558318ce88f0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318c9a2d0" file="air/examples/posix/p0/msg_box.h" linenr="21" column="22" str="const" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318b21360" file="air/examples/posix/p0/msg_box.h" linenr="21" column="28" str="int" scope="0x558318b2a180" type="name" isUnsigned="true" isImplicitInt="true"/>
+    <token id="0x558318b978d0" file="air/examples/posix/p0/msg_box.h" linenr="21" column="37" str="elt_size" scope="0x558318b2a180" type="name" varId="6"/>
+    <token id="0x558318ce88f0" file="air/examples/posix/p0/msg_box.h" linenr="21" column="45" str=")" scope="0x558318b2a180" link="0x558318cdb520"/>
+    <token id="0x558318ae6200" file="air/examples/posix/p0/msg_box.h" linenr="21" column="46" str=";" scope="0x558318b2a180"/>
+    <token id="0x558318cd75b0" file="air/examples/posix/p0/msg_box.h" linenr="27" column="1" str="int" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318ad1e70" file="air/examples/posix/p0/msg_box.h" linenr="27" column="5" str="msg_box_receive" scope="0x558318b2a180" type="name" function="0x558318d55870"/>
+    <token id="0x558318d40e30" file="air/examples/posix/p0/msg_box.h" linenr="27" column="20" str="(" scope="0x558318b2a180" link="0x558318ce7ab0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318bb8ca0" file="air/examples/posix/p0/msg_box.h" linenr="27" column="21" str="struct" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318b9d910" file="air/examples/posix/p0/msg_box.h" linenr="27" column="0" str="s_msg_box" scope="0x558318b2a180" type="name" type-scope="0x558318d97360" astParent="0x558318b9da00"/>
+    <token id="0x558318b9da00" file="air/examples/posix/p0/msg_box.h" linenr="27" column="0" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318d588f0" astOperand1="0x558318b9d910" astOperand2="0x558318d1d4c0"/>
+    <token id="0x558318d1d4c0" file="air/examples/posix/p0/msg_box.h" linenr="27" column="29" str="mbox" scope="0x558318b2a180" type="name" varId="7" astParent="0x558318b9da00"/>
+    <token id="0x558318d588f0" file="air/examples/posix/p0/msg_box.h" linenr="27" column="33" str="," scope="0x558318b2a180" astOperand1="0x558318b9da00" astOperand2="0x558318d77180"/>
+    <token id="0x558318b0d3a0" file="air/examples/posix/p0/msg_box.h" linenr="27" column="35" str="char" scope="0x558318b2a180" type="name" astParent="0x558318d77180"/>
+    <token id="0x558318d77180" file="air/examples/posix/p0/msg_box.h" linenr="27" column="40" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318d588f0" astOperand1="0x558318b0d3a0" astOperand2="0x558318b1a9f0"/>
+    <token id="0x558318b1a9f0" file="air/examples/posix/p0/msg_box.h" linenr="27" column="41" str="buf" scope="0x558318b2a180" type="name" varId="8" astParent="0x558318d77180"/>
+    <token id="0x558318ce7ab0" file="air/examples/posix/p0/msg_box.h" linenr="27" column="44" str=")" scope="0x558318b2a180" link="0x558318d40e30"/>
+    <token id="0x558318ce41a0" file="air/examples/posix/p0/msg_box.h" linenr="27" column="45" str=";" scope="0x558318b2a180"/>
+    <token id="0x558318b84b60" file="air/examples/posix/p0/msg_box.h" linenr="34" column="1" str="int" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318b0fab0" file="air/examples/posix/p0/msg_box.h" linenr="34" column="5" str="msg_box_send" scope="0x558318b2a180" type="name" function="0x558318d557c0"/>
+    <token id="0x558318b97ba0" file="air/examples/posix/p0/msg_box.h" linenr="34" column="17" str="(" scope="0x558318b2a180" link="0x558318b5c1e0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318afbc60" file="air/examples/posix/p0/msg_box.h" linenr="34" column="18" str="struct" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318b650e0" file="air/examples/posix/p0/msg_box.h" linenr="34" column="0" str="s_msg_box" scope="0x558318b2a180" type="name" type-scope="0x558318d97360" astParent="0x558318b651d0"/>
+    <token id="0x558318b651d0" file="air/examples/posix/p0/msg_box.h" linenr="34" column="0" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318b20f50" astOperand1="0x558318b650e0" astOperand2="0x558318afdba0"/>
+    <token id="0x558318afdba0" file="air/examples/posix/p0/msg_box.h" linenr="34" column="26" str="mbox" scope="0x558318b2a180" type="name" varId="9" astParent="0x558318b651d0"/>
+    <token id="0x558318b20f50" file="air/examples/posix/p0/msg_box.h" linenr="34" column="30" str="," scope="0x558318b2a180" astOperand1="0x558318b651d0" astOperand2="0x558318b42620"/>
+    <token id="0x558318b74110" file="air/examples/posix/p0/msg_box.h" linenr="34" column="32" str="const" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318cc8390" file="air/examples/posix/p0/msg_box.h" linenr="34" column="38" str="char" scope="0x558318b2a180" type="name" astParent="0x558318b42620"/>
+    <token id="0x558318b42620" file="air/examples/posix/p0/msg_box.h" linenr="34" column="43" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318b20f50" astOperand1="0x558318cc8390" astOperand2="0x558318b240b0"/>
+    <token id="0x558318b240b0" file="air/examples/posix/p0/msg_box.h" linenr="34" column="44" str="buf" scope="0x558318b2a180" type="name" varId="10" astParent="0x558318b42620"/>
+    <token id="0x558318b5c1e0" file="air/examples/posix/p0/msg_box.h" linenr="34" column="47" str=")" scope="0x558318b2a180" link="0x558318b97ba0"/>
+    <token id="0x558318b007d0" file="air/examples/posix/p0/msg_box.h" linenr="34" column="48" str=";" scope="0x558318b2a180"/>
+    <token id="0x558318e1a0b0" file="air/examples/posix/p0/msg_box.h" linenr="42" column="1" str="void" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318b40540" file="air/examples/posix/p0/msg_box.h" linenr="42" column="6" str="msg_box_delete" scope="0x558318b2a180" type="name" function="0x558318d915e0"/>
+    <token id="0x558318da93d0" file="air/examples/posix/p0/msg_box.h" linenr="42" column="20" str="(" scope="0x558318b2a180" link="0x558318da48b0" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318ab09c0" file="air/examples/posix/p0/msg_box.h" linenr="42" column="21" str="struct" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318d55c80" file="air/examples/posix/p0/msg_box.h" linenr="42" column="0" str="s_msg_box" scope="0x558318b2a180" type="name" type-scope="0x558318d97360" astParent="0x558318d55d70"/>
+    <token id="0x558318d55d70" file="air/examples/posix/p0/msg_box.h" linenr="42" column="0" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astOperand1="0x558318d55c80" astOperand2="0x558318b53640"/>
+    <token id="0x558318b53640" file="air/examples/posix/p0/msg_box.h" linenr="42" column="29" str="mbox" scope="0x558318b2a180" type="name" varId="11" astParent="0x558318d55d70"/>
+    <token id="0x558318da48b0" file="air/examples/posix/p0/msg_box.h" linenr="42" column="33" str=")" scope="0x558318b2a180" link="0x558318da93d0"/>
+    <token id="0x558318b6b460" file="air/examples/posix/p0/msg_box.h" linenr="42" column="34" str=";" scope="0x558318b2a180"/>
+    <token id="0x558318b24d60" file="air/examples/posix/p0/utils.h" linenr="13" column="1" str="void" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318b077a0" file="air/examples/posix/p0/utils.h" linenr="13" column="6" str="add_timespec" scope="0x558318b2a180" type="name" function="0x558318d55920"/>
+    <token id="0x558318b40a30" file="air/examples/posix/p0/utils.h" linenr="13" column="19" str="(" scope="0x558318b2a180" link="0x558318bc9340" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318d700d0" file="air/examples/posix/p0/utils.h" linenr="13" column="20" str="struct" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318bc3510" file="air/examples/posix/p0/utils.h" linenr="13" column="27" str="timespec" scope="0x558318b2a180" type="name" astParent="0x558318b7cbb0"/>
+    <token id="0x558318b7cbb0" file="air/examples/posix/p0/utils.h" linenr="13" column="36" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318cd4af0" astOperand1="0x558318bc3510" astOperand2="0x558318ccc120"/>
+    <token id="0x558318ccc120" file="air/examples/posix/p0/utils.h" linenr="13" column="37" str="s" scope="0x558318b2a180" type="name" varId="12" variable="0x558318ca9b50" astParent="0x558318b7cbb0" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318cd4af0" file="air/examples/posix/p0/utils.h" linenr="13" column="38" str="," scope="0x558318b2a180" astParent="0x558318bc3ec0" astOperand1="0x558318b7cbb0" astOperand2="0x558318b247e0"/>
+    <token id="0x558318b7f8f0" file="air/examples/posix/p0/utils.h" linenr="14" column="20" str="const" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318b0edf0" file="air/examples/posix/p0/utils.h" linenr="14" column="26" str="struct" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318b23ed0" file="air/examples/posix/p0/utils.h" linenr="14" column="33" str="timespec" scope="0x558318b2a180" type="name" astParent="0x558318b247e0"/>
+    <token id="0x558318b247e0" file="air/examples/posix/p0/utils.h" linenr="14" column="42" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318cd4af0" astOperand1="0x558318b23ed0" astOperand2="0x558318bbf8a0"/>
+    <token id="0x558318bbf8a0" file="air/examples/posix/p0/utils.h" linenr="14" column="43" str="t1" scope="0x558318b2a180" type="name" varId="13" variable="0x558318abc700" astParent="0x558318b247e0" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318bc3ec0" file="air/examples/posix/p0/utils.h" linenr="14" column="45" str="," scope="0x558318b2a180" astOperand1="0x558318cd4af0" astOperand2="0x558318cdb260"/>
+    <token id="0x558318d70750" file="air/examples/posix/p0/utils.h" linenr="15" column="20" str="const" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318ce83d0" file="air/examples/posix/p0/utils.h" linenr="15" column="26" str="struct" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318d9c420" file="air/examples/posix/p0/utils.h" linenr="15" column="33" str="timespec" scope="0x558318b2a180" type="name" astParent="0x558318cdb260"/>
+    <token id="0x558318cdb260" file="air/examples/posix/p0/utils.h" linenr="15" column="42" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318bc3ec0" astOperand1="0x558318d9c420" astOperand2="0x558318b85830"/>
+    <token id="0x558318b85830" file="air/examples/posix/p0/utils.h" linenr="15" column="43" str="t2" scope="0x558318b2a180" type="name" varId="14" variable="0x558318cdb300" astParent="0x558318cdb260" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318bc9340" file="air/examples/posix/p0/utils.h" linenr="15" column="45" str=")" scope="0x558318b2a180" link="0x558318b40a30"/>
+    <token id="0x558318b1ec20" file="air/examples/posix/p0/utils.h" linenr="15" column="46" str=";" scope="0x558318b2a180"/>
+    <token id="0x558318db1710" file="air/examples/posix/p0/msg_box.c" linenr="14" column="1" str="struct" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318d2ee60" file="air/examples/posix/p0/msg_box.c" linenr="14" column="0" str="s_msg_box" scope="0x558318b2a180" type="name" type-scope="0x558318d97360"/>
+    <token id="0x558318d2ef50" file="air/examples/posix/p0/msg_box.c" linenr="14" column="0" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true"/>
+    <token id="0x558318d9a1d0" file="air/examples/posix/p0/msg_box.c" linenr="14" column="9" str="msg_box_init" scope="0x558318b2a180" type="name" function="0x558318ce5c90"/>
+    <token id="0x558318cdb620" file="air/examples/posix/p0/msg_box.c" linenr="14" column="21" str="(" scope="0x558318b2a180" link="0x558318d572f0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318ad1ff0" file="air/examples/posix/p0/msg_box.c" linenr="14" column="22" str="const" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318d70590" file="air/examples/posix/p0/msg_box.c" linenr="14" column="28" str="int" scope="0x558318b2a180" type="name" isUnsigned="true" isImplicitInt="true"/>
+    <token id="0x558318d55710" file="air/examples/posix/p0/msg_box.c" linenr="14" column="37" str="elt_size" scope="0x558318b2a180" type="name" varId="15" variable="0x558318d754f0" values="0x558318da4eb0" valueType-type="int" valueType-sign="unsigned" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d572f0" file="air/examples/posix/p0/msg_box.c" linenr="14" column="45" str=")" scope="0x558318b2a180" link="0x558318cdb620"/>
+    <token id="0x558318d94820" file="air/examples/posix/p0/msg_box.c" linenr="14" column="47" str="{" scope="0x558318d16c10" link="0x558318daa730"/>
+    <token id="0x558318d81670" file="air/examples/posix/p0/msg_box.c" linenr="15" column="5" str="struct" scope="0x558318d16c10" type="name"/>
+    <token id="0x558318d86cc0" file="air/examples/posix/p0/msg_box.c" linenr="15" column="0" str="s_msg_box" scope="0x558318d16c10" type="name" type-scope="0x558318d97360" astParent="0x558318d86db0"/>
+    <token id="0x558318d86db0" file="air/examples/posix/p0/msg_box.c" linenr="15" column="0" str="*" scope="0x558318d16c10" type="op" isArithmeticalOp="true" astOperand1="0x558318d86cc0" astOperand2="0x558318ce8330"/>
+    <token id="0x558318ce8330" file="air/examples/posix/p0/msg_box.c" linenr="15" column="13" str="mbox" scope="0x558318d16c10" type="name" varId="16" variable="0x558318bc1e80" astParent="0x558318d86db0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318ce8590" file="air/examples/posix/p0/msg_box.c" linenr="15" column="17" str=";" scope="0x558318d16c10"/>
+    <token id="0x558318e1b270" file="air/examples/posix/p0/msg_box.c" linenr="18" column="5" str="if" scope="0x558318d16c10" type="name" astParent="0x558318d70d70"/>
+    <token id="0x558318d70d70" file="air/examples/posix/p0/msg_box.c" linenr="18" column="8" str="(" scope="0x558318d16c10" link="0x558318d80eb0" astOperand1="0x558318e1b270" astOperand2="0x558318aed0b0"/>
+    <token id="0x558318aed0b0" file="air/examples/posix/p0/msg_box.c" linenr="18" column="9" str="!" scope="0x558318d16c10" type="op" isLogicalOp="true" astParent="0x558318d70d70" astOperand1="0x558318b40750" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318d35610" file="air/examples/posix/p0/msg_box.c" linenr="18" column="10" str="(" scope="0x558318d16c10" link="0x558318b23f80"/>
+    <token id="0x558318d70830" file="air/examples/posix/p0/msg_box.c" linenr="18" column="11" str="mbox" scope="0x558318d16c10" type="name" varId="16" variable="0x558318bc1e80" values="0x558318b7c790" astParent="0x558318b40750" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b40750" file="air/examples/posix/p0/msg_box.c" linenr="18" column="15" str="=" scope="0x558318d16c10" type="op" isAssignmentOp="true" astParent="0x558318aed0b0" astOperand1="0x558318d70830" astOperand2="0x558318b1fe00" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b1fe00" file="air/examples/posix/p0/msg_box.c" linenr="18" column="16" str="(" scope="0x558318d16c10" link="0x558318d73540" astParent="0x558318b40750" astOperand1="0x558318d75870" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318d66300" file="air/examples/posix/p0/msg_box.c" linenr="18" column="17" str="struct" scope="0x558318d16c10" type="name"/>
+    <token id="0x558318d7e4c0" file="air/examples/posix/p0/msg_box.c" linenr="18" column="0" str="s_msg_box" scope="0x558318d16c10" type="name" type-scope="0x558318d97360"/>
+    <token id="0x558318d7e5b0" file="air/examples/posix/p0/msg_box.c" linenr="18" column="0" str="*" scope="0x558318d16c10" type="op" isArithmeticalOp="true"/>
+    <token id="0x558318d73540" file="air/examples/posix/p0/msg_box.c" linenr="18" column="24" str=")" scope="0x558318d16c10" link="0x558318b1fe00"/>
+    <token id="0x558318b4bd10" file="air/examples/posix/p0/msg_box.c" linenr="18" column="25" str="malloc" scope="0x558318d16c10" type="name" astParent="0x558318d75870"/>
+    <token id="0x558318d75870" file="air/examples/posix/p0/msg_box.c" linenr="18" column="31" str="(" scope="0x558318d16c10" link="0x558318a99550" astParent="0x558318b1fe00" astOperand1="0x558318b4bd10" astOperand2="0x558318d112c0" valueType-type="void" valueType-pointer="1" valueType-reference="None" valueType-originalTypeName="void *"/>
+    <token id="0x558318db1670" file="air/examples/posix/p0/msg_box.c" linenr="18" column="32" str="sizeof" scope="0x558318d16c10" type="name" astParent="0x558318d112c0"/>
+    <token id="0x558318d112c0" file="air/examples/posix/p0/msg_box.c" linenr="18" column="38" str="(" scope="0x558318d16c10" link="0x558318bc3aa0" values="0x558318acd2d0" astParent="0x558318d75870" astOperand1="0x558318db1670" astOperand2="0x558318ab0910" valueType-type="long" valueType-sign="unsigned" valueType-reference="None" valueType-originalTypeName="size_t"/>
+    <token id="0x558318d73c40" file="air/examples/posix/p0/msg_box.c" linenr="18" column="39" str="struct" scope="0x558318d16c10" type="name" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318ab0910" file="air/examples/posix/p0/msg_box.c" linenr="18" column="46" str="s_msg_box" scope="0x558318d16c10" type="name" type-scope="0x558318d97360" astParent="0x558318d112c0"/>
+    <token id="0x558318bc3aa0" file="air/examples/posix/p0/msg_box.c" linenr="18" column="55" str=")" scope="0x558318d16c10" link="0x558318d112c0"/>
+    <token id="0x558318a99550" file="air/examples/posix/p0/msg_box.c" linenr="18" column="56" str=")" scope="0x558318d16c10" link="0x558318d75870"/>
+    <token id="0x558318b23f80" file="air/examples/posix/p0/msg_box.c" linenr="18" column="57" str=")" scope="0x558318d16c10" link="0x558318d35610"/>
+    <token id="0x558318d80eb0" file="air/examples/posix/p0/msg_box.c" linenr="18" column="58" str=")" scope="0x558318d16c10" link="0x558318d70d70"/>
+    <token id="0x558318d80c00" file="air/examples/posix/p0/msg_box.c" linenr="18" column="0" str="{" scope="0x558318d76260" link="0x558318bb0880"/>
+    <token id="0x558318aecb90" file="air/examples/posix/p0/msg_box.c" linenr="19" column="7" str="return" scope="0x558318d76260" type="name" astOperand1="0x558318ddd710" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318ddd710" file="air/examples/posix/p0/msg_box.c" linenr="19" column="14" str="0" scope="0x558318d76260" type="number" isInt="true" values="0x558318b40630" astParent="0x558318aecb90" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d6f2f0" file="air/examples/posix/p0/msg_box.c" linenr="19" column="15" str=";" scope="0x558318d76260"/>
+    <token id="0x558318bb0880" file="air/examples/posix/p0/msg_box.c" linenr="19" column="0" str="}" scope="0x558318d76260" link="0x558318d80c00"/>
+    <token id="0x558318ae17a0" file="air/examples/posix/p0/msg_box.c" linenr="22" column="5" str="if" scope="0x558318d16c10" type="name" astParent="0x558318dd8990"/>
+    <token id="0x558318dd8990" file="air/examples/posix/p0/msg_box.c" linenr="22" column="8" str="(" scope="0x558318d16c10" link="0x558318b6e660" astOperand1="0x558318ae17a0" astOperand2="0x558318d91970"/>
+    <token id="0x558318d91970" file="air/examples/posix/p0/msg_box.c" linenr="22" column="9" str="!" scope="0x558318d16c10" type="op" isLogicalOp="true" astParent="0x558318dd8990" astOperand1="0x558318ce8c60" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318ae7500" file="air/examples/posix/p0/msg_box.c" linenr="22" column="10" str="(" scope="0x558318d16c10" link="0x558318b97f80"/>
+    <token id="0x558318d75da0" file="air/examples/posix/p0/msg_box.c" linenr="22" column="11" str="(" scope="0x558318d16c10" link="0x558318b7d930"/>
+    <token id="0x558318b312a0" file="air/examples/posix/p0/msg_box.c" linenr="22" column="12" str="*" scope="0x558318d16c10" type="op" isArithmeticalOp="true" astParent="0x558318b2fdb0" astOperand1="0x558318ab7350" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318ab7350" file="air/examples/posix/p0/msg_box.c" linenr="22" column="13" str="mbox" scope="0x558318d16c10" type="name" varId="16" variable="0x558318bc1e80" astParent="0x558318b312a0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b7d930" file="air/examples/posix/p0/msg_box.c" linenr="22" column="17" str=")" scope="0x558318d16c10" link="0x558318d75da0"/>
+    <token id="0x558318b2fdb0" file="air/examples/posix/p0/msg_box.c" linenr="22" column="18" str="." scope="0x558318d16c10" astParent="0x558318ce8c60" astOperand1="0x558318b312a0" astOperand2="0x558318b54f90" valueType-type="char" valueType-sign="signed" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318b54f90" file="air/examples/posix/p0/msg_box.c" linenr="22" column="19" str="buf" scope="0x558318d16c10" type="name" varId="17" astParent="0x558318b2fdb0"/>
+    <token id="0x558318ce8c60" file="air/examples/posix/p0/msg_box.c" linenr="22" column="22" str="=" scope="0x558318d16c10" type="op" isAssignmentOp="true" astParent="0x558318d91970" astOperand1="0x558318b2fdb0" astOperand2="0x558318b5ed70" valueType-type="char" valueType-sign="signed" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318b5ed70" file="air/examples/posix/p0/msg_box.c" linenr="22" column="23" str="(" scope="0x558318d16c10" link="0x558318d330f0" astParent="0x558318ce8c60" astOperand1="0x558318b10220" valueType-type="char" valueType-sign="signed" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318d6cb20" file="air/examples/posix/p0/msg_box.c" linenr="22" column="24" str="char" scope="0x558318d16c10" type="name"/>
+    <token id="0x558318bb3060" file="air/examples/posix/p0/msg_box.c" linenr="22" column="29" str="*" scope="0x558318d16c10" type="op" isArithmeticalOp="true"/>
+    <token id="0x558318d330f0" file="air/examples/posix/p0/msg_box.c" linenr="22" column="30" str=")" scope="0x558318d16c10" link="0x558318b5ed70"/>
+    <token id="0x558318d696a0" file="air/examples/posix/p0/msg_box.c" linenr="22" column="31" str="malloc" scope="0x558318d16c10" type="name" astParent="0x558318b10220"/>
+    <token id="0x558318b10220" file="air/examples/posix/p0/msg_box.c" linenr="22" column="37" str="(" scope="0x558318d16c10" link="0x558318b7ce70" astParent="0x558318b5ed70" astOperand1="0x558318d696a0" astOperand2="0x558318ad4c90" valueType-type="void" valueType-pointer="1" valueType-reference="None" valueType-originalTypeName="void *"/>
+    <token id="0x558318ad4c90" file="air/examples/posix/p0/msg_box.c" linenr="22" column="38" str="elt_size" scope="0x558318d16c10" type="name" varId="15" variable="0x558318d754f0" values="0x558318bb7de0" astParent="0x558318b10220" valueType-type="int" valueType-sign="unsigned" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b7ce70" file="air/examples/posix/p0/msg_box.c" linenr="22" column="46" str=")" scope="0x558318d16c10" link="0x558318b10220"/>
+    <token id="0x558318b97f80" file="air/examples/posix/p0/msg_box.c" linenr="22" column="47" str=")" scope="0x558318d16c10" link="0x558318ae7500"/>
+    <token id="0x558318b6e660" file="air/examples/posix/p0/msg_box.c" linenr="22" column="48" str=")" scope="0x558318d16c10" link="0x558318dd8990"/>
+    <token id="0x558318bb0970" file="air/examples/posix/p0/msg_box.c" linenr="22" column="0" str="{" scope="0x558318d169b0" link="0x558318b76100"/>
+    <token id="0x558318d337c0" file="air/examples/posix/p0/msg_box.c" linenr="23" column="7" str="return" scope="0x558318d169b0" type="name" astOperand1="0x558318aab0b0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318aab0b0" file="air/examples/posix/p0/msg_box.c" linenr="23" column="14" str="0" scope="0x558318d169b0" type="number" isInt="true" values="0x558318ddd7f0" astParent="0x558318d337c0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b5c090" file="air/examples/posix/p0/msg_box.c" linenr="23" column="15" str=";" scope="0x558318d169b0"/>
+    <token id="0x558318b76100" file="air/examples/posix/p0/msg_box.c" linenr="23" column="0" str="}" scope="0x558318d169b0" link="0x558318bb0970"/>
+    <token id="0x558318ae1740" file="air/examples/posix/p0/msg_box.c" linenr="25" column="5" str="(" scope="0x558318d16c10" link="0x558318cd1b20"/>
+    <token id="0x558318dd8930" file="air/examples/posix/p0/msg_box.c" linenr="25" column="6" str="*" scope="0x558318d16c10" type="op" isArithmeticalOp="true" astParent="0x558318da2e90" astOperand1="0x558318d91910" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318d91910" file="air/examples/posix/p0/msg_box.c" linenr="25" column="7" str="mbox" scope="0x558318d16c10" type="name" varId="16" variable="0x558318bc1e80" astParent="0x558318dd8930" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318cd1b20" file="air/examples/posix/p0/msg_box.c" linenr="25" column="11" str=")" scope="0x558318d16c10" link="0x558318ae1740"/>
+    <token id="0x558318da2e90" file="air/examples/posix/p0/msg_box.c" linenr="25" column="12" str="." scope="0x558318d16c10" astParent="0x558318b2a060" astOperand1="0x558318dd8930" astOperand2="0x558318bb0560" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318bb0560" file="air/examples/posix/p0/msg_box.c" linenr="25" column="13" str="empty" scope="0x558318d16c10" type="name" varId="18" astParent="0x558318da2e90"/>
+    <token id="0x558318b2a060" file="air/examples/posix/p0/msg_box.c" linenr="25" column="19" str="=" scope="0x558318d16c10" type="op" isAssignmentOp="true" astOperand1="0x558318da2e90" astOperand2="0x558318b7d8d0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318b7d8d0" file="air/examples/posix/p0/msg_box.c" linenr="25" column="21" str="true" scope="0x558318d16c10" type="name" astParent="0x558318b2a060" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318b5ed10" file="air/examples/posix/p0/msg_box.c" linenr="25" column="25" str=";" scope="0x558318d16c10"/>
+    <token id="0x558318d6cac0" file="air/examples/posix/p0/msg_box.c" linenr="26" column="5" str="(" scope="0x558318d16c10" link="0x558318ce8c00"/>
+    <token id="0x558318bb3000" file="air/examples/posix/p0/msg_box.c" linenr="26" column="6" str="*" scope="0x558318d16c10" type="op" isArithmeticalOp="true" astParent="0x558318b54f30" astOperand1="0x558318d33090" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318d33090" file="air/examples/posix/p0/msg_box.c" linenr="26" column="7" str="mbox" scope="0x558318d16c10" type="name" varId="16" variable="0x558318bc1e80" astParent="0x558318bb3000" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318ce8c00" file="air/examples/posix/p0/msg_box.c" linenr="26" column="11" str=")" scope="0x558318d16c10" link="0x558318d6cac0"/>
+    <token id="0x558318b54f30" file="air/examples/posix/p0/msg_box.c" linenr="26" column="12" str="." scope="0x558318d16c10" values="0x558318d734a0" astParent="0x558318d922a0" astOperand1="0x558318bb3000" astOperand2="0x558318b2fcc0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b2fcc0" file="air/examples/posix/p0/msg_box.c" linenr="26" column="13" str="elt_size" scope="0x558318d16c10" type="name" varId="19" astParent="0x558318b54f30"/>
+    <token id="0x558318d922a0" file="air/examples/posix/p0/msg_box.c" linenr="26" column="21" str="=" scope="0x558318d16c10" type="op" isAssignmentOp="true" values="0x558318ddd5b0" astOperand1="0x558318b54f30" astOperand2="0x558318d69520" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d69520" file="air/examples/posix/p0/msg_box.c" linenr="26" column="22" str="elt_size" scope="0x558318d16c10" type="name" varId="15" variable="0x558318d754f0" values="0x558318b12ea0" astParent="0x558318d922a0" valueType-type="int" valueType-sign="unsigned" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b6b150" file="air/examples/posix/p0/msg_box.c" linenr="26" column="30" str=";" scope="0x558318d16c10"/>
+    <token id="0x558318aecf30" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="if" scope="0x558318d16c10" type="name" isExpandedMacro="true" astParent="0x558318b23960"/>
+    <token id="0x558318b23960" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="(" scope="0x558318d16c10" isExpandedMacro="true" link="0x558318c99e10" astOperand1="0x558318aecf30" astOperand2="0x558318d94410"/>
+    <token id="0x558318b6e4e0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="pthread_mutex_init" scope="0x558318d16c10" type="name" astParent="0x558318da81f0"/>
+    <token id="0x558318da81f0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="(" scope="0x558318d16c10" link="0x558318b5b450" astParent="0x558318d94410" astOperand1="0x558318b6e4e0" astOperand2="0x558318d07f30"/>
+    <token id="0x558318b97e00" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="&amp;" scope="0x558318d16c10" type="op" values="0x558318d9c9e0" astParent="0x558318d07f30" astOperand1="0x558318afb540"/>
+    <token id="0x558318d51ac0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="(" scope="0x558318d16c10" link="0x558318b72bf0"/>
+    <token id="0x558318ac1310" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="(" scope="0x558318d16c10" link="0x558318b36ab0"/>
+    <token id="0x558318b31f90" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="*" scope="0x558318d16c10" type="op" isArithmeticalOp="true" astParent="0x558318afb540" astOperand1="0x558318bb06a0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318bb06a0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="mbox" scope="0x558318d16c10" type="name" varId="16" variable="0x558318bc1e80" astParent="0x558318b31f90" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b36ab0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str=")" scope="0x558318d16c10" link="0x558318ac1310"/>
+    <token id="0x558318afb540" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="." scope="0x558318d16c10" astParent="0x558318b97e00" astOperand1="0x558318b31f90" astOperand2="0x558318d7f590"/>
+    <token id="0x558318d7f590" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="mutex" scope="0x558318d16c10" type="name" varId="20" astParent="0x558318afb540"/>
+    <token id="0x558318b72bf0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str=")" scope="0x558318d16c10" link="0x558318d51ac0"/>
+    <token id="0x558318d07f30" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="," scope="0x558318d16c10" astParent="0x558318da81f0" astOperand1="0x558318b97e00" astOperand2="0x558318bb41c0"/>
+    <token id="0x558318bb41c0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="0" scope="0x558318d16c10" type="number" isInt="true" values="0x558318b95f80" astParent="0x558318d07f30" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b5b450" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str=")" scope="0x558318d16c10" link="0x558318da81f0"/>
+    <token id="0x558318d94410" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="!=" scope="0x558318d16c10" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x558318b23960" astOperand1="0x558318da81f0" astOperand2="0x558318b4a970" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318b4a970" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="0" scope="0x558318d16c10" type="number" isInt="true" isExpandedMacro="true" values="0x558318b7f990" astParent="0x558318d94410" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318c99e10" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str=")" scope="0x558318d16c10" isExpandedMacro="true" link="0x558318b23960"/>
+    <token id="0x558318d942e0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="{" scope="0x558318d2f530" isExpandedMacro="true" link="0x558318d50130"/>
+    <token id="0x558318af90d0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="printf" scope="0x558318d2f530" type="name" isExpandedMacro="true" astParent="0x558318ac07c0"/>
+    <token id="0x558318ac07c0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="(" scope="0x558318d2f530" isExpandedMacro="true" link="0x558318d25f90" astOperand1="0x558318af90d0" astOperand2="0x558318cdb9e0" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
+    <token id="0x558318ddc5a0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="&quot;%s %d:\n&quot;" scope="0x558318d2f530" type="string" strlen="7" isExpandedMacro="true" values="0x558318b547c0" astParent="0x558318b811f0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b811f0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="," scope="0x558318d2f530" isExpandedMacro="true" astParent="0x558318cdb9e0" astOperand1="0x558318ddc5a0" astOperand2="0x558318bc41b0"/>
+    <token id="0x558318bc41b0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="&quot;air/examples/posix/p0/msg_box.c&quot;" scope="0x558318d2f530" type="string" strlen="31" values="0x558318dcc720" astParent="0x558318b811f0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318cdb9e0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="," scope="0x558318d2f530" isExpandedMacro="true" astParent="0x558318ac07c0" astOperand1="0x558318b811f0" astOperand2="0x558318b0f930"/>
+    <token id="0x558318b0f930" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="28" scope="0x558318d2f530" type="number" isInt="true" values="0x558318b82cc0" astParent="0x558318cdb9e0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d25f90" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str=")" scope="0x558318d2f530" isExpandedMacro="true" link="0x558318ac07c0"/>
+    <token id="0x558318ae5c50" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str=";" scope="0x558318d2f530" isExpandedMacro="true"/>
+    <token id="0x558318abb530" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="perror" scope="0x558318d2f530" type="name" isExpandedMacro="true" astParent="0x558318d92120"/>
+    <token id="0x558318d92120" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="(" scope="0x558318d2f530" isExpandedMacro="true" link="0x558318d56db0" astOperand1="0x558318abb530" astOperand2="0x558318ce5640" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
+    <token id="0x558318ce5640" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="&quot;[ERROR]&quot;" scope="0x558318d2f530" type="string" strlen="7" isExpandedMacro="true" values="0x558318b1b760" astParent="0x558318d92120" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d56db0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str=")" scope="0x558318d2f530" isExpandedMacro="true" link="0x558318d92120"/>
+    <token id="0x558318b7a4e0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str=";" scope="0x558318d2f530" isExpandedMacro="true"/>
+    <token id="0x558318d50130" file="air/examples/posix/p0/msg_box.c" linenr="28" column="5" str="}" scope="0x558318d2f530" isExpandedMacro="true" link="0x558318d942e0"/>
+    <token id="0x558318bb6ec0" file="air/examples/posix/p0/msg_box.c" linenr="28" column="54" str=";" scope="0x558318d16c10"/>
+    <token id="0x558318ad4830" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="if" scope="0x558318d16c10" type="name" isExpandedMacro="true" astParent="0x558318d7bf20"/>
+    <token id="0x558318d7bf20" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="(" scope="0x558318d16c10" isExpandedMacro="true" link="0x558318ba57c0" astOperand1="0x558318ad4830" astOperand2="0x558318b96e60"/>
+    <token id="0x558318b04140" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="pthread_cond_init" scope="0x558318d16c10" type="name" astParent="0x558318d51ef0"/>
+    <token id="0x558318d51ef0" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="(" scope="0x558318d16c10" link="0x558318ba1170" astParent="0x558318b96e60" astOperand1="0x558318b04140" astOperand2="0x558318d5adb0"/>
+    <token id="0x558318d33870" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="&amp;" scope="0x558318d16c10" type="op" values="0x558318b48f00" astParent="0x558318d5adb0" astOperand1="0x558318b53900"/>
+    <token id="0x558318b87630" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="(" scope="0x558318d16c10" link="0x558318b7d9e0"/>
+    <token id="0x558318d10cf0" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="(" scope="0x558318d16c10" link="0x558318cdb060"/>
+    <token id="0x558318d83df0" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="*" scope="0x558318d16c10" type="op" isArithmeticalOp="true" astParent="0x558318b53900" astOperand1="0x558318b8f6e0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b8f6e0" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="mbox" scope="0x558318d16c10" type="name" varId="16" variable="0x558318bc1e80" astParent="0x558318d83df0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318cdb060" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str=")" scope="0x558318d16c10" link="0x558318d10cf0"/>
+    <token id="0x558318b53900" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="." scope="0x558318d16c10" astParent="0x558318d33870" astOperand1="0x558318d83df0" astOperand2="0x558318b9d5a0"/>
+    <token id="0x558318b9d5a0" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="not_empty" scope="0x558318d16c10" type="name" varId="21" astParent="0x558318b53900"/>
+    <token id="0x558318b7d9e0" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str=")" scope="0x558318d16c10" link="0x558318b87630"/>
+    <token id="0x558318d5adb0" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="," scope="0x558318d16c10" astParent="0x558318d51ef0" astOperand1="0x558318d33870" astOperand2="0x558318d76e80"/>
+    <token id="0x558318d76e80" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="0" scope="0x558318d16c10" type="number" isInt="true" values="0x558318b3e190" astParent="0x558318d5adb0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318ba1170" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str=")" scope="0x558318d16c10" link="0x558318d51ef0"/>
+    <token id="0x558318b96e60" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="!=" scope="0x558318d16c10" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x558318d7bf20" astOperand1="0x558318d51ef0" astOperand2="0x558318b4b650" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318b4b650" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="0" scope="0x558318d16c10" type="number" isInt="true" isExpandedMacro="true" values="0x558318b56230" astParent="0x558318b96e60" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318ba57c0" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str=")" scope="0x558318d16c10" isExpandedMacro="true" link="0x558318d7bf20"/>
+    <token id="0x558318ceaf80" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="{" scope="0x558318da8f00" isExpandedMacro="true" link="0x558318d7a330"/>
+    <token id="0x558318da28d0" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="printf" scope="0x558318da8f00" type="name" isExpandedMacro="true" astParent="0x558318b11000"/>
+    <token id="0x558318b11000" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="(" scope="0x558318da8f00" isExpandedMacro="true" link="0x558318b0fc10" astOperand1="0x558318da28d0" astOperand2="0x558318acfb40" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
+    <token id="0x558318d34720" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="&quot;%s %d:\n&quot;" scope="0x558318da8f00" type="string" strlen="7" isExpandedMacro="true" values="0x558318d9d720" astParent="0x558318d34780" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d34780" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="," scope="0x558318da8f00" isExpandedMacro="true" astParent="0x558318acfb40" astOperand1="0x558318d34720" astOperand2="0x558318b24920"/>
+    <token id="0x558318b24920" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="&quot;air/examples/posix/p0/msg_box.c&quot;" scope="0x558318da8f00" type="string" strlen="31" values="0x558318d91350" astParent="0x558318d34780" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318acfb40" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="," scope="0x558318da8f00" isExpandedMacro="true" astParent="0x558318b11000" astOperand1="0x558318d34780" astOperand2="0x558318b98ff0"/>
+    <token id="0x558318b98ff0" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="29" scope="0x558318da8f00" type="number" isInt="true" values="0x558318dd53f0" astParent="0x558318acfb40" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b0fc10" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str=")" scope="0x558318da8f00" isExpandedMacro="true" link="0x558318b11000"/>
+    <token id="0x558318b41d30" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str=";" scope="0x558318da8f00" isExpandedMacro="true"/>
+    <token id="0x558318d32d10" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="perror" scope="0x558318da8f00" type="name" isExpandedMacro="true" astParent="0x558318b8c8e0"/>
+    <token id="0x558318b8c8e0" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="(" scope="0x558318da8f00" isExpandedMacro="true" link="0x558318b17f80" astOperand1="0x558318d32d10" astOperand2="0x558318d4c060" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
+    <token id="0x558318d4c060" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="&quot;[ERROR]&quot;" scope="0x558318da8f00" type="string" strlen="7" isExpandedMacro="true" values="0x558318d666c0" astParent="0x558318b8c8e0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b17f80" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str=")" scope="0x558318da8f00" isExpandedMacro="true" link="0x558318b8c8e0"/>
+    <token id="0x558318cdbe70" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str=";" scope="0x558318da8f00" isExpandedMacro="true"/>
+    <token id="0x558318d7a330" file="air/examples/posix/p0/msg_box.c" linenr="29" column="5" str="}" scope="0x558318da8f00" isExpandedMacro="true" link="0x558318ceaf80"/>
+    <token id="0x558318d7a390" file="air/examples/posix/p0/msg_box.c" linenr="29" column="58" str=";" scope="0x558318d16c10"/>
+    <token id="0x558318cd8990" file="air/examples/posix/p0/msg_box.c" linenr="31" column="5" str="return" scope="0x558318d16c10" type="name" astOperand1="0x558318d59f30" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318d59f30" file="air/examples/posix/p0/msg_box.c" linenr="31" column="12" str="mbox" scope="0x558318d16c10" type="name" varId="16" variable="0x558318bc1e80" astParent="0x558318cd8990" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318aaafc0" file="air/examples/posix/p0/msg_box.c" linenr="31" column="16" str=";" scope="0x558318d16c10"/>
+    <token id="0x558318daa730" file="air/examples/posix/p0/msg_box.c" linenr="32" column="1" str="}" scope="0x558318d16c10" link="0x558318d94820"/>
+    <token id="0x558318d33640" file="air/examples/posix/p0/msg_box.c" linenr="35" column="1" str="int" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318d9a0a0" file="air/examples/posix/p0/msg_box.c" linenr="35" column="5" str="msg_box_receive" scope="0x558318b2a180" type="name" function="0x558318d55870"/>
+    <token id="0x558318bb9eb0" file="air/examples/posix/p0/msg_box.c" linenr="35" column="20" str="(" scope="0x558318b2a180" link="0x558318b044a0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318af12c0" file="air/examples/posix/p0/msg_box.c" linenr="35" column="21" str="struct" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318b9d210" file="air/examples/posix/p0/msg_box.c" linenr="35" column="0" str="s_msg_box" scope="0x558318b2a180" type="name" type-scope="0x558318d97360" astParent="0x558318b9d300"/>
+    <token id="0x558318b9d300" file="air/examples/posix/p0/msg_box.c" linenr="35" column="0" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318ad4b70" astOperand1="0x558318b9d210" astOperand2="0x558318ad4b10"/>
+    <token id="0x558318ad4b10" file="air/examples/posix/p0/msg_box.c" linenr="35" column="29" str="mbox" scope="0x558318b2a180" type="name" varId="22" variable="0x558318acfca0" astParent="0x558318b9d300" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318ad4b70" file="air/examples/posix/p0/msg_box.c" linenr="35" column="33" str="," scope="0x558318b2a180" astOperand1="0x558318b9d300" astOperand2="0x558318b633c0"/>
+    <token id="0x558318d8b820" file="air/examples/posix/p0/msg_box.c" linenr="35" column="35" str="char" scope="0x558318b2a180" type="name" astParent="0x558318b633c0"/>
+    <token id="0x558318b633c0" file="air/examples/posix/p0/msg_box.c" linenr="35" column="40" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318ad4b70" astOperand1="0x558318d8b820" astOperand2="0x558318b100a0"/>
+    <token id="0x558318b100a0" file="air/examples/posix/p0/msg_box.c" linenr="35" column="41" str="buf" scope="0x558318b2a180" type="name" varId="23" variable="0x558318b89310" astParent="0x558318b633c0" valueType-type="char" valueType-sign="signed" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318b044a0" file="air/examples/posix/p0/msg_box.c" linenr="35" column="44" str=")" scope="0x558318b2a180" link="0x558318bb9eb0"/>
+    <token id="0x558318d9dbd0" file="air/examples/posix/p0/msg_box.c" linenr="35" column="46" str="{" scope="0x558318d120e0" link="0x558318dd4c50"/>
+    <token id="0x558318b12770" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="if" scope="0x558318d120e0" type="name" isExpandedMacro="true" astParent="0x558318dd52e0"/>
+    <token id="0x558318dd52e0" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="(" scope="0x558318d120e0" isExpandedMacro="true" link="0x558318b7bc10" astOperand1="0x558318b12770" astOperand2="0x558318d111b0"/>
+    <token id="0x558318af0eb0" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="pthread_mutex_lock" scope="0x558318d120e0" type="name" astParent="0x558318b245e0"/>
+    <token id="0x558318b245e0" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="(" scope="0x558318d120e0" link="0x558318b17e00" astParent="0x558318d111b0" astOperand1="0x558318af0eb0" astOperand2="0x558318b40390"/>
+    <token id="0x558318b40390" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="&amp;" scope="0x558318d120e0" type="op" values="0x558318d51960" astParent="0x558318b245e0" astOperand1="0x558318d17e80"/>
+    <token id="0x558318d3a920" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="(" scope="0x558318d120e0" link="0x558318ad4760"/>
+    <token id="0x558318bace70" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="*" scope="0x558318d120e0" type="op" isArithmeticalOp="true" astParent="0x558318d17e80" astOperand1="0x558318b0f860" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b0f860" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="mbox" scope="0x558318d120e0" type="name" varId="22" variable="0x558318acfca0" astParent="0x558318bace70" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318ad4760" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str=")" scope="0x558318d120e0" link="0x558318d3a920"/>
+    <token id="0x558318d17e80" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="." scope="0x558318d120e0" astParent="0x558318b40390" astOperand1="0x558318bace70" astOperand2="0x558318ce0380"/>
+    <token id="0x558318ce0380" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="mutex" scope="0x558318d120e0" type="name" varId="24" astParent="0x558318d17e80"/>
+    <token id="0x558318b17e00" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str=")" scope="0x558318d120e0" link="0x558318b245e0"/>
+    <token id="0x558318d111b0" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="!=" scope="0x558318d120e0" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x558318dd52e0" astOperand1="0x558318b245e0" astOperand2="0x558318b2b300" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318b2b300" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="0" scope="0x558318d120e0" type="number" isInt="true" isExpandedMacro="true" values="0x558318b92b30" astParent="0x558318d111b0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b7bc10" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str=")" scope="0x558318d120e0" isExpandedMacro="true" link="0x558318dd52e0"/>
+    <token id="0x558318cd8510" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="{" scope="0x558318cc7bf0" isExpandedMacro="true" link="0x558318cde1d0"/>
+    <token id="0x558318b69450" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="printf" scope="0x558318cc7bf0" type="name" isExpandedMacro="true" astParent="0x558318b7bfa0"/>
+    <token id="0x558318b7bfa0" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="(" scope="0x558318cc7bf0" isExpandedMacro="true" link="0x558318b67330" astOperand1="0x558318b69450" astOperand2="0x558318ae0000" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
+    <token id="0x558318dddaf0" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="&quot;%s %d:\n&quot;" scope="0x558318cc7bf0" type="string" strlen="7" isExpandedMacro="true" values="0x558318db1630" astParent="0x558318d7d720" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d7d720" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="," scope="0x558318cc7bf0" isExpandedMacro="true" astParent="0x558318ae0000" astOperand1="0x558318dddaf0" astOperand2="0x558318ad43f0"/>
+    <token id="0x558318ad43f0" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="&quot;air/examples/posix/p0/msg_box.c&quot;" scope="0x558318cc7bf0" type="string" strlen="31" values="0x558318b40860" astParent="0x558318d7d720" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318ae0000" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="," scope="0x558318cc7bf0" isExpandedMacro="true" astParent="0x558318b7bfa0" astOperand1="0x558318d7d720" astOperand2="0x558318ae80c0"/>
+    <token id="0x558318ae80c0" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="37" scope="0x558318cc7bf0" type="number" isInt="true" values="0x558318b96380" astParent="0x558318ae0000" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b67330" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str=")" scope="0x558318cc7bf0" isExpandedMacro="true" link="0x558318b7bfa0"/>
+    <token id="0x558318d16780" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str=";" scope="0x558318cc7bf0" isExpandedMacro="true"/>
+    <token id="0x558318d167e0" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="perror" scope="0x558318cc7bf0" type="name" isExpandedMacro="true" astParent="0x558318b7c1a0"/>
+    <token id="0x558318b7c1a0" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="(" scope="0x558318cc7bf0" isExpandedMacro="true" link="0x558318d765a0" astOperand1="0x558318d167e0" astOperand2="0x558318ae8120" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
+    <token id="0x558318ae8120" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="&quot;[ERROR]&quot;" scope="0x558318cc7bf0" type="string" strlen="7" isExpandedMacro="true" values="0x558318d35330" astParent="0x558318b7c1a0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d765a0" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str=")" scope="0x558318cc7bf0" isExpandedMacro="true" link="0x558318b7c1a0"/>
+    <token id="0x558318cde0f0" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str=";" scope="0x558318cc7bf0" isExpandedMacro="true"/>
+    <token id="0x558318cde1d0" file="air/examples/posix/p0/msg_box.c" linenr="37" column="3" str="}" scope="0x558318cc7bf0" isExpandedMacro="true" link="0x558318cd8510"/>
+    <token id="0x558318cde2b0" file="air/examples/posix/p0/msg_box.c" linenr="37" column="49" str=";" scope="0x558318d120e0"/>
+    <token id="0x558318bad1e0" file="air/examples/posix/p0/msg_box.c" linenr="39" column="3" str="while" scope="0x558318d120e0" type="name" astParent="0x558318bad130"/>
+    <token id="0x558318bad130" file="air/examples/posix/p0/msg_box.c" linenr="39" column="9" str="(" scope="0x558318d120e0" link="0x558318cbab10" astOperand1="0x558318bad1e0" astOperand2="0x558318d81320"/>
+    <token id="0x558318bad080" file="air/examples/posix/p0/msg_box.c" linenr="39" column="10" str="(" scope="0x558318d120e0" link="0x558318abd260"/>
+    <token id="0x558318daa6d0" file="air/examples/posix/p0/msg_box.c" linenr="39" column="11" str="*" scope="0x558318d120e0" type="op" isArithmeticalOp="true" astParent="0x558318d81320" astOperand1="0x558318abd310" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318abd310" file="air/examples/posix/p0/msg_box.c" linenr="39" column="12" str="mbox" scope="0x558318d120e0" type="name" varId="22" variable="0x558318acfca0" astParent="0x558318daa6d0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318abd260" file="air/examples/posix/p0/msg_box.c" linenr="39" column="16" str=")" scope="0x558318d120e0" link="0x558318bad080"/>
+    <token id="0x558318d81320" file="air/examples/posix/p0/msg_box.c" linenr="39" column="17" str="." scope="0x558318d120e0" astParent="0x558318bad130" astOperand1="0x558318daa6d0" astOperand2="0x558318b5c030" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318b5c030" file="air/examples/posix/p0/msg_box.c" linenr="39" column="18" str="empty" scope="0x558318d120e0" type="name" varId="25" astParent="0x558318d81320"/>
+    <token id="0x558318cbab10" file="air/examples/posix/p0/msg_box.c" linenr="39" column="23" str=")" scope="0x558318d120e0" link="0x558318bad130"/>
+    <token id="0x558318b20a90" file="air/examples/posix/p0/msg_box.c" linenr="39" column="25" str="{" scope="0x558318adea00" link="0x558318b7a660"/>
+    <token id="0x558318cd27a0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="if" scope="0x558318adea00" type="name" isExpandedMacro="true" astParent="0x558318cbac00"/>
+    <token id="0x558318cbac00" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="(" scope="0x558318adea00" isExpandedMacro="true" link="0x558318b85590" astOperand1="0x558318cd27a0" astOperand2="0x558318b95620"/>
+    <token id="0x558318ccc2a0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="pthread_cond_wait" scope="0x558318adea00" type="name" astParent="0x558318d615a0"/>
+    <token id="0x558318d615a0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="(" scope="0x558318adea00" link="0x558318b95540" astParent="0x558318b95620" astOperand1="0x558318ccc2a0" astOperand2="0x558318b847b0"/>
+    <token id="0x558318b7fb30" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="&amp;" scope="0x558318adea00" type="op" values="0x558318d54690" astParent="0x558318b847b0" astOperand1="0x558318d18840"/>
+    <token id="0x558318b7fc10" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="(" scope="0x558318adea00" link="0x558318da8780"/>
+    <token id="0x558318b641d0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="*" scope="0x558318adea00" type="op" isArithmeticalOp="true" astParent="0x558318d18840" astOperand1="0x558318da86a0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318da86a0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="mbox" scope="0x558318adea00" type="name" varId="22" variable="0x558318acfca0" astParent="0x558318b641d0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318da8780" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str=")" scope="0x558318adea00" link="0x558318b7fc10"/>
+    <token id="0x558318d18840" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="." scope="0x558318adea00" astParent="0x558318b7fb30" astOperand1="0x558318b641d0" astOperand2="0x558318b846d0"/>
+    <token id="0x558318b846d0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="not_empty" scope="0x558318adea00" type="name" varId="26" astParent="0x558318d18840"/>
+    <token id="0x558318b847b0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="," scope="0x558318adea00" astParent="0x558318d615a0" astOperand1="0x558318b7fb30" astOperand2="0x558318b920f0"/>
+    <token id="0x558318b920f0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="&amp;" scope="0x558318adea00" type="op" values="0x558318c9a410" astParent="0x558318b847b0" astOperand1="0x558318b38960"/>
+    <token id="0x558318ce57d0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="(" scope="0x558318adea00" link="0x558318b38880"/>
+    <token id="0x558318ce58b0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="*" scope="0x558318adea00" type="op" isArithmeticalOp="true" astParent="0x558318b38960" astOperand1="0x558318b14ab0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b14ab0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="mbox" scope="0x558318adea00" type="name" varId="22" variable="0x558318acfca0" astParent="0x558318ce58b0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b38880" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str=")" scope="0x558318adea00" link="0x558318ce57d0"/>
+    <token id="0x558318b38960" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="." scope="0x558318adea00" astParent="0x558318b920f0" astOperand1="0x558318ce58b0" astOperand2="0x558318b56590"/>
+    <token id="0x558318b56590" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="mutex" scope="0x558318adea00" type="name" varId="24" astParent="0x558318b38960"/>
+    <token id="0x558318b95540" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str=")" scope="0x558318adea00" link="0x558318d615a0"/>
+    <token id="0x558318b95620" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="!=" scope="0x558318adea00" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x558318cbac00" astOperand1="0x558318d615a0" astOperand2="0x558318b854b0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318b854b0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="0" scope="0x558318adea00" type="number" isInt="true" isExpandedMacro="true" values="0x558318d37510" astParent="0x558318b95620" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b85590" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str=")" scope="0x558318adea00" isExpandedMacro="true" link="0x558318cbac00"/>
+    <token id="0x558318babc40" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="{" scope="0x558318b2d2f0" isExpandedMacro="true" link="0x558318e1a530"/>
+    <token id="0x558318abe3b0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="printf" scope="0x558318b2d2f0" type="name" isExpandedMacro="true" astParent="0x558318abe490"/>
+    <token id="0x558318abe490" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="(" scope="0x558318b2d2f0" isExpandedMacro="true" link="0x558318cdad90" astOperand1="0x558318abe3b0" astOperand2="0x558318cdaca0" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
+    <token id="0x558318bc2270" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="&quot;%s %d:\n&quot;" scope="0x558318b2d2f0" type="string" strlen="7" isExpandedMacro="true" values="0x558318b03e80" astParent="0x558318bbf010" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318bbf010" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="," scope="0x558318b2d2f0" isExpandedMacro="true" astParent="0x558318cdaca0" astOperand1="0x558318bc2270" astOperand2="0x558318bbf0f0"/>
+    <token id="0x558318bbf0f0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="&quot;air/examples/posix/p0/msg_box.c&quot;" scope="0x558318b2d2f0" type="string" strlen="31" values="0x558318cc8a60" astParent="0x558318bbf010" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318cdaca0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="," scope="0x558318b2d2f0" isExpandedMacro="true" astParent="0x558318abe490" astOperand1="0x558318bbf010" astOperand2="0x558318cd8c90"/>
+    <token id="0x558318cd8c90" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="41" scope="0x558318b2d2f0" type="number" isInt="true" values="0x558318cd81f0" astParent="0x558318cdaca0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318cdad90" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str=")" scope="0x558318b2d2f0" isExpandedMacro="true" link="0x558318abe490"/>
+    <token id="0x558318cdaef0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str=";" scope="0x558318b2d2f0" isExpandedMacro="true"/>
+    <token id="0x558318af9a90" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="perror" scope="0x558318b2d2f0" type="name" isExpandedMacro="true" astParent="0x558318af9b70"/>
+    <token id="0x558318af9b70" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="(" scope="0x558318b2d2f0" isExpandedMacro="true" link="0x558318b1b8f0" astOperand1="0x558318af9a90" astOperand2="0x558318cd8d80" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
+    <token id="0x558318cd8d80" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="&quot;[ERROR]&quot;" scope="0x558318b2d2f0" type="string" strlen="7" isExpandedMacro="true" values="0x558318aacb20" astParent="0x558318af9b70" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b1b8f0" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str=")" scope="0x558318b2d2f0" isExpandedMacro="true" link="0x558318af9b70"/>
+    <token id="0x558318cd8f40" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str=";" scope="0x558318b2d2f0" isExpandedMacro="true"/>
+    <token id="0x558318e1a530" file="air/examples/posix/p0/msg_box.c" linenr="41" column="5" str="}" scope="0x558318b2d2f0" isExpandedMacro="true" link="0x558318babc40"/>
+    <token id="0x558318e1a610" file="air/examples/posix/p0/msg_box.c" linenr="41" column="70" str=";" scope="0x558318adea00"/>
+    <token id="0x558318b7a660" file="air/examples/posix/p0/msg_box.c" linenr="42" column="3" str="}" scope="0x558318adea00" link="0x558318b20a90"/>
+    <token id="0x558318ba6600" file="air/examples/posix/p0/msg_box.c" linenr="45" column="3" str="memcpy" scope="0x558318d120e0" type="name" astParent="0x558318d6c000"/>
+    <token id="0x558318d6c000" file="air/examples/posix/p0/msg_box.c" linenr="45" column="9" str="(" scope="0x558318d120e0" link="0x558318b7d250" astOperand1="0x558318ba6600" astOperand2="0x558318d99fc0" valueType-type="void" valueType-pointer="1" valueType-reference="None" valueType-originalTypeName="void *"/>
+    <token id="0x558318b83700" file="air/examples/posix/p0/msg_box.c" linenr="45" column="10" str="buf" scope="0x558318d120e0" type="name" varId="23" variable="0x558318b89310" astParent="0x558318d6bea0" valueType-type="char" valueType-sign="signed" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318d6bea0" file="air/examples/posix/p0/msg_box.c" linenr="45" column="13" str="," scope="0x558318d120e0" astParent="0x558318d99fc0" astOperand1="0x558318b83700" astOperand2="0x558318d99e60"/>
+    <token id="0x558318cd2900" file="air/examples/posix/p0/msg_box.c" linenr="45" column="14" str="(" scope="0x558318d120e0" link="0x558318e1a780"/>
+    <token id="0x558318b877b0" file="air/examples/posix/p0/msg_box.c" linenr="45" column="15" str="*" scope="0x558318d120e0" type="op" isArithmeticalOp="true" astParent="0x558318d99e60" astOperand1="0x558318cd2890" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318cd2890" file="air/examples/posix/p0/msg_box.c" linenr="45" column="16" str="mbox" scope="0x558318d120e0" type="name" varId="22" variable="0x558318acfca0" astParent="0x558318b877b0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318e1a780" file="air/examples/posix/p0/msg_box.c" linenr="45" column="20" str=")" scope="0x558318d120e0" link="0x558318cd2900"/>
+    <token id="0x558318d99e60" file="air/examples/posix/p0/msg_box.c" linenr="45" column="21" str="." scope="0x558318d120e0" astParent="0x558318d6bea0" astOperand1="0x558318b877b0" astOperand2="0x558318d99ec0" valueType-type="char" valueType-sign="signed" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318d99ec0" file="air/examples/posix/p0/msg_box.c" linenr="45" column="22" str="buf" scope="0x558318d120e0" type="name" varId="27" astParent="0x558318d99e60"/>
+    <token id="0x558318d99fc0" file="air/examples/posix/p0/msg_box.c" linenr="45" column="25" str="," scope="0x558318d120e0" astParent="0x558318d6c000" astOperand1="0x558318d6bea0" astOperand2="0x558318dae640"/>
+    <token id="0x558318b8f860" file="air/examples/posix/p0/msg_box.c" linenr="45" column="26" str="(" scope="0x558318d120e0" link="0x558318b7d0d0"/>
+    <token id="0x558318d30f30" file="air/examples/posix/p0/msg_box.c" linenr="45" column="27" str="*" scope="0x558318d120e0" type="op" isArithmeticalOp="true" astParent="0x558318dae640" astOperand1="0x558318d30f90" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318d30f90" file="air/examples/posix/p0/msg_box.c" linenr="45" column="28" str="mbox" scope="0x558318d120e0" type="name" varId="22" variable="0x558318acfca0" astParent="0x558318d30f30" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b7d0d0" file="air/examples/posix/p0/msg_box.c" linenr="45" column="32" str=")" scope="0x558318d120e0" link="0x558318b8f860"/>
+    <token id="0x558318dae640" file="air/examples/posix/p0/msg_box.c" linenr="45" column="33" str="." scope="0x558318d120e0" values="0x558318b7ec10" astParent="0x558318d99fc0" astOperand1="0x558318d30f30" astOperand2="0x558318dae6a0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318dae6a0" file="air/examples/posix/p0/msg_box.c" linenr="45" column="34" str="elt_size" scope="0x558318d120e0" type="name" varId="28" astParent="0x558318dae640"/>
+    <token id="0x558318b7d250" file="air/examples/posix/p0/msg_box.c" linenr="45" column="42" str=")" scope="0x558318d120e0" link="0x558318d6c000"/>
+    <token id="0x558318d58c40" file="air/examples/posix/p0/msg_box.c" linenr="45" column="43" str=";" scope="0x558318d120e0"/>
+    <token id="0x558318d58ca0" file="air/examples/posix/p0/msg_box.c" linenr="46" column="3" str="(" scope="0x558318d120e0" link="0x558318adf750"/>
+    <token id="0x558318d58d90" file="air/examples/posix/p0/msg_box.c" linenr="46" column="4" str="*" scope="0x558318d120e0" type="op" isArithmeticalOp="true" astParent="0x558318adf7b0" astOperand1="0x558318d58df0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318d58df0" file="air/examples/posix/p0/msg_box.c" linenr="46" column="5" str="mbox" scope="0x558318d120e0" type="name" varId="22" variable="0x558318acfca0" astParent="0x558318d58d90" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318adf750" file="air/examples/posix/p0/msg_box.c" linenr="46" column="9" str=")" scope="0x558318d120e0" link="0x558318d58ca0"/>
+    <token id="0x558318adf7b0" file="air/examples/posix/p0/msg_box.c" linenr="46" column="10" str="." scope="0x558318d120e0" astParent="0x558318adf900" astOperand1="0x558318d58d90" astOperand2="0x558318adf8a0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318adf8a0" file="air/examples/posix/p0/msg_box.c" linenr="46" column="11" str="empty" scope="0x558318d120e0" type="name" varId="25" astParent="0x558318adf7b0"/>
+    <token id="0x558318adf900" file="air/examples/posix/p0/msg_box.c" linenr="46" column="17" str="=" scope="0x558318d120e0" type="op" isAssignmentOp="true" astOperand1="0x558318adf7b0" astOperand2="0x558318c982c0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318c982c0" file="air/examples/posix/p0/msg_box.c" linenr="46" column="19" str="true" scope="0x558318d120e0" type="name" astParent="0x558318adf900" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318d55450" file="air/examples/posix/p0/msg_box.c" linenr="46" column="23" str=";" scope="0x558318d120e0"/>
+    <token id="0x558318d554b0" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="if" scope="0x558318d120e0" type="name" isExpandedMacro="true" astParent="0x558318c98440"/>
+    <token id="0x558318c98440" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="(" scope="0x558318d120e0" isExpandedMacro="true" link="0x558318d75a40" astOperand1="0x558318d554b0" astOperand2="0x558318d9f4b0"/>
+    <token id="0x558318db9ef0" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="pthread_mutex_unlock" scope="0x558318d120e0" type="name" astParent="0x558318bc2040"/>
+    <token id="0x558318bc2040" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="(" scope="0x558318d120e0" link="0x558318d9f3d0" astParent="0x558318d9f4b0" astOperand1="0x558318db9ef0" astOperand2="0x558318bc20a0"/>
+    <token id="0x558318bc20a0" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="&amp;" scope="0x558318d120e0" type="op" values="0x558318b823c0" astParent="0x558318bc2040" astOperand1="0x558318bb0350"/>
+    <token id="0x558318b29ee0" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="(" scope="0x558318d120e0" link="0x558318bb02f0"/>
+    <token id="0x558318ade660" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="*" scope="0x558318d120e0" type="op" isArithmeticalOp="true" astParent="0x558318bb0350" astOperand1="0x558318ade740" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318ade740" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="mbox" scope="0x558318d120e0" type="name" varId="22" variable="0x558318acfca0" astParent="0x558318ade660" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318bb02f0" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str=")" scope="0x558318d120e0" link="0x558318b29ee0"/>
+    <token id="0x558318bb0350" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="." scope="0x558318d120e0" astParent="0x558318bc20a0" astOperand1="0x558318ade660" astOperand2="0x558318bb0480"/>
+    <token id="0x558318bb0480" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="mutex" scope="0x558318d120e0" type="name" varId="24" astParent="0x558318bb0350"/>
+    <token id="0x558318d9f3d0" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str=")" scope="0x558318d120e0" link="0x558318bc2040"/>
+    <token id="0x558318d9f4b0" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="!=" scope="0x558318d120e0" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x558318c98440" astOperand1="0x558318bc2040" astOperand2="0x558318da2c20" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318da2c20" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="0" scope="0x558318d120e0" type="number" isInt="true" isExpandedMacro="true" values="0x558318d47660" astParent="0x558318d9f4b0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d75a40" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str=")" scope="0x558318d120e0" isExpandedMacro="true" link="0x558318c98440"/>
+    <token id="0x558318d75aa0" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="{" scope="0x558318d75ba0" isExpandedMacro="true" link="0x558318b6b6d0"/>
+    <token id="0x558318da2d10" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="printf" scope="0x558318d75ba0" type="name" isExpandedMacro="true" astParent="0x558318d3f270"/>
+    <token id="0x558318d3f270" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="(" scope="0x558318d75ba0" isExpandedMacro="true" link="0x558318cd1990" astOperand1="0x558318da2d10" astOperand2="0x558318b19860" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
+    <token id="0x558318d3f350" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="&quot;%s %d:\n&quot;" scope="0x558318d75ba0" type="string" strlen="7" isExpandedMacro="true" values="0x558318ad14f0" astParent="0x558318b19670" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b19670" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="," scope="0x558318d75ba0" isExpandedMacro="true" astParent="0x558318b19860" astOperand1="0x558318d3f350" astOperand2="0x558318b196d0"/>
+    <token id="0x558318b196d0" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="&quot;air/examples/posix/p0/msg_box.c&quot;" scope="0x558318d75ba0" type="string" strlen="31" values="0x558318bca3d0" astParent="0x558318b19670" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b19860" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="," scope="0x558318d75ba0" isExpandedMacro="true" astParent="0x558318d3f270" astOperand1="0x558318b19670" astOperand2="0x558318cd18b0"/>
+    <token id="0x558318cd18b0" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="48" scope="0x558318d75ba0" type="number" isInt="true" values="0x558318b42510" astParent="0x558318b19860" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318cd1990" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str=")" scope="0x558318d75ba0" isExpandedMacro="true" link="0x558318d3f270"/>
+    <token id="0x558318cd19f0" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str=";" scope="0x558318d75ba0" isExpandedMacro="true"/>
+    <token id="0x558318b2a7f0" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="perror" scope="0x558318d75ba0" type="name" isExpandedMacro="true" astParent="0x558318b2a8d0"/>
+    <token id="0x558318b2a8d0" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="(" scope="0x558318d75ba0" isExpandedMacro="true" link="0x558318b6b510" astOperand1="0x558318b2a7f0" astOperand2="0x558318b2a9b0" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
+    <token id="0x558318b2a9b0" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="&quot;[ERROR]&quot;" scope="0x558318d75ba0" type="string" strlen="7" isExpandedMacro="true" values="0x558318d76b60" astParent="0x558318b2a8d0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b6b510" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str=")" scope="0x558318d75ba0" isExpandedMacro="true" link="0x558318b2a8d0"/>
+    <token id="0x558318b6b5f0" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str=";" scope="0x558318d75ba0" isExpandedMacro="true"/>
+    <token id="0x558318b6b6d0" file="air/examples/posix/p0/msg_box.c" linenr="48" column="3" str="}" scope="0x558318d75ba0" isExpandedMacro="true" link="0x558318d75aa0"/>
+    <token id="0x558318ce4e10" file="air/examples/posix/p0/msg_box.c" linenr="48" column="51" str=";" scope="0x558318d120e0"/>
+    <token id="0x558318dd4bf0" file="air/examples/posix/p0/msg_box.c" linenr="49" column="3" str="return" scope="0x558318d120e0" type="name" astOperand1="0x558318b46070" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318dd4b40" file="air/examples/posix/p0/msg_box.c" linenr="49" column="10" str="(" scope="0x558318d120e0" link="0x558318b46120"/>
+    <token id="0x558318dd4a90" file="air/examples/posix/p0/msg_box.c" linenr="49" column="11" str="*" scope="0x558318d120e0" type="op" isArithmeticalOp="true" astParent="0x558318b46070" astOperand1="0x558318b461d0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b461d0" file="air/examples/posix/p0/msg_box.c" linenr="49" column="12" str="mbox" scope="0x558318d120e0" type="name" varId="22" variable="0x558318acfca0" astParent="0x558318dd4a90" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b46120" file="air/examples/posix/p0/msg_box.c" linenr="49" column="16" str=")" scope="0x558318d120e0" link="0x558318dd4b40"/>
+    <token id="0x558318b46070" file="air/examples/posix/p0/msg_box.c" linenr="49" column="17" str="." scope="0x558318d120e0" values="0x558318b5e670" astParent="0x558318dd4bf0" astOperand1="0x558318dd4a90" astOperand2="0x558318b45fc0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b45fc0" file="air/examples/posix/p0/msg_box.c" linenr="49" column="18" str="elt_size" scope="0x558318d120e0" type="name" varId="28" astParent="0x558318b46070"/>
+    <token id="0x558318db9d30" file="air/examples/posix/p0/msg_box.c" linenr="49" column="26" str=";" scope="0x558318d120e0"/>
+    <token id="0x558318dd4c50" file="air/examples/posix/p0/msg_box.c" linenr="50" column="1" str="}" scope="0x558318d120e0" link="0x558318d9dbd0"/>
+    <token id="0x558318ce4ef0" file="air/examples/posix/p0/msg_box.c" linenr="53" column="1" str="int" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318ce4f50" file="air/examples/posix/p0/msg_box.c" linenr="53" column="5" str="msg_box_send" scope="0x558318b2a180" type="name" function="0x558318d557c0"/>
+    <token id="0x558318bb3110" file="air/examples/posix/p0/msg_box.c" linenr="53" column="17" str="(" scope="0x558318b2a180" link="0x558318ba1250" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b675b0" file="air/examples/posix/p0/msg_box.c" linenr="53" column="18" str="struct" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318dad0b0" file="air/examples/posix/p0/msg_box.c" linenr="53" column="0" str="s_msg_box" scope="0x558318b2a180" type="name" type-scope="0x558318d97360" astParent="0x558318dad1a0"/>
+    <token id="0x558318dad1a0" file="air/examples/posix/p0/msg_box.c" linenr="53" column="0" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318bb32f0" astOperand1="0x558318dad0b0" astOperand2="0x558318bb3200"/>
+    <token id="0x558318bb3200" file="air/examples/posix/p0/msg_box.c" linenr="53" column="26" str="mbox" scope="0x558318b2a180" type="name" varId="29" variable="0x558318ad1d10" astParent="0x558318dad1a0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318bb32f0" file="air/examples/posix/p0/msg_box.c" linenr="53" column="30" str="," scope="0x558318b2a180" astOperand1="0x558318dad1a0" astOperand2="0x558318bb3350"/>
+    <token id="0x558318b67610" file="air/examples/posix/p0/msg_box.c" linenr="53" column="32" str="const" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318b11bc0" file="air/examples/posix/p0/msg_box.c" linenr="53" column="38" str="char" scope="0x558318b2a180" type="name" astParent="0x558318bb3350"/>
+    <token id="0x558318bb3350" file="air/examples/posix/p0/msg_box.c" linenr="53" column="43" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318bb32f0" astOperand1="0x558318b11bc0" astOperand2="0x558318b11c20"/>
+    <token id="0x558318b11c20" file="air/examples/posix/p0/msg_box.c" linenr="53" column="44" str="buf" scope="0x558318b2a180" type="name" varId="30" variable="0x558318b3a110" astParent="0x558318bb3350" valueType-type="char" valueType-sign="signed" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318ba1250" file="air/examples/posix/p0/msg_box.c" linenr="53" column="47" str=")" scope="0x558318b2a180" link="0x558318bb3110"/>
+    <token id="0x558318b11da0" file="air/examples/posix/p0/msg_box.c" linenr="53" column="49" str="{" scope="0x558318ae7300" link="0x558318b2d870"/>
+    <token id="0x558318ba1340" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="if" scope="0x558318ae7300" type="name" isExpandedMacro="true" astParent="0x558318d17f40"/>
+    <token id="0x558318d17f40" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="(" scope="0x558318ae7300" isExpandedMacro="true" link="0x558318d3ab80" astOperand1="0x558318ba1340" astOperand2="0x558318b60b00"/>
+    <token id="0x558318d18020" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="pthread_mutex_lock" scope="0x558318ae7300" type="name" astParent="0x558318b9ea40"/>
+    <token id="0x558318b9ea40" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="(" scope="0x558318ae7300" link="0x558318b730a0" astParent="0x558318b60b00" astOperand1="0x558318d18020" astOperand2="0x558318b9eb20"/>
+    <token id="0x558318b9eb20" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="&amp;" scope="0x558318ae7300" type="op" values="0x558318d2ab20" astParent="0x558318b9ea40" astOperand1="0x558318b72ee0"/>
+    <token id="0x558318b9ec00" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="(" scope="0x558318ae7300" link="0x558318b74690"/>
+    <token id="0x558318b744d0" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="*" scope="0x558318ae7300" type="op" isArithmeticalOp="true" astParent="0x558318b72ee0" astOperand1="0x558318b745b0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b745b0" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="mbox" scope="0x558318ae7300" type="name" varId="29" variable="0x558318ad1d10" astParent="0x558318b744d0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b74690" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str=")" scope="0x558318ae7300" link="0x558318b9ec00"/>
+    <token id="0x558318b72ee0" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="." scope="0x558318ae7300" astParent="0x558318b9eb20" astOperand1="0x558318b744d0" astOperand2="0x558318b72fc0"/>
+    <token id="0x558318b72fc0" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="mutex" scope="0x558318ae7300" type="name" varId="31" astParent="0x558318b72ee0"/>
+    <token id="0x558318b730a0" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str=")" scope="0x558318ae7300" link="0x558318b9ea40"/>
+    <token id="0x558318b60b00" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="!=" scope="0x558318ae7300" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x558318d17f40" astOperand1="0x558318b9ea40" astOperand2="0x558318b60cc0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318b60cc0" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="0" scope="0x558318ae7300" type="number" isInt="true" isExpandedMacro="true" values="0x558318d6a3e0" astParent="0x558318b60b00" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d3ab80" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str=")" scope="0x558318ae7300" isExpandedMacro="true" link="0x558318d17f40"/>
+    <token id="0x558318b00960" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="{" scope="0x558318b79bd0" isExpandedMacro="true" link="0x558318bb7990"/>
+    <token id="0x558318b00a40" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="printf" scope="0x558318b79bd0" type="name" isExpandedMacro="true" astParent="0x558318ac09f0"/>
+    <token id="0x558318ac09f0" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="(" scope="0x558318b79bd0" isExpandedMacro="true" link="0x558318bb9c40" astOperand1="0x558318b00a40" astOperand2="0x558318d7dee0" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
+    <token id="0x558318bb45f0" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="&quot;%s %d:\n&quot;" scope="0x558318b79bd0" type="string" strlen="7" isExpandedMacro="true" values="0x558318b72880" astParent="0x558318ac0bb0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318ac0bb0" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="," scope="0x558318b79bd0" isExpandedMacro="true" astParent="0x558318d7dee0" astOperand1="0x558318bb45f0" astOperand2="0x558318d7dda0"/>
+    <token id="0x558318d7dda0" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="&quot;air/examples/posix/p0/msg_box.c&quot;" scope="0x558318b79bd0" type="string" strlen="31" values="0x558318d3b170" astParent="0x558318ac0bb0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d7dee0" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="," scope="0x558318b79bd0" isExpandedMacro="true" astParent="0x558318ac09f0" astOperand1="0x558318ac0bb0" astOperand2="0x558318d7a1b0"/>
+    <token id="0x558318d7a1b0" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="54" scope="0x558318b79bd0" type="number" isInt="true" values="0x558318cd7140" astParent="0x558318d7dee0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318bb9c40" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str=")" scope="0x558318b79bd0" isExpandedMacro="true" link="0x558318ac09f0"/>
+    <token id="0x558318bb9ca0" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str=";" scope="0x558318b79bd0" isExpandedMacro="true"/>
+    <token id="0x558318bb9dd0" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="perror" scope="0x558318b79bd0" type="name" isExpandedMacro="true" astParent="0x558318daa820"/>
+    <token id="0x558318daa820" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="(" scope="0x558318b79bd0" isExpandedMacro="true" link="0x558318b23c40" astOperand1="0x558318bb9dd0" astOperand2="0x558318daa900" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
+    <token id="0x558318daa900" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="&quot;[ERROR]&quot;" scope="0x558318b79bd0" type="string" strlen="7" isExpandedMacro="true" values="0x558318d7e1b0" astParent="0x558318daa820" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b23c40" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str=")" scope="0x558318b79bd0" isExpandedMacro="true" link="0x558318daa820"/>
+    <token id="0x558318bb78b0" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str=";" scope="0x558318b79bd0" isExpandedMacro="true"/>
+    <token id="0x558318bb7990" file="air/examples/posix/p0/msg_box.c" linenr="54" column="3" str="}" scope="0x558318b79bd0" isExpandedMacro="true" link="0x558318b00960"/>
+    <token id="0x558318bb7a70" file="air/examples/posix/p0/msg_box.c" linenr="54" column="49" str=";" scope="0x558318ae7300"/>
+    <token id="0x558318b89f80" file="air/examples/posix/p0/msg_box.c" linenr="57" column="3" str="memcpy" scope="0x558318ae7300" type="name" astParent="0x558318b9e180"/>
+    <token id="0x558318b9e180" file="air/examples/posix/p0/msg_box.c" linenr="57" column="9" str="(" scope="0x558318ae7300" link="0x558318daef30" astOperand1="0x558318b89f80" astOperand2="0x558318e15b40" valueType-type="void" valueType-pointer="1" valueType-reference="None" valueType-originalTypeName="void *"/>
+    <token id="0x558318d3cd70" file="air/examples/posix/p0/msg_box.c" linenr="57" column="10" str="(" scope="0x558318ae7300" link="0x558318d54fe0"/>
+    <token id="0x558318d3cdd0" file="air/examples/posix/p0/msg_box.c" linenr="57" column="11" str="*" scope="0x558318ae7300" type="op" isArithmeticalOp="true" astParent="0x558318ba1430" astOperand1="0x558318d3cc10" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318d3cc10" file="air/examples/posix/p0/msg_box.c" linenr="57" column="12" str="mbox" scope="0x558318ae7300" type="name" varId="29" variable="0x558318ad1d10" astParent="0x558318d3cdd0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318d54fe0" file="air/examples/posix/p0/msg_box.c" linenr="57" column="16" str=")" scope="0x558318ae7300" link="0x558318d3cd70"/>
+    <token id="0x558318ba1430" file="air/examples/posix/p0/msg_box.c" linenr="57" column="17" str="." scope="0x558318ae7300" astParent="0x558318b9e320" astOperand1="0x558318d3cdd0" astOperand2="0x558318b9e2c0" valueType-type="char" valueType-sign="signed" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318b9e2c0" file="air/examples/posix/p0/msg_box.c" linenr="57" column="18" str="buf" scope="0x558318ae7300" type="name" varId="32" astParent="0x558318ba1430"/>
+    <token id="0x558318b9e320" file="air/examples/posix/p0/msg_box.c" linenr="57" column="21" str="," scope="0x558318ae7300" astParent="0x558318e15b40" astOperand1="0x558318ba1430" astOperand2="0x558318d75120"/>
+    <token id="0x558318d75120" file="air/examples/posix/p0/msg_box.c" linenr="57" column="22" str="buf" scope="0x558318ae7300" type="name" varId="30" variable="0x558318b3a110" astParent="0x558318b9e320" valueType-type="char" valueType-sign="signed" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318e15b40" file="air/examples/posix/p0/msg_box.c" linenr="57" column="25" str="," scope="0x558318ae7300" astParent="0x558318b9e180" astOperand1="0x558318b9e320" astOperand2="0x558318daede0"/>
+    <token id="0x558318d75180" file="air/examples/posix/p0/msg_box.c" linenr="57" column="26" str="(" scope="0x558318ae7300" link="0x558318daed80"/>
+    <token id="0x558318d75270" file="air/examples/posix/p0/msg_box.c" linenr="57" column="27" str="*" scope="0x558318ae7300" type="op" isArithmeticalOp="true" astParent="0x558318daede0" astOperand1="0x558318d75360" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318d75360" file="air/examples/posix/p0/msg_box.c" linenr="57" column="28" str="mbox" scope="0x558318ae7300" type="name" varId="29" variable="0x558318ad1d10" astParent="0x558318d75270" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318daed80" file="air/examples/posix/p0/msg_box.c" linenr="57" column="32" str=")" scope="0x558318ae7300" link="0x558318d75180"/>
+    <token id="0x558318daede0" file="air/examples/posix/p0/msg_box.c" linenr="57" column="33" str="." scope="0x558318ae7300" values="0x558318abc6d0" astParent="0x558318e15b40" astOperand1="0x558318d75270" astOperand2="0x558318daeed0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318daeed0" file="air/examples/posix/p0/msg_box.c" linenr="57" column="34" str="elt_size" scope="0x558318ae7300" type="name" varId="33" astParent="0x558318daede0"/>
+    <token id="0x558318daef30" file="air/examples/posix/p0/msg_box.c" linenr="57" column="42" str=")" scope="0x558318ae7300" link="0x558318b9e180"/>
+    <token id="0x558318d11a30" file="air/examples/posix/p0/msg_box.c" linenr="57" column="43" str=";" scope="0x558318ae7300"/>
+    <token id="0x558318b84490" file="air/examples/posix/p0/msg_box.c" linenr="58" column="3" str="(" scope="0x558318ae7300" link="0x558318d35730"/>
+    <token id="0x558318d11b20" file="air/examples/posix/p0/msg_box.c" linenr="58" column="4" str="*" scope="0x558318ae7300" type="op" isArithmeticalOp="true" astParent="0x558318d35790" astOperand1="0x558318d11c10" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318d11c10" file="air/examples/posix/p0/msg_box.c" linenr="58" column="5" str="mbox" scope="0x558318ae7300" type="name" varId="29" variable="0x558318ad1d10" astParent="0x558318d11b20" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318d35730" file="air/examples/posix/p0/msg_box.c" linenr="58" column="9" str=")" scope="0x558318ae7300" link="0x558318b84490"/>
+    <token id="0x558318d35790" file="air/examples/posix/p0/msg_box.c" linenr="58" column="10" str="." scope="0x558318ae7300" astParent="0x558318b12980" astOperand1="0x558318d11b20" astOperand2="0x558318d35880" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318d35880" file="air/examples/posix/p0/msg_box.c" linenr="58" column="11" str="empty" scope="0x558318ae7300" type="name" varId="34" astParent="0x558318d35790"/>
+    <token id="0x558318b12980" file="air/examples/posix/p0/msg_box.c" linenr="58" column="16" str="=" scope="0x558318ae7300" type="op" isAssignmentOp="true" astOperand1="0x558318d35790" astOperand2="0x558318da7ec0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318da7ec0" file="air/examples/posix/p0/msg_box.c" linenr="58" column="17" str="false" scope="0x558318ae7300" type="name" astParent="0x558318b12980" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318b129e0" file="air/examples/posix/p0/msg_box.c" linenr="58" column="22" str=";" scope="0x558318ae7300"/>
+    <token id="0x558318b12ad0" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="if" scope="0x558318ae7300" type="name" isExpandedMacro="true" astParent="0x558318b6af90"/>
+    <token id="0x558318b6af90" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="(" scope="0x558318ae7300" isExpandedMacro="true" link="0x558318b63200" astOperand1="0x558318b12ad0" astOperand2="0x558318b3c290"/>
+    <token id="0x558318b6b070" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="pthread_cond_signal" scope="0x558318ae7300" type="name" astParent="0x558318aecd70"/>
+    <token id="0x558318aecd70" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="(" scope="0x558318ae7300" link="0x558318d8b580" astParent="0x558318b3c290" astOperand1="0x558318b6b070" astOperand2="0x558318b89240"/>
+    <token id="0x558318b89240" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="&amp;" scope="0x558318ae7300" type="op" values="0x558318b36cc0" astParent="0x558318aecd70" astOperand1="0x558318af1100"/>
+    <token id="0x558318b236c0" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="(" scope="0x558318ae7300" link="0x558318cd4d70"/>
+    <token id="0x558318b237a0" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="*" scope="0x558318ae7300" type="op" isArithmeticalOp="true" astParent="0x558318af1100" astOperand1="0x558318b23880" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b23880" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="mbox" scope="0x558318ae7300" type="name" varId="29" variable="0x558318ad1d10" astParent="0x558318b237a0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318cd4d70" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str=")" scope="0x558318ae7300" link="0x558318b236c0"/>
+    <token id="0x558318af1100" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="." scope="0x558318ae7300" astParent="0x558318b89240" astOperand1="0x558318b237a0" astOperand2="0x558318af11e0"/>
+    <token id="0x558318af11e0" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="not_empty" scope="0x558318ae7300" type="name" varId="35" astParent="0x558318af1100"/>
+    <token id="0x558318d8b580" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str=")" scope="0x558318ae7300" link="0x558318aecd70"/>
+    <token id="0x558318b3c290" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="!=" scope="0x558318ae7300" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x558318b6af90" astOperand1="0x558318aecd70" astOperand2="0x558318b63120" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318b63120" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="0" scope="0x558318ae7300" type="number" isInt="true" isExpandedMacro="true" values="0x558318b428b0" astParent="0x558318b3c290" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b63200" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str=")" scope="0x558318ae7300" isExpandedMacro="true" link="0x558318b6af90"/>
+    <token id="0x558318b300b0" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="{" scope="0x558318e1a2e0" isExpandedMacro="true" link="0x558318dd5200"/>
+    <token id="0x558318b04200" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="printf" scope="0x558318e1a2e0" type="name" isExpandedMacro="true" astParent="0x558318b042e0"/>
+    <token id="0x558318b042e0" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="(" scope="0x558318e1a2e0" isExpandedMacro="true" link="0x558318d9da40" astOperand1="0x558318b04200" astOperand2="0x558318b25760" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
+    <token id="0x558318b043c0" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="&quot;%s %d:\n&quot;" scope="0x558318e1a2e0" type="string" strlen="7" isExpandedMacro="true" values="0x558318cd4950" astParent="0x558318ba7d10" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318ba7d10" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="," scope="0x558318e1a2e0" isExpandedMacro="true" astParent="0x558318b25760" astOperand1="0x558318b043c0" astOperand2="0x558318b25620"/>
+    <token id="0x558318b25620" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="&quot;air/examples/posix/p0/msg_box.c&quot;" scope="0x558318e1a2e0" type="string" strlen="31" values="0x558318afd400" astParent="0x558318ba7d10" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b25760" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="," scope="0x558318e1a2e0" isExpandedMacro="true" astParent="0x558318b042e0" astOperand1="0x558318ba7d10" astOperand2="0x558318d9d930"/>
+    <token id="0x558318d9d930" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="61" scope="0x558318e1a2e0" type="number" isInt="true" values="0x558318db1970" astParent="0x558318b25760" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d9da40" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str=")" scope="0x558318e1a2e0" isExpandedMacro="true" link="0x558318b042e0"/>
+    <token id="0x558318da7b20" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str=";" scope="0x558318e1a2e0" isExpandedMacro="true"/>
+    <token id="0x558318d9db30" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="perror" scope="0x558318e1a2e0" type="name" isExpandedMacro="true" astParent="0x558318b125b0"/>
+    <token id="0x558318b125b0" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="(" scope="0x558318e1a2e0" isExpandedMacro="true" link="0x558318dd5040" astOperand1="0x558318d9db30" astOperand2="0x558318b12690" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
+    <token id="0x558318b12690" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="&quot;[ERROR]&quot;" scope="0x558318e1a2e0" type="string" strlen="7" isExpandedMacro="true" values="0x558318d98600" astParent="0x558318b125b0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318dd5040" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str=")" scope="0x558318e1a2e0" isExpandedMacro="true" link="0x558318b125b0"/>
+    <token id="0x558318ac5fb0" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str=";" scope="0x558318e1a2e0" isExpandedMacro="true"/>
+    <token id="0x558318dd5200" file="air/examples/posix/p0/msg_box.c" linenr="61" column="3" str="}" scope="0x558318e1a2e0" isExpandedMacro="true" link="0x558318b300b0"/>
+    <token id="0x558318ab9ac0" file="air/examples/posix/p0/msg_box.c" linenr="61" column="54" str=";" scope="0x558318ae7300"/>
+    <token id="0x558318b2d720" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="if" scope="0x558318ae7300" type="name" isExpandedMacro="true" astParent="0x558318d75750"/>
+    <token id="0x558318d75750" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="(" scope="0x558318ae7300" isExpandedMacro="true" link="0x558318d3a760" astOperand1="0x558318b2d720" astOperand2="0x558318b401d0"/>
+    <token id="0x558318ce62f0" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="pthread_mutex_unlock" scope="0x558318ae7300" type="name" astParent="0x558318af0cf0"/>
+    <token id="0x558318af0cf0" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="(" scope="0x558318ae7300" link="0x558318b400f0" astParent="0x558318b401d0" astOperand1="0x558318ce62f0" astOperand2="0x558318af0dd0"/>
+    <token id="0x558318af0dd0" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="&amp;" scope="0x558318ae7300" type="op" values="0x558318adf660" astParent="0x558318af0cf0" astOperand1="0x558318b29000"/>
+    <token id="0x558318ccdbd0" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="(" scope="0x558318ae7300" link="0x558318b24340"/>
+    <token id="0x558318b643e0" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="*" scope="0x558318ae7300" type="op" isArithmeticalOp="true" astParent="0x558318b29000" astOperand1="0x558318b644c0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b644c0" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="mbox" scope="0x558318ae7300" type="name" varId="29" variable="0x558318ad1d10" astParent="0x558318b643e0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b24340" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str=")" scope="0x558318ae7300" link="0x558318ccdbd0"/>
+    <token id="0x558318b29000" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="." scope="0x558318ae7300" astParent="0x558318af0dd0" astOperand1="0x558318b643e0" astOperand2="0x558318b24500"/>
+    <token id="0x558318b24500" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="mutex" scope="0x558318ae7300" type="name" varId="31" astParent="0x558318b29000"/>
+    <token id="0x558318b400f0" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str=")" scope="0x558318ae7300" link="0x558318af0cf0"/>
+    <token id="0x558318b401d0" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="!=" scope="0x558318ae7300" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x558318d75750" astOperand1="0x558318af0cf0" astOperand2="0x558318d3a680" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318d3a680" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="0" scope="0x558318ae7300" type="number" isInt="true" isExpandedMacro="true" values="0x558318b5d7e0" astParent="0x558318b401d0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d3a760" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str=")" scope="0x558318ae7300" isExpandedMacro="true" link="0x558318d75750"/>
+    <token id="0x558318d3a840" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="{" scope="0x558318aec8c0" isExpandedMacro="true" link="0x558318b491b0"/>
+    <token id="0x558318d9de70" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="printf" scope="0x558318aec8c0" type="name" isExpandedMacro="true" astParent="0x558318baccb0"/>
+    <token id="0x558318baccb0" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="(" scope="0x558318aec8c0" isExpandedMacro="true" link="0x558318b0f6d0" astOperand1="0x558318d9de70" astOperand2="0x558318d1cc70" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
+    <token id="0x558318bacd90" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="&quot;%s %d:\n&quot;" scope="0x558318aec8c0" type="string" strlen="7" isExpandedMacro="true" values="0x558318b15cc0" astParent="0x558318d1ca50" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d1ca50" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="," scope="0x558318aec8c0" isExpandedMacro="true" astParent="0x558318d1cc70" astOperand1="0x558318bacd90" astOperand2="0x558318b98320"/>
+    <token id="0x558318b98320" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="&quot;air/examples/posix/p0/msg_box.c&quot;" scope="0x558318aec8c0" type="string" strlen="31" values="0x558318d2fbd0" astParent="0x558318d1ca50" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d1cc70" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="," scope="0x558318aec8c0" isExpandedMacro="true" astParent="0x558318baccb0" astOperand1="0x558318d1ca50" astOperand2="0x558318b0f5c0"/>
+    <token id="0x558318b0f5c0" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="63" scope="0x558318aec8c0" type="number" isInt="true" values="0x558318d83db0" astParent="0x558318d1cc70" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b0f6d0" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str=")" scope="0x558318aec8c0" isExpandedMacro="true" link="0x558318baccb0"/>
+    <token id="0x558318ad6390" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str=";" scope="0x558318aec8c0" isExpandedMacro="true"/>
+    <token id="0x558318ad44c0" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="perror" scope="0x558318aec8c0" type="name" isExpandedMacro="true" astParent="0x558318b0f7c0"/>
+    <token id="0x558318b0f7c0" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="(" scope="0x558318aec8c0" isExpandedMacro="true" link="0x558318d17be0" astOperand1="0x558318ad44c0" astOperand2="0x558318ad4680" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
+    <token id="0x558318ad4680" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="&quot;[ERROR]&quot;" scope="0x558318aec8c0" type="string" strlen="7" isExpandedMacro="true" values="0x558318da8510" astParent="0x558318b0f7c0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d17be0" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str=")" scope="0x558318aec8c0" isExpandedMacro="true" link="0x558318b0f7c0"/>
+    <token id="0x558318d17cc0" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str=";" scope="0x558318aec8c0" isExpandedMacro="true"/>
+    <token id="0x558318b491b0" file="air/examples/posix/p0/msg_box.c" linenr="63" column="3" str="}" scope="0x558318aec8c0" isExpandedMacro="true" link="0x558318d3a840"/>
+    <token id="0x558318b8b060" file="air/examples/posix/p0/msg_box.c" linenr="63" column="51" str=";" scope="0x558318ae7300"/>
+    <token id="0x558318b6aeb0" file="air/examples/posix/p0/msg_box.c" linenr="64" column="3" str="return" scope="0x558318ae7300" type="name" astOperand1="0x558318b2d5c0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d89f50" file="air/examples/posix/p0/msg_box.c" linenr="64" column="10" str="(" scope="0x558318ae7300" link="0x558318d8a130"/>
+    <token id="0x558318b46cd0" file="air/examples/posix/p0/msg_box.c" linenr="64" column="11" str="*" scope="0x558318ae7300" type="op" isArithmeticalOp="true" astParent="0x558318b2d5c0" astOperand1="0x558318d8a040" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318d8a040" file="air/examples/posix/p0/msg_box.c" linenr="64" column="12" str="mbox" scope="0x558318ae7300" type="name" varId="29" variable="0x558318ad1d10" astParent="0x558318b46cd0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318d8a130" file="air/examples/posix/p0/msg_box.c" linenr="64" column="16" str=")" scope="0x558318ae7300" link="0x558318d89f50"/>
+    <token id="0x558318b2d5c0" file="air/examples/posix/p0/msg_box.c" linenr="64" column="17" str="." scope="0x558318ae7300" values="0x558318c9a390" astParent="0x558318b6aeb0" astOperand1="0x558318b46cd0" astOperand2="0x558318b2d620" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b2d620" file="air/examples/posix/p0/msg_box.c" linenr="64" column="18" str="elt_size" scope="0x558318ae7300" type="name" varId="33" astParent="0x558318b2d5c0"/>
+    <token id="0x558318b2d780" file="air/examples/posix/p0/msg_box.c" linenr="64" column="26" str=";" scope="0x558318ae7300"/>
+    <token id="0x558318b2d870" file="air/examples/posix/p0/msg_box.c" linenr="65" column="1" str="}" scope="0x558318ae7300" link="0x558318b11da0"/>
+    <token id="0x558318ce6140" file="air/examples/posix/p0/msg_box.c" linenr="68" column="1" str="void" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318ce61a0" file="air/examples/posix/p0/msg_box.c" linenr="68" column="6" str="msg_box_delete" scope="0x558318b2a180" type="name" function="0x558318d915e0"/>
+    <token id="0x558318ab9c30" file="air/examples/posix/p0/msg_box.c" linenr="68" column="20" str="(" scope="0x558318b2a180" link="0x558318b8b1d0" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318b743c0" file="air/examples/posix/p0/msg_box.c" linenr="68" column="21" str="struct" scope="0x558318b2a180" type="name"/>
+    <token id="0x558318cd8010" file="air/examples/posix/p0/msg_box.c" linenr="68" column="0" str="s_msg_box" scope="0x558318b2a180" type="name" type-scope="0x558318d97360" astParent="0x558318cd8100"/>
+    <token id="0x558318cd8100" file="air/examples/posix/p0/msg_box.c" linenr="68" column="0" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astOperand1="0x558318cd8010" astOperand2="0x558318ab9d20"/>
+    <token id="0x558318ab9d20" file="air/examples/posix/p0/msg_box.c" linenr="68" column="29" str="mbox" scope="0x558318b2a180" type="name" varId="36" variable="0x558318d52510" astParent="0x558318cd8100" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b8b1d0" file="air/examples/posix/p0/msg_box.c" linenr="68" column="33" str=")" scope="0x558318b2a180" link="0x558318ab9c30"/>
+    <token id="0x558318b8b230" file="air/examples/posix/p0/msg_box.c" linenr="68" column="35" str="{" scope="0x558318e15df0" link="0x558318d80b10"/>
+    <token id="0x558318b8b320" file="air/examples/posix/p0/msg_box.c" linenr="69" column="3" str="pthread_cond_destroy" scope="0x558318e15df0" type="name" astParent="0x558318b36880"/>
+    <token id="0x558318b36880" file="air/examples/posix/p0/msg_box.c" linenr="69" column="23" str="(" scope="0x558318e15df0" link="0x558318b2f6f0" astOperand1="0x558318b8b320" astOperand2="0x558318a98bc0"/>
+    <token id="0x558318a98bc0" file="air/examples/posix/p0/msg_box.c" linenr="69" column="24" str="&amp;" scope="0x558318e15df0" type="op" values="0x558318cb6b00" astParent="0x558318b36880" astOperand1="0x558318d7f490"/>
+    <token id="0x558318b368e0" file="air/examples/posix/p0/msg_box.c" linenr="69" column="25" str="(" scope="0x558318e15df0" link="0x558318d7f430"/>
+    <token id="0x558318d7f2d0" file="air/examples/posix/p0/msg_box.c" linenr="69" column="26" str="*" scope="0x558318e15df0" type="op" isArithmeticalOp="true" astParent="0x558318d7f490" astOperand1="0x558318d7f330" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318d7f330" file="air/examples/posix/p0/msg_box.c" linenr="69" column="27" str="mbox" scope="0x558318e15df0" type="name" varId="36" variable="0x558318d52510" astParent="0x558318d7f2d0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318d7f430" file="air/examples/posix/p0/msg_box.c" linenr="69" column="31" str=")" scope="0x558318e15df0" link="0x558318b368e0"/>
+    <token id="0x558318d7f490" file="air/examples/posix/p0/msg_box.c" linenr="69" column="32" str="." scope="0x558318e15df0" astParent="0x558318a98bc0" astOperand1="0x558318d7f2d0" astOperand2="0x558318b72930"/>
+    <token id="0x558318b72930" file="air/examples/posix/p0/msg_box.c" linenr="69" column="33" str="not_empty" scope="0x558318e15df0" type="name" varId="37" astParent="0x558318d7f490"/>
+    <token id="0x558318b2f6f0" file="air/examples/posix/p0/msg_box.c" linenr="69" column="42" str=")" scope="0x558318e15df0" link="0x558318b36880"/>
+    <token id="0x558318b72990" file="air/examples/posix/p0/msg_box.c" linenr="69" column="43" str=";" scope="0x558318e15df0"/>
+    <token id="0x558318b72a80" file="air/examples/posix/p0/msg_box.c" linenr="70" column="3" str="pthread_mutex_lock" scope="0x558318e15df0" type="name" astParent="0x558318b72b70"/>
+    <token id="0x558318b72b70" file="air/examples/posix/p0/msg_box.c" linenr="70" column="21" str="(" scope="0x558318e15df0" link="0x558318d10ef0" astOperand1="0x558318b72a80" astOperand2="0x558318ce0150"/>
+    <token id="0x558318ce0150" file="air/examples/posix/p0/msg_box.c" linenr="70" column="22" str="&amp;" scope="0x558318e15df0" type="op" values="0x558318c97030" astParent="0x558318b72b70" astOperand1="0x558318dd94c0"/>
+    <token id="0x558318ce01b0" file="air/examples/posix/p0/msg_box.c" linenr="70" column="23" str="(" scope="0x558318e15df0" link="0x558318b17bd0"/>
+    <token id="0x558318ce02a0" file="air/examples/posix/p0/msg_box.c" linenr="70" column="24" str="*" scope="0x558318e15df0" type="op" isArithmeticalOp="true" astParent="0x558318dd94c0" astOperand1="0x558318ce0300" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318ce0300" file="air/examples/posix/p0/msg_box.c" linenr="70" column="25" str="mbox" scope="0x558318e15df0" type="name" varId="36" variable="0x558318d52510" astParent="0x558318ce02a0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b17bd0" file="air/examples/posix/p0/msg_box.c" linenr="70" column="29" str=")" scope="0x558318e15df0" link="0x558318ce01b0"/>
+    <token id="0x558318dd94c0" file="air/examples/posix/p0/msg_box.c" linenr="70" column="30" str="." scope="0x558318e15df0" astParent="0x558318ce0150" astOperand1="0x558318ce02a0" astOperand2="0x558318b17cc0"/>
+    <token id="0x558318b17cc0" file="air/examples/posix/p0/msg_box.c" linenr="70" column="31" str="mutex" scope="0x558318e15df0" type="name" varId="38" astParent="0x558318dd94c0"/>
+    <token id="0x558318d10ef0" file="air/examples/posix/p0/msg_box.c" linenr="70" column="36" str=")" scope="0x558318e15df0" link="0x558318b72b70"/>
+    <token id="0x558318d10f50" file="air/examples/posix/p0/msg_box.c" linenr="70" column="37" str=";" scope="0x558318e15df0"/>
+    <token id="0x558318d11050" file="air/examples/posix/p0/msg_box.c" linenr="71" column="3" str="free" scope="0x558318e15df0" type="name" astParent="0x558318b794b0"/>
+    <token id="0x558318b794b0" file="air/examples/posix/p0/msg_box.c" linenr="71" column="7" str="(" scope="0x558318e15df0" link="0x558318b31450" astOperand1="0x558318d11050" astOperand2="0x558318ce53a0" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
+    <token id="0x558318ce5160" file="air/examples/posix/p0/msg_box.c" linenr="71" column="8" str="(" scope="0x558318e15df0" link="0x558318ce5340"/>
+    <token id="0x558318d11140" file="air/examples/posix/p0/msg_box.c" linenr="71" column="9" str="*" scope="0x558318e15df0" type="op" isArithmeticalOp="true" astParent="0x558318ce53a0" astOperand1="0x558318ce5250" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318ce5250" file="air/examples/posix/p0/msg_box.c" linenr="71" column="10" str="mbox" scope="0x558318e15df0" type="name" varId="36" variable="0x558318d52510" astParent="0x558318d11140" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318ce5340" file="air/examples/posix/p0/msg_box.c" linenr="71" column="14" str=")" scope="0x558318e15df0" link="0x558318ce5160"/>
+    <token id="0x558318ce53a0" file="air/examples/posix/p0/msg_box.c" linenr="71" column="15" str="." scope="0x558318e15df0" astParent="0x558318b794b0" astOperand1="0x558318d11140" astOperand2="0x558318b2b0d0" valueType-type="char" valueType-sign="signed" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318b2b0d0" file="air/examples/posix/p0/msg_box.c" linenr="71" column="16" str="buf" scope="0x558318e15df0" type="name" varId="39" astParent="0x558318ce53a0"/>
+    <token id="0x558318b31450" file="air/examples/posix/p0/msg_box.c" linenr="71" column="19" str=")" scope="0x558318e15df0" link="0x558318b794b0"/>
+    <token id="0x558318b2b130" file="air/examples/posix/p0/msg_box.c" linenr="71" column="20" str=";" scope="0x558318e15df0"/>
+    <token id="0x558318b7b950" file="air/examples/posix/p0/msg_box.c" linenr="72" column="3" str="pthread_mutex_unlock" scope="0x558318e15df0" type="name" astParent="0x558318b7b9b0"/>
+    <token id="0x558318b7b9b0" file="air/examples/posix/p0/msg_box.c" linenr="72" column="23" str="(" scope="0x558318e15df0" link="0x558318b69220" astOperand1="0x558318b7b950" astOperand2="0x558318b7bab0"/>
+    <token id="0x558318b7bab0" file="air/examples/posix/p0/msg_box.c" linenr="72" column="24" str="&amp;" scope="0x558318e15df0" type="op" values="0x558318ab4060" astParent="0x558318b7b9b0" astOperand1="0x558318cd83a0"/>
+    <token id="0x558318b7bb10" file="air/examples/posix/p0/msg_box.c" linenr="72" column="25" str="(" scope="0x558318e15df0" link="0x558318cd82b0"/>
+    <token id="0x558318cd8250" file="air/examples/posix/p0/msg_box.c" linenr="72" column="26" str="*" scope="0x558318e15df0" type="op" isArithmeticalOp="true" astParent="0x558318cd83a0" astOperand1="0x558318b2c0a0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318b2c0a0" file="air/examples/posix/p0/msg_box.c" linenr="72" column="27" str="mbox" scope="0x558318e15df0" type="name" varId="36" variable="0x558318d52510" astParent="0x558318cd8250" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318cd82b0" file="air/examples/posix/p0/msg_box.c" linenr="72" column="31" str=")" scope="0x558318e15df0" link="0x558318b7bb10"/>
+    <token id="0x558318cd83a0" file="air/examples/posix/p0/msg_box.c" linenr="72" column="32" str="." scope="0x558318e15df0" astParent="0x558318b7bab0" astOperand1="0x558318cd8250" astOperand2="0x558318cd8490"/>
+    <token id="0x558318cd8490" file="air/examples/posix/p0/msg_box.c" linenr="72" column="33" str="mutex" scope="0x558318e15df0" type="name" varId="38" astParent="0x558318cd83a0"/>
+    <token id="0x558318b69220" file="air/examples/posix/p0/msg_box.c" linenr="72" column="38" str=")" scope="0x558318e15df0" link="0x558318b7b9b0"/>
+    <token id="0x558318b69280" file="air/examples/posix/p0/msg_box.c" linenr="72" column="39" str=";" scope="0x558318e15df0"/>
+    <token id="0x558318b69370" file="air/examples/posix/p0/msg_box.c" linenr="73" column="3" str="pthread_mutex_destroy" scope="0x558318e15df0" type="name" astParent="0x558318b693d0"/>
+    <token id="0x558318b693d0" file="air/examples/posix/p0/msg_box.c" linenr="73" column="24" str="(" scope="0x558318e15df0" link="0x558318d7a5f0" astOperand1="0x558318b69370" astOperand2="0x558318b7bd70"/>
+    <token id="0x558318b7bd70" file="air/examples/posix/p0/msg_box.c" linenr="73" column="25" str="&amp;" scope="0x558318e15df0" type="op" values="0x558318b1fef0" astParent="0x558318b693d0" astOperand1="0x558318ddd990"/>
+    <token id="0x558318b0ac20" file="air/examples/posix/p0/msg_box.c" linenr="73" column="26" str="(" scope="0x558318e15df0" link="0x558318ddd890"/>
+    <token id="0x558318b7be60" file="air/examples/posix/p0/msg_box.c" linenr="73" column="27" str="*" scope="0x558318e15df0" type="op" isArithmeticalOp="true" astParent="0x558318ddd990" astOperand1="0x558318ddd830" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318ddd830" file="air/examples/posix/p0/msg_box.c" linenr="73" column="28" str="mbox" scope="0x558318e15df0" type="name" varId="36" variable="0x558318d52510" astParent="0x558318b7be60" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318ddd890" file="air/examples/posix/p0/msg_box.c" linenr="73" column="32" str=")" scope="0x558318e15df0" link="0x558318b0ac20"/>
+    <token id="0x558318ddd990" file="air/examples/posix/p0/msg_box.c" linenr="73" column="33" str="." scope="0x558318e15df0" astParent="0x558318b7bd70" astOperand1="0x558318b7be60" astOperand2="0x558318afacb0"/>
+    <token id="0x558318afacb0" file="air/examples/posix/p0/msg_box.c" linenr="73" column="34" str="mutex" scope="0x558318e15df0" type="name" varId="38" astParent="0x558318ddd990"/>
+    <token id="0x558318d7a5f0" file="air/examples/posix/p0/msg_box.c" linenr="73" column="39" str=")" scope="0x558318e15df0" link="0x558318b693d0"/>
+    <token id="0x558318ddda80" file="air/examples/posix/p0/msg_box.c" linenr="73" column="40" str=";" scope="0x558318e15df0"/>
+    <token id="0x558318d7a6e0" file="air/examples/posix/p0/msg_box.c" linenr="74" column="3" str="free" scope="0x558318e15df0" type="name" astParent="0x558318d7a7d0"/>
+    <token id="0x558318d7a7d0" file="air/examples/posix/p0/msg_box.c" linenr="74" column="7" str="(" scope="0x558318e15df0" link="0x558318d80ab0" astOperand1="0x558318d7a6e0" astOperand2="0x558318d7a830" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
+    <token id="0x558318d7a830" file="air/examples/posix/p0/msg_box.c" linenr="74" column="8" str="mbox" scope="0x558318e15df0" type="name" varId="36" variable="0x558318d52510" astParent="0x558318d7a7d0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d97360"/>
+    <token id="0x558318d80ab0" file="air/examples/posix/p0/msg_box.c" linenr="74" column="12" str=")" scope="0x558318e15df0" link="0x558318d7a7d0"/>
+    <token id="0x558318ab0b90" file="air/examples/posix/p0/msg_box.c" linenr="74" column="13" str=";" scope="0x558318e15df0"/>
+    <token id="0x558318d80b10" file="air/examples/posix/p0/msg_box.c" linenr="75" column="1" str="}" scope="0x558318e15df0" link="0x558318b8b230"/>
+  </tokenlist>
+  <scopes>
+    <scope id="0x558318b2a180" type="Global">
+      <functionList>
+        <function id="0x558318ce5c90" token="0x558318d9a1d0" tokenDef="0x558318dd4f90" name="msg_box_init" type="Function">
+          <arg nr="1" variable="0x558318d754f0"/>
+        </function>
+        <function id="0x558318d55870" token="0x558318d9a0a0" tokenDef="0x558318ad1e70" name="msg_box_receive" type="Function">
+          <arg nr="1" variable="0x558318acfca0"/>
+          <arg nr="2" variable="0x558318b89310"/>
+        </function>
+        <function id="0x558318d557c0" token="0x558318ce4f50" tokenDef="0x558318b0fab0" name="msg_box_send" type="Function">
+          <arg nr="1" variable="0x558318ad1d10"/>
+          <arg nr="2" variable="0x558318b3a110"/>
+        </function>
+        <function id="0x558318d915e0" token="0x558318ce61a0" tokenDef="0x558318b40540" name="msg_box_delete" type="Function">
+          <arg nr="1" variable="0x558318d52510"/>
+        </function>
+        <function id="0x558318d55920" token="0" tokenDef="0x558318b077a0" name="add_timespec" type="Function">
+          <arg nr="1" variable="0x558318ca9b50"/>
+          <arg nr="2" variable="0x558318abc700"/>
+          <arg nr="3" variable="0x558318cdb300"/>
+        </function>
+      </functionList>
+    </scope>
+    <scope id="0x558318d97360" type="Struct" className="s_msg_box" bodyStart="0x558318ce8230" bodyEnd="0x558318e161e0" nestedIn="0x558318b2a180">
+      <varlist>
+        <var id="0x558318b5b3f0"/>
+        <var id="0x558318ac0950"/>
+        <var id="0x558318d945a0"/>
+        <var id="0x558318afb6d0"/>
+        <var id="0x558318cd0cc0"/>
+      </varlist>
+    </scope>
+    <scope id="0x558318d16c10" type="Function" className="msg_box_init" bodyStart="0x558318d94820" bodyEnd="0x558318daa730" nestedIn="0x558318b2a180" function="0x558318ce5c90">
+      <varlist>
+        <var id="0x558318bc1e80"/>
+      </varlist>
+    </scope>
+    <scope id="0x558318d76260" type="If" bodyStart="0x558318d80c00" bodyEnd="0x558318bb0880" nestedIn="0x558318d16c10"/>
+    <scope id="0x558318d169b0" type="If" bodyStart="0x558318bb0970" bodyEnd="0x558318b76100" nestedIn="0x558318d16c10"/>
+    <scope id="0x558318d2f530" type="If" bodyStart="0x558318d942e0" bodyEnd="0x558318d50130" nestedIn="0x558318d16c10"/>
+    <scope id="0x558318da8f00" type="If" bodyStart="0x558318ceaf80" bodyEnd="0x558318d7a330" nestedIn="0x558318d16c10"/>
+    <scope id="0x558318d120e0" type="Function" className="msg_box_receive" bodyStart="0x558318d9dbd0" bodyEnd="0x558318dd4c50" nestedIn="0x558318b2a180" function="0x558318d55870"/>
+    <scope id="0x558318cc7bf0" type="If" bodyStart="0x558318cd8510" bodyEnd="0x558318cde1d0" nestedIn="0x558318d120e0"/>
+    <scope id="0x558318adea00" type="While" bodyStart="0x558318b20a90" bodyEnd="0x558318b7a660" nestedIn="0x558318d120e0"/>
+    <scope id="0x558318b2d2f0" type="If" bodyStart="0x558318babc40" bodyEnd="0x558318e1a530" nestedIn="0x558318adea00"/>
+    <scope id="0x558318d75ba0" type="If" bodyStart="0x558318d75aa0" bodyEnd="0x558318b6b6d0" nestedIn="0x558318d120e0"/>
+    <scope id="0x558318ae7300" type="Function" className="msg_box_send" bodyStart="0x558318b11da0" bodyEnd="0x558318b2d870" nestedIn="0x558318b2a180" function="0x558318d557c0"/>
+    <scope id="0x558318b79bd0" type="If" bodyStart="0x558318b00960" bodyEnd="0x558318bb7990" nestedIn="0x558318ae7300"/>
+    <scope id="0x558318e1a2e0" type="If" bodyStart="0x558318b300b0" bodyEnd="0x558318dd5200" nestedIn="0x558318ae7300"/>
+    <scope id="0x558318aec8c0" type="If" bodyStart="0x558318d3a840" bodyEnd="0x558318b491b0" nestedIn="0x558318ae7300"/>
+    <scope id="0x558318e15df0" type="Function" className="msg_box_delete" bodyStart="0x558318b8b230" bodyEnd="0x558318d80b10" nestedIn="0x558318b2a180" function="0x558318d915e0"/>
+  </scopes>
+  <variables>
+    <var id="0x558318abc700" nameToken="0x558318bbf8a0" typeStartToken="0x558318b23ed0" typeEndToken="0x558318b247e0" access="Argument" scope="0" constness="1" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318ac0950" nameToken="0x558318daa470" typeStartToken="0x558318db1790" typeEndToken="0x558318db1790" access="Public" scope="0x558318d97360" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318acfca0" nameToken="0x558318ad4b10" typeStartToken="0x558318b9d210" typeEndToken="0x558318b9d300" access="Argument" scope="0x558318d120e0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318ad1d10" nameToken="0x558318bb3200" typeStartToken="0x558318dad0b0" typeEndToken="0x558318dad1a0" access="Argument" scope="0x558318ae7300" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318afb6d0" nameToken="0x558318cdb5a0" typeStartToken="0x558318b61070" typeEndToken="0x558318b61070" access="Public" scope="0x558318d97360" constness="0" isArray="false" isClass="true" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b3a110" nameToken="0x558318b11c20" typeStartToken="0x558318b11bc0" typeEndToken="0x558318bb3350" access="Argument" scope="0x558318ae7300" constness="1" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b5b3f0" nameToken="0x558318d81ea0" typeStartToken="0x558318aa67b0" typeEndToken="0x558318c911d0" access="Public" scope="0x558318d97360" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b89310" nameToken="0x558318b100a0" typeStartToken="0x558318d8b820" typeEndToken="0x558318b633c0" access="Argument" scope="0x558318d120e0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318bc1e80" nameToken="0x558318ce8330" typeStartToken="0x558318d86cc0" typeEndToken="0x558318d86db0" access="Local" scope="0x558318d16c10" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318ca9b50" nameToken="0x558318ccc120" typeStartToken="0x558318bc3510" typeEndToken="0x558318b7cbb0" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318cd0cc0" nameToken="0x558318d234c0" typeStartToken="0x558318ccc6c0" typeEndToken="0x558318ccc6c0" access="Public" scope="0x558318d97360" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318cdb300" nameToken="0x558318b85830" typeStartToken="0x558318d9c420" typeEndToken="0x558318cdb260" access="Argument" scope="0" constness="1" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d52510" nameToken="0x558318ab9d20" typeStartToken="0x558318cd8010" typeEndToken="0x558318cd8100" access="Argument" scope="0x558318e15df0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d754f0" nameToken="0x558318d55710" typeStartToken="0x558318d70590" typeEndToken="0x558318d70590" access="Argument" scope="0x558318d16c10" constness="1" isArray="false" isClass="false" isConst="true" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d945a0" nameToken="0x558318ce8850" typeStartToken="0x558318ddd690" typeEndToken="0x558318ddd690" access="Public" scope="0x558318d97360" constness="0" isArray="false" isClass="true" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+  </variables>
+  <valueflow>
+    <values id="0x558318cb96d0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318da4eb0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b7c790">
+      <value uninit="1" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318acd2d0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b40630">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318bb7de0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318ddd7f0">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d734a0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318ddd5b0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b12ea0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d9c9e0">
+      <value lifetime="0x558318d7f590" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318b95f80">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b7f990">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b547c0">
+      <value tokvalue="0x558318ddc5a0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318dcc720">
+      <value tokvalue="0x558318bc41b0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b82cc0">
+      <value intvalue="28" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b1b760">
+      <value tokvalue="0x558318ce5640" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b48f00">
+      <value lifetime="0x558318b9d5a0" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318b3e190">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b56230">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d9d720">
+      <value tokvalue="0x558318d34720" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d91350">
+      <value tokvalue="0x558318b24920" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318dd53f0">
+      <value intvalue="29" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d666c0">
+      <value tokvalue="0x558318d4c060" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d51960">
+      <value lifetime="0x558318ce0380" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318b92b30">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318db1630">
+      <value tokvalue="0x558318dddaf0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b40860">
+      <value tokvalue="0x558318ad43f0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b96380">
+      <value intvalue="37" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d35330">
+      <value tokvalue="0x558318ae8120" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d54690">
+      <value lifetime="0x558318b846d0" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318c9a410">
+      <value lifetime="0x558318b56590" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318d37510">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b03e80">
+      <value tokvalue="0x558318bc2270" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318cc8a60">
+      <value tokvalue="0x558318bbf0f0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318cd81f0">
+      <value intvalue="41" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318aacb20">
+      <value tokvalue="0x558318cd8d80" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b7ec10">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b823c0">
+      <value lifetime="0x558318bb0480" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318d47660">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318ad14f0">
+      <value tokvalue="0x558318d3f350" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318bca3d0">
+      <value tokvalue="0x558318b196d0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b42510">
+      <value intvalue="48" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d76b60">
+      <value tokvalue="0x558318b2a9b0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b5e670">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d2ab20">
+      <value lifetime="0x558318b72fc0" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318d6a3e0">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b72880">
+      <value tokvalue="0x558318bb45f0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d3b170">
+      <value tokvalue="0x558318d7dda0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318cd7140">
+      <value intvalue="54" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d7e1b0">
+      <value tokvalue="0x558318daa900" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318abc6d0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b36cc0">
+      <value lifetime="0x558318af11e0" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318b428b0">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318cd4950">
+      <value tokvalue="0x558318b043c0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318afd400">
+      <value tokvalue="0x558318b25620" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318db1970">
+      <value intvalue="61" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d98600">
+      <value tokvalue="0x558318b12690" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318adf660">
+      <value lifetime="0x558318b24500" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318b5d7e0">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b15cc0">
+      <value tokvalue="0x558318bacd90" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d2fbd0">
+      <value tokvalue="0x558318b98320" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d83db0">
+      <value intvalue="63" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318da8510">
+      <value tokvalue="0x558318ad4680" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318c9a390">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318cb6b00">
+      <value lifetime="0x558318b72930" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318c97030">
+      <value lifetime="0x558318b17cc0" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318ab4060">
+      <value lifetime="0x558318cd8490" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318b1fef0">
+      <value lifetime="0x558318afacb0" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+  </valueflow>
+  <typedef-info>
+    <info name="msg_box" file="air/examples/posix/p0/msg_box.h" line="19" column="4" used="1"/>
+  </typedef-info>
+</dump>
+</dumps>

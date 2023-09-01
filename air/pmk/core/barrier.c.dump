@@ -1,0 +1,1019 @@
+<?xml version="1.0"?>
+<dumps>
+  <platform name="Native" char_bit="8" short_bit="16" int_bit="32" long_bit="64" long_long_bit="64" pointer_bit="64"/>
+  <rawtokens>
+    <file index="0" name="air/pmk/core/barrier.c"/>
+    <file index="1" name="air/pmk/core/include/barrier.h"/>
+    <file index="2" name="air/pmk/arch/sparc/include/atomic.h"/>
+    <file index="3" name="air/pmk/arch/sparc/include/air_arch.h"/>
+    <tok fileIndex="0" linenr="1" column="1" str="/*x * Copyright (C) 2013-2014  GMVIS Skysoft S.A.x *x * The license and distribution terms for this file may bex * found in the file LICENSE in this distribution or atx * air/LICENSEx */"/>
+    <tok fileIndex="0" linenr="8" column="1" str="/**x * @file barrier.cx * @author pfnfx * @brief Sense-reversal barrier implementationx */"/>
+    <tok fileIndex="0" linenr="14" column="1" str="#"/>
+    <tok fileIndex="0" linenr="14" column="2" str="include"/>
+    <tok fileIndex="0" linenr="14" column="10" str="&lt;barrier.h&gt;"/>
+    <tok fileIndex="0" linenr="17" column="1" str="void"/>
+    <tok fileIndex="0" linenr="17" column="6" str="pmk_barrier_init"/>
+    <tok fileIndex="0" linenr="17" column="22" str="("/>
+    <tok fileIndex="0" linenr="17" column="23" str="pmk_barrier_t"/>
+    <tok fileIndex="0" linenr="17" column="37" str="*"/>
+    <tok fileIndex="0" linenr="17" column="38" str="barrier"/>
+    <tok fileIndex="0" linenr="17" column="45" str=","/>
+    <tok fileIndex="0" linenr="17" column="47" str="air_u32_t"/>
+    <tok fileIndex="0" linenr="17" column="57" str="size"/>
+    <tok fileIndex="0" linenr="17" column="61" str=")"/>
+    <tok fileIndex="0" linenr="17" column="63" str="{"/>
+    <tok fileIndex="0" linenr="19" column="5" str="int"/>
+    <tok fileIndex="0" linenr="19" column="9" str="i"/>
+    <tok fileIndex="0" linenr="19" column="10" str=";"/>
+    <tok fileIndex="0" linenr="20" column="5" str="barrier"/>
+    <tok fileIndex="0" linenr="20" column="12" str="-&gt;"/>
+    <tok fileIndex="0" linenr="20" column="14" str="sense"/>
+    <tok fileIndex="0" linenr="20" column="20" str="="/>
+    <tok fileIndex="0" linenr="20" column="22" str="0"/>
+    <tok fileIndex="0" linenr="20" column="23" str=";"/>
+    <tok fileIndex="0" linenr="21" column="5" str="barrier"/>
+    <tok fileIndex="0" linenr="21" column="12" str="-&gt;"/>
+    <tok fileIndex="0" linenr="21" column="14" str="size"/>
+    <tok fileIndex="0" linenr="21" column="19" str="="/>
+    <tok fileIndex="0" linenr="21" column="21" str="size"/>
+    <tok fileIndex="0" linenr="21" column="25" str=";"/>
+    <tok fileIndex="0" linenr="23" column="5" str="atomic_set"/>
+    <tok fileIndex="0" linenr="23" column="15" str="("/>
+    <tok fileIndex="0" linenr="23" column="16" str="size"/>
+    <tok fileIndex="0" linenr="23" column="20" str=","/>
+    <tok fileIndex="0" linenr="23" column="22" str="&amp;"/>
+    <tok fileIndex="0" linenr="23" column="23" str="barrier"/>
+    <tok fileIndex="0" linenr="23" column="30" str="-&gt;"/>
+    <tok fileIndex="0" linenr="23" column="32" str="count"/>
+    <tok fileIndex="0" linenr="23" column="37" str=")"/>
+    <tok fileIndex="0" linenr="23" column="38" str=";"/>
+    <tok fileIndex="0" linenr="24" column="5" str="for"/>
+    <tok fileIndex="0" linenr="24" column="9" str="("/>
+    <tok fileIndex="0" linenr="24" column="10" str="i"/>
+    <tok fileIndex="0" linenr="24" column="12" str="="/>
+    <tok fileIndex="0" linenr="24" column="14" str="0"/>
+    <tok fileIndex="0" linenr="24" column="15" str=";"/>
+    <tok fileIndex="0" linenr="24" column="17" str="i"/>
+    <tok fileIndex="0" linenr="24" column="19" str="&lt;"/>
+    <tok fileIndex="0" linenr="24" column="21" str="PMK_MAX_CORES"/>
+    <tok fileIndex="0" linenr="24" column="34" str=";"/>
+    <tok fileIndex="0" linenr="24" column="36" str="++"/>
+    <tok fileIndex="0" linenr="24" column="38" str="i"/>
+    <tok fileIndex="0" linenr="24" column="39" str=")"/>
+    <tok fileIndex="0" linenr="24" column="41" str="{"/>
+    <tok fileIndex="0" linenr="25" column="9" str="barrier"/>
+    <tok fileIndex="0" linenr="25" column="16" str="-&gt;"/>
+    <tok fileIndex="0" linenr="25" column="18" str="local_sense"/>
+    <tok fileIndex="0" linenr="25" column="29" str="["/>
+    <tok fileIndex="0" linenr="25" column="30" str="i"/>
+    <tok fileIndex="0" linenr="25" column="31" str="]"/>
+    <tok fileIndex="0" linenr="25" column="33" str="="/>
+    <tok fileIndex="0" linenr="25" column="35" str="barrier"/>
+    <tok fileIndex="0" linenr="25" column="42" str="-&gt;"/>
+    <tok fileIndex="0" linenr="25" column="44" str="sense"/>
+    <tok fileIndex="0" linenr="25" column="49" str=";"/>
+    <tok fileIndex="0" linenr="26" column="5" str="}"/>
+    <tok fileIndex="0" linenr="27" column="1" str="}"/>
+    <tok fileIndex="0" linenr="29" column="1" str="void"/>
+    <tok fileIndex="0" linenr="29" column="6" str="pmk_barrier_wait"/>
+    <tok fileIndex="0" linenr="29" column="22" str="("/>
+    <tok fileIndex="0" linenr="29" column="23" str="pmk_barrier_t"/>
+    <tok fileIndex="0" linenr="29" column="37" str="*"/>
+    <tok fileIndex="0" linenr="29" column="38" str="barrier"/>
+    <tok fileIndex="0" linenr="29" column="45" str=","/>
+    <tok fileIndex="0" linenr="29" column="47" str="air_u32_t"/>
+    <tok fileIndex="0" linenr="29" column="57" str="core_id"/>
+    <tok fileIndex="0" linenr="29" column="64" str=")"/>
+    <tok fileIndex="0" linenr="29" column="66" str="{"/>
+    <tok fileIndex="0" linenr="31" column="5" str="/* swap local sense */"/>
+    <tok fileIndex="0" linenr="32" column="5" str="barrier"/>
+    <tok fileIndex="0" linenr="32" column="12" str="-&gt;"/>
+    <tok fileIndex="0" linenr="32" column="14" str="local_sense"/>
+    <tok fileIndex="0" linenr="32" column="25" str="["/>
+    <tok fileIndex="0" linenr="32" column="26" str="core_id"/>
+    <tok fileIndex="0" linenr="32" column="33" str="]"/>
+    <tok fileIndex="0" linenr="32" column="35" str="="/>
+    <tok fileIndex="0" linenr="32" column="37" str="~"/>
+    <tok fileIndex="0" linenr="32" column="38" str="barrier"/>
+    <tok fileIndex="0" linenr="32" column="45" str="-&gt;"/>
+    <tok fileIndex="0" linenr="32" column="47" str="local_sense"/>
+    <tok fileIndex="0" linenr="32" column="58" str="["/>
+    <tok fileIndex="0" linenr="32" column="59" str="core_id"/>
+    <tok fileIndex="0" linenr="32" column="66" str="]"/>
+    <tok fileIndex="0" linenr="32" column="67" str=";"/>
+    <tok fileIndex="0" linenr="34" column="5" str="/* last core remaining ? */"/>
+    <tok fileIndex="0" linenr="35" column="5" str="if"/>
+    <tok fileIndex="0" linenr="35" column="8" str="("/>
+    <tok fileIndex="0" linenr="35" column="9" str="atomic_fetch_dec"/>
+    <tok fileIndex="0" linenr="35" column="25" str="("/>
+    <tok fileIndex="0" linenr="35" column="26" str="&amp;"/>
+    <tok fileIndex="0" linenr="35" column="27" str="barrier"/>
+    <tok fileIndex="0" linenr="35" column="34" str="-&gt;"/>
+    <tok fileIndex="0" linenr="35" column="36" str="count"/>
+    <tok fileIndex="0" linenr="35" column="41" str=")"/>
+    <tok fileIndex="0" linenr="35" column="43" str="=="/>
+    <tok fileIndex="0" linenr="35" column="46" str="0"/>
+    <tok fileIndex="0" linenr="35" column="47" str=")"/>
+    <tok fileIndex="0" linenr="35" column="49" str="{"/>
+    <tok fileIndex="0" linenr="37" column="9" str="atomic_set"/>
+    <tok fileIndex="0" linenr="37" column="19" str="("/>
+    <tok fileIndex="0" linenr="37" column="20" str="barrier"/>
+    <tok fileIndex="0" linenr="37" column="27" str="-&gt;"/>
+    <tok fileIndex="0" linenr="37" column="29" str="size"/>
+    <tok fileIndex="0" linenr="37" column="33" str=","/>
+    <tok fileIndex="0" linenr="37" column="35" str="&amp;"/>
+    <tok fileIndex="0" linenr="37" column="36" str="barrier"/>
+    <tok fileIndex="0" linenr="37" column="43" str="-&gt;"/>
+    <tok fileIndex="0" linenr="37" column="45" str="count"/>
+    <tok fileIndex="0" linenr="37" column="50" str=")"/>
+    <tok fileIndex="0" linenr="37" column="51" str=";"/>
+    <tok fileIndex="0" linenr="38" column="9" str="barrier"/>
+    <tok fileIndex="0" linenr="38" column="16" str="-&gt;"/>
+    <tok fileIndex="0" linenr="38" column="18" str="sense"/>
+    <tok fileIndex="0" linenr="38" column="24" str="="/>
+    <tok fileIndex="0" linenr="38" column="26" str="barrier"/>
+    <tok fileIndex="0" linenr="38" column="33" str="-&gt;"/>
+    <tok fileIndex="0" linenr="38" column="35" str="local_sense"/>
+    <tok fileIndex="0" linenr="38" column="46" str="["/>
+    <tok fileIndex="0" linenr="38" column="47" str="core_id"/>
+    <tok fileIndex="0" linenr="38" column="54" str="]"/>
+    <tok fileIndex="0" linenr="38" column="55" str=";"/>
+    <tok fileIndex="0" linenr="40" column="5" str="/* no? wait for last core */"/>
+    <tok fileIndex="0" linenr="41" column="5" str="}"/>
+    <tok fileIndex="0" linenr="41" column="7" str="else"/>
+    <tok fileIndex="0" linenr="41" column="12" str="{"/>
+    <tok fileIndex="0" linenr="43" column="9" str="while"/>
+    <tok fileIndex="0" linenr="43" column="15" str="("/>
+    <tok fileIndex="0" linenr="43" column="16" str="barrier"/>
+    <tok fileIndex="0" linenr="43" column="23" str="-&gt;"/>
+    <tok fileIndex="0" linenr="43" column="25" str="sense"/>
+    <tok fileIndex="0" linenr="43" column="31" str="!="/>
+    <tok fileIndex="0" linenr="43" column="34" str="barrier"/>
+    <tok fileIndex="0" linenr="43" column="41" str="-&gt;"/>
+    <tok fileIndex="0" linenr="43" column="43" str="local_sense"/>
+    <tok fileIndex="0" linenr="43" column="54" str="["/>
+    <tok fileIndex="0" linenr="43" column="55" str="core_id"/>
+    <tok fileIndex="0" linenr="43" column="62" str="]"/>
+    <tok fileIndex="0" linenr="43" column="63" str=")"/>
+    <tok fileIndex="0" linenr="43" column="64" str=";"/>
+    <tok fileIndex="0" linenr="44" column="5" str="}"/>
+    <tok fileIndex="0" linenr="45" column="1" str="}"/>
+  </rawtokens>
+  <suppressions>
+  </suppressions>
+<dump cfg="INLINE=__inline__">
+  <standards>
+    <c version="c11"/>
+    <cpp version="c++20"/>
+  </standards>
+  <directivelist>
+    <directive file="air/pmk/core/barrier.c" linenr="14" str="#include &lt;barrier.h&gt;"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="14" str="#ifndef __AIR_ARCH_H__"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="15" str="#define __AIR_ARCH_H__"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="16" str="#ifndef ASM"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="17" str="#ifdef __cplusplus"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="19" str="#endif"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="24" str="#define NULL ((void *)0)"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="34" str="#define air_offsetof(st, m) ((air_sz_t)(&amp;((st *) 0)-&gt;m))"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="200" str="#ifdef __cplusplus"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="202" str="#endif"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="203" str="#endif"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="205" str="#define AIR_SYSCALL_OS_TRAP 0x80"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="206" str="#define AIR_SYSCALL_SPARC_TRAP 0x82"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="207" str="#define AIR_SYSCALL_FLUSH_TRAP 0x83"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="208" str="#define AIR_SYSCALL_HM_TRAP 0x84"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="209" str="#define AIR_SYSCALL_PS_TRAP 0x89"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="212" str="#define AIR_IRQ_HM_EVENT AIR_SYSCALL_HM_TRAP"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="215" str="#define AIR_SYSCALL_SPARC_DISABLE_INTERRUPTS 0"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="216" str="#define AIR_SYSCALL_SPARC_ENABLE_INTERRUPTS 1"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="217" str="#define AIR_SYSCALL_SPARC_DISABLE_TRAPS 2"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="218" str="#define AIR_SYSCALL_SPARC_ENABLE_TRAPS 3"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="219" str="#define AIR_SYSCALL_SPARC_DISABLE_FPU 4"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="220" str="#define AIR_SYSCALL_SPARC_ENABLE_FPU 5"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="221" str="#define AIR_SYSCALL_SPARC_GET_TBR 6"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="222" str="#define AIR_SYSCALL_SPARC_SET_TBR 7"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="223" str="#define AIR_SYSCALL_SPARC_GET_PSR 8"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="224" str="#define AIR_SYSCALL_SPARC_SET_PSR 9"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="225" str="#define AIR_SYSCALL_SPARC_RETT 10"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="226" str="#define AIR_SYSCALL_SPARC_GET_CACHE_REGISTER 11"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="227" str="#define AIR_SYSCALL_SPARC_SET_CACHE_REGISTER 12"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="228" str="#define AIR_SYSCALL_SPARC_RESTORE_CACHE_REGISTER 13"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="229" str="#define AIR_SYSCALL_SPARC_GET_IRQ_MASK_REGISTER 14"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="230" str="#define AIR_SYSCALL_SPARC_SET_IRQ_MASK_REGISTER 15"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="231" str="#define AIR_SYSCALL_SPARC_SET_IRQ_FORCE_REGISTER 16"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="232" str="#define AIR_SYSCALL_SPARC_GET_INST_CACHE_CFG_REGISTER 17"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="233" str="#define AIR_SYSCALL_SPARC_GET_DATA_CACHE_CFG_REGISTER 18"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="234" str="#define AIR_SYSCALL_SPARC_SET_EF 19"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="235" str="#define AIR_SYSCALL_SPARC_COUNT 20"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="241" str="#define AIR_SYSCALL_ARCH_COUNT 0"/>
+    <directive file="air/pmk/arch/sparc/include/air_arch.h" linenr="243" str="#endif"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="27" str="#ifndef __ATOMIC_H__"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="28" str="#define __ATOMIC_H__"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="30" str="#include &lt;air_arch.h&gt;"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="43" str="#define atomic_set(i, v) ((void)sparc_atomic_swap((int)(i), (v)))"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="44" str="#define atomic_swap(i, v) (sparc_atomic_swap((int)(i), (v)))"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="45" str="#define atomic_fetch(v) ((v)-&gt;value)"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="47" str="#define atomic_add(i, v) ((void)sparc_atomic_add( (int)(i), (v)))"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="48" str="#define atomic_sub(i, v) ((void)sparc_atomic_add(-(int)(i), (v)))"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="49" str="#define atomic_inc(v) ((void)sparc_atomic_add( 1, (v)))"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="50" str="#define atomic_dec(v) ((void)sparc_atomic_add( -1, (v)))"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="52" str="#define atomic_or(i, v) ((void)sparc_atomic_or((int)(i), (v)))"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="53" str="#define atomic_and(i, v) ((void)sparc_atomic_and((int)(i), (v)))"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="54" str="#define atomic_xor(i, v) ((void)sparc_atomic_xor((int)(i), (v)))"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="56" str="#define atomic_fetch_add(i, v) (sparc_atomic_add( (int)(i), (v)))"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="57" str="#define atomic_fetch_sub(i, v) (sparc_atomic_add(-(int)(i), (v)))"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="58" str="#define atomic_fetch_inc(v) (sparc_atomic_add( 1, (v)))"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="59" str="#define atomic_fetch_dec(v) (sparc_atomic_add( -1, (v)))"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="61" str="#define atomic_fetch_or(i, v) (sparc_atomic_or((int)(i), (v)))"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="62" str="#define atomic_fetch_and(i, v) (sparc_atomic_and((int)(i), (v)))"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="63" str="#define atomic_fetch_xor(i, v) (sparc_atomic_xor((int)(i), (v)))"/>
+    <directive file="air/pmk/arch/sparc/include/atomic.h" linenr="65" str="#endif"/>
+    <directive file="air/pmk/core/include/barrier.h" linenr="15" str="#ifndef __BARRIER_H__"/>
+    <directive file="air/pmk/core/include/barrier.h" linenr="16" str="#define __BARRIER_H__"/>
+    <directive file="air/pmk/core/include/barrier.h" linenr="18" str="#include &lt;atomic.h&gt;"/>
+    <directive file="air/pmk/core/include/barrier.h" linenr="59" str="#endif"/>
+  </directivelist>
+  <macro-usage>
+    <macro name="atomic_fetch_dec" file="air/pmk/arch/sparc/include/atomic.h" line="59" column="9" usefile="air/pmk/core/barrier.c" useline="35" usecolumn="9" is-known-value="true"/>
+    <macro name="atomic_set" file="air/pmk/arch/sparc/include/atomic.h" line="43" column="9" usefile="air/pmk/core/barrier.c" useline="23" usecolumn="5" is-known-value="true"/>
+    <macro name="atomic_set" file="air/pmk/arch/sparc/include/atomic.h" line="43" column="9" usefile="air/pmk/core/barrier.c" useline="37" usecolumn="9" is-known-value="true"/>
+  </macro-usage>
+  <tokenlist>
+    <token id="0x558318b0def0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="95" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x55831979d010" file="air/pmk/arch/sparc/include/air_arch.h" linenr="95" column="11" str="air_syscall_disable_interrupts" scope="0x558318d177c0" type="name" function="0x558318d5be70"/>
+    <token id="0x558319430d60" file="air/pmk/arch/sparc/include/air_arch.h" linenr="95" column="41" str="(" scope="0x558318d177c0" link="0x558318afa6b0" values="0x558318cd3050" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583198dbbe0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="95" column="42" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318afa6b0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="95" column="46" str=")" scope="0x558318d177c0" link="0x558319430d60"/>
+    <token id="0x558318e9c820" file="air/pmk/arch/sparc/include/air_arch.h" linenr="95" column="47" str=";" scope="0x558318d177c0"/>
+    <token id="0x5583197080d0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="100" column="1" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318ef14d0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="100" column="6" str="air_syscall_enable_interrupts" scope="0x558318d177c0" type="name" function="0x558318d3ba20"/>
+    <token id="0x558318e21b70" file="air/pmk/arch/sparc/include/air_arch.h" linenr="100" column="35" str="(" scope="0x558318d177c0" link="0x558318ab0d50" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318d1e090" file="air/pmk/arch/sparc/include/air_arch.h" linenr="100" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x55831977e400" file="air/pmk/arch/sparc/include/air_arch.h" linenr="100" column="46" str="pil" scope="0x558318d177c0" type="name" varId="1" variable="0x558318d2b380" values="0x558319554ad0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318ab0d50" file="air/pmk/arch/sparc/include/air_arch.h" linenr="100" column="49" str=")" scope="0x558318d177c0" link="0x558318e21b70"/>
+    <token id="0x5583198e5ad0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="100" column="50" str=";" scope="0x558318d177c0"/>
+    <token id="0x558319978f00" file="air/pmk/arch/sparc/include/air_arch.h" linenr="104" column="1" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x55831990e880" file="air/pmk/arch/sparc/include/air_arch.h" linenr="104" column="6" str="air_syscall_disable_traps" scope="0x558318d177c0" type="name" function="0x558318f01390"/>
+    <token id="0x558318d6bce0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="104" column="31" str="(" scope="0x558318d177c0" link="0x558318eaf3a0" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318dad020" file="air/pmk/arch/sparc/include/air_arch.h" linenr="104" column="32" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318eaf3a0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="104" column="36" str=")" scope="0x558318d177c0" link="0x558318d6bce0"/>
+    <token id="0x558318e83fb0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="104" column="37" str=";" scope="0x558318d177c0"/>
+    <token id="0x558319584010" file="air/pmk/arch/sparc/include/air_arch.h" linenr="108" column="1" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x5583193dd110" file="air/pmk/arch/sparc/include/air_arch.h" linenr="108" column="6" str="air_syscall_enable_traps" scope="0x558318d177c0" type="name" function="0x558318e4ace0"/>
+    <token id="0x558318c97800" file="air/pmk/arch/sparc/include/air_arch.h" linenr="108" column="30" str="(" scope="0x558318d177c0" link="0x55831998e7a0" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318b66cb0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="108" column="31" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x55831998e7a0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="108" column="35" str=")" scope="0x558318d177c0" link="0x558318c97800"/>
+    <token id="0x558318b3e1f0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="108" column="36" str=";" scope="0x558318d177c0"/>
+    <token id="0x55831979d690" file="air/pmk/arch/sparc/include/air_arch.h" linenr="114" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558318e0d190" file="air/pmk/arch/sparc/include/air_arch.h" linenr="114" column="11" str="air_syscall_disable_fpu" scope="0x558318d177c0" type="name" function="0x558318e650a0"/>
+    <token id="0x5583198b3120" file="air/pmk/arch/sparc/include/air_arch.h" linenr="114" column="34" str="(" scope="0x558318d177c0" link="0x558318de7f90" values="0x558318b92b30" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318c9d9c0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="114" column="35" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318de7f90" file="air/pmk/arch/sparc/include/air_arch.h" linenr="114" column="39" str=")" scope="0x558318d177c0" link="0x5583198b3120"/>
+    <token id="0x558319708010" file="air/pmk/arch/sparc/include/air_arch.h" linenr="114" column="40" str=";" scope="0x558318d177c0"/>
+    <token id="0x558318d4f4d0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="120" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558318eee870" file="air/pmk/arch/sparc/include/air_arch.h" linenr="120" column="11" str="air_syscall_enable_fpu" scope="0x558318d177c0" type="name" function="0x5583191d6800"/>
+    <token id="0x5583192c46d0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="120" column="33" str="(" scope="0x558318d177c0" link="0x558318d112c0" values="0x558318d8b4b0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d58fd0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="120" column="34" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318d112c0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="120" column="38" str=")" scope="0x558318d177c0" link="0x5583192c46d0"/>
+    <token id="0x5583193655e0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="120" column="39" str=";" scope="0x558318d177c0"/>
+    <token id="0x558318aab840" file="air/pmk/arch/sparc/include/air_arch.h" linenr="125" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558318d70d70" file="air/pmk/arch/sparc/include/air_arch.h" linenr="125" column="11" str="air_syscall_get_psr" scope="0x558318d177c0" type="name" function="0x558319899740"/>
+    <token id="0x558318c9ebf0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="125" column="30" str="(" scope="0x558318d177c0" link="0x558318eb3190" values="0x558319695be0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318cc7cc0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="125" column="31" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318eb3190" file="air/pmk/arch/sparc/include/air_arch.h" linenr="125" column="35" str=")" scope="0x558318d177c0" link="0x558318c9ebf0"/>
+    <token id="0x558318ce37d0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="125" column="36" str=";" scope="0x558318d177c0"/>
+    <token id="0x558319946640" file="air/pmk/arch/sparc/include/air_arch.h" linenr="130" column="1" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x5583193d2bd0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="130" column="6" str="air_syscall_set_psr" scope="0x558318d177c0" type="name" function="0x558318bb6d40"/>
+    <token id="0x558318b3a450" file="air/pmk/arch/sparc/include/air_arch.h" linenr="130" column="25" str="(" scope="0x558318d177c0" link="0x558318ea1260" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318ebe8c0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="130" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558318d16d50" file="air/pmk/arch/sparc/include/air_arch.h" linenr="130" column="36" str="psr" scope="0x558318d177c0" type="name" varId="2" variable="0x558318cc8510" values="0x558318bbdd00" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318ea1260" file="air/pmk/arch/sparc/include/air_arch.h" linenr="130" column="39" str=")" scope="0x558318d177c0" link="0x558318b3a450"/>
+    <token id="0x558319589be0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="130" column="40" str=";" scope="0x558318d177c0"/>
+    <token id="0x558319585400" file="air/pmk/arch/sparc/include/air_arch.h" linenr="136" column="1" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x55831945f570" file="air/pmk/arch/sparc/include/air_arch.h" linenr="136" column="6" str="air_syscall_virtual_rett" scope="0x558318d177c0" type="name" function="0x558318b42c70"/>
+    <token id="0x558318b33980" file="air/pmk/arch/sparc/include/air_arch.h" linenr="136" column="30" str="(" scope="0x558318d177c0" link="0x558318e1a0b0" valueType-type="void" valueType-reference="None"/>
+    <token id="0x55831945b010" file="air/pmk/arch/sparc/include/air_arch.h" linenr="136" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558318ea08d0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="136" column="41" str="pc" scope="0x558318d177c0" type="name" varId="3" variable="0x55831942a160" values="0x558318baaaa0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e0cfd0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="136" column="43" str="," scope="0x558318d177c0"/>
+    <token id="0x558318d004c0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="136" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x5583198b36a0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="136" column="55" str="n_pc" scope="0x558318d177c0" type="name" varId="4" variable="0x558318d85680" values="0x558319692270" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e1a0b0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="136" column="59" str=")" scope="0x558318d177c0" link="0x558318b33980"/>
+    <token id="0x558319581580" file="air/pmk/arch/sparc/include/air_arch.h" linenr="136" column="60" str=";" scope="0x558318d177c0"/>
+    <token id="0x558318d55710" file="air/pmk/arch/sparc/include/air_arch.h" linenr="141" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558318b52690" file="air/pmk/arch/sparc/include/air_arch.h" linenr="141" column="11" str="air_syscall_get_cache_register" scope="0x558318d177c0" type="name" function="0x558318f40030"/>
+    <token id="0x558318d755a0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="141" column="41" str="(" scope="0x558318d177c0" link="0x558318da9460" values="0x558319ac72f0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318cca7a0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="141" column="42" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318da9460" file="air/pmk/arch/sparc/include/air_arch.h" linenr="141" column="46" str=")" scope="0x558318d177c0" link="0x558318d755a0"/>
+    <token id="0x55831935bc90" file="air/pmk/arch/sparc/include/air_arch.h" linenr="141" column="47" str=";" scope="0x558318d177c0"/>
+    <token id="0x55831937b620" file="air/pmk/arch/sparc/include/air_arch.h" linenr="148" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x5583193ca220" file="air/pmk/arch/sparc/include/air_arch.h" linenr="148" column="11" str="air_syscall_set_cache_register" scope="0x558318d177c0" type="name" function="0x558319363640"/>
+    <token id="0x558318e5e7a0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="148" column="41" str="(" scope="0x558318d177c0" link="0x558319ae4770" values="0x5583196f44f0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319863ef0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="148" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558319516920" file="air/pmk/arch/sparc/include/air_arch.h" linenr="148" column="52" str="cache" scope="0x558318d177c0" type="name" varId="5" variable="0x5583198dd2d0" values="0x558319417500" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319ae4770" file="air/pmk/arch/sparc/include/air_arch.h" linenr="148" column="57" str=")" scope="0x558318d177c0" link="0x558318e5e7a0"/>
+    <token id="0x558318eeeea0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="148" column="58" str=";" scope="0x558318d177c0"/>
+    <token id="0x55831974d770" file="air/pmk/arch/sparc/include/air_arch.h" linenr="153" column="1" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x55831943e690" file="air/pmk/arch/sparc/include/air_arch.h" linenr="153" column="6" str="air_syscall_set_tbr" scope="0x558318d177c0" type="name" function="0x55831958f2d0"/>
+    <token id="0x558318e8dc90" file="air/pmk/arch/sparc/include/air_arch.h" linenr="153" column="25" str="(" scope="0x558318d177c0" link="0x558319acd4e0" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318ab5040" file="air/pmk/arch/sparc/include/air_arch.h" linenr="153" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558318ec6fd0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="153" column="36" str="tbr" scope="0x558318d177c0" type="name" varId="6" variable="0x558319acb900" values="0x558318d4c450" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319acd4e0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="153" column="39" str=")" scope="0x558318d177c0" link="0x558318e8dc90"/>
+    <token id="0x558318ad1ff0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="153" column="40" str=";" scope="0x558318d177c0"/>
+    <token id="0x558318cc9bf0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="158" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558318aecc10" file="air/pmk/arch/sparc/include/air_arch.h" linenr="158" column="11" str="air_syscall_get_tbr" scope="0x558318d177c0" type="name" function="0x558319533bb0"/>
+    <token id="0x558318af7d00" file="air/pmk/arch/sparc/include/air_arch.h" linenr="158" column="30" str="(" scope="0x558318d177c0" link="0x558318cf7850" values="0x558318b14950" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318babb20" file="air/pmk/arch/sparc/include/air_arch.h" linenr="158" column="31" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318cf7850" file="air/pmk/arch/sparc/include/air_arch.h" linenr="158" column="35" str=")" scope="0x558318d177c0" link="0x558318af7d00"/>
+    <token id="0x558318b9a370" file="air/pmk/arch/sparc/include/air_arch.h" linenr="158" column="36" str=";" scope="0x558318d177c0"/>
+    <token id="0x558319ae5200" file="air/pmk/arch/sparc/include/air_arch.h" linenr="164" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x5583191c7aa0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="164" column="11" str="air_syscall_get_irq_mask_register" scope="0x558318d177c0" type="name" function="0x558319978be0"/>
+    <token id="0x558319952560" file="air/pmk/arch/sparc/include/air_arch.h" linenr="164" column="44" str="(" scope="0x558318d177c0" link="0x558319539e40" values="0x5583194403f0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319587db0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="164" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558318e1b270" file="air/pmk/arch/sparc/include/air_arch.h" linenr="164" column="55" str="core_id" scope="0x558318d177c0" type="name" varId="7" variable="0x558319408110" values="0x558318b6d6b0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319539e40" file="air/pmk/arch/sparc/include/air_arch.h" linenr="164" column="62" str=")" scope="0x558318d177c0" link="0x558319952560"/>
+    <token id="0x55831995a650" file="air/pmk/arch/sparc/include/air_arch.h" linenr="164" column="63" str=";" scope="0x558318d177c0"/>
+    <token id="0x558318e00270" file="air/pmk/arch/sparc/include/air_arch.h" linenr="172" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558318de35a0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="172" column="11" str="air_syscall_set_irq_mask_register" scope="0x558318d177c0" type="name" function="0x55831940f1f0"/>
+    <token id="0x558318baf5a0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="172" column="44" str="(" scope="0x558318d177c0" link="0x558318cd4bc0" values="0x558319a891b0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318ce1a00" file="air/pmk/arch/sparc/include/air_arch.h" linenr="172" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558318e97f30" file="air/pmk/arch/sparc/include/air_arch.h" linenr="172" column="55" str="core_id" scope="0x558318d177c0" type="name" varId="8" variable="0x558318b21420" values="0x558318e042d0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e1a1b0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="172" column="62" str="," scope="0x558318d177c0"/>
+    <token id="0x55831944cea0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="172" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558319408210" file="air/pmk/arch/sparc/include/air_arch.h" linenr="172" column="74" str="mask" scope="0x558318d177c0" type="name" varId="9" variable="0x558318b2c4a0" values="0x558318d9d6c0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318cd4bc0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="172" column="78" str=")" scope="0x558318d177c0" link="0x558318baf5a0"/>
+    <token id="0x558318ef1630" file="air/pmk/arch/sparc/include/air_arch.h" linenr="172" column="79" str=";" scope="0x558318d177c0"/>
+    <token id="0x558319459480" file="air/pmk/arch/sparc/include/air_arch.h" linenr="180" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x5583198e78b0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="180" column="11" str="air_syscall_set_irq_force_register" scope="0x558318d177c0" type="name" function="0x558318e9a120"/>
+    <token id="0x558318e311c0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="180" column="45" str="(" scope="0x558318d177c0" link="0x55831997f6d0" values="0x55831991d940" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583191ce2d0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="180" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558318b40750" file="air/pmk/arch/sparc/include/air_arch.h" linenr="180" column="56" str="core_id" scope="0x558318d177c0" type="name" varId="10" variable="0x558318d19b30" values="0x558318ddd530" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583196be100" file="air/pmk/arch/sparc/include/air_arch.h" linenr="180" column="63" str="," scope="0x558318d177c0"/>
+    <token id="0x5583199761a0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="180" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x5583193ebd00" file="air/pmk/arch/sparc/include/air_arch.h" linenr="180" column="75" str="force" scope="0x558318d177c0" type="name" varId="11" variable="0x558318ea1b40" values="0x558318da74c0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831997f6d0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="180" column="80" str=")" scope="0x558318d177c0" link="0x558318e311c0"/>
+    <token id="0x5583198d07f0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="180" column="81" str=";" scope="0x558318d177c0"/>
+    <token id="0x558319768cc0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="185" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x5583198dcec0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="185" column="11" str="air_syscall_get_inst_cache_config_register" scope="0x558318d177c0" type="name" function="0x558318b2c960"/>
+    <token id="0x5583194149a0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="185" column="53" str="(" scope="0x558318d177c0" link="0x558318b16480" values="0x558318f018d0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583195365d0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="185" column="54" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318b16480" file="air/pmk/arch/sparc/include/air_arch.h" linenr="185" column="58" str=")" scope="0x558318d177c0" link="0x5583194149a0"/>
+    <token id="0x558318e26da0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="185" column="59" str=";" scope="0x558318d177c0"/>
+    <token id="0x558318ebc600" file="air/pmk/arch/sparc/include/air_arch.h" linenr="190" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558318b306f0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="190" column="11" str="air_syscall_get_data_cache_config_register" scope="0x558318d177c0" type="name" function="0x55831955b1c0"/>
+    <token id="0x558318af17f0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="190" column="53" str="(" scope="0x558318d177c0" link="0x55831991ecf0" values="0x558318b5d0b0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318aa67b0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="190" column="54" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x55831991ecf0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="190" column="58" str=")" scope="0x558318d177c0" link="0x558318af17f0"/>
+    <token id="0x558319327d90" file="air/pmk/arch/sparc/include/air_arch.h" linenr="190" column="59" str=";" scope="0x558318d177c0"/>
+    <token id="0x55831955b800" file="air/pmk/arch/sparc/include/air_arch.h" linenr="197" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x55831997d5b0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="197" column="11" str="air_syscall_set_ef" scope="0x558318d177c0" type="name" function="0x5583193ea4c0"/>
+    <token id="0x558318e724e0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="197" column="29" str="(" scope="0x558318d177c0" link="0x558318cc73f0" values="0x5583198c70a0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831976c1b0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="197" column="30" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318cc73f0" file="air/pmk/arch/sparc/include/air_arch.h" linenr="197" column="34" str=")" scope="0x558318d177c0" link="0x558318e724e0"/>
+    <token id="0x558319514d20" file="air/pmk/arch/sparc/include/air_arch.h" linenr="197" column="35" str=";" scope="0x558318d177c0"/>
+    <token id="0x558318af54e0" file="air/pmk/arch/sparc/include/atomic.h" linenr="35" column="9" str="struct" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318aff690" file="air/pmk/arch/sparc/include/atomic.h" linenr="35" column="0" str="atomic_t" scope="0x558318d177c0" type="name" type-scope="0x558319680900"/>
+    <token id="0x558318bb52f0" file="air/pmk/arch/sparc/include/atomic.h" linenr="35" column="16" str="{" scope="0x558319680900" link="0x558318d33c90" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558319680900"/>
+    <token id="0x558318ee3900" file="air/pmk/arch/sparc/include/atomic.h" linenr="35" column="18" str="volatile" scope="0x558319680900" type="name"/>
+    <token id="0x558318e982c0" file="air/pmk/arch/sparc/include/atomic.h" linenr="35" column="27" str="int" scope="0x558319680900" type="name"/>
+    <token id="0x558318d700b0" file="air/pmk/arch/sparc/include/atomic.h" linenr="35" column="31" str="value" scope="0x558319680900" type="name" varId="12" variable="0x558319363aa0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d23bc0" file="air/pmk/arch/sparc/include/atomic.h" linenr="35" column="36" str=";" scope="0x558319680900"/>
+    <token id="0x558318d33c90" file="air/pmk/arch/sparc/include/atomic.h" linenr="35" column="38" str="}" scope="0x558319680900" link="0x558318bb52f0"/>
+    <token id="0x558318ab6f90" file="air/pmk/arch/sparc/include/atomic.h" linenr="35" column="0" str=";" scope="0x558318d177c0"/>
+    <token id="0x5583196826a0" file="air/pmk/arch/sparc/include/atomic.h" linenr="37" column="1" str="extern" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318b59d70" file="air/pmk/arch/sparc/include/atomic.h" linenr="37" column="0" str="long" scope="0x558318d177c0" type="name" isSigned="true"/>
+    <token id="0x558318b1deb0" file="air/pmk/arch/sparc/include/atomic.h" linenr="37" column="18" str="sparc_atomic_add" scope="0x558318d177c0" type="name" function="0x5583195898c0"/>
+    <token id="0x558319961340" file="air/pmk/arch/sparc/include/atomic.h" linenr="37" column="34" str="(" scope="0x558318d177c0" link="0x558318ccc6c0" valueType-type="long" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558319ae7f30" file="air/pmk/arch/sparc/include/atomic.h" linenr="37" column="0" str="long" scope="0x558318d177c0" type="name" isSigned="true"/>
+    <token id="0x5583198ad880" file="air/pmk/arch/sparc/include/atomic.h" linenr="37" column="45" str="i" scope="0x558318d177c0" type="name" varId="13" variable="0x558318bbcb30" valueType-type="long" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318bb2750" file="air/pmk/arch/sparc/include/atomic.h" linenr="37" column="46" str="," scope="0x558318d177c0"/>
+    <token id="0x558318b0e380" file="air/pmk/arch/sparc/include/atomic.h" linenr="37" column="48" str="struct" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318d05c90" file="air/pmk/arch/sparc/include/atomic.h" linenr="37" column="0" str="atomic_t" scope="0x558318d177c0" type="name" type-scope="0x558319680900" astParent="0x558318d929c0"/>
+    <token id="0x558318d929c0" file="air/pmk/arch/sparc/include/atomic.h" linenr="37" column="57" str="*" scope="0x558318d177c0" type="op" isArithmeticalOp="true" astOperand1="0x558318d05c90" astOperand2="0x558319ada510"/>
+    <token id="0x558319ada510" file="air/pmk/arch/sparc/include/atomic.h" linenr="37" column="58" str="v" scope="0x558318d177c0" type="name" varId="14" variable="0x558318b89310" astParent="0x558318d929c0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558319680900"/>
+    <token id="0x558318ccc6c0" file="air/pmk/arch/sparc/include/atomic.h" linenr="37" column="59" str=")" scope="0x558318d177c0" link="0x558319961340"/>
+    <token id="0x558319539fd0" file="air/pmk/arch/sparc/include/atomic.h" linenr="37" column="60" str=";" scope="0x558318d177c0"/>
+    <token id="0x55831995e880" file="air/pmk/arch/sparc/include/atomic.h" linenr="38" column="1" str="extern" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318df3530" file="air/pmk/arch/sparc/include/atomic.h" linenr="38" column="0" str="long" scope="0x558318d177c0" type="name" isSigned="true"/>
+    <token id="0x5583196f00c0" file="air/pmk/arch/sparc/include/atomic.h" linenr="38" column="18" str="sparc_atomic_swap" scope="0x558318d177c0" type="name" function="0x558319893280"/>
+    <token id="0x558318cc8ff0" file="air/pmk/arch/sparc/include/atomic.h" linenr="38" column="35" str="(" scope="0x558318d177c0" link="0x558318df1f10" valueType-type="long" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318bca880" file="air/pmk/arch/sparc/include/atomic.h" linenr="38" column="0" str="long" scope="0x558318d177c0" type="name" isSigned="true"/>
+    <token id="0x558318aee9a0" file="air/pmk/arch/sparc/include/atomic.h" linenr="38" column="46" str="i" scope="0x558318d177c0" type="name" varId="15" variable="0x5583194523b0" valueType-type="long" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d55110" file="air/pmk/arch/sparc/include/atomic.h" linenr="38" column="47" str="," scope="0x558318d177c0"/>
+    <token id="0x558318ec7270" file="air/pmk/arch/sparc/include/atomic.h" linenr="38" column="49" str="struct" scope="0x558318d177c0" type="name"/>
+    <token id="0x55831991eda0" file="air/pmk/arch/sparc/include/atomic.h" linenr="38" column="0" str="atomic_t" scope="0x558318d177c0" type="name" type-scope="0x558319680900" astParent="0x558318d2d2b0"/>
+    <token id="0x558318d2d2b0" file="air/pmk/arch/sparc/include/atomic.h" linenr="38" column="58" str="*" scope="0x558318d177c0" type="op" isArithmeticalOp="true" astOperand1="0x55831991eda0" astOperand2="0x55831976bc50"/>
+    <token id="0x55831976bc50" file="air/pmk/arch/sparc/include/atomic.h" linenr="38" column="59" str="v" scope="0x558318d177c0" type="name" varId="16" variable="0x558319ad4170" astParent="0x558318d2d2b0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558319680900"/>
+    <token id="0x558318df1f10" file="air/pmk/arch/sparc/include/atomic.h" linenr="38" column="60" str=")" scope="0x558318d177c0" link="0x558318cc8ff0"/>
+    <token id="0x558318d66300" file="air/pmk/arch/sparc/include/atomic.h" linenr="38" column="61" str=";" scope="0x558318d177c0"/>
+    <token id="0x558319acb070" file="air/pmk/arch/sparc/include/atomic.h" linenr="39" column="1" str="extern" scope="0x558318d177c0" type="name"/>
+    <token id="0x5583199876e0" file="air/pmk/arch/sparc/include/atomic.h" linenr="39" column="0" str="long" scope="0x558318d177c0" type="name" isSigned="true"/>
+    <token id="0x558318ec8860" file="air/pmk/arch/sparc/include/atomic.h" linenr="39" column="18" str="sparc_atomic_or" scope="0x558318d177c0" type="name" function="0x55831970ef50"/>
+    <token id="0x5583191d6b20" file="air/pmk/arch/sparc/include/atomic.h" linenr="39" column="33" str="(" scope="0x558318d177c0" link="0x558318d9f3d0" valueType-type="long" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318c9da50" file="air/pmk/arch/sparc/include/atomic.h" linenr="39" column="0" str="long" scope="0x558318d177c0" type="name" isSigned="true"/>
+    <token id="0x5583198cb0a0" file="air/pmk/arch/sparc/include/atomic.h" linenr="39" column="44" str="i" scope="0x558318d177c0" type="name" varId="17" variable="0x5583195825e0" valueType-type="long" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318bb2d60" file="air/pmk/arch/sparc/include/atomic.h" linenr="39" column="45" str="," scope="0x558318d177c0"/>
+    <token id="0x558318ce8590" file="air/pmk/arch/sparc/include/atomic.h" linenr="39" column="47" str="struct" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318d18ec0" file="air/pmk/arch/sparc/include/atomic.h" linenr="39" column="0" str="atomic_t" scope="0x558318d177c0" type="name" type-scope="0x558319680900" astParent="0x558318b08870"/>
+    <token id="0x558318b08870" file="air/pmk/arch/sparc/include/atomic.h" linenr="39" column="56" str="*" scope="0x558318d177c0" type="op" isArithmeticalOp="true" astOperand1="0x558318d18ec0" astOperand2="0x558318e830e0"/>
+    <token id="0x558318e830e0" file="air/pmk/arch/sparc/include/atomic.h" linenr="39" column="57" str="v" scope="0x558318d177c0" type="name" varId="18" variable="0x558318ef27e0" astParent="0x558318b08870" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558319680900"/>
+    <token id="0x558318d9f3d0" file="air/pmk/arch/sparc/include/atomic.h" linenr="39" column="58" str=")" scope="0x558318d177c0" link="0x5583191d6b20"/>
+    <token id="0x558318e88f00" file="air/pmk/arch/sparc/include/atomic.h" linenr="39" column="59" str=";" scope="0x558318d177c0"/>
+    <token id="0x558318f522e0" file="air/pmk/arch/sparc/include/atomic.h" linenr="40" column="1" str="extern" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318b79e80" file="air/pmk/arch/sparc/include/atomic.h" linenr="40" column="0" str="long" scope="0x558318d177c0" type="name" isSigned="true"/>
+    <token id="0x5583193d6d20" file="air/pmk/arch/sparc/include/atomic.h" linenr="40" column="18" str="sparc_atomic_and" scope="0x558318d177c0" type="name" function="0x5583198cb9d0"/>
+    <token id="0x558318e161e0" file="air/pmk/arch/sparc/include/atomic.h" linenr="40" column="34" str="(" scope="0x558318d177c0" link="0x55831970ec40" valueType-type="long" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x5583198bc070" file="air/pmk/arch/sparc/include/atomic.h" linenr="40" column="0" str="long" scope="0x558318d177c0" type="name" isSigned="true"/>
+    <token id="0x558318dffb80" file="air/pmk/arch/sparc/include/atomic.h" linenr="40" column="45" str="i" scope="0x558318d177c0" type="name" varId="19" variable="0x558318d75210" valueType-type="long" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318f096e0" file="air/pmk/arch/sparc/include/atomic.h" linenr="40" column="46" str="," scope="0x558318d177c0"/>
+    <token id="0x558319ab9500" file="air/pmk/arch/sparc/include/atomic.h" linenr="40" column="48" str="struct" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318db1790" file="air/pmk/arch/sparc/include/atomic.h" linenr="40" column="0" str="atomic_t" scope="0x558318d177c0" type="name" type-scope="0x558319680900" astParent="0x558318e79850"/>
+    <token id="0x558318e79850" file="air/pmk/arch/sparc/include/atomic.h" linenr="40" column="57" str="*" scope="0x558318d177c0" type="op" isArithmeticalOp="true" astOperand1="0x558318db1790" astOperand2="0x558318eb9660"/>
+    <token id="0x558318eb9660" file="air/pmk/arch/sparc/include/atomic.h" linenr="40" column="58" str="v" scope="0x558318d177c0" type="name" varId="20" variable="0x558319ae1ad0" astParent="0x558318e79850" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558319680900"/>
+    <token id="0x55831970ec40" file="air/pmk/arch/sparc/include/atomic.h" linenr="40" column="59" str=")" scope="0x558318d177c0" link="0x558318e161e0"/>
+    <token id="0x558318efff30" file="air/pmk/arch/sparc/include/atomic.h" linenr="40" column="60" str=";" scope="0x558318d177c0"/>
+    <token id="0x5583194596a0" file="air/pmk/arch/sparc/include/atomic.h" linenr="41" column="1" str="extern" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318d301f0" file="air/pmk/arch/sparc/include/atomic.h" linenr="41" column="0" str="long" scope="0x558318d177c0" type="name" isSigned="true"/>
+    <token id="0x55831970e6c0" file="air/pmk/arch/sparc/include/atomic.h" linenr="41" column="18" str="sparc_atomic_xor" scope="0x558318d177c0" type="name" function="0x558318b9c1d0"/>
+    <token id="0x558318da93d0" file="air/pmk/arch/sparc/include/atomic.h" linenr="41" column="34" str="(" scope="0x558318d177c0" link="0x558319acc330" valueType-type="long" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b61070" file="air/pmk/arch/sparc/include/atomic.h" linenr="41" column="0" str="long" scope="0x558318d177c0" type="name" isSigned="true"/>
+    <token id="0x558318b7cf00" file="air/pmk/arch/sparc/include/atomic.h" linenr="41" column="45" str="i" scope="0x558318d177c0" type="name" varId="21" variable="0x558318d28e00" valueType-type="long" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x55831998d9f0" file="air/pmk/arch/sparc/include/atomic.h" linenr="41" column="46" str="," scope="0x558318d177c0"/>
+    <token id="0x5583198e5060" file="air/pmk/arch/sparc/include/atomic.h" linenr="41" column="48" str="struct" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318b03ed0" file="air/pmk/arch/sparc/include/atomic.h" linenr="41" column="0" str="atomic_t" scope="0x558318d177c0" type="name" type-scope="0x558319680900" astParent="0x55831945efd0"/>
+    <token id="0x55831945efd0" file="air/pmk/arch/sparc/include/atomic.h" linenr="41" column="57" str="*" scope="0x558318d177c0" type="op" isArithmeticalOp="true" astOperand1="0x558318b03ed0" astOperand2="0x558318db1670"/>
+    <token id="0x558318db1670" file="air/pmk/arch/sparc/include/atomic.h" linenr="41" column="58" str="v" scope="0x558318d177c0" type="name" varId="22" variable="0x558318af5860" astParent="0x55831945efd0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558319680900"/>
+    <token id="0x558319acc330" file="air/pmk/arch/sparc/include/atomic.h" linenr="41" column="59" str=")" scope="0x558318d177c0" link="0x558318da93d0"/>
+    <token id="0x558318bb0610" file="air/pmk/arch/sparc/include/atomic.h" linenr="41" column="60" str=";" scope="0x558318d177c0"/>
+    <token id="0x558319325ee0" file="air/pmk/core/include/barrier.h" linenr="29" column="9" str="struct" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318d83df0" file="air/pmk/core/include/barrier.h" linenr="29" column="0" str="pmk_barrier_t" scope="0x558318d177c0" type="name" type-scope="0x558318cc1a30"/>
+    <token id="0x558318d081e0" file="air/pmk/core/include/barrier.h" linenr="29" column="16" str="{" scope="0x558318cc1a30" link="0x558318e3fb80" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x558318caa780" file="air/pmk/core/include/barrier.h" linenr="32" column="0" str="long" scope="0x558318cc1a30" type="name" isUnsigned="true"/>
+    <token id="0x558318ef1580" file="air/pmk/core/include/barrier.h" linenr="32" column="15" str="size" scope="0x558318cc1a30" type="name" varId="23" variable="0x5583195306c0" values="0x558318da6870" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583191c6b60" file="air/pmk/core/include/barrier.h" linenr="32" column="19" str=";" scope="0x558318cc1a30"/>
+    <token id="0x5583193c2620" file="air/pmk/core/include/barrier.h" linenr="34" column="5" str="struct" scope="0x558318cc1a30" type="name"/>
+    <token id="0x5583191c6d20" file="air/pmk/core/include/barrier.h" linenr="34" column="0" str="atomic_t" scope="0x558318cc1a30" type="name" type-scope="0x558319680900"/>
+    <token id="0x558319688250" file="air/pmk/core/include/barrier.h" linenr="34" column="14" str="count" scope="0x558318cc1a30" type="name" varId="24" variable="0x558319340a90" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558319680900"/>
+    <token id="0x55831952f590" file="air/pmk/core/include/barrier.h" linenr="34" column="19" str=";" scope="0x558318cc1a30"/>
+    <token id="0x558318d34c90" file="air/pmk/core/include/barrier.h" linenr="36" column="5" str="volatile" scope="0x558318cc1a30" type="name"/>
+    <token id="0x558319514b60" file="air/pmk/core/include/barrier.h" linenr="36" column="0" str="long" scope="0x558318cc1a30" type="name" isUnsigned="true"/>
+    <token id="0x558318ce7420" file="air/pmk/core/include/barrier.h" linenr="36" column="24" str="sense" scope="0x558318cc1a30" type="name" varId="25" variable="0x558318b35240" values="0x558318e0e9f0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319a9dea0" file="air/pmk/core/include/barrier.h" linenr="36" column="29" str=";" scope="0x558318cc1a30"/>
+    <token id="0x558318b4bd10" file="air/pmk/core/include/barrier.h" linenr="38" column="0" str="long" scope="0x558318cc1a30" type="name" isUnsigned="true"/>
+    <token id="0x558318cdb5a0" file="air/pmk/core/include/barrier.h" linenr="38" column="15" str="local_sense" scope="0x558318cc1a30" type="name" varId="26" variable="0x558319772f10" astParent="0x558318dab2e0" valueType-type="long" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318dab2e0" file="air/pmk/core/include/barrier.h" linenr="38" column="26" str="[" scope="0x558318cc1a30" link="0x558318ce8630" astOperand1="0x558318cdb5a0" astOperand2="0x5583193e78c0" valueType-type="long" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x5583193e78c0" file="air/pmk/core/include/barrier.h" linenr="38" column="27" str="PMK_MAX_CORES" scope="0x558318cc1a30" type="name" astParent="0x558318dab2e0"/>
+    <token id="0x558318ce8630" file="air/pmk/core/include/barrier.h" linenr="38" column="40" str="]" scope="0x558318cc1a30" link="0x558318dab2e0"/>
+    <token id="0x558318e15520" file="air/pmk/core/include/barrier.h" linenr="38" column="41" str=";" scope="0x558318cc1a30"/>
+    <token id="0x558318e3fb80" file="air/pmk/core/include/barrier.h" linenr="40" column="1" str="}" scope="0x558318cc1a30" link="0x558318d081e0"/>
+    <token id="0x558318df1dc0" file="air/pmk/core/include/barrier.h" linenr="40" column="0" str=";" scope="0x558318d177c0"/>
+    <token id="0x558319420490" file="air/pmk/core/include/barrier.h" linenr="48" column="1" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318d699d0" file="air/pmk/core/include/barrier.h" linenr="48" column="6" str="pmk_barrier_init" scope="0x558318d177c0" type="name" function="0x558319ad61b0"/>
+    <token id="0x558318b7faf0" file="air/pmk/core/include/barrier.h" linenr="48" column="22" str="(" scope="0x558318d177c0" link="0x558319741880" valueType-type="void" valueType-reference="None"/>
+    <token id="0x5583193c4eb0" file="air/pmk/core/include/barrier.h" linenr="48" column="23" str="struct" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318eee110" file="air/pmk/core/include/barrier.h" linenr="48" column="0" str="pmk_barrier_t" scope="0x558318d177c0" type="name" type-scope="0x558318cc1a30" astParent="0x558318c9ab80"/>
+    <token id="0x558318c9ab80" file="air/pmk/core/include/barrier.h" linenr="48" column="37" str="*" scope="0x558318d177c0" type="op" isArithmeticalOp="true" astParent="0x558318cd3e70" astOperand1="0x558318eee110" astOperand2="0x558318e9d530"/>
+    <token id="0x558318e9d530" file="air/pmk/core/include/barrier.h" linenr="48" column="38" str="barrier" scope="0x558318d177c0" type="name" varId="27" astParent="0x558318c9ab80"/>
+    <token id="0x558318cd3e70" file="air/pmk/core/include/barrier.h" linenr="48" column="45" str="," scope="0x558318d177c0" astOperand1="0x558318c9ab80" astOperand2="0x558318b09130"/>
+    <token id="0x558318eee920" file="air/pmk/core/include/barrier.h" linenr="48" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558318b09130" file="air/pmk/core/include/barrier.h" linenr="48" column="57" str="size" scope="0x558318d177c0" type="name" varId="28" astParent="0x558318cd3e70"/>
+    <token id="0x558319741880" file="air/pmk/core/include/barrier.h" linenr="48" column="61" str=")" scope="0x558318d177c0" link="0x558318b7faf0"/>
+    <token id="0x558318ccc540" file="air/pmk/core/include/barrier.h" linenr="48" column="62" str=";" scope="0x558318d177c0"/>
+    <token id="0x558319363d00" file="air/pmk/core/include/barrier.h" linenr="55" column="1" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318cb6000" file="air/pmk/core/include/barrier.h" linenr="55" column="6" str="pmk_barrier_wait" scope="0x558318d177c0" type="name" function="0x5583199206b0"/>
+    <token id="0x558319445310" file="air/pmk/core/include/barrier.h" linenr="55" column="22" str="(" scope="0x558318d177c0" link="0x558318d9fd90" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318ccc5c0" file="air/pmk/core/include/barrier.h" linenr="55" column="23" str="struct" scope="0x558318d177c0" type="name"/>
+    <token id="0x5583193d6500" file="air/pmk/core/include/barrier.h" linenr="55" column="0" str="pmk_barrier_t" scope="0x558318d177c0" type="name" type-scope="0x558318cc1a30" astParent="0x558318d9fe40"/>
+    <token id="0x558318d9fe40" file="air/pmk/core/include/barrier.h" linenr="55" column="37" str="*" scope="0x558318d177c0" type="op" isArithmeticalOp="true" astParent="0x558319962a70" astOperand1="0x5583193d6500" astOperand2="0x55831953a080"/>
+    <token id="0x55831953a080" file="air/pmk/core/include/barrier.h" linenr="55" column="38" str="barrier" scope="0x558318d177c0" type="name" varId="29" astParent="0x558318d9fe40"/>
+    <token id="0x558319962a70" file="air/pmk/core/include/barrier.h" linenr="55" column="45" str="," scope="0x558318d177c0" astOperand1="0x558318d9fe40" astOperand2="0x558318ce5640"/>
+    <token id="0x558318e7b940" file="air/pmk/core/include/barrier.h" linenr="55" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558318ce5640" file="air/pmk/core/include/barrier.h" linenr="55" column="57" str="core_id" scope="0x558318d177c0" type="name" varId="30" astParent="0x558319962a70"/>
+    <token id="0x558318d9fd90" file="air/pmk/core/include/barrier.h" linenr="55" column="64" str=")" scope="0x558318d177c0" link="0x558319445310"/>
+    <token id="0x558319aac0e0" file="air/pmk/core/include/barrier.h" linenr="55" column="65" str=";" scope="0x558318d177c0"/>
+    <token id="0x558318b312a0" file="air/pmk/core/barrier.c" linenr="17" column="1" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318b978d0" file="air/pmk/core/barrier.c" linenr="17" column="6" str="pmk_barrier_init" scope="0x558318d177c0" type="name" function="0x558319ad61b0"/>
+    <token id="0x558318b34b90" file="air/pmk/core/barrier.c" linenr="17" column="22" str="(" scope="0x558318d177c0" link="0x558319a9dbe0" valueType-type="void" valueType-reference="None"/>
+    <token id="0x5583193d5bc0" file="air/pmk/core/barrier.c" linenr="17" column="23" str="struct" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318af25f0" file="air/pmk/core/barrier.c" linenr="17" column="0" str="pmk_barrier_t" scope="0x558318d177c0" type="name" type-scope="0x558318cc1a30" astParent="0x5583199208c0"/>
+    <token id="0x5583199208c0" file="air/pmk/core/barrier.c" linenr="17" column="37" str="*" scope="0x558318d177c0" type="op" isArithmeticalOp="true" astParent="0x558318cdb520" astOperand1="0x558318af25f0" astOperand2="0x558318ef42c0"/>
+    <token id="0x558318ef42c0" file="air/pmk/core/barrier.c" linenr="17" column="38" str="barrier" scope="0x558318d177c0" type="name" varId="31" variable="0x558318e9ac30" astParent="0x5583199208c0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x558318cdb520" file="air/pmk/core/barrier.c" linenr="17" column="45" str="," scope="0x558318d177c0" astOperand1="0x5583199208c0" astOperand2="0x55831931b380"/>
+    <token id="0x558318d85960" file="air/pmk/core/barrier.c" linenr="17" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x55831931b380" file="air/pmk/core/barrier.c" linenr="17" column="57" str="size" scope="0x558318d177c0" type="name" varId="32" variable="0x5583193adbb0" values="0x55831992af40" astParent="0x558318cdb520" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319a9dbe0" file="air/pmk/core/barrier.c" linenr="17" column="61" str=")" scope="0x558318d177c0" link="0x558318b34b90"/>
+    <token id="0x5583191cee10" file="air/pmk/core/barrier.c" linenr="17" column="63" str="{" scope="0x558318e433b0" link="0x558318d39180"/>
+    <token id="0x558318d7a8b0" file="air/pmk/core/barrier.c" linenr="19" column="5" str="int" scope="0x558318e433b0" type="name"/>
+    <token id="0x558318ac47f0" file="air/pmk/core/barrier.c" linenr="19" column="9" str="i" scope="0x558318e433b0" type="name" varId="33" variable="0x5583193c16e0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318cbb7b0" file="air/pmk/core/barrier.c" linenr="19" column="10" str=";" scope="0x558318e433b0"/>
+    <token id="0x558318d70b80" file="air/pmk/core/barrier.c" linenr="20" column="5" str="barrier" scope="0x558318e433b0" type="name" varId="31" variable="0x558318e9ac30" astParent="0x558318e1a2d0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x558318e1a2d0" file="air/pmk/core/barrier.c" linenr="20" column="12" str="." scope="0x558318e433b0" values="0x558318aac630" astParent="0x558318d7bf20" astOperand1="0x558318d70b80" astOperand2="0x558318b53500" originalName="->" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b53500" file="air/pmk/core/barrier.c" linenr="20" column="14" str="sense" scope="0x558318e433b0" type="name" varId="34" variable="0x558318b35240" values="0x558318d9a650" astParent="0x558318e1a2d0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d7bf20" file="air/pmk/core/barrier.c" linenr="20" column="20" str="=" scope="0x558318e433b0" type="op" isAssignmentOp="true" values="0x558319450170" astOperand1="0x558318e1a2d0" astOperand2="0x55831997e670" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831997e670" file="air/pmk/core/barrier.c" linenr="20" column="22" str="0" scope="0x558318e433b0" type="number" isInt="true" values="0x558318b74150" astParent="0x558318d7bf20" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x55831951a550" file="air/pmk/core/barrier.c" linenr="20" column="23" str=";" scope="0x558318e433b0"/>
+    <token id="0x5583192bfeb0" file="air/pmk/core/barrier.c" linenr="21" column="5" str="barrier" scope="0x558318e433b0" type="name" varId="31" variable="0x558318e9ac30" astParent="0x558318ae4e90" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x558318ae4e90" file="air/pmk/core/barrier.c" linenr="21" column="12" str="." scope="0x558318e433b0" values="0x5583193b0c80" astParent="0x558318de6480" astOperand1="0x5583192bfeb0" astOperand2="0x558318e14d10" originalName="->" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e14d10" file="air/pmk/core/barrier.c" linenr="21" column="14" str="size" scope="0x558318e433b0" type="name" varId="35" variable="0x5583195306c0" values="0x558319693d60" astParent="0x558318ae4e90" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318de6480" file="air/pmk/core/barrier.c" linenr="21" column="19" str="=" scope="0x558318e433b0" type="op" isAssignmentOp="true" values="0x55831991da70" astOperand1="0x558318ae4e90" astOperand2="0x558318b30f00" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b30f00" file="air/pmk/core/barrier.c" linenr="21" column="21" str="size" scope="0x558318e433b0" type="name" varId="32" variable="0x5583193adbb0" values="0x5583195381a0" astParent="0x558318de6480" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d17e80" file="air/pmk/core/barrier.c" linenr="21" column="25" str=";" scope="0x558318e433b0"/>
+    <token id="0x558318b20330" file="air/pmk/core/barrier.c" linenr="23" column="5" str="(" scope="0x558318e433b0" isExpandedMacro="true" link="0x558318cbcd30" astOperand1="0x558318e16270" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318b886d0" file="air/pmk/core/barrier.c" linenr="23" column="5" str="void" scope="0x558318e433b0" type="name" isExpandedMacro="true"/>
+    <token id="0x558318cbcd30" file="air/pmk/core/barrier.c" linenr="23" column="5" str=")" scope="0x558318e433b0" isExpandedMacro="true" link="0x558318b20330"/>
+    <token id="0x5583197513e0" file="air/pmk/core/barrier.c" linenr="23" column="5" str="sparc_atomic_swap" scope="0x558318e433b0" type="name" isExpandedMacro="true" function="0x558319893280" astParent="0x558318e16270"/>
+    <token id="0x558318e16270" file="air/pmk/core/barrier.c" linenr="23" column="5" str="(" scope="0x558318e433b0" isExpandedMacro="true" link="0x55831939c460" astParent="0x558318b20330" astOperand1="0x5583197513e0" astOperand2="0x558318eec7e0" valueType-type="long" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b4be60" file="air/pmk/core/barrier.c" linenr="23" column="5" str="(" scope="0x558318e433b0" isExpandedMacro="true" link="0x5583197794d0" astParent="0x558318eec7e0" astOperand1="0x558318b11290" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d9a1d0" file="air/pmk/core/barrier.c" linenr="23" column="5" str="int" scope="0x558318e433b0" type="name" isExpandedMacro="true"/>
+    <token id="0x5583197794d0" file="air/pmk/core/barrier.c" linenr="23" column="5" str=")" scope="0x558318e433b0" isExpandedMacro="true" link="0x558318b4be60"/>
+    <token id="0x558318b6a790" file="air/pmk/core/barrier.c" linenr="23" column="5" str="(" scope="0x558318e433b0" isExpandedMacro="true" link="0x5583191d1360"/>
+    <token id="0x558318b11290" file="air/pmk/core/barrier.c" linenr="23" column="5" str="size" scope="0x558318e433b0" type="name" varId="32" variable="0x5583193adbb0" values="0x558318ad4da0" astParent="0x558318b4be60" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583191d1360" file="air/pmk/core/barrier.c" linenr="23" column="5" str=")" scope="0x558318e433b0" isExpandedMacro="true" link="0x558318b6a790"/>
+    <token id="0x558318eec7e0" file="air/pmk/core/barrier.c" linenr="23" column="5" str="," scope="0x558318e433b0" isExpandedMacro="true" astParent="0x558318e16270" astOperand1="0x558318b4be60" astOperand2="0x558318e86bb0"/>
+    <token id="0x558318e86bb0" file="air/pmk/core/barrier.c" linenr="23" column="5" str="&amp;" scope="0x558318e433b0" type="op" values="0x558318b88670" astParent="0x558318eec7e0" astOperand1="0x5583194113a0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558319680900"/>
+    <token id="0x558318afd9a0" file="air/pmk/core/barrier.c" linenr="23" column="5" str="barrier" scope="0x558318e433b0" type="name" varId="31" variable="0x558318e9ac30" astParent="0x5583194113a0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x5583194113a0" file="air/pmk/core/barrier.c" linenr="23" column="5" str="." scope="0x558318e433b0" astParent="0x558318e86bb0" astOperand1="0x558318afd9a0" astOperand2="0x5583198d22a0" originalName="->" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558319680900"/>
+    <token id="0x5583198d22a0" file="air/pmk/core/barrier.c" linenr="23" column="5" str="count" scope="0x558318e433b0" type="name" varId="36" variable="0x558319340a90" astParent="0x5583194113a0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558319680900"/>
+    <token id="0x55831939c460" file="air/pmk/core/barrier.c" linenr="23" column="5" str=")" scope="0x558318e433b0" isExpandedMacro="true" link="0x558318e16270"/>
+    <token id="0x558318cd8610" file="air/pmk/core/barrier.c" linenr="23" column="38" str=";" scope="0x558318e433b0"/>
+    <token id="0x5583198b1e80" file="air/pmk/core/barrier.c" linenr="24" column="5" str="for" scope="0x558318e433b0" type="name" astParent="0x55831991d120"/>
+    <token id="0x55831991d120" file="air/pmk/core/barrier.c" linenr="24" column="9" str="(" scope="0x558318e433b0" link="0x558318bbd600" astOperand1="0x5583198b1e80" astOperand2="0x558319684d70"/>
+    <token id="0x558319514c40" file="air/pmk/core/barrier.c" linenr="24" column="10" str="i" scope="0x558318e433b0" type="name" varId="33" variable="0x5583193c16e0" astParent="0x558318ba37d0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318ba37d0" file="air/pmk/core/barrier.c" linenr="24" column="12" str="=" scope="0x558318e433b0" type="op" isAssignmentOp="true" values="0x558318d706b0" astParent="0x558319684d70" astOperand1="0x558319514c40" astOperand2="0x558319947210" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558319947210" file="air/pmk/core/barrier.c" linenr="24" column="14" str="0" scope="0x558318e433b0" type="number" isInt="true" values="0x55831974c8b0" astParent="0x558318ba37d0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558319684d70" file="air/pmk/core/barrier.c" linenr="24" column="15" str=";" scope="0x558318e433b0" astParent="0x55831991d120" astOperand1="0x558318ba37d0" astOperand2="0x558318ab09c0"/>
+    <token id="0x55831998fcc0" file="air/pmk/core/barrier.c" linenr="24" column="17" str="i" scope="0x558318e433b0" type="name" varId="33" variable="0x5583193c16e0" astParent="0x558318effa80" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318effa80" file="air/pmk/core/barrier.c" linenr="24" column="19" str="&lt;" scope="0x558318e433b0" type="op" isComparisonOp="true" astParent="0x558318ab09c0" astOperand1="0x55831998fcc0" astOperand2="0x558319979860" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558319979860" file="air/pmk/core/barrier.c" linenr="24" column="21" str="PMK_MAX_CORES" scope="0x558318e433b0" type="name" astParent="0x558318effa80"/>
+    <token id="0x558318ab09c0" file="air/pmk/core/barrier.c" linenr="24" column="34" str=";" scope="0x558318e433b0" astParent="0x558319684d70" astOperand1="0x558318effa80" astOperand2="0x558318f00b70"/>
+    <token id="0x558318f00b70" file="air/pmk/core/barrier.c" linenr="24" column="36" str="++" scope="0x558318e433b0" type="op" astParent="0x558318ab09c0" astOperand1="0x558318e18470" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318e18470" file="air/pmk/core/barrier.c" linenr="24" column="38" str="i" scope="0x558318e433b0" type="name" varId="33" variable="0x5583193c16e0" astParent="0x558318f00b70" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318bbd600" file="air/pmk/core/barrier.c" linenr="24" column="39" str=")" scope="0x558318e433b0" link="0x55831991d120"/>
+    <token id="0x558319971c20" file="air/pmk/core/barrier.c" linenr="24" column="41" str="{" scope="0x558318b315b0" link="0x558319aca8c0"/>
+    <token id="0x558318b842e0" file="air/pmk/core/barrier.c" linenr="25" column="9" str="barrier" scope="0x558318b315b0" type="name" varId="31" variable="0x558318e9ac30" astParent="0x558318ce71f0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x558318ce71f0" file="air/pmk/core/barrier.c" linenr="25" column="16" str="." scope="0x558318b315b0" astParent="0x558318ce11a0" astOperand1="0x558318b842e0" astOperand2="0x558319859860" originalName="->" valueType-type="long" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558319859860" file="air/pmk/core/barrier.c" linenr="25" column="18" str="local_sense" scope="0x558318b315b0" type="name" varId="37" variable="0x558319772f10" values="0x558318aee4c0" astParent="0x558318ce71f0" valueType-type="long" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318ce11a0" file="air/pmk/core/barrier.c" linenr="25" column="29" str="[" scope="0x558318b315b0" link="0x55831973da40" values="0x558319aa5c90" astParent="0x55831973f6b0" astOperand1="0x558318ce71f0" astOperand2="0x558318ceb2f0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318ceb2f0" file="air/pmk/core/barrier.c" linenr="25" column="30" str="i" scope="0x558318b315b0" type="name" varId="33" variable="0x5583193c16e0" astParent="0x558318ce11a0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x55831973da40" file="air/pmk/core/barrier.c" linenr="25" column="31" str="]" scope="0x558318b315b0" link="0x558318ce11a0"/>
+    <token id="0x55831973f6b0" file="air/pmk/core/barrier.c" linenr="25" column="33" str="=" scope="0x558318b315b0" type="op" isAssignmentOp="true" values="0x558318d94860" astOperand1="0x558318ce11a0" astOperand2="0x558319535e30" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318f56880" file="air/pmk/core/barrier.c" linenr="25" column="35" str="barrier" scope="0x558318b315b0" type="name" varId="31" variable="0x558318e9ac30" astParent="0x558319535e30" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x558319535e30" file="air/pmk/core/barrier.c" linenr="25" column="42" str="." scope="0x558318b315b0" values="0x558318b3ffd0" astParent="0x55831973f6b0" astOperand1="0x558318f56880" astOperand2="0x558318cdb620" originalName="->" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318cdb620" file="air/pmk/core/barrier.c" linenr="25" column="44" str="sense" scope="0x558318b315b0" type="name" varId="34" variable="0x558318b35240" values="0x558318b1c1c0" astParent="0x558319535e30" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831979d730" file="air/pmk/core/barrier.c" linenr="25" column="49" str=";" scope="0x558318b315b0"/>
+    <token id="0x558319aca8c0" file="air/pmk/core/barrier.c" linenr="26" column="5" str="}" scope="0x558318b315b0" link="0x558319971c20"/>
+    <token id="0x558318d39180" file="air/pmk/core/barrier.c" linenr="27" column="1" str="}" scope="0x558318e433b0" link="0x5583191cee10"/>
+    <token id="0x558318ddee50" file="air/pmk/core/barrier.c" linenr="29" column="1" str="void" scope="0x558318d177c0" type="name"/>
+    <token id="0x55831989a520" file="air/pmk/core/barrier.c" linenr="29" column="6" str="pmk_barrier_wait" scope="0x558318d177c0" type="name" function="0x5583199206b0"/>
+    <token id="0x5583193f06c0" file="air/pmk/core/barrier.c" linenr="29" column="22" str="(" scope="0x558318d177c0" link="0x558318ec7340" valueType-type="void" valueType-reference="None"/>
+    <token id="0x5583191d1600" file="air/pmk/core/barrier.c" linenr="29" column="23" str="struct" scope="0x558318d177c0" type="name"/>
+    <token id="0x558318e21a50" file="air/pmk/core/barrier.c" linenr="29" column="0" str="pmk_barrier_t" scope="0x558318d177c0" type="name" type-scope="0x558318cc1a30" astParent="0x558318d68180"/>
+    <token id="0x558318d68180" file="air/pmk/core/barrier.c" linenr="29" column="37" str="*" scope="0x558318d177c0" type="op" isArithmeticalOp="true" astParent="0x558318b90dc0" astOperand1="0x558318e21a50" astOperand2="0x558318b98030"/>
+    <token id="0x558318b98030" file="air/pmk/core/barrier.c" linenr="29" column="38" str="barrier" scope="0x558318d177c0" type="name" varId="38" variable="0x558318cc6e60" astParent="0x558318d68180" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x558318b90dc0" file="air/pmk/core/barrier.c" linenr="29" column="45" str="," scope="0x558318d177c0" astOperand1="0x558318d68180" astOperand2="0x558318dd5810"/>
+    <token id="0x558318e1b010" file="air/pmk/core/barrier.c" linenr="29" column="0" str="long" scope="0x558318d177c0" type="name" isUnsigned="true"/>
+    <token id="0x558318dd5810" file="air/pmk/core/barrier.c" linenr="29" column="57" str="core_id" scope="0x558318d177c0" type="name" varId="39" variable="0x558318ba8840" values="0x558319538100" astParent="0x558318b90dc0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318ec7340" file="air/pmk/core/barrier.c" linenr="29" column="64" str=")" scope="0x558318d177c0" link="0x5583193f06c0"/>
+    <token id="0x558318aed130" file="air/pmk/core/barrier.c" linenr="29" column="66" str="{" scope="0x558318aa5110" link="0x558318daa470"/>
+    <token id="0x558319587260" file="air/pmk/core/barrier.c" linenr="32" column="5" str="barrier" scope="0x558318aa5110" type="name" varId="38" variable="0x558318cc6e60" astParent="0x5583197b7d70" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x5583197b7d70" file="air/pmk/core/barrier.c" linenr="32" column="12" str="." scope="0x558318aa5110" astParent="0x5583193c9820" astOperand1="0x558319587260" astOperand2="0x5583193682f0" originalName="->" valueType-type="long" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x5583193682f0" file="air/pmk/core/barrier.c" linenr="32" column="14" str="local_sense" scope="0x558318aa5110" type="name" varId="40" variable="0x558319772f10" values="0x558318bb7de0" astParent="0x5583197b7d70" valueType-type="long" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x5583193c9820" file="air/pmk/core/barrier.c" linenr="32" column="25" str="[" scope="0x558318aa5110" link="0x558318c98d70" values="0x558318b03e80" astParent="0x558318e79b10" astOperand1="0x5583197b7d70" astOperand2="0x558319acec20" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319acec20" file="air/pmk/core/barrier.c" linenr="32" column="26" str="core_id" scope="0x558318aa5110" type="name" varId="39" variable="0x558318ba8840" values="0x558318d40e70" astParent="0x5583193c9820" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318c98d70" file="air/pmk/core/barrier.c" linenr="32" column="33" str="]" scope="0x558318aa5110" link="0x5583193c9820"/>
+    <token id="0x558318e79b10" file="air/pmk/core/barrier.c" linenr="32" column="35" str="=" scope="0x558318aa5110" type="op" isAssignmentOp="true" values="0x558318d69830" astOperand1="0x5583193c9820" astOperand2="0x55831984cf40" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831984cf40" file="air/pmk/core/barrier.c" linenr="32" column="37" str="~" scope="0x558318aa5110" type="op" values="0x5583198b6000" astParent="0x558318e79b10" astOperand1="0x558318e84110" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318ac48e0" file="air/pmk/core/barrier.c" linenr="32" column="38" str="barrier" scope="0x558318aa5110" type="name" varId="38" variable="0x558318cc6e60" astParent="0x558319779560" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x558319779560" file="air/pmk/core/barrier.c" linenr="32" column="45" str="." scope="0x558318aa5110" astParent="0x558318e84110" astOperand1="0x558318ac48e0" astOperand2="0x558318d70830" originalName="->" valueType-type="long" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318d70830" file="air/pmk/core/barrier.c" linenr="32" column="47" str="local_sense" scope="0x558318aa5110" type="name" varId="40" variable="0x558319772f10" values="0x558318d9b550" astParent="0x558319779560" valueType-type="long" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318e84110" file="air/pmk/core/barrier.c" linenr="32" column="58" str="[" scope="0x558318aa5110" link="0x558318ddd710" values="0x558318ea9620" astParent="0x55831984cf40" astOperand1="0x558319779560" astOperand2="0x5583196fb4f0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583196fb4f0" file="air/pmk/core/barrier.c" linenr="32" column="59" str="core_id" scope="0x558318aa5110" type="name" varId="39" variable="0x558318ba8840" values="0x558319753a80" astParent="0x558318e84110" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318ddd710" file="air/pmk/core/barrier.c" linenr="32" column="66" str="]" scope="0x558318aa5110" link="0x558318e84110"/>
+    <token id="0x558319761fa0" file="air/pmk/core/barrier.c" linenr="32" column="67" str=";" scope="0x558318aa5110"/>
+    <token id="0x558318d66220" file="air/pmk/core/barrier.c" linenr="35" column="5" str="if" scope="0x558318aa5110" type="name" astParent="0x558318e501d0"/>
+    <token id="0x558318e501d0" file="air/pmk/core/barrier.c" linenr="35" column="8" str="(" scope="0x558318aa5110" link="0x558318b2c770" astOperand1="0x558318d66220" astOperand2="0x55831940d2c0"/>
+    <token id="0x558318e8e510" file="air/pmk/core/barrier.c" linenr="35" column="9" str="sparc_atomic_add" scope="0x558318aa5110" type="name" isExpandedMacro="true" function="0x5583195898c0" astParent="0x558318dd68d0"/>
+    <token id="0x558318dd68d0" file="air/pmk/core/barrier.c" linenr="35" column="9" str="(" scope="0x558318aa5110" isExpandedMacro="true" link="0x558318d81200" astParent="0x55831940d2c0" astOperand1="0x558318e8e510" astOperand2="0x558318af13f0" valueType-type="long" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x55831992d460" file="air/pmk/core/barrier.c" linenr="35" column="9" str="-1" scope="0x558318aa5110" type="number" isInt="true" isExpandedMacro="true" values="0x558318ecc6c0" astParent="0x558318af13f0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318af13f0" file="air/pmk/core/barrier.c" linenr="35" column="9" str="," scope="0x558318aa5110" isExpandedMacro="true" astParent="0x558318dd68d0" astOperand1="0x55831992d460" astOperand2="0x558318b73200"/>
+    <token id="0x558318b73200" file="air/pmk/core/barrier.c" linenr="35" column="9" str="&amp;" scope="0x558318aa5110" type="op" values="0x558318daaaa0" astParent="0x558318af13f0" astOperand1="0x558318a99550" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558319680900"/>
+    <token id="0x558318b9da30" file="air/pmk/core/barrier.c" linenr="35" column="9" str="barrier" scope="0x558318aa5110" type="name" varId="38" variable="0x558318cc6e60" astParent="0x558318a99550" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x558318a99550" file="air/pmk/core/barrier.c" linenr="35" column="9" str="." scope="0x558318aa5110" astParent="0x558318b73200" astOperand1="0x558318b9da30" astOperand2="0x558318b6a360" originalName="->" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558319680900"/>
+    <token id="0x558318b6a360" file="air/pmk/core/barrier.c" linenr="35" column="9" str="count" scope="0x558318aa5110" type="name" varId="41" variable="0x558319340a90" astParent="0x558318a99550" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558319680900"/>
+    <token id="0x558318d81200" file="air/pmk/core/barrier.c" linenr="35" column="9" str=")" scope="0x558318aa5110" isExpandedMacro="true" link="0x558318dd68d0"/>
+    <token id="0x55831940d2c0" file="air/pmk/core/barrier.c" linenr="35" column="43" str="==" scope="0x558318aa5110" type="op" isComparisonOp="true" astParent="0x558318e501d0" astOperand1="0x558318dd68d0" astOperand2="0x5583191ceea0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x5583191ceea0" file="air/pmk/core/barrier.c" linenr="35" column="46" str="0" scope="0x558318aa5110" type="number" isInt="true" values="0x55831996f8b0" astParent="0x55831940d2c0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b2c770" file="air/pmk/core/barrier.c" linenr="35" column="47" str=")" scope="0x558318aa5110" link="0x558318e501d0"/>
+    <token id="0x558318d8fac0" file="air/pmk/core/barrier.c" linenr="35" column="49" str="{" scope="0x558319533eb0" link="0x558318b82230"/>
+    <token id="0x558319440b40" file="air/pmk/core/barrier.c" linenr="37" column="9" str="(" scope="0x558319533eb0" isExpandedMacro="true" link="0x558318b20010"/>
+    <token id="0x558318abb9f0" file="air/pmk/core/barrier.c" linenr="37" column="9" str="(" scope="0x558319533eb0" isExpandedMacro="true" link="0x55831974d240" astOperand1="0x558318ae5d00" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558319369670" file="air/pmk/core/barrier.c" linenr="37" column="9" str="void" scope="0x558319533eb0" type="name" isExpandedMacro="true"/>
+    <token id="0x55831974d240" file="air/pmk/core/barrier.c" linenr="37" column="9" str=")" scope="0x558319533eb0" isExpandedMacro="true" link="0x558318abb9f0"/>
+    <token id="0x558318d572f0" file="air/pmk/core/barrier.c" linenr="37" column="9" str="sparc_atomic_swap" scope="0x558319533eb0" type="name" isExpandedMacro="true" function="0x558319893280" astParent="0x558318ae5d00"/>
+    <token id="0x558318ae5d00" file="air/pmk/core/barrier.c" linenr="37" column="9" str="(" scope="0x558319533eb0" isExpandedMacro="true" link="0x558318afd460" astParent="0x558318abb9f0" astOperand1="0x558318d572f0" astOperand2="0x5583198bc120" valueType-type="long" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x5583198477f0" file="air/pmk/core/barrier.c" linenr="37" column="9" str="(" scope="0x558319533eb0" isExpandedMacro="true" link="0x558318daebe0" astParent="0x5583198bc120" astOperand1="0x55831958a100" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b41f40" file="air/pmk/core/barrier.c" linenr="37" column="9" str="int" scope="0x558319533eb0" type="name" isExpandedMacro="true"/>
+    <token id="0x558318daebe0" file="air/pmk/core/barrier.c" linenr="37" column="9" str=")" scope="0x558319533eb0" isExpandedMacro="true" link="0x5583198477f0"/>
+    <token id="0x5583191d6cb0" file="air/pmk/core/barrier.c" linenr="37" column="9" str="(" scope="0x558319533eb0" isExpandedMacro="true" link="0x558318cad4a0"/>
+    <token id="0x558318c98530" file="air/pmk/core/barrier.c" linenr="37" column="9" str="barrier" scope="0x558319533eb0" type="name" varId="38" variable="0x558318cc6e60" astParent="0x55831958a100" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x55831958a100" file="air/pmk/core/barrier.c" linenr="37" column="9" str="." scope="0x558319533eb0" values="0x558318d972c0" astParent="0x5583198477f0" astOperand1="0x558318c98530" astOperand2="0x5583193dd7f0" originalName="->" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583193dd7f0" file="air/pmk/core/barrier.c" linenr="37" column="9" str="size" scope="0x558319533eb0" type="name" varId="42" variable="0x5583195306c0" values="0x558319399900" astParent="0x55831958a100" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318cad4a0" file="air/pmk/core/barrier.c" linenr="37" column="9" str=")" scope="0x558319533eb0" isExpandedMacro="true" link="0x5583191d6cb0"/>
+    <token id="0x5583198bc120" file="air/pmk/core/barrier.c" linenr="37" column="9" str="," scope="0x558319533eb0" isExpandedMacro="true" astParent="0x558318ae5d00" astOperand1="0x5583198477f0" astOperand2="0x558318b937a0"/>
+    <token id="0x558318b937a0" file="air/pmk/core/barrier.c" linenr="37" column="9" str="&amp;" scope="0x558319533eb0" type="op" values="0x558318d84880" astParent="0x5583198bc120" astOperand1="0x558319413ca0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558319680900"/>
+    <token id="0x558318dbd890" file="air/pmk/core/barrier.c" linenr="37" column="9" str="barrier" scope="0x558319533eb0" type="name" varId="38" variable="0x558318cc6e60" astParent="0x558319413ca0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x558319413ca0" file="air/pmk/core/barrier.c" linenr="37" column="9" str="." scope="0x558319533eb0" astParent="0x558318b937a0" astOperand1="0x558318dbd890" astOperand2="0x558318cdd8c0" originalName="->" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558319680900"/>
+    <token id="0x558318cdd8c0" file="air/pmk/core/barrier.c" linenr="37" column="9" str="count" scope="0x558319533eb0" type="name" varId="41" variable="0x558319340a90" astParent="0x558319413ca0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558319680900"/>
+    <token id="0x558318afd460" file="air/pmk/core/barrier.c" linenr="37" column="9" str=")" scope="0x558319533eb0" isExpandedMacro="true" link="0x558318ae5d00"/>
+    <token id="0x558318b20010" file="air/pmk/core/barrier.c" linenr="37" column="9" str=")" scope="0x558319533eb0" isExpandedMacro="true" link="0x558319440b40"/>
+    <token id="0x558318ac20e0" file="air/pmk/core/barrier.c" linenr="37" column="51" str=";" scope="0x558319533eb0"/>
+    <token id="0x558319462630" file="air/pmk/core/barrier.c" linenr="38" column="9" str="barrier" scope="0x558319533eb0" type="name" varId="38" variable="0x558318cc6e60" astParent="0x5583194311f0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x5583194311f0" file="air/pmk/core/barrier.c" linenr="38" column="16" str="." scope="0x558319533eb0" values="0x558318a88da0" astParent="0x558318b73670" astOperand1="0x558319462630" astOperand2="0x558318b65ac0" originalName="->" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b65ac0" file="air/pmk/core/barrier.c" linenr="38" column="18" str="sense" scope="0x558319533eb0" type="name" varId="43" variable="0x558318b35240" values="0x558318eab210" astParent="0x5583194311f0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b73670" file="air/pmk/core/barrier.c" linenr="38" column="24" str="=" scope="0x558319533eb0" type="op" isAssignmentOp="true" values="0x558319973800" astOperand1="0x5583194311f0" astOperand2="0x55831997de20" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318db5970" file="air/pmk/core/barrier.c" linenr="38" column="26" str="barrier" scope="0x558319533eb0" type="name" varId="38" variable="0x558318cc6e60" astParent="0x558318b5ee20" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x558318b5ee20" file="air/pmk/core/barrier.c" linenr="38" column="33" str="." scope="0x558319533eb0" astParent="0x55831997de20" astOperand1="0x558318db5970" astOperand2="0x558318b14990" originalName="->" valueType-type="long" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318b14990" file="air/pmk/core/barrier.c" linenr="38" column="35" str="local_sense" scope="0x558319533eb0" type="name" varId="40" variable="0x558319772f10" values="0x558318eaad80" astParent="0x558318b5ee20" valueType-type="long" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x55831997de20" file="air/pmk/core/barrier.c" linenr="38" column="46" str="[" scope="0x558319533eb0" link="0x5583193ca300" values="0x558319368fc0" astParent="0x558318b73670" astOperand1="0x558318b5ee20" astOperand2="0x558319a9da30" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319a9da30" file="air/pmk/core/barrier.c" linenr="38" column="47" str="core_id" scope="0x558319533eb0" type="name" varId="39" variable="0x558318ba8840" values="0x55831967e1e0" astParent="0x55831997de20" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583193ca300" file="air/pmk/core/barrier.c" linenr="38" column="54" str="]" scope="0x558319533eb0" link="0x55831997de20"/>
+    <token id="0x558318b3f510" file="air/pmk/core/barrier.c" linenr="38" column="55" str=";" scope="0x558319533eb0"/>
+    <token id="0x558318b82230" file="air/pmk/core/barrier.c" linenr="41" column="5" str="}" scope="0x558319533eb0" link="0x558318d8fac0"/>
+    <token id="0x558318af3ef0" file="air/pmk/core/barrier.c" linenr="41" column="7" str="else" scope="0x558318aa5110" type="name"/>
+    <token id="0x55831984b680" file="air/pmk/core/barrier.c" linenr="41" column="12" str="{" scope="0x558318d29cf0" link="0x558318ef4370"/>
+    <token id="0x558318abc570" file="air/pmk/core/barrier.c" linenr="43" column="9" str="while" scope="0x558318d29cf0" type="name" astParent="0x558318d92f90"/>
+    <token id="0x558318d92f90" file="air/pmk/core/barrier.c" linenr="43" column="15" str="(" scope="0x558318d29cf0" link="0x558318e94150" astOperand1="0x558318abc570" astOperand2="0x558318e40c30"/>
+    <token id="0x558318cb2ba0" file="air/pmk/core/barrier.c" linenr="43" column="16" str="barrier" scope="0x558318d29cf0" type="name" varId="38" variable="0x558318cc6e60" astParent="0x558319a9dc60" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x558319a9dc60" file="air/pmk/core/barrier.c" linenr="43" column="23" str="." scope="0x558318d29cf0" values="0x558318b00320" astParent="0x558318e40c30" astOperand1="0x558318cb2ba0" astOperand2="0x558318bc2150" originalName="->" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318bc2150" file="air/pmk/core/barrier.c" linenr="43" column="25" str="sense" scope="0x558318d29cf0" type="name" varId="43" variable="0x558318b35240" values="0x558319445b80" astParent="0x558319a9dc60" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e40c30" file="air/pmk/core/barrier.c" linenr="43" column="31" str="!=" scope="0x558318d29cf0" type="op" isComparisonOp="true" astParent="0x558318d92f90" astOperand1="0x558319a9dc60" astOperand2="0x558318d2aae0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x55831990f2b0" file="air/pmk/core/barrier.c" linenr="43" column="34" str="barrier" scope="0x558318d29cf0" type="name" varId="38" variable="0x558318cc6e60" astParent="0x558318e84060" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318cc1a30"/>
+    <token id="0x558318e84060" file="air/pmk/core/barrier.c" linenr="43" column="41" str="." scope="0x558318d29cf0" astParent="0x558318d2aae0" astOperand1="0x55831990f2b0" astOperand2="0x55831992e660" originalName="->" valueType-type="long" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x55831992e660" file="air/pmk/core/barrier.c" linenr="43" column="43" str="local_sense" scope="0x558318d29cf0" type="name" varId="40" variable="0x558319772f10" values="0x558318e4c7c0" astParent="0x558318e84060" valueType-type="long" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318d2aae0" file="air/pmk/core/barrier.c" linenr="43" column="54" str="[" scope="0x558318d29cf0" link="0x558319980ee0" values="0x558318cb7400" astParent="0x558318e40c30" astOperand1="0x558318e84060" astOperand2="0x558318ba4d80" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318ba4d80" file="air/pmk/core/barrier.c" linenr="43" column="55" str="core_id" scope="0x558318d29cf0" type="name" varId="39" variable="0x558318ba8840" values="0x5583193a1ff0" astParent="0x558318d2aae0" valueType-type="long" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319980ee0" file="air/pmk/core/barrier.c" linenr="43" column="62" str="]" scope="0x558318d29cf0" link="0x558318d2aae0"/>
+    <token id="0x558318e94150" file="air/pmk/core/barrier.c" linenr="43" column="63" str=")" scope="0x558318d29cf0" link="0x558318d92f90"/>
+    <token id="0x558318acfbe0" file="air/pmk/core/barrier.c" linenr="43" column="0" str="{" scope="0x558318ac2cf0" link="0x558318c9d660"/>
+    <token id="0x55831976bd00" file="air/pmk/core/barrier.c" linenr="43" column="64" str=";" scope="0x558318ac2cf0"/>
+    <token id="0x558318c9d660" file="air/pmk/core/barrier.c" linenr="43" column="0" str="}" scope="0x558318ac2cf0" link="0x558318acfbe0"/>
+    <token id="0x558318ef4370" file="air/pmk/core/barrier.c" linenr="44" column="5" str="}" scope="0x558318d29cf0" link="0x55831984b680"/>
+    <token id="0x558318daa470" file="air/pmk/core/barrier.c" linenr="45" column="1" str="}" scope="0x558318aa5110" link="0x558318aed130"/>
+  </tokenlist>
+  <scopes>
+    <scope id="0x558318d177c0" type="Global">
+      <functionList>
+        <function id="0x558318d5be70" token="0" tokenDef="0x55831979d010" name="air_syscall_disable_interrupts" type="Function"/>
+        <function id="0x558318d3ba20" token="0" tokenDef="0x558318ef14d0" name="air_syscall_enable_interrupts" type="Function">
+          <arg nr="1" variable="0x558318d2b380"/>
+        </function>
+        <function id="0x558318f01390" token="0" tokenDef="0x55831990e880" name="air_syscall_disable_traps" type="Function"/>
+        <function id="0x558318e4ace0" token="0" tokenDef="0x5583193dd110" name="air_syscall_enable_traps" type="Function"/>
+        <function id="0x558318e650a0" token="0" tokenDef="0x558318e0d190" name="air_syscall_disable_fpu" type="Function"/>
+        <function id="0x5583191d6800" token="0" tokenDef="0x558318eee870" name="air_syscall_enable_fpu" type="Function"/>
+        <function id="0x558319899740" token="0" tokenDef="0x558318d70d70" name="air_syscall_get_psr" type="Function"/>
+        <function id="0x558318bb6d40" token="0" tokenDef="0x5583193d2bd0" name="air_syscall_set_psr" type="Function">
+          <arg nr="1" variable="0x558318cc8510"/>
+        </function>
+        <function id="0x558318b42c70" token="0" tokenDef="0x55831945f570" name="air_syscall_virtual_rett" type="Function">
+          <arg nr="1" variable="0x55831942a160"/>
+          <arg nr="2" variable="0x558318d85680"/>
+        </function>
+        <function id="0x558318f40030" token="0" tokenDef="0x558318b52690" name="air_syscall_get_cache_register" type="Function"/>
+        <function id="0x558319363640" token="0" tokenDef="0x5583193ca220" name="air_syscall_set_cache_register" type="Function">
+          <arg nr="1" variable="0x5583198dd2d0"/>
+        </function>
+        <function id="0x55831958f2d0" token="0" tokenDef="0x55831943e690" name="air_syscall_set_tbr" type="Function">
+          <arg nr="1" variable="0x558319acb900"/>
+        </function>
+        <function id="0x558319533bb0" token="0" tokenDef="0x558318aecc10" name="air_syscall_get_tbr" type="Function"/>
+        <function id="0x558319978be0" token="0" tokenDef="0x5583191c7aa0" name="air_syscall_get_irq_mask_register" type="Function">
+          <arg nr="1" variable="0x558319408110"/>
+        </function>
+        <function id="0x55831940f1f0" token="0" tokenDef="0x558318de35a0" name="air_syscall_set_irq_mask_register" type="Function">
+          <arg nr="1" variable="0x558318b21420"/>
+          <arg nr="2" variable="0x558318b2c4a0"/>
+        </function>
+        <function id="0x558318e9a120" token="0" tokenDef="0x5583198e78b0" name="air_syscall_set_irq_force_register" type="Function">
+          <arg nr="1" variable="0x558318d19b30"/>
+          <arg nr="2" variable="0x558318ea1b40"/>
+        </function>
+        <function id="0x558318b2c960" token="0" tokenDef="0x5583198dcec0" name="air_syscall_get_inst_cache_config_register" type="Function"/>
+        <function id="0x55831955b1c0" token="0" tokenDef="0x558318b306f0" name="air_syscall_get_data_cache_config_register" type="Function"/>
+        <function id="0x5583193ea4c0" token="0" tokenDef="0x55831997d5b0" name="air_syscall_set_ef" type="Function"/>
+        <function id="0x5583195898c0" token="0" tokenDef="0x558318b1deb0" name="sparc_atomic_add" type="Function">
+          <arg nr="1" variable="0x558318bbcb30"/>
+          <arg nr="2" variable="0x558318b89310"/>
+        </function>
+        <function id="0x558319893280" token="0" tokenDef="0x5583196f00c0" name="sparc_atomic_swap" type="Function">
+          <arg nr="1" variable="0x5583194523b0"/>
+          <arg nr="2" variable="0x558319ad4170"/>
+        </function>
+        <function id="0x55831970ef50" token="0" tokenDef="0x558318ec8860" name="sparc_atomic_or" type="Function">
+          <arg nr="1" variable="0x5583195825e0"/>
+          <arg nr="2" variable="0x558318ef27e0"/>
+        </function>
+        <function id="0x5583198cb9d0" token="0" tokenDef="0x5583193d6d20" name="sparc_atomic_and" type="Function">
+          <arg nr="1" variable="0x558318d75210"/>
+          <arg nr="2" variable="0x558319ae1ad0"/>
+        </function>
+        <function id="0x558318b9c1d0" token="0" tokenDef="0x55831970e6c0" name="sparc_atomic_xor" type="Function">
+          <arg nr="1" variable="0x558318d28e00"/>
+          <arg nr="2" variable="0x558318af5860"/>
+        </function>
+        <function id="0x558319ad61b0" token="0x558318b978d0" tokenDef="0x558318d699d0" name="pmk_barrier_init" type="Function">
+          <arg nr="1" variable="0x558318e9ac30"/>
+          <arg nr="2" variable="0x5583193adbb0"/>
+        </function>
+        <function id="0x5583199206b0" token="0x55831989a520" tokenDef="0x558318cb6000" name="pmk_barrier_wait" type="Function">
+          <arg nr="1" variable="0x558318cc6e60"/>
+          <arg nr="2" variable="0x558318ba8840"/>
+        </function>
+      </functionList>
+    </scope>
+    <scope id="0x558319680900" type="Struct" className="atomic_t" bodyStart="0x558318bb52f0" bodyEnd="0x558318d33c90" nestedIn="0x558318d177c0">
+      <varlist>
+        <var id="0x558319363aa0"/>
+      </varlist>
+    </scope>
+    <scope id="0x558318cc1a30" type="Struct" className="pmk_barrier_t" bodyStart="0x558318d081e0" bodyEnd="0x558318e3fb80" nestedIn="0x558318d177c0">
+      <varlist>
+        <var id="0x5583195306c0"/>
+        <var id="0x558319340a90"/>
+        <var id="0x558318b35240"/>
+        <var id="0x558319772f10"/>
+      </varlist>
+    </scope>
+    <scope id="0x558318e433b0" type="Function" className="pmk_barrier_init" bodyStart="0x5583191cee10" bodyEnd="0x558318d39180" nestedIn="0x558318d177c0" function="0x558319ad61b0">
+      <varlist>
+        <var id="0x5583193c16e0"/>
+      </varlist>
+    </scope>
+    <scope id="0x558318b315b0" type="For" bodyStart="0x558319971c20" bodyEnd="0x558319aca8c0" nestedIn="0x558318e433b0"/>
+    <scope id="0x558318aa5110" type="Function" className="pmk_barrier_wait" bodyStart="0x558318aed130" bodyEnd="0x558318daa470" nestedIn="0x558318d177c0" function="0x5583199206b0"/>
+    <scope id="0x558319533eb0" type="If" bodyStart="0x558318d8fac0" bodyEnd="0x558318b82230" nestedIn="0x558318aa5110"/>
+    <scope id="0x558318d29cf0" type="Else" bodyStart="0x55831984b680" bodyEnd="0x558318ef4370" nestedIn="0x558318aa5110"/>
+    <scope id="0x558318ac2cf0" type="While" bodyStart="0x558318acfbe0" bodyEnd="0x558318c9d660" nestedIn="0x558318d29cf0"/>
+  </scopes>
+  <variables>
+    <var id="0x558318af5860" nameToken="0x558318db1670" typeStartToken="0x558318b03ed0" typeEndToken="0x55831945efd0" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b21420" nameToken="0x558318e97f30" typeStartToken="0x558318ce1a00" typeEndToken="0x558318ce1a00" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b2c4a0" nameToken="0x558319408210" typeStartToken="0x55831944cea0" typeEndToken="0x55831944cea0" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b35240" nameToken="0x558318ce7420" typeStartToken="0x558319514b60" typeEndToken="0x558319514b60" access="Public" scope="0x558318cc1a30" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="true"/>
+    <var id="0x558318b89310" nameToken="0x558319ada510" typeStartToken="0x558318d05c90" typeEndToken="0x558318d929c0" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318ba8840" nameToken="0x558318dd5810" typeStartToken="0x558318e1b010" typeEndToken="0x558318e1b010" access="Argument" scope="0x558318aa5110" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318bbcb30" nameToken="0x5583198ad880" typeStartToken="0x558319ae7f30" typeEndToken="0x558319ae7f30" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318cc6e60" nameToken="0x558318b98030" typeStartToken="0x558318e21a50" typeEndToken="0x558318d68180" access="Argument" scope="0x558318aa5110" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318cc8510" nameToken="0x558318d16d50" typeStartToken="0x558318ebe8c0" typeEndToken="0x558318ebe8c0" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d19b30" nameToken="0x558318b40750" typeStartToken="0x5583191ce2d0" typeEndToken="0x5583191ce2d0" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d28e00" nameToken="0x558318b7cf00" typeStartToken="0x558318b61070" typeEndToken="0x558318b61070" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d2b380" nameToken="0x55831977e400" typeStartToken="0x558318d1e090" typeEndToken="0x558318d1e090" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d75210" nameToken="0x558318dffb80" typeStartToken="0x5583198bc070" typeEndToken="0x5583198bc070" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d85680" nameToken="0x5583198b36a0" typeStartToken="0x558318d004c0" typeEndToken="0x558318d004c0" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318e9ac30" nameToken="0x558318ef42c0" typeStartToken="0x558318af25f0" typeEndToken="0x5583199208c0" access="Argument" scope="0x558318e433b0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318ea1b40" nameToken="0x5583193ebd00" typeStartToken="0x5583199761a0" typeEndToken="0x5583199761a0" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318ef27e0" nameToken="0x558318e830e0" typeStartToken="0x558318d18ec0" typeEndToken="0x558318b08870" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558319340a90" nameToken="0x558319688250" typeStartToken="0x5583191c6d20" typeEndToken="0x5583191c6d20" access="Public" scope="0x558318cc1a30" constness="0" isArray="false" isClass="true" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558319363aa0" nameToken="0x558318d700b0" typeStartToken="0x558318e982c0" typeEndToken="0x558318e982c0" access="Public" scope="0x558319680900" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="true"/>
+    <var id="0x5583193adbb0" nameToken="0x55831931b380" typeStartToken="0x558318d85960" typeEndToken="0x558318d85960" access="Argument" scope="0x558318e433b0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x5583193c16e0" nameToken="0x558318ac47f0" typeStartToken="0x558318d7a8b0" typeEndToken="0x558318d7a8b0" access="Local" scope="0x558318e433b0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558319408110" nameToken="0x558318e1b270" typeStartToken="0x558319587db0" typeEndToken="0x558319587db0" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x55831942a160" nameToken="0x558318ea08d0" typeStartToken="0x55831945b010" typeEndToken="0x55831945b010" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x5583194523b0" nameToken="0x558318aee9a0" typeStartToken="0x558318bca880" typeEndToken="0x558318bca880" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x5583195306c0" nameToken="0x558318ef1580" typeStartToken="0x558318caa780" typeEndToken="0x558318caa780" access="Public" scope="0x558318cc1a30" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x5583195825e0" nameToken="0x5583198cb0a0" typeStartToken="0x558318c9da50" typeEndToken="0x558318c9da50" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558319772f10" nameToken="0x558318cdb5a0" typeStartToken="0x558318b4bd10" typeEndToken="0x558318b4bd10" access="Public" scope="0x558318cc1a30" constness="0" isArray="true" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x5583198dd2d0" nameToken="0x558319516920" typeStartToken="0x558319863ef0" typeEndToken="0x558319863ef0" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558319acb900" nameToken="0x558318ec6fd0" typeStartToken="0x558318ab5040" typeEndToken="0x558318ab5040" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558319ad4170" nameToken="0x55831976bc50" typeStartToken="0x55831991eda0" typeEndToken="0x558318d2d2b0" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558319ae1ad0" nameToken="0x558318eb9660" typeStartToken="0x558318db1790" typeEndToken="0x558318e79850" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+  </variables>
+  <valueflow>
+    <values id="0x558318cd3050">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319554ad0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b92b30">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d8b4b0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319695be0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318bbdd00">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318baaaa0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319692270">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319ac72f0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583196f44f0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319417500">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d4c450">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b14950">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583194403f0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b6d6b0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319a891b0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318e042d0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d9d6c0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x55831991d940">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318ddd530">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318da74c0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318f018d0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b5d0b0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583198c70a0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318da6870">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318e0e9f0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x55831992af40">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318aac630">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d9a650">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319450170">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b74150">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x5583193b0c80">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319693d60">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x55831991da70">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583195381a0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318ad4da0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b88670">
+      <value lifetime="0x5583194113a0" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318d706b0">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x55831974c8b0">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318aee4c0">
+      <value lifetime="0x558318cdb5a0" lifetime-scope="Local" lifetime-kind="Object" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558319aa5c90">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d94860">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b3ffd0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b1c1c0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319538100">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318bb7de0">
+      <value lifetime="0x558318cdb5a0" lifetime-scope="Local" lifetime-kind="Object" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318b03e80">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d40e70">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d69830">
+      <value intvalue="0" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583198b6000">
+      <value intvalue="0" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d9b550">
+      <value lifetime="0x558318cdb5a0" lifetime-scope="Local" lifetime-kind="Object" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318ea9620">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319753a80">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318ecc6c0">
+      <value intvalue="-1" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318daaaa0">
+      <value lifetime="0x558318a99550" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x55831996f8b0">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d972c0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319399900">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d84880">
+      <value lifetime="0x558319413ca0" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318a88da0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318eab210">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319973800">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318eaad80">
+      <value lifetime="0x558318cdb5a0" lifetime-scope="Local" lifetime-kind="Object" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558319368fc0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x55831967e1e0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b00320">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319445b80">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318e4c7c0">
+      <value lifetime="0x558318cdb5a0" lifetime-scope="Local" lifetime-kind="Object" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318cb7400">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583193a1ff0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+  </valueflow>
+  <typedef-info>
+    <info name="air_sz_t" file="air/pmk/arch/sparc/include/air_arch.h" line="29" column="27" used="0"/>
+    <info name="air_i8_t" file="air/pmk/arch/sparc/include/air_arch.h" line="39" column="21" used="0"/>
+    <info name="air_u8_t" file="air/pmk/arch/sparc/include/air_arch.h" line="44" column="23" used="0"/>
+    <info name="air_i16_t" file="air/pmk/arch/sparc/include/air_arch.h" line="49" column="22" used="0"/>
+    <info name="air_u16_t" file="air/pmk/arch/sparc/include/air_arch.h" line="54" column="24" used="0"/>
+    <info name="air_i32_t" file="air/pmk/arch/sparc/include/air_arch.h" line="59" column="21" used="1"/>
+    <info name="air_u32_t" file="air/pmk/arch/sparc/include/air_arch.h" line="64" column="23" used="1"/>
+    <info name="air_i64_t" file="air/pmk/arch/sparc/include/air_arch.h" line="69" column="26" used="0"/>
+    <info name="air_u64_t" file="air/pmk/arch/sparc/include/air_arch.h" line="74" column="28" used="0"/>
+    <info name="air_iptr_t" file="air/pmk/arch/sparc/include/air_arch.h" line="79" column="21" used="0"/>
+    <info name="air_uptr_t" file="air/pmk/arch/sparc/include/air_arch.h" line="84" column="23" used="0"/>
+    <info name="air_isr_level_t" file="air/pmk/arch/sparc/include/air_arch.h" line="89" column="23" used="0"/>
+    <info name="atomic_t" file="air/pmk/arch/sparc/include/atomic.h" line="35" column="40" used="1"/>
+    <info name="pmk_barrier_t" file="air/pmk/core/include/barrier.h" line="40" column="3" used="1"/>
+  </typedef-info>
+</dump>
+</dumps>
