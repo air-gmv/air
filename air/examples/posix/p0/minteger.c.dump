@@ -284,538 +284,538 @@
     <macro name="__LINE__" file="" line="1" column="1" usefile="air/examples/posix/p0/minteger.c" useline="33" usecolumn="3" is-known-value="false"/>
   </macro-usage>
   <tokenlist>
-    <token id="0x5558a4d495a0" file="air/examples/posix/p0/minteger.h" linenr="10" column="9" str="struct" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4e1f790" file="air/examples/posix/p0/minteger.h" linenr="10" column="16" str="s_m_integer" scope="0x5558a4d9d530" type="name" type-scope="0x5558a4d849b0"/>
-    <token id="0x5558a4b6cfb0" file="air/examples/posix/p0/minteger.h" linenr="10" column="28" str="{" scope="0x5558a4d849b0" link="0x5558a4b8f360" valueType-type="record" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4d3a6c0" file="air/examples/posix/p0/minteger.h" linenr="11" column="3" str="int" scope="0x5558a4d849b0" type="name"/>
-    <token id="0x5558a4d914c0" file="air/examples/posix/p0/minteger.h" linenr="11" column="7" str="value" scope="0x5558a4d849b0" type="name" varId="1" variable="0x5558a4e0c100" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4e841e0" file="air/examples/posix/p0/minteger.h" linenr="11" column="12" str=";" scope="0x5558a4d849b0"/>
-    <token id="0x5558a4b5c9a0" file="air/examples/posix/p0/minteger.h" linenr="12" column="3" str="pthread_mutex_t" scope="0x5558a4d849b0" type="name"/>
-    <token id="0x5558a4c058d0" file="air/examples/posix/p0/minteger.h" linenr="12" column="19" str="mutex" scope="0x5558a4d849b0" type="name" varId="2" variable="0x5558a4e42aa0"/>
-    <token id="0x5558a4d082d0" file="air/examples/posix/p0/minteger.h" linenr="12" column="24" str=";" scope="0x5558a4d849b0"/>
-    <token id="0x5558a4b8f360" file="air/examples/posix/p0/minteger.h" linenr="13" column="1" str="}" scope="0x5558a4d849b0" link="0x5558a4b6cfb0"/>
-    <token id="0x5558a4e0c090" file="air/examples/posix/p0/minteger.h" linenr="13" column="0" str=";" scope="0x5558a4d9d530"/>
-    <token id="0x5558a4d568f0" file="air/examples/posix/p0/minteger.h" linenr="15" column="1" str="struct" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4e15c80" file="air/examples/posix/p0/minteger.h" linenr="15" column="0" str="s_m_integer" scope="0x5558a4d9d530" type="name" type-scope="0x5558a4d849b0"/>
-    <token id="0x5558a4dc8db0" file="air/examples/posix/p0/minteger.h" linenr="15" column="0" str="*" scope="0x5558a4d9d530" type="op" isArithmeticalOp="true"/>
-    <token id="0x5558a4e881b0" file="air/examples/posix/p0/minteger.h" linenr="15" column="11" str="MI_init" scope="0x5558a4d9d530" type="name" function="0x5558a4dff440"/>
-    <token id="0x5558a4b147b0" file="air/examples/posix/p0/minteger.h" linenr="15" column="18" str="(" scope="0x5558a4d9d530" link="0x5558a4b5b130" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4d56230" file="air/examples/posix/p0/minteger.h" linenr="15" column="19" str="int" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4dd43e0" file="air/examples/posix/p0/minteger.h" linenr="15" column="23" str="priority" scope="0x5558a4d9d530" type="name" varId="3"/>
-    <token id="0x5558a4b5b130" file="air/examples/posix/p0/minteger.h" linenr="15" column="31" str=")" scope="0x5558a4d9d530" link="0x5558a4b147b0"/>
-    <token id="0x5558a4dc3110" file="air/examples/posix/p0/minteger.h" linenr="15" column="32" str=";" scope="0x5558a4d9d530"/>
-    <token id="0x5558a4b6b9a0" file="air/examples/posix/p0/minteger.h" linenr="18" column="1" str="void" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4d55dd0" file="air/examples/posix/p0/minteger.h" linenr="18" column="6" str="MI_write" scope="0x5558a4d9d530" type="name" function="0x5558a4bd5200"/>
-    <token id="0x5558a4dff280" file="air/examples/posix/p0/minteger.h" linenr="18" column="14" str="(" scope="0x5558a4d9d530" link="0x5558a4e009c0" valueType-type="void" valueType-reference="None"/>
-    <token id="0x5558a4b19840" file="air/examples/posix/p0/minteger.h" linenr="18" column="15" str="struct" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4dc41d0" file="air/examples/posix/p0/minteger.h" linenr="18" column="0" str="s_m_integer" scope="0x5558a4d9d530" type="name" type-scope="0x5558a4d849b0" astParent="0x5558a4baf230"/>
-    <token id="0x5558a4baf230" file="air/examples/posix/p0/minteger.h" linenr="18" column="0" str="*" scope="0x5558a4d9d530" type="op" isArithmeticalOp="true" astParent="0x5558a4deb180" astOperand1="0x5558a4dc41d0" astOperand2="0x5558a4b299f0"/>
-    <token id="0x5558a4b299f0" file="air/examples/posix/p0/minteger.h" linenr="18" column="25" str="m" scope="0x5558a4d9d530" type="name" varId="4" astParent="0x5558a4baf230"/>
-    <token id="0x5558a4deb180" file="air/examples/posix/p0/minteger.h" linenr="18" column="26" str="," scope="0x5558a4d9d530" astOperand1="0x5558a4baf230" astOperand2="0x5558a4d3a540"/>
-    <token id="0x5558a4d05090" file="air/examples/posix/p0/minteger.h" linenr="18" column="28" str="int" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4d3a540" file="air/examples/posix/p0/minteger.h" linenr="18" column="32" str="v" scope="0x5558a4d9d530" type="name" varId="5" astParent="0x5558a4deb180"/>
-    <token id="0x5558a4e009c0" file="air/examples/posix/p0/minteger.h" linenr="18" column="33" str=")" scope="0x5558a4d9d530" link="0x5558a4dff280"/>
-    <token id="0x5558a4ddec90" file="air/examples/posix/p0/minteger.h" linenr="18" column="34" str=";" scope="0x5558a4d9d530"/>
-    <token id="0x5558a4c20d60" file="air/examples/posix/p0/minteger.h" linenr="19" column="1" str="int" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4d24c80" file="air/examples/posix/p0/minteger.h" linenr="19" column="5" str="MI_read" scope="0x5558a4d9d530" type="name" function="0x5558a4b2f3d0"/>
-    <token id="0x5558a4e84630" file="air/examples/posix/p0/minteger.h" linenr="19" column="12" str="(" scope="0x5558a4d9d530" link="0x5558a4d86a20" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4bd4cb0" file="air/examples/posix/p0/minteger.h" linenr="19" column="13" str="struct" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4e19540" file="air/examples/posix/p0/minteger.h" linenr="19" column="0" str="s_m_integer" scope="0x5558a4d9d530" type="name" type-scope="0x5558a4d849b0" astParent="0x5558a4baf070"/>
-    <token id="0x5558a4baf070" file="air/examples/posix/p0/minteger.h" linenr="19" column="0" str="*" scope="0x5558a4d9d530" type="op" isArithmeticalOp="true" astOperand1="0x5558a4e19540" astOperand2="0x5558a4e84450"/>
-    <token id="0x5558a4e84450" file="air/examples/posix/p0/minteger.h" linenr="19" column="23" str="m" scope="0x5558a4d9d530" type="name" varId="6" astParent="0x5558a4baf070"/>
-    <token id="0x5558a4d86a20" file="air/examples/posix/p0/minteger.h" linenr="19" column="24" str=")" scope="0x5558a4d9d530" link="0x5558a4e84630"/>
-    <token id="0x5558a4d498a0" file="air/examples/posix/p0/minteger.h" linenr="19" column="25" str=";" scope="0x5558a4d9d530"/>
-    <token id="0x5558a4d86ec0" file="air/examples/posix/p0/utils.h" linenr="13" column="1" str="void" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4b5c480" file="air/examples/posix/p0/utils.h" linenr="13" column="6" str="add_timespec" scope="0x5558a4d9d530" type="name" function="0x5558a4c38940"/>
-    <token id="0x5558a4deed90" file="air/examples/posix/p0/utils.h" linenr="13" column="19" str="(" scope="0x5558a4d9d530" link="0x5558a4d521a0" valueType-type="void" valueType-reference="None"/>
-    <token id="0x5558a4b686b0" file="air/examples/posix/p0/utils.h" linenr="13" column="20" str="struct" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4d3a5c0" file="air/examples/posix/p0/utils.h" linenr="13" column="27" str="timespec" scope="0x5558a4d9d530" type="name" astParent="0x5558a4c27fb0"/>
-    <token id="0x5558a4c27fb0" file="air/examples/posix/p0/utils.h" linenr="13" column="36" str="*" scope="0x5558a4d9d530" type="op" isArithmeticalOp="true" astParent="0x5558a4bb9e60" astOperand1="0x5558a4d3a5c0" astOperand2="0x5558a4d55f90"/>
-    <token id="0x5558a4d55f90" file="air/examples/posix/p0/utils.h" linenr="13" column="37" str="s" scope="0x5558a4d9d530" type="name" varId="7" variable="0x5558a4bf7310" astParent="0x5558a4c27fb0" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
-    <token id="0x5558a4bb9e60" file="air/examples/posix/p0/utils.h" linenr="13" column="38" str="," scope="0x5558a4d9d530" astParent="0x5558a4b889f0" astOperand1="0x5558a4c27fb0" astOperand2="0x5558a4d553a0"/>
-    <token id="0x5558a4e02240" file="air/examples/posix/p0/utils.h" linenr="14" column="20" str="const" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4bb68d0" file="air/examples/posix/p0/utils.h" linenr="14" column="26" str="struct" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4d524c0" file="air/examples/posix/p0/utils.h" linenr="14" column="33" str="timespec" scope="0x5558a4d9d530" type="name" astParent="0x5558a4d553a0"/>
-    <token id="0x5558a4d553a0" file="air/examples/posix/p0/utils.h" linenr="14" column="42" str="*" scope="0x5558a4d9d530" type="op" isArithmeticalOp="true" astParent="0x5558a4bb9e60" astOperand1="0x5558a4d524c0" astOperand2="0x5558a4bf2b60"/>
-    <token id="0x5558a4bf2b60" file="air/examples/posix/p0/utils.h" linenr="14" column="43" str="t1" scope="0x5558a4d9d530" type="name" varId="8" variable="0x5558a4b3fd10" astParent="0x5558a4d553a0" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4b889f0" file="air/examples/posix/p0/utils.h" linenr="14" column="45" str="," scope="0x5558a4d9d530" astOperand1="0x5558a4bb9e60" astOperand2="0x5558a4bca1e0"/>
-    <token id="0x5558a4d55ab0" file="air/examples/posix/p0/utils.h" linenr="15" column="20" str="const" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4b6bba0" file="air/examples/posix/p0/utils.h" linenr="15" column="26" str="struct" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4b6e7d0" file="air/examples/posix/p0/utils.h" linenr="15" column="33" str="timespec" scope="0x5558a4d9d530" type="name" astParent="0x5558a4bca1e0"/>
-    <token id="0x5558a4bca1e0" file="air/examples/posix/p0/utils.h" linenr="15" column="42" str="*" scope="0x5558a4d9d530" type="op" isArithmeticalOp="true" astParent="0x5558a4b889f0" astOperand1="0x5558a4b6e7d0" astOperand2="0x5558a4b920b0"/>
-    <token id="0x5558a4b920b0" file="air/examples/posix/p0/utils.h" linenr="15" column="43" str="t2" scope="0x5558a4d9d530" type="name" varId="9" variable="0x5558a4da3fb0" astParent="0x5558a4bca1e0" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4d521a0" file="air/examples/posix/p0/utils.h" linenr="15" column="45" str=")" scope="0x5558a4d9d530" link="0x5558a4deed90"/>
-    <token id="0x5558a4d455b0" file="air/examples/posix/p0/utils.h" linenr="15" column="46" str=";" scope="0x5558a4d9d530"/>
-    <token id="0x5558a4b3fe70" file="air/examples/posix/p0/minteger.c" linenr="8" column="1" str="struct" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4df57a0" file="air/examples/posix/p0/minteger.c" linenr="8" column="0" str="s_m_integer" scope="0x5558a4d9d530" type="name" type-scope="0x5558a4d849b0"/>
-    <token id="0x5558a4b623f0" file="air/examples/posix/p0/minteger.c" linenr="8" column="0" str="*" scope="0x5558a4d9d530" type="op" isArithmeticalOp="true"/>
-    <token id="0x5558a4b69c60" file="air/examples/posix/p0/minteger.c" linenr="8" column="11" str="MI_init" scope="0x5558a4d9d530" type="name" function="0x5558a4dff440"/>
-    <token id="0x5558a4de5180" file="air/examples/posix/p0/minteger.c" linenr="8" column="18" str="(" scope="0x5558a4d9d530" link="0x5558a4c05ba0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4deb740" file="air/examples/posix/p0/minteger.c" linenr="8" column="19" str="int" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4b7dab0" file="air/examples/posix/p0/minteger.c" linenr="8" column="23" str="priority" scope="0x5558a4d9d530" type="name" varId="10" variable="0x5558a4b98310" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4c05ba0" file="air/examples/posix/p0/minteger.c" linenr="8" column="31" str=")" scope="0x5558a4d9d530" link="0x5558a4de5180"/>
-    <token id="0x5558a4c26ca0" file="air/examples/posix/p0/minteger.c" linenr="8" column="33" str="{" scope="0x5558a4de4260" link="0x5558a4d940f0"/>
-    <token id="0x5558a4e42f90" file="air/examples/posix/p0/minteger.c" linenr="9" column="3" str="struct" scope="0x5558a4de4260" type="name"/>
-    <token id="0x5558a4baae30" file="air/examples/posix/p0/minteger.c" linenr="9" column="0" str="s_m_integer" scope="0x5558a4de4260" type="name" type-scope="0x5558a4d849b0" astParent="0x5558a4c35590"/>
-    <token id="0x5558a4c35590" file="air/examples/posix/p0/minteger.c" linenr="9" column="0" str="*" scope="0x5558a4de4260" type="op" isArithmeticalOp="true" astOperand1="0x5558a4baae30" astOperand2="0x5558a4b7b3a0"/>
-    <token id="0x5558a4b7b3a0" file="air/examples/posix/p0/minteger.c" linenr="9" column="13" str="m" scope="0x5558a4de4260" type="name" varId="11" variable="0x5558a4e42b80" astParent="0x5558a4c35590" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4b42410" file="air/examples/posix/p0/minteger.c" linenr="9" column="14" str=";" scope="0x5558a4de4260"/>
-    <token id="0x5558a4b54200" file="air/examples/posix/p0/minteger.c" linenr="10" column="3" str="m" scope="0x5558a4de4260" type="name" varId="11" variable="0x5558a4e42b80" values="0x5558a4da13c0" astParent="0x5558a4d8b4c0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4d8b4c0" file="air/examples/posix/p0/minteger.c" linenr="10" column="5" str="=" scope="0x5558a4de4260" type="op" isAssignmentOp="true" astOperand1="0x5558a4b54200" astOperand2="0x5558a4dc68f0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4dc68f0" file="air/examples/posix/p0/minteger.c" linenr="10" column="7" str="(" scope="0x5558a4de4260" link="0x5558a4d54fb0" astParent="0x5558a4d8b4c0" astOperand1="0x5558a4b6ba40" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4daee30" file="air/examples/posix/p0/minteger.c" linenr="10" column="8" str="struct" scope="0x5558a4de4260" type="name"/>
-    <token id="0x5558a4c10590" file="air/examples/posix/p0/minteger.c" linenr="10" column="0" str="s_m_integer" scope="0x5558a4de4260" type="name" type-scope="0x5558a4d849b0"/>
-    <token id="0x5558a4d8c980" file="air/examples/posix/p0/minteger.c" linenr="10" column="0" str="*" scope="0x5558a4de4260" type="op" isArithmeticalOp="true"/>
-    <token id="0x5558a4d54fb0" file="air/examples/posix/p0/minteger.c" linenr="10" column="17" str=")" scope="0x5558a4de4260" link="0x5558a4dc68f0"/>
-    <token id="0x5558a4df3960" file="air/examples/posix/p0/minteger.c" linenr="10" column="19" str="malloc" scope="0x5558a4de4260" type="name" astParent="0x5558a4b6ba40"/>
-    <token id="0x5558a4b6ba40" file="air/examples/posix/p0/minteger.c" linenr="10" column="25" str="(" scope="0x5558a4de4260" link="0x5558a4b4e640" astParent="0x5558a4dc68f0" astOperand1="0x5558a4df3960" astOperand2="0x5558a4dd4220" valueType-type="void" valueType-pointer="1" valueType-reference="None" valueType-originalTypeName="void *"/>
-    <token id="0x5558a4b71ed0" file="air/examples/posix/p0/minteger.c" linenr="10" column="26" str="sizeof" scope="0x5558a4de4260" type="name" astParent="0x5558a4dd4220"/>
-    <token id="0x5558a4dd4220" file="air/examples/posix/p0/minteger.c" linenr="10" column="32" str="(" scope="0x5558a4de4260" link="0x5558a4d37d80" values="0x5558a4c25d80" astParent="0x5558a4b6ba40" astOperand1="0x5558a4b71ed0" astOperand2="0x5558a4bdc190" valueType-type="long" valueType-sign="unsigned" valueType-reference="None" valueType-originalTypeName="size_t"/>
-    <token id="0x5558a4e83520" file="air/examples/posix/p0/minteger.c" linenr="10" column="33" str="struct" scope="0x5558a4de4260" type="name" valueType-type="record" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4bdc190" file="air/examples/posix/p0/minteger.c" linenr="10" column="40" str="s_m_integer" scope="0x5558a4de4260" type="name" type-scope="0x5558a4d849b0" astParent="0x5558a4dd4220"/>
-    <token id="0x5558a4d37d80" file="air/examples/posix/p0/minteger.c" linenr="10" column="51" str=")" scope="0x5558a4de4260" link="0x5558a4dd4220"/>
-    <token id="0x5558a4b4e640" file="air/examples/posix/p0/minteger.c" linenr="10" column="52" str=")" scope="0x5558a4de4260" link="0x5558a4b6ba40"/>
-    <token id="0x5558a4d55420" file="air/examples/posix/p0/minteger.c" linenr="10" column="53" str=";" scope="0x5558a4de4260"/>
-    <token id="0x5558a4e890b0" file="air/examples/posix/p0/minteger.c" linenr="11" column="3" str="(" scope="0x5558a4de4260" link="0x5558a4d562b0"/>
-    <token id="0x5558a4d93cc0" file="air/examples/posix/p0/minteger.c" linenr="11" column="4" str="*" scope="0x5558a4de4260" type="op" isArithmeticalOp="true" astParent="0x5558a4baff40" astOperand1="0x5558a4dce790" valueType-type="record" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4dce790" file="air/examples/posix/p0/minteger.c" linenr="11" column="5" str="m" scope="0x5558a4de4260" type="name" varId="11" variable="0x5558a4e42b80" astParent="0x5558a4d93cc0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4d562b0" file="air/examples/posix/p0/minteger.c" linenr="11" column="6" str=")" scope="0x5558a4de4260" link="0x5558a4e890b0"/>
-    <token id="0x5558a4baff40" file="air/examples/posix/p0/minteger.c" linenr="11" column="7" str="." scope="0x5558a4de4260" astParent="0x5558a4c317b0" astOperand1="0x5558a4d93cc0" astOperand2="0x5558a4bcce20" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4bcce20" file="air/examples/posix/p0/minteger.c" linenr="11" column="8" str="value" scope="0x5558a4de4260" type="name" varId="12" astParent="0x5558a4baff40"/>
-    <token id="0x5558a4c317b0" file="air/examples/posix/p0/minteger.c" linenr="11" column="14" str="=" scope="0x5558a4de4260" type="op" isAssignmentOp="true" values="0x5558a4d7e910" astOperand1="0x5558a4baff40" astOperand2="0x5558a4dd82e0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4dd82e0" file="air/examples/posix/p0/minteger.c" linenr="11" column="16" str="0" scope="0x5558a4de4260" type="number" isInt="true" values="0x5558a4bec3d0" astParent="0x5558a4c317b0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4dee8e0" file="air/examples/posix/p0/minteger.c" linenr="11" column="17" str=";" scope="0x5558a4de4260"/>
-    <token id="0x5558a4bb94c0" file="air/examples/posix/p0/minteger.c" linenr="12" column="3" str="pthread_mutexattr_t" scope="0x5558a4de4260" type="name"/>
-    <token id="0x5558a4da0a10" file="air/examples/posix/p0/minteger.c" linenr="12" column="23" str="my_attr" scope="0x5558a4de4260" type="name" varId="13" variable="0x5558a4d93c30"/>
-    <token id="0x5558a4bb8200" file="air/examples/posix/p0/minteger.c" linenr="12" column="30" str=";" scope="0x5558a4de4260"/>
-    <token id="0x5558a4b8ed20" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="if" scope="0x5558a4de4260" type="name" isExpandedMacro="true" astParent="0x5558a4d46710"/>
-    <token id="0x5558a4d46710" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="(" scope="0x5558a4de4260" isExpandedMacro="true" link="0x5558a4beb9e0" astOperand1="0x5558a4b8ed20" astOperand2="0x5558a4dc2d90"/>
-    <token id="0x5558a4b7de80" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="pthread_mutexattr_init" scope="0x5558a4de4260" type="name" astParent="0x5558a4c0d280"/>
-    <token id="0x5558a4c0d280" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="(" scope="0x5558a4de4260" link="0x5558a4b7c2c0" astParent="0x5558a4dc2d90" astOperand1="0x5558a4b7de80" astOperand2="0x5558a4bf6890"/>
-    <token id="0x5558a4bf6890" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="&amp;" scope="0x5558a4de4260" type="op" values="0x5558a4d4ad20" astParent="0x5558a4c0d280" astOperand1="0x5558a4dc7d00"/>
-    <token id="0x5558a4dc7d00" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="my_attr" scope="0x5558a4de4260" type="name" varId="13" variable="0x5558a4d93c30" astParent="0x5558a4bf6890"/>
-    <token id="0x5558a4b7c2c0" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str=")" scope="0x5558a4de4260" link="0x5558a4c0d280"/>
-    <token id="0x5558a4dc2d90" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="!=" scope="0x5558a4de4260" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x5558a4d46710" astOperand1="0x5558a4c0d280" astOperand2="0x5558a4b5c3f0" valueType-type="bool" valueType-reference="None"/>
-    <token id="0x5558a4b5c3f0" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="0" scope="0x5558a4de4260" type="number" isInt="true" isExpandedMacro="true" values="0x5558a4e052c0" astParent="0x5558a4dc2d90" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4beb9e0" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str=")" scope="0x5558a4de4260" isExpandedMacro="true" link="0x5558a4d46710"/>
-    <token id="0x5558a4bc1900" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="{" scope="0x5558a4d84c10" isExpandedMacro="true" link="0x5558a4b7d930"/>
-    <token id="0x5558a4d49060" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="printf" scope="0x5558a4d84c10" type="name" isExpandedMacro="true" astParent="0x5558a4df1df0"/>
-    <token id="0x5558a4df1df0" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="(" scope="0x5558a4d84c10" isExpandedMacro="true" link="0x5558a4b42830" astOperand1="0x5558a4d49060" astOperand2="0x5558a4b72140" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
-    <token id="0x5558a4d7ecf0" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="&quot;%s %d:\n&quot;" scope="0x5558a4d84c10" type="string" strlen="7" isExpandedMacro="true" values="0x5558a4bb1730" astParent="0x5558a4da1870" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4da1870" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="," scope="0x5558a4d84c10" isExpandedMacro="true" astParent="0x5558a4b72140" astOperand1="0x5558a4d7ecf0" astOperand2="0x5558a4dbfef0"/>
-    <token id="0x5558a4dbfef0" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="&quot;air/examples/posix/p0/minteger.c&quot;" scope="0x5558a4d84c10" type="string" strlen="32" values="0x5558a4e170b0" astParent="0x5558a4da1870" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4b72140" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="," scope="0x5558a4d84c10" isExpandedMacro="true" astParent="0x5558a4df1df0" astOperand1="0x5558a4da1870" astOperand2="0x5558a4de9f20"/>
-    <token id="0x5558a4de9f20" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="13" scope="0x5558a4d84c10" type="number" isInt="true" values="0x5558a4d25200" astParent="0x5558a4b72140" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4b42830" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str=")" scope="0x5558a4d84c10" isExpandedMacro="true" link="0x5558a4df1df0"/>
-    <token id="0x5558a4c24ec0" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str=";" scope="0x5558a4d84c10" isExpandedMacro="true"/>
-    <token id="0x5558a4dbe130" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="perror" scope="0x5558a4d84c10" type="name" isExpandedMacro="true" astParent="0x5558a4dc4db0"/>
-    <token id="0x5558a4dc4db0" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="(" scope="0x5558a4d84c10" isExpandedMacro="true" link="0x5558a4b29530" astOperand1="0x5558a4dbe130" astOperand2="0x5558a4d53640" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
-    <token id="0x5558a4d53640" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="&quot;[ERROR]&quot;" scope="0x5558a4d84c10" type="string" strlen="7" isExpandedMacro="true" values="0x5558a4b3bb50" astParent="0x5558a4dc4db0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4b29530" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str=")" scope="0x5558a4d84c10" isExpandedMacro="true" link="0x5558a4dc4db0"/>
-    <token id="0x5558a4b53c50" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str=";" scope="0x5558a4d84c10" isExpandedMacro="true"/>
-    <token id="0x5558a4b7d930" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="}" scope="0x5558a4d84c10" isExpandedMacro="true" link="0x5558a4bc1900"/>
-    <token id="0x5558a4d499e0" file="air/examples/posix/p0/minteger.c" linenr="13" column="47" str=";" scope="0x5558a4de4260"/>
-    <token id="0x5558a4bef1f0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="if" scope="0x5558a4de4260" type="name" isExpandedMacro="true" astParent="0x5558a4e4a5a0"/>
-    <token id="0x5558a4e4a5a0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="(" scope="0x5558a4de4260" isExpandedMacro="true" link="0x5558a4bafd30" astOperand1="0x5558a4bef1f0" astOperand2="0x5558a4e893a0"/>
-    <token id="0x5558a4b670d0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="pthread_mutex_init" scope="0x5558a4de4260" type="name" astParent="0x5558a4e022e0"/>
-    <token id="0x5558a4e022e0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="(" scope="0x5558a4de4260" link="0x5558a4c06ff0" astParent="0x5558a4e893a0" astOperand1="0x5558a4b670d0" astOperand2="0x5558a4e4e3e0"/>
-    <token id="0x5558a4d07e10" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="&amp;" scope="0x5558a4de4260" type="op" values="0x5558a4deef90" astParent="0x5558a4e4e3e0" astOperand1="0x5558a4c143b0"/>
-    <token id="0x5558a4bb8970" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="(" scope="0x5558a4de4260" link="0x5558a4e4e380"/>
-    <token id="0x5558a4c137c0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="(" scope="0x5558a4de4260" link="0x5558a4b92920"/>
-    <token id="0x5558a4e108d0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="*" scope="0x5558a4de4260" type="op" isArithmeticalOp="true" astParent="0x5558a4c143b0" astOperand1="0x5558a4b7f000" valueType-type="record" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4b7f000" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="m" scope="0x5558a4de4260" type="name" varId="11" variable="0x5558a4e42b80" astParent="0x5558a4e108d0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4b92920" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str=")" scope="0x5558a4de4260" link="0x5558a4c137c0"/>
-    <token id="0x5558a4c143b0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="." scope="0x5558a4de4260" astParent="0x5558a4d07e10" astOperand1="0x5558a4e108d0" astOperand2="0x5558a4c14410"/>
-    <token id="0x5558a4c14410" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="mutex" scope="0x5558a4de4260" type="name" varId="14" astParent="0x5558a4c143b0"/>
-    <token id="0x5558a4e4e380" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str=")" scope="0x5558a4de4260" link="0x5558a4bb8970"/>
-    <token id="0x5558a4e4e3e0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="," scope="0x5558a4de4260" astParent="0x5558a4e022e0" astOperand1="0x5558a4d07e10" astOperand2="0x5558a4d3bab0"/>
-    <token id="0x5558a4d3bab0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="&amp;" scope="0x5558a4de4260" type="op" values="0x5558a4b92f20" astParent="0x5558a4e4e3e0" astOperand1="0x5558a4b3db40"/>
-    <token id="0x5558a4b3db40" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="my_attr" scope="0x5558a4de4260" type="name" varId="13" variable="0x5558a4d93c30" astParent="0x5558a4d3bab0"/>
-    <token id="0x5558a4c06ff0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str=")" scope="0x5558a4de4260" link="0x5558a4e022e0"/>
-    <token id="0x5558a4e893a0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="!=" scope="0x5558a4de4260" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x5558a4e4a5a0" astOperand1="0x5558a4e022e0" astOperand2="0x5558a4b7dc10" valueType-type="bool" valueType-reference="None"/>
-    <token id="0x5558a4b7dc10" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="0" scope="0x5558a4de4260" type="number" isInt="true" isExpandedMacro="true" values="0x5558a4d9c550" astParent="0x5558a4e893a0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4bafd30" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str=")" scope="0x5558a4de4260" isExpandedMacro="true" link="0x5558a4e4a5a0"/>
-    <token id="0x5558a4da0d10" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="{" scope="0x5558a4e05360" isExpandedMacro="true" link="0x5558a4bd3210"/>
-    <token id="0x5558a4bfa8e0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="printf" scope="0x5558a4e05360" type="name" isExpandedMacro="true" astParent="0x5558a4dba060"/>
-    <token id="0x5558a4dba060" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="(" scope="0x5558a4e05360" isExpandedMacro="true" link="0x5558a4e894a0" astOperand1="0x5558a4bfa8e0" astOperand2="0x5558a4dc3490" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
-    <token id="0x5558a4b85f80" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="&quot;%s %d:\n&quot;" scope="0x5558a4e05360" type="string" strlen="7" isExpandedMacro="true" values="0x5558a4b8ccd0" astParent="0x5558a4ba4e80" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4ba4e80" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="," scope="0x5558a4e05360" isExpandedMacro="true" astParent="0x5558a4dc3490" astOperand1="0x5558a4b85f80" astOperand2="0x5558a4bd2210"/>
-    <token id="0x5558a4bd2210" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="&quot;air/examples/posix/p0/minteger.c&quot;" scope="0x5558a4e05360" type="string" strlen="32" values="0x5558a4e154c0" astParent="0x5558a4ba4e80" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4dc3490" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="," scope="0x5558a4e05360" isExpandedMacro="true" astParent="0x5558a4dba060" astOperand1="0x5558a4ba4e80" astOperand2="0x5558a4dcf5e0"/>
-    <token id="0x5558a4dcf5e0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="16" scope="0x5558a4e05360" type="number" isInt="true" values="0x5558a4bd53d0" astParent="0x5558a4dc3490" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4e894a0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str=")" scope="0x5558a4e05360" isExpandedMacro="true" link="0x5558a4dba060"/>
-    <token id="0x5558a4e088d0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str=";" scope="0x5558a4e05360" isExpandedMacro="true"/>
-    <token id="0x5558a4b96fe0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="perror" scope="0x5558a4e05360" type="name" isExpandedMacro="true" astParent="0x5558a4df4df0"/>
-    <token id="0x5558a4df4df0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="(" scope="0x5558a4e05360" isExpandedMacro="true" link="0x5558a4d9cf90" astOperand1="0x5558a4b96fe0" astOperand2="0x5558a4c0b340" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
-    <token id="0x5558a4c0b340" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="&quot;[ERROR]&quot;" scope="0x5558a4e05360" type="string" strlen="7" isExpandedMacro="true" values="0x5558a4b57910" astParent="0x5558a4df4df0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4d9cf90" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str=")" scope="0x5558a4e05360" isExpandedMacro="true" link="0x5558a4df4df0"/>
-    <token id="0x5558a4dc3db0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str=";" scope="0x5558a4e05360" isExpandedMacro="true"/>
-    <token id="0x5558a4bd3210" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="}" scope="0x5558a4e05360" isExpandedMacro="true" link="0x5558a4da0d10"/>
-    <token id="0x5558a4b9dfe0" file="air/examples/posix/p0/minteger.c" linenr="16" column="56" str=";" scope="0x5558a4de4260"/>
-    <token id="0x5558a4dcf510" file="air/examples/posix/p0/minteger.c" linenr="17" column="3" str="return" scope="0x5558a4de4260" type="name" astOperand1="0x5558a4be0aa0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4be0aa0" file="air/examples/posix/p0/minteger.c" linenr="17" column="10" str="m" scope="0x5558a4de4260" type="name" varId="11" variable="0x5558a4e42b80" astParent="0x5558a4dcf510" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4ba4db0" file="air/examples/posix/p0/minteger.c" linenr="17" column="11" str=";" scope="0x5558a4de4260"/>
-    <token id="0x5558a4d940f0" file="air/examples/posix/p0/minteger.c" linenr="18" column="1" str="}" scope="0x5558a4de4260" link="0x5558a4c26ca0"/>
-    <token id="0x5558a4bd2140" file="air/examples/posix/p0/minteger.c" linenr="21" column="1" str="void" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4e00280" file="air/examples/posix/p0/minteger.c" linenr="21" column="6" str="MI_write" scope="0x5558a4d9d530" type="name" function="0x5558a4bd5200"/>
-    <token id="0x5558a4dc33c0" file="air/examples/posix/p0/minteger.c" linenr="21" column="14" str="(" scope="0x5558a4d9d530" link="0x5558a4dc3420" valueType-type="void" valueType-reference="None"/>
-    <token id="0x5558a4dcf570" file="air/examples/posix/p0/minteger.c" linenr="21" column="15" str="struct" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4e42c70" file="air/examples/posix/p0/minteger.c" linenr="21" column="0" str="s_m_integer" scope="0x5558a4d9d530" type="name" type-scope="0x5558a4d849b0" astParent="0x5558a4d9db00"/>
-    <token id="0x5558a4d9db00" file="air/examples/posix/p0/minteger.c" linenr="21" column="0" str="*" scope="0x5558a4d9d530" type="op" isArithmeticalOp="true" astParent="0x5558a4c1f3a0" astOperand1="0x5558a4e42c70" astOperand2="0x5558a4ba4e10"/>
-    <token id="0x5558a4ba4e10" file="air/examples/posix/p0/minteger.c" linenr="21" column="25" str="m" scope="0x5558a4d9d530" type="name" varId="15" variable="0x5558a4dff600" astParent="0x5558a4d9db00" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4c1f3a0" file="air/examples/posix/p0/minteger.c" linenr="21" column="26" str="," scope="0x5558a4d9d530" astOperand1="0x5558a4d9db00" astOperand2="0x5558a4c00060"/>
-    <token id="0x5558a4bd21a0" file="air/examples/posix/p0/minteger.c" linenr="21" column="28" str="int" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4c00060" file="air/examples/posix/p0/minteger.c" linenr="21" column="32" str="v" scope="0x5558a4d9d530" type="name" varId="16" variable="0x5558a4be90d0" astParent="0x5558a4c1f3a0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4dc3420" file="air/examples/posix/p0/minteger.c" linenr="21" column="33" str=")" scope="0x5558a4d9d530" link="0x5558a4dc33c0"/>
-    <token id="0x5558a4bd5520" file="air/examples/posix/p0/minteger.c" linenr="21" column="35" str="{" scope="0x5558a4b98180" link="0x5558a4b9d5d0"/>
-    <token id="0x5558a4c1f400" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="if" scope="0x5558a4b98180" type="name" isExpandedMacro="true" astParent="0x5558a4c000c0"/>
-    <token id="0x5558a4c000c0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="(" scope="0x5558a4b98180" isExpandedMacro="true" link="0x5558a4e15e80" astOperand1="0x5558a4c1f400" astOperand2="0x5558a4dc1200"/>
-    <token id="0x5558a4bd5580" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="pthread_mutex_lock" scope="0x5558a4b98180" type="name" astParent="0x5558a4d4b510"/>
-    <token id="0x5558a4d4b510" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="(" scope="0x5558a4b98180" link="0x5558a4bf7170" astParent="0x5558a4dc1200" astOperand1="0x5558a4bd5580" astOperand2="0x5558a4bb0600"/>
-    <token id="0x5558a4bb0600" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="&amp;" scope="0x5558a4b98180" type="op" values="0x5558a4bfece0" astParent="0x5558a4d4b510" astOperand1="0x5558a4baa0e0"/>
-    <token id="0x5558a4e15970" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="(" scope="0x5558a4b98180" link="0x5558a4bf7090"/>
-    <token id="0x5558a4c15b60" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="(" scope="0x5558a4b98180" link="0x5558a4d42ca0"/>
-    <token id="0x5558a4c15c40" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="*" scope="0x5558a4b98180" type="op" isArithmeticalOp="true" astParent="0x5558a4baa0e0" astOperand1="0x5558a4d42bc0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4d42bc0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="m" scope="0x5558a4b98180" type="name" varId="15" variable="0x5558a4dff600" astParent="0x5558a4c15c40" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4d42ca0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str=")" scope="0x5558a4b98180" link="0x5558a4c15b60"/>
-    <token id="0x5558a4baa0e0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="." scope="0x5558a4b98180" astParent="0x5558a4bb0600" astOperand1="0x5558a4c15c40" astOperand2="0x5558a4baa1c0"/>
-    <token id="0x5558a4baa1c0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="mutex" scope="0x5558a4b98180" type="name" varId="17" astParent="0x5558a4baa0e0"/>
-    <token id="0x5558a4bf7090" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str=")" scope="0x5558a4b98180" link="0x5558a4e15970"/>
-    <token id="0x5558a4bf7170" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str=")" scope="0x5558a4b98180" link="0x5558a4d4b510"/>
-    <token id="0x5558a4dc1200" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="!=" scope="0x5558a4b98180" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x5558a4c000c0" astOperand1="0x5558a4d4b510" astOperand2="0x5558a4e15da0" valueType-type="bool" valueType-reference="None"/>
-    <token id="0x5558a4e15da0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="0" scope="0x5558a4b98180" type="number" isInt="true" isExpandedMacro="true" values="0x5558a4da24a0" astParent="0x5558a4dc1200" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4e15e80" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str=")" scope="0x5558a4b98180" isExpandedMacro="true" link="0x5558a4c000c0"/>
-    <token id="0x5558a4b226d0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="{" scope="0x5558a4c25a20" isExpandedMacro="true" link="0x5558a4b78b50"/>
-    <token id="0x5558a4b227b0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="printf" scope="0x5558a4c25a20" type="name" isExpandedMacro="true" astParent="0x5558a4c06880"/>
-    <token id="0x5558a4c06880" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="(" scope="0x5558a4c25a20" isExpandedMacro="true" link="0x5558a4de1b70" astOperand1="0x5558a4b227b0" astOperand2="0x5558a4dc37b0" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
-    <token id="0x5558a4c06960" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="&quot;%s %d:\n&quot;" scope="0x5558a4c25a20" type="string" strlen="7" isExpandedMacro="true" values="0x5558a4b685a0" astParent="0x5558a4e0bcc0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4e0bcc0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="," scope="0x5558a4c25a20" isExpandedMacro="true" astParent="0x5558a4dc37b0" astOperand1="0x5558a4c06960" astOperand2="0x5558a4e0bda0"/>
-    <token id="0x5558a4e0bda0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="&quot;air/examples/posix/p0/minteger.c&quot;" scope="0x5558a4c25a20" type="string" strlen="32" values="0x5558a4d00d90" astParent="0x5558a4e0bcc0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4dc37b0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="," scope="0x5558a4c25a20" isExpandedMacro="true" astParent="0x5558a4c06880" astOperand1="0x5558a4e0bcc0" astOperand2="0x5558a4de1b10"/>
-    <token id="0x5558a4de1b10" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="22" scope="0x5558a4c25a20" type="number" isInt="true" values="0x5558a4b50bc0" astParent="0x5558a4dc37b0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4de1b70" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str=")" scope="0x5558a4c25a20" isExpandedMacro="true" link="0x5558a4c06880"/>
-    <token id="0x5558a4e087d0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str=";" scope="0x5558a4c25a20" isExpandedMacro="true"/>
-    <token id="0x5558a4dc38a0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="perror" scope="0x5558a4c25a20" type="name" isExpandedMacro="true" astParent="0x5558a4e08830"/>
-    <token id="0x5558a4e08830" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="(" scope="0x5558a4c25a20" isExpandedMacro="true" link="0x5558a4c36fb0" astOperand1="0x5558a4dc38a0" astOperand2="0x5558a4c36ed0" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
-    <token id="0x5558a4c36ed0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="&quot;[ERROR]&quot;" scope="0x5558a4c25a20" type="string" strlen="7" isExpandedMacro="true" values="0x5558a4b75560" astParent="0x5558a4e08830" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4c36fb0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str=")" scope="0x5558a4c25a20" isExpandedMacro="true" link="0x5558a4e08830"/>
-    <token id="0x5558a4b78a70" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str=";" scope="0x5558a4c25a20" isExpandedMacro="true"/>
-    <token id="0x5558a4b78b50" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="}" scope="0x5558a4c25a20" isExpandedMacro="true" link="0x5558a4b226d0"/>
-    <token id="0x5558a4b96e50" file="air/examples/posix/p0/minteger.c" linenr="22" column="48" str=";" scope="0x5558a4b98180"/>
-    <token id="0x5558a4b68b90" file="air/examples/posix/p0/minteger.c" linenr="23" column="3" str="(" scope="0x5558a4b98180" link="0x5558a4b1ea70"/>
-    <token id="0x5558a4b1ebd0" file="air/examples/posix/p0/minteger.c" linenr="23" column="4" str="*" scope="0x5558a4b98180" type="op" isArithmeticalOp="true" astParent="0x5558a4dfdff0" astOperand1="0x5558a4b1eb20" valueType-type="record" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4b1eb20" file="air/examples/posix/p0/minteger.c" linenr="23" column="5" str="m" scope="0x5558a4b98180" type="name" varId="15" variable="0x5558a4dff600" astParent="0x5558a4b1ebd0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4b1ea70" file="air/examples/posix/p0/minteger.c" linenr="23" column="6" str=")" scope="0x5558a4b98180" link="0x5558a4b68b90"/>
-    <token id="0x5558a4dfdff0" file="air/examples/posix/p0/minteger.c" linenr="23" column="7" str="." scope="0x5558a4b98180" astParent="0x5558a4df6fe0" astOperand1="0x5558a4b1ebd0" astOperand2="0x5558a4dfdf40" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4dfdf40" file="air/examples/posix/p0/minteger.c" linenr="23" column="8" str="value" scope="0x5558a4b98180" type="name" varId="18" astParent="0x5558a4dfdff0"/>
-    <token id="0x5558a4df6fe0" file="air/examples/posix/p0/minteger.c" linenr="23" column="14" str="=" scope="0x5558a4b98180" type="op" isAssignmentOp="true" astOperand1="0x5558a4dfdff0" astOperand2="0x5558a4df7040" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4df7040" file="air/examples/posix/p0/minteger.c" linenr="23" column="16" str="v" scope="0x5558a4b98180" type="name" varId="16" variable="0x5558a4be90d0" astParent="0x5558a4df6fe0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4d48300" file="air/examples/posix/p0/minteger.c" linenr="23" column="17" str=";" scope="0x5558a4b98180"/>
-    <token id="0x5558a4b68c80" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="if" scope="0x5558a4b98180" type="name" isExpandedMacro="true" astParent="0x5558a4d48360"/>
-    <token id="0x5558a4d48360" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="(" scope="0x5558a4b98180" isExpandedMacro="true" link="0x5558a4e47310" astOperand1="0x5558a4b68c80" astOperand2="0x5558a4bb70e0"/>
-    <token id="0x5558a4de35a0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="pthread_mutex_unlock" scope="0x5558a4b98180" type="name" astParent="0x5558a4c1e7f0"/>
-    <token id="0x5558a4c1e7f0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="(" scope="0x5558a4b98180" link="0x5558a4bb7000" astParent="0x5558a4bb70e0" astOperand1="0x5558a4de35a0" astOperand2="0x5558a4c1e8d0"/>
-    <token id="0x5558a4c1e8d0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="&amp;" scope="0x5558a4b98180" type="op" values="0x5558a4d99310" astParent="0x5558a4c1e7f0" astOperand1="0x5558a4b44270"/>
-    <token id="0x5558a4be4070" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="(" scope="0x5558a4b98180" link="0x5558a4c06250"/>
-    <token id="0x5558a4be4150" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="*" scope="0x5558a4b98180" type="op" isArithmeticalOp="true" astParent="0x5558a4b44270" astOperand1="0x5558a4c06170" valueType-type="record" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4c06170" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="m" scope="0x5558a4b98180" type="name" varId="15" variable="0x5558a4dff600" astParent="0x5558a4be4150" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4c06250" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str=")" scope="0x5558a4b98180" link="0x5558a4be4070"/>
-    <token id="0x5558a4b44270" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="." scope="0x5558a4b98180" astParent="0x5558a4c1e8d0" astOperand1="0x5558a4be4150" astOperand2="0x5558a4b44350"/>
-    <token id="0x5558a4b44350" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="mutex" scope="0x5558a4b98180" type="name" varId="17" astParent="0x5558a4b44270"/>
-    <token id="0x5558a4bb7000" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str=")" scope="0x5558a4b98180" link="0x5558a4c1e7f0"/>
-    <token id="0x5558a4bb70e0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="!=" scope="0x5558a4b98180" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x5558a4d48360" astOperand1="0x5558a4c1e7f0" astOperand2="0x5558a4b33f30" valueType-type="bool" valueType-reference="None"/>
-    <token id="0x5558a4b33f30" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="0" scope="0x5558a4b98180" type="number" isInt="true" isExpandedMacro="true" values="0x5558a4c04ff0" astParent="0x5558a4bb70e0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4e47310" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str=")" scope="0x5558a4b98180" isExpandedMacro="true" link="0x5558a4d48360"/>
-    <token id="0x5558a4e473f0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="{" scope="0x5558a4bc9cd0" isExpandedMacro="true" link="0x5558a4dee720"/>
-    <token id="0x5558a4bf85b0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="printf" scope="0x5558a4bc9cd0" type="name" isExpandedMacro="true" astParent="0x5558a4bf8690"/>
-    <token id="0x5558a4bf8690" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="(" scope="0x5558a4bc9cd0" isExpandedMacro="true" link="0x5558a4b5a990" astOperand1="0x5558a4bf85b0" astOperand2="0x5558a4e83f20" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
-    <token id="0x5558a4be7390" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="&quot;%s %d:\n&quot;" scope="0x5558a4bc9cd0" type="string" strlen="7" isExpandedMacro="true" values="0x5558a4bf58a0" astParent="0x5558a4be7470" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4be7470" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="," scope="0x5558a4bc9cd0" isExpandedMacro="true" astParent="0x5558a4e83f20" astOperand1="0x5558a4be7390" astOperand2="0x5558a4e83de0"/>
-    <token id="0x5558a4e83de0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="&quot;air/examples/posix/p0/minteger.c&quot;" scope="0x5558a4bc9cd0" type="string" strlen="32" values="0x5558a4d52d90" astParent="0x5558a4be7470" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4e83f20" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="," scope="0x5558a4bc9cd0" isExpandedMacro="true" astParent="0x5558a4bf8690" astOperand1="0x5558a4be7470" astOperand2="0x5558a4b5a8b0"/>
-    <token id="0x5558a4b5a8b0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="24" scope="0x5558a4bc9cd0" type="number" isInt="true" values="0x5558a4d4b3f0" astParent="0x5558a4e83f20" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4b5a990" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str=")" scope="0x5558a4bc9cd0" isExpandedMacro="true" link="0x5558a4bf8690"/>
-    <token id="0x5558a4bb8040" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str=";" scope="0x5558a4bc9cd0" isExpandedMacro="true"/>
-    <token id="0x5558a4bb8120" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="perror" scope="0x5558a4bc9cd0" type="name" isExpandedMacro="true" astParent="0x5558a4da0850"/>
-    <token id="0x5558a4da0850" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="(" scope="0x5558a4bc9cd0" isExpandedMacro="true" link="0x5558a4bb9300" astOperand1="0x5558a4bb8120" astOperand2="0x5558a4da0930" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
-    <token id="0x5558a4da0930" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="&quot;[ERROR]&quot;" scope="0x5558a4bc9cd0" type="string" strlen="7" isExpandedMacro="true" values="0x5558a4b66ef0" astParent="0x5558a4da0850" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4bb9300" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str=")" scope="0x5558a4bc9cd0" isExpandedMacro="true" link="0x5558a4da0850"/>
-    <token id="0x5558a4bb93e0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str=";" scope="0x5558a4bc9cd0" isExpandedMacro="true"/>
-    <token id="0x5558a4dee720" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="}" scope="0x5558a4bc9cd0" isExpandedMacro="true" link="0x5558a4e473f0"/>
-    <token id="0x5558a4dee800" file="air/examples/posix/p0/minteger.c" linenr="24" column="48" str=";" scope="0x5558a4b98180"/>
-    <token id="0x5558a4b9d5d0" file="air/examples/posix/p0/minteger.c" linenr="25" column="1" str="}" scope="0x5558a4b98180" link="0x5558a4bd5520"/>
-    <token id="0x5558a4b06c00" file="air/examples/posix/p0/minteger.c" linenr="28" column="1" str="int" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4b06b50" file="air/examples/posix/p0/minteger.c" linenr="28" column="5" str="MI_read" scope="0x5558a4d9d530" type="name" function="0x5558a4b2f3d0"/>
-    <token id="0x5558a4b06aa0" file="air/examples/posix/p0/minteger.c" linenr="28" column="12" str="(" scope="0x5558a4d9d530" link="0x5558a4be2210" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4be2370" file="air/examples/posix/p0/minteger.c" linenr="28" column="13" str="struct" scope="0x5558a4d9d530" type="name"/>
-    <token id="0x5558a4d55590" file="air/examples/posix/p0/minteger.c" linenr="28" column="0" str="s_m_integer" scope="0x5558a4d9d530" type="name" type-scope="0x5558a4d849b0" astParent="0x5558a4e16440"/>
-    <token id="0x5558a4e16440" file="air/examples/posix/p0/minteger.c" linenr="28" column="0" str="*" scope="0x5558a4d9d530" type="op" isArithmeticalOp="true" astOperand1="0x5558a4d55590" astOperand2="0x5558a4be22c0"/>
-    <token id="0x5558a4be22c0" file="air/examples/posix/p0/minteger.c" linenr="28" column="23" str="m" scope="0x5558a4d9d530" type="name" varId="19" variable="0x5558a4b1efd0" astParent="0x5558a4e16440" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4be2210" file="air/examples/posix/p0/minteger.c" linenr="28" column="24" str=")" scope="0x5558a4d9d530" link="0x5558a4b06aa0"/>
-    <token id="0x5558a4bb4b20" file="air/examples/posix/p0/minteger.c" linenr="28" column="26" str="{" scope="0x5558a4e19010" link="0x5558a4b23b00"/>
-    <token id="0x5558a4b9d630" file="air/examples/posix/p0/minteger.c" linenr="29" column="3" str="int" scope="0x5558a4e19010" type="name"/>
-    <token id="0x5558a4b9d730" file="air/examples/posix/p0/minteger.c" linenr="29" column="7" str="v" scope="0x5558a4e19010" type="name" varId="20" variable="0x5558a4b22cc0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4b99f80" file="air/examples/posix/p0/minteger.c" linenr="29" column="8" str=";" scope="0x5558a4e19010"/>
-    <token id="0x5558a4b99fe0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="if" scope="0x5558a4e19010" type="name" isExpandedMacro="true" astParent="0x5558a4b7dcc0"/>
-    <token id="0x5558a4b7dcc0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="(" scope="0x5558a4e19010" isExpandedMacro="true" link="0x5558a4ba3b30" astOperand1="0x5558a4b99fe0" astOperand2="0x5558a4dc2bd0"/>
-    <token id="0x5558a4b7dda0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="pthread_mutex_lock" scope="0x5558a4e19010" type="name" astParent="0x5558a4be8fe0"/>
-    <token id="0x5558a4be8fe0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="(" scope="0x5558a4e19010" link="0x5558a4b7c1e0" astParent="0x5558a4dc2bd0" astOperand1="0x5558a4b7dda0" astOperand2="0x5558a4c0d0c0"/>
-    <token id="0x5558a4c0d0c0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="&amp;" scope="0x5558a4e19010" type="op" values="0x5558a4d366a0" astParent="0x5558a4be8fe0" astOperand1="0x5558a4dc7c20"/>
-    <token id="0x5558a4c0d1a0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="(" scope="0x5558a4e19010" link="0x5558a4dc7b40"/>
-    <token id="0x5558a4bf66d0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="*" scope="0x5558a4e19010" type="op" isArithmeticalOp="true" astParent="0x5558a4dc7c20" astOperand1="0x5558a4bf67b0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4bf67b0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="m" scope="0x5558a4e19010" type="name" varId="19" variable="0x5558a4b1efd0" astParent="0x5558a4bf66d0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4dc7b40" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str=")" scope="0x5558a4e19010" link="0x5558a4c0d1a0"/>
-    <token id="0x5558a4dc7c20" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="." scope="0x5558a4e19010" astParent="0x5558a4c0d0c0" astOperand1="0x5558a4bf66d0" astOperand2="0x5558a4b7c100"/>
-    <token id="0x5558a4b7c100" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="mutex" scope="0x5558a4e19010" type="name" varId="21" astParent="0x5558a4dc7c20"/>
-    <token id="0x5558a4b7c1e0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str=")" scope="0x5558a4e19010" link="0x5558a4be8fe0"/>
-    <token id="0x5558a4dc2bd0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="!=" scope="0x5558a4e19010" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x5558a4b7dcc0" astOperand1="0x5558a4be8fe0" astOperand2="0x5558a4ba3a50" valueType-type="bool" valueType-reference="None"/>
-    <token id="0x5558a4ba3a50" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="0" scope="0x5558a4e19010" type="number" isInt="true" isExpandedMacro="true" values="0x5558a4bae6e0" astParent="0x5558a4dc2bd0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4ba3b30" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str=")" scope="0x5558a4e19010" isExpandedMacro="true" link="0x5558a4b7dcc0"/>
-    <token id="0x5558a4b5c230" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="{" scope="0x5558a4d53eb0" isExpandedMacro="true" link="0x5558a4bd3050"/>
-    <token id="0x5558a4b5c310" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="printf" scope="0x5558a4d53eb0" type="name" isExpandedMacro="true" astParent="0x5558a4df4c30"/>
-    <token id="0x5558a4df4c30" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="(" scope="0x5558a4d53eb0" isExpandedMacro="true" link="0x5558a4e0cbd0" astOperand1="0x5558a4b5c310" astOperand2="0x5558a4c0b180" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
-    <token id="0x5558a4df4d10" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="&quot;%s %d:\n&quot;" scope="0x5558a4d53eb0" type="string" strlen="7" isExpandedMacro="true" values="0x5558a4c25de0" astParent="0x5558a4c0b880" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4c0b880" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="," scope="0x5558a4d53eb0" isExpandedMacro="true" astParent="0x5558a4c0b180" astOperand1="0x5558a4df4d10" astOperand2="0x5558a4c0b960"/>
-    <token id="0x5558a4c0b960" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="&quot;air/examples/posix/p0/minteger.c&quot;" scope="0x5558a4d53eb0" type="string" strlen="32" values="0x5558a4e4b5b0" astParent="0x5558a4c0b880" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4c0b180" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="," scope="0x5558a4d53eb0" isExpandedMacro="true" astParent="0x5558a4df4c30" astOperand1="0x5558a4c0b880" astOperand2="0x5558a4e0cb70"/>
-    <token id="0x5558a4e0cb70" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="31" scope="0x5558a4d53eb0" type="number" isInt="true" values="0x5558a4e84550" astParent="0x5558a4c0b180" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4e0cbd0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str=")" scope="0x5558a4d53eb0" isExpandedMacro="true" link="0x5558a4df4c30"/>
-    <token id="0x5558a4d550f0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str=";" scope="0x5558a4d53eb0" isExpandedMacro="true"/>
-    <token id="0x5558a4c0b270" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="perror" scope="0x5558a4d53eb0" type="name" isExpandedMacro="true" astParent="0x5558a4d55150"/>
-    <token id="0x5558a4d55150" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="(" scope="0x5558a4d53eb0" isExpandedMacro="true" link="0x5558a4dc3bf0" astOperand1="0x5558a4c0b270" astOperand2="0x5558a4d9ceb0" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
-    <token id="0x5558a4d9ceb0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="&quot;[ERROR]&quot;" scope="0x5558a4d53eb0" type="string" strlen="7" isExpandedMacro="true" values="0x5558a4b9ebe0" astParent="0x5558a4d55150" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4dc3bf0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str=")" scope="0x5558a4d53eb0" isExpandedMacro="true" link="0x5558a4d55150"/>
-    <token id="0x5558a4dc3cd0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str=";" scope="0x5558a4d53eb0" isExpandedMacro="true"/>
-    <token id="0x5558a4bd3050" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="}" scope="0x5558a4d53eb0" isExpandedMacro="true" link="0x5558a4b5c230"/>
-    <token id="0x5558a4bd3130" file="air/examples/posix/p0/minteger.c" linenr="31" column="46" str=";" scope="0x5558a4e19010"/>
-    <token id="0x5558a4b76920" file="air/examples/posix/p0/minteger.c" linenr="32" column="3" str="v" scope="0x5558a4e19010" type="name" varId="20" variable="0x5558a4b22cc0" astParent="0x5558a4b76870" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4b76870" file="air/examples/posix/p0/minteger.c" linenr="32" column="4" str="=" scope="0x5558a4e19010" type="op" isAssignmentOp="true" astOperand1="0x5558a4b76920" astOperand2="0x5558a4b9a0e0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4e88380" file="air/examples/posix/p0/minteger.c" linenr="32" column="5" str="(" scope="0x5558a4e19010" link="0x5558a4dc7d90"/>
-    <token id="0x5558a4e882d0" file="air/examples/posix/p0/minteger.c" linenr="32" column="6" str="*" scope="0x5558a4e19010" type="op" isArithmeticalOp="true" astParent="0x5558a4b9a0e0" astOperand1="0x5558a4dc7e40" valueType-type="record" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4dc7e40" file="air/examples/posix/p0/minteger.c" linenr="32" column="7" str="m" scope="0x5558a4e19010" type="name" varId="19" variable="0x5558a4b1efd0" astParent="0x5558a4e882d0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4dc7d90" file="air/examples/posix/p0/minteger.c" linenr="32" column="8" str=")" scope="0x5558a4e19010" link="0x5558a4e88380"/>
-    <token id="0x5558a4b9a0e0" file="air/examples/posix/p0/minteger.c" linenr="32" column="9" str="." scope="0x5558a4e19010" astParent="0x5558a4b76870" astOperand1="0x5558a4e882d0" astOperand2="0x5558a4b8ea90" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4b8ea90" file="air/examples/posix/p0/minteger.c" linenr="32" column="10" str="value" scope="0x5558a4e19010" type="name" varId="22" astParent="0x5558a4b9a0e0"/>
-    <token id="0x5558a4b8eaf0" file="air/examples/posix/p0/minteger.c" linenr="32" column="15" str=";" scope="0x5558a4e19010"/>
-    <token id="0x5558a4dc7f30" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="if" scope="0x5558a4e19010" type="name" isExpandedMacro="true" astParent="0x5558a4e88470"/>
-    <token id="0x5558a4e88470" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="(" scope="0x5558a4e19010" isExpandedMacro="true" link="0x5558a4d45f80" astOperand1="0x5558a4dc7f30" astOperand2="0x5558a4b4cad0"/>
-    <token id="0x5558a4b2a690" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="pthread_mutex_unlock" scope="0x5558a4e19010" type="name" astParent="0x5558a4dec4c0"/>
-    <token id="0x5558a4dec4c0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="(" scope="0x5558a4e19010" link="0x5558a4b4c9f0" astParent="0x5558a4b4cad0" astOperand1="0x5558a4b2a690" astOperand2="0x5558a4dec520"/>
-    <token id="0x5558a4dec520" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="&amp;" scope="0x5558a4e19010" type="op" values="0x5558a4c06ec0" astParent="0x5558a4dec4c0" astOperand1="0x5558a4e1ef60"/>
-    <token id="0x5558a4d800d0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="(" scope="0x5558a4e19010" link="0x5558a4b07e60"/>
-    <token id="0x5558a4d801b0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="*" scope="0x5558a4e19010" type="op" isArithmeticalOp="true" astParent="0x5558a4e1ef60" astOperand1="0x5558a4b07d80" valueType-type="record" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4b07d80" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="m" scope="0x5558a4e19010" type="name" varId="19" variable="0x5558a4b1efd0" astParent="0x5558a4d801b0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5558a4d849b0"/>
-    <token id="0x5558a4b07e60" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str=")" scope="0x5558a4e19010" link="0x5558a4d800d0"/>
-    <token id="0x5558a4e1ef60" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="." scope="0x5558a4e19010" astParent="0x5558a4dec520" astOperand1="0x5558a4d801b0" astOperand2="0x5558a4e1f040"/>
-    <token id="0x5558a4e1f040" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="mutex" scope="0x5558a4e19010" type="name" varId="21" astParent="0x5558a4e1ef60"/>
-    <token id="0x5558a4b4c9f0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str=")" scope="0x5558a4e19010" link="0x5558a4dec4c0"/>
-    <token id="0x5558a4b4cad0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="!=" scope="0x5558a4e19010" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x5558a4e88470" astOperand1="0x5558a4dec4c0" astOperand2="0x5558a4d35cc0" valueType-type="bool" valueType-reference="None"/>
-    <token id="0x5558a4d35cc0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="0" scope="0x5558a4e19010" type="number" isInt="true" isExpandedMacro="true" values="0x5558a4dde950" astParent="0x5558a4b4cad0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4d45f80" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str=")" scope="0x5558a4e19010" isExpandedMacro="true" link="0x5558a4e88470"/>
-    <token id="0x5558a4d46060" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="{" scope="0x5558a4b42e50" isExpandedMacro="true" link="0x5558a4dc3eb0"/>
-    <token id="0x5558a4d4c420" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="printf" scope="0x5558a4b42e50" type="name" isExpandedMacro="true" astParent="0x5558a4d4c500"/>
-    <token id="0x5558a4d4c500" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="(" scope="0x5558a4b42e50" isExpandedMacro="true" link="0x5558a4e1b130" astOperand1="0x5558a4d4c420" astOperand2="0x5558a4dd8230" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
-    <token id="0x5558a4e7afd0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="&quot;%s %d:\n&quot;" scope="0x5558a4b42e50" type="string" strlen="7" isExpandedMacro="true" values="0x5558a4bec8a0" astParent="0x5558a4e7b0b0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4e7b0b0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="," scope="0x5558a4b42e50" isExpandedMacro="true" astParent="0x5558a4dd8230" astOperand1="0x5558a4e7afd0" astOperand2="0x5558a4dd80f0"/>
-    <token id="0x5558a4dd80f0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="&quot;air/examples/posix/p0/minteger.c&quot;" scope="0x5558a4b42e50" type="string" strlen="32" values="0x5558a4b8def0" astParent="0x5558a4e7b0b0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4dd8230" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="," scope="0x5558a4b42e50" isExpandedMacro="true" astParent="0x5558a4d4c500" astOperand1="0x5558a4e7b0b0" astOperand2="0x5558a4e1b020"/>
-    <token id="0x5558a4e1b020" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="33" scope="0x5558a4b42e50" type="number" isInt="true" values="0x5558a4bf03c0" astParent="0x5558a4dd8230" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4e1b130" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str=")" scope="0x5558a4b42e50" isExpandedMacro="true" link="0x5558a4d4c500"/>
-    <token id="0x5558a4bf1860" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str=";" scope="0x5558a4b42e50" isExpandedMacro="true"/>
-    <token id="0x5558a4bf1940" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="perror" scope="0x5558a4b42e50" type="name" isExpandedMacro="true" astParent="0x5558a4b9b2e0"/>
-    <token id="0x5558a4b9b2e0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="(" scope="0x5558a4b42e50" isExpandedMacro="true" link="0x5558a4e0a7a0" astOperand1="0x5558a4bf1940" astOperand2="0x5558a4b9b3c0" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
-    <token id="0x5558a4b9b3c0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="&quot;[ERROR]&quot;" scope="0x5558a4b42e50" type="string" strlen="7" isExpandedMacro="true" values="0x5558a4de14a0" astParent="0x5558a4b9b2e0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x5558a4e0a7a0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str=")" scope="0x5558a4b42e50" isExpandedMacro="true" link="0x5558a4b9b2e0"/>
-    <token id="0x5558a4e0a880" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str=";" scope="0x5558a4b42e50" isExpandedMacro="true"/>
-    <token id="0x5558a4dc3eb0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="}" scope="0x5558a4b42e50" isExpandedMacro="true" link="0x5558a4d46060"/>
-    <token id="0x5558a4dc3f90" file="air/examples/posix/p0/minteger.c" linenr="33" column="48" str=";" scope="0x5558a4e19010"/>
-    <token id="0x5558a4ba83c0" file="air/examples/posix/p0/minteger.c" linenr="34" column="3" str="return" scope="0x5558a4e19010" type="name" astOperand1="0x5558a4b23c60" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4b23c60" file="air/examples/posix/p0/minteger.c" linenr="34" column="10" str="v" scope="0x5558a4e19010" type="name" varId="20" variable="0x5558a4b22cc0" astParent="0x5558a4ba83c0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x5558a4b23bb0" file="air/examples/posix/p0/minteger.c" linenr="34" column="11" str=";" scope="0x5558a4e19010"/>
-    <token id="0x5558a4b23b00" file="air/examples/posix/p0/minteger.c" linenr="35" column="1" str="}" scope="0x5558a4e19010" link="0x5558a4bb4b20"/>
+    <token id="0x558318cdb5a0" file="air/examples/posix/p0/minteger.h" linenr="10" column="9" str="struct" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318db1790" file="air/examples/posix/p0/minteger.h" linenr="10" column="16" str="s_m_integer" scope="0x558318d2f530" type="name" type-scope="0x558318d169b0"/>
+    <token id="0x558318afefb0" file="air/examples/posix/p0/minteger.h" linenr="10" column="28" str="{" scope="0x558318d169b0" link="0x558318b21360" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318ccc6c0" file="air/examples/posix/p0/minteger.h" linenr="11" column="3" str="int" scope="0x558318d169b0" type="name"/>
+    <token id="0x558318d234c0" file="air/examples/posix/p0/minteger.h" linenr="11" column="7" str="value" scope="0x558318d169b0" type="name" varId="1" variable="0x558318d9e100" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318e161e0" file="air/examples/posix/p0/minteger.h" linenr="11" column="12" str=";" scope="0x558318d169b0"/>
+    <token id="0x558318aee9a0" file="air/examples/posix/p0/minteger.h" linenr="12" column="3" str="pthread_mutex_t" scope="0x558318d169b0" type="name"/>
+    <token id="0x558318b978d0" file="air/examples/posix/p0/minteger.h" linenr="12" column="19" str="mutex" scope="0x558318d169b0" type="name" varId="2" variable="0x558318dd4aa0"/>
+    <token id="0x558318c9a2d0" file="air/examples/posix/p0/minteger.h" linenr="12" column="24" str=";" scope="0x558318d169b0"/>
+    <token id="0x558318b21360" file="air/examples/posix/p0/minteger.h" linenr="13" column="1" str="}" scope="0x558318d169b0" link="0x558318afefb0"/>
+    <token id="0x558318d9e090" file="air/examples/posix/p0/minteger.h" linenr="13" column="0" str=";" scope="0x558318d2f530"/>
+    <token id="0x558318ce88f0" file="air/examples/posix/p0/minteger.h" linenr="15" column="1" str="struct" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318da7c80" file="air/examples/posix/p0/minteger.h" linenr="15" column="0" str="s_m_integer" scope="0x558318d2f530" type="name" type-scope="0x558318d169b0"/>
+    <token id="0x558318d5adb0" file="air/examples/posix/p0/minteger.h" linenr="15" column="0" str="*" scope="0x558318d2f530" type="op" isArithmeticalOp="true"/>
+    <token id="0x558318e1a1b0" file="air/examples/posix/p0/minteger.h" linenr="15" column="11" str="MI_init" scope="0x558318d2f530" type="name" function="0x558318d91440"/>
+    <token id="0x558318aa67b0" file="air/examples/posix/p0/minteger.h" linenr="15" column="18" str="(" scope="0x558318d2f530" link="0x558318aed130" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318ce8230" file="air/examples/posix/p0/minteger.h" linenr="15" column="19" str="int" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318d663e0" file="air/examples/posix/p0/minteger.h" linenr="15" column="23" str="priority" scope="0x558318d2f530" type="name" varId="3"/>
+    <token id="0x558318aed130" file="air/examples/posix/p0/minteger.h" linenr="15" column="31" str=")" scope="0x558318d2f530" link="0x558318aa67b0"/>
+    <token id="0x558318d55110" file="air/examples/posix/p0/minteger.h" linenr="15" column="32" str=";" scope="0x558318d2f530"/>
+    <token id="0x558318afd9a0" file="air/examples/posix/p0/minteger.h" linenr="18" column="1" str="void" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318ce7dd0" file="air/examples/posix/p0/minteger.h" linenr="18" column="6" str="MI_write" scope="0x558318d2f530" type="name" function="0x558318b67200"/>
+    <token id="0x558318d91280" file="air/examples/posix/p0/minteger.h" linenr="18" column="14" str="(" scope="0x558318d2f530" link="0x558318d929c0" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318aab840" file="air/examples/posix/p0/minteger.h" linenr="18" column="15" str="struct" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318d561d0" file="air/examples/posix/p0/minteger.h" linenr="18" column="0" str="s_m_integer" scope="0x558318d2f530" type="name" type-scope="0x558318d169b0" astParent="0x558318b41230"/>
+    <token id="0x558318b41230" file="air/examples/posix/p0/minteger.h" linenr="18" column="0" str="*" scope="0x558318d2f530" type="op" isArithmeticalOp="true" astParent="0x558318d7d180" astOperand1="0x558318d561d0" astOperand2="0x558318abb9f0"/>
+    <token id="0x558318abb9f0" file="air/examples/posix/p0/minteger.h" linenr="18" column="25" str="m" scope="0x558318d2f530" type="name" varId="4" astParent="0x558318b41230"/>
+    <token id="0x558318d7d180" file="air/examples/posix/p0/minteger.h" linenr="18" column="26" str="," scope="0x558318d2f530" astOperand1="0x558318b41230" astOperand2="0x558318ccc540"/>
+    <token id="0x558318c97090" file="air/examples/posix/p0/minteger.h" linenr="18" column="28" str="int" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318ccc540" file="air/examples/posix/p0/minteger.h" linenr="18" column="32" str="v" scope="0x558318d2f530" type="name" varId="5" astParent="0x558318d7d180"/>
+    <token id="0x558318d929c0" file="air/examples/posix/p0/minteger.h" linenr="18" column="33" str=")" scope="0x558318d2f530" link="0x558318d91280"/>
+    <token id="0x558318d70c90" file="air/examples/posix/p0/minteger.h" linenr="18" column="34" str=";" scope="0x558318d2f530"/>
+    <token id="0x558318bb2d60" file="air/examples/posix/p0/minteger.h" linenr="19" column="1" str="int" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318cb6c80" file="air/examples/posix/p0/minteger.h" linenr="19" column="5" str="MI_read" scope="0x558318d2f530" type="name" function="0x558318ac1380"/>
+    <token id="0x558318e16630" file="air/examples/posix/p0/minteger.h" linenr="19" column="12" str="(" scope="0x558318d2f530" link="0x558318d18a20" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b66cb0" file="air/examples/posix/p0/minteger.h" linenr="19" column="13" str="struct" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318dab540" file="air/examples/posix/p0/minteger.h" linenr="19" column="0" str="s_m_integer" scope="0x558318d2f530" type="name" type-scope="0x558318d169b0" astParent="0x558318b41070"/>
+    <token id="0x558318b41070" file="air/examples/posix/p0/minteger.h" linenr="19" column="0" str="*" scope="0x558318d2f530" type="op" isArithmeticalOp="true" astOperand1="0x558318dab540" astOperand2="0x558318e16450"/>
+    <token id="0x558318e16450" file="air/examples/posix/p0/minteger.h" linenr="19" column="23" str="m" scope="0x558318d2f530" type="name" varId="6" astParent="0x558318b41070"/>
+    <token id="0x558318d18a20" file="air/examples/posix/p0/minteger.h" linenr="19" column="24" str=")" scope="0x558318d2f530" link="0x558318e16630"/>
+    <token id="0x558318cdb8a0" file="air/examples/posix/p0/minteger.h" linenr="19" column="25" str=";" scope="0x558318d2f530"/>
+    <token id="0x558318d18ec0" file="air/examples/posix/p0/utils.h" linenr="13" column="1" str="void" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318aee480" file="air/examples/posix/p0/utils.h" linenr="13" column="6" str="add_timespec" scope="0x558318d2f530" type="name" function="0x558318bca940"/>
+    <token id="0x558318d80d90" file="air/examples/posix/p0/utils.h" linenr="13" column="19" str="(" scope="0x558318d2f530" link="0x558318ce41a0" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318afa6b0" file="air/examples/posix/p0/utils.h" linenr="13" column="20" str="struct" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318ccc5c0" file="air/examples/posix/p0/utils.h" linenr="13" column="27" str="timespec" scope="0x558318d2f530" type="name" astParent="0x558318bb9fb0"/>
+    <token id="0x558318bb9fb0" file="air/examples/posix/p0/utils.h" linenr="13" column="36" str="*" scope="0x558318d2f530" type="op" isArithmeticalOp="true" astParent="0x558318b4be60" astOperand1="0x558318ccc5c0" astOperand2="0x558318ce7f90"/>
+    <token id="0x558318ce7f90" file="air/examples/posix/p0/utils.h" linenr="13" column="37" str="s" scope="0x558318d2f530" type="name" varId="7" variable="0x558318b89310" astParent="0x558318bb9fb0" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318b4be60" file="air/examples/posix/p0/utils.h" linenr="13" column="38" str="," scope="0x558318d2f530" astParent="0x558318b1a9f0" astOperand1="0x558318bb9fb0" astOperand2="0x558318ce73a0"/>
+    <token id="0x558318d94240" file="air/examples/posix/p0/utils.h" linenr="14" column="20" str="const" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318b488d0" file="air/examples/posix/p0/utils.h" linenr="14" column="26" str="struct" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318ce44c0" file="air/examples/posix/p0/utils.h" linenr="14" column="33" str="timespec" scope="0x558318d2f530" type="name" astParent="0x558318ce73a0"/>
+    <token id="0x558318ce73a0" file="air/examples/posix/p0/utils.h" linenr="14" column="42" str="*" scope="0x558318d2f530" type="op" isArithmeticalOp="true" astParent="0x558318b4be60" astOperand1="0x558318ce44c0" astOperand2="0x558318b84b60"/>
+    <token id="0x558318b84b60" file="air/examples/posix/p0/utils.h" linenr="14" column="43" str="t1" scope="0x558318d2f530" type="name" varId="8" variable="0x558318ad1d10" astParent="0x558318ce73a0" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b1a9f0" file="air/examples/posix/p0/utils.h" linenr="14" column="45" str="," scope="0x558318d2f530" astOperand1="0x558318b4be60" astOperand2="0x558318b5c1e0"/>
+    <token id="0x558318ce7ab0" file="air/examples/posix/p0/utils.h" linenr="15" column="20" str="const" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318afdba0" file="air/examples/posix/p0/utils.h" linenr="15" column="26" str="struct" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318b007d0" file="air/examples/posix/p0/utils.h" linenr="15" column="33" str="timespec" scope="0x558318d2f530" type="name" astParent="0x558318b5c1e0"/>
+    <token id="0x558318b5c1e0" file="air/examples/posix/p0/utils.h" linenr="15" column="42" str="*" scope="0x558318d2f530" type="op" isArithmeticalOp="true" astParent="0x558318b1a9f0" astOperand1="0x558318b007d0" astOperand2="0x558318b240b0"/>
+    <token id="0x558318b240b0" file="air/examples/posix/p0/utils.h" linenr="15" column="43" str="t2" scope="0x558318d2f530" type="name" varId="9" variable="0x558318d35fb0" astParent="0x558318b5c1e0" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318ce41a0" file="air/examples/posix/p0/utils.h" linenr="15" column="45" str=")" scope="0x558318d2f530" link="0x558318d80d90"/>
+    <token id="0x558318cd75b0" file="air/examples/posix/p0/utils.h" linenr="15" column="46" str=";" scope="0x558318d2f530"/>
+    <token id="0x558318ad1e70" file="air/examples/posix/p0/minteger.c" linenr="8" column="1" str="struct" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318d877a0" file="air/examples/posix/p0/minteger.c" linenr="8" column="0" str="s_m_integer" scope="0x558318d2f530" type="name" type-scope="0x558318d169b0"/>
+    <token id="0x558318af43f0" file="air/examples/posix/p0/minteger.c" linenr="8" column="0" str="*" scope="0x558318d2f530" type="op" isArithmeticalOp="true"/>
+    <token id="0x558318afbc60" file="air/examples/posix/p0/minteger.c" linenr="8" column="11" str="MI_init" scope="0x558318d2f530" type="name" function="0x558318d91440"/>
+    <token id="0x558318d77180" file="air/examples/posix/p0/minteger.c" linenr="8" column="18" str="(" scope="0x558318d2f530" link="0x558318b97ba0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318d7d740" file="air/examples/posix/p0/minteger.c" linenr="8" column="19" str="int" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318b0fab0" file="air/examples/posix/p0/minteger.c" linenr="8" column="23" str="priority" scope="0x558318d2f530" type="name" varId="10" variable="0x558318b2a310" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b97ba0" file="air/examples/posix/p0/minteger.c" linenr="8" column="31" str=")" scope="0x558318d2f530" link="0x558318d77180"/>
+    <token id="0x558318bb8ca0" file="air/examples/posix/p0/minteger.c" linenr="8" column="33" str="{" scope="0x558318d76260" link="0x558318d260f0"/>
+    <token id="0x558318dd4f90" file="air/examples/posix/p0/minteger.c" linenr="9" column="3" str="struct" scope="0x558318d76260" type="name"/>
+    <token id="0x558318b3ce30" file="air/examples/posix/p0/minteger.c" linenr="9" column="0" str="s_m_integer" scope="0x558318d76260" type="name" type-scope="0x558318d169b0" astParent="0x558318bc7590"/>
+    <token id="0x558318bc7590" file="air/examples/posix/p0/minteger.c" linenr="9" column="0" str="*" scope="0x558318d76260" type="op" isArithmeticalOp="true" astOperand1="0x558318b3ce30" astOperand2="0x558318b0d3a0"/>
+    <token id="0x558318b0d3a0" file="air/examples/posix/p0/minteger.c" linenr="9" column="13" str="m" scope="0x558318d76260" type="name" varId="11" variable="0x558318dd4b80" astParent="0x558318bc7590" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318ad4410" file="air/examples/posix/p0/minteger.c" linenr="9" column="14" str=";" scope="0x558318d76260"/>
+    <token id="0x558318ae6200" file="air/examples/posix/p0/minteger.c" linenr="10" column="3" str="m" scope="0x558318d76260" type="name" varId="11" variable="0x558318dd4b80" values="0x558318d333c0" astParent="0x558318d1d4c0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318d1d4c0" file="air/examples/posix/p0/minteger.c" linenr="10" column="5" str="=" scope="0x558318d76260" type="op" isAssignmentOp="true" astOperand1="0x558318ae6200" astOperand2="0x558318d588f0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318d588f0" file="air/examples/posix/p0/minteger.c" linenr="10" column="7" str="(" scope="0x558318d76260" link="0x558318ce6fb0" astParent="0x558318d1d4c0" astOperand1="0x558318afda40" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318d40e30" file="air/examples/posix/p0/minteger.c" linenr="10" column="8" str="struct" scope="0x558318d76260" type="name"/>
+    <token id="0x558318ba2590" file="air/examples/posix/p0/minteger.c" linenr="10" column="0" str="s_m_integer" scope="0x558318d76260" type="name" type-scope="0x558318d169b0"/>
+    <token id="0x558318d1e980" file="air/examples/posix/p0/minteger.c" linenr="10" column="0" str="*" scope="0x558318d76260" type="op" isArithmeticalOp="true"/>
+    <token id="0x558318ce6fb0" file="air/examples/posix/p0/minteger.c" linenr="10" column="17" str=")" scope="0x558318d76260" link="0x558318d588f0"/>
+    <token id="0x558318d85960" file="air/examples/posix/p0/minteger.c" linenr="10" column="19" str="malloc" scope="0x558318d76260" type="name" astParent="0x558318afda40"/>
+    <token id="0x558318afda40" file="air/examples/posix/p0/minteger.c" linenr="10" column="25" str="(" scope="0x558318d76260" link="0x558318ae0640" astParent="0x558318d588f0" astOperand1="0x558318d85960" astOperand2="0x558318d66220" valueType-type="void" valueType-pointer="1" valueType-reference="None" valueType-originalTypeName="void *"/>
+    <token id="0x558318b03ed0" file="air/examples/posix/p0/minteger.c" linenr="10" column="26" str="sizeof" scope="0x558318d76260" type="name" astParent="0x558318d66220"/>
+    <token id="0x558318d66220" file="air/examples/posix/p0/minteger.c" linenr="10" column="32" str="(" scope="0x558318d76260" link="0x558318cc9d80" values="0x558318bb7d80" astParent="0x558318afda40" astOperand1="0x558318b03ed0" astOperand2="0x558318b6e190" valueType-type="long" valueType-sign="unsigned" valueType-reference="None" valueType-originalTypeName="size_t"/>
+    <token id="0x558318e15520" file="air/examples/posix/p0/minteger.c" linenr="10" column="33" str="struct" scope="0x558318d76260" type="name" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318b6e190" file="air/examples/posix/p0/minteger.c" linenr="10" column="40" str="s_m_integer" scope="0x558318d76260" type="name" type-scope="0x558318d169b0" astParent="0x558318d66220"/>
+    <token id="0x558318cc9d80" file="air/examples/posix/p0/minteger.c" linenr="10" column="51" str=")" scope="0x558318d76260" link="0x558318d66220"/>
+    <token id="0x558318ae0640" file="air/examples/posix/p0/minteger.c" linenr="10" column="52" str=")" scope="0x558318d76260" link="0x558318afda40"/>
+    <token id="0x558318ce7420" file="air/examples/posix/p0/minteger.c" linenr="10" column="53" str=";" scope="0x558318d76260"/>
+    <token id="0x558318e1b0b0" file="air/examples/posix/p0/minteger.c" linenr="11" column="3" str="(" scope="0x558318d76260" link="0x558318ce82b0"/>
+    <token id="0x558318d25cc0" file="air/examples/posix/p0/minteger.c" linenr="11" column="4" str="*" scope="0x558318d76260" type="op" isArithmeticalOp="true" astParent="0x558318b41f40" astOperand1="0x558318d60790" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318d60790" file="air/examples/posix/p0/minteger.c" linenr="11" column="5" str="m" scope="0x558318d76260" type="name" varId="11" variable="0x558318dd4b80" astParent="0x558318d25cc0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318ce82b0" file="air/examples/posix/p0/minteger.c" linenr="11" column="6" str=")" scope="0x558318d76260" link="0x558318e1b0b0"/>
+    <token id="0x558318b41f40" file="air/examples/posix/p0/minteger.c" linenr="11" column="7" str="." scope="0x558318d76260" astParent="0x558318bc37b0" astOperand1="0x558318d25cc0" astOperand2="0x558318b5ee20" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b5ee20" file="air/examples/posix/p0/minteger.c" linenr="11" column="8" str="value" scope="0x558318d76260" type="name" varId="12" astParent="0x558318b41f40"/>
+    <token id="0x558318bc37b0" file="air/examples/posix/p0/minteger.c" linenr="11" column="14" str="=" scope="0x558318d76260" type="op" isAssignmentOp="true" values="0x558318d10910" astOperand1="0x558318b41f40" astOperand2="0x558318d6a2e0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d6a2e0" file="air/examples/posix/p0/minteger.c" linenr="11" column="16" str="0" scope="0x558318d76260" type="number" isInt="true" values="0x558318b7e3d0" astParent="0x558318bc37b0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d808e0" file="air/examples/posix/p0/minteger.c" linenr="11" column="17" str=";" scope="0x558318d76260"/>
+    <token id="0x558318b4b4c0" file="air/examples/posix/p0/minteger.c" linenr="12" column="3" str="pthread_mutexattr_t" scope="0x558318d76260" type="name"/>
+    <token id="0x558318d32a10" file="air/examples/posix/p0/minteger.c" linenr="12" column="23" str="my_attr" scope="0x558318d76260" type="name" varId="13" variable="0x558318d25c30"/>
+    <token id="0x558318b4a200" file="air/examples/posix/p0/minteger.c" linenr="12" column="30" str=";" scope="0x558318d76260"/>
+    <token id="0x558318b20d20" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="if" scope="0x558318d76260" type="name" isExpandedMacro="true" astParent="0x558318cd8710"/>
+    <token id="0x558318cd8710" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="(" scope="0x558318d76260" isExpandedMacro="true" link="0x558318b7d9e0" astOperand1="0x558318b20d20" astOperand2="0x558318d54d90"/>
+    <token id="0x558318b0fe80" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="pthread_mutexattr_init" scope="0x558318d76260" type="name" astParent="0x558318b9f280"/>
+    <token id="0x558318b9f280" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="(" scope="0x558318d76260" link="0x558318b0e2c0" astParent="0x558318d54d90" astOperand1="0x558318b0fe80" astOperand2="0x558318b88890"/>
+    <token id="0x558318b88890" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="&amp;" scope="0x558318d76260" type="op" values="0x558318cdcd20" astParent="0x558318b9f280" astOperand1="0x558318d59d00"/>
+    <token id="0x558318d59d00" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="my_attr" scope="0x558318d76260" type="name" varId="13" variable="0x558318d25c30" astParent="0x558318b88890"/>
+    <token id="0x558318b0e2c0" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str=")" scope="0x558318d76260" link="0x558318b9f280"/>
+    <token id="0x558318d54d90" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="!=" scope="0x558318d76260" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x558318cd8710" astOperand1="0x558318b9f280" astOperand2="0x558318aee3f0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318aee3f0" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="0" scope="0x558318d76260" type="number" isInt="true" isExpandedMacro="true" values="0x558318d972c0" astParent="0x558318d54d90" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b7d9e0" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str=")" scope="0x558318d76260" isExpandedMacro="true" link="0x558318cd8710"/>
+    <token id="0x558318b53900" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="{" scope="0x558318d16c10" isExpandedMacro="true" link="0x558318b0f930"/>
+    <token id="0x558318cdb060" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="printf" scope="0x558318d16c10" type="name" isExpandedMacro="true" astParent="0x558318d83df0"/>
+    <token id="0x558318d83df0" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="(" scope="0x558318d16c10" isExpandedMacro="true" link="0x558318ad4830" astOperand1="0x558318cdb060" astOperand2="0x558318b04140" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
+    <token id="0x558318d10cf0" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="&quot;%s %d:\n&quot;" scope="0x558318d16c10" type="string" strlen="7" isExpandedMacro="true" values="0x558318b43730" astParent="0x558318d33870" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d33870" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="," scope="0x558318d16c10" isExpandedMacro="true" astParent="0x558318b04140" astOperand1="0x558318d10cf0" astOperand2="0x558318d51ef0"/>
+    <token id="0x558318d51ef0" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="&quot;air/examples/posix/p0/minteger.c&quot;" scope="0x558318d16c10" type="string" strlen="32" values="0x558318da90b0" astParent="0x558318d33870" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b04140" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="," scope="0x558318d16c10" isExpandedMacro="true" astParent="0x558318d83df0" astOperand1="0x558318d33870" astOperand2="0x558318d7bf20"/>
+    <token id="0x558318d7bf20" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="13" scope="0x558318d16c10" type="number" isInt="true" values="0x558318cb7200" astParent="0x558318b04140" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318ad4830" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str=")" scope="0x558318d16c10" isExpandedMacro="true" link="0x558318d83df0"/>
+    <token id="0x558318bb6ec0" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str=";" scope="0x558318d16c10" isExpandedMacro="true"/>
+    <token id="0x558318d50130" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="perror" scope="0x558318d16c10" type="name" isExpandedMacro="true" astParent="0x558318d56db0"/>
+    <token id="0x558318d56db0" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="(" scope="0x558318d16c10" isExpandedMacro="true" link="0x558318abb530" astOperand1="0x558318d50130" astOperand2="0x558318ce5640" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
+    <token id="0x558318ce5640" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="&quot;[ERROR]&quot;" scope="0x558318d16c10" type="string" strlen="7" isExpandedMacro="true" values="0x558318acdb20" astParent="0x558318d56db0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318abb530" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str=")" scope="0x558318d16c10" isExpandedMacro="true" link="0x558318d56db0"/>
+    <token id="0x558318ae5c50" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str=";" scope="0x558318d16c10" isExpandedMacro="true"/>
+    <token id="0x558318b0f930" file="air/examples/posix/p0/minteger.c" linenr="13" column="3" str="}" scope="0x558318d16c10" isExpandedMacro="true" link="0x558318b53900"/>
+    <token id="0x558318cdb9e0" file="air/examples/posix/p0/minteger.c" linenr="13" column="47" str=";" scope="0x558318d76260"/>
+    <token id="0x558318b811f0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="if" scope="0x558318d76260" type="name" isExpandedMacro="true" astParent="0x558318ddc5a0"/>
+    <token id="0x558318ddc5a0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="(" scope="0x558318d76260" isExpandedMacro="true" link="0x558318b41d30" astOperand1="0x558318b811f0" astOperand2="0x558318e1b3a0"/>
+    <token id="0x558318af90d0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="pthread_mutex_init" scope="0x558318d76260" type="name" astParent="0x558318d942e0"/>
+    <token id="0x558318d942e0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="(" scope="0x558318d76260" link="0x558318b98ff0" astParent="0x558318e1b3a0" astOperand1="0x558318af90d0" astOperand2="0x558318de03e0"/>
+    <token id="0x558318c99e10" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="&amp;" scope="0x558318d76260" type="op" values="0x558318d80f90" astParent="0x558318de03e0" astOperand1="0x558318ba63b0"/>
+    <token id="0x558318b4a970" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="(" scope="0x558318d76260" link="0x558318de0380"/>
+    <token id="0x558318ba57c0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="(" scope="0x558318d76260" link="0x558318b24920"/>
+    <token id="0x558318da28d0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="*" scope="0x558318d76260" type="op" isArithmeticalOp="true" astParent="0x558318ba63b0" astOperand1="0x558318b11000" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318b11000" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="m" scope="0x558318d76260" type="name" varId="11" variable="0x558318dd4b80" astParent="0x558318da28d0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318b24920" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str=")" scope="0x558318d76260" link="0x558318ba57c0"/>
+    <token id="0x558318ba63b0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="." scope="0x558318d76260" astParent="0x558318c99e10" astOperand1="0x558318da28d0" astOperand2="0x558318ba6410"/>
+    <token id="0x558318ba6410" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="mutex" scope="0x558318d76260" type="name" varId="14" astParent="0x558318ba63b0"/>
+    <token id="0x558318de0380" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str=")" scope="0x558318d76260" link="0x558318b4a970"/>
+    <token id="0x558318de03e0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="," scope="0x558318d76260" astParent="0x558318d942e0" astOperand1="0x558318c99e10" astOperand2="0x558318ccdab0"/>
+    <token id="0x558318ccdab0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="&amp;" scope="0x558318d76260" type="op" values="0x558318b24f20" astParent="0x558318de03e0" astOperand1="0x558318acfb40"/>
+    <token id="0x558318acfb40" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="my_attr" scope="0x558318d76260" type="name" varId="13" variable="0x558318d25c30" astParent="0x558318ccdab0"/>
+    <token id="0x558318b98ff0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str=")" scope="0x558318d76260" link="0x558318d942e0"/>
+    <token id="0x558318e1b3a0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="!=" scope="0x558318d76260" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x558318ddc5a0" astOperand1="0x558318d942e0" astOperand2="0x558318b0fc10" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318b0fc10" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="0" scope="0x558318d76260" type="number" isInt="true" isExpandedMacro="true" values="0x558318d2e550" astParent="0x558318e1b3a0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b41d30" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str=")" scope="0x558318d76260" isExpandedMacro="true" link="0x558318ddc5a0"/>
+    <token id="0x558318d32d10" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="{" scope="0x558318d97360" isExpandedMacro="true" link="0x558318b65210"/>
+    <token id="0x558318b8c8e0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="printf" scope="0x558318d97360" type="name" isExpandedMacro="true" astParent="0x558318d4c060"/>
+    <token id="0x558318d4c060" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="(" scope="0x558318d97360" isExpandedMacro="true" link="0x558318e1b4a0" astOperand1="0x558318b8c8e0" astOperand2="0x558318d55490" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
+    <token id="0x558318b17f80" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="&quot;%s %d:\n&quot;" scope="0x558318d97360" type="string" strlen="7" isExpandedMacro="true" values="0x558318b1ecd0" astParent="0x558318b36e80" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b36e80" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="," scope="0x558318d97360" isExpandedMacro="true" astParent="0x558318d55490" astOperand1="0x558318b17f80" astOperand2="0x558318b64210"/>
+    <token id="0x558318b64210" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="&quot;air/examples/posix/p0/minteger.c&quot;" scope="0x558318d97360" type="string" strlen="32" values="0x558318da74c0" astParent="0x558318b36e80" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d55490" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="," scope="0x558318d97360" isExpandedMacro="true" astParent="0x558318d4c060" astOperand1="0x558318b36e80" astOperand2="0x558318d615e0"/>
+    <token id="0x558318d615e0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="16" scope="0x558318d97360" type="number" isInt="true" values="0x558318b673d0" astParent="0x558318d55490" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318e1b4a0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str=")" scope="0x558318d97360" isExpandedMacro="true" link="0x558318d4c060"/>
+    <token id="0x558318d9a8d0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str=";" scope="0x558318d97360" isExpandedMacro="true"/>
+    <token id="0x558318b28fe0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="perror" scope="0x558318d97360" type="name" isExpandedMacro="true" astParent="0x558318d86df0"/>
+    <token id="0x558318d86df0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="(" scope="0x558318d97360" isExpandedMacro="true" link="0x558318d2ef90" astOperand1="0x558318b28fe0" astOperand2="0x558318b9d340" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
+    <token id="0x558318b9d340" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="&quot;[ERROR]&quot;" scope="0x558318d97360" type="string" strlen="7" isExpandedMacro="true" values="0x558318ae9910" astParent="0x558318d86df0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d2ef90" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str=")" scope="0x558318d97360" isExpandedMacro="true" link="0x558318d86df0"/>
+    <token id="0x558318d55db0" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str=";" scope="0x558318d97360" isExpandedMacro="true"/>
+    <token id="0x558318b65210" file="air/examples/posix/p0/minteger.c" linenr="16" column="3" str="}" scope="0x558318d97360" isExpandedMacro="true" link="0x558318d32d10"/>
+    <token id="0x558318b2ffe0" file="air/examples/posix/p0/minteger.c" linenr="16" column="56" str=";" scope="0x558318d76260"/>
+    <token id="0x558318d61510" file="air/examples/posix/p0/minteger.c" linenr="17" column="3" str="return" scope="0x558318d76260" type="name" astOperand1="0x558318b72aa0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318b72aa0" file="air/examples/posix/p0/minteger.c" linenr="17" column="10" str="m" scope="0x558318d76260" type="name" varId="11" variable="0x558318dd4b80" astParent="0x558318d61510" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318b36db0" file="air/examples/posix/p0/minteger.c" linenr="17" column="11" str=";" scope="0x558318d76260"/>
+    <token id="0x558318d260f0" file="air/examples/posix/p0/minteger.c" linenr="18" column="1" str="}" scope="0x558318d76260" link="0x558318bb8ca0"/>
+    <token id="0x558318b64140" file="air/examples/posix/p0/minteger.c" linenr="21" column="1" str="void" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318d92280" file="air/examples/posix/p0/minteger.c" linenr="21" column="6" str="MI_write" scope="0x558318d2f530" type="name" function="0x558318b67200"/>
+    <token id="0x558318d553c0" file="air/examples/posix/p0/minteger.c" linenr="21" column="14" str="(" scope="0x558318d2f530" link="0x558318d55420" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318d61570" file="air/examples/posix/p0/minteger.c" linenr="21" column="15" str="struct" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318dd4c70" file="air/examples/posix/p0/minteger.c" linenr="21" column="0" str="s_m_integer" scope="0x558318d2f530" type="name" type-scope="0x558318d169b0" astParent="0x558318d2fb00"/>
+    <token id="0x558318d2fb00" file="air/examples/posix/p0/minteger.c" linenr="21" column="0" str="*" scope="0x558318d2f530" type="op" isArithmeticalOp="true" astParent="0x558318bb13a0" astOperand1="0x558318dd4c70" astOperand2="0x558318b36e10"/>
+    <token id="0x558318b36e10" file="air/examples/posix/p0/minteger.c" linenr="21" column="25" str="m" scope="0x558318d2f530" type="name" varId="15" variable="0x558318d91600" astParent="0x558318d2fb00" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318bb13a0" file="air/examples/posix/p0/minteger.c" linenr="21" column="26" str="," scope="0x558318d2f530" astOperand1="0x558318d2fb00" astOperand2="0x558318b92060"/>
+    <token id="0x558318b641a0" file="air/examples/posix/p0/minteger.c" linenr="21" column="28" str="int" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318b92060" file="air/examples/posix/p0/minteger.c" linenr="21" column="32" str="v" scope="0x558318d2f530" type="name" varId="16" variable="0x558318b7b0d0" astParent="0x558318bb13a0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d55420" file="air/examples/posix/p0/minteger.c" linenr="21" column="33" str=")" scope="0x558318d2f530" link="0x558318d553c0"/>
+    <token id="0x558318b67520" file="air/examples/posix/p0/minteger.c" linenr="21" column="35" str="{" scope="0x558318b2a180" link="0x558318b2f5d0"/>
+    <token id="0x558318bb1400" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="if" scope="0x558318b2a180" type="name" isExpandedMacro="true" astParent="0x558318b920c0"/>
+    <token id="0x558318b920c0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="(" scope="0x558318b2a180" isExpandedMacro="true" link="0x558318da7e80" astOperand1="0x558318bb1400" astOperand2="0x558318d53200"/>
+    <token id="0x558318b67580" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="pthread_mutex_lock" scope="0x558318b2a180" type="name" astParent="0x558318cdd510"/>
+    <token id="0x558318cdd510" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="(" scope="0x558318b2a180" link="0x558318b89170" astParent="0x558318d53200" astOperand1="0x558318b67580" astOperand2="0x558318b42600"/>
+    <token id="0x558318b42600" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="&amp;" scope="0x558318b2a180" type="op" values="0x558318b90ce0" astParent="0x558318cdd510" astOperand1="0x558318b3c0e0"/>
+    <token id="0x558318da7970" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="(" scope="0x558318b2a180" link="0x558318b89090"/>
+    <token id="0x558318ba7b60" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="(" scope="0x558318b2a180" link="0x558318cd4ca0"/>
+    <token id="0x558318ba7c40" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318b3c0e0" astOperand1="0x558318cd4bc0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318cd4bc0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="m" scope="0x558318b2a180" type="name" varId="15" variable="0x558318d91600" astParent="0x558318ba7c40" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318cd4ca0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str=")" scope="0x558318b2a180" link="0x558318ba7b60"/>
+    <token id="0x558318b3c0e0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="." scope="0x558318b2a180" astParent="0x558318b42600" astOperand1="0x558318ba7c40" astOperand2="0x558318b3c1c0"/>
+    <token id="0x558318b3c1c0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="mutex" scope="0x558318b2a180" type="name" varId="17" astParent="0x558318b3c0e0"/>
+    <token id="0x558318b89090" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str=")" scope="0x558318b2a180" link="0x558318da7970"/>
+    <token id="0x558318b89170" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str=")" scope="0x558318b2a180" link="0x558318cdd510"/>
+    <token id="0x558318d53200" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="!=" scope="0x558318b2a180" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x558318b920c0" astOperand1="0x558318cdd510" astOperand2="0x558318da7da0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318da7da0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="0" scope="0x558318b2a180" type="number" isInt="true" isExpandedMacro="true" values="0x558318d344a0" astParent="0x558318d53200" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318da7e80" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str=")" scope="0x558318b2a180" isExpandedMacro="true" link="0x558318b920c0"/>
+    <token id="0x558318ab46d0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="{" scope="0x558318bb7a20" isExpandedMacro="true" link="0x558318b0ab50"/>
+    <token id="0x558318ab47b0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="printf" scope="0x558318bb7a20" type="name" isExpandedMacro="true" astParent="0x558318b98880"/>
+    <token id="0x558318b98880" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="(" scope="0x558318bb7a20" isExpandedMacro="true" link="0x558318d73b70" astOperand1="0x558318ab47b0" astOperand2="0x558318d557b0" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
+    <token id="0x558318b98960" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="&quot;%s %d:\n&quot;" scope="0x558318bb7a20" type="string" strlen="7" isExpandedMacro="true" values="0x558318afa5a0" astParent="0x558318d9dcc0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d9dcc0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="," scope="0x558318bb7a20" isExpandedMacro="true" astParent="0x558318d557b0" astOperand1="0x558318b98960" astOperand2="0x558318d9dda0"/>
+    <token id="0x558318d9dda0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="&quot;air/examples/posix/p0/minteger.c&quot;" scope="0x558318bb7a20" type="string" strlen="32" values="0x558318c92d90" astParent="0x558318d9dcc0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d557b0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="," scope="0x558318bb7a20" isExpandedMacro="true" astParent="0x558318b98880" astOperand1="0x558318d9dcc0" astOperand2="0x558318d73b10"/>
+    <token id="0x558318d73b10" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="22" scope="0x558318bb7a20" type="number" isInt="true" values="0x558318ae2bc0" astParent="0x558318d557b0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d73b70" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str=")" scope="0x558318bb7a20" isExpandedMacro="true" link="0x558318b98880"/>
+    <token id="0x558318d9a7d0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str=";" scope="0x558318bb7a20" isExpandedMacro="true"/>
+    <token id="0x558318d558a0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="perror" scope="0x558318bb7a20" type="name" isExpandedMacro="true" astParent="0x558318d9a830"/>
+    <token id="0x558318d9a830" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="(" scope="0x558318bb7a20" isExpandedMacro="true" link="0x558318bc8fb0" astOperand1="0x558318d558a0" astOperand2="0x558318bc8ed0" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
+    <token id="0x558318bc8ed0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="&quot;[ERROR]&quot;" scope="0x558318bb7a20" type="string" strlen="7" isExpandedMacro="true" values="0x558318b07560" astParent="0x558318d9a830" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318bc8fb0" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str=")" scope="0x558318bb7a20" isExpandedMacro="true" link="0x558318d9a830"/>
+    <token id="0x558318b0aa70" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str=";" scope="0x558318bb7a20" isExpandedMacro="true"/>
+    <token id="0x558318b0ab50" file="air/examples/posix/p0/minteger.c" linenr="22" column="3" str="}" scope="0x558318bb7a20" isExpandedMacro="true" link="0x558318ab46d0"/>
+    <token id="0x558318b28e50" file="air/examples/posix/p0/minteger.c" linenr="22" column="48" str=";" scope="0x558318b2a180"/>
+    <token id="0x558318afab90" file="air/examples/posix/p0/minteger.c" linenr="23" column="3" str="(" scope="0x558318b2a180" link="0x558318ab0a70"/>
+    <token id="0x558318ab0bd0" file="air/examples/posix/p0/minteger.c" linenr="23" column="4" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318d8fff0" astOperand1="0x558318ab0b20" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318ab0b20" file="air/examples/posix/p0/minteger.c" linenr="23" column="5" str="m" scope="0x558318b2a180" type="name" varId="15" variable="0x558318d91600" astParent="0x558318ab0bd0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318ab0a70" file="air/examples/posix/p0/minteger.c" linenr="23" column="6" str=")" scope="0x558318b2a180" link="0x558318afab90"/>
+    <token id="0x558318d8fff0" file="air/examples/posix/p0/minteger.c" linenr="23" column="7" str="." scope="0x558318b2a180" astParent="0x558318d88fe0" astOperand1="0x558318ab0bd0" astOperand2="0x558318d8ff40" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d8ff40" file="air/examples/posix/p0/minteger.c" linenr="23" column="8" str="value" scope="0x558318b2a180" type="name" varId="18" astParent="0x558318d8fff0"/>
+    <token id="0x558318d88fe0" file="air/examples/posix/p0/minteger.c" linenr="23" column="14" str="=" scope="0x558318b2a180" type="op" isAssignmentOp="true" astOperand1="0x558318d8fff0" astOperand2="0x558318d89040" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d89040" file="air/examples/posix/p0/minteger.c" linenr="23" column="16" str="v" scope="0x558318b2a180" type="name" varId="16" variable="0x558318b7b0d0" astParent="0x558318d88fe0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318cda300" file="air/examples/posix/p0/minteger.c" linenr="23" column="17" str=";" scope="0x558318b2a180"/>
+    <token id="0x558318afac80" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="if" scope="0x558318b2a180" type="name" isExpandedMacro="true" astParent="0x558318cda360"/>
+    <token id="0x558318cda360" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="(" scope="0x558318b2a180" isExpandedMacro="true" link="0x558318dd9310" astOperand1="0x558318afac80" astOperand2="0x558318b490e0"/>
+    <token id="0x558318d755a0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="pthread_mutex_unlock" scope="0x558318b2a180" type="name" astParent="0x558318bb07f0"/>
+    <token id="0x558318bb07f0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="(" scope="0x558318b2a180" link="0x558318b49000" astParent="0x558318b490e0" astOperand1="0x558318d755a0" astOperand2="0x558318bb08d0"/>
+    <token id="0x558318bb08d0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="&amp;" scope="0x558318b2a180" type="op" values="0x558318d2b310" astParent="0x558318bb07f0" astOperand1="0x558318ad6270"/>
+    <token id="0x558318b76070" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="(" scope="0x558318b2a180" link="0x558318b98250"/>
+    <token id="0x558318b76150" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318ad6270" astOperand1="0x558318b98170" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318b98170" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="m" scope="0x558318b2a180" type="name" varId="15" variable="0x558318d91600" astParent="0x558318b76150" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318b98250" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str=")" scope="0x558318b2a180" link="0x558318b76070"/>
+    <token id="0x558318ad6270" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="." scope="0x558318b2a180" astParent="0x558318bb08d0" astOperand1="0x558318b76150" astOperand2="0x558318ad6350"/>
+    <token id="0x558318ad6350" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="mutex" scope="0x558318b2a180" type="name" varId="17" astParent="0x558318ad6270"/>
+    <token id="0x558318b49000" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str=")" scope="0x558318b2a180" link="0x558318bb07f0"/>
+    <token id="0x558318b490e0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="!=" scope="0x558318b2a180" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x558318cda360" astOperand1="0x558318bb07f0" astOperand2="0x558318ac5ee0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318ac5ee0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="0" scope="0x558318b2a180" type="number" isInt="true" isExpandedMacro="true" values="0x558318b96ff0" astParent="0x558318b490e0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318dd9310" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str=")" scope="0x558318b2a180" isExpandedMacro="true" link="0x558318cda360"/>
+    <token id="0x558318dd93f0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="{" scope="0x558318b5bcd0" isExpandedMacro="true" link="0x558318d80720"/>
+    <token id="0x558318b8a5b0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="printf" scope="0x558318b5bcd0" type="name" isExpandedMacro="true" astParent="0x558318b8a690"/>
+    <token id="0x558318b8a690" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="(" scope="0x558318b5bcd0" isExpandedMacro="true" link="0x558318aec990" astOperand1="0x558318b8a5b0" astOperand2="0x558318e15f20" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
+    <token id="0x558318b79390" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="&quot;%s %d:\n&quot;" scope="0x558318b5bcd0" type="string" strlen="7" isExpandedMacro="true" values="0x558318b878a0" astParent="0x558318b79470" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b79470" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="," scope="0x558318b5bcd0" isExpandedMacro="true" astParent="0x558318e15f20" astOperand1="0x558318b79390" astOperand2="0x558318e15de0"/>
+    <token id="0x558318e15de0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="&quot;air/examples/posix/p0/minteger.c&quot;" scope="0x558318b5bcd0" type="string" strlen="32" values="0x558318ce4d90" astParent="0x558318b79470" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318e15f20" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="," scope="0x558318b5bcd0" isExpandedMacro="true" astParent="0x558318b8a690" astOperand1="0x558318b79470" astOperand2="0x558318aec8b0"/>
+    <token id="0x558318aec8b0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="24" scope="0x558318b5bcd0" type="number" isInt="true" values="0x558318cdd3f0" astParent="0x558318e15f20" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318aec990" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str=")" scope="0x558318b5bcd0" isExpandedMacro="true" link="0x558318b8a690"/>
+    <token id="0x558318b4a040" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str=";" scope="0x558318b5bcd0" isExpandedMacro="true"/>
+    <token id="0x558318b4a120" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="perror" scope="0x558318b5bcd0" type="name" isExpandedMacro="true" astParent="0x558318d32850"/>
+    <token id="0x558318d32850" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="(" scope="0x558318b5bcd0" isExpandedMacro="true" link="0x558318b4b300" astOperand1="0x558318b4a120" astOperand2="0x558318d32930" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
+    <token id="0x558318d32930" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="&quot;[ERROR]&quot;" scope="0x558318b5bcd0" type="string" strlen="7" isExpandedMacro="true" values="0x558318af8ef0" astParent="0x558318d32850" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b4b300" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str=")" scope="0x558318b5bcd0" isExpandedMacro="true" link="0x558318d32850"/>
+    <token id="0x558318b4b3e0" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str=";" scope="0x558318b5bcd0" isExpandedMacro="true"/>
+    <token id="0x558318d80720" file="air/examples/posix/p0/minteger.c" linenr="24" column="3" str="}" scope="0x558318b5bcd0" isExpandedMacro="true" link="0x558318dd93f0"/>
+    <token id="0x558318d80800" file="air/examples/posix/p0/minteger.c" linenr="24" column="48" str=";" scope="0x558318b2a180"/>
+    <token id="0x558318b2f5d0" file="air/examples/posix/p0/minteger.c" linenr="25" column="1" str="}" scope="0x558318b2a180" link="0x558318b67520"/>
+    <token id="0x558318a98c00" file="air/examples/posix/p0/minteger.c" linenr="28" column="1" str="int" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318a98b50" file="air/examples/posix/p0/minteger.c" linenr="28" column="5" str="MI_read" scope="0x558318d2f530" type="name" function="0x558318ac1380"/>
+    <token id="0x558318a98aa0" file="air/examples/posix/p0/minteger.c" linenr="28" column="12" str="(" scope="0x558318d2f530" link="0x558318b74210" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b74370" file="air/examples/posix/p0/minteger.c" linenr="28" column="13" str="struct" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318ce7590" file="air/examples/posix/p0/minteger.c" linenr="28" column="0" str="s_m_integer" scope="0x558318d2f530" type="name" type-scope="0x558318d169b0" astParent="0x558318da8440"/>
+    <token id="0x558318da8440" file="air/examples/posix/p0/minteger.c" linenr="28" column="0" str="*" scope="0x558318d2f530" type="op" isArithmeticalOp="true" astOperand1="0x558318ce7590" astOperand2="0x558318b742c0"/>
+    <token id="0x558318b742c0" file="air/examples/posix/p0/minteger.c" linenr="28" column="23" str="m" scope="0x558318d2f530" type="name" varId="19" variable="0x558318ab0fd0" astParent="0x558318da8440" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318b74210" file="air/examples/posix/p0/minteger.c" linenr="28" column="24" str=")" scope="0x558318d2f530" link="0x558318a98aa0"/>
+    <token id="0x558318b46b20" file="air/examples/posix/p0/minteger.c" linenr="28" column="26" str="{" scope="0x558318dab010" link="0x558318ab5b00"/>
+    <token id="0x558318b2f630" file="air/examples/posix/p0/minteger.c" linenr="29" column="3" str="int" scope="0x558318dab010" type="name"/>
+    <token id="0x558318b2f730" file="air/examples/posix/p0/minteger.c" linenr="29" column="7" str="v" scope="0x558318dab010" type="name" varId="20" variable="0x558318ab4cc0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b2bf80" file="air/examples/posix/p0/minteger.c" linenr="29" column="8" str=";" scope="0x558318dab010"/>
+    <token id="0x558318b2bfe0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="if" scope="0x558318dab010" type="name" isExpandedMacro="true" astParent="0x558318b0fcc0"/>
+    <token id="0x558318b0fcc0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="(" scope="0x558318dab010" isExpandedMacro="true" link="0x558318b35b30" astOperand1="0x558318b2bfe0" astOperand2="0x558318d54bd0"/>
+    <token id="0x558318b0fda0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="pthread_mutex_lock" scope="0x558318dab010" type="name" astParent="0x558318b7afe0"/>
+    <token id="0x558318b7afe0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="(" scope="0x558318dab010" link="0x558318b0e1e0" astParent="0x558318d54bd0" astOperand1="0x558318b0fda0" astOperand2="0x558318b9f0c0"/>
+    <token id="0x558318b9f0c0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="&amp;" scope="0x558318dab010" type="op" values="0x558318cc86a0" astParent="0x558318b7afe0" astOperand1="0x558318d59c20"/>
+    <token id="0x558318b9f1a0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="(" scope="0x558318dab010" link="0x558318d59b40"/>
+    <token id="0x558318b886d0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="*" scope="0x558318dab010" type="op" isArithmeticalOp="true" astParent="0x558318d59c20" astOperand1="0x558318b887b0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318b887b0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="m" scope="0x558318dab010" type="name" varId="19" variable="0x558318ab0fd0" astParent="0x558318b886d0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318d59b40" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str=")" scope="0x558318dab010" link="0x558318b9f1a0"/>
+    <token id="0x558318d59c20" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="." scope="0x558318dab010" astParent="0x558318b9f0c0" astOperand1="0x558318b886d0" astOperand2="0x558318b0e100"/>
+    <token id="0x558318b0e100" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="mutex" scope="0x558318dab010" type="name" varId="21" astParent="0x558318d59c20"/>
+    <token id="0x558318b0e1e0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str=")" scope="0x558318dab010" link="0x558318b7afe0"/>
+    <token id="0x558318d54bd0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="!=" scope="0x558318dab010" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x558318b0fcc0" astOperand1="0x558318b7afe0" astOperand2="0x558318b35a50" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318b35a50" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="0" scope="0x558318dab010" type="number" isInt="true" isExpandedMacro="true" values="0x558318b406e0" astParent="0x558318d54bd0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b35b30" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str=")" scope="0x558318dab010" isExpandedMacro="true" link="0x558318b0fcc0"/>
+    <token id="0x558318aee230" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="{" scope="0x558318ce5eb0" isExpandedMacro="true" link="0x558318b65050"/>
+    <token id="0x558318aee310" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="printf" scope="0x558318ce5eb0" type="name" isExpandedMacro="true" astParent="0x558318d86c30"/>
+    <token id="0x558318d86c30" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="(" scope="0x558318ce5eb0" isExpandedMacro="true" link="0x558318d9ebd0" astOperand1="0x558318aee310" astOperand2="0x558318b9d180" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
+    <token id="0x558318d86d10" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="&quot;%s %d:\n&quot;" scope="0x558318ce5eb0" type="string" strlen="7" isExpandedMacro="true" values="0x558318bb7de0" astParent="0x558318b9d880" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b9d880" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="," scope="0x558318ce5eb0" isExpandedMacro="true" astParent="0x558318b9d180" astOperand1="0x558318d86d10" astOperand2="0x558318b9d960"/>
+    <token id="0x558318b9d960" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="&quot;air/examples/posix/p0/minteger.c&quot;" scope="0x558318ce5eb0" type="string" strlen="32" values="0x558318ddd5b0" astParent="0x558318b9d880" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b9d180" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="," scope="0x558318ce5eb0" isExpandedMacro="true" astParent="0x558318d86c30" astOperand1="0x558318b9d880" astOperand2="0x558318d9eb70"/>
+    <token id="0x558318d9eb70" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="31" scope="0x558318ce5eb0" type="number" isInt="true" values="0x558318e16550" astParent="0x558318b9d180" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d9ebd0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str=")" scope="0x558318ce5eb0" isExpandedMacro="true" link="0x558318d86c30"/>
+    <token id="0x558318ce70f0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str=";" scope="0x558318ce5eb0" isExpandedMacro="true"/>
+    <token id="0x558318b9d270" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="perror" scope="0x558318ce5eb0" type="name" isExpandedMacro="true" astParent="0x558318ce7150"/>
+    <token id="0x558318ce7150" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="(" scope="0x558318ce5eb0" isExpandedMacro="true" link="0x558318d55bf0" astOperand1="0x558318b9d270" astOperand2="0x558318d2eeb0" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
+    <token id="0x558318d2eeb0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="&quot;[ERROR]&quot;" scope="0x558318ce5eb0" type="string" strlen="7" isExpandedMacro="true" values="0x558318b30be0" astParent="0x558318ce7150" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d55bf0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str=")" scope="0x558318ce5eb0" isExpandedMacro="true" link="0x558318ce7150"/>
+    <token id="0x558318d55cd0" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str=";" scope="0x558318ce5eb0" isExpandedMacro="true"/>
+    <token id="0x558318b65050" file="air/examples/posix/p0/minteger.c" linenr="31" column="3" str="}" scope="0x558318ce5eb0" isExpandedMacro="true" link="0x558318aee230"/>
+    <token id="0x558318b65130" file="air/examples/posix/p0/minteger.c" linenr="31" column="46" str=";" scope="0x558318dab010"/>
+    <token id="0x558318b08920" file="air/examples/posix/p0/minteger.c" linenr="32" column="3" str="v" scope="0x558318dab010" type="name" varId="20" variable="0x558318ab4cc0" astParent="0x558318b08870" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b08870" file="air/examples/posix/p0/minteger.c" linenr="32" column="4" str="=" scope="0x558318dab010" type="op" isAssignmentOp="true" astOperand1="0x558318b08920" astOperand2="0x558318b2c0e0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318e1a380" file="air/examples/posix/p0/minteger.c" linenr="32" column="5" str="(" scope="0x558318dab010" link="0x558318d59d90"/>
+    <token id="0x558318e1a2d0" file="air/examples/posix/p0/minteger.c" linenr="32" column="6" str="*" scope="0x558318dab010" type="op" isArithmeticalOp="true" astParent="0x558318b2c0e0" astOperand1="0x558318d59e40" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318d59e40" file="air/examples/posix/p0/minteger.c" linenr="32" column="7" str="m" scope="0x558318dab010" type="name" varId="19" variable="0x558318ab0fd0" astParent="0x558318e1a2d0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318d59d90" file="air/examples/posix/p0/minteger.c" linenr="32" column="8" str=")" scope="0x558318dab010" link="0x558318e1a380"/>
+    <token id="0x558318b2c0e0" file="air/examples/posix/p0/minteger.c" linenr="32" column="9" str="." scope="0x558318dab010" astParent="0x558318b08870" astOperand1="0x558318e1a2d0" astOperand2="0x558318b20a90" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b20a90" file="air/examples/posix/p0/minteger.c" linenr="32" column="10" str="value" scope="0x558318dab010" type="name" varId="22" astParent="0x558318b2c0e0"/>
+    <token id="0x558318b20af0" file="air/examples/posix/p0/minteger.c" linenr="32" column="15" str=";" scope="0x558318dab010"/>
+    <token id="0x558318d59f30" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="if" scope="0x558318dab010" type="name" isExpandedMacro="true" astParent="0x558318e1a470"/>
+    <token id="0x558318e1a470" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="(" scope="0x558318dab010" isExpandedMacro="true" link="0x558318cd7f80" astOperand1="0x558318d59f30" astOperand2="0x558318adead0"/>
+    <token id="0x558318abc690" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="pthread_mutex_unlock" scope="0x558318dab010" type="name" astParent="0x558318d7e4c0"/>
+    <token id="0x558318d7e4c0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="(" scope="0x558318dab010" link="0x558318ade9f0" astParent="0x558318adead0" astOperand1="0x558318abc690" astOperand2="0x558318d7e520"/>
+    <token id="0x558318d7e520" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="&amp;" scope="0x558318dab010" type="op" values="0x558318b98ec0" astParent="0x558318d7e4c0" astOperand1="0x558318db0f60"/>
+    <token id="0x558318d120d0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="(" scope="0x558318dab010" link="0x558318a99e60"/>
+    <token id="0x558318d121b0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="*" scope="0x558318dab010" type="op" isArithmeticalOp="true" astParent="0x558318db0f60" astOperand1="0x558318a99d80" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318a99d80" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="m" scope="0x558318dab010" type="name" varId="19" variable="0x558318ab0fd0" astParent="0x558318d121b0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d169b0"/>
+    <token id="0x558318a99e60" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str=")" scope="0x558318dab010" link="0x558318d120d0"/>
+    <token id="0x558318db0f60" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="." scope="0x558318dab010" astParent="0x558318d7e520" astOperand1="0x558318d121b0" astOperand2="0x558318db1040"/>
+    <token id="0x558318db1040" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="mutex" scope="0x558318dab010" type="name" varId="21" astParent="0x558318db0f60"/>
+    <token id="0x558318ade9f0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str=")" scope="0x558318dab010" link="0x558318d7e4c0"/>
+    <token id="0x558318adead0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="!=" scope="0x558318dab010" type="op" isComparisonOp="true" isExpandedMacro="true" astParent="0x558318e1a470" astOperand1="0x558318d7e4c0" astOperand2="0x558318cc7cc0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318cc7cc0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="0" scope="0x558318dab010" type="number" isInt="true" isExpandedMacro="true" values="0x558318d70950" astParent="0x558318adead0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318cd7f80" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str=")" scope="0x558318dab010" isExpandedMacro="true" link="0x558318e1a470"/>
+    <token id="0x558318cd8060" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="{" scope="0x558318ad4e50" isExpandedMacro="true" link="0x558318d55eb0"/>
+    <token id="0x558318cde420" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="printf" scope="0x558318ad4e50" type="name" isExpandedMacro="true" astParent="0x558318cde500"/>
+    <token id="0x558318cde500" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="(" scope="0x558318ad4e50" isExpandedMacro="true" link="0x558318dad130" astOperand1="0x558318cde420" astOperand2="0x558318d6a230" valueType-type="int" valueType-sign="signed" valueType-reference="None" valueType-originalTypeName="int"/>
+    <token id="0x558318e0cfd0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="&quot;%s %d:\n&quot;" scope="0x558318ad4e50" type="string" strlen="7" isExpandedMacro="true" values="0x558318b7e8a0" astParent="0x558318e0d0b0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318e0d0b0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="," scope="0x558318ad4e50" isExpandedMacro="true" astParent="0x558318d6a230" astOperand1="0x558318e0cfd0" astOperand2="0x558318d6a0f0"/>
+    <token id="0x558318d6a0f0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="&quot;air/examples/posix/p0/minteger.c&quot;" scope="0x558318ad4e50" type="string" strlen="32" values="0x558318b1fef0" astParent="0x558318e0d0b0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d6a230" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="," scope="0x558318ad4e50" isExpandedMacro="true" astParent="0x558318cde500" astOperand1="0x558318e0d0b0" astOperand2="0x558318dad020"/>
+    <token id="0x558318dad020" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="33" scope="0x558318ad4e50" type="number" isInt="true" values="0x558318b823c0" astParent="0x558318d6a230" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318dad130" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str=")" scope="0x558318ad4e50" isExpandedMacro="true" link="0x558318cde500"/>
+    <token id="0x558318b83860" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str=";" scope="0x558318ad4e50" isExpandedMacro="true"/>
+    <token id="0x558318b83940" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="perror" scope="0x558318ad4e50" type="name" isExpandedMacro="true" astParent="0x558318b2d2e0"/>
+    <token id="0x558318b2d2e0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="(" scope="0x558318ad4e50" isExpandedMacro="true" link="0x558318d9c7a0" astOperand1="0x558318b83940" astOperand2="0x558318b2d3c0" valueType-type="void" valueType-reference="None" valueType-originalTypeName="void"/>
+    <token id="0x558318b2d3c0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="&quot;[ERROR]&quot;" scope="0x558318ad4e50" type="string" strlen="7" isExpandedMacro="true" values="0x558318d734a0" astParent="0x558318b2d2e0" valueType-type="char" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d9c7a0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str=")" scope="0x558318ad4e50" isExpandedMacro="true" link="0x558318b2d2e0"/>
+    <token id="0x558318d9c880" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str=";" scope="0x558318ad4e50" isExpandedMacro="true"/>
+    <token id="0x558318d55eb0" file="air/examples/posix/p0/minteger.c" linenr="33" column="3" str="}" scope="0x558318ad4e50" isExpandedMacro="true" link="0x558318cd8060"/>
+    <token id="0x558318d55f90" file="air/examples/posix/p0/minteger.c" linenr="33" column="48" str=";" scope="0x558318dab010"/>
+    <token id="0x558318b3a3c0" file="air/examples/posix/p0/minteger.c" linenr="34" column="3" str="return" scope="0x558318dab010" type="name" astOperand1="0x558318ab5c60" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318ab5c60" file="air/examples/posix/p0/minteger.c" linenr="34" column="10" str="v" scope="0x558318dab010" type="name" varId="20" variable="0x558318ab4cc0" astParent="0x558318b3a3c0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318ab5bb0" file="air/examples/posix/p0/minteger.c" linenr="34" column="11" str=";" scope="0x558318dab010"/>
+    <token id="0x558318ab5b00" file="air/examples/posix/p0/minteger.c" linenr="35" column="1" str="}" scope="0x558318dab010" link="0x558318b46b20"/>
   </tokenlist>
   <scopes>
-    <scope id="0x5558a4d9d530" type="Global">
+    <scope id="0x558318d2f530" type="Global">
       <functionList>
-        <function id="0x5558a4dff440" token="0x5558a4b69c60" tokenDef="0x5558a4e881b0" name="MI_init" type="Function">
-          <arg nr="1" variable="0x5558a4b98310"/>
+        <function id="0x558318d91440" token="0x558318afbc60" tokenDef="0x558318e1a1b0" name="MI_init" type="Function">
+          <arg nr="1" variable="0x558318b2a310"/>
         </function>
-        <function id="0x5558a4bd5200" token="0x5558a4e00280" tokenDef="0x5558a4d55dd0" name="MI_write" type="Function">
-          <arg nr="1" variable="0x5558a4dff600"/>
-          <arg nr="2" variable="0x5558a4be90d0"/>
+        <function id="0x558318b67200" token="0x558318d92280" tokenDef="0x558318ce7dd0" name="MI_write" type="Function">
+          <arg nr="1" variable="0x558318d91600"/>
+          <arg nr="2" variable="0x558318b7b0d0"/>
         </function>
-        <function id="0x5558a4b2f3d0" token="0x5558a4b06b50" tokenDef="0x5558a4d24c80" name="MI_read" type="Function">
-          <arg nr="1" variable="0x5558a4b1efd0"/>
+        <function id="0x558318ac1380" token="0x558318a98b50" tokenDef="0x558318cb6c80" name="MI_read" type="Function">
+          <arg nr="1" variable="0x558318ab0fd0"/>
         </function>
-        <function id="0x5558a4c38940" token="0" tokenDef="0x5558a4b5c480" name="add_timespec" type="Function">
-          <arg nr="1" variable="0x5558a4bf7310"/>
-          <arg nr="2" variable="0x5558a4b3fd10"/>
-          <arg nr="3" variable="0x5558a4da3fb0"/>
+        <function id="0x558318bca940" token="0" tokenDef="0x558318aee480" name="add_timespec" type="Function">
+          <arg nr="1" variable="0x558318b89310"/>
+          <arg nr="2" variable="0x558318ad1d10"/>
+          <arg nr="3" variable="0x558318d35fb0"/>
         </function>
       </functionList>
     </scope>
-    <scope id="0x5558a4d849b0" type="Struct" className="s_m_integer" bodyStart="0x5558a4b6cfb0" bodyEnd="0x5558a4b8f360" nestedIn="0x5558a4d9d530">
+    <scope id="0x558318d169b0" type="Struct" className="s_m_integer" bodyStart="0x558318afefb0" bodyEnd="0x558318b21360" nestedIn="0x558318d2f530">
       <varlist>
-        <var id="0x5558a4e0c100"/>
-        <var id="0x5558a4e42aa0"/>
+        <var id="0x558318d9e100"/>
+        <var id="0x558318dd4aa0"/>
       </varlist>
     </scope>
-    <scope id="0x5558a4de4260" type="Function" className="MI_init" bodyStart="0x5558a4c26ca0" bodyEnd="0x5558a4d940f0" nestedIn="0x5558a4d9d530" function="0x5558a4dff440">
+    <scope id="0x558318d76260" type="Function" className="MI_init" bodyStart="0x558318bb8ca0" bodyEnd="0x558318d260f0" nestedIn="0x558318d2f530" function="0x558318d91440">
       <varlist>
-        <var id="0x5558a4e42b80"/>
-        <var id="0x5558a4d93c30"/>
+        <var id="0x558318dd4b80"/>
+        <var id="0x558318d25c30"/>
       </varlist>
     </scope>
-    <scope id="0x5558a4d84c10" type="If" bodyStart="0x5558a4bc1900" bodyEnd="0x5558a4b7d930" nestedIn="0x5558a4de4260"/>
-    <scope id="0x5558a4e05360" type="If" bodyStart="0x5558a4da0d10" bodyEnd="0x5558a4bd3210" nestedIn="0x5558a4de4260"/>
-    <scope id="0x5558a4b98180" type="Function" className="MI_write" bodyStart="0x5558a4bd5520" bodyEnd="0x5558a4b9d5d0" nestedIn="0x5558a4d9d530" function="0x5558a4bd5200"/>
-    <scope id="0x5558a4c25a20" type="If" bodyStart="0x5558a4b226d0" bodyEnd="0x5558a4b78b50" nestedIn="0x5558a4b98180"/>
-    <scope id="0x5558a4bc9cd0" type="If" bodyStart="0x5558a4e473f0" bodyEnd="0x5558a4dee720" nestedIn="0x5558a4b98180"/>
-    <scope id="0x5558a4e19010" type="Function" className="MI_read" bodyStart="0x5558a4bb4b20" bodyEnd="0x5558a4b23b00" nestedIn="0x5558a4d9d530" function="0x5558a4b2f3d0">
+    <scope id="0x558318d16c10" type="If" bodyStart="0x558318b53900" bodyEnd="0x558318b0f930" nestedIn="0x558318d76260"/>
+    <scope id="0x558318d97360" type="If" bodyStart="0x558318d32d10" bodyEnd="0x558318b65210" nestedIn="0x558318d76260"/>
+    <scope id="0x558318b2a180" type="Function" className="MI_write" bodyStart="0x558318b67520" bodyEnd="0x558318b2f5d0" nestedIn="0x558318d2f530" function="0x558318b67200"/>
+    <scope id="0x558318bb7a20" type="If" bodyStart="0x558318ab46d0" bodyEnd="0x558318b0ab50" nestedIn="0x558318b2a180"/>
+    <scope id="0x558318b5bcd0" type="If" bodyStart="0x558318dd93f0" bodyEnd="0x558318d80720" nestedIn="0x558318b2a180"/>
+    <scope id="0x558318dab010" type="Function" className="MI_read" bodyStart="0x558318b46b20" bodyEnd="0x558318ab5b00" nestedIn="0x558318d2f530" function="0x558318ac1380">
       <varlist>
-        <var id="0x5558a4b22cc0"/>
+        <var id="0x558318ab4cc0"/>
       </varlist>
     </scope>
-    <scope id="0x5558a4d53eb0" type="If" bodyStart="0x5558a4b5c230" bodyEnd="0x5558a4bd3050" nestedIn="0x5558a4e19010"/>
-    <scope id="0x5558a4b42e50" type="If" bodyStart="0x5558a4d46060" bodyEnd="0x5558a4dc3eb0" nestedIn="0x5558a4e19010"/>
+    <scope id="0x558318ce5eb0" type="If" bodyStart="0x558318aee230" bodyEnd="0x558318b65050" nestedIn="0x558318dab010"/>
+    <scope id="0x558318ad4e50" type="If" bodyStart="0x558318cd8060" bodyEnd="0x558318d55eb0" nestedIn="0x558318dab010"/>
   </scopes>
   <variables>
-    <var id="0x5558a4b1efd0" nameToken="0x5558a4be22c0" typeStartToken="0x5558a4d55590" typeEndToken="0x5558a4e16440" access="Argument" scope="0x5558a4e19010" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
-    <var id="0x5558a4b22cc0" nameToken="0x5558a4b9d730" typeStartToken="0x5558a4b9d630" typeEndToken="0x5558a4b9d630" access="Local" scope="0x5558a4e19010" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
-    <var id="0x5558a4b3fd10" nameToken="0x5558a4bf2b60" typeStartToken="0x5558a4d524c0" typeEndToken="0x5558a4d553a0" access="Argument" scope="0" constness="1" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
-    <var id="0x5558a4b98310" nameToken="0x5558a4b7dab0" typeStartToken="0x5558a4deb740" typeEndToken="0x5558a4deb740" access="Argument" scope="0x5558a4de4260" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
-    <var id="0x5558a4be90d0" nameToken="0x5558a4c00060" typeStartToken="0x5558a4bd21a0" typeEndToken="0x5558a4bd21a0" access="Argument" scope="0x5558a4b98180" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
-    <var id="0x5558a4bf7310" nameToken="0x5558a4d55f90" typeStartToken="0x5558a4d3a5c0" typeEndToken="0x5558a4c27fb0" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
-    <var id="0x5558a4d93c30" nameToken="0x5558a4da0a10" typeStartToken="0x5558a4bb94c0" typeEndToken="0x5558a4bb94c0" access="Local" scope="0x5558a4de4260" constness="0" isArray="false" isClass="true" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
-    <var id="0x5558a4da3fb0" nameToken="0x5558a4b920b0" typeStartToken="0x5558a4b6e7d0" typeEndToken="0x5558a4bca1e0" access="Argument" scope="0" constness="1" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
-    <var id="0x5558a4dff600" nameToken="0x5558a4ba4e10" typeStartToken="0x5558a4e42c70" typeEndToken="0x5558a4d9db00" access="Argument" scope="0x5558a4b98180" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
-    <var id="0x5558a4e0c100" nameToken="0x5558a4d914c0" typeStartToken="0x5558a4d3a6c0" typeEndToken="0x5558a4d3a6c0" access="Public" scope="0x5558a4d849b0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
-    <var id="0x5558a4e42aa0" nameToken="0x5558a4c058d0" typeStartToken="0x5558a4b5c9a0" typeEndToken="0x5558a4b5c9a0" access="Public" scope="0x5558a4d849b0" constness="0" isArray="false" isClass="true" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
-    <var id="0x5558a4e42b80" nameToken="0x5558a4b7b3a0" typeStartToken="0x5558a4baae30" typeEndToken="0x5558a4c35590" access="Local" scope="0x5558a4de4260" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318ab0fd0" nameToken="0x558318b742c0" typeStartToken="0x558318ce7590" typeEndToken="0x558318da8440" access="Argument" scope="0x558318dab010" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318ab4cc0" nameToken="0x558318b2f730" typeStartToken="0x558318b2f630" typeEndToken="0x558318b2f630" access="Local" scope="0x558318dab010" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318ad1d10" nameToken="0x558318b84b60" typeStartToken="0x558318ce44c0" typeEndToken="0x558318ce73a0" access="Argument" scope="0" constness="1" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b2a310" nameToken="0x558318b0fab0" typeStartToken="0x558318d7d740" typeEndToken="0x558318d7d740" access="Argument" scope="0x558318d76260" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b7b0d0" nameToken="0x558318b92060" typeStartToken="0x558318b641a0" typeEndToken="0x558318b641a0" access="Argument" scope="0x558318b2a180" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b89310" nameToken="0x558318ce7f90" typeStartToken="0x558318ccc5c0" typeEndToken="0x558318bb9fb0" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d25c30" nameToken="0x558318d32a10" typeStartToken="0x558318b4b4c0" typeEndToken="0x558318b4b4c0" access="Local" scope="0x558318d76260" constness="0" isArray="false" isClass="true" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d35fb0" nameToken="0x558318b240b0" typeStartToken="0x558318b007d0" typeEndToken="0x558318b5c1e0" access="Argument" scope="0" constness="1" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d91600" nameToken="0x558318b36e10" typeStartToken="0x558318dd4c70" typeEndToken="0x558318d2fb00" access="Argument" scope="0x558318b2a180" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d9e100" nameToken="0x558318d234c0" typeStartToken="0x558318ccc6c0" typeEndToken="0x558318ccc6c0" access="Public" scope="0x558318d169b0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318dd4aa0" nameToken="0x558318b978d0" typeStartToken="0x558318aee9a0" typeEndToken="0x558318aee9a0" access="Public" scope="0x558318d169b0" constness="0" isArray="false" isClass="true" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318dd4b80" nameToken="0x558318b0d3a0" typeStartToken="0x558318b3ce30" typeEndToken="0x558318bc7590" access="Local" scope="0x558318d76260" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
   </variables>
   <valueflow>
-    <values id="0x5558a4da13c0">
+    <values id="0x558318d333c0">
       <value uninit="1" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4c25d80">
+    <values id="0x558318bb7d80">
       <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
     </values>
-    <values id="0x5558a4d7e910">
+    <values id="0x558318d10910">
       <value intvalue="0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4bec3d0">
+    <values id="0x558318b7e3d0">
       <value intvalue="0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4d4ad20">
-      <value lifetime="0x5558a4dc7d00" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    <values id="0x558318cdcd20">
+      <value lifetime="0x558318d59d00" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
     </values>
-    <values id="0x5558a4e052c0">
+    <values id="0x558318d972c0">
       <value intvalue="0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4bb1730">
-      <value tokvalue="0x5558a4d7ecf0" bound="Point" known="true" path="0"/>
+    <values id="0x558318b43730">
+      <value tokvalue="0x558318d10cf0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4e170b0">
-      <value tokvalue="0x5558a4dbfef0" bound="Point" known="true" path="0"/>
+    <values id="0x558318da90b0">
+      <value tokvalue="0x558318d51ef0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4d25200">
+    <values id="0x558318cb7200">
       <value intvalue="13" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4b3bb50">
-      <value tokvalue="0x5558a4d53640" bound="Point" known="true" path="0"/>
+    <values id="0x558318acdb20">
+      <value tokvalue="0x558318ce5640" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4deef90">
-      <value lifetime="0x5558a4c14410" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    <values id="0x558318d80f90">
+      <value lifetime="0x558318ba6410" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
     </values>
-    <values id="0x5558a4b92f20">
-      <value lifetime="0x5558a4b3db40" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    <values id="0x558318b24f20">
+      <value lifetime="0x558318acfb40" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
     </values>
-    <values id="0x5558a4d9c550">
+    <values id="0x558318d2e550">
       <value intvalue="0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4b8ccd0">
-      <value tokvalue="0x5558a4b85f80" bound="Point" known="true" path="0"/>
+    <values id="0x558318b1ecd0">
+      <value tokvalue="0x558318b17f80" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4e154c0">
-      <value tokvalue="0x5558a4bd2210" bound="Point" known="true" path="0"/>
+    <values id="0x558318da74c0">
+      <value tokvalue="0x558318b64210" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4bd53d0">
+    <values id="0x558318b673d0">
       <value intvalue="16" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4b57910">
-      <value tokvalue="0x5558a4c0b340" bound="Point" known="true" path="0"/>
+    <values id="0x558318ae9910">
+      <value tokvalue="0x558318b9d340" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4bfece0">
-      <value lifetime="0x5558a4baa1c0" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    <values id="0x558318b90ce0">
+      <value lifetime="0x558318b3c1c0" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
     </values>
-    <values id="0x5558a4da24a0">
+    <values id="0x558318d344a0">
       <value intvalue="0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4b685a0">
-      <value tokvalue="0x5558a4c06960" bound="Point" known="true" path="0"/>
+    <values id="0x558318afa5a0">
+      <value tokvalue="0x558318b98960" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4d00d90">
-      <value tokvalue="0x5558a4e0bda0" bound="Point" known="true" path="0"/>
+    <values id="0x558318c92d90">
+      <value tokvalue="0x558318d9dda0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4b50bc0">
+    <values id="0x558318ae2bc0">
       <value intvalue="22" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4b75560">
-      <value tokvalue="0x5558a4c36ed0" bound="Point" known="true" path="0"/>
+    <values id="0x558318b07560">
+      <value tokvalue="0x558318bc8ed0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4d99310">
-      <value lifetime="0x5558a4b44350" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    <values id="0x558318d2b310">
+      <value lifetime="0x558318ad6350" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
     </values>
-    <values id="0x5558a4c04ff0">
+    <values id="0x558318b96ff0">
       <value intvalue="0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4bf58a0">
-      <value tokvalue="0x5558a4be7390" bound="Point" known="true" path="0"/>
+    <values id="0x558318b878a0">
+      <value tokvalue="0x558318b79390" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4d52d90">
-      <value tokvalue="0x5558a4e83de0" bound="Point" known="true" path="0"/>
+    <values id="0x558318ce4d90">
+      <value tokvalue="0x558318e15de0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4d4b3f0">
+    <values id="0x558318cdd3f0">
       <value intvalue="24" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4b66ef0">
-      <value tokvalue="0x5558a4da0930" bound="Point" known="true" path="0"/>
+    <values id="0x558318af8ef0">
+      <value tokvalue="0x558318d32930" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4d366a0">
-      <value lifetime="0x5558a4b7c100" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    <values id="0x558318cc86a0">
+      <value lifetime="0x558318b0e100" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
     </values>
-    <values id="0x5558a4bae6e0">
+    <values id="0x558318b406e0">
       <value intvalue="0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4c25de0">
-      <value tokvalue="0x5558a4df4d10" bound="Point" known="true" path="0"/>
+    <values id="0x558318bb7de0">
+      <value tokvalue="0x558318d86d10" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4e4b5b0">
-      <value tokvalue="0x5558a4c0b960" bound="Point" known="true" path="0"/>
+    <values id="0x558318ddd5b0">
+      <value tokvalue="0x558318b9d960" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4e84550">
+    <values id="0x558318e16550">
       <value intvalue="31" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4b9ebe0">
-      <value tokvalue="0x5558a4d9ceb0" bound="Point" known="true" path="0"/>
+    <values id="0x558318b30be0">
+      <value tokvalue="0x558318d2eeb0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4c06ec0">
-      <value lifetime="0x5558a4e1f040" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    <values id="0x558318b98ec0">
+      <value lifetime="0x558318db1040" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
     </values>
-    <values id="0x5558a4dde950">
+    <values id="0x558318d70950">
       <value intvalue="0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4bec8a0">
-      <value tokvalue="0x5558a4e7afd0" bound="Point" known="true" path="0"/>
+    <values id="0x558318b7e8a0">
+      <value tokvalue="0x558318e0cfd0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4b8def0">
-      <value tokvalue="0x5558a4dd80f0" bound="Point" known="true" path="0"/>
+    <values id="0x558318b1fef0">
+      <value tokvalue="0x558318d6a0f0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4bf03c0">
+    <values id="0x558318b823c0">
       <value intvalue="33" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x5558a4de14a0">
-      <value tokvalue="0x5558a4b9b3c0" bound="Point" known="true" path="0"/>
+    <values id="0x558318d734a0">
+      <value tokvalue="0x558318b2d3c0" bound="Point" known="true" path="0"/>
     </values>
   </valueflow>
   <typedef-info>
