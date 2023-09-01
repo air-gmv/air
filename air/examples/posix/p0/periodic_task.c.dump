@@ -1,0 +1,614 @@
+<?xml version="1.0"?>
+<dumps>
+  <platform name="Native" char_bit="8" short_bit="16" int_bit="32" long_bit="64" long_long_bit="64" pointer_bit="64"/>
+  <rawtokens>
+    <file index="0" name="air/examples/posix/p0/periodic_task.c"/>
+    <file index="1" name="air/examples/posix/p0/periodic_task.h"/>
+    <file index="2" name="air/examples/posix/p0/utils.h"/>
+    <tok fileIndex="0" linenr="1" column="1" str="#"/>
+    <tok fileIndex="0" linenr="1" column="2" str="include"/>
+    <tok fileIndex="0" linenr="1" column="10" str="&lt;pthread.h&gt;"/>
+    <tok fileIndex="0" linenr="2" column="1" str="#"/>
+    <tok fileIndex="0" linenr="2" column="2" str="include"/>
+    <tok fileIndex="0" linenr="2" column="10" str="&lt;semaphore.h&gt;"/>
+    <tok fileIndex="0" linenr="3" column="1" str="#"/>
+    <tok fileIndex="0" linenr="3" column="2" str="include"/>
+    <tok fileIndex="0" linenr="3" column="10" str="&lt;stdlib.h&gt;"/>
+    <tok fileIndex="0" linenr="5" column="1" str="#"/>
+    <tok fileIndex="0" linenr="5" column="2" str="include"/>
+    <tok fileIndex="0" linenr="5" column="10" str="&quot;periodic_task.h&quot;"/>
+    <tok fileIndex="0" linenr="6" column="1" str="#"/>
+    <tok fileIndex="0" linenr="6" column="2" str="include"/>
+    <tok fileIndex="0" linenr="6" column="10" str="&quot;utils.h&quot;"/>
+    <tok fileIndex="0" linenr="8" column="1" str="/*****************************************************************************/"/>
+    <tok fileIndex="0" linenr="9" column="1" str="void"/>
+    <tok fileIndex="0" linenr="9" column="6" str="*"/>
+    <tok fileIndex="0" linenr="9" column="7" str="periodic_task_body"/>
+    <tok fileIndex="0" linenr="9" column="26" str="("/>
+    <tok fileIndex="0" linenr="9" column="27" str="void"/>
+    <tok fileIndex="0" linenr="9" column="32" str="*"/>
+    <tok fileIndex="0" linenr="9" column="33" str="parameters"/>
+    <tok fileIndex="0" linenr="9" column="43" str=")"/>
+    <tok fileIndex="0" linenr="9" column="44" str=";"/>
+    <tok fileIndex="0" linenr="11" column="1" str="void"/>
+    <tok fileIndex="0" linenr="11" column="6" str="*"/>
+    <tok fileIndex="0" linenr="11" column="7" str="periodic_task_body"/>
+    <tok fileIndex="0" linenr="11" column="26" str="("/>
+    <tok fileIndex="0" linenr="11" column="27" str="void"/>
+    <tok fileIndex="0" linenr="11" column="32" str="*"/>
+    <tok fileIndex="0" linenr="11" column="33" str="parameters"/>
+    <tok fileIndex="0" linenr="11" column="43" str=")"/>
+    <tok fileIndex="0" linenr="11" column="45" str="{"/>
+    <tok fileIndex="0" linenr="12" column="3" str="struct"/>
+    <tok fileIndex="0" linenr="12" column="10" str="timespec"/>
+    <tok fileIndex="0" linenr="12" column="19" str="trigger"/>
+    <tok fileIndex="0" linenr="12" column="26" str=";"/>
+    <tok fileIndex="0" linenr="12" column="49" str="/* Stores next dispatch time */"/>
+    <tok fileIndex="0" linenr="13" column="3" str="struct"/>
+    <tok fileIndex="0" linenr="13" column="10" str="timespec"/>
+    <tok fileIndex="0" linenr="13" column="19" str="period"/>
+    <tok fileIndex="0" linenr="13" column="25" str=";"/>
+    <tok fileIndex="0" linenr="13" column="56" str="/* Period of the task */"/>
+    <tok fileIndex="0" linenr="14" column="3" str="sem_t"/>
+    <tok fileIndex="0" linenr="14" column="9" str="timer"/>
+    <tok fileIndex="0" linenr="14" column="14" str=";"/>
+    <tok fileIndex="0" linenr="15" column="3" str="task_parameters"/>
+    <tok fileIndex="0" linenr="15" column="19" str="*"/>
+    <tok fileIndex="0" linenr="15" column="20" str="my_parameters"/>
+    <tok fileIndex="0" linenr="15" column="34" str="="/>
+    <tok fileIndex="0" linenr="15" column="36" str="("/>
+    <tok fileIndex="0" linenr="15" column="37" str="task_parameters"/>
+    <tok fileIndex="0" linenr="15" column="53" str="*"/>
+    <tok fileIndex="0" linenr="15" column="54" str=")"/>
+    <tok fileIndex="0" linenr="15" column="56" str="parameters"/>
+    <tok fileIndex="0" linenr="15" column="66" str=";"/>
+    <tok fileIndex="0" linenr="17" column="3" str="period"/>
+    <tok fileIndex="0" linenr="17" column="10" str="="/>
+    <tok fileIndex="0" linenr="17" column="12" str="("/>
+    <tok fileIndex="0" linenr="17" column="13" str="*"/>
+    <tok fileIndex="0" linenr="17" column="14" str="my_parameters"/>
+    <tok fileIndex="0" linenr="17" column="27" str=")"/>
+    <tok fileIndex="0" linenr="17" column="28" str="."/>
+    <tok fileIndex="0" linenr="17" column="29" str="period"/>
+    <tok fileIndex="0" linenr="17" column="35" str=";"/>
+    <tok fileIndex="0" linenr="19" column="3" str="sem_init"/>
+    <tok fileIndex="0" linenr="19" column="11" str="("/>
+    <tok fileIndex="0" linenr="19" column="12" str="&amp;"/>
+    <tok fileIndex="0" linenr="19" column="13" str="timer"/>
+    <tok fileIndex="0" linenr="19" column="18" str=","/>
+    <tok fileIndex="0" linenr="19" column="19" str="0"/>
+    <tok fileIndex="0" linenr="19" column="20" str=","/>
+    <tok fileIndex="0" linenr="19" column="21" str="0"/>
+    <tok fileIndex="0" linenr="19" column="22" str=")"/>
+    <tok fileIndex="0" linenr="19" column="23" str=";"/>
+    <tok fileIndex="0" linenr="19" column="45" str="/* Create a non-shared semaphore */"/>
+    <tok fileIndex="0" linenr="21" column="3" str="clock_gettime"/>
+    <tok fileIndex="0" linenr="21" column="16" str="("/>
+    <tok fileIndex="0" linenr="21" column="17" str="CLOCK_REALTIME"/>
+    <tok fileIndex="0" linenr="21" column="31" str=","/>
+    <tok fileIndex="0" linenr="21" column="32" str="&amp;"/>
+    <tok fileIndex="0" linenr="21" column="33" str="trigger"/>
+    <tok fileIndex="0" linenr="21" column="40" str=")"/>
+    <tok fileIndex="0" linenr="21" column="41" str=";"/>
+    <tok fileIndex="0" linenr="21" column="58" str="/* Initialize timer */"/>
+    <tok fileIndex="0" linenr="22" column="3" str="for"/>
+    <tok fileIndex="0" linenr="22" column="7" str="("/>
+    <tok fileIndex="0" linenr="22" column="8" str=";"/>
+    <tok fileIndex="0" linenr="22" column="9" str=";"/>
+    <tok fileIndex="0" linenr="22" column="10" str=")"/>
+    <tok fileIndex="0" linenr="22" column="12" str="{"/>
+    <tok fileIndex="0" linenr="22" column="52" str="/* Infinite periodic loop */"/>
+    <tok fileIndex="0" linenr="23" column="5" str="my_parameters"/>
+    <tok fileIndex="0" linenr="23" column="18" str="-&gt;"/>
+    <tok fileIndex="0" linenr="23" column="20" str="job"/>
+    <tok fileIndex="0" linenr="23" column="23" str="("/>
+    <tok fileIndex="0" linenr="23" column="24" str=")"/>
+    <tok fileIndex="0" linenr="23" column="25" str=";"/>
+    <tok fileIndex="0" linenr="25" column="5" str="add_timespec"/>
+    <tok fileIndex="0" linenr="25" column="17" str="("/>
+    <tok fileIndex="0" linenr="25" column="18" str="&amp;"/>
+    <tok fileIndex="0" linenr="25" column="19" str="trigger"/>
+    <tok fileIndex="0" linenr="25" column="26" str=","/>
+    <tok fileIndex="0" linenr="25" column="28" str="&amp;"/>
+    <tok fileIndex="0" linenr="25" column="29" str="trigger"/>
+    <tok fileIndex="0" linenr="25" column="36" str=","/>
+    <tok fileIndex="0" linenr="25" column="38" str="&amp;"/>
+    <tok fileIndex="0" linenr="25" column="39" str="period"/>
+    <tok fileIndex="0" linenr="25" column="45" str=")"/>
+    <tok fileIndex="0" linenr="25" column="46" str=";"/>
+    <tok fileIndex="0" linenr="25" column="48" str="/* Compute next dispatch time */"/>
+    <tok fileIndex="0" linenr="26" column="5" str="sem_timedwait"/>
+    <tok fileIndex="0" linenr="26" column="18" str="("/>
+    <tok fileIndex="0" linenr="26" column="19" str="&amp;"/>
+    <tok fileIndex="0" linenr="26" column="20" str="timer"/>
+    <tok fileIndex="0" linenr="26" column="25" str=","/>
+    <tok fileIndex="0" linenr="26" column="26" str="&amp;"/>
+    <tok fileIndex="0" linenr="26" column="27" str="trigger"/>
+    <tok fileIndex="0" linenr="26" column="34" str=")"/>
+    <tok fileIndex="0" linenr="26" column="35" str=";"/>
+    <tok fileIndex="0" linenr="26" column="51" str="/* Wait until next trigger */"/>
+    <tok fileIndex="0" linenr="27" column="3" str="}"/>
+    <tok fileIndex="0" linenr="28" column="1" str="}"/>
+    <tok fileIndex="0" linenr="30" column="1" str="/*****************************************************************************/"/>
+    <tok fileIndex="0" linenr="31" column="1" str="void"/>
+    <tok fileIndex="0" linenr="31" column="6" str="create_periodic_task"/>
+    <tok fileIndex="0" linenr="31" column="27" str="("/>
+    <tok fileIndex="0" linenr="31" column="28" str="struct"/>
+    <tok fileIndex="0" linenr="31" column="35" str="timespec"/>
+    <tok fileIndex="0" linenr="31" column="44" str="period"/>
+    <tok fileIndex="0" linenr="31" column="50" str=","/>
+    <tok fileIndex="0" linenr="31" column="52" str="void"/>
+    <tok fileIndex="0" linenr="31" column="57" str="("/>
+    <tok fileIndex="0" linenr="31" column="58" str="*"/>
+    <tok fileIndex="0" linenr="31" column="59" str="job"/>
+    <tok fileIndex="0" linenr="31" column="62" str=")"/>
+    <tok fileIndex="0" linenr="31" column="64" str="("/>
+    <tok fileIndex="0" linenr="31" column="65" str="void"/>
+    <tok fileIndex="0" linenr="31" column="69" str=")"/>
+    <tok fileIndex="0" linenr="31" column="70" str=")"/>
+    <tok fileIndex="0" linenr="31" column="72" str="{"/>
+    <tok fileIndex="0" linenr="32" column="3" str="pthread_t"/>
+    <tok fileIndex="0" linenr="32" column="13" str="tid"/>
+    <tok fileIndex="0" linenr="32" column="16" str=";"/>
+    <tok fileIndex="0" linenr="33" column="3" str="task_parameters"/>
+    <tok fileIndex="0" linenr="33" column="19" str="*"/>
+    <tok fileIndex="0" linenr="33" column="20" str="parameters"/>
+    <tok fileIndex="0" linenr="33" column="31" str="="/>
+    <tok fileIndex="0" linenr="33" column="33" str="malloc"/>
+    <tok fileIndex="0" linenr="33" column="40" str="("/>
+    <tok fileIndex="0" linenr="33" column="41" str="sizeof"/>
+    <tok fileIndex="0" linenr="33" column="48" str="("/>
+    <tok fileIndex="0" linenr="33" column="49" str="task_parameters"/>
+    <tok fileIndex="0" linenr="33" column="64" str=")"/>
+    <tok fileIndex="0" linenr="33" column="65" str=")"/>
+    <tok fileIndex="0" linenr="33" column="66" str=";"/>
+    <tok fileIndex="0" linenr="35" column="3" str="parameters"/>
+    <tok fileIndex="0" linenr="35" column="13" str="-&gt;"/>
+    <tok fileIndex="0" linenr="35" column="15" str="period"/>
+    <tok fileIndex="0" linenr="35" column="22" str="="/>
+    <tok fileIndex="0" linenr="35" column="24" str="period"/>
+    <tok fileIndex="0" linenr="35" column="30" str=";"/>
+    <tok fileIndex="0" linenr="36" column="3" str="parameters"/>
+    <tok fileIndex="0" linenr="36" column="13" str="-&gt;"/>
+    <tok fileIndex="0" linenr="36" column="15" str="job"/>
+    <tok fileIndex="0" linenr="36" column="19" str="="/>
+    <tok fileIndex="0" linenr="36" column="21" str="job"/>
+    <tok fileIndex="0" linenr="36" column="24" str=";"/>
+    <tok fileIndex="0" linenr="38" column="3" str="pthread_create"/>
+    <tok fileIndex="0" linenr="38" column="17" str="("/>
+    <tok fileIndex="0" linenr="38" column="18" str="&amp;"/>
+    <tok fileIndex="0" linenr="38" column="19" str="tid"/>
+    <tok fileIndex="0" linenr="38" column="22" str=","/>
+    <tok fileIndex="0" linenr="38" column="24" str="NULL"/>
+    <tok fileIndex="0" linenr="38" column="28" str=","/>
+    <tok fileIndex="0" linenr="38" column="30" str="periodic_task_body"/>
+    <tok fileIndex="0" linenr="38" column="48" str=","/>
+    <tok fileIndex="0" linenr="38" column="50" str="("/>
+    <tok fileIndex="0" linenr="38" column="51" str="void"/>
+    <tok fileIndex="0" linenr="38" column="56" str="*"/>
+    <tok fileIndex="0" linenr="38" column="57" str=")"/>
+    <tok fileIndex="0" linenr="38" column="58" str="parameters"/>
+    <tok fileIndex="0" linenr="38" column="68" str=")"/>
+    <tok fileIndex="0" linenr="38" column="69" str=";"/>
+    <tok fileIndex="0" linenr="39" column="1" str="}"/>
+    <tok fileIndex="0" linenr="40" column="1" str="/*****************************************************************************/"/>
+    <tok fileIndex="0" linenr="41" column="1" str="#"/>
+    <tok fileIndex="0" linenr="41" column="2" str="ifdef"/>
+    <tok fileIndex="0" linenr="41" column="8" str="__TEST__"/>
+    <tok fileIndex="0" linenr="42" column="1" str="void"/>
+    <tok fileIndex="0" linenr="42" column="6" str="dummy"/>
+    <tok fileIndex="0" linenr="42" column="12" str="("/>
+    <tok fileIndex="0" linenr="42" column="13" str="void"/>
+    <tok fileIndex="0" linenr="42" column="17" str=")"/>
+    <tok fileIndex="0" linenr="42" column="19" str="{"/>
+    <tok fileIndex="0" linenr="43" column="3" str="printf"/>
+    <tok fileIndex="0" linenr="43" column="10" str="("/>
+    <tok fileIndex="0" linenr="43" column="11" str="&quot;o&lt; \n&quot;"/>
+    <tok fileIndex="0" linenr="43" column="18" str=")"/>
+    <tok fileIndex="0" linenr="43" column="19" str=";"/>
+    <tok fileIndex="0" linenr="44" column="1" str="}"/>
+    <tok fileIndex="0" linenr="46" column="1" str="int"/>
+    <tok fileIndex="0" linenr="46" column="5" str="main"/>
+    <tok fileIndex="0" linenr="46" column="10" str="("/>
+    <tok fileIndex="0" linenr="46" column="11" str="void"/>
+    <tok fileIndex="0" linenr="46" column="15" str=")"/>
+    <tok fileIndex="0" linenr="46" column="17" str="{"/>
+    <tok fileIndex="0" linenr="47" column="3" str="struct"/>
+    <tok fileIndex="0" linenr="47" column="10" str="timespec"/>
+    <tok fileIndex="0" linenr="47" column="19" str="period"/>
+    <tok fileIndex="0" linenr="47" column="25" str=";"/>
+    <tok fileIndex="0" linenr="48" column="3" str="period"/>
+    <tok fileIndex="0" linenr="48" column="9" str="."/>
+    <tok fileIndex="0" linenr="48" column="10" str="tv_nsec"/>
+    <tok fileIndex="0" linenr="48" column="18" str="="/>
+    <tok fileIndex="0" linenr="48" column="20" str="250"/>
+    <tok fileIndex="0" linenr="48" column="24" str="*"/>
+    <tok fileIndex="0" linenr="48" column="26" str="1000"/>
+    <tok fileIndex="0" linenr="48" column="31" str="*"/>
+    <tok fileIndex="0" linenr="48" column="33" str="1000"/>
+    <tok fileIndex="0" linenr="48" column="37" str=";"/>
+    <tok fileIndex="0" linenr="49" column="3" str="period"/>
+    <tok fileIndex="0" linenr="49" column="9" str="."/>
+    <tok fileIndex="0" linenr="49" column="10" str="tv_sec"/>
+    <tok fileIndex="0" linenr="49" column="18" str="="/>
+    <tok fileIndex="0" linenr="49" column="20" str="0"/>
+    <tok fileIndex="0" linenr="49" column="22" str=";"/>
+    <tok fileIndex="0" linenr="51" column="3" str="create_periodic_task"/>
+    <tok fileIndex="0" linenr="51" column="24" str="("/>
+    <tok fileIndex="0" linenr="51" column="25" str="period"/>
+    <tok fileIndex="0" linenr="51" column="31" str=","/>
+    <tok fileIndex="0" linenr="51" column="33" str="dummy"/>
+    <tok fileIndex="0" linenr="51" column="38" str=")"/>
+    <tok fileIndex="0" linenr="51" column="39" str=";"/>
+    <tok fileIndex="0" linenr="52" column="3" str="printf"/>
+    <tok fileIndex="0" linenr="52" column="10" str="("/>
+    <tok fileIndex="0" linenr="52" column="11" str="&quot;Task created\n&quot;"/>
+    <tok fileIndex="0" linenr="52" column="27" str=")"/>
+    <tok fileIndex="0" linenr="52" column="28" str=";"/>
+    <tok fileIndex="0" linenr="53" column="3" str="while"/>
+    <tok fileIndex="0" linenr="53" column="9" str="("/>
+    <tok fileIndex="0" linenr="53" column="10" str="1"/>
+    <tok fileIndex="0" linenr="53" column="11" str=")"/>
+    <tok fileIndex="0" linenr="53" column="12" str=";"/>
+    <tok fileIndex="0" linenr="54" column="3" str="return"/>
+    <tok fileIndex="0" linenr="54" column="10" str="0"/>
+    <tok fileIndex="0" linenr="54" column="11" str=";"/>
+    <tok fileIndex="0" linenr="55" column="1" str="}"/>
+    <tok fileIndex="0" linenr="56" column="1" str="#"/>
+    <tok fileIndex="0" linenr="56" column="2" str="endif"/>
+    <tok fileIndex="0" linenr="56" column="8" str="/* __TEST__ */"/>
+  </rawtokens>
+  <suppressions>
+  </suppressions>
+<dump cfg="INLINE=__inline__">
+  <standards>
+    <c version="c11"/>
+    <cpp version="c++20"/>
+  </standards>
+  <directivelist>
+    <directive file="air/examples/posix/p0/periodic_task.c" linenr="1" str="#include &lt;pthread.h&gt;"/>
+    <directive file="air/examples/posix/p0/periodic_task.c" linenr="2" str="#include &lt;semaphore.h&gt;"/>
+    <directive file="air/examples/posix/p0/periodic_task.c" linenr="3" str="#include &lt;stdlib.h&gt;"/>
+    <directive file="air/examples/posix/p0/periodic_task.c" linenr="5" str="#include &quot;periodic_task.h&quot;"/>
+    <directive file="air/examples/posix/p0/periodic_task.c" linenr="6" str="#include &quot;utils.h&quot;"/>
+    <directive file="air/examples/posix/p0/periodic_task.c" linenr="41" str="#ifdef __TEST__"/>
+    <directive file="air/examples/posix/p0/periodic_task.c" linenr="56" str="#endif"/>
+    <directive file="air/examples/posix/p0/periodic_task.h" linenr="5" str="#ifndef __PERIODIC_TASK_H__"/>
+    <directive file="air/examples/posix/p0/periodic_task.h" linenr="6" str="#define __PERIODIC_TASK_H__"/>
+    <directive file="air/examples/posix/p0/periodic_task.h" linenr="18" str="#endif"/>
+    <directive file="air/examples/posix/p0/utils.h" linenr="1" str="#ifndef __UTILS_H__"/>
+    <directive file="air/examples/posix/p0/utils.h" linenr="2" str="#define __UTILS_H__"/>
+    <directive file="air/examples/posix/p0/utils.h" linenr="4" str="#include &lt;stdio.h&gt;"/>
+    <directive file="air/examples/posix/p0/utils.h" linenr="5" str="#include &lt;time.h&gt;"/>
+    <directive file="air/examples/posix/p0/utils.h" linenr="10" str="#define CHECK_NZ(X) if ((X) != 0) { printf (&quot;%s %d:\n&quot;, __FILE__, __LINE__); perror (&quot;[ERROR]&quot;); }"/>
+    <directive file="air/examples/posix/p0/utils.h" linenr="18" str="#endif"/>
+  </directivelist>
+  <tokenlist>
+    <token id="0x558318d663e0" file="air/examples/posix/p0/periodic_task.h" linenr="8" column="9" str="struct" scope="0x558318da8f00" type="name"/>
+    <token id="0x558318e1a1b0" file="air/examples/posix/p0/periodic_task.h" linenr="8" column="16" str="_task_parameters" scope="0x558318da8f00" type="name" type-scope="0x558318d2f530"/>
+    <token id="0x558318ce7530" file="air/examples/posix/p0/periodic_task.h" linenr="8" column="33" str="{" scope="0x558318d2f530" link="0x558318b61390" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d2f530"/>
+    <token id="0x558318ce7ab0" file="air/examples/posix/p0/periodic_task.h" linenr="9" column="3" str="struct" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318ae0640" file="air/examples/posix/p0/periodic_task.h" linenr="9" column="10" str="timespec" scope="0x558318d2f530" type="name"/>
+    <token id="0x558318d66220" file="air/examples/posix/p0/periodic_task.h" linenr="9" column="19" str="period" scope="0x558318d2f530" type="name" varId="1" variable="0x558318d61490" valueType-type="record" valueType-reference="None"/>
+    <token id="0x558318e15520" file="air/examples/posix/p0/periodic_task.h" linenr="9" column="25" str=";" scope="0x558318d2f530"/>
+    <token id="0x558318b17a70" file="air/examples/posix/p0/periodic_task.h" linenr="10" column="3" str="void" scope="0x558318d2f530" type="name" astParent="0x558318d699d0"/>
+    <token id="0x558318d699d0" file="air/examples/posix/p0/periodic_task.h" linenr="10" column="8" str="(" scope="0x558318d2f530" link="0x558318e1b0b0" astParent="0x558318ce7420" astOperand1="0x558318b17a70" astOperand2="0x558318ba8ee0" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318ba8ee0" file="air/examples/posix/p0/periodic_task.h" linenr="10" column="9" str="*" scope="0x558318d2f530" type="op" isArithmeticalOp="true" astParent="0x558318d699d0" astOperand1="0x558318e1b010" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318e1b010" file="air/examples/posix/p0/periodic_task.h" linenr="10" column="10" str="job" scope="0x558318d2f530" type="name" varId="2" variable="0x558318b5ef50" astParent="0x558318ba8ee0" valueType-type="void" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318e1b0b0" file="air/examples/posix/p0/periodic_task.h" linenr="10" column="13" str=")" scope="0x558318d2f530" link="0x558318d699d0"/>
+    <token id="0x558318ce7420" file="air/examples/posix/p0/periodic_task.h" linenr="10" column="0" str="(" scope="0x558318d2f530" link="0x558318d25cc0" astOperand1="0x558318d699d0"/>
+    <token id="0x558318d25cc0" file="air/examples/posix/p0/periodic_task.h" linenr="10" column="0" str=")" scope="0x558318d2f530" link="0x558318ce7420"/>
+    <token id="0x558318b1ff60" file="air/examples/posix/p0/periodic_task.h" linenr="10" column="20" str=";" scope="0x558318d2f530"/>
+    <token id="0x558318b61390" file="air/examples/posix/p0/periodic_task.h" linenr="11" column="1" str="}" scope="0x558318d2f530" link="0x558318ce7530"/>
+    <token id="0x558318c9a4e0" file="air/examples/posix/p0/periodic_task.h" linenr="11" column="0" str=";" scope="0x558318da8f00"/>
+    <token id="0x558318b40490" file="air/examples/posix/p0/periodic_task.h" linenr="13" column="1" str="void" scope="0x558318da8f00" type="name"/>
+    <token id="0x558318ccc640" file="air/examples/posix/p0/periodic_task.h" linenr="13" column="6" str="create_periodic_task" scope="0x558318da8f00" type="name" function="0x558318d9c600"/>
+    <token id="0x558318ddd610" file="air/examples/posix/p0/periodic_task.h" linenr="13" column="27" str="(" scope="0x558318da8f00" link="0x558318bb8ca0" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318b53500" file="air/examples/posix/p0/periodic_task.h" linenr="13" column="28" str="struct" scope="0x558318da8f00" type="name"/>
+    <token id="0x558318b53640" file="air/examples/posix/p0/periodic_task.h" linenr="13" column="35" str="timespec" scope="0x558318da8f00" type="name"/>
+    <token id="0x558318ce6fb0" file="air/examples/posix/p0/periodic_task.h" linenr="13" column="44" str="period" scope="0x558318da8f00" type="name" varId="3"/>
+    <token id="0x558318d80d90" file="air/examples/posix/p0/periodic_task.h" linenr="13" column="50" str="," scope="0x558318da8f00"/>
+    <token id="0x558318aa67b0" file="air/examples/posix/p0/periodic_task.h" linenr="13" column="52" str="void" scope="0x558318da8f00" type="name" astParent="0x558318ce41a0"/>
+    <token id="0x558318ce41a0" file="air/examples/posix/p0/periodic_task.h" linenr="13" column="57" str="(" scope="0x558318da8f00" link="0x558318b0d3a0" astParent="0x558318ad1e70" astOperand1="0x558318aa67b0" astOperand2="0x558318d7d740" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318d7d740" file="air/examples/posix/p0/periodic_task.h" linenr="13" column="58" str="*" scope="0x558318da8f00" type="op" isArithmeticalOp="true" astParent="0x558318ce41a0" astOperand1="0x558318e1a230"/>
+    <token id="0x558318e1a230" file="air/examples/posix/p0/periodic_task.h" linenr="13" column="59" str="job" scope="0x558318da8f00" type="name" varId="4" astParent="0x558318d7d740"/>
+    <token id="0x558318b0d3a0" file="air/examples/posix/p0/periodic_task.h" linenr="13" column="62" str=")" scope="0x558318da8f00" link="0x558318ce41a0"/>
+    <token id="0x558318ad1e70" file="air/examples/posix/p0/periodic_task.h" linenr="13" column="0" str="(" scope="0x558318da8f00" link="0x558318cd75b0" astOperand1="0x558318ce41a0"/>
+    <token id="0x558318cd75b0" file="air/examples/posix/p0/periodic_task.h" linenr="13" column="0" str=")" scope="0x558318da8f00" link="0x558318ad1e70"/>
+    <token id="0x558318bb8ca0" file="air/examples/posix/p0/periodic_task.h" linenr="13" column="70" str=")" scope="0x558318da8f00" link="0x558318ddd610"/>
+    <token id="0x558318ae6200" file="air/examples/posix/p0/periodic_task.h" linenr="13" column="71" str=";" scope="0x558318da8f00"/>
+    <token id="0x558318d1d4c0" file="air/examples/posix/p0/utils.h" linenr="13" column="1" str="void" scope="0x558318da8f00" type="name"/>
+    <token id="0x558318dd4f90" file="air/examples/posix/p0/utils.h" linenr="13" column="6" str="add_timespec" scope="0x558318da8f00" type="name" function="0x558318b6e280"/>
+    <token id="0x558318afbc60" file="air/examples/posix/p0/utils.h" linenr="13" column="19" str="(" scope="0x558318da8f00" link="0x558318d18a20" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318b5c1e0" file="air/examples/posix/p0/utils.h" linenr="13" column="20" str="struct" scope="0x558318da8f00" type="name"/>
+    <token id="0x558318afdba0" file="air/examples/posix/p0/utils.h" linenr="13" column="27" str="timespec" scope="0x558318da8f00" type="name" astParent="0x558318b1a9f0"/>
+    <token id="0x558318b1a9f0" file="air/examples/posix/p0/utils.h" linenr="13" column="36" str="*" scope="0x558318da8f00" type="op" isArithmeticalOp="true" astParent="0x558318b97ba0" astOperand1="0x558318afdba0" astOperand2="0x558318b84b60"/>
+    <token id="0x558318b84b60" file="air/examples/posix/p0/utils.h" linenr="13" column="37" str="s" scope="0x558318da8f00" type="name" varId="5" variable="0x558318b6e0a0" astParent="0x558318b1a9f0" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318b97ba0" file="air/examples/posix/p0/utils.h" linenr="13" column="38" str="," scope="0x558318da8f00" astParent="0x558318b42620" astOperand1="0x558318b1a9f0" astOperand2="0x558318b48820"/>
+    <token id="0x558318b0fab0" file="air/examples/posix/p0/utils.h" linenr="14" column="20" str="const" scope="0x558318da8f00" type="name"/>
+    <token id="0x558318d77180" file="air/examples/posix/p0/utils.h" linenr="14" column="26" str="struct" scope="0x558318da8f00" type="name"/>
+    <token id="0x558318b240b0" file="air/examples/posix/p0/utils.h" linenr="14" column="33" str="timespec" scope="0x558318da8f00" type="name" astParent="0x558318b48820"/>
+    <token id="0x558318b48820" file="air/examples/posix/p0/utils.h" linenr="14" column="42" str="*" scope="0x558318da8f00" type="op" isArithmeticalOp="true" astParent="0x558318b97ba0" astOperand1="0x558318b240b0" astOperand2="0x558318ad4410"/>
+    <token id="0x558318ad4410" file="air/examples/posix/p0/utils.h" linenr="14" column="43" str="t1" scope="0x558318da8f00" type="name" varId="6" variable="0x558318b6e180" astParent="0x558318b48820" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318b42620" file="air/examples/posix/p0/utils.h" linenr="14" column="45" str="," scope="0x558318da8f00" astOperand1="0x558318b97ba0" astOperand2="0x558318e16630"/>
+    <token id="0x558318cdd530" file="air/examples/posix/p0/utils.h" linenr="15" column="20" str="const" scope="0x558318da8f00" type="name"/>
+    <token id="0x558318aee480" file="air/examples/posix/p0/utils.h" linenr="15" column="26" str="struct" scope="0x558318da8f00" type="name"/>
+    <token id="0x558318cb6c80" file="air/examples/posix/p0/utils.h" linenr="15" column="33" str="timespec" scope="0x558318da8f00" type="name" astParent="0x558318e16630"/>
+    <token id="0x558318e16630" file="air/examples/posix/p0/utils.h" linenr="15" column="42" str="*" scope="0x558318da8f00" type="op" isArithmeticalOp="true" astParent="0x558318b42620" astOperand1="0x558318cb6c80" astOperand2="0x558318e16450"/>
+    <token id="0x558318e16450" file="air/examples/posix/p0/utils.h" linenr="15" column="43" str="t2" scope="0x558318da8f00" type="name" varId="7" variable="0x558318ce70e0" astParent="0x558318e16630" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x558318d18a20" file="air/examples/posix/p0/utils.h" linenr="15" column="45" str=")" scope="0x558318da8f00" link="0x558318afbc60"/>
+    <token id="0x558318b66cb0" file="air/examples/posix/p0/utils.h" linenr="15" column="46" str=";" scope="0x558318da8f00"/>
+    <token id="0x558318cdb8a0" file="air/examples/posix/p0/periodic_task.c" linenr="9" column="1" str="void" scope="0x558318da8f00" type="name"/>
+    <token id="0x558318d18ec0" file="air/examples/posix/p0/periodic_task.c" linenr="9" column="6" str="*" scope="0x558318da8f00" type="op" isArithmeticalOp="true"/>
+    <token id="0x558318d929c0" file="air/examples/posix/p0/periodic_task.c" linenr="9" column="7" str="periodic_task_body" scope="0x558318da8f00" type="name" function="0x558318bb4090"/>
+    <token id="0x558318abb9f0" file="air/examples/posix/p0/periodic_task.c" linenr="9" column="26" str="(" scope="0x558318da8f00" link="0x558318ccc540" valueType-type="void" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318d7d180" file="air/examples/posix/p0/periodic_task.c" linenr="9" column="27" str="void" scope="0x558318da8f00" type="name" astParent="0x558318aab840"/>
+    <token id="0x558318aab840" file="air/examples/posix/p0/periodic_task.c" linenr="9" column="32" str="*" scope="0x558318da8f00" type="op" isArithmeticalOp="true" astOperand1="0x558318d7d180" astOperand2="0x558318c97090"/>
+    <token id="0x558318c97090" file="air/examples/posix/p0/periodic_task.c" linenr="9" column="33" str="parameters" scope="0x558318da8f00" type="name" varId="8" astParent="0x558318aab840"/>
+    <token id="0x558318ccc540" file="air/examples/posix/p0/periodic_task.c" linenr="9" column="43" str=")" scope="0x558318da8f00" link="0x558318abb9f0"/>
+    <token id="0x558318d70c90" file="air/examples/posix/p0/periodic_task.c" linenr="9" column="44" str=";" scope="0x558318da8f00"/>
+    <token id="0x558318bb2d60" file="air/examples/posix/p0/periodic_task.c" linenr="11" column="1" str="void" scope="0x558318da8f00" type="name"/>
+    <token id="0x558318d91280" file="air/examples/posix/p0/periodic_task.c" linenr="11" column="6" str="*" scope="0x558318da8f00" type="op" isArithmeticalOp="true"/>
+    <token id="0x558318b85830" file="air/examples/posix/p0/periodic_task.c" linenr="11" column="7" str="periodic_task_body" scope="0x558318da8f00" type="name" function="0x558318bb4090"/>
+    <token id="0x558318ae0020" file="air/examples/posix/p0/periodic_task.c" linenr="11" column="26" str="(" scope="0x558318da8f00" link="0x558318afd9a0" valueType-type="void" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318bc9340" file="air/examples/posix/p0/periodic_task.c" linenr="11" column="27" str="void" scope="0x558318da8f00" type="name" astParent="0x558318dad840"/>
+    <token id="0x558318dad840" file="air/examples/posix/p0/periodic_task.c" linenr="11" column="32" str="*" scope="0x558318da8f00" type="op" isArithmeticalOp="true" astOperand1="0x558318bc9340" astOperand2="0x558318b20d20"/>
+    <token id="0x558318b20d20" file="air/examples/posix/p0/periodic_task.c" linenr="11" column="33" str="parameters" scope="0x558318da8f00" type="name" varId="9" variable="0x558318dab2f0" astParent="0x558318dad840" valueType-type="void" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318afd9a0" file="air/examples/posix/p0/periodic_task.c" linenr="11" column="43" str=")" scope="0x558318da8f00" link="0x558318ae0020"/>
+    <token id="0x558318ce7dd0" file="air/examples/posix/p0/periodic_task.c" linenr="11" column="45" str="{" scope="0x558318d169b0" link="0x558318d55840"/>
+    <token id="0x558318d9c420" file="air/examples/posix/p0/periodic_task.c" linenr="12" column="3" str="struct" scope="0x558318d169b0" type="name"/>
+    <token id="0x558318bc1e70" file="air/examples/posix/p0/periodic_task.c" linenr="12" column="10" str="timespec" scope="0x558318d169b0" type="name"/>
+    <token id="0x558318bc7440" file="air/examples/posix/p0/periodic_task.c" linenr="12" column="19" str="trigger" scope="0x558318d169b0" type="name" varId="10" variable="0x558318d7cd90" valueType-type="record" valueType-reference="None"/>
+    <token id="0x558318cd0cb0" file="air/examples/posix/p0/periodic_task.c" linenr="12" column="26" str=";" scope="0x558318d169b0"/>
+    <token id="0x558318bb4340" file="air/examples/posix/p0/periodic_task.c" linenr="13" column="3" str="struct" scope="0x558318d169b0" type="name"/>
+    <token id="0x558318ab4cb0" file="air/examples/posix/p0/periodic_task.c" linenr="13" column="10" str="timespec" scope="0x558318d169b0" type="name"/>
+    <token id="0x558318d52500" file="air/examples/posix/p0/periodic_task.c" linenr="13" column="19" str="period" scope="0x558318d169b0" type="name" varId="11" variable="0x558318c9a550" valueType-type="record" valueType-reference="None"/>
+    <token id="0x558318b2da30" file="air/examples/posix/p0/periodic_task.c" linenr="13" column="25" str=";" scope="0x558318d169b0"/>
+    <token id="0x558318b3a100" file="air/examples/posix/p0/periodic_task.c" linenr="14" column="3" str="sem_t" scope="0x558318d169b0" type="name"/>
+    <token id="0x558318d8dea0" file="air/examples/posix/p0/periodic_task.c" linenr="14" column="9" str="timer" scope="0x558318d169b0" type="name" varId="12" variable="0x558318e0d390"/>
+    <token id="0x558318ad1d00" file="air/examples/posix/p0/periodic_task.c" linenr="14" column="14" str=";" scope="0x558318d169b0"/>
+    <token id="0x558318d35fa0" file="air/examples/posix/p0/periodic_task.c" linenr="15" column="3" str="struct" scope="0x558318d169b0" type="name"/>
+    <token id="0x558318ad3e30" file="air/examples/posix/p0/periodic_task.c" linenr="15" column="0" str="_task_parameters" scope="0x558318d169b0" type="name" type-scope="0x558318d2f530" astParent="0x558318b89300"/>
+    <token id="0x558318b89300" file="air/examples/posix/p0/periodic_task.c" linenr="15" column="19" str="*" scope="0x558318d169b0" type="op" isArithmeticalOp="true" astOperand1="0x558318ad3e30" astOperand2="0x558318da7fe0"/>
+    <token id="0x558318da7fe0" file="air/examples/posix/p0/periodic_task.c" linenr="15" column="20" str="my_parameters" scope="0x558318d169b0" type="name" varId="13" variable="0x558318ad3450" astParent="0x558318b89300" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d2f530"/>
+    <token id="0x558318bbf650" file="air/examples/posix/p0/periodic_task.c" linenr="15" column="34" str=";" scope="0x558318d169b0" isSplittedVarDeclEq="true"/>
+    <token id="0x558318ba7b60" file="air/examples/posix/p0/periodic_task.c" linenr="15" column="20" str="my_parameters" scope="0x558318d169b0" type="name" varId="13" variable="0x558318ad3450" astParent="0x558318b7e1f0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d2f530"/>
+    <token id="0x558318b7e1f0" file="air/examples/posix/p0/periodic_task.c" linenr="15" column="34" str="=" scope="0x558318d169b0" type="op" isAssignmentOp="true" astOperand1="0x558318ba7b60" astOperand2="0x558318d754e0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d2f530"/>
+    <token id="0x558318d754e0" file="air/examples/posix/p0/periodic_task.c" linenr="15" column="36" str="(" scope="0x558318d169b0" link="0x558318b30f00" astParent="0x558318b7e1f0" astOperand1="0x558318b0e4d0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d2f530"/>
+    <token id="0x558318ce5ae0" file="air/examples/posix/p0/periodic_task.c" linenr="15" column="37" str="struct" scope="0x558318d169b0" type="name"/>
+    <token id="0x558318d4b160" file="air/examples/posix/p0/periodic_task.c" linenr="15" column="0" str="_task_parameters" scope="0x558318d169b0" type="name" type-scope="0x558318d2f530"/>
+    <token id="0x558318ab0fc0" file="air/examples/posix/p0/periodic_task.c" linenr="15" column="53" str="*" scope="0x558318d169b0" type="op" isArithmeticalOp="true"/>
+    <token id="0x558318b30f00" file="air/examples/posix/p0/periodic_task.c" linenr="15" column="54" str=")" scope="0x558318d169b0" link="0x558318d754e0"/>
+    <token id="0x558318b0e4d0" file="air/examples/posix/p0/periodic_task.c" linenr="15" column="56" str="parameters" scope="0x558318d169b0" type="name" varId="9" variable="0x558318dab2f0" astParent="0x558318d754e0" valueType-type="void" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318ac0210" file="air/examples/posix/p0/periodic_task.c" linenr="15" column="66" str=";" scope="0x558318d169b0"/>
+    <token id="0x558318ce5d30" file="air/examples/posix/p0/periodic_task.c" linenr="17" column="3" str="period" scope="0x558318d169b0" type="name" varId="11" variable="0x558318c9a550" astParent="0x558318dd60c0" valueType-type="record" valueType-reference="None"/>
+    <token id="0x558318dd60c0" file="air/examples/posix/p0/periodic_task.c" linenr="17" column="10" str="=" scope="0x558318d169b0" type="op" isAssignmentOp="true" astOperand1="0x558318ce5d30" astOperand2="0x558318b7d480" valueType-type="record" valueType-reference="None"/>
+    <token id="0x558318d51fe0" file="air/examples/posix/p0/periodic_task.c" linenr="17" column="12" str="(" scope="0x558318d169b0" link="0x558318d91680"/>
+    <token id="0x558318acfc90" file="air/examples/posix/p0/periodic_task.c" linenr="17" column="13" str="*" scope="0x558318d169b0" type="op" isArithmeticalOp="true" astParent="0x558318b7d480" astOperand1="0x558318b98a20" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d2f530"/>
+    <token id="0x558318b98a20" file="air/examples/posix/p0/periodic_task.c" linenr="17" column="14" str="my_parameters" scope="0x558318d169b0" type="name" varId="13" variable="0x558318ad3450" values="0x558318d972c0" astParent="0x558318acfc90" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d2f530"/>
+    <token id="0x558318d91680" file="air/examples/posix/p0/periodic_task.c" linenr="17" column="27" str=")" scope="0x558318d169b0" link="0x558318d51fe0"/>
+    <token id="0x558318b7d480" file="air/examples/posix/p0/periodic_task.c" linenr="17" column="28" str="." scope="0x558318d169b0" astParent="0x558318dd60c0" astOperand1="0x558318acfc90" astOperand2="0x558318b7c320" valueType-type="record" valueType-reference="None"/>
+    <token id="0x558318b7c320" file="air/examples/posix/p0/periodic_task.c" linenr="17" column="29" str="period" scope="0x558318d169b0" type="name" varId="14" astParent="0x558318b7d480"/>
+    <token id="0x558318ad3280" file="air/examples/posix/p0/periodic_task.c" linenr="17" column="35" str=";" scope="0x558318d169b0"/>
+    <token id="0x558318d25c20" file="air/examples/posix/p0/periodic_task.c" linenr="19" column="3" str="sem_init" scope="0x558318d169b0" type="name" astParent="0x558318bc4040"/>
+    <token id="0x558318bc4040" file="air/examples/posix/p0/periodic_task.c" linenr="19" column="11" str="(" scope="0x558318d169b0" link="0x558318b12770" astOperand1="0x558318d25c20" astOperand2="0x558318d3a920"/>
+    <token id="0x558318dd5550" file="air/examples/posix/p0/periodic_task.c" linenr="19" column="12" str="&amp;" scope="0x558318d169b0" type="op" values="0x558318ddd7f0" astParent="0x558318b7c1a0" astOperand1="0x558318da5a70"/>
+    <token id="0x558318da5a70" file="air/examples/posix/p0/periodic_task.c" linenr="19" column="13" str="timer" scope="0x558318d169b0" type="name" varId="12" variable="0x558318e0d390" astParent="0x558318dd5550"/>
+    <token id="0x558318b7c1a0" file="air/examples/posix/p0/periodic_task.c" linenr="19" column="18" str="," scope="0x558318d169b0" astParent="0x558318d3a920" astOperand1="0x558318dd5550" astOperand2="0x558318d17e80"/>
+    <token id="0x558318d17e80" file="air/examples/posix/p0/periodic_task.c" linenr="19" column="19" str="0" scope="0x558318d169b0" type="number" isInt="true" values="0x558318bb7de0" astParent="0x558318b7c1a0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d3a920" file="air/examples/posix/p0/periodic_task.c" linenr="19" column="20" str="," scope="0x558318d169b0" astParent="0x558318bc4040" astOperand1="0x558318b7c1a0" astOperand2="0x558318af0eb0"/>
+    <token id="0x558318af0eb0" file="air/examples/posix/p0/periodic_task.c" linenr="19" column="21" str="0" scope="0x558318d169b0" type="number" isInt="true" values="0x558318acdb20" astParent="0x558318d3a920" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b12770" file="air/examples/posix/p0/periodic_task.c" linenr="19" column="22" str=")" scope="0x558318d169b0" link="0x558318bc4040"/>
+    <token id="0x558318b044a0" file="air/examples/posix/p0/periodic_task.c" linenr="19" column="23" str=";" scope="0x558318d169b0"/>
+    <token id="0x558318b96e60" file="air/examples/posix/p0/periodic_task.c" linenr="21" column="3" str="clock_gettime" scope="0x558318d169b0" type="name" astParent="0x558318ba1170"/>
+    <token id="0x558318ba1170" file="air/examples/posix/p0/periodic_task.c" linenr="21" column="16" str="(" scope="0x558318d169b0" link="0x558318d33870" astOperand1="0x558318b96e60" astOperand2="0x558318cdb060"/>
+    <token id="0x558318b7d9e0" file="air/examples/posix/p0/periodic_task.c" linenr="21" column="17" str="CLOCK_REALTIME" scope="0x558318d169b0" type="name" astParent="0x558318cdb060"/>
+    <token id="0x558318cdb060" file="air/examples/posix/p0/periodic_task.c" linenr="21" column="31" str="," scope="0x558318d169b0" astParent="0x558318ba1170" astOperand1="0x558318b7d9e0" astOperand2="0x558318d83df0"/>
+    <token id="0x558318d83df0" file="air/examples/posix/p0/periodic_task.c" linenr="21" column="32" str="&amp;" scope="0x558318d169b0" type="op" values="0x558318cb96d0" astParent="0x558318cdb060" astOperand1="0x558318d10cf0" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318d10cf0" file="air/examples/posix/p0/periodic_task.c" linenr="21" column="33" str="trigger" scope="0x558318d169b0" type="name" varId="10" variable="0x558318d7cd90" astParent="0x558318d83df0" valueType-type="record" valueType-reference="None"/>
+    <token id="0x558318d33870" file="air/examples/posix/p0/periodic_task.c" linenr="21" column="40" str=")" scope="0x558318d169b0" link="0x558318ba1170"/>
+    <token id="0x558318d51ef0" file="air/examples/posix/p0/periodic_task.c" linenr="21" column="41" str=";" scope="0x558318d169b0"/>
+    <token id="0x558318b04140" file="air/examples/posix/p0/periodic_task.c" linenr="22" column="3" str="for" scope="0x558318d169b0" type="name" astParent="0x558318d7bf20"/>
+    <token id="0x558318d7bf20" file="air/examples/posix/p0/periodic_task.c" linenr="22" column="7" str="(" scope="0x558318d169b0" link="0x558318b92060" astOperand1="0x558318b04140" astOperand2="0x558318b14a20"/>
+    <token id="0x558318b14a20" file="air/examples/posix/p0/periodic_task.c" linenr="22" column="8" str=";" scope="0x558318d169b0" astParent="0x558318d7bf20" astOperand2="0x558318b14a80"/>
+    <token id="0x558318b14a80" file="air/examples/posix/p0/periodic_task.c" linenr="22" column="9" str=";" scope="0x558318d169b0" astParent="0x558318b14a20"/>
+    <token id="0x558318b92060" file="air/examples/posix/p0/periodic_task.c" linenr="22" column="10" str=")" scope="0x558318d169b0" link="0x558318d7bf20"/>
+    <token id="0x558318b920c0" file="air/examples/posix/p0/periodic_task.c" linenr="22" column="12" str="{" scope="0x558318d76260" link="0x558318ab7080"/>
+    <token id="0x558318b20a90" file="air/examples/posix/p0/periodic_task.c" linenr="23" column="5" str="my_parameters" scope="0x558318d76260" type="name" varId="13" variable="0x558318ad3450" values="0x558318b1b760" astParent="0x558318b20af0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d2f530"/>
+    <token id="0x558318b20af0" file="air/examples/posix/p0/periodic_task.c" linenr="23" column="18" str="." scope="0x558318d76260" astParent="0x558318d75a10" astOperand1="0x558318b20a90" astOperand2="0x558318d759b0" originalName="->" valueType-type="void" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318d759b0" file="air/examples/posix/p0/periodic_task.c" linenr="23" column="20" str="job" scope="0x558318d76260" type="name" varId="21" variable="0x558318b5ef50" astParent="0x558318b20af0" valueType-type="void" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318d75a10" file="air/examples/posix/p0/periodic_task.c" linenr="23" column="23" str="(" scope="0x558318d76260" link="0x558318b49350" astOperand1="0x558318b20af0" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318b49350" file="air/examples/posix/p0/periodic_task.c" linenr="23" column="24" str=")" scope="0x558318d76260" link="0x558318d75a10"/>
+    <token id="0x558318b98910" file="air/examples/posix/p0/periodic_task.c" linenr="23" column="25" str=";" scope="0x558318d76260"/>
+    <token id="0x558318cd4810" file="air/examples/posix/p0/periodic_task.c" linenr="25" column="5" str="add_timespec" scope="0x558318d76260" type="name" function="0x558318b6e280" astParent="0x558318ce5c20"/>
+    <token id="0x558318ce5c20" file="air/examples/posix/p0/periodic_task.c" linenr="25" column="17" str="(" scope="0x558318d76260" link="0x558318d88fe0" astOperand1="0x558318cd4810" astOperand2="0x558318b493b0" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318ad36a0" file="air/examples/posix/p0/periodic_task.c" linenr="25" column="18" str="&amp;" scope="0x558318d76260" type="op" values="0x558318da4eb0" astParent="0x558318ad1b60" astOperand1="0x558318ab5b90" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318ab5b90" file="air/examples/posix/p0/periodic_task.c" linenr="25" column="19" str="trigger" scope="0x558318d76260" type="name" varId="10" variable="0x558318d7cd90" astParent="0x558318ad36a0" valueType-type="record" valueType-reference="None"/>
+    <token id="0x558318ad1b60" file="air/examples/posix/p0/periodic_task.c" linenr="25" column="26" str="," scope="0x558318d76260" astParent="0x558318b493b0" astOperand1="0x558318ad36a0" astOperand2="0x558318d91570"/>
+    <token id="0x558318d91570" file="air/examples/posix/p0/periodic_task.c" linenr="25" column="28" str="&amp;" scope="0x558318d76260" type="op" values="0x558318b40630" astParent="0x558318ad1b60" astOperand1="0x558318ba63b0" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318ba63b0" file="air/examples/posix/p0/periodic_task.c" linenr="25" column="29" str="trigger" scope="0x558318d76260" type="name" varId="10" variable="0x558318d7cd90" astParent="0x558318d91570" valueType-type="record" valueType-reference="None"/>
+    <token id="0x558318b493b0" file="air/examples/posix/p0/periodic_task.c" linenr="25" column="36" str="," scope="0x558318d76260" astParent="0x558318ce5c20" astOperand1="0x558318ad1b60" astOperand2="0x558318de0380"/>
+    <token id="0x558318de0380" file="air/examples/posix/p0/periodic_task.c" linenr="25" column="38" str="&amp;" scope="0x558318d76260" type="op" values="0x558318b7ec10" astParent="0x558318b493b0" astOperand1="0x558318cd4870" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318cd4870" file="air/examples/posix/p0/periodic_task.c" linenr="25" column="39" str="period" scope="0x558318d76260" type="name" varId="11" variable="0x558318c9a550" astParent="0x558318de0380" valueType-type="record" valueType-reference="None"/>
+    <token id="0x558318d88fe0" file="air/examples/posix/p0/periodic_task.c" linenr="25" column="45" str=")" scope="0x558318d76260" link="0x558318ce5c20"/>
+    <token id="0x558318ad3700" file="air/examples/posix/p0/periodic_task.c" linenr="25" column="46" str=";" scope="0x558318d76260"/>
+    <token id="0x558318ab7020" file="air/examples/posix/p0/periodic_task.c" linenr="26" column="5" str="sem_timedwait" scope="0x558318d76260" type="name" astParent="0x558318ad1bc0"/>
+    <token id="0x558318ad1bc0" file="air/examples/posix/p0/periodic_task.c" linenr="26" column="18" str="(" scope="0x558318d76260" link="0x558318d89040" astOperand1="0x558318ab7020" astOperand2="0x558318de03e0"/>
+    <token id="0x558318ba6410" file="air/examples/posix/p0/periodic_task.c" linenr="26" column="19" str="&amp;" scope="0x558318d76260" type="op" values="0x558318b95f80" astParent="0x558318de03e0" astOperand1="0x558318b6e3b0"/>
+    <token id="0x558318b6e3b0" file="air/examples/posix/p0/periodic_task.c" linenr="26" column="20" str="timer" scope="0x558318d76260" type="name" varId="12" variable="0x558318e0d390" astParent="0x558318ba6410"/>
+    <token id="0x558318de03e0" file="air/examples/posix/p0/periodic_task.c" linenr="26" column="25" str="," scope="0x558318d76260" astParent="0x558318ad1bc0" astOperand1="0x558318ba6410" astOperand2="0x558318bb41c0"/>
+    <token id="0x558318bb41c0" file="air/examples/posix/p0/periodic_task.c" linenr="26" column="26" str="&amp;" scope="0x558318d76260" type="op" values="0x558318b7f990" astParent="0x558318de03e0" astOperand1="0x558318b67520" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318b67520" file="air/examples/posix/p0/periodic_task.c" linenr="26" column="27" str="trigger" scope="0x558318d76260" type="name" varId="10" variable="0x558318d7cd90" astParent="0x558318bb41c0" valueType-type="record" valueType-reference="None"/>
+    <token id="0x558318d89040" file="air/examples/posix/p0/periodic_task.c" linenr="26" column="34" str=")" scope="0x558318d76260" link="0x558318ad1bc0"/>
+    <token id="0x558318d8ffd0" file="air/examples/posix/p0/periodic_task.c" linenr="26" column="35" str=";" scope="0x558318d76260"/>
+    <token id="0x558318ab7080" file="air/examples/posix/p0/periodic_task.c" linenr="27" column="3" str="}" scope="0x558318d76260" link="0x558318b920c0"/>
+    <token id="0x558318d55840" file="air/examples/posix/p0/periodic_task.c" linenr="28" column="1" str="}" scope="0x558318d169b0" link="0x558318ce7dd0"/>
+    <token id="0x558318b67580" file="air/examples/posix/p0/periodic_task.c" linenr="31" column="1" str="void" scope="0x558318da8f00" type="name"/>
+    <token id="0x558318d90030" file="air/examples/posix/p0/periodic_task.c" linenr="31" column="6" str="create_periodic_task" scope="0x558318da8f00" type="name" function="0x558318d9c600"/>
+    <token id="0x558318ad4830" file="air/examples/posix/p0/periodic_task.c" linenr="31" column="27" str="(" scope="0x558318da8f00" link="0x558318b811f0" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318bb6ec0" file="air/examples/posix/p0/periodic_task.c" linenr="31" column="28" str="struct" scope="0x558318da8f00" type="name"/>
+    <token id="0x558318d50130" file="air/examples/posix/p0/periodic_task.c" linenr="31" column="35" str="timespec" scope="0x558318da8f00" type="name"/>
+    <token id="0x558318ab0b00" file="air/examples/posix/p0/periodic_task.c" linenr="31" column="44" str="period" scope="0x558318da8f00" type="name" varId="15" variable="0x558318cc9d20" valueType-type="record" valueType-reference="None"/>
+    <token id="0x558318d56db0" file="air/examples/posix/p0/periodic_task.c" linenr="31" column="50" str="," scope="0x558318da8f00"/>
+    <token id="0x558318ce5640" file="air/examples/posix/p0/periodic_task.c" linenr="31" column="52" str="void" scope="0x558318da8f00" type="name" astParent="0x558318afac20"/>
+    <token id="0x558318afac20" file="air/examples/posix/p0/periodic_task.c" linenr="31" column="57" str="(" scope="0x558318da8f00" link="0x558318b0ab00" astParent="0x558318cdb9e0" astOperand1="0x558318ce5640" astOperand2="0x558318abb530" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318abb530" file="air/examples/posix/p0/periodic_task.c" linenr="31" column="58" str="*" scope="0x558318da8f00" type="op" isArithmeticalOp="true" astParent="0x558318afac20" astOperand1="0x558318ae5c50" valueType-type="void" valueType-reference="None"/>
+    <token id="0x558318ae5c50" file="air/examples/posix/p0/periodic_task.c" linenr="31" column="59" str="job" scope="0x558318da8f00" type="name" varId="16" variable="0x558318d5de30" astParent="0x558318abb530" valueType-type="void" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318b0ab00" file="air/examples/posix/p0/periodic_task.c" linenr="31" column="62" str=")" scope="0x558318da8f00" link="0x558318afac20"/>
+    <token id="0x558318cdb9e0" file="air/examples/posix/p0/periodic_task.c" linenr="31" column="0" str="(" scope="0x558318da8f00" link="0x558318b0f930" astOperand1="0x558318afac20"/>
+    <token id="0x558318b0f930" file="air/examples/posix/p0/periodic_task.c" linenr="31" column="0" str=")" scope="0x558318da8f00" link="0x558318cdb9e0"/>
+    <token id="0x558318b811f0" file="air/examples/posix/p0/periodic_task.c" linenr="31" column="70" str=")" scope="0x558318da8f00" link="0x558318ad4830"/>
+    <token id="0x558318ddc5a0" file="air/examples/posix/p0/periodic_task.c" linenr="31" column="72" str="{" scope="0x558318d16c10" link="0x558318da7ad0"/>
+    <token id="0x558318b313c0" file="air/examples/posix/p0/periodic_task.c" linenr="32" column="3" str="pthread_t" scope="0x558318d16c10" type="name"/>
+    <token id="0x558318af90d0" file="air/examples/posix/p0/periodic_task.c" linenr="32" column="13" str="tid" scope="0x558318d16c10" type="name" varId="17" variable="0x558318e15440"/>
+    <token id="0x558318d942e0" file="air/examples/posix/p0/periodic_task.c" linenr="32" column="16" str=";" scope="0x558318d16c10"/>
+    <token id="0x558318b79420" file="air/examples/posix/p0/periodic_task.c" linenr="33" column="3" str="struct" scope="0x558318d16c10" type="name"/>
+    <token id="0x558318e0d320" file="air/examples/posix/p0/periodic_task.c" linenr="33" column="0" str="_task_parameters" scope="0x558318d16c10" type="name" type-scope="0x558318d2f530" astParent="0x558318c99e10"/>
+    <token id="0x558318c99e10" file="air/examples/posix/p0/periodic_task.c" linenr="33" column="19" str="*" scope="0x558318d16c10" type="op" isArithmeticalOp="true" astOperand1="0x558318e0d320" astOperand2="0x558318b4a970"/>
+    <token id="0x558318b4a970" file="air/examples/posix/p0/periodic_task.c" linenr="33" column="20" str="parameters" scope="0x558318d16c10" type="name" varId="18" variable="0x558318cc8150" astParent="0x558318c99e10" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d2f530"/>
+    <token id="0x558318dd93a0" file="air/examples/posix/p0/periodic_task.c" linenr="33" column="31" str=";" scope="0x558318d16c10" isSplittedVarDeclEq="true"/>
+    <token id="0x558318b7e2e0" file="air/examples/posix/p0/periodic_task.c" linenr="33" column="20" str="parameters" scope="0x558318d16c10" type="name" varId="18" variable="0x558318cc8150" astParent="0x558318d4b100" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d2f530"/>
+    <token id="0x558318d4b100" file="air/examples/posix/p0/periodic_task.c" linenr="33" column="31" str="=" scope="0x558318d16c10" type="op" isAssignmentOp="true" astOperand1="0x558318b7e2e0" astOperand2="0x558318a9a250" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d2f530"/>
+    <token id="0x558318b645a0" file="air/examples/posix/p0/periodic_task.c" linenr="33" column="33" str="malloc" scope="0x558318d16c10" type="name" astParent="0x558318a9a250"/>
+    <token id="0x558318a9a250" file="air/examples/posix/p0/periodic_task.c" linenr="33" column="40" str="(" scope="0x558318d16c10" link="0x558318b4b650" astParent="0x558318d4b100" astOperand1="0x558318b645a0" astOperand2="0x558318c96fd0" valueType-type="void" valueType-pointer="1" valueType-reference="None" valueType-originalTypeName="void *"/>
+    <token id="0x558318b2f660" file="air/examples/posix/p0/periodic_task.c" linenr="33" column="41" str="sizeof" scope="0x558318d16c10" type="name" astParent="0x558318c96fd0"/>
+    <token id="0x558318c96fd0" file="air/examples/posix/p0/periodic_task.c" linenr="33" column="48" str="(" scope="0x558318d16c10" link="0x558318a98b30" values="0x558318ddd5b0" astParent="0x558318a9a250" astOperand1="0x558318b2f660" astOperand2="0x558318b3cb40" valueType-type="long" valueType-sign="unsigned" valueType-reference="None" valueType-originalTypeName="size_t"/>
+    <token id="0x558318ab4a40" file="air/examples/posix/p0/periodic_task.c" linenr="33" column="49" str="struct" scope="0x558318d16c10" type="name" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318d2f530"/>
+    <token id="0x558318b3cb40" file="air/examples/posix/p0/periodic_task.c" linenr="33" column="0" str="_task_parameters" scope="0x558318d16c10" type="name" type-scope="0x558318d2f530" astParent="0x558318c96fd0"/>
+    <token id="0x558318a98b30" file="air/examples/posix/p0/periodic_task.c" linenr="33" column="64" str=")" scope="0x558318d16c10" link="0x558318c96fd0"/>
+    <token id="0x558318b4b650" file="air/examples/posix/p0/periodic_task.c" linenr="33" column="65" str=")" scope="0x558318d16c10" link="0x558318a9a250"/>
+    <token id="0x558318ba57c0" file="air/examples/posix/p0/periodic_task.c" linenr="33" column="66" str=";" scope="0x558318d16c10"/>
+    <token id="0x558318b742a0" file="air/examples/posix/p0/periodic_task.c" linenr="35" column="3" str="parameters" scope="0x558318d16c10" type="name" varId="18" variable="0x558318cc8150" astParent="0x558318da28d0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d2f530"/>
+    <token id="0x558318da28d0" file="air/examples/posix/p0/periodic_task.c" linenr="35" column="13" str="." scope="0x558318d16c10" astParent="0x558318b46bb0" astOperand1="0x558318b742a0" astOperand2="0x558318b24920" originalName="->" valueType-type="record" valueType-reference="None"/>
+    <token id="0x558318b24920" file="air/examples/posix/p0/periodic_task.c" linenr="35" column="15" str="period" scope="0x558318d16c10" type="name" varId="19" variable="0x558318d61490" astParent="0x558318da28d0" valueType-type="record" valueType-reference="None"/>
+    <token id="0x558318b46bb0" file="air/examples/posix/p0/periodic_task.c" linenr="35" column="22" str="=" scope="0x558318d16c10" type="op" isAssignmentOp="true" astOperand1="0x558318da28d0" astOperand2="0x558318acfb40" valueType-type="record" valueType-reference="None"/>
+    <token id="0x558318acfb40" file="air/examples/posix/p0/periodic_task.c" linenr="35" column="24" str="period" scope="0x558318d16c10" type="name" varId="15" variable="0x558318cc9d20" astParent="0x558318b46bb0" valueType-type="record" valueType-reference="None"/>
+    <token id="0x558318b98ff0" file="air/examples/posix/p0/periodic_task.c" linenr="35" column="30" str=";" scope="0x558318d16c10"/>
+    <token id="0x558318b49090" file="air/examples/posix/p0/periodic_task.c" linenr="36" column="3" str="parameters" scope="0x558318d16c10" type="name" varId="18" variable="0x558318cc8150" astParent="0x558318b0fc10" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d2f530"/>
+    <token id="0x558318b0fc10" file="air/examples/posix/p0/periodic_task.c" linenr="36" column="13" str="." scope="0x558318d16c10" astParent="0x558318ad6300" astOperand1="0x558318b49090" astOperand2="0x558318b41d30" originalName="->" valueType-type="void" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318b41d30" file="air/examples/posix/p0/periodic_task.c" linenr="36" column="15" str="job" scope="0x558318d16c10" type="name" varId="20" variable="0x558318b5ef50" astParent="0x558318b0fc10" valueType-type="void" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318ad6300" file="air/examples/posix/p0/periodic_task.c" linenr="36" column="19" str="=" scope="0x558318d16c10" type="op" isAssignmentOp="true" astOperand1="0x558318b0fc10" astOperand2="0x558318d32d10" valueType-type="void" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318d32d10" file="air/examples/posix/p0/periodic_task.c" linenr="36" column="21" str="job" scope="0x558318d16c10" type="name" varId="16" variable="0x558318d5de30" astParent="0x558318ad6300" valueType-type="void" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318b8c8e0" file="air/examples/posix/p0/periodic_task.c" linenr="36" column="24" str=";" scope="0x558318d16c10"/>
+    <token id="0x558318b98200" file="air/examples/posix/p0/periodic_task.c" linenr="38" column="3" str="pthread_create" scope="0x558318d16c10" type="name" astParent="0x558318d4c060"/>
+    <token id="0x558318d4c060" file="air/examples/posix/p0/periodic_task.c" linenr="38" column="17" str="(" scope="0x558318d16c10" link="0x558318da7970" astOperand1="0x558318b98200" astOperand2="0x558318b28fd0"/>
+    <token id="0x558318b17f80" file="air/examples/posix/p0/periodic_task.c" linenr="38" column="18" str="&amp;" scope="0x558318d16c10" type="op" values="0x558318b547c0" astParent="0x558318da8210" astOperand1="0x558318d9dd50"/>
+    <token id="0x558318d9dd50" file="air/examples/posix/p0/periodic_task.c" linenr="38" column="19" str="tid" scope="0x558318d16c10" type="name" varId="17" variable="0x558318e15440" astParent="0x558318b17f80"/>
+    <token id="0x558318da8210" file="air/examples/posix/p0/periodic_task.c" linenr="38" column="22" str="," scope="0x558318d16c10" astParent="0x558318b28ee0" astOperand1="0x558318b17f80" astOperand2="0x558318d40e10"/>
+    <token id="0x558318d40e10" file="air/examples/posix/p0/periodic_task.c" linenr="38" column="24" str="NULL" scope="0x558318d16c10" type="name" values="0x558318da90b0" astParent="0x558318da8210"/>
+    <token id="0x558318b28ee0" file="air/examples/posix/p0/periodic_task.c" linenr="38" column="28" str="," scope="0x558318d16c10" astParent="0x558318b28fd0" astOperand1="0x558318da8210" astOperand2="0x558318d9de40"/>
+    <token id="0x558318d9de40" file="air/examples/posix/p0/periodic_task.c" linenr="38" column="30" str="periodic_task_body" scope="0x558318d16c10" type="name" function="0x558318bb4090" astParent="0x558318b28ee0"/>
+    <token id="0x558318b28fd0" file="air/examples/posix/p0/periodic_task.c" linenr="38" column="48" str="," scope="0x558318d16c10" astParent="0x558318d4c060" astOperand1="0x558318b28ee0" astOperand2="0x558318d75630"/>
+    <token id="0x558318d75630" file="air/examples/posix/p0/periodic_task.c" linenr="38" column="50" str="(" scope="0x558318d16c10" link="0x558318b79610" astParent="0x558318b28fd0" astOperand1="0x558318b79700" valueType-type="void" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318b0f160" file="air/examples/posix/p0/periodic_task.c" linenr="38" column="51" str="void" scope="0x558318d16c10" type="name"/>
+    <token id="0x558318b0f1c0" file="air/examples/posix/p0/periodic_task.c" linenr="38" column="56" str="*" scope="0x558318d16c10" type="op" isArithmeticalOp="true"/>
+    <token id="0x558318b79610" file="air/examples/posix/p0/periodic_task.c" linenr="38" column="57" str=")" scope="0x558318d16c10" link="0x558318d75630"/>
+    <token id="0x558318b79700" file="air/examples/posix/p0/periodic_task.c" linenr="38" column="58" str="parameters" scope="0x558318d16c10" type="name" varId="18" variable="0x558318cc8150" astParent="0x558318d75630" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x558318d2f530"/>
+    <token id="0x558318da7970" file="air/examples/posix/p0/periodic_task.c" linenr="38" column="68" str=")" scope="0x558318d16c10" link="0x558318d4c060"/>
+    <token id="0x558318da79d0" file="air/examples/posix/p0/periodic_task.c" linenr="38" column="69" str=";" scope="0x558318d16c10"/>
+    <token id="0x558318da7ad0" file="air/examples/posix/p0/periodic_task.c" linenr="39" column="1" str="}" scope="0x558318d16c10" link="0x558318ddc5a0"/>
+  </tokenlist>
+  <scopes>
+    <scope id="0x558318da8f00" type="Global">
+      <functionList>
+        <function id="0x558318d9c600" token="0x558318d90030" tokenDef="0x558318ccc640" name="create_periodic_task" type="Function">
+          <arg nr="1" variable="0x558318cc9d20"/>
+          <arg nr="2" variable="0x558318d5de30"/>
+        </function>
+        <function id="0x558318b6e280" token="0" tokenDef="0x558318dd4f90" name="add_timespec" type="Function">
+          <arg nr="1" variable="0x558318b6e0a0"/>
+          <arg nr="2" variable="0x558318b6e180"/>
+          <arg nr="3" variable="0x558318ce70e0"/>
+        </function>
+        <function id="0x558318bb4090" token="0x558318b85830" tokenDef="0x558318d929c0" name="periodic_task_body" type="Function">
+          <arg nr="1" variable="0x558318dab2f0"/>
+        </function>
+      </functionList>
+    </scope>
+    <scope id="0x558318d2f530" type="Struct" className="_task_parameters" bodyStart="0x558318ce7530" bodyEnd="0x558318b61390" nestedIn="0x558318da8f00">
+      <varlist>
+        <var id="0x558318d61490"/>
+        <var id="0x558318b5ef50"/>
+      </varlist>
+    </scope>
+    <scope id="0x558318d169b0" type="Function" className="periodic_task_body" bodyStart="0x558318ce7dd0" bodyEnd="0x558318d55840" nestedIn="0x558318da8f00" function="0x558318bb4090">
+      <varlist>
+        <var id="0x558318d7cd90"/>
+        <var id="0x558318c9a550"/>
+        <var id="0x558318e0d390"/>
+        <var id="0x558318ad3450"/>
+      </varlist>
+    </scope>
+    <scope id="0x558318d76260" type="For" bodyStart="0x558318b920c0" bodyEnd="0x558318ab7080" nestedIn="0x558318d169b0"/>
+    <scope id="0x558318d16c10" type="Function" className="create_periodic_task" bodyStart="0x558318ddc5a0" bodyEnd="0x558318da7ad0" nestedIn="0x558318da8f00" function="0x558318d9c600">
+      <varlist>
+        <var id="0x558318e15440"/>
+        <var id="0x558318cc8150"/>
+      </varlist>
+    </scope>
+  </scopes>
+  <variables>
+    <var id="0x558318ad3450" nameToken="0x558318da7fe0" typeStartToken="0x558318ad3e30" typeEndToken="0x558318b89300" access="Local" scope="0x558318d169b0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b5ef50" nameToken="0x558318e1b010" typeStartToken="0x558318b17a70" typeEndToken="0x558318ba8ee0" access="Public" scope="0x558318d2f530" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b6e0a0" nameToken="0x558318b84b60" typeStartToken="0x558318afdba0" typeEndToken="0x558318b1a9f0" access="Argument" scope="0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b6e180" nameToken="0x558318ad4410" typeStartToken="0x558318b240b0" typeEndToken="0x558318b48820" access="Argument" scope="0" constness="1" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318c9a550" nameToken="0x558318d52500" typeStartToken="0x558318ab4cb0" typeEndToken="0x558318ab4cb0" access="Local" scope="0x558318d169b0" constness="0" isArray="false" isClass="true" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318cc8150" nameToken="0x558318b4a970" typeStartToken="0x558318e0d320" typeEndToken="0x558318c99e10" access="Local" scope="0x558318d16c10" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318cc9d20" nameToken="0x558318ab0b00" typeStartToken="0x558318d50130" typeEndToken="0x558318d50130" access="Argument" scope="0x558318d16c10" constness="0" isArray="false" isClass="true" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318ce70e0" nameToken="0x558318e16450" typeStartToken="0x558318cb6c80" typeEndToken="0x558318e16630" access="Argument" scope="0" constness="1" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d5de30" nameToken="0x558318ae5c50" typeStartToken="0x558318ce5640" typeEndToken="0x558318abb530" access="Argument" scope="0x558318d16c10" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d61490" nameToken="0x558318d66220" typeStartToken="0x558318ae0640" typeEndToken="0x558318ae0640" access="Public" scope="0x558318d2f530" constness="0" isArray="false" isClass="true" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d7cd90" nameToken="0x558318bc7440" typeStartToken="0x558318bc1e70" typeEndToken="0x558318bc1e70" access="Local" scope="0x558318d169b0" constness="0" isArray="false" isClass="true" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318dab2f0" nameToken="0x558318b20d20" typeStartToken="0x558318bc9340" typeEndToken="0x558318dad840" access="Argument" scope="0x558318d169b0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318e0d390" nameToken="0x558318d8dea0" typeStartToken="0x558318b3a100" typeEndToken="0x558318b3a100" access="Local" scope="0x558318d169b0" constness="0" isArray="false" isClass="true" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318e15440" nameToken="0x558318af90d0" typeStartToken="0x558318b313c0" typeEndToken="0x558318b313c0" access="Local" scope="0x558318d16c10" constness="0" isArray="false" isClass="true" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+  </variables>
+  <valueflow>
+    <values id="0x558318d972c0">
+      <value symbolic="0x558318d754e0" symbolic-delta="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318ddd7f0">
+      <value lifetime="0x558318da5a70" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318bb7de0">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318acdb20">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318cb96d0">
+      <value lifetime="0x558318d10cf0" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318b1b760">
+      <value symbolic="0x558318d754e0" symbolic-delta="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318da4eb0">
+      <value lifetime="0x558318ab5b90" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318b40630">
+      <value lifetime="0x558318ba63b0" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318b7ec10">
+      <value lifetime="0x558318cd4870" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318b95f80">
+      <value lifetime="0x558318b6e3b0" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318b7f990">
+      <value lifetime="0x558318b67520" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318ddd5b0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b547c0">
+      <value lifetime="0x558318d9dd50" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318da90b0">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+  </valueflow>
+  <typedef-info>
+    <info name="task_parameters" file="air/examples/posix/p0/periodic_task.h" line="11" column="3" used="1"/>
+  </typedef-info>
+</dump>
+</dumps>

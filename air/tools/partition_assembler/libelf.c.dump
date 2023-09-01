@@ -1,0 +1,1645 @@
+<?xml version="1.0"?>
+<dumps>
+  <platform name="Native" char_bit="8" short_bit="16" int_bit="32" long_bit="64" long_long_bit="64" pointer_bit="64"/>
+  <rawtokens>
+    <file index="0" name="air/tools/partition_assembler/libelf.c"/>
+    <file index="1" name="air/tools/partition_assembler/include/libelf.h"/>
+    <tok fileIndex="0" linenr="1" column="1" str="/* ============================================================================x *  Copyright (C) GMVIS Skysoft S.A., 2014x * ============================================================================x *  This file is part of the AIR - ARINC 653 Interface in RTEMS - Operatingx *  system.x *  The license and distribution terms for this file may be found in the filex *  LICENSE in this distribution or at http://www.rtems.com/license/LICENSE.x * ==========================================================================*/"/>
+    <tok fileIndex="0" linenr="9" column="1" str="/**x * @file libelf.cx * @author pfnfx * @brief Provides set of functions to provide a minimal ELF supportx */"/>
+    <tok fileIndex="0" linenr="15" column="1" str="#"/>
+    <tok fileIndex="0" linenr="15" column="2" str="include"/>
+    <tok fileIndex="0" linenr="15" column="10" str="&lt;stdbool.h&gt;"/>
+    <tok fileIndex="0" linenr="18" column="1" str="#"/>
+    <tok fileIndex="0" linenr="18" column="2" str="include"/>
+    <tok fileIndex="0" linenr="18" column="10" str="&quot;libelf.h&quot;"/>
+    <tok fileIndex="0" linenr="20" column="1" str="/** * @brief Checks if the machine is big or little endian * @return true if big endian, false otherwise */"/>
+    <tok fileIndex="0" linenr="24" column="1" str="bool"/>
+    <tok fileIndex="0" linenr="24" column="6" str="elf_machine_is_bigendian"/>
+    <tok fileIndex="0" linenr="24" column="30" str="("/>
+    <tok fileIndex="0" linenr="24" column="31" str=")"/>
+    <tok fileIndex="0" linenr="24" column="33" str="{"/>
+    <tok fileIndex="0" linenr="26" column="5" str="volatile"/>
+    <tok fileIndex="0" linenr="26" column="14" str="int32_t"/>
+    <tok fileIndex="0" linenr="26" column="22" str="num"/>
+    <tok fileIndex="0" linenr="26" column="26" str="="/>
+    <tok fileIndex="0" linenr="26" column="28" str="1"/>
+    <tok fileIndex="0" linenr="26" column="29" str=";"/>
+    <tok fileIndex="0" linenr="27" column="5" str="return"/>
+    <tok fileIndex="0" linenr="27" column="12" str="*"/>
+    <tok fileIndex="0" linenr="27" column="13" str="("/>
+    <tok fileIndex="0" linenr="27" column="14" str="int8_t"/>
+    <tok fileIndex="0" linenr="27" column="20" str="*"/>
+    <tok fileIndex="0" linenr="27" column="21" str=")"/>
+    <tok fileIndex="0" linenr="27" column="22" str="&amp;"/>
+    <tok fileIndex="0" linenr="27" column="23" str="num"/>
+    <tok fileIndex="0" linenr="27" column="27" str="=="/>
+    <tok fileIndex="0" linenr="27" column="30" str="1"/>
+    <tok fileIndex="0" linenr="27" column="32" str="?"/>
+    <tok fileIndex="0" linenr="27" column="34" str="false"/>
+    <tok fileIndex="0" linenr="27" column="40" str=":"/>
+    <tok fileIndex="0" linenr="27" column="42" str="true"/>
+    <tok fileIndex="0" linenr="27" column="46" str=";"/>
+    <tok fileIndex="0" linenr="28" column="1" str="}"/>
+    <tok fileIndex="0" linenr="30" column="1" str="/**x *  \brief Fixes the endianness of a uint16_tx *x *  \param [in] value input valuex *  \param [in] source_big_endian Value source endiannessx *  \param [in] target_big_endian Target endianness for the valuex *x *  \return true if big endian, false otherwisex *x *  Fixes the endianness of a uint16_t based on the value source endianness andx *  target value endiannessx */"/>
+    <tok fileIndex="0" linenr="42" column="1" str="uint16_t"/>
+    <tok fileIndex="0" linenr="42" column="10" str="elf_correct_uint16"/>
+    <tok fileIndex="0" linenr="42" column="28" str="("/>
+    <tok fileIndex="0" linenr="42" column="29" str="uint16_t"/>
+    <tok fileIndex="0" linenr="42" column="38" str="value"/>
+    <tok fileIndex="0" linenr="42" column="43" str=","/>
+    <tok fileIndex="0" linenr="43" column="29" str="bool"/>
+    <tok fileIndex="0" linenr="43" column="34" str="source_big_endian"/>
+    <tok fileIndex="0" linenr="43" column="51" str=","/>
+    <tok fileIndex="0" linenr="44" column="29" str="bool"/>
+    <tok fileIndex="0" linenr="44" column="34" str="target_big_endian"/>
+    <tok fileIndex="0" linenr="44" column="51" str=")"/>
+    <tok fileIndex="0" linenr="44" column="52" str="{"/>
+    <tok fileIndex="0" linenr="46" column="5" str="uint32_t"/>
+    <tok fileIndex="0" linenr="46" column="14" str="ret"/>
+    <tok fileIndex="0" linenr="46" column="18" str="="/>
+    <tok fileIndex="0" linenr="46" column="20" str="value"/>
+    <tok fileIndex="0" linenr="46" column="25" str=";"/>
+    <tok fileIndex="0" linenr="48" column="5" str="/* Swap bytes if the sorces are diferent */"/>
+    <tok fileIndex="0" linenr="49" column="5" str="if"/>
+    <tok fileIndex="0" linenr="49" column="8" str="("/>
+    <tok fileIndex="0" linenr="49" column="9" str="("/>
+    <tok fileIndex="0" linenr="49" column="10" str="source_big_endian"/>
+    <tok fileIndex="0" linenr="49" column="28" str="&amp;&amp;"/>
+    <tok fileIndex="0" linenr="49" column="31" str="!"/>
+    <tok fileIndex="0" linenr="49" column="32" str="target_big_endian"/>
+    <tok fileIndex="0" linenr="49" column="49" str=")"/>
+    <tok fileIndex="0" linenr="49" column="51" str="||"/>
+    <tok fileIndex="0" linenr="50" column="9" str="("/>
+    <tok fileIndex="0" linenr="50" column="10" str="!"/>
+    <tok fileIndex="0" linenr="50" column="11" str="source_big_endian"/>
+    <tok fileIndex="0" linenr="50" column="29" str="&amp;&amp;"/>
+    <tok fileIndex="0" linenr="50" column="32" str="target_big_endian"/>
+    <tok fileIndex="0" linenr="50" column="49" str=")"/>
+    <tok fileIndex="0" linenr="50" column="50" str=")"/>
+    <tok fileIndex="0" linenr="50" column="51" str="{"/>
+    <tok fileIndex="0" linenr="52" column="9" str="ret"/>
+    <tok fileIndex="0" linenr="52" column="13" str="="/>
+    <tok fileIndex="0" linenr="52" column="15" str="("/>
+    <tok fileIndex="0" linenr="52" column="16" str="value"/>
+    <tok fileIndex="0" linenr="52" column="22" str="&lt;&lt;"/>
+    <tok fileIndex="0" linenr="52" column="25" str="8"/>
+    <tok fileIndex="0" linenr="52" column="26" str=")"/>
+    <tok fileIndex="0" linenr="52" column="28" str="|"/>
+    <tok fileIndex="0" linenr="52" column="30" str="("/>
+    <tok fileIndex="0" linenr="52" column="31" str="value"/>
+    <tok fileIndex="0" linenr="52" column="36" str="&gt;&gt;"/>
+    <tok fileIndex="0" linenr="52" column="39" str="8"/>
+    <tok fileIndex="0" linenr="52" column="41" str=")"/>
+    <tok fileIndex="0" linenr="52" column="42" str=";"/>
+    <tok fileIndex="0" linenr="54" column="5" str="}"/>
+    <tok fileIndex="0" linenr="56" column="5" str="return"/>
+    <tok fileIndex="0" linenr="56" column="12" str="ret"/>
+    <tok fileIndex="0" linenr="56" column="15" str=";"/>
+    <tok fileIndex="0" linenr="57" column="1" str="}"/>
+    <tok fileIndex="0" linenr="59" column="1" str="/**x *  \brief Fixes the endianness of a uint32_tx *x *  \param [in] value input valuex *  \param [in] source_big_endian Value source endiannessx *  \param [in] target_big_endian Target endianness for the valuex *x *  \return true if big endian, false otherwisex *x *  Fixes the endianness of a uint32_t based on the value source endianness andx *  target value endiannessx */"/>
+    <tok fileIndex="0" linenr="71" column="1" str="uint32_t"/>
+    <tok fileIndex="0" linenr="71" column="10" str="elf_correct_uint32"/>
+    <tok fileIndex="0" linenr="71" column="28" str="("/>
+    <tok fileIndex="0" linenr="71" column="29" str="uint32_t"/>
+    <tok fileIndex="0" linenr="71" column="38" str="value"/>
+    <tok fileIndex="0" linenr="71" column="43" str=","/>
+    <tok fileIndex="0" linenr="72" column="29" str="bool"/>
+    <tok fileIndex="0" linenr="72" column="34" str="source_big_endian"/>
+    <tok fileIndex="0" linenr="72" column="51" str=","/>
+    <tok fileIndex="0" linenr="73" column="29" str="bool"/>
+    <tok fileIndex="0" linenr="73" column="34" str="target_big_endian"/>
+    <tok fileIndex="0" linenr="73" column="51" str=")"/>
+    <tok fileIndex="0" linenr="73" column="52" str="{"/>
+    <tok fileIndex="0" linenr="75" column="5" str="uint32_t"/>
+    <tok fileIndex="0" linenr="75" column="14" str="ret"/>
+    <tok fileIndex="0" linenr="75" column="18" str="="/>
+    <tok fileIndex="0" linenr="75" column="20" str="value"/>
+    <tok fileIndex="0" linenr="75" column="25" str=";"/>
+    <tok fileIndex="0" linenr="77" column="5" str="/* Swap bytes if the sorces are diferent */"/>
+    <tok fileIndex="0" linenr="78" column="5" str="if"/>
+    <tok fileIndex="0" linenr="78" column="8" str="("/>
+    <tok fileIndex="0" linenr="78" column="9" str="("/>
+    <tok fileIndex="0" linenr="78" column="10" str="source_big_endian"/>
+    <tok fileIndex="0" linenr="78" column="28" str="&amp;&amp;"/>
+    <tok fileIndex="0" linenr="78" column="31" str="!"/>
+    <tok fileIndex="0" linenr="78" column="32" str="target_big_endian"/>
+    <tok fileIndex="0" linenr="78" column="49" str=")"/>
+    <tok fileIndex="0" linenr="78" column="51" str="||"/>
+    <tok fileIndex="0" linenr="79" column="9" str="("/>
+    <tok fileIndex="0" linenr="79" column="10" str="!"/>
+    <tok fileIndex="0" linenr="79" column="11" str="source_big_endian"/>
+    <tok fileIndex="0" linenr="79" column="29" str="&amp;&amp;"/>
+    <tok fileIndex="0" linenr="79" column="32" str="target_big_endian"/>
+    <tok fileIndex="0" linenr="79" column="49" str=")"/>
+    <tok fileIndex="0" linenr="79" column="50" str=")"/>
+    <tok fileIndex="0" linenr="79" column="51" str="{"/>
+    <tok fileIndex="0" linenr="81" column="9" str="ret"/>
+    <tok fileIndex="0" linenr="81" column="13" str="="/>
+    <tok fileIndex="0" linenr="81" column="15" str="("/>
+    <tok fileIndex="0" linenr="81" column="16" str="("/>
+    <tok fileIndex="0" linenr="81" column="17" str="value"/>
+    <tok fileIndex="0" linenr="81" column="23" str="&gt;&gt;"/>
+    <tok fileIndex="0" linenr="81" column="26" str="24"/>
+    <tok fileIndex="0" linenr="81" column="28" str=")"/>
+    <tok fileIndex="0" linenr="81" column="30" str="&amp;"/>
+    <tok fileIndex="0" linenr="81" column="32" str="0x000000ff"/>
+    <tok fileIndex="0" linenr="81" column="42" str=")"/>
+    <tok fileIndex="0" linenr="81" column="44" str="|"/>
+    <tok fileIndex="0" linenr="81" column="46" str="("/>
+    <tok fileIndex="0" linenr="81" column="47" str="("/>
+    <tok fileIndex="0" linenr="81" column="48" str="value"/>
+    <tok fileIndex="0" linenr="81" column="54" str="&lt;&lt;"/>
+    <tok fileIndex="0" linenr="81" column="57" str="8"/>
+    <tok fileIndex="0" linenr="81" column="59" str=")"/>
+    <tok fileIndex="0" linenr="81" column="61" str="&amp;"/>
+    <tok fileIndex="0" linenr="81" column="63" str="0x00ff0000"/>
+    <tok fileIndex="0" linenr="81" column="73" str=")"/>
+    <tok fileIndex="0" linenr="81" column="75" str="|"/>
+    <tok fileIndex="0" linenr="82" column="15" str="("/>
+    <tok fileIndex="0" linenr="82" column="16" str="("/>
+    <tok fileIndex="0" linenr="82" column="17" str="value"/>
+    <tok fileIndex="0" linenr="82" column="23" str="&gt;&gt;"/>
+    <tok fileIndex="0" linenr="82" column="26" str="8"/>
+    <tok fileIndex="0" linenr="82" column="28" str=")"/>
+    <tok fileIndex="0" linenr="82" column="30" str="&amp;"/>
+    <tok fileIndex="0" linenr="82" column="32" str="0x0000ff00"/>
+    <tok fileIndex="0" linenr="82" column="42" str=")"/>
+    <tok fileIndex="0" linenr="82" column="44" str="|"/>
+    <tok fileIndex="0" linenr="82" column="46" str="("/>
+    <tok fileIndex="0" linenr="82" column="47" str="("/>
+    <tok fileIndex="0" linenr="82" column="48" str="value"/>
+    <tok fileIndex="0" linenr="82" column="54" str="&lt;&lt;"/>
+    <tok fileIndex="0" linenr="82" column="57" str="24"/>
+    <tok fileIndex="0" linenr="82" column="59" str=")"/>
+    <tok fileIndex="0" linenr="82" column="61" str="&amp;"/>
+    <tok fileIndex="0" linenr="82" column="63" str="0xff000000"/>
+    <tok fileIndex="0" linenr="82" column="73" str=")"/>
+    <tok fileIndex="0" linenr="82" column="74" str=";"/>
+    <tok fileIndex="0" linenr="84" column="5" str="}"/>
+    <tok fileIndex="0" linenr="86" column="5" str="return"/>
+    <tok fileIndex="0" linenr="86" column="12" str="ret"/>
+    <tok fileIndex="0" linenr="86" column="15" str=";"/>
+    <tok fileIndex="0" linenr="87" column="1" str="}"/>
+    <tok fileIndex="0" linenr="89" column="1" str="/**x *  \brief Validate an ELF 32 for sparcx *x *  \param [in] in_buffer Buffer ELF inputx *  \return true if valid, false otherwisex *x *  Valides an ELF for 32 for sparc by examing the file headerx */"/>
+    <tok fileIndex="0" linenr="97" column="1" str="unsigned"/>
+    <tok fileIndex="0" linenr="97" column="10" str="char"/>
+    <tok fileIndex="0" linenr="97" column="15" str="elf_check"/>
+    <tok fileIndex="0" linenr="97" column="24" str="("/>
+    <tok fileIndex="0" linenr="97" column="25" str="unsigned"/>
+    <tok fileIndex="0" linenr="97" column="34" str="char"/>
+    <tok fileIndex="0" linenr="97" column="39" str="*"/>
+    <tok fileIndex="0" linenr="97" column="40" str="in_buffer"/>
+    <tok fileIndex="0" linenr="97" column="49" str=")"/>
+    <tok fileIndex="0" linenr="97" column="50" str="{"/>
+    <tok fileIndex="0" linenr="99" column="5" str="unsigned"/>
+    <tok fileIndex="0" linenr="99" column="14" str="char"/>
+    <tok fileIndex="0" linenr="99" column="19" str="ret"/>
+    <tok fileIndex="0" linenr="99" column="23" str="="/>
+    <tok fileIndex="0" linenr="99" column="25" str="1"/>
+    <tok fileIndex="0" linenr="99" column="26" str=";"/>
+    <tok fileIndex="0" linenr="100" column="5" str="Elf32_Ehdr"/>
+    <tok fileIndex="0" linenr="100" column="16" str="*"/>
+    <tok fileIndex="0" linenr="100" column="17" str="Ehdr"/>
+    <tok fileIndex="0" linenr="100" column="22" str="="/>
+    <tok fileIndex="0" linenr="100" column="24" str="("/>
+    <tok fileIndex="0" linenr="100" column="25" str="Elf32_Ehdr"/>
+    <tok fileIndex="0" linenr="100" column="36" str="*"/>
+    <tok fileIndex="0" linenr="100" column="37" str=")"/>
+    <tok fileIndex="0" linenr="100" column="38" str="in_buffer"/>
+    <tok fileIndex="0" linenr="100" column="47" str=";"/>
+    <tok fileIndex="0" linenr="102" column="5" str="/* Check header: ([0x7f]ELF for valid elf files) */"/>
+    <tok fileIndex="0" linenr="103" column="5" str="if"/>
+    <tok fileIndex="0" linenr="103" column="8" str="("/>
+    <tok fileIndex="0" linenr="103" column="9" str="0x7f"/>
+    <tok fileIndex="0" linenr="103" column="14" str="!="/>
+    <tok fileIndex="0" linenr="103" column="17" str="Ehdr"/>
+    <tok fileIndex="0" linenr="103" column="21" str="-&gt;"/>
+    <tok fileIndex="0" linenr="103" column="23" str="e_ident"/>
+    <tok fileIndex="0" linenr="103" column="30" str="["/>
+    <tok fileIndex="0" linenr="103" column="31" str="0"/>
+    <tok fileIndex="0" linenr="103" column="32" str="]"/>
+    <tok fileIndex="0" linenr="103" column="34" str="||"/>
+    <tok fileIndex="0" linenr="103" column="37" str="&apos;E&apos;"/>
+    <tok fileIndex="0" linenr="103" column="41" str="!="/>
+    <tok fileIndex="0" linenr="103" column="44" str="Ehdr"/>
+    <tok fileIndex="0" linenr="103" column="48" str="-&gt;"/>
+    <tok fileIndex="0" linenr="103" column="50" str="e_ident"/>
+    <tok fileIndex="0" linenr="103" column="57" str="["/>
+    <tok fileIndex="0" linenr="103" column="58" str="1"/>
+    <tok fileIndex="0" linenr="103" column="59" str="]"/>
+    <tok fileIndex="0" linenr="103" column="61" str="||"/>
+    <tok fileIndex="0" linenr="104" column="9" str="&apos;L&apos;"/>
+    <tok fileIndex="0" linenr="104" column="13" str="!="/>
+    <tok fileIndex="0" linenr="104" column="16" str="Ehdr"/>
+    <tok fileIndex="0" linenr="104" column="20" str="-&gt;"/>
+    <tok fileIndex="0" linenr="104" column="22" str="e_ident"/>
+    <tok fileIndex="0" linenr="104" column="29" str="["/>
+    <tok fileIndex="0" linenr="104" column="30" str="2"/>
+    <tok fileIndex="0" linenr="104" column="31" str="]"/>
+    <tok fileIndex="0" linenr="104" column="33" str="||"/>
+    <tok fileIndex="0" linenr="104" column="36" str="&apos;F&apos;"/>
+    <tok fileIndex="0" linenr="104" column="40" str="!="/>
+    <tok fileIndex="0" linenr="104" column="43" str="Ehdr"/>
+    <tok fileIndex="0" linenr="104" column="47" str="-&gt;"/>
+    <tok fileIndex="0" linenr="104" column="49" str="e_ident"/>
+    <tok fileIndex="0" linenr="104" column="56" str="["/>
+    <tok fileIndex="0" linenr="104" column="57" str="3"/>
+    <tok fileIndex="0" linenr="104" column="58" str="]"/>
+    <tok fileIndex="0" linenr="104" column="59" str=")"/>
+    <tok fileIndex="0" linenr="104" column="60" str="{"/>
+    <tok fileIndex="0" linenr="105" column="9" str="// printf(&quot; elf_check() invalid magic number \n&quot;);"/>
+    <tok fileIndex="0" linenr="106" column="9" str="ret"/>
+    <tok fileIndex="0" linenr="106" column="13" str="="/>
+    <tok fileIndex="0" linenr="106" column="15" str="0"/>
+    <tok fileIndex="0" linenr="106" column="16" str=";"/>
+    <tok fileIndex="0" linenr="107" column="5" str="}"/>
+    <tok fileIndex="0" linenr="109" column="5" str="/* Check data class: (1 for 32 bits objects) */"/>
+    <tok fileIndex="0" linenr="110" column="5" str="if"/>
+    <tok fileIndex="0" linenr="110" column="8" str="("/>
+    <tok fileIndex="0" linenr="110" column="9" str="ret"/>
+    <tok fileIndex="0" linenr="110" column="13" str="&amp;&amp;"/>
+    <tok fileIndex="0" linenr="110" column="16" str="1"/>
+    <tok fileIndex="0" linenr="110" column="18" str="!="/>
+    <tok fileIndex="0" linenr="110" column="21" str="Ehdr"/>
+    <tok fileIndex="0" linenr="110" column="25" str="-&gt;"/>
+    <tok fileIndex="0" linenr="110" column="27" str="e_ident"/>
+    <tok fileIndex="0" linenr="110" column="34" str="["/>
+    <tok fileIndex="0" linenr="110" column="35" str="4"/>
+    <tok fileIndex="0" linenr="110" column="36" str="]"/>
+    <tok fileIndex="0" linenr="110" column="37" str=")"/>
+    <tok fileIndex="0" linenr="110" column="38" str="{"/>
+    <tok fileIndex="0" linenr="111" column="9" str="// printf(&quot; elf_check() invalid class\n&quot;);"/>
+    <tok fileIndex="0" linenr="112" column="9" str="ret"/>
+    <tok fileIndex="0" linenr="112" column="13" str="="/>
+    <tok fileIndex="0" linenr="112" column="15" str="0"/>
+    <tok fileIndex="0" linenr="112" column="16" str=";"/>
+    <tok fileIndex="0" linenr="113" column="5" str="}"/>
+    <tok fileIndex="0" linenr="115" column="5" str="/* Get the machine and file endinaess */"/>
+    <tok fileIndex="0" linenr="116" column="5" str="bool"/>
+    <tok fileIndex="0" linenr="116" column="10" str="mbig"/>
+    <tok fileIndex="0" linenr="116" column="15" str="="/>
+    <tok fileIndex="0" linenr="116" column="17" str="elf_machine_is_bigendian"/>
+    <tok fileIndex="0" linenr="116" column="41" str="("/>
+    <tok fileIndex="0" linenr="116" column="42" str=")"/>
+    <tok fileIndex="0" linenr="116" column="43" str=";"/>
+    <tok fileIndex="0" linenr="117" column="5" str="bool"/>
+    <tok fileIndex="0" linenr="117" column="10" str="fbig"/>
+    <tok fileIndex="0" linenr="117" column="15" str="="/>
+    <tok fileIndex="0" linenr="117" column="17" str="Ehdr"/>
+    <tok fileIndex="0" linenr="117" column="21" str="-&gt;"/>
+    <tok fileIndex="0" linenr="117" column="23" str="e_ident"/>
+    <tok fileIndex="0" linenr="117" column="30" str="["/>
+    <tok fileIndex="0" linenr="117" column="31" str="5"/>
+    <tok fileIndex="0" linenr="117" column="32" str="]"/>
+    <tok fileIndex="0" linenr="117" column="34" str="=="/>
+    <tok fileIndex="0" linenr="117" column="37" str="2"/>
+    <tok fileIndex="0" linenr="117" column="39" str="?"/>
+    <tok fileIndex="0" linenr="117" column="41" str="true"/>
+    <tok fileIndex="0" linenr="117" column="46" str=":"/>
+    <tok fileIndex="0" linenr="117" column="48" str="false"/>
+    <tok fileIndex="0" linenr="117" column="53" str=";"/>
+    <tok fileIndex="0" linenr="119" column="5" str="/* Check machine: (2 for sparc) */"/>
+    <tok fileIndex="0" linenr="120" column="5" str="if"/>
+    <tok fileIndex="0" linenr="120" column="8" str="("/>
+    <tok fileIndex="0" linenr="120" column="9" str="ret"/>
+    <tok fileIndex="0" linenr="120" column="13" str="&amp;&amp;"/>
+    <tok fileIndex="0" linenr="120" column="16" str="2"/>
+    <tok fileIndex="0" linenr="120" column="18" str="!="/>
+    <tok fileIndex="0" linenr="120" column="21" str="elf_correct_uint16"/>
+    <tok fileIndex="0" linenr="120" column="39" str="("/>
+    <tok fileIndex="0" linenr="120" column="40" str="Ehdr"/>
+    <tok fileIndex="0" linenr="120" column="44" str="-&gt;"/>
+    <tok fileIndex="0" linenr="120" column="46" str="e_machine"/>
+    <tok fileIndex="0" linenr="120" column="55" str=","/>
+    <tok fileIndex="0" linenr="120" column="57" str="fbig"/>
+    <tok fileIndex="0" linenr="120" column="61" str=","/>
+    <tok fileIndex="0" linenr="120" column="63" str="mbig"/>
+    <tok fileIndex="0" linenr="120" column="67" str=")"/>
+    <tok fileIndex="0" linenr="120" column="68" str=")"/>
+    <tok fileIndex="0" linenr="120" column="69" str="{"/>
+    <tok fileIndex="0" linenr="121" column="9" str="// printf(&quot; elf_check() invalid machine code\n&quot;);"/>
+    <tok fileIndex="0" linenr="122" column="9" str="ret"/>
+    <tok fileIndex="0" linenr="122" column="13" str="="/>
+    <tok fileIndex="0" linenr="122" column="15" str="0"/>
+    <tok fileIndex="0" linenr="122" column="16" str=";"/>
+    <tok fileIndex="0" linenr="123" column="5" str="}"/>
+    <tok fileIndex="0" linenr="125" column="5" str="/* Check version: (1 for current) */"/>
+    <tok fileIndex="0" linenr="126" column="5" str="if"/>
+    <tok fileIndex="0" linenr="126" column="8" str="("/>
+    <tok fileIndex="0" linenr="126" column="9" str="ret"/>
+    <tok fileIndex="0" linenr="126" column="13" str="&amp;&amp;"/>
+    <tok fileIndex="0" linenr="126" column="16" str="1"/>
+    <tok fileIndex="0" linenr="126" column="18" str="!="/>
+    <tok fileIndex="0" linenr="126" column="21" str="elf_correct_uint32"/>
+    <tok fileIndex="0" linenr="126" column="39" str="("/>
+    <tok fileIndex="0" linenr="126" column="40" str="Ehdr"/>
+    <tok fileIndex="0" linenr="126" column="44" str="-&gt;"/>
+    <tok fileIndex="0" linenr="126" column="46" str="e_version"/>
+    <tok fileIndex="0" linenr="126" column="55" str=","/>
+    <tok fileIndex="0" linenr="126" column="57" str="fbig"/>
+    <tok fileIndex="0" linenr="126" column="61" str=","/>
+    <tok fileIndex="0" linenr="126" column="63" str="mbig"/>
+    <tok fileIndex="0" linenr="126" column="67" str=")"/>
+    <tok fileIndex="0" linenr="126" column="68" str=")"/>
+    <tok fileIndex="0" linenr="126" column="69" str="{"/>
+    <tok fileIndex="0" linenr="127" column="9" str="// printf(&quot; elf_check() invalid version\n&quot;);"/>
+    <tok fileIndex="0" linenr="128" column="9" str="ret"/>
+    <tok fileIndex="0" linenr="128" column="13" str="="/>
+    <tok fileIndex="0" linenr="128" column="15" str="0"/>
+    <tok fileIndex="0" linenr="128" column="16" str=";"/>
+    <tok fileIndex="0" linenr="129" column="5" str="}"/>
+    <tok fileIndex="0" linenr="131" column="5" str="/* Check type: (2 for executable) */"/>
+    <tok fileIndex="0" linenr="132" column="5" str="if"/>
+    <tok fileIndex="0" linenr="132" column="8" str="("/>
+    <tok fileIndex="0" linenr="132" column="9" str="ret"/>
+    <tok fileIndex="0" linenr="132" column="13" str="&amp;&amp;"/>
+    <tok fileIndex="0" linenr="132" column="16" str="2"/>
+    <tok fileIndex="0" linenr="132" column="18" str="!="/>
+    <tok fileIndex="0" linenr="132" column="21" str="elf_correct_uint16"/>
+    <tok fileIndex="0" linenr="132" column="39" str="("/>
+    <tok fileIndex="0" linenr="132" column="40" str="Ehdr"/>
+    <tok fileIndex="0" linenr="132" column="44" str="-&gt;"/>
+    <tok fileIndex="0" linenr="132" column="46" str="e_type"/>
+    <tok fileIndex="0" linenr="132" column="52" str=","/>
+    <tok fileIndex="0" linenr="132" column="54" str="fbig"/>
+    <tok fileIndex="0" linenr="132" column="58" str=","/>
+    <tok fileIndex="0" linenr="132" column="60" str="mbig"/>
+    <tok fileIndex="0" linenr="132" column="64" str=")"/>
+    <tok fileIndex="0" linenr="132" column="65" str=")"/>
+    <tok fileIndex="0" linenr="132" column="66" str="{"/>
+    <tok fileIndex="0" linenr="133" column="9" str="// printf(&quot; elf_check() invalid type\n&quot;);"/>
+    <tok fileIndex="0" linenr="134" column="9" str="ret"/>
+    <tok fileIndex="0" linenr="134" column="13" str="="/>
+    <tok fileIndex="0" linenr="134" column="15" str="0"/>
+    <tok fileIndex="0" linenr="134" column="16" str=";"/>
+    <tok fileIndex="0" linenr="135" column="5" str="}"/>
+    <tok fileIndex="0" linenr="137" column="5" str="/* Check if the file contains program segements */"/>
+    <tok fileIndex="0" linenr="138" column="5" str="if"/>
+    <tok fileIndex="0" linenr="138" column="8" str="("/>
+    <tok fileIndex="0" linenr="138" column="9" str="ret"/>
+    <tok fileIndex="0" linenr="138" column="13" str="&amp;&amp;"/>
+    <tok fileIndex="0" linenr="138" column="16" str="0"/>
+    <tok fileIndex="0" linenr="138" column="18" str="&gt;="/>
+    <tok fileIndex="0" linenr="138" column="21" str="elf_correct_uint16"/>
+    <tok fileIndex="0" linenr="138" column="39" str="("/>
+    <tok fileIndex="0" linenr="138" column="40" str="Ehdr"/>
+    <tok fileIndex="0" linenr="138" column="44" str="-&gt;"/>
+    <tok fileIndex="0" linenr="138" column="46" str="e_phnum"/>
+    <tok fileIndex="0" linenr="138" column="53" str=","/>
+    <tok fileIndex="0" linenr="138" column="55" str="fbig"/>
+    <tok fileIndex="0" linenr="138" column="59" str=","/>
+    <tok fileIndex="0" linenr="138" column="61" str="mbig"/>
+    <tok fileIndex="0" linenr="138" column="65" str=")"/>
+    <tok fileIndex="0" linenr="138" column="66" str=")"/>
+    <tok fileIndex="0" linenr="138" column="67" str="{"/>
+    <tok fileIndex="0" linenr="139" column="9" str="// printf(&quot; elf_check() doesn&apos;t contain program segments\n&quot;);"/>
+    <tok fileIndex="0" linenr="140" column="9" str="ret"/>
+    <tok fileIndex="0" linenr="140" column="13" str="="/>
+    <tok fileIndex="0" linenr="140" column="15" str="0"/>
+    <tok fileIndex="0" linenr="140" column="16" str=";"/>
+    <tok fileIndex="0" linenr="141" column="5" str="}"/>
+    <tok fileIndex="0" linenr="143" column="5" str="return"/>
+    <tok fileIndex="0" linenr="143" column="12" str="ret"/>
+    <tok fileIndex="0" linenr="143" column="15" str=";"/>
+    <tok fileIndex="0" linenr="144" column="1" str="}"/>
+  </rawtokens>
+  <suppressions>
+  </suppressions>
+<dump cfg="INLINE=__inline__">
+  <standards>
+    <c version="c11"/>
+    <cpp version="c++20"/>
+  </standards>
+  <directivelist>
+    <directive file="air/tools/partition_assembler/libelf.c" linenr="15" str="#include &lt;stdbool.h&gt;"/>
+    <directive file="air/tools/partition_assembler/libelf.c" linenr="18" str="#include &quot;libelf.h&quot;"/>
+    <directive file="air/tools/partition_assembler/include/libelf.h" linenr="2" str="#include &lt;stdint.h&gt;"/>
+    <directive file="air/tools/partition_assembler/include/libelf.h" linenr="3" str="#include &lt;stdbool.h&gt;"/>
+    <directive file="air/tools/partition_assembler/include/libelf.h" linenr="6" str="#ifndef _ELF_H_"/>
+    <directive file="air/tools/partition_assembler/include/libelf.h" linenr="7" str="#define _ELF_H_"/>
+    <directive file="air/tools/partition_assembler/include/libelf.h" linenr="14" str="#define EI_NIDENT (16)"/>
+    <directive file="air/tools/partition_assembler/include/libelf.h" linenr="68" str="#endif"/>
+  </directivelist>
+  <macro-usage>
+    <macro name="EI_NIDENT" file="air/tools/partition_assembler/include/libelf.h" line="14" column="9" usefile="air/tools/partition_assembler/include/libelf.h" useline="18" usecolumn="27" is-known-value="true"/>
+  </macro-usage>
+  <tokenlist>
+    <token id="0x558319440b40" file="air/tools/partition_assembler/include/libelf.h" linenr="16" column="9" str="struct" scope="0x558318b90890" type="name"/>
+    <token id="0x558319514ee0" file="air/tools/partition_assembler/include/libelf.h" linenr="16" column="0" str="Elf32_Ehdr" scope="0x558318b90890" type="name" type-scope="0x5583196d1d70"/>
+    <token id="0x55831991ecf0" file="air/tools/partition_assembler/include/libelf.h" linenr="17" column="1" str="{" scope="0x5583196d1d70" link="0x558318ae5d00" valueType-type="record" valueType-reference="None" valueType-typeScope="0x5583196d1d70"/>
+    <token id="0x55831952f590" file="air/tools/partition_assembler/include/libelf.h" linenr="18" column="14" str="char" scope="0x5583196d1d70" type="name" isUnsigned="true"/>
+    <token id="0x5583193fd2d0" file="air/tools/partition_assembler/include/libelf.h" linenr="18" column="19" str="e_ident" scope="0x5583196d1d70" type="name" varId="1" variable="0x558318d7a760" astParent="0x55831931d110" valueType-type="char" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x55831931d110" file="air/tools/partition_assembler/include/libelf.h" linenr="18" column="26" str="[" scope="0x5583196d1d70" link="0x558318b73670" astOperand1="0x5583193fd2d0" astOperand2="0x558318e7cd20" valueType-type="char" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318e7cd20" file="air/tools/partition_assembler/include/libelf.h" linenr="18" column="27" str="16" scope="0x5583196d1d70" type="number" isInt="true" isExpandedMacro="true" values="0x558319ad09d0" astParent="0x55831931d110" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b73670" file="air/tools/partition_assembler/include/libelf.h" linenr="18" column="36" str="]" scope="0x5583196d1d70" link="0x55831931d110"/>
+    <token id="0x558319408210" file="air/tools/partition_assembler/include/libelf.h" linenr="18" column="37" str=";" scope="0x5583196d1d70"/>
+    <token id="0x558318b52690" file="air/tools/partition_assembler/include/libelf.h" linenr="19" column="5" str="uint16_t" scope="0x5583196d1d70" type="name"/>
+    <token id="0x558318eb5940" file="air/tools/partition_assembler/include/libelf.h" linenr="19" column="16" str="e_type" scope="0x5583196d1d70" type="name" varId="2" variable="0x558318b99610" values="0x5583198acca0" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319452e80" file="air/tools/partition_assembler/include/libelf.h" linenr="19" column="22" str=";" scope="0x5583196d1d70"/>
+    <token id="0x55831997d5b0" file="air/tools/partition_assembler/include/libelf.h" linenr="20" column="5" str="uint16_t" scope="0x5583196d1d70" type="name"/>
+    <token id="0x558318daebe0" file="air/tools/partition_assembler/include/libelf.h" linenr="20" column="16" str="e_machine" scope="0x5583196d1d70" type="name" varId="3" variable="0x558318ced330" values="0x55831976ffa0" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319407900" file="air/tools/partition_assembler/include/libelf.h" linenr="20" column="25" str=";" scope="0x5583196d1d70"/>
+    <token id="0x558319960b60" file="air/tools/partition_assembler/include/libelf.h" linenr="21" column="5" str="uint32_t" scope="0x5583196d1d70" type="name"/>
+    <token id="0x558318d55710" file="air/tools/partition_assembler/include/libelf.h" linenr="21" column="16" str="e_version" scope="0x5583196d1d70" type="name" varId="4" variable="0x5583198dd2d0" values="0x558318ce8370" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d92f10" file="air/tools/partition_assembler/include/libelf.h" linenr="21" column="25" str=";" scope="0x5583196d1d70"/>
+    <token id="0x558318b90dc0" file="air/tools/partition_assembler/include/libelf.h" linenr="22" column="5" str="uint32_t" scope="0x5583196d1d70" type="name"/>
+    <token id="0x558318de7f90" file="air/tools/partition_assembler/include/libelf.h" linenr="22" column="16" str="e_entry" scope="0x5583196d1d70" type="name" varId="5" variable="0x558318f46cc0" values="0x5583196fe730" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831991bd40" file="air/tools/partition_assembler/include/libelf.h" linenr="22" column="23" str=";" scope="0x5583196d1d70"/>
+    <token id="0x558319752630" file="air/tools/partition_assembler/include/libelf.h" linenr="23" column="5" str="uint32_t" scope="0x5583196d1d70" type="name"/>
+    <token id="0x558319327d90" file="air/tools/partition_assembler/include/libelf.h" linenr="23" column="15" str="e_phoff" scope="0x5583196d1d70" type="name" varId="6" variable="0x558318f00a30" values="0x558318cf0a30" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831931b380" file="air/tools/partition_assembler/include/libelf.h" linenr="23" column="22" str=";" scope="0x5583196d1d70"/>
+    <token id="0x558319736680" file="air/tools/partition_assembler/include/libelf.h" linenr="24" column="5" str="uint32_t" scope="0x5583196d1d70" type="name"/>
+    <token id="0x5583197703e0" file="air/tools/partition_assembler/include/libelf.h" linenr="24" column="15" str="e_shoff" scope="0x5583196d1d70" type="name" varId="7" variable="0x55831985d910" values="0x558318b82cc0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831992e660" file="air/tools/partition_assembler/include/libelf.h" linenr="24" column="22" str=";" scope="0x5583196d1d70"/>
+    <token id="0x558318b41f40" file="air/tools/partition_assembler/include/libelf.h" linenr="25" column="5" str="uint32_t" scope="0x5583196d1d70" type="name"/>
+    <token id="0x558319931190" file="air/tools/partition_assembler/include/libelf.h" linenr="25" column="16" str="e_flags" scope="0x5583196d1d70" type="name" varId="8" variable="0x558319aceb80" values="0x55831991bdf0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831994a740" file="air/tools/partition_assembler/include/libelf.h" linenr="25" column="23" str=";" scope="0x5583196d1d70"/>
+    <token id="0x558318b7d530" file="air/tools/partition_assembler/include/libelf.h" linenr="26" column="5" str="uint16_t" scope="0x5583196d1d70" type="name"/>
+    <token id="0x5583198c32a0" file="air/tools/partition_assembler/include/libelf.h" linenr="26" column="16" str="e_ehsize" scope="0x5583196d1d70" type="name" varId="9" variable="0x558319770340" values="0x558318bb2cf0" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b312a0" file="air/tools/partition_assembler/include/libelf.h" linenr="26" column="24" str=";" scope="0x5583196d1d70"/>
+    <token id="0x5583196dc9c0" file="air/tools/partition_assembler/include/libelf.h" linenr="27" column="5" str="uint16_t" scope="0x5583196d1d70" type="name"/>
+    <token id="0x558318b1a480" file="air/tools/partition_assembler/include/libelf.h" linenr="27" column="16" str="e_phentsize" scope="0x5583196d1d70" type="name" varId="10" variable="0x558318b69ce0" values="0x558318d910c0" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318aba8f0" file="air/tools/partition_assembler/include/libelf.h" linenr="27" column="27" str=";" scope="0x5583196d1d70"/>
+    <token id="0x55831970ec40" file="air/tools/partition_assembler/include/libelf.h" linenr="28" column="5" str="uint16_t" scope="0x5583196d1d70" type="name"/>
+    <token id="0x558318d66220" file="air/tools/partition_assembler/include/libelf.h" linenr="28" column="16" str="e_phnum" scope="0x5583196d1d70" type="name" varId="11" variable="0x558318b78700" values="0x558318e99760" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831974d240" file="air/tools/partition_assembler/include/libelf.h" linenr="28" column="23" str=";" scope="0x5583196d1d70"/>
+    <token id="0x558318ad1ff0" file="air/tools/partition_assembler/include/libelf.h" linenr="29" column="5" str="uint16_t" scope="0x5583196d1d70" type="name"/>
+    <token id="0x558318ddee50" file="air/tools/partition_assembler/include/libelf.h" linenr="29" column="16" str="e_shentsize" scope="0x5583196d1d70" type="name" varId="12" variable="0x5583198ad4d0" values="0x558318cff050" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319514d20" file="air/tools/partition_assembler/include/libelf.h" linenr="29" column="27" str=";" scope="0x5583196d1d70"/>
+    <token id="0x558318b16480" file="air/tools/partition_assembler/include/libelf.h" linenr="30" column="5" str="uint16_t" scope="0x5583196d1d70" type="name"/>
+    <token id="0x558318b3a450" file="air/tools/partition_assembler/include/libelf.h" linenr="30" column="16" str="e_shnum" scope="0x5583196d1d70" type="name" varId="13" variable="0x558318ba60f0" values="0x5583197b8770" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b98030" file="air/tools/partition_assembler/include/libelf.h" linenr="30" column="23" str=";" scope="0x5583196d1d70"/>
+    <token id="0x558318d234c0" file="air/tools/partition_assembler/include/libelf.h" linenr="31" column="5" str="uint16_t" scope="0x5583196d1d70" type="name"/>
+    <token id="0x5583198bc070" file="air/tools/partition_assembler/include/libelf.h" linenr="31" column="16" str="e_shstrndx" scope="0x5583196d1d70" type="name" varId="14" variable="0x5583194523b0" values="0x558318aacb00" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e84110" file="air/tools/partition_assembler/include/libelf.h" linenr="31" column="26" str=";" scope="0x5583196d1d70"/>
+    <token id="0x558318ae5d00" file="air/tools/partition_assembler/include/libelf.h" linenr="33" column="1" str="}" scope="0x5583196d1d70" link="0x55831991ecf0"/>
+    <token id="0x558319947210" file="air/tools/partition_assembler/include/libelf.h" linenr="33" column="0" str=";" scope="0x558318b90890"/>
+    <token id="0x558318e92e10" file="air/tools/partition_assembler/include/libelf.h" linenr="36" column="9" str="struct" scope="0x558318b90890" type="name"/>
+    <token id="0x558318cbcd30" file="air/tools/partition_assembler/include/libelf.h" linenr="36" column="0" str="Elf32_Shdr" scope="0x558318b90890" type="name" type-scope="0x558318dab010"/>
+    <token id="0x558318e3fb80" file="air/tools/partition_assembler/include/libelf.h" linenr="37" column="1" str="{" scope="0x558318dab010" link="0x55831997e670" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558318dab010"/>
+    <token id="0x558318b65ac0" file="air/tools/partition_assembler/include/libelf.h" linenr="38" column="5" str="uint32_t" scope="0x558318dab010" type="name"/>
+    <token id="0x55831944cea0" file="air/tools/partition_assembler/include/libelf.h" linenr="38" column="17" str="sh_name" scope="0x558318dab010" type="name" varId="15" variable="0x558319417f80" values="0x558318dd8970" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318dca520" file="air/tools/partition_assembler/include/libelf.h" linenr="38" column="24" str=";" scope="0x558318dab010"/>
+    <token id="0x5583198e5ea0" file="air/tools/partition_assembler/include/libelf.h" linenr="39" column="5" str="uint32_t" scope="0x558318dab010" type="name"/>
+    <token id="0x5583193d6d20" file="air/tools/partition_assembler/include/libelf.h" linenr="39" column="17" str="sh_type" scope="0x558318dab010" type="name" varId="16" variable="0x558318e17a40" values="0x558318da90b0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583198ba3e0" file="air/tools/partition_assembler/include/libelf.h" linenr="39" column="24" str=";" scope="0x558318dab010"/>
+    <token id="0x558319708010" file="air/tools/partition_assembler/include/libelf.h" linenr="40" column="5" str="uint32_t" scope="0x558318dab010" type="name"/>
+    <token id="0x5583193e78c0" file="air/tools/partition_assembler/include/libelf.h" linenr="40" column="17" str="sh_flags" scope="0x558318dab010" type="name" varId="17" variable="0x558318d26120" values="0x55831939c410" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583199876e0" file="air/tools/partition_assembler/include/libelf.h" linenr="40" column="25" str=";" scope="0x558318dab010"/>
+    <token id="0x558319975fd0" file="air/tools/partition_assembler/include/libelf.h" linenr="41" column="5" str="uint32_t" scope="0x558318dab010" type="name"/>
+    <token id="0x558319113840" file="air/tools/partition_assembler/include/libelf.h" linenr="41" column="17" str="sh_addr" scope="0x558318dab010" type="name" varId="18" variable="0x558319ad8170" values="0x558318b25910" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b5ee20" file="air/tools/partition_assembler/include/libelf.h" linenr="41" column="24" str=";" scope="0x558318dab010"/>
+    <token id="0x5583193ef2e0" file="air/tools/partition_assembler/include/libelf.h" linenr="42" column="5" str="uint32_t" scope="0x558318dab010" type="name"/>
+    <token id="0x558318ec8860" file="air/tools/partition_assembler/include/libelf.h" linenr="42" column="17" str="sh_offset" scope="0x558318dab010" type="name" varId="19" variable="0x558318e09cf0" values="0x558319767d20" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318ec7340" file="air/tools/partition_assembler/include/libelf.h" linenr="42" column="26" str=";" scope="0x558318dab010"/>
+    <token id="0x558318b17a70" file="air/tools/partition_assembler/include/libelf.h" linenr="43" column="5" str="uint32_t" scope="0x558318dab010" type="name"/>
+    <token id="0x5583193dd110" file="air/tools/partition_assembler/include/libelf.h" linenr="43" column="17" str="sh_size" scope="0x558318dab010" type="name" varId="20" variable="0x558318ef1eb0" values="0x558318d73c80" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319535e30" file="air/tools/partition_assembler/include/libelf.h" linenr="43" column="24" str=";" scope="0x558318dab010"/>
+    <token id="0x558318d572f0" file="air/tools/partition_assembler/include/libelf.h" linenr="44" column="5" str="uint32_t" scope="0x558318dab010" type="name"/>
+    <token id="0x558318da5ff0" file="air/tools/partition_assembler/include/libelf.h" linenr="44" column="17" str="sh_link" scope="0x558318dab010" type="name" varId="21" variable="0x558319ae6e10" values="0x558318ad1eb0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b20f50" file="air/tools/partition_assembler/include/libelf.h" linenr="44" column="24" str=";" scope="0x558318dab010"/>
+    <token id="0x558318b7b710" file="air/tools/partition_assembler/include/libelf.h" linenr="45" column="5" str="uint32_t" scope="0x558318dab010" type="name"/>
+    <token id="0x558319514b60" file="air/tools/partition_assembler/include/libelf.h" linenr="45" column="17" str="sh_info" scope="0x558318dab010" type="name" varId="22" variable="0x558318ab8d40" values="0x5583196d6060" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583193d5bc0" file="air/tools/partition_assembler/include/libelf.h" linenr="45" column="24" str=";" scope="0x558318dab010"/>
+    <token id="0x5583198e5060" file="air/tools/partition_assembler/include/libelf.h" linenr="46" column="5" str="uint32_t" scope="0x558318dab010" type="name"/>
+    <token id="0x558318d86b90" file="air/tools/partition_assembler/include/libelf.h" linenr="46" column="17" str="sh_addralign" scope="0x558318dab010" type="name" varId="23" variable="0x558318b35240" values="0x5583196d96e0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318ea44d0" file="air/tools/partition_assembler/include/libelf.h" linenr="46" column="29" str=";" scope="0x558318dab010"/>
+    <token id="0x5583191cef30" file="air/tools/partition_assembler/include/libelf.h" linenr="47" column="5" str="uint32_t" scope="0x558318dab010" type="name"/>
+    <token id="0x558318b1a7f0" file="air/tools/partition_assembler/include/libelf.h" linenr="47" column="17" str="sh_entsize" scope="0x558318dab010" type="name" varId="24" variable="0x55831944d460" values="0x558318ad4da0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e79850" file="air/tools/partition_assembler/include/libelf.h" linenr="47" column="27" str=";" scope="0x558318dab010"/>
+    <token id="0x55831997e670" file="air/tools/partition_assembler/include/libelf.h" linenr="48" column="1" str="}" scope="0x558318dab010" link="0x558318e3fb80"/>
+    <token id="0x558318cddb60" file="air/tools/partition_assembler/include/libelf.h" linenr="48" column="0" str=";" scope="0x558318b90890"/>
+    <token id="0x5583197513e0" file="air/tools/partition_assembler/include/libelf.h" linenr="51" column="9" str="struct" scope="0x558318b90890" type="name"/>
+    <token id="0x558319971c20" file="air/tools/partition_assembler/include/libelf.h" linenr="51" column="0" str="Elf32_Phdr" scope="0x558318b90890" type="name" type-scope="0x558319585e10"/>
+    <token id="0x558318ad6b00" file="air/tools/partition_assembler/include/libelf.h" linenr="52" column="1" str="{" scope="0x558319585e10" link="0x558318d6bce0" valueType-type="record" valueType-reference="None" valueType-typeScope="0x558319585e10"/>
+    <token id="0x558319462630" file="air/tools/partition_assembler/include/libelf.h" linenr="53" column="5" str="uint32_t" scope="0x558319585e10" type="name"/>
+    <token id="0x55831979d690" file="air/tools/partition_assembler/include/libelf.h" linenr="53" column="16" str="p_type" scope="0x558319585e10" type="name" varId="25" variable="0x558318af9030" values="0x558319850b20" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319ad3930" file="air/tools/partition_assembler/include/libelf.h" linenr="53" column="22" str=";" scope="0x558319585e10"/>
+    <token id="0x558318d55d50" file="air/tools/partition_assembler/include/libelf.h" linenr="54" column="5" str="uint32_t" scope="0x558319585e10" type="name"/>
+    <token id="0x558318f5fa90" file="air/tools/partition_assembler/include/libelf.h" linenr="54" column="15" str="p_offset" scope="0x558319585e10" type="name" varId="26" variable="0x558318da4070" values="0x558318d69830" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318ae9630" file="air/tools/partition_assembler/include/libelf.h" linenr="54" column="23" str=";" scope="0x558319585e10"/>
+    <token id="0x558318d61600" file="air/tools/partition_assembler/include/libelf.h" linenr="55" column="5" str="uint32_t" scope="0x558319585e10" type="name"/>
+    <token id="0x558318e0a1e0" file="air/tools/partition_assembler/include/libelf.h" linenr="55" column="16" str="p_vaddr" scope="0x558319585e10" type="name" varId="27" variable="0x558318b61980" values="0x558318ccfda0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319ab9500" file="air/tools/partition_assembler/include/libelf.h" linenr="55" column="23" str=";" scope="0x558319585e10"/>
+    <token id="0x558318dd68d0" file="air/tools/partition_assembler/include/libelf.h" linenr="56" column="5" str="uint32_t" scope="0x558319585e10" type="name"/>
+    <token id="0x55831967fbf0" file="air/tools/partition_assembler/include/libelf.h" linenr="56" column="16" str="p_paddr" scope="0x558319585e10" type="name" varId="28" variable="0x558318ba3890" values="0x558318b4f570" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583191c6d20" file="air/tools/partition_assembler/include/libelf.h" linenr="56" column="23" str=";" scope="0x558319585e10"/>
+    <token id="0x558319587db0" file="air/tools/partition_assembler/include/libelf.h" linenr="57" column="5" str="uint32_t" scope="0x558319585e10" type="name"/>
+    <token id="0x55831953a4a0" file="air/tools/partition_assembler/include/libelf.h" linenr="57" column="16" str="p_filesz" scope="0x558319585e10" type="name" varId="29" variable="0x5583197398c0" values="0x5583193a86b0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318c9d4f0" file="air/tools/partition_assembler/include/libelf.h" linenr="57" column="24" str=";" scope="0x558319585e10"/>
+    <token id="0x55831969ab20" file="air/tools/partition_assembler/include/libelf.h" linenr="58" column="5" str="uint32_t" scope="0x558319585e10" type="name"/>
+    <token id="0x558318b25780" file="air/tools/partition_assembler/include/libelf.h" linenr="58" column="16" str="p_memsz" scope="0x558319585e10" type="name" varId="30" variable="0x558318d18ad0" values="0x558318af9450" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e51b10" file="air/tools/partition_assembler/include/libelf.h" linenr="58" column="23" str=";" scope="0x558319585e10"/>
+    <token id="0x558318b6a360" file="air/tools/partition_assembler/include/libelf.h" linenr="59" column="5" str="uint32_t" scope="0x558319585e10" type="name"/>
+    <token id="0x558318f5af40" file="air/tools/partition_assembler/include/libelf.h" linenr="59" column="16" str="p_flags" scope="0x558319585e10" type="name" varId="31" variable="0x558319408110" values="0x558318bb7de0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319776b70" file="air/tools/partition_assembler/include/libelf.h" linenr="59" column="23" str=";" scope="0x558319585e10"/>
+    <token id="0x558318b65200" file="air/tools/partition_assembler/include/libelf.h" linenr="60" column="5" str="uint32_t" scope="0x558319585e10" type="name"/>
+    <token id="0x558318c9d9c0" file="air/tools/partition_assembler/include/libelf.h" linenr="60" column="16" str="p_align" scope="0x558319585e10" type="name" varId="32" variable="0x55831955f1b0" values="0x558318cb96d0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e88f00" file="air/tools/partition_assembler/include/libelf.h" linenr="60" column="23" str=";" scope="0x558319585e10"/>
+    <token id="0x558318d6bce0" file="air/tools/partition_assembler/include/libelf.h" linenr="61" column="1" str="}" scope="0x558319585e10" link="0x558318ad6b00"/>
+    <token id="0x558318b20330" file="air/tools/partition_assembler/include/libelf.h" linenr="61" column="0" str=";" scope="0x558318b90890"/>
+    <token id="0x558318dd6b30" file="air/tools/partition_assembler/include/libelf.h" linenr="63" column="1" str="bool" scope="0x558318b90890" type="name"/>
+    <token id="0x5583194500e0" file="air/tools/partition_assembler/include/libelf.h" linenr="63" column="6" str="elf_machine_is_bigendian" scope="0x558318b90890" type="name" function="0x55831984c5a0"/>
+    <token id="0x558318e04950" file="air/tools/partition_assembler/include/libelf.h" linenr="63" column="30" str="(" scope="0x558318b90890" link="0x558319707ce0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558319707ce0" file="air/tools/partition_assembler/include/libelf.h" linenr="63" column="31" str=")" scope="0x558318b90890" link="0x558318e04950"/>
+    <token id="0x55831976a210" file="air/tools/partition_assembler/include/libelf.h" linenr="63" column="32" str=";" scope="0x558318b90890"/>
+    <token id="0x558318c9bea0" file="air/tools/partition_assembler/include/libelf.h" linenr="64" column="10" str="char" scope="0x558318b90890" type="name" isUnsigned="true"/>
+    <token id="0x558318f54e10" file="air/tools/partition_assembler/include/libelf.h" linenr="64" column="15" str="elf_check" scope="0x558318b90890" type="name" function="0x5583198424e0"/>
+    <token id="0x558318ef4500" file="air/tools/partition_assembler/include/libelf.h" linenr="64" column="24" str="(" scope="0x558318b90890" link="0x55831966a1f0" values="0x558319574140" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318eec7e0" file="air/tools/partition_assembler/include/libelf.h" linenr="64" column="34" str="char" scope="0x558318b90890" type="name" isUnsigned="true" astParent="0x558319539e40"/>
+    <token id="0x558319539e40" file="air/tools/partition_assembler/include/libelf.h" linenr="64" column="39" str="*" scope="0x558318b90890" type="op" isArithmeticalOp="true" astOperand1="0x558318eec7e0" astOperand2="0x5583191d0910"/>
+    <token id="0x5583191d0910" file="air/tools/partition_assembler/include/libelf.h" linenr="64" column="40" str="in_buffer" scope="0x558318b90890" type="name" varId="33" astParent="0x558319539e40"/>
+    <token id="0x55831966a1f0" file="air/tools/partition_assembler/include/libelf.h" linenr="64" column="49" str=")" scope="0x558318b90890" link="0x558318ef4500"/>
+    <token id="0x55831931f140" file="air/tools/partition_assembler/include/libelf.h" linenr="64" column="50" str=";" scope="0x558318b90890"/>
+    <token id="0x558318aecc10" file="air/tools/partition_assembler/include/libelf.h" linenr="65" column="1" str="uint16_t" scope="0x558318b90890" type="name"/>
+    <token id="0x55831939f980" file="air/tools/partition_assembler/include/libelf.h" linenr="65" column="10" str="elf_correct_uint16" scope="0x558318b90890" type="name" function="0x558319363640"/>
+    <token id="0x558318b46cd0" file="air/tools/partition_assembler/include/libelf.h" linenr="65" column="28" str="(" scope="0x558318b90890" link="0x558319687ca0" values="0x558318dc4700" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e63980" file="air/tools/partition_assembler/include/libelf.h" linenr="65" column="29" str="uint16_t" scope="0x558318b90890" type="name"/>
+    <token id="0x558318e32d00" file="air/tools/partition_assembler/include/libelf.h" linenr="65" column="38" str="value" scope="0x558318b90890" type="name" varId="34"/>
+    <token id="0x558318eeeea0" file="air/tools/partition_assembler/include/libelf.h" linenr="65" column="43" str="," scope="0x558318b90890"/>
+    <token id="0x558318afefb0" file="air/tools/partition_assembler/include/libelf.h" linenr="65" column="45" str="bool" scope="0x558318b90890" type="name"/>
+    <token id="0x558318abc570" file="air/tools/partition_assembler/include/libelf.h" linenr="65" column="50" str="source_big_endian" scope="0x558318b90890" type="name" varId="35"/>
+    <token id="0x5583198b31c0" file="air/tools/partition_assembler/include/libelf.h" linenr="65" column="67" str="," scope="0x558318b90890"/>
+    <token id="0x558318cccfc0" file="air/tools/partition_assembler/include/libelf.h" linenr="65" column="69" str="bool" scope="0x558318b90890" type="name"/>
+    <token id="0x5583191cee10" file="air/tools/partition_assembler/include/libelf.h" linenr="65" column="74" str="target_big_endian" scope="0x558318b90890" type="name" varId="36"/>
+    <token id="0x558319687ca0" file="air/tools/partition_assembler/include/libelf.h" linenr="65" column="91" str=")" scope="0x558318b90890" link="0x558318b46cd0"/>
+    <token id="0x558318ddd690" file="air/tools/partition_assembler/include/libelf.h" linenr="65" column="92" str=";" scope="0x558318b90890"/>
+    <token id="0x558318caf890" file="air/tools/partition_assembler/include/libelf.h" linenr="66" column="1" str="uint32_t" scope="0x558318b90890" type="name"/>
+    <token id="0x5583194176d0" file="air/tools/partition_assembler/include/libelf.h" linenr="66" column="10" str="elf_correct_uint32" scope="0x558318b90890" type="name" function="0x558318e09d90"/>
+    <token id="0x558318ce44c0" file="air/tools/partition_assembler/include/libelf.h" linenr="66" column="28" str="(" scope="0x558318b90890" link="0x55831958f590" values="0x558318ea09f0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e09960" file="air/tools/partition_assembler/include/libelf.h" linenr="66" column="29" str="uint32_t" scope="0x558318b90890" type="name"/>
+    <token id="0x558319363d00" file="air/tools/partition_assembler/include/libelf.h" linenr="66" column="38" str="value" scope="0x558318b90890" type="name" varId="37"/>
+    <token id="0x558318d97790" file="air/tools/partition_assembler/include/libelf.h" linenr="66" column="43" str="," scope="0x558318b90890"/>
+    <token id="0x558318defae0" file="air/tools/partition_assembler/include/libelf.h" linenr="66" column="45" str="bool" scope="0x558318b90890" type="name"/>
+    <token id="0x558318e99430" file="air/tools/partition_assembler/include/libelf.h" linenr="66" column="50" str="source_big_endian" scope="0x558318b90890" type="name" varId="38"/>
+    <token id="0x558318d70d70" file="air/tools/partition_assembler/include/libelf.h" linenr="66" column="67" str="," scope="0x558318b90890"/>
+    <token id="0x5583195160d0" file="air/tools/partition_assembler/include/libelf.h" linenr="66" column="69" str="bool" scope="0x558318b90890" type="name"/>
+    <token id="0x558318de7030" file="air/tools/partition_assembler/include/libelf.h" linenr="66" column="74" str="target_big_endian" scope="0x558318b90890" type="name" varId="39"/>
+    <token id="0x55831958f590" file="air/tools/partition_assembler/include/libelf.h" linenr="66" column="91" str=")" scope="0x558318b90890" link="0x558318ce44c0"/>
+    <token id="0x558318e982c0" file="air/tools/partition_assembler/include/libelf.h" linenr="66" column="92" str=";" scope="0x558318b90890"/>
+    <token id="0x558318da2d80" file="air/tools/partition_assembler/libelf.c" linenr="24" column="1" str="bool" scope="0x558318b90890" type="name"/>
+    <token id="0x558319983130" file="air/tools/partition_assembler/libelf.c" linenr="24" column="6" str="elf_machine_is_bigendian" scope="0x558318b90890" type="name" function="0x55831984c5a0"/>
+    <token id="0x558318de7be0" file="air/tools/partition_assembler/libelf.c" linenr="24" column="30" str="(" scope="0x558318b90890" link="0x558319539d90" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558319539d90" file="air/tools/partition_assembler/libelf.c" linenr="24" column="31" str=")" scope="0x558318b90890" link="0x558318de7be0"/>
+    <token id="0x558318f096e0" file="air/tools/partition_assembler/libelf.c" linenr="24" column="33" str="{" scope="0x558319ae8da0" link="0x5583191d6cb0"/>
+    <token id="0x5583193ca220" file="air/tools/partition_assembler/libelf.c" linenr="26" column="5" str="volatile" scope="0x558319ae8da0" type="name"/>
+    <token id="0x5583196f1740" file="air/tools/partition_assembler/libelf.c" linenr="26" column="14" str="int32_t" scope="0x558319ae8da0" type="name"/>
+    <token id="0x558318eb3190" file="air/tools/partition_assembler/libelf.c" linenr="26" column="22" str="num" scope="0x558319ae8da0" type="name" varId="40" variable="0x558318ca0560" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318cb9710" file="air/tools/partition_assembler/libelf.c" linenr="26" column="26" str=";" scope="0x558319ae8da0" isSplittedVarDeclEq="true"/>
+    <token id="0x5583194082f0" file="air/tools/partition_assembler/libelf.c" linenr="26" column="22" str="num" scope="0x558319ae8da0" type="name" varId="40" variable="0x558318ca0560" astParent="0x558318ec7270" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318ec7270" file="air/tools/partition_assembler/libelf.c" linenr="26" column="26" str="=" scope="0x558319ae8da0" type="op" isAssignmentOp="true" values="0x558319754510" astOperand1="0x5583194082f0" astOperand2="0x5583193d5b10" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x5583193d5b10" file="air/tools/partition_assembler/libelf.c" linenr="26" column="28" str="1" scope="0x558319ae8da0" type="number" isInt="true" values="0x558319974330" astParent="0x558318ec7270" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x5583191d6b20" file="air/tools/partition_assembler/libelf.c" linenr="26" column="29" str=";" scope="0x558319ae8da0"/>
+    <token id="0x558319514e00" file="air/tools/partition_assembler/libelf.c" linenr="27" column="5" str="return" scope="0x558319ae8da0" type="name" astOperand1="0x558318ce83d0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318bca880" file="air/tools/partition_assembler/libelf.c" linenr="27" column="12" str="*" scope="0x558319ae8da0" type="op" isArithmeticalOp="true" values="0x558318b32df0" astParent="0x5583198b1e80" astOperand1="0x558318f522e0" valueType-type="char" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318f522e0" file="air/tools/partition_assembler/libelf.c" linenr="27" column="13" str="(" scope="0x558319ae8da0" link="0x558319ab7bb0" values="0x55831976b550" astParent="0x558318bca880" astOperand1="0x558319846af0" valueType-type="char" valueType-sign="signed" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x5583196f3800" file="air/tools/partition_assembler/libelf.c" linenr="27" column="14" str="int8_t" scope="0x558319ae8da0" type="name"/>
+    <token id="0x558318ec60f0" file="air/tools/partition_assembler/libelf.c" linenr="27" column="20" str="*" scope="0x558319ae8da0" type="op" isArithmeticalOp="true"/>
+    <token id="0x558319ab7bb0" file="air/tools/partition_assembler/libelf.c" linenr="27" column="21" str=")" scope="0x558319ae8da0" link="0x558318f522e0"/>
+    <token id="0x558319846af0" file="air/tools/partition_assembler/libelf.c" linenr="27" column="22" str="&amp;" scope="0x558319ae8da0" type="op" values="0x558318dcc6d0" astParent="0x558318f522e0" astOperand1="0x558318ac50e0" valueType-type="int" valueType-sign="signed" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318ac50e0" file="air/tools/partition_assembler/libelf.c" linenr="27" column="23" str="num" scope="0x558319ae8da0" type="name" varId="40" variable="0x558318ca0560" values="0x5583198d0cb0" astParent="0x558319846af0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x5583198b1e80" file="air/tools/partition_assembler/libelf.c" linenr="27" column="27" str="==" scope="0x558319ae8da0" type="op" isComparisonOp="true" values="0x5583198c4aa0" astParent="0x558318ce83d0" astOperand1="0x558318bca880" astOperand2="0x558319552550" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558319552550" file="air/tools/partition_assembler/libelf.c" linenr="27" column="30" str="1" scope="0x558319ae8da0" type="number" isInt="true" values="0x55831995a890" astParent="0x5583198b1e80" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318ce83d0" file="air/tools/partition_assembler/libelf.c" linenr="27" column="32" str="?" scope="0x558319ae8da0" astParent="0x558319514e00" astOperand1="0x5583198b1e80" astOperand2="0x5583193c2620" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x55831952eeb0" file="air/tools/partition_assembler/libelf.c" linenr="27" column="34" str="false" scope="0x558319ae8da0" type="name" astParent="0x5583193c2620" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x5583193c2620" file="air/tools/partition_assembler/libelf.c" linenr="27" column="40" str=":" scope="0x558319ae8da0" astParent="0x558318ce83d0" astOperand1="0x55831952eeb0" astOperand2="0x558318b41b50" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318b41b50" file="air/tools/partition_assembler/libelf.c" linenr="27" column="42" str="true" scope="0x558319ae8da0" type="name" astParent="0x5583193c2620" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318ccc5c0" file="air/tools/partition_assembler/libelf.c" linenr="27" column="46" str=";" scope="0x558319ae8da0"/>
+    <token id="0x5583191d6cb0" file="air/tools/partition_assembler/libelf.c" linenr="28" column="1" str="}" scope="0x558319ae8da0" link="0x558318f096e0"/>
+    <token id="0x5583198b3120" file="air/tools/partition_assembler/libelf.c" linenr="42" column="1" str="uint16_t" scope="0x558318b90890" type="name"/>
+    <token id="0x558318dfd8d0" file="air/tools/partition_assembler/libelf.c" linenr="42" column="10" str="elf_correct_uint16" scope="0x558318b90890" type="name" function="0x558319363640"/>
+    <token id="0x55831989f250" file="air/tools/partition_assembler/libelf.c" linenr="42" column="28" str="(" scope="0x558318b90890" link="0x558318eb4970" values="0x55831993d960" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318ef4370" file="air/tools/partition_assembler/libelf.c" linenr="42" column="29" str="uint16_t" scope="0x558318b90890" type="name"/>
+    <token id="0x558318b1f910" file="air/tools/partition_assembler/libelf.c" linenr="42" column="38" str="value" scope="0x558318b90890" type="name" varId="41" variable="0x558318af5860" values="0x558318e54610" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318eeea80" file="air/tools/partition_assembler/libelf.c" linenr="42" column="43" str="," scope="0x558318b90890"/>
+    <token id="0x558318b633e0" file="air/tools/partition_assembler/libelf.c" linenr="43" column="29" str="bool" scope="0x558318b90890" type="name"/>
+    <token id="0x558318af7d00" file="air/tools/partition_assembler/libelf.c" linenr="43" column="34" str="source_big_endian" scope="0x558318b90890" type="name" varId="42" variable="0x558318b28480" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318d2be10" file="air/tools/partition_assembler/libelf.c" linenr="43" column="51" str="," scope="0x558318b90890"/>
+    <token id="0x5583196f00c0" file="air/tools/partition_assembler/libelf.c" linenr="44" column="29" str="bool" scope="0x558318b90890" type="name"/>
+    <token id="0x558319863ef0" file="air/tools/partition_assembler/libelf.c" linenr="44" column="34" str="target_big_endian" scope="0x558318b90890" type="name" varId="43" variable="0x558318b1b100" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318eb4970" file="air/tools/partition_assembler/libelf.c" linenr="44" column="51" str=")" scope="0x558318b90890" link="0x55831989f250"/>
+    <token id="0x558318db5970" file="air/tools/partition_assembler/libelf.c" linenr="44" column="52" str="{" scope="0x558318e4c810" link="0x558318bb2750"/>
+    <token id="0x5583198cb0a0" file="air/tools/partition_assembler/libelf.c" linenr="46" column="5" str="uint32_t" scope="0x558318e4c810" type="name"/>
+    <token id="0x558319768cc0" file="air/tools/partition_assembler/libelf.c" linenr="46" column="14" str="ret" scope="0x558318e4c810" type="name" varId="44" variable="0x558318d50e30" values="0x558319419970" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583195159d0" file="air/tools/partition_assembler/libelf.c" linenr="46" column="18" str=";" scope="0x558318e4c810" isSplittedVarDeclEq="true"/>
+    <token id="0x55831970e6c0" file="air/tools/partition_assembler/libelf.c" linenr="46" column="14" str="ret" scope="0x558318e4c810" type="name" varId="44" variable="0x558318d50e30" values="0x558318e1efe0" astParent="0x558318ce8630" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318ce8630" file="air/tools/partition_assembler/libelf.c" linenr="46" column="18" str="=" scope="0x558318e4c810" type="op" isAssignmentOp="true" values="0x558319a9cee0" astOperand1="0x55831970e6c0" astOperand2="0x55831939cbd0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831939cbd0" file="air/tools/partition_assembler/libelf.c" linenr="46" column="20" str="value" scope="0x558318e4c810" type="name" varId="41" variable="0x558318af5860" values="0x55831995abc0" astParent="0x558318ce8630" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831966d350" file="air/tools/partition_assembler/libelf.c" linenr="46" column="25" str=";" scope="0x558318e4c810"/>
+    <token id="0x5583195365d0" file="air/tools/partition_assembler/libelf.c" linenr="49" column="5" str="if" scope="0x558318e4c810" type="name" astParent="0x558318cdb5a0"/>
+    <token id="0x558318cdb5a0" file="air/tools/partition_assembler/libelf.c" linenr="49" column="8" str="(" scope="0x558318e4c810" link="0x558318f61ac0" astOperand1="0x5583195365d0" astOperand2="0x5583199512a0"/>
+    <token id="0x558318f56880" file="air/tools/partition_assembler/libelf.c" linenr="49" column="9" str="(" scope="0x558318e4c810" link="0x55831979d010"/>
+    <token id="0x558318d85a10" file="air/tools/partition_assembler/libelf.c" linenr="49" column="10" str="source_big_endian" scope="0x558318e4c810" type="name" varId="42" variable="0x558318b28480" astParent="0x558318d58fd0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318d58fd0" file="air/tools/partition_assembler/libelf.c" linenr="49" column="28" str="&amp;&amp;" scope="0x558318e4c810" type="op" isLogicalOp="true" astParent="0x5583199512a0" astOperand1="0x558318d85a10" astOperand2="0x558318b0def0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318b0def0" file="air/tools/partition_assembler/libelf.c" linenr="49" column="31" str="!" scope="0x558318e4c810" type="op" isLogicalOp="true" astParent="0x558318d58fd0" astOperand1="0x558318ddd710" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318ddd710" file="air/tools/partition_assembler/libelf.c" linenr="49" column="32" str="target_big_endian" scope="0x558318e4c810" type="name" varId="43" variable="0x558318b1b100" astParent="0x558318b0def0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x55831979d010" file="air/tools/partition_assembler/libelf.c" linenr="49" column="49" str=")" scope="0x558318e4c810" link="0x558318f56880"/>
+    <token id="0x5583199512a0" file="air/tools/partition_assembler/libelf.c" linenr="49" column="51" str="||" scope="0x558318e4c810" type="op" isLogicalOp="true" astParent="0x558318cdb5a0" astOperand1="0x558318d58fd0" astOperand2="0x5583193c4eb0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318e161e0" file="air/tools/partition_assembler/libelf.c" linenr="50" column="9" str="(" scope="0x558318e4c810" link="0x558318aaca70"/>
+    <token id="0x558318d92f90" file="air/tools/partition_assembler/libelf.c" linenr="50" column="10" str="!" scope="0x558318e4c810" type="op" isLogicalOp="true" astParent="0x5583193c4eb0" astOperand1="0x558318ee3850" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318ee3850" file="air/tools/partition_assembler/libelf.c" linenr="50" column="11" str="source_big_endian" scope="0x558318e4c810" type="name" varId="42" variable="0x558318b28480" astParent="0x558318d92f90" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x5583193c4eb0" file="air/tools/partition_assembler/libelf.c" linenr="50" column="29" str="&amp;&amp;" scope="0x558318e4c810" type="op" isLogicalOp="true" astParent="0x5583199512a0" astOperand1="0x558318d92f90" astOperand2="0x558318cc9bf0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318cc9bf0" file="air/tools/partition_assembler/libelf.c" linenr="50" column="32" str="target_big_endian" scope="0x558318e4c810" type="name" varId="43" variable="0x558318b1b100" astParent="0x5583193c4eb0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318aaca70" file="air/tools/partition_assembler/libelf.c" linenr="50" column="49" str=")" scope="0x558318e4c810" link="0x558318e161e0"/>
+    <token id="0x558318f61ac0" file="air/tools/partition_assembler/libelf.c" linenr="50" column="50" str=")" scope="0x558318e4c810" link="0x558318cdb5a0"/>
+    <token id="0x55831976bc50" file="air/tools/partition_assembler/libelf.c" linenr="50" column="51" str="{" scope="0x558318abd350" link="0x558318b7cf00"/>
+    <token id="0x558319751e90" file="air/tools/partition_assembler/libelf.c" linenr="52" column="9" str="ret" scope="0x558318abd350" type="name" varId="44" variable="0x558318d50e30" values="0x5583193b0430" astParent="0x558318d081e0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d081e0" file="air/tools/partition_assembler/libelf.c" linenr="52" column="13" str="=" scope="0x558318abd350" type="op" isAssignmentOp="true" values="0x558318ddd5b0" astOperand1="0x558319751e90" astOperand2="0x558318f063b0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d18a20" file="air/tools/partition_assembler/libelf.c" linenr="52" column="15" str="(" scope="0x558318abd350" link="0x558319459480"/>
+    <token id="0x558318eee1c0" file="air/tools/partition_assembler/libelf.c" linenr="52" column="16" str="value" scope="0x558318abd350" type="name" varId="41" variable="0x558318af5860" values="0x558319776c00" astParent="0x558318dab2e0" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318dab2e0" file="air/tools/partition_assembler/libelf.c" linenr="52" column="22" str="&lt;&lt;" scope="0x558318abd350" type="op" isArithmeticalOp="true" astParent="0x558318f063b0" astOperand1="0x558318eee1c0" astOperand2="0x558318b7faf0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318b7faf0" file="air/tools/partition_assembler/libelf.c" linenr="52" column="25" str="8" scope="0x558318abd350" type="number" isInt="true" values="0x558318b00320" astParent="0x558318dab2e0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558319459480" file="air/tools/partition_assembler/libelf.c" linenr="52" column="26" str=")" scope="0x558318abd350" link="0x558318d18a20"/>
+    <token id="0x558318f063b0" file="air/tools/partition_assembler/libelf.c" linenr="52" column="28" str="|" scope="0x558318abd350" type="op" astParent="0x558318d081e0" astOperand1="0x558318dab2e0" astOperand2="0x5583195219a0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x5583196bc4f0" file="air/tools/partition_assembler/libelf.c" linenr="52" column="30" str="(" scope="0x558318abd350" link="0x5583193d2bd0"/>
+    <token id="0x55831991dae0" file="air/tools/partition_assembler/libelf.c" linenr="52" column="31" str="value" scope="0x558318abd350" type="name" varId="41" variable="0x558318af5860" values="0x55831974d1c0" astParent="0x5583195219a0" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583195219a0" file="air/tools/partition_assembler/libelf.c" linenr="52" column="36" str="&gt;&gt;" scope="0x558318abd350" type="op" isArithmeticalOp="true" astParent="0x558318f063b0" astOperand1="0x55831991dae0" astOperand2="0x558318dd5810" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318dd5810" file="air/tools/partition_assembler/libelf.c" linenr="52" column="39" str="8" scope="0x558318abd350" type="number" isInt="true" values="0x558318dc71b0" astParent="0x5583195219a0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x5583193d2bd0" file="air/tools/partition_assembler/libelf.c" linenr="52" column="41" str=")" scope="0x558318abd350" link="0x5583196bc4f0"/>
+    <token id="0x55831939c670" file="air/tools/partition_assembler/libelf.c" linenr="52" column="42" str=";" scope="0x558318abd350"/>
+    <token id="0x558318b7cf00" file="air/tools/partition_assembler/libelf.c" linenr="54" column="5" str="}" scope="0x558318abd350" link="0x55831976bc50"/>
+    <token id="0x558318df1dc0" file="air/tools/partition_assembler/libelf.c" linenr="56" column="5" str="return" scope="0x558318e4c810" type="name" values="0x55831989a2d0" astOperand1="0x5583198e78b0" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583198e78b0" file="air/tools/partition_assembler/libelf.c" linenr="56" column="12" str="ret" scope="0x558318e4c810" type="name" varId="44" variable="0x558318d50e30" values="0x55831976ae60" astParent="0x558318df1dc0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318eb9660" file="air/tools/partition_assembler/libelf.c" linenr="56" column="15" str=";" scope="0x558318e4c810"/>
+    <token id="0x558318bb2750" file="air/tools/partition_assembler/libelf.c" linenr="57" column="1" str="}" scope="0x558318e4c810" link="0x558318db5970"/>
+    <token id="0x558318e1b010" file="air/tools/partition_assembler/libelf.c" linenr="71" column="1" str="uint32_t" scope="0x558318b90890" type="name"/>
+    <token id="0x558318b4a880" file="air/tools/partition_assembler/libelf.c" linenr="71" column="10" str="elf_correct_uint32" scope="0x558318b90890" type="name" function="0x558318e09d90"/>
+    <token id="0x558318d87660" file="air/tools/partition_assembler/libelf.c" linenr="71" column="28" str="(" scope="0x558318b90890" link="0x558318b9da30" values="0x558318b36360" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e31ca0" file="air/tools/partition_assembler/libelf.c" linenr="71" column="29" str="uint32_t" scope="0x558318b90890" type="name"/>
+    <token id="0x558318d755a0" file="air/tools/partition_assembler/libelf.c" linenr="71" column="38" str="value" scope="0x558318b90890" type="name" varId="45" variable="0x558318eab500" values="0x558319538100" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831973fdf0" file="air/tools/partition_assembler/libelf.c" linenr="71" column="43" str="," scope="0x558318b90890"/>
+    <token id="0x55831974d770" file="air/tools/partition_assembler/libelf.c" linenr="72" column="29" str="bool" scope="0x558318b90890" type="name"/>
+    <token id="0x558318d5b0f0" file="air/tools/partition_assembler/libelf.c" linenr="72" column="34" str="source_big_endian" scope="0x558318b90890" type="name" varId="46" variable="0x558318e9ac30" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318d2aa60" file="air/tools/partition_assembler/libelf.c" linenr="72" column="51" str="," scope="0x558318b90890"/>
+    <token id="0x55831976ba40" file="air/tools/partition_assembler/libelf.c" linenr="73" column="29" str="bool" scope="0x558318b90890" type="name"/>
+    <token id="0x5583196d2380" file="air/tools/partition_assembler/libelf.c" linenr="73" column="34" str="target_big_endian" scope="0x558318b90890" type="name" varId="47" variable="0x558318d73df0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318b9da30" file="air/tools/partition_assembler/libelf.c" linenr="73" column="51" str=")" scope="0x558318b90890" link="0x558318d87660"/>
+    <token id="0x558318ea74e0" file="air/tools/partition_assembler/libelf.c" linenr="73" column="52" str="{" scope="0x558318d9d770" link="0x558318e1b270"/>
+    <token id="0x558319986140" file="air/tools/partition_assembler/libelf.c" linenr="75" column="5" str="uint32_t" scope="0x558318d9d770" type="name"/>
+    <token id="0x558318ad92e0" file="air/tools/partition_assembler/libelf.c" linenr="75" column="14" str="ret" scope="0x558318d9d770" type="name" varId="48" variable="0x558318d3ffb0" values="0x558318b88670" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d68180" file="air/tools/partition_assembler/libelf.c" linenr="75" column="18" str=";" scope="0x558318d9d770" isSplittedVarDeclEq="true"/>
+    <token id="0x55831973da40" file="air/tools/partition_assembler/libelf.c" linenr="75" column="14" str="ret" scope="0x558318d9d770" type="name" varId="48" variable="0x558318d3ffb0" values="0x558318b97be0" astParent="0x558318b82230" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b82230" file="air/tools/partition_assembler/libelf.c" linenr="75" column="18" str="=" scope="0x558318d9d770" type="op" isAssignmentOp="true" values="0x558318f00b30" astOperand1="0x55831973da40" astOperand2="0x558319368410" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319368410" file="air/tools/partition_assembler/libelf.c" linenr="75" column="20" str="value" scope="0x558318d9d770" type="name" varId="45" variable="0x558318eab500" values="0x5583196e99f0" astParent="0x558318b82230" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831931b7a0" file="air/tools/partition_assembler/libelf.c" linenr="75" column="25" str=";" scope="0x558318d9d770"/>
+    <token id="0x55831975e640" file="air/tools/partition_assembler/libelf.c" linenr="78" column="5" str="if" scope="0x558318d9d770" type="name" astParent="0x558318d9f3d0"/>
+    <token id="0x558318d9f3d0" file="air/tools/partition_assembler/libelf.c" linenr="78" column="8" str="(" scope="0x558318d9d770" link="0x55831991d120" astOperand1="0x55831975e640" astOperand2="0x55831941f7c0"/>
+    <token id="0x558318ba37d0" file="air/tools/partition_assembler/libelf.c" linenr="78" column="9" str="(" scope="0x558318d9d770" link="0x558318af3ef0"/>
+    <token id="0x558318bb4440" file="air/tools/partition_assembler/libelf.c" linenr="78" column="10" str="source_big_endian" scope="0x558318d9d770" type="name" varId="46" variable="0x558318e9ac30" astParent="0x558318d9a1d0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318d9a1d0" file="air/tools/partition_assembler/libelf.c" linenr="78" column="28" str="&amp;&amp;" scope="0x558318d9d770" type="op" isLogicalOp="true" astParent="0x55831941f7c0" astOperand1="0x558318bb4440" astOperand2="0x55831966dd40" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x55831966dd40" file="air/tools/partition_assembler/libelf.c" linenr="78" column="31" str="!" scope="0x558318d9d770" type="op" isLogicalOp="true" astParent="0x558318d9a1d0" astOperand1="0x558318cdb100" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318cdb100" file="air/tools/partition_assembler/libelf.c" linenr="78" column="32" str="target_big_endian" scope="0x558318d9d770" type="name" varId="47" variable="0x558318d73df0" astParent="0x55831966dd40" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318af3ef0" file="air/tools/partition_assembler/libelf.c" linenr="78" column="49" str=")" scope="0x558318d9d770" link="0x558318ba37d0"/>
+    <token id="0x55831941f7c0" file="air/tools/partition_assembler/libelf.c" linenr="78" column="51" str="||" scope="0x558318d9d770" type="op" isLogicalOp="true" astParent="0x558318d9f3d0" astOperand1="0x558318d9a1d0" astOperand2="0x5583197bb650" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318ce73a0" file="air/tools/partition_assembler/libelf.c" linenr="79" column="9" str="(" scope="0x558318d9d770" link="0x5583193d6500"/>
+    <token id="0x558318d17750" file="air/tools/partition_assembler/libelf.c" linenr="79" column="10" str="!" scope="0x558318d9d770" type="op" isLogicalOp="true" astParent="0x5583197bb650" astOperand1="0x55831968b9d0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x55831968b9d0" file="air/tools/partition_assembler/libelf.c" linenr="79" column="11" str="source_big_endian" scope="0x558318d9d770" type="name" varId="46" variable="0x558318e9ac30" astParent="0x558318d17750" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x5583197bb650" file="air/tools/partition_assembler/libelf.c" linenr="79" column="29" str="&amp;&amp;" scope="0x558318d9d770" type="op" isLogicalOp="true" astParent="0x55831941f7c0" astOperand1="0x558318d17750" astOperand2="0x558319ae5200" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558319ae5200" file="air/tools/partition_assembler/libelf.c" linenr="79" column="32" str="target_big_endian" scope="0x558318d9d770" type="name" varId="47" variable="0x558318d73df0" astParent="0x5583197bb650" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x5583193d6500" file="air/tools/partition_assembler/libelf.c" linenr="79" column="49" str=")" scope="0x558318d9d770" link="0x558318ce73a0"/>
+    <token id="0x55831991d120" file="air/tools/partition_assembler/libelf.c" linenr="79" column="50" str=")" scope="0x558318d9d770" link="0x558318d9f3d0"/>
+    <token id="0x5583191d1600" file="air/tools/partition_assembler/libelf.c" linenr="79" column="51" str="{" scope="0x558319699f80" link="0x558318d11650"/>
+    <token id="0x558318e0cfd0" file="air/tools/partition_assembler/libelf.c" linenr="81" column="9" str="ret" scope="0x558319699f80" type="name" varId="48" variable="0x558318d3ffb0" values="0x55831952b830" astParent="0x558318c98d70" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318c98d70" file="air/tools/partition_assembler/libelf.c" linenr="81" column="13" str="=" scope="0x558319699f80" type="op" isAssignmentOp="true" values="0x558318ebc160" astOperand1="0x558318e0cfd0" astOperand2="0x5583193dd7f0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d81670" file="air/tools/partition_assembler/libelf.c" linenr="81" column="15" str="(" scope="0x558319699f80" link="0x558318e724e0"/>
+    <token id="0x558318d33c90" file="air/tools/partition_assembler/libelf.c" linenr="81" column="16" str="(" scope="0x558319699f80" link="0x55831995e880"/>
+    <token id="0x5583197b9d50" file="air/tools/partition_assembler/libelf.c" linenr="81" column="17" str="value" scope="0x558319699f80" type="name" varId="45" variable="0x558318eab500" values="0x558318baaaa0" astParent="0x558318d80eb0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d80eb0" file="air/tools/partition_assembler/libelf.c" linenr="81" column="23" str="&gt;&gt;" scope="0x558319699f80" type="op" isArithmeticalOp="true" values="0x558318b7e8a0" astParent="0x558319777c10" astOperand1="0x5583197b9d50" astOperand2="0x558318b0e380" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b0e380" file="air/tools/partition_assembler/libelf.c" linenr="81" column="26" str="24" scope="0x558319699f80" type="number" isInt="true" values="0x558318a88da0" astParent="0x558318d80eb0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x55831995e880" file="air/tools/partition_assembler/libelf.c" linenr="81" column="28" str=")" scope="0x558319699f80" link="0x558318d33c90"/>
+    <token id="0x558319777c10" file="air/tools/partition_assembler/libelf.c" linenr="81" column="30" str="&amp;" scope="0x558319699f80" type="op" values="0x558318d81e90" astParent="0x558318b34b90" astOperand1="0x558318d80eb0" astOperand2="0x5583196fcf40" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583196fcf40" file="air/tools/partition_assembler/libelf.c" linenr="81" column="32" str="0x000000ff" scope="0x558319699f80" type="number" isInt="true" values="0x558318d58930" astParent="0x558319777c10" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318e724e0" file="air/tools/partition_assembler/libelf.c" linenr="81" column="42" str=")" scope="0x558319699f80" link="0x558318d81670"/>
+    <token id="0x558318b34b90" file="air/tools/partition_assembler/libelf.c" linenr="81" column="44" str="|" scope="0x558319699f80" type="op" values="0x55831984b980" astParent="0x558318afd9a0" astOperand1="0x558319777c10" astOperand2="0x5583192bfeb0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583196826a0" file="air/tools/partition_assembler/libelf.c" linenr="81" column="46" str="(" scope="0x558319699f80" link="0x558318e00670"/>
+    <token id="0x5583191c7aa0" file="air/tools/partition_assembler/libelf.c" linenr="81" column="47" str="(" scope="0x558319699f80" link="0x558319946640"/>
+    <token id="0x558318e44220" file="air/tools/partition_assembler/libelf.c" linenr="81" column="48" str="value" scope="0x558319699f80" type="name" varId="45" variable="0x558318eab500" values="0x5583193a6060" astParent="0x558319587260" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319587260" file="air/tools/partition_assembler/libelf.c" linenr="81" column="54" str="&lt;&lt;" scope="0x558319699f80" type="op" isArithmeticalOp="true" values="0x55831954b320" astParent="0x5583192bfeb0" astOperand1="0x558318e44220" astOperand2="0x558318b33980" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b33980" file="air/tools/partition_assembler/libelf.c" linenr="81" column="57" str="8" scope="0x558319699f80" type="number" isInt="true" values="0x558318d6ed10" astParent="0x558319587260" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558319946640" file="air/tools/partition_assembler/libelf.c" linenr="81" column="59" str=")" scope="0x558319699f80" link="0x5583191c7aa0"/>
+    <token id="0x5583192bfeb0" file="air/tools/partition_assembler/libelf.c" linenr="81" column="61" str="&amp;" scope="0x558319699f80" type="op" values="0x5583199883b0" astParent="0x558318b34b90" astOperand1="0x558319587260" astOperand2="0x55831990f2b0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831990f2b0" file="air/tools/partition_assembler/libelf.c" linenr="81" column="63" str="0x00ff0000" scope="0x558319699f80" type="number" isInt="true" values="0x5583196f3f90" astParent="0x5583192bfeb0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318e00670" file="air/tools/partition_assembler/libelf.c" linenr="81" column="73" str=")" scope="0x558319699f80" link="0x5583196826a0"/>
+    <token id="0x558318afd9a0" file="air/tools/partition_assembler/libelf.c" linenr="81" column="75" str="|" scope="0x558319699f80" type="op" values="0x558318aac630" astParent="0x5583193dd7f0" astOperand1="0x558318b34b90" astOperand2="0x558318b03ed0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831984c440" file="air/tools/partition_assembler/libelf.c" linenr="82" column="15" str="(" scope="0x558319699f80" link="0x5583198dcec0"/>
+    <token id="0x558318aa7540" file="air/tools/partition_assembler/libelf.c" linenr="82" column="16" str="(" scope="0x558319699f80" link="0x5583191d1360"/>
+    <token id="0x558318e14d10" file="air/tools/partition_assembler/libelf.c" linenr="82" column="17" str="value" scope="0x558319699f80" type="name" varId="45" variable="0x558318eab500" values="0x558318b99d40" astParent="0x558318aa9c90" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318aa9c90" file="air/tools/partition_assembler/libelf.c" linenr="82" column="23" str="&gt;&gt;" scope="0x558319699f80" type="op" isArithmeticalOp="true" values="0x558319983bd0" astParent="0x558318b03ed0" astOperand1="0x558318e14d10" astOperand2="0x558318aa81d0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318aa81d0" file="air/tools/partition_assembler/libelf.c" linenr="82" column="26" str="8" scope="0x558319699f80" type="number" isInt="true" values="0x558318b3ffd0" astParent="0x558318aa9c90" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x5583191d1360" file="air/tools/partition_assembler/libelf.c" linenr="82" column="28" str=")" scope="0x558319699f80" link="0x558318aa7540"/>
+    <token id="0x558318b03ed0" file="air/tools/partition_assembler/libelf.c" linenr="82" column="30" str="&amp;" scope="0x558319699f80" type="op" values="0x558318d429e0" astParent="0x558318afd9a0" astOperand1="0x558318aa9c90" astOperand2="0x558319ae9fb0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319ae9fb0" file="air/tools/partition_assembler/libelf.c" linenr="82" column="32" str="0x0000ff00" scope="0x558319699f80" type="number" isInt="true" values="0x5583196d74c0" astParent="0x558318b03ed0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x5583198dcec0" file="air/tools/partition_assembler/libelf.c" linenr="82" column="42" str=")" scope="0x558319699f80" link="0x55831984c440"/>
+    <token id="0x5583193dd7f0" file="air/tools/partition_assembler/libelf.c" linenr="82" column="44" str="|" scope="0x558319699f80" type="op" values="0x558318b19350" astParent="0x558318c98d70" astOperand1="0x558318afd9a0" astOperand2="0x558319859860" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d301f0" file="air/tools/partition_assembler/libelf.c" linenr="82" column="46" str="(" scope="0x558319699f80" link="0x558318edf2d0"/>
+    <token id="0x5583196f4ab0" file="air/tools/partition_assembler/libelf.c" linenr="82" column="47" str="(" scope="0x558319699f80" link="0x5583198a7070"/>
+    <token id="0x558318d81200" file="air/tools/partition_assembler/libelf.c" linenr="82" column="48" str="value" scope="0x558319699f80" type="name" varId="45" variable="0x558318eab500" values="0x558318dac030" astParent="0x55831976bdb0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831976bdb0" file="air/tools/partition_assembler/libelf.c" linenr="82" column="54" str="&lt;&lt;" scope="0x558319699f80" type="op" isArithmeticalOp="true" values="0x55831952d870" astParent="0x558319859860" astOperand1="0x558318d81200" astOperand2="0x558318d66300" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d66300" file="air/tools/partition_assembler/libelf.c" linenr="82" column="57" str="24" scope="0x558319699f80" type="number" isInt="true" values="0x558318b428b0" astParent="0x55831976bdb0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x5583198a7070" file="air/tools/partition_assembler/libelf.c" linenr="82" column="59" str=")" scope="0x558319699f80" link="0x5583196f4ab0"/>
+    <token id="0x558319859860" file="air/tools/partition_assembler/libelf.c" linenr="82" column="61" str="&amp;" scope="0x558319699f80" type="op" values="0x558318b0f2e0" astParent="0x5583193dd7f0" astOperand1="0x55831976bdb0" astOperand2="0x558318e41e90" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e41e90" file="air/tools/partition_assembler/libelf.c" linenr="82" column="63" str="0xff000000" scope="0x558319699f80" type="number" isInt="true" values="0x558318ba77b0" astParent="0x558319859860" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318edf2d0" file="air/tools/partition_assembler/libelf.c" linenr="82" column="73" str=")" scope="0x558319699f80" link="0x558318d301f0"/>
+    <token id="0x558318ad0e40" file="air/tools/partition_assembler/libelf.c" linenr="82" column="74" str=";" scope="0x558319699f80"/>
+    <token id="0x558318d11650" file="air/tools/partition_assembler/libelf.c" linenr="84" column="5" str="}" scope="0x558319699f80" link="0x5583191d1600"/>
+    <token id="0x558318d2aae0" file="air/tools/partition_assembler/libelf.c" linenr="86" column="5" str="return" scope="0x558318d9d770" type="name" values="0x55831992af40" astOperand1="0x558318d700b0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d700b0" file="air/tools/partition_assembler/libelf.c" linenr="86" column="12" str="ret" scope="0x558318d9d770" type="name" varId="48" variable="0x558318d3ffb0" values="0x5583196e8cd0" astParent="0x558318d2aae0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e6bf80" file="air/tools/partition_assembler/libelf.c" linenr="86" column="15" str=";" scope="0x558318d9d770"/>
+    <token id="0x558318e1b270" file="air/tools/partition_assembler/libelf.c" linenr="87" column="1" str="}" scope="0x558318d9d770" link="0x558318ea74e0"/>
+    <token id="0x558318d6de20" file="air/tools/partition_assembler/libelf.c" linenr="97" column="10" str="char" scope="0x558318b90890" type="name" isUnsigned="true"/>
+    <token id="0x558318e42ed0" file="air/tools/partition_assembler/libelf.c" linenr="97" column="15" str="elf_check" scope="0x558318b90890" type="name" function="0x5583198424e0"/>
+    <token id="0x5583194311f0" file="air/tools/partition_assembler/libelf.c" linenr="97" column="24" str="(" scope="0x558318b90890" link="0x558318e88580" values="0x558318eafaf0" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e86bb0" file="air/tools/partition_assembler/libelf.c" linenr="97" column="34" str="char" scope="0x558318b90890" type="name" isUnsigned="true" astParent="0x558318c9da50"/>
+    <token id="0x558318c9da50" file="air/tools/partition_assembler/libelf.c" linenr="97" column="39" str="*" scope="0x558318b90890" type="op" isArithmeticalOp="true" astOperand1="0x558318e86bb0" astOperand2="0x558318e79b10"/>
+    <token id="0x558318e79b10" file="air/tools/partition_assembler/libelf.c" linenr="97" column="40" str="in_buffer" scope="0x558318b90890" type="name" varId="49" variable="0x558318ab4cc0" astParent="0x558318c9da50" valueType-type="char" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318e88580" file="air/tools/partition_assembler/libelf.c" linenr="97" column="49" str=")" scope="0x558318b90890" link="0x5583194311f0"/>
+    <token id="0x558318afd460" file="air/tools/partition_assembler/libelf.c" linenr="97" column="50" str="{" scope="0x558318ad4190" link="0x558318d8fac0"/>
+    <token id="0x5583198e7960" file="air/tools/partition_assembler/libelf.c" linenr="99" column="14" str="char" scope="0x558318ad4190" type="name" isUnsigned="true"/>
+    <token id="0x558318bb9fb0" file="air/tools/partition_assembler/libelf.c" linenr="99" column="19" str="ret" scope="0x558318ad4190" type="name" varId="50" variable="0x5583195825e0" values="0x5583198a3a70" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319862630" file="air/tools/partition_assembler/libelf.c" linenr="99" column="23" str=";" scope="0x558318ad4190" isSplittedVarDeclEq="true"/>
+    <token id="0x558318dd1df0" file="air/tools/partition_assembler/libelf.c" linenr="99" column="19" str="ret" scope="0x558318ad4190" type="name" varId="50" variable="0x5583195825e0" values="0x558318b49fd0" astParent="0x558318b978d0" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b978d0" file="air/tools/partition_assembler/libelf.c" linenr="99" column="23" str="=" scope="0x558318ad4190" type="op" isAssignmentOp="true" values="0x558318b0faf0" astOperand1="0x558318dd1df0" astOperand2="0x558318cb6000" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318cb6000" file="air/tools/partition_assembler/libelf.c" linenr="99" column="25" str="1" scope="0x558318ad4190" type="number" isInt="true" values="0x558318d2e550" astParent="0x558318b978d0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x5583198aa9b0" file="air/tools/partition_assembler/libelf.c" linenr="99" column="26" str=";" scope="0x558318ad4190"/>
+    <token id="0x5583191c6b60" file="air/tools/partition_assembler/libelf.c" linenr="100" column="5" str="struct" scope="0x558318ad4190" type="name"/>
+    <token id="0x558318c9d0e0" file="air/tools/partition_assembler/libelf.c" linenr="100" column="0" str="Elf32_Ehdr" scope="0x558318ad4190" type="name" type-scope="0x5583196d1d70" astParent="0x558319ad3dd0"/>
+    <token id="0x558319ad3dd0" file="air/tools/partition_assembler/libelf.c" linenr="100" column="16" str="*" scope="0x558318ad4190" type="op" isArithmeticalOp="true" astOperand1="0x558318c9d0e0" astOperand2="0x558318afda40"/>
+    <token id="0x558318afda40" file="air/tools/partition_assembler/libelf.c" linenr="100" column="17" str="Ehdr" scope="0x558318ad4190" type="name" varId="51" variable="0x558318de3960" astParent="0x558319ad3dd0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5583196d1d70"/>
+    <token id="0x558318b842e0" file="air/tools/partition_assembler/libelf.c" linenr="100" column="22" str=";" scope="0x558318ad4190" isSplittedVarDeclEq="true"/>
+    <token id="0x558318ce37d0" file="air/tools/partition_assembler/libelf.c" linenr="100" column="17" str="Ehdr" scope="0x558318ad4190" type="name" varId="51" variable="0x558318de3960" astParent="0x5583199808e0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5583196d1d70"/>
+    <token id="0x5583199808e0" file="air/tools/partition_assembler/libelf.c" linenr="100" column="22" str="=" scope="0x558318ad4190" type="op" isAssignmentOp="true" astOperand1="0x558318ce37d0" astOperand2="0x558319a9da30" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5583196d1d70"/>
+    <token id="0x558319a9da30" file="air/tools/partition_assembler/libelf.c" linenr="100" column="24" str="(" scope="0x558318ad4190" link="0x5583198d0fe0" astParent="0x5583199808e0" astOperand1="0x558318aaf020" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5583196d1d70"/>
+    <token id="0x558318af25f0" file="air/tools/partition_assembler/libelf.c" linenr="100" column="25" str="struct" scope="0x558318ad4190" type="name"/>
+    <token id="0x558318b4bd10" file="air/tools/partition_assembler/libelf.c" linenr="100" column="0" str="Elf32_Ehdr" scope="0x558318ad4190" type="name" type-scope="0x5583196d1d70"/>
+    <token id="0x558318cfc4e0" file="air/tools/partition_assembler/libelf.c" linenr="100" column="36" str="*" scope="0x558318ad4190" type="op" isArithmeticalOp="true"/>
+    <token id="0x5583198d0fe0" file="air/tools/partition_assembler/libelf.c" linenr="100" column="37" str=")" scope="0x558318ad4190" link="0x558319a9da30"/>
+    <token id="0x558318aaf020" file="air/tools/partition_assembler/libelf.c" linenr="100" column="38" str="in_buffer" scope="0x558318ad4190" type="name" varId="49" variable="0x558318ab4cc0" astParent="0x558319a9da30" valueType-type="char" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318af54e0" file="air/tools/partition_assembler/libelf.c" linenr="100" column="47" str=";" scope="0x558318ad4190"/>
+    <token id="0x5583199797e0" file="air/tools/partition_assembler/libelf.c" linenr="103" column="5" str="if" scope="0x558318ad4190" type="name" astParent="0x55831942aa10"/>
+    <token id="0x55831942aa10" file="air/tools/partition_assembler/libelf.c" linenr="103" column="8" str="(" scope="0x558318ad4190" link="0x558318b3b7d0" astOperand1="0x5583199797e0" astOperand2="0x558318f00b70"/>
+    <token id="0x558319acd4e0" file="air/tools/partition_assembler/libelf.c" linenr="103" column="9" str="0x7f" scope="0x558318ad4190" type="number" isInt="true" values="0x5583194403f0" astParent="0x558319857d00" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558319857d00" file="air/tools/partition_assembler/libelf.c" linenr="103" column="14" str="!=" scope="0x558318ad4190" type="op" isComparisonOp="true" astParent="0x5583191ceea0" astOperand1="0x558319acd4e0" astOperand2="0x558318ea7590" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558319931650" file="air/tools/partition_assembler/libelf.c" linenr="103" column="17" str="Ehdr" scope="0x558318ad4190" type="name" varId="51" variable="0x558318de3960" values="0x558318ba5e80" astParent="0x5583193c28a0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5583196d1d70"/>
+    <token id="0x5583193c28a0" file="air/tools/partition_assembler/libelf.c" linenr="103" column="21" str="." scope="0x558318ad4190" astParent="0x558318ea7590" astOperand1="0x558319931650" astOperand2="0x558319970850" originalName="->" valueType-type="char" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558319970850" file="air/tools/partition_assembler/libelf.c" linenr="103" column="23" str="e_ident" scope="0x558318ad4190" type="name" varId="52" variable="0x558318d7a760" values="0x558318d42020" astParent="0x5583193c28a0" valueType-type="char" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318ea7590" file="air/tools/partition_assembler/libelf.c" linenr="103" column="30" str="[" scope="0x558318ad4190" link="0x558318d9fe40" values="0x558318cfe3c0" astParent="0x558319857d00" astOperand1="0x5583193c28a0" astOperand2="0x55831953a290" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831953a290" file="air/tools/partition_assembler/libelf.c" linenr="103" column="31" str="0" scope="0x558318ad4190" type="number" isInt="true" values="0x558319366190" astParent="0x558318ea7590" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d9fe40" file="air/tools/partition_assembler/libelf.c" linenr="103" column="32" str="]" scope="0x558318ad4190" link="0x558318ea7590"/>
+    <token id="0x5583191ceea0" file="air/tools/partition_assembler/libelf.c" linenr="103" column="34" str="||" scope="0x558318ad4190" type="op" isLogicalOp="true" astParent="0x5583196be100" astOperand1="0x558319857d00" astOperand2="0x558318d05c90" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318e19730" file="air/tools/partition_assembler/libelf.c" linenr="103" column="37" str="&apos;E&apos;" scope="0x558318ad4190" type="char" values="0x558318d1d1a0" astParent="0x558318d05c90" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d05c90" file="air/tools/partition_assembler/libelf.c" linenr="103" column="41" str="!=" scope="0x558318ad4190" type="op" isComparisonOp="true" astParent="0x5583191ceea0" astOperand1="0x558318e19730" astOperand2="0x558318e6ff80" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558319438150" file="air/tools/partition_assembler/libelf.c" linenr="103" column="44" str="Ehdr" scope="0x558318ad4190" type="name" varId="51" variable="0x558318de3960" values="0x558318b412c0" astParent="0x55831984cf40" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5583196d1d70"/>
+    <token id="0x55831984cf40" file="air/tools/partition_assembler/libelf.c" linenr="103" column="48" str="." scope="0x558318ad4190" astParent="0x558318e6ff80" astOperand1="0x558319438150" astOperand2="0x558319acc330" originalName="->" valueType-type="char" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558319acc330" file="air/tools/partition_assembler/libelf.c" linenr="103" column="50" str="e_ident" scope="0x558318ad4190" type="name" varId="52" variable="0x558318d7a760" values="0x558318bacab0" astParent="0x55831984cf40" valueType-type="char" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318e6ff80" file="air/tools/partition_assembler/libelf.c" linenr="103" column="57" str="[" scope="0x558318ad4190" link="0x558318ec1a60" values="0x558319aca950" astParent="0x558318d05c90" astOperand1="0x55831984cf40" astOperand2="0x558318cdb520" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318cdb520" file="air/tools/partition_assembler/libelf.c" linenr="103" column="58" str="1" scope="0x558318ad4190" type="number" isInt="true" values="0x558318edcf00" astParent="0x558318e6ff80" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318ec1a60" file="air/tools/partition_assembler/libelf.c" linenr="103" column="59" str="]" scope="0x558318ad4190" link="0x558318e6ff80"/>
+    <token id="0x5583196be100" file="air/tools/partition_assembler/libelf.c" linenr="103" column="61" str="||" scope="0x558318ad4190" type="op" isLogicalOp="true" astParent="0x558318f00b70" astOperand1="0x5583191ceea0" astOperand2="0x55831977e400" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318d586c0" file="air/tools/partition_assembler/libelf.c" linenr="104" column="9" str="&apos;L&apos;" scope="0x558318ad4190" type="char" values="0x5583195381a0" astParent="0x55831977e400" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x55831977e400" file="air/tools/partition_assembler/libelf.c" linenr="104" column="13" str="!=" scope="0x558318ad4190" type="op" isComparisonOp="true" astParent="0x5583196be100" astOperand1="0x558318d586c0" astOperand2="0x55831931b9b0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x5583196d9e10" file="air/tools/partition_assembler/libelf.c" linenr="104" column="16" str="Ehdr" scope="0x558318ad4190" type="name" varId="51" variable="0x558318de3960" values="0x558318cc3e20" astParent="0x558318e26da0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5583196d1d70"/>
+    <token id="0x558318e26da0" file="air/tools/partition_assembler/libelf.c" linenr="104" column="20" str="." scope="0x558318ad4190" astParent="0x55831931b9b0" astOperand1="0x5583196d9e10" astOperand2="0x5583194074a0" originalName="->" valueType-type="char" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x5583194074a0" file="air/tools/partition_assembler/libelf.c" linenr="104" column="22" str="e_ident" scope="0x558318ad4190" type="name" varId="52" variable="0x558318d7a760" values="0x5583196f5540" astParent="0x558318e26da0" valueType-type="char" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x55831931b9b0" file="air/tools/partition_assembler/libelf.c" linenr="104" column="29" str="[" scope="0x558318ad4190" link="0x558318e1a0b0" values="0x558318e17800" astParent="0x55831977e400" astOperand1="0x558318e26da0" astOperand2="0x558318e7a750" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e7a750" file="air/tools/partition_assembler/libelf.c" linenr="104" column="30" str="2" scope="0x558318ad4190" type="number" isInt="true" values="0x55831967fc80" astParent="0x55831931b9b0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318e1a0b0" file="air/tools/partition_assembler/libelf.c" linenr="104" column="31" str="]" scope="0x558318ad4190" link="0x55831931b9b0"/>
+    <token id="0x558318f00b70" file="air/tools/partition_assembler/libelf.c" linenr="104" column="33" str="||" scope="0x558318ad4190" type="op" isLogicalOp="true" astParent="0x55831942aa10" astOperand1="0x5583196be100" astOperand2="0x558319a9dea0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x55831939c460" file="air/tools/partition_assembler/libelf.c" linenr="104" column="36" str="&apos;F&apos;" scope="0x558318ad4190" type="char" values="0x5583191d2780" astParent="0x558319a9dea0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558319a9dea0" file="air/tools/partition_assembler/libelf.c" linenr="104" column="40" str="!=" scope="0x558318ad4190" type="op" isComparisonOp="true" astParent="0x558318f00b70" astOperand1="0x55831939c460" astOperand2="0x55831998d9f0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318e307c0" file="air/tools/partition_assembler/libelf.c" linenr="104" column="43" str="Ehdr" scope="0x558318ad4190" type="name" varId="51" variable="0x558318de3960" values="0x558318b90b50" astParent="0x558318d34690" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5583196d1d70"/>
+    <token id="0x558318d34690" file="air/tools/partition_assembler/libelf.c" linenr="104" column="47" str="." scope="0x558318ad4190" astParent="0x55831998d9f0" astOperand1="0x558318e307c0" astOperand2="0x558318d91280" originalName="->" valueType-type="char" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318d91280" file="air/tools/partition_assembler/libelf.c" linenr="104" column="49" str="e_ident" scope="0x558318ad4190" type="name" varId="52" variable="0x558318d7a760" values="0x5583196d0610" astParent="0x558318d34690" valueType-type="char" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x55831998d9f0" file="air/tools/partition_assembler/libelf.c" linenr="104" column="56" str="[" scope="0x558318ad4190" link="0x558318ea0040" values="0x558318db1630" astParent="0x558319a9dea0" astOperand1="0x558318d34690" astOperand2="0x5583193f06c0" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583193f06c0" file="air/tools/partition_assembler/libelf.c" linenr="104" column="57" str="3" scope="0x558318ad4190" type="number" isInt="true" values="0x558318b753b0" astParent="0x55831998d9f0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318ea0040" file="air/tools/partition_assembler/libelf.c" linenr="104" column="58" str="]" scope="0x558318ad4190" link="0x55831998d9f0"/>
+    <token id="0x558318b3b7d0" file="air/tools/partition_assembler/libelf.c" linenr="104" column="59" str=")" scope="0x558318ad4190" link="0x55831942aa10"/>
+    <token id="0x55831953a080" file="air/tools/partition_assembler/libelf.c" linenr="104" column="60" str="{" scope="0x5583196f6900" link="0x55831951a550"/>
+    <token id="0x558319aac0e0" file="air/tools/partition_assembler/libelf.c" linenr="106" column="9" str="ret" scope="0x5583196f6900" type="name" varId="50" variable="0x5583195825e0" values="0x5583198c8810" astParent="0x5583193655e0" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583193655e0" file="air/tools/partition_assembler/libelf.c" linenr="106" column="13" str="=" scope="0x5583196f6900" type="op" isAssignmentOp="true" values="0x558319584e70" astOperand1="0x558319aac0e0" astOperand2="0x558318e9d530" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e9d530" file="air/tools/partition_assembler/libelf.c" linenr="106" column="15" str="0" scope="0x5583196f6900" type="number" isInt="true" values="0x558318e0a040" astParent="0x5583193655e0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d85960" file="air/tools/partition_assembler/libelf.c" linenr="106" column="16" str=";" scope="0x5583196f6900"/>
+    <token id="0x55831951a550" file="air/tools/partition_assembler/libelf.c" linenr="107" column="5" str="}" scope="0x5583196f6900" link="0x55831953a080"/>
+    <token id="0x558318e0dac0" file="air/tools/partition_assembler/libelf.c" linenr="110" column="5" str="if" scope="0x558318ad4190" type="name" astParent="0x558318eddca0"/>
+    <token id="0x558318eddca0" file="air/tools/partition_assembler/libelf.c" linenr="110" column="8" str="(" scope="0x558318ad4190" link="0x558318b07850" astOperand1="0x558318e0dac0" astOperand2="0x5583193682f0"/>
+    <token id="0x558318ba4d80" file="air/tools/partition_assembler/libelf.c" linenr="110" column="9" str="ret" scope="0x558318ad4190" type="name" varId="50" variable="0x5583195825e0" values="0x558318f46430" astParent="0x5583193682f0" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583193682f0" file="air/tools/partition_assembler/libelf.c" linenr="110" column="13" str="&amp;&amp;" scope="0x558318ad4190" type="op" isLogicalOp="true" astParent="0x558318eddca0" astOperand1="0x558318ba4d80" astOperand2="0x55831955b800" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x55831940d2c0" file="air/tools/partition_assembler/libelf.c" linenr="110" column="16" str="1" scope="0x558318ad4190" type="number" isInt="true" values="0x558318b09590" astParent="0x55831955b800" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x55831955b800" file="air/tools/partition_assembler/libelf.c" linenr="110" column="18" str="!=" scope="0x558318ad4190" type="op" isComparisonOp="true" astParent="0x5583193682f0" astOperand1="0x55831940d2c0" astOperand2="0x5583195379b0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318cd8610" file="air/tools/partition_assembler/libelf.c" linenr="110" column="21" str="Ehdr" scope="0x558318ad4190" type="name" varId="51" variable="0x558318de3960" values="0x55831931e650" astParent="0x558318b40750" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5583196d1d70"/>
+    <token id="0x558318b40750" file="air/tools/partition_assembler/libelf.c" linenr="110" column="25" str="." scope="0x558318ad4190" astParent="0x5583195379b0" astOperand1="0x558318cd8610" astOperand2="0x558318b207a0" originalName="->" valueType-type="char" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318b207a0" file="air/tools/partition_assembler/libelf.c" linenr="110" column="27" str="e_ident" scope="0x558318ad4190" type="name" varId="52" variable="0x558318d7a760" values="0x558318b68b20" astParent="0x558318b40750" valueType-type="char" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x5583195379b0" file="air/tools/partition_assembler/libelf.c" linenr="110" column="34" str="[" scope="0x558318ad4190" link="0x558319ae7f30" values="0x558318ddd7f0" astParent="0x55831955b800" astOperand1="0x558318b40750" astOperand2="0x558318effa80" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318effa80" file="air/tools/partition_assembler/libelf.c" linenr="110" column="35" str="4" scope="0x558318ad4190" type="number" isInt="true" values="0x558318d35330" astParent="0x5583195379b0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558319ae7f30" file="air/tools/partition_assembler/libelf.c" linenr="110" column="36" str="]" scope="0x558318ad4190" link="0x5583195379b0"/>
+    <token id="0x558318b07850" file="air/tools/partition_assembler/libelf.c" linenr="110" column="37" str=")" scope="0x558318ad4190" link="0x558318eddca0"/>
+    <token id="0x55831935bc90" file="air/tools/partition_assembler/libelf.c" linenr="110" column="38" str="{" scope="0x5583198b8f80" link="0x558318b61070"/>
+    <token id="0x558318cfe420" file="air/tools/partition_assembler/libelf.c" linenr="112" column="9" str="ret" scope="0x5583198b8f80" type="name" varId="50" variable="0x5583195825e0" values="0x558319695be0" astParent="0x558318cca7a0" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318cca7a0" file="air/tools/partition_assembler/libelf.c" linenr="112" column="13" str="=" scope="0x5583198b8f80" type="op" isAssignmentOp="true" values="0x558319458c90" astOperand1="0x558318cfe420" astOperand2="0x55831944a170" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831944a170" file="air/tools/partition_assembler/libelf.c" linenr="112" column="15" str="0" scope="0x5583198b8f80" type="number" isInt="true" values="0x558318aee4c0" astParent="0x558318cca7a0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558319979860" file="air/tools/partition_assembler/libelf.c" linenr="112" column="16" str=";" scope="0x5583198b8f80"/>
+    <token id="0x558318b61070" file="air/tools/partition_assembler/libelf.c" linenr="113" column="5" str="}" scope="0x5583198b8f80" link="0x55831935bc90"/>
+    <token id="0x558318b6a790" file="air/tools/partition_assembler/libelf.c" linenr="116" column="5" str="bool" scope="0x558318ad4190" type="name"/>
+    <token id="0x55831958eff0" file="air/tools/partition_assembler/libelf.c" linenr="116" column="10" str="mbig" scope="0x558318ad4190" type="name" varId="53" variable="0x558318d2e2d0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318ce0430" file="air/tools/partition_assembler/libelf.c" linenr="116" column="15" str=";" scope="0x558318ad4190" isSplittedVarDeclEq="true"/>
+    <token id="0x558318cc0e70" file="air/tools/partition_assembler/libelf.c" linenr="116" column="10" str="mbig" scope="0x558318ad4190" type="name" varId="53" variable="0x558318d2e2d0" astParent="0x558318ac48e0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318ac48e0" file="air/tools/partition_assembler/libelf.c" linenr="116" column="15" str="=" scope="0x558318ad4190" type="op" isAssignmentOp="true" astOperand1="0x558318cc0e70" astOperand2="0x558318e15520" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558319966f80" file="air/tools/partition_assembler/libelf.c" linenr="116" column="17" str="elf_machine_is_bigendian" scope="0x558318ad4190" type="name" function="0x55831984c5a0" astParent="0x558318e15520"/>
+    <token id="0x558318e15520" file="air/tools/partition_assembler/libelf.c" linenr="116" column="41" str="(" scope="0x558318ad4190" link="0x558318e8dc90" astParent="0x558318ac48e0" astOperand1="0x558319966f80" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318e8dc90" file="air/tools/partition_assembler/libelf.c" linenr="116" column="42" str=")" scope="0x558318ad4190" link="0x558318e15520"/>
+    <token id="0x558318b73200" file="air/tools/partition_assembler/libelf.c" linenr="116" column="43" str=";" scope="0x558318ad4190"/>
+    <token id="0x558318cd4bc0" file="air/tools/partition_assembler/libelf.c" linenr="117" column="5" str="bool" scope="0x558318ad4190" type="name"/>
+    <token id="0x5583194503a0" file="air/tools/partition_assembler/libelf.c" linenr="117" column="10" str="fbig" scope="0x558318ad4190" type="name" varId="54" variable="0x558318e70660" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318abb9f0" file="air/tools/partition_assembler/libelf.c" linenr="117" column="15" str=";" scope="0x558318ad4190" isSplittedVarDeclEq="true"/>
+    <token id="0x5583194149a0" file="air/tools/partition_assembler/libelf.c" linenr="117" column="10" str="fbig" scope="0x558318ad4190" type="name" varId="54" variable="0x558318e70660" astParent="0x558318afb280" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318afb280" file="air/tools/partition_assembler/libelf.c" linenr="117" column="15" str="=" scope="0x558318ad4190" type="op" isAssignmentOp="true" astOperand1="0x5583194149a0" astOperand2="0x558318ea22a0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318cc8ff0" file="air/tools/partition_assembler/libelf.c" linenr="117" column="17" str="Ehdr" scope="0x558318ad4190" type="name" varId="51" variable="0x558318de3960" values="0x558318b10690" astParent="0x558318da9460" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5583196d1d70"/>
+    <token id="0x558318da9460" file="air/tools/partition_assembler/libelf.c" linenr="117" column="21" str="." scope="0x558318ad4190" astParent="0x558319413ca0" astOperand1="0x558318cc8ff0" astOperand2="0x558318b2c770" originalName="->" valueType-type="char" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558318b2c770" file="air/tools/partition_assembler/libelf.c" linenr="117" column="23" str="e_ident" scope="0x558318ad4190" type="name" varId="52" variable="0x558318d7a760" values="0x558318b8e6c0" astParent="0x558318da9460" valueType-type="char" valueType-sign="unsigned" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x558319413ca0" file="air/tools/partition_assembler/libelf.c" linenr="117" column="30" str="[" scope="0x558318ad4190" link="0x558318af17f0" values="0x558318e92520" astParent="0x558319761fa0" astOperand1="0x558318da9460" astOperand2="0x55831995a650" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831995a650" file="air/tools/partition_assembler/libelf.c" linenr="117" column="31" str="5" scope="0x558318ad4190" type="number" isInt="true" values="0x558318afe580" astParent="0x558319413ca0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318af17f0" file="air/tools/partition_assembler/libelf.c" linenr="117" column="32" str="]" scope="0x558318ad4190" link="0x558319413ca0"/>
+    <token id="0x558319761fa0" file="air/tools/partition_assembler/libelf.c" linenr="117" column="34" str="==" scope="0x558318ad4190" type="op" isComparisonOp="true" astParent="0x558318ea22a0" astOperand1="0x558319413ca0" astOperand2="0x558318d112c0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318d112c0" file="air/tools/partition_assembler/libelf.c" linenr="117" column="37" str="2" scope="0x558318ad4190" type="number" isInt="true" values="0x558318b55e20" astParent="0x558319761fa0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318ea22a0" file="air/tools/partition_assembler/libelf.c" linenr="117" column="39" str="?" scope="0x558318ad4190" astParent="0x558318afb280" astOperand1="0x558319761fa0" astOperand2="0x558318d9fd90" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318baf5a0" file="air/tools/partition_assembler/libelf.c" linenr="117" column="41" str="true" scope="0x558318ad4190" type="name" astParent="0x558318d9fd90" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318d9fd90" file="air/tools/partition_assembler/libelf.c" linenr="117" column="46" str=":" scope="0x558318ad4190" astParent="0x558318ea22a0" astOperand1="0x558318baf5a0" astOperand2="0x558318e64fa0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318e64fa0" file="air/tools/partition_assembler/libelf.c" linenr="117" column="48" str="false" scope="0x558318ad4190" type="name" astParent="0x558318d9fd90" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x55831992d460" file="air/tools/partition_assembler/libelf.c" linenr="117" column="53" str=";" scope="0x558318ad4190"/>
+    <token id="0x558318ab7ba0" file="air/tools/partition_assembler/libelf.c" linenr="120" column="5" str="if" scope="0x558318ad4190" type="name" astParent="0x558318ce8590"/>
+    <token id="0x558318ce8590" file="air/tools/partition_assembler/libelf.c" linenr="120" column="8" str="(" scope="0x558318ad4190" link="0x558318b283c0" astOperand1="0x558318ab7ba0" astOperand2="0x558318b9a370"/>
+    <token id="0x558319a9dbe0" file="air/tools/partition_assembler/libelf.c" linenr="120" column="9" str="ret" scope="0x558318ad4190" type="name" varId="50" variable="0x5583195825e0" values="0x558319ad9ae0" astParent="0x558318b9a370" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b9a370" file="air/tools/partition_assembler/libelf.c" linenr="120" column="13" str="&amp;&amp;" scope="0x558318ad4190" type="op" isLogicalOp="true" astParent="0x558318ce8590" astOperand1="0x558319a9dbe0" astOperand2="0x5583198b37c0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x55831931b900" file="air/tools/partition_assembler/libelf.c" linenr="120" column="16" str="2" scope="0x558318ad4190" type="number" isInt="true" values="0x558319745530" astParent="0x5583198b37c0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x5583198b37c0" file="air/tools/partition_assembler/libelf.c" linenr="120" column="18" str="!=" scope="0x558318ad4190" type="op" isComparisonOp="true" astParent="0x558318b9a370" astOperand1="0x55831931b900" astOperand2="0x558318cb6c80" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318e71ad0" file="air/tools/partition_assembler/libelf.c" linenr="120" column="21" str="elf_correct_uint16" scope="0x558318ad4190" type="name" function="0x558319363640" astParent="0x558318cb6c80"/>
+    <token id="0x558318cb6c80" file="air/tools/partition_assembler/libelf.c" linenr="120" column="39" str="(" scope="0x558318ad4190" link="0x558318d86d10" values="0x558318eb0e60" astParent="0x5583198b37c0" astOperand1="0x558318e71ad0" astOperand2="0x5583193c98d0" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d699d0" file="air/tools/partition_assembler/libelf.c" linenr="120" column="40" str="Ehdr" scope="0x558318ad4190" type="name" varId="51" variable="0x558318de3960" values="0x558318b3d630" astParent="0x558319461ec0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5583196d1d70"/>
+    <token id="0x558319461ec0" file="air/tools/partition_assembler/libelf.c" linenr="120" column="44" str="." scope="0x558318ad4190" values="0x558319441ce0" astParent="0x558318dad020" astOperand1="0x558318d699d0" astOperand2="0x55831984cbe0" originalName="->" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831984cbe0" file="air/tools/partition_assembler/libelf.c" linenr="120" column="46" str="e_machine" scope="0x558318ad4190" type="name" varId="55" variable="0x558318ced330" values="0x558318d9d720" astParent="0x558319461ec0" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318dad020" file="air/tools/partition_assembler/libelf.c" linenr="120" column="55" str="," scope="0x558318ad4190" astParent="0x5583193c98d0" astOperand1="0x558319461ec0" astOperand2="0x558318d17e80"/>
+    <token id="0x558318d17e80" file="air/tools/partition_assembler/libelf.c" linenr="120" column="57" str="fbig" scope="0x558318ad4190" type="name" varId="54" variable="0x558318e70660" astParent="0x558318dad020" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x5583193c98d0" file="air/tools/partition_assembler/libelf.c" linenr="120" column="61" str="," scope="0x558318ad4190" astParent="0x558318cb6c80" astOperand1="0x558318dad020" astOperand2="0x5583196fb4f0"/>
+    <token id="0x5583196fb4f0" file="air/tools/partition_assembler/libelf.c" linenr="120" column="63" str="mbig" scope="0x558318ad4190" type="name" varId="53" variable="0x558318d2e2d0" astParent="0x5583193c98d0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318d86d10" file="air/tools/partition_assembler/libelf.c" linenr="120" column="67" str=")" scope="0x558318ad4190" link="0x558318cb6c80"/>
+    <token id="0x558318b283c0" file="air/tools/partition_assembler/libelf.c" linenr="120" column="68" str=")" scope="0x558318ad4190" link="0x558318ce8590"/>
+    <token id="0x558318adfbb0" file="air/tools/partition_assembler/libelf.c" linenr="120" column="69" str="{" scope="0x558318bbbd00" link="0x5583198443b0"/>
+    <token id="0x5583193b2510" file="air/tools/partition_assembler/libelf.c" linenr="122" column="9" str="ret" scope="0x558318bbbd00" type="name" varId="50" variable="0x5583195825e0" values="0x558318ddf0d0" astParent="0x558318e94150" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e94150" file="air/tools/partition_assembler/libelf.c" linenr="122" column="13" str="=" scope="0x558318bbbd00" type="op" isAssignmentOp="true" values="0x5583193b3cc0" astOperand1="0x5583193b2510" astOperand2="0x558318d1ac60" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d1ac60" file="air/tools/partition_assembler/libelf.c" linenr="122" column="15" str="0" scope="0x558318bbbd00" type="number" isInt="true" values="0x558318ab89a0" astParent="0x558318e94150" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558319857840" file="air/tools/partition_assembler/libelf.c" linenr="122" column="16" str=";" scope="0x558318bbbd00"/>
+    <token id="0x5583198443b0" file="air/tools/partition_assembler/libelf.c" linenr="123" column="5" str="}" scope="0x558318bbbd00" link="0x558318adfbb0"/>
+    <token id="0x5583199866f0" file="air/tools/partition_assembler/libelf.c" linenr="126" column="5" str="if" scope="0x558318ad4190" type="name" astParent="0x558318d83df0"/>
+    <token id="0x558318d83df0" file="air/tools/partition_assembler/libelf.c" linenr="126" column="8" str="(" scope="0x558318ad4190" link="0x558318d70830" astOperand1="0x5583199866f0" astOperand2="0x5583194071d0"/>
+    <token id="0x558318df1f10" file="air/tools/partition_assembler/libelf.c" linenr="126" column="9" str="ret" scope="0x558318ad4190" type="name" varId="50" variable="0x5583195825e0" values="0x55831939d980" astParent="0x5583194071d0" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583194071d0" file="air/tools/partition_assembler/libelf.c" linenr="126" column="13" str="&amp;&amp;" scope="0x558318ad4190" type="op" isLogicalOp="true" astParent="0x558318d83df0" astOperand1="0x558318df1f10" astOperand2="0x558319952560" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x5583197b7d70" file="air/tools/partition_assembler/libelf.c" linenr="126" column="16" str="1" scope="0x558318ad4190" type="number" isInt="true" values="0x5583193d6280" astParent="0x558319952560" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558319952560" file="air/tools/partition_assembler/libelf.c" linenr="126" column="18" str="!=" scope="0x558318ad4190" type="op" isComparisonOp="true" astParent="0x5583194071d0" astOperand1="0x5583197b7d70" astOperand2="0x558318cad4a0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318b3e1f0" file="air/tools/partition_assembler/libelf.c" linenr="126" column="21" str="elf_correct_uint32" scope="0x558318ad4190" type="name" function="0x558318e09d90" astParent="0x558318cad4a0"/>
+    <token id="0x558318cad4a0" file="air/tools/partition_assembler/libelf.c" linenr="126" column="39" str="(" scope="0x558318ad4190" link="0x558319538e30" values="0x558318e0a9a0" astParent="0x558319952560" astOperand1="0x558318b3e1f0" astOperand2="0x55831943b9e0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831974cf60" file="air/tools/partition_assembler/libelf.c" linenr="126" column="40" str="Ehdr" scope="0x558318ad4190" type="name" varId="51" variable="0x558318de3960" values="0x558318b44720" astParent="0x55831991eda0" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5583196d1d70"/>
+    <token id="0x55831991eda0" file="air/tools/partition_assembler/libelf.c" linenr="126" column="44" str="." scope="0x558318ad4190" values="0x558318ecb3f0" astParent="0x558318b91fd0" astOperand1="0x55831974cf60" astOperand2="0x558318d7d180" originalName="->" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d7d180" file="air/tools/partition_assembler/libelf.c" linenr="126" column="46" str="e_version" scope="0x558318ad4190" type="name" varId="56" variable="0x5583198dd2d0" values="0x558318cbd620" astParent="0x55831991eda0" valueType-type="int" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b91fd0" file="air/tools/partition_assembler/libelf.c" linenr="126" column="55" str="," scope="0x558318ad4190" astParent="0x55831943b9e0" astOperand1="0x55831991eda0" astOperand2="0x558319a9df20"/>
+    <token id="0x558319a9df20" file="air/tools/partition_assembler/libelf.c" linenr="126" column="57" str="fbig" scope="0x558318ad4190" type="name" varId="54" variable="0x558318e70660" astParent="0x558318b91fd0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x55831943b9e0" file="air/tools/partition_assembler/libelf.c" linenr="126" column="61" str="," scope="0x558318ad4190" astParent="0x558318cad4a0" astOperand1="0x558318b91fd0" astOperand2="0x558318ef1630"/>
+    <token id="0x558318ef1630" file="air/tools/partition_assembler/libelf.c" linenr="126" column="63" str="mbig" scope="0x558318ad4190" type="name" varId="53" variable="0x558318d2e2d0" astParent="0x55831943b9e0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558319538e30" file="air/tools/partition_assembler/libelf.c" linenr="126" column="67" str=")" scope="0x558318ad4190" link="0x558318cad4a0"/>
+    <token id="0x558318d70830" file="air/tools/partition_assembler/libelf.c" linenr="126" column="68" str=")" scope="0x558318ad4190" link="0x558318d83df0"/>
+    <token id="0x558319424610" file="air/tools/partition_assembler/libelf.c" linenr="126" column="69" str="{" scope="0x558318cc3140" link="0x558318db5a30"/>
+    <token id="0x558319741330" file="air/tools/partition_assembler/libelf.c" linenr="128" column="9" str="ret" scope="0x558318cc3140" type="name" varId="50" variable="0x5583195825e0" values="0x558319acb770" astParent="0x5583193dc4e0" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583193dc4e0" file="air/tools/partition_assembler/libelf.c" linenr="128" column="13" str="=" scope="0x558318cc3140" type="op" isAssignmentOp="true" values="0x558319a891b0" astOperand1="0x558319741330" astOperand2="0x55831943e690" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x55831943e690" file="air/tools/partition_assembler/libelf.c" linenr="128" column="15" str="0" scope="0x558318cc3140" type="number" isInt="true" values="0x558318e1a270" astParent="0x5583193dc4e0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318ea1260" file="air/tools/partition_assembler/libelf.c" linenr="128" column="16" str=";" scope="0x558318cc3140"/>
+    <token id="0x558318db5a30" file="air/tools/partition_assembler/libelf.c" linenr="129" column="5" str="}" scope="0x558318cc3140" link="0x558319424610"/>
+    <token id="0x558318de35a0" file="air/tools/partition_assembler/libelf.c" linenr="132" column="5" str="if" scope="0x558318ad4190" type="name" astParent="0x558319777e50"/>
+    <token id="0x558319777e50" file="air/tools/partition_assembler/libelf.c" linenr="132" column="8" str="(" scope="0x558318ad4190" link="0x558318caa780" astOperand1="0x558318de35a0" astOperand2="0x558318e501d0"/>
+    <token id="0x558318e97f30" file="air/tools/partition_assembler/libelf.c" linenr="132" column="9" str="ret" scope="0x558318ad4190" type="name" varId="50" variable="0x5583195825e0" values="0x558318ab9c90" astParent="0x558318e501d0" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e501d0" file="air/tools/partition_assembler/libelf.c" linenr="132" column="13" str="&amp;&amp;" scope="0x558318ad4190" type="op" isLogicalOp="true" astParent="0x558319777e50" astOperand1="0x558318e97f30" astOperand2="0x5583198b36a0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x55831952e6f0" file="air/tools/partition_assembler/libelf.c" linenr="132" column="16" str="2" scope="0x558318ad4190" type="number" isInt="true" values="0x558318ecc6c0" astParent="0x5583198b36a0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x5583198b36a0" file="air/tools/partition_assembler/libelf.c" linenr="132" column="18" str="!=" scope="0x558318ad4190" type="op" isComparisonOp="true" astParent="0x558318e501d0" astOperand1="0x55831952e6f0" astOperand2="0x558318d05bf0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318d7a8b0" file="air/tools/partition_assembler/libelf.c" linenr="132" column="21" str="elf_correct_uint16" scope="0x558318ad4190" type="name" function="0x558319363640" astParent="0x558318d05bf0"/>
+    <token id="0x558318d05bf0" file="air/tools/partition_assembler/libelf.c" linenr="132" column="39" str="(" scope="0x558318ad4190" link="0x5583193e37d0" values="0x558318e1b0f0" astParent="0x5583198b36a0" astOperand1="0x558318d7a8b0" astOperand2="0x558318ccfe70" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318cc3c00" file="air/tools/partition_assembler/libelf.c" linenr="132" column="40" str="Ehdr" scope="0x558318ad4190" type="name" varId="51" variable="0x558318de3960" values="0x558318b3b6d0" astParent="0x558318ae3e30" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5583196d1d70"/>
+    <token id="0x558318ae3e30" file="air/tools/partition_assembler/libelf.c" linenr="132" column="44" str="." scope="0x558318ad4190" values="0x55831944b1f0" astParent="0x558318b9f670" astOperand1="0x558318cc3c00" astOperand2="0x558318d70b80" originalName="->" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d70b80" file="air/tools/partition_assembler/libelf.c" linenr="132" column="46" str="e_type" scope="0x558318ad4190" type="name" varId="57" variable="0x558318b99610" values="0x558318db1970" astParent="0x558318ae3e30" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318b9f670" file="air/tools/partition_assembler/libelf.c" linenr="132" column="52" str="," scope="0x558318ad4190" astParent="0x558318ccfe70" astOperand1="0x558318ae3e30" astOperand2="0x5583192c46d0"/>
+    <token id="0x5583192c46d0" file="air/tools/partition_assembler/libelf.c" linenr="132" column="54" str="fbig" scope="0x558318ad4190" type="name" varId="54" variable="0x558318e70660" astParent="0x558318b9f670" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318ccfe70" file="air/tools/partition_assembler/libelf.c" linenr="132" column="58" str="," scope="0x558318ad4190" astParent="0x558318d05bf0" astOperand1="0x558318b9f670" astOperand2="0x558318c97090"/>
+    <token id="0x558318c97090" file="air/tools/partition_assembler/libelf.c" linenr="132" column="60" str="mbig" scope="0x558318ad4190" type="name" varId="53" variable="0x558318d2e2d0" astParent="0x558318ccfe70" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x5583193e37d0" file="air/tools/partition_assembler/libelf.c" linenr="132" column="64" str=")" scope="0x558318ad4190" link="0x558318d05bf0"/>
+    <token id="0x558318caa780" file="air/tools/partition_assembler/libelf.c" linenr="132" column="65" str=")" scope="0x558318ad4190" link="0x558319777e50"/>
+    <token id="0x558318e00270" file="air/tools/partition_assembler/libelf.c" linenr="132" column="66" str="{" scope="0x558318da8f00" link="0x558318ad80e0"/>
+    <token id="0x558318de63d0" file="air/tools/partition_assembler/libelf.c" linenr="134" column="9" str="ret" scope="0x558318da8f00" type="name" varId="50" variable="0x5583195825e0" values="0x558318e7b0c0" astParent="0x558318d663e0" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318d663e0" file="air/tools/partition_assembler/libelf.c" linenr="134" column="13" str="=" scope="0x558318da8f00" type="op" isAssignmentOp="true" values="0x558318e042d0" astOperand1="0x558318de63d0" astOperand2="0x558318eee9d0" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318eee9d0" file="air/tools/partition_assembler/libelf.c" linenr="134" column="15" str="0" scope="0x558318da8f00" type="number" isInt="true" values="0x558318ce41e0" astParent="0x558318d663e0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318d94240" file="air/tools/partition_assembler/libelf.c" linenr="134" column="16" str=";" scope="0x558318da8f00"/>
+    <token id="0x558318ad80e0" file="air/tools/partition_assembler/libelf.c" linenr="135" column="5" str="}" scope="0x558318da8f00" link="0x558318e00270"/>
+    <token id="0x5583197080d0" file="air/tools/partition_assembler/libelf.c" linenr="138" column="5" str="if" scope="0x558318ad4190" type="name" astParent="0x558318e40c30"/>
+    <token id="0x558318e40c30" file="air/tools/partition_assembler/libelf.c" linenr="138" column="8" str="(" scope="0x558318ad4190" link="0x55831944a200" astOperand1="0x5583197080d0" astOperand2="0x558318babb20"/>
+    <token id="0x558318bb2d60" file="air/tools/partition_assembler/libelf.c" linenr="138" column="9" str="ret" scope="0x558318ad4190" type="name" varId="50" variable="0x5583195825e0" values="0x55831951a600" astParent="0x558318babb20" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318babb20" file="air/tools/partition_assembler/libelf.c" linenr="138" column="13" str="&amp;&amp;" scope="0x558318ad4190" type="op" isLogicalOp="true" astParent="0x558318e40c30" astOperand1="0x558318bb2d60" astOperand2="0x558318eee110" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318d16d50" file="air/tools/partition_assembler/libelf.c" linenr="138" column="16" str="0" scope="0x558318ad4190" type="number" isInt="true" values="0x558318e98110" astParent="0x558318eee110" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318eee110" file="air/tools/partition_assembler/libelf.c" linenr="138" column="18" str="&gt;=" scope="0x558318ad4190" type="op" isComparisonOp="true" astParent="0x558318babb20" astOperand1="0x558318d16d50" astOperand2="0x558318cdb620" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558319961340" file="air/tools/partition_assembler/libelf.c" linenr="138" column="21" str="elf_correct_uint16" scope="0x558318ad4190" type="name" function="0x558319363640" astParent="0x558318cdb620"/>
+    <token id="0x558318cdb620" file="air/tools/partition_assembler/libelf.c" linenr="138" column="39" str="(" scope="0x558318ad4190" link="0x558318d18ec0" values="0x558318bbdd00" astParent="0x558318eee110" astOperand1="0x558319961340" astOperand2="0x55831974d6e0" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318aee9a0" file="air/tools/partition_assembler/libelf.c" linenr="138" column="40" str="Ehdr" scope="0x558318ad4190" type="name" varId="51" variable="0x558318de3960" values="0x558318d29c40" astParent="0x558318ce5640" valueType-type="record" valueType-pointer="1" valueType-reference="None" valueType-typeScope="0x5583196d1d70"/>
+    <token id="0x558318ce5640" file="air/tools/partition_assembler/libelf.c" linenr="138" column="44" str="." scope="0x558318ad4190" values="0x558318b53680" astParent="0x558319584010" astOperand1="0x558318aee9a0" astOperand2="0x558318ccc6c0" originalName="->" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318ccc6c0" file="air/tools/partition_assembler/libelf.c" linenr="138" column="46" str="e_phnum" scope="0x558318ad4190" type="name" varId="58" variable="0x558318b78700" values="0x558318d76a10" astParent="0x558318ce5640" valueType-type="short" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319584010" file="air/tools/partition_assembler/libelf.c" linenr="138" column="53" str="," scope="0x558318ad4190" astParent="0x55831974d6e0" astOperand1="0x558318ce5640" astOperand2="0x558318b09130"/>
+    <token id="0x558318b09130" file="air/tools/partition_assembler/libelf.c" linenr="138" column="55" str="fbig" scope="0x558318ad4190" type="name" varId="54" variable="0x558318e70660" astParent="0x558319584010" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x55831974d6e0" file="air/tools/partition_assembler/libelf.c" linenr="138" column="59" str="," scope="0x558318ad4190" astParent="0x558318cdb620" astOperand1="0x558319584010" astOperand2="0x5583193a5d00"/>
+    <token id="0x5583193a5d00" file="air/tools/partition_assembler/libelf.c" linenr="138" column="61" str="mbig" scope="0x558318ad4190" type="name" varId="53" variable="0x558318d2e2d0" astParent="0x55831974d6e0" valueType-type="bool" valueType-reference="None"/>
+    <token id="0x558318d18ec0" file="air/tools/partition_assembler/libelf.c" linenr="138" column="65" str=")" scope="0x558318ad4190" link="0x558318cdb620"/>
+    <token id="0x55831944a200" file="air/tools/partition_assembler/libelf.c" linenr="138" column="66" str=")" scope="0x558318ad4190" link="0x558318e40c30"/>
+    <token id="0x5583193e9550" file="air/tools/partition_assembler/libelf.c" linenr="138" column="67" str="{" scope="0x558318cc9840" link="0x55831984ccb0"/>
+    <token id="0x558318eaf3a0" file="air/tools/partition_assembler/libelf.c" linenr="140" column="9" str="ret" scope="0x558318cc9840" type="name" varId="50" variable="0x5583195825e0" values="0x55831937b4d0" astParent="0x558318e83fb0" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318e83fb0" file="air/tools/partition_assembler/libelf.c" linenr="140" column="13" str="=" scope="0x558318cc9840" type="op" isAssignmentOp="true" values="0x558318b03e80" astOperand1="0x558318eaf3a0" astOperand2="0x5583193c9980" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x5583193c9980" file="air/tools/partition_assembler/libelf.c" linenr="140" column="15" str="0" scope="0x558318cc9840" type="number" isInt="true" values="0x558318d5d070" astParent="0x558318e83fb0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x558318ec1940" file="air/tools/partition_assembler/libelf.c" linenr="140" column="16" str=";" scope="0x558318cc9840"/>
+    <token id="0x55831984ccb0" file="air/tools/partition_assembler/libelf.c" linenr="141" column="5" str="}" scope="0x558318cc9840" link="0x5583193e9550"/>
+    <token id="0x558318dfe150" file="air/tools/partition_assembler/libelf.c" linenr="143" column="5" str="return" scope="0x558318ad4190" type="name" values="0x558318aa8930" astOperand1="0x558318ce71f0" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558318ce71f0" file="air/tools/partition_assembler/libelf.c" linenr="143" column="12" str="ret" scope="0x558318ad4190" type="name" varId="50" variable="0x5583195825e0" values="0x5583193d7a50" astParent="0x558318dfe150" valueType-type="char" valueType-sign="unsigned" valueType-reference="None"/>
+    <token id="0x558319675810" file="air/tools/partition_assembler/libelf.c" linenr="143" column="15" str=";" scope="0x558318ad4190"/>
+    <token id="0x558318d8fac0" file="air/tools/partition_assembler/libelf.c" linenr="144" column="1" str="}" scope="0x558318ad4190" link="0x558318afd460"/>
+  </tokenlist>
+  <scopes>
+    <scope id="0x558318b90890" type="Global">
+      <functionList>
+        <function id="0x55831984c5a0" token="0x558319983130" tokenDef="0x5583194500e0" name="elf_machine_is_bigendian" type="Function"/>
+        <function id="0x5583198424e0" token="0x558318e42ed0" tokenDef="0x558318f54e10" name="elf_check" type="Function">
+          <arg nr="1" variable="0x558318ab4cc0"/>
+        </function>
+        <function id="0x558319363640" token="0x558318dfd8d0" tokenDef="0x55831939f980" name="elf_correct_uint16" type="Function">
+          <arg nr="1" variable="0x558318af5860"/>
+          <arg nr="2" variable="0x558318b28480"/>
+          <arg nr="3" variable="0x558318b1b100"/>
+        </function>
+        <function id="0x558318e09d90" token="0x558318b4a880" tokenDef="0x5583194176d0" name="elf_correct_uint32" type="Function">
+          <arg nr="1" variable="0x558318eab500"/>
+          <arg nr="2" variable="0x558318e9ac30"/>
+          <arg nr="3" variable="0x558318d73df0"/>
+        </function>
+      </functionList>
+    </scope>
+    <scope id="0x5583196d1d70" type="Struct" className="Elf32_Ehdr" bodyStart="0x55831991ecf0" bodyEnd="0x558318ae5d00" nestedIn="0x558318b90890">
+      <varlist>
+        <var id="0x558318d7a760"/>
+        <var id="0x558318b99610"/>
+        <var id="0x558318ced330"/>
+        <var id="0x5583198dd2d0"/>
+        <var id="0x558318f46cc0"/>
+        <var id="0x558318f00a30"/>
+        <var id="0x55831985d910"/>
+        <var id="0x558319aceb80"/>
+        <var id="0x558319770340"/>
+        <var id="0x558318b69ce0"/>
+        <var id="0x558318b78700"/>
+        <var id="0x5583198ad4d0"/>
+        <var id="0x558318ba60f0"/>
+        <var id="0x5583194523b0"/>
+      </varlist>
+    </scope>
+    <scope id="0x558318dab010" type="Struct" className="Elf32_Shdr" bodyStart="0x558318e3fb80" bodyEnd="0x55831997e670" nestedIn="0x558318b90890">
+      <varlist>
+        <var id="0x558319417f80"/>
+        <var id="0x558318e17a40"/>
+        <var id="0x558318d26120"/>
+        <var id="0x558319ad8170"/>
+        <var id="0x558318e09cf0"/>
+        <var id="0x558318ef1eb0"/>
+        <var id="0x558319ae6e10"/>
+        <var id="0x558318ab8d40"/>
+        <var id="0x558318b35240"/>
+        <var id="0x55831944d460"/>
+      </varlist>
+    </scope>
+    <scope id="0x558319585e10" type="Struct" className="Elf32_Phdr" bodyStart="0x558318ad6b00" bodyEnd="0x558318d6bce0" nestedIn="0x558318b90890">
+      <varlist>
+        <var id="0x558318af9030"/>
+        <var id="0x558318da4070"/>
+        <var id="0x558318b61980"/>
+        <var id="0x558318ba3890"/>
+        <var id="0x5583197398c0"/>
+        <var id="0x558318d18ad0"/>
+        <var id="0x558319408110"/>
+        <var id="0x55831955f1b0"/>
+      </varlist>
+    </scope>
+    <scope id="0x558319ae8da0" type="Function" className="elf_machine_is_bigendian" bodyStart="0x558318f096e0" bodyEnd="0x5583191d6cb0" nestedIn="0x558318b90890" function="0x55831984c5a0">
+      <varlist>
+        <var id="0x558318ca0560"/>
+      </varlist>
+    </scope>
+    <scope id="0x558318e4c810" type="Function" className="elf_correct_uint16" bodyStart="0x558318db5970" bodyEnd="0x558318bb2750" nestedIn="0x558318b90890" function="0x558319363640">
+      <varlist>
+        <var id="0x558318d50e30"/>
+      </varlist>
+    </scope>
+    <scope id="0x558318abd350" type="If" bodyStart="0x55831976bc50" bodyEnd="0x558318b7cf00" nestedIn="0x558318e4c810"/>
+    <scope id="0x558318d9d770" type="Function" className="elf_correct_uint32" bodyStart="0x558318ea74e0" bodyEnd="0x558318e1b270" nestedIn="0x558318b90890" function="0x558318e09d90">
+      <varlist>
+        <var id="0x558318d3ffb0"/>
+      </varlist>
+    </scope>
+    <scope id="0x558319699f80" type="If" bodyStart="0x5583191d1600" bodyEnd="0x558318d11650" nestedIn="0x558318d9d770"/>
+    <scope id="0x558318ad4190" type="Function" className="elf_check" bodyStart="0x558318afd460" bodyEnd="0x558318d8fac0" nestedIn="0x558318b90890" function="0x5583198424e0">
+      <varlist>
+        <var id="0x5583195825e0"/>
+        <var id="0x558318de3960"/>
+        <var id="0x558318d2e2d0"/>
+        <var id="0x558318e70660"/>
+      </varlist>
+    </scope>
+    <scope id="0x5583196f6900" type="If" bodyStart="0x55831953a080" bodyEnd="0x55831951a550" nestedIn="0x558318ad4190"/>
+    <scope id="0x5583198b8f80" type="If" bodyStart="0x55831935bc90" bodyEnd="0x558318b61070" nestedIn="0x558318ad4190"/>
+    <scope id="0x558318bbbd00" type="If" bodyStart="0x558318adfbb0" bodyEnd="0x5583198443b0" nestedIn="0x558318ad4190"/>
+    <scope id="0x558318cc3140" type="If" bodyStart="0x558319424610" bodyEnd="0x558318db5a30" nestedIn="0x558318ad4190"/>
+    <scope id="0x558318da8f00" type="If" bodyStart="0x558318e00270" bodyEnd="0x558318ad80e0" nestedIn="0x558318ad4190"/>
+    <scope id="0x558318cc9840" type="If" bodyStart="0x5583193e9550" bodyEnd="0x55831984ccb0" nestedIn="0x558318ad4190"/>
+  </scopes>
+  <variables>
+    <var id="0x558318ab4cc0" nameToken="0x558318e79b10" typeStartToken="0x558318e86bb0" typeEndToken="0x558318c9da50" access="Argument" scope="0x558318ad4190" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318ab8d40" nameToken="0x558319514b60" typeStartToken="0x558318b7b710" typeEndToken="0x558318b7b710" access="Public" scope="0x558318dab010" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318af5860" nameToken="0x558318b1f910" typeStartToken="0x558318ef4370" typeEndToken="0x558318ef4370" access="Argument" scope="0x558318e4c810" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318af9030" nameToken="0x55831979d690" typeStartToken="0x558319462630" typeEndToken="0x558319462630" access="Public" scope="0x558319585e10" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b1b100" nameToken="0x558319863ef0" typeStartToken="0x5583196f00c0" typeEndToken="0x5583196f00c0" access="Argument" scope="0x558318e4c810" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b28480" nameToken="0x558318af7d00" typeStartToken="0x558318b633e0" typeEndToken="0x558318b633e0" access="Argument" scope="0x558318e4c810" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b35240" nameToken="0x558318d86b90" typeStartToken="0x5583198e5060" typeEndToken="0x5583198e5060" access="Public" scope="0x558318dab010" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b61980" nameToken="0x558318e0a1e0" typeStartToken="0x558318d61600" typeEndToken="0x558318d61600" access="Public" scope="0x558319585e10" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b69ce0" nameToken="0x558318b1a480" typeStartToken="0x5583196dc9c0" typeEndToken="0x5583196dc9c0" access="Public" scope="0x5583196d1d70" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b78700" nameToken="0x558318d66220" typeStartToken="0x55831970ec40" typeEndToken="0x55831970ec40" access="Public" scope="0x5583196d1d70" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318b99610" nameToken="0x558318eb5940" typeStartToken="0x558318b52690" typeEndToken="0x558318b52690" access="Public" scope="0x5583196d1d70" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318ba3890" nameToken="0x55831967fbf0" typeStartToken="0x558318dd68d0" typeEndToken="0x558318dd68d0" access="Public" scope="0x558319585e10" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318ba60f0" nameToken="0x558318b3a450" typeStartToken="0x558318b16480" typeEndToken="0x558318b16480" access="Public" scope="0x5583196d1d70" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318ca0560" nameToken="0x558318eb3190" typeStartToken="0x5583196f1740" typeEndToken="0x5583196f1740" access="Local" scope="0x558319ae8da0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="true"/>
+    <var id="0x558318ced330" nameToken="0x558318daebe0" typeStartToken="0x55831997d5b0" typeEndToken="0x55831997d5b0" access="Public" scope="0x5583196d1d70" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d18ad0" nameToken="0x558318b25780" typeStartToken="0x55831969ab20" typeEndToken="0x55831969ab20" access="Public" scope="0x558319585e10" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d26120" nameToken="0x5583193e78c0" typeStartToken="0x558319708010" typeEndToken="0x558319708010" access="Public" scope="0x558318dab010" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d2e2d0" nameToken="0x55831958eff0" typeStartToken="0x558318b6a790" typeEndToken="0x558318b6a790" access="Local" scope="0x558318ad4190" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d3ffb0" nameToken="0x558318ad92e0" typeStartToken="0x558319986140" typeEndToken="0x558319986140" access="Local" scope="0x558318d9d770" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d50e30" nameToken="0x558319768cc0" typeStartToken="0x5583198cb0a0" typeEndToken="0x5583198cb0a0" access="Local" scope="0x558318e4c810" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d73df0" nameToken="0x5583196d2380" typeStartToken="0x55831976ba40" typeEndToken="0x55831976ba40" access="Argument" scope="0x558318d9d770" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318d7a760" nameToken="0x5583193fd2d0" typeStartToken="0x55831952f590" typeEndToken="0x55831952f590" access="Public" scope="0x5583196d1d70" constness="0" isArray="true" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318da4070" nameToken="0x558318f5fa90" typeStartToken="0x558318d55d50" typeEndToken="0x558318d55d50" access="Public" scope="0x558319585e10" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318de3960" nameToken="0x558318afda40" typeStartToken="0x558318c9d0e0" typeEndToken="0x558319ad3dd0" access="Local" scope="0x558318ad4190" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318e09cf0" nameToken="0x558318ec8860" typeStartToken="0x5583193ef2e0" typeEndToken="0x5583193ef2e0" access="Public" scope="0x558318dab010" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318e17a40" nameToken="0x5583193d6d20" typeStartToken="0x5583198e5ea0" typeEndToken="0x5583198e5ea0" access="Public" scope="0x558318dab010" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318e70660" nameToken="0x5583194503a0" typeStartToken="0x558318cd4bc0" typeEndToken="0x558318cd4bc0" access="Local" scope="0x558318ad4190" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318e9ac30" nameToken="0x558318d5b0f0" typeStartToken="0x55831974d770" typeEndToken="0x55831974d770" access="Argument" scope="0x558318d9d770" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318eab500" nameToken="0x558318d755a0" typeStartToken="0x558318e31ca0" typeEndToken="0x558318e31ca0" access="Argument" scope="0x558318d9d770" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318ef1eb0" nameToken="0x5583193dd110" typeStartToken="0x558318b17a70" typeEndToken="0x558318b17a70" access="Public" scope="0x558318dab010" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318f00a30" nameToken="0x558319327d90" typeStartToken="0x558319752630" typeEndToken="0x558319752630" access="Public" scope="0x5583196d1d70" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558318f46cc0" nameToken="0x558318de7f90" typeStartToken="0x558318b90dc0" typeEndToken="0x558318b90dc0" access="Public" scope="0x5583196d1d70" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558319408110" nameToken="0x558318f5af40" typeStartToken="0x558318b6a360" typeEndToken="0x558318b6a360" access="Public" scope="0x558319585e10" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558319417f80" nameToken="0x55831944cea0" typeStartToken="0x558318b65ac0" typeEndToken="0x558318b65ac0" access="Public" scope="0x558318dab010" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x55831944d460" nameToken="0x558318b1a7f0" typeStartToken="0x5583191cef30" typeEndToken="0x5583191cef30" access="Public" scope="0x558318dab010" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x5583194523b0" nameToken="0x5583198bc070" typeStartToken="0x558318d234c0" typeEndToken="0x558318d234c0" access="Public" scope="0x5583196d1d70" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x55831955f1b0" nameToken="0x558318c9d9c0" typeStartToken="0x558318b65200" typeEndToken="0x558318b65200" access="Public" scope="0x558319585e10" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x5583195825e0" nameToken="0x558318bb9fb0" typeStartToken="0x5583198e7960" typeEndToken="0x5583198e7960" access="Local" scope="0x558318ad4190" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x5583197398c0" nameToken="0x55831953a4a0" typeStartToken="0x558319587db0" typeEndToken="0x558319587db0" access="Public" scope="0x558319585e10" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558319770340" nameToken="0x5583198c32a0" typeStartToken="0x558318b7d530" typeEndToken="0x558318b7d530" access="Public" scope="0x5583196d1d70" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x55831985d910" nameToken="0x5583197703e0" typeStartToken="0x558319736680" typeEndToken="0x558319736680" access="Public" scope="0x5583196d1d70" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x5583198ad4d0" nameToken="0x558318ddee50" typeStartToken="0x558318ad1ff0" typeEndToken="0x558318ad1ff0" access="Public" scope="0x5583196d1d70" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x5583198dd2d0" nameToken="0x558318d55710" typeStartToken="0x558319960b60" typeEndToken="0x558319960b60" access="Public" scope="0x5583196d1d70" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558319aceb80" nameToken="0x558319931190" typeStartToken="0x558318b41f40" typeEndToken="0x558318b41f40" access="Public" scope="0x5583196d1d70" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558319ad8170" nameToken="0x558319113840" typeStartToken="0x558319975fd0" typeEndToken="0x558319975fd0" access="Public" scope="0x558318dab010" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x558319ae6e10" nameToken="0x558318da5ff0" typeStartToken="0x558318d572f0" typeEndToken="0x558318d572f0" access="Public" scope="0x558318dab010" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="false" isReference="false" isStatic="false" isVolatile="false"/>
+  </variables>
+  <valueflow>
+    <values id="0x558319ad09d0">
+      <value intvalue="16" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x5583198acca0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x55831976ffa0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318ce8370">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583196fe730">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318cf0a30">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b82cc0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x55831991bdf0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318bb2cf0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d910c0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318e99760">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318cff050">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583197b8770">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318aacb00">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318dd8970">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318da90b0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x55831939c410">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b25910">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319767d20">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d73c80">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318ad1eb0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583196d6060">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583196d96e0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318ad4da0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319850b20">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d69830">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318ccfda0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b4f570">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583193a86b0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318af9450">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318bb7de0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318cb96d0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319574140">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318dc4700">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318ea09f0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319754510">
+      <value intvalue="1" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558319974330">
+      <value intvalue="1" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b32df0">
+      <value intvalue="1" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x55831976b550">
+      <value lifetime="0x558318ac50e0" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318dcc6d0">
+      <value lifetime="0x558318ac50e0" lifetime-scope="Local" lifetime-kind="Address" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x5583198d0cb0">
+      <value intvalue="1" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x5583198c4aa0">
+      <value intvalue="1" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x55831995a890">
+      <value intvalue="1" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x55831993d960">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318e54610">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319419970">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318e1efe0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319a9cee0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x55831995abc0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583193b0430">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318ddd5b0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319776c00">
+      <value symbolic="0x55831970e6c0" symbolic-delta="0" bound="Point" known="true" path="0"/>
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b00320">
+      <value intvalue="8" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x55831974d1c0">
+      <value symbolic="0x55831970e6c0" symbolic-delta="0" bound="Point" known="true" path="0"/>
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318dc71b0">
+      <value intvalue="8" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x55831989a2d0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x55831976ae60">
+      <value symbolic="0x55831939cbd0" symbolic-delta="0" bound="Point" possible="true" path="0"/>
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b36360">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319538100">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b88670">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b97be0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318f00b30">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583196e99f0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x55831952b830">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318ebc160">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318baaaa0">
+      <value symbolic="0x55831973da40" symbolic-delta="0" bound="Point" known="true" path="0"/>
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b7e8a0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318a88da0">
+      <value intvalue="24" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d81e90">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d58930">
+      <value intvalue="255" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x55831984b980">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583193a6060">
+      <value symbolic="0x55831973da40" symbolic-delta="0" bound="Point" known="true" path="0"/>
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x55831954b320">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d6ed10">
+      <value intvalue="8" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x5583199883b0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583196f3f90">
+      <value intvalue="16711680" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318aac630">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b99d40">
+      <value symbolic="0x55831973da40" symbolic-delta="0" bound="Point" known="true" path="0"/>
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319983bd0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b3ffd0">
+      <value intvalue="8" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d429e0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583196d74c0">
+      <value intvalue="65280" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b19350">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318dac030">
+      <value symbolic="0x55831973da40" symbolic-delta="0" bound="Point" known="true" path="0"/>
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x55831952d870">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b428b0">
+      <value intvalue="24" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b0f2e0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318ba77b0">
+      <value intvalue="4278190080" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x55831992af40">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583196e8cd0">
+      <value symbolic="0x558319368410" symbolic-delta="0" bound="Point" possible="true" path="0"/>
+      <value symbolic="0x5583193dd7f0" symbolic-delta="0" bound="Point" possible="true" path="0"/>
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318eafaf0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583198a3a70">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b49fd0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b0faf0">
+      <value intvalue="1" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d2e550">
+      <value intvalue="1" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x5583194403f0">
+      <value intvalue="127" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318ba5e80">
+      <value symbolic="0x558319a9da30" symbolic-delta="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d42020">
+      <value lifetime="0x5583193fd2d0" lifetime-scope="Local" lifetime-kind="Object" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318cfe3c0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319366190">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d1d1a0">
+      <value intvalue="69" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b412c0">
+      <value symbolic="0x558319a9da30" symbolic-delta="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318bacab0">
+      <value lifetime="0x5583193fd2d0" lifetime-scope="Local" lifetime-kind="Object" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558319aca950">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318edcf00">
+      <value intvalue="1" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x5583195381a0">
+      <value intvalue="76" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318cc3e20">
+      <value symbolic="0x558319a9da30" symbolic-delta="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x5583196f5540">
+      <value lifetime="0x5583193fd2d0" lifetime-scope="Local" lifetime-kind="Object" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318e17800">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x55831967fc80">
+      <value intvalue="2" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x5583191d2780">
+      <value intvalue="70" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b90b50">
+      <value symbolic="0x558319a9da30" symbolic-delta="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x5583196d0610">
+      <value lifetime="0x5583193fd2d0" lifetime-scope="Local" lifetime-kind="Object" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318db1630">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b753b0">
+      <value intvalue="3" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x5583198c8810">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319584e70">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318e0a040">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318f46430">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+      <value intvalue="1" bound="Point" possible="true" path="0"/>
+      <value intvalue="0" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318b09590">
+      <value intvalue="1" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x55831931e650">
+      <value symbolic="0x558319a9da30" symbolic-delta="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b68b20">
+      <value lifetime="0x5583193fd2d0" lifetime-scope="Local" lifetime-kind="Object" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318ddd7f0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d35330">
+      <value intvalue="4" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558319695be0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319458c90">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318aee4c0">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b10690">
+      <value symbolic="0x558319a9da30" symbolic-delta="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b8e6c0">
+      <value lifetime="0x5583193fd2d0" lifetime-scope="Local" lifetime-kind="Object" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318e92520">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318afe580">
+      <value intvalue="5" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b55e20">
+      <value intvalue="2" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558319ad9ae0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319745530">
+      <value intvalue="2" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318eb0e60">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b3d630">
+      <value symbolic="0x558319a9da30" symbolic-delta="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558319441ce0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d9d720">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318ddf0d0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583193b3cc0">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318ab89a0">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x55831939d980">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+      <value intvalue="0" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x5583193d6280">
+      <value intvalue="1" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318e0a9a0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b44720">
+      <value symbolic="0x558319a9da30" symbolic-delta="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318ecb3f0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318cbd620">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319acb770">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558319a891b0">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318e1a270">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318ab9c90">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+      <value intvalue="0" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318ecc6c0">
+      <value intvalue="2" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318e1b0f0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b3b6d0">
+      <value symbolic="0x558319a9da30" symbolic-delta="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x55831944b1f0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318db1970">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318e7b0c0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318e042d0">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318ce41e0">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x55831951a600">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+      <value intvalue="0" bound="Point" possible="true" path="0"/>
+    </values>
+    <values id="0x558318e98110">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318bbdd00">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d29c40">
+      <value symbolic="0x558319a9da30" symbolic-delta="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318b53680">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318d76a10">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x55831937b4d0">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x558318b03e80">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318d5d070">
+      <value intvalue="0" bound="Point" known="true" path="0"/>
+    </values>
+    <values id="0x558318aa8930">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+    </values>
+    <values id="0x5583193d7a50">
+      <value intvalue="18446744073709551615" bound="Upper" impossible="true" path="0"/>
+      <value intvalue="0" bound="Point" possible="true" path="0"/>
+    </values>
+  </valueflow>
+  <typedef-info>
+    <info name="Elf32_Half" file="air/tools/partition_assembler/include/libelf.h" line="9" column="18" used="1"/>
+    <info name="Elf32_Word" file="air/tools/partition_assembler/include/libelf.h" line="10" column="18" used="1"/>
+    <info name="Elf32_Off" file="air/tools/partition_assembler/include/libelf.h" line="11" column="18" used="1"/>
+    <info name="Elf32_Addr" file="air/tools/partition_assembler/include/libelf.h" line="12" column="18" used="1"/>
+    <info name="Elf32_Ehdr" file="air/tools/partition_assembler/include/libelf.h" line="33" column="3" used="1"/>
+    <info name="Elf32_Shdr" file="air/tools/partition_assembler/include/libelf.h" line="48" column="3" used="0"/>
+    <info name="Elf32_Phdr" file="air/tools/partition_assembler/include/libelf.h" line="61" column="3" used="0"/>
+  </typedef-info>
+</dump>
+</dumps>
