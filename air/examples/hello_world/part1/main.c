@@ -20,37 +20,35 @@
 #endif
 #endif
 
-
-
 #ifndef RTEMS48I
-static char *my_ctime( time_t t )
+static char *my_ctime(time_t t)
 {
-  static char b[32];
-  ctime_r(&t, b);
-  b[ strlen(b) - 1] = '\0';
-  return b;
+    static char b[32];
+    ctime_r(&t, b);
+    b[strlen(b) - 1] = '\0';
+    return b;
 }
 #endif
 
-void entry_point(void) 
+void entry_point(void)
 {
     struct timespec start;
     int ticks_per_sec = 1000000 / air_syscall_get_us_per_tick();
 
-    for (int i= 0; i < 10; i++)
+    for (int i = 0; i < 10; i++)
     {
-        #ifdef RTEMS48I
-            rtems_clock_get_uptime( &start );
+#ifdef RTEMS48I
+        rtems_clock_get_uptime(&start);
 
-            pprintf( "\n\n*** RTEMS48I HELLO WORLD TEST **** PART1 ***\n" );
-            pprintf( "Time is %ld:%9ld", (long)start.tv_sec, start.tv_nsec);
-        #else
-            clock_gettime( CLOCK_MONOTONIC, &start );
+        pprintf("\n\n*** RTEMS48I HELLO WORLD TEST **** PART1 ***\n");
+        pprintf("Time is %ld:%9ld", (long)start.tv_sec, start.tv_nsec);
+#else
+        clock_gettime(CLOCK_MONOTONIC, &start);
 
-            printf( "\n\n*** RTEMS5 HELLO WORLD TEST **** PART1 ***\n" );
-            printf( "Time is : %s:%9ld\n", my_ctime(start.tv_sec), start.tv_nsec);
-        #endif
+        (void)printf("\n\n*** RTEMS5 HELLO WORLD TEST **** PART1 ***\n");
+        (void)printf("Time is : %s:%9ld\n", my_ctime(start.tv_sec), start.tv_nsec);
+#endif
 
-        rtems_task_wake_after(ticks_per_sec/10);
+        rtems_task_wake_after(ticks_per_sec / 10);
     }
 }

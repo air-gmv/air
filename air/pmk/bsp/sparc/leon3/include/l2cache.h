@@ -23,62 +23,67 @@
 /**
  *  @brief L2Cache Control bits enumeration
  */
-typedef enum {
+typedef enum
+{
 
-    CTRL_EN         = 1 << 31,      /**< Enable cache       */
-    CTRL_EDAC       = 1 << 30,      /**< Enable EDAC        */
-    CTRL_HPRHB      = 1 << 5,       /**< */
-    CTRL_HPB        = 1 << 4,       /**< */
-    CTRL_UC         = 1 << 3,       /**< Bus usage status   */
-    CTRL_HC         = 1 << 2,       /**< Hit rate status    */
-    CTRL_WP         = 1 << 1,       /**< Write Policy       */
-    CTRL_HP         = 1 << 0,       /**< */
+    CTRL_EN = 1 << 31,   /**< Enable cache       */
+    CTRL_EDAC = 1 << 30, /**< Enable EDAC        */
+    CTRL_HPRHB = 1 << 5, /**< */
+    CTRL_HPB = 1 << 4,   /**< */
+    CTRL_UC = 1 << 3,    /**< Bus usage status   */
+    CTRL_HC = 1 << 2,    /**< Hit rate status    */
+    CTRL_WP = 1 << 1,    /**< Write Policy       */
+    CTRL_HP = 1 << 0,    /**< */
 
 } l2cacge_ctrl_e;
 
 /**
  *  @brief L2 Cache Writing Policy enumeration
  */
-typedef enum {
+typedef enum
+{
 
-    COPY_BACK       = 0,            /**< Copy back mode     */
-    WRITE_THROUGH   = 1,            /**< Write through mode */
+    COPY_BACK = 0,     /**< Copy back mode     */
+    WRITE_THROUGH = 1, /**< Write through mode */
 
 } l2cache_writepol_e;
 
 /**
  *  @brief Bus usage and hit rate status mode enumeration
  */
-typedef enum {
+typedef enum
+{
 
-    SHIFTING_MODE   = 0,            /**< Shifting mode      */
-    WRAPPING_MODE   = 1,            /**< Wrapping mode      */
+    SHIFTING_MODE = 0, /**< Shifting mode      */
+    WRAPPING_MODE = 1, /**< Wrapping mode      */
 
 } l2cacge_statys_mode_e;
 
 /**
  *  @brief L2 Cache Flush mode enumeration
  */
-typedef enum {
+typedef enum
+{
 
-    INVALIDATE_ONE_LINE     = 0x01,
-    WRITE_BACK_ONE_LINE     = 0x02,
-    INV_AND_WB_ONE_LINE     = INVALIDATE_ONE_LINE | WRITE_BACK_ONE_LINE,
-    INVALIDATE_ALL_LINES    = 0x05,
-    WRITE_BACK_ALL_LINES    = 0x06,
-    INV_AND_WB_ALL_LINES    = INVALIDATE_ALL_LINES | WRITE_BACK_ALL_LINES,
+    INVALIDATE_ONE_LINE = 0x01,
+    WRITE_BACK_ONE_LINE = 0x02,
+    INV_AND_WB_ONE_LINE = INVALIDATE_ONE_LINE | WRITE_BACK_ONE_LINE,
+    INVALIDATE_ALL_LINES = 0x05,
+    WRITE_BACK_ALL_LINES = 0x06,
+    INV_AND_WB_ALL_LINES = INVALIDATE_ALL_LINES | WRITE_BACK_ALL_LINES,
 
 } l2cache_rflush_mode_e;
 
 /**
  *  @brief L2Cache Replacement Policy enumeration
  */
-typedef enum {
+typedef enum
+{
 
-    LRU             = 0,            /**< Least Recently Used                 */
-    PSEUDO_RANDOM   = 1,            /**< Pseudo-Random                       */
-    MASTER_INDEX_0  = 2,            /**< Master-Index using index replace    */
-    MASTER_INDEX_1  = 3,            /**< Master-Index using modules function */
+    LRU = 0,            /**< Least Recently Used                 */
+    PSEUDO_RANDOM = 1,  /**< Pseudo-Random                       */
+    MASTER_INDEX_0 = 2, /**< Master-Index using index replace    */
+    MASTER_INDEX_1 = 3, /**< Master-Index using modules function */
 
 } l2cache_reppol_e;
 

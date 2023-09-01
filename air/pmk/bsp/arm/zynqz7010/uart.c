@@ -13,27 +13,28 @@
 
 #if DEBUG_MONITOR != 2
 
-#include <uart.h>
-#include <parameters.h>
 #include <bsp_console.h>
+#include <parameters.h>
 #include <slcr.h>
+#include <uart.h>
 
-#define UART(port) ((uart_t *)(XPAR_PS7_UART_0_BASEADDR + port*0x1000))
+#define UART(port) ((uart_t *)(XPAR_PS7_UART_0_BASEADDR + port * 0x1000))
 air_u32_t arm_uart_debug_port = 0;
 
-void arm_setup_uart(air_u32_t port, air_u32_t BaudRate) {
+void arm_setup_uart(air_u32_t port, air_u32_t BaudRate)
+{
 
-    air_u32_t IterBAUDDIV;          /* Iterator for available baud divisor values */
-    air_u32_t BRGR_Value;           /* Calculated value for baud rate generator */
-    air_u32_t CalcBaudRate;         /* Calculated baud rate */
-    air_u32_t BaudError;            /* Diff between calculated and requested baud rate */
-    air_u32_t Best_BRGR = 0U;       /* Best value for baud rate generator */
-    air_u32_t Best_BAUDDIV = 0U;    /* Best value for baud divisor */
+    air_u32_t IterBAUDDIV;       /* Iterator for available baud divisor values */
+    air_u32_t BRGR_Value;        /* Calculated value for baud rate generator */
+    air_u32_t CalcBaudRate;      /* Calculated baud rate */
+    air_u32_t BaudError;         /* Diff between calculated and requested baud rate */
+    air_u32_t Best_BRGR = 0U;    /* Best value for baud rate generator */
+    air_u32_t Best_BAUDDIV = 0U; /* Best value for baud divisor */
     air_u32_t Best_Error = 0xFFFFFFFFU;
     air_u32_t InputClk = 100000000;
 
-
-    for (IterBAUDDIV = 4; IterBAUDDIV < 255; IterBAUDDIV++) {
+    for (IterBAUDDIV = 4; IterBAUDDIV < 255; IterBAUDDIV++)
+    {
 
         /* Calculate the value for BRGR register */
         BRGR_Value = InputClk / (BaudRate * (IterBAUDDIV + 1));
@@ -42,15 +43,18 @@ void arm_setup_uart(air_u32_t port, air_u32_t BaudRate) {
         CalcBaudRate = InputClk / (BRGR_Value * (IterBAUDDIV + 1));
 
         /* Avoid unsigned integer underflow */
-        if (BaudRate > CalcBaudRate) {
+        if (BaudRate > CalcBaudRate)
+        {
             BaudError = BaudRate - CalcBaudRate;
         }
-        else {
+        else
+        {
             BaudError = CalcBaudRate - BaudRate;
         }
 
         /* Find the calculated baud rate closest to requested baud rate. */
-        if (Best_Error > BaudError) {
+        if (Best_Error > BaudError)
+        {
 
             Best_BRGR = BRGR_Value;
             Best_BAUDDIV = IterBAUDDIV;
@@ -60,31 +64,36 @@ void arm_setup_uart(air_u32_t port, air_u32_t BaudRate) {
 
     arm_instruction_synchronization_barrier();
 
-    //disable uart:
-    UART(port)->ctrl = (ARM_UART_CTRL_RX_DIS | ARM_UART_CTRL_TX_DIS );
+    // disable uart:
+    UART(port)->ctrl = (ARM_UART_CTRL_RX_DIS | ARM_UART_CTRL_TX_DIS);
 
-    //write baud rate:
+    // write baud rate:
     UART(port)->baud_rate_gen = Best_BRGR;
     UART(port)->baud_rate_div = Best_BAUDDIV;
 
-    //reset tx and rx
-    UART(port)->ctrl = (ARM_UART_CTRL_RXRST | ARM_UART_CTRL_TXRST) ;
-    //enable uart
+    // reset tx and rx
+    UART(port)->ctrl = (ARM_UART_CTRL_RXRST | ARM_UART_CTRL_TXRST);
+    // enable uart
     UART(port)->ctrl = (ARM_UART_CTRL_RX_EN | ARM_UART_CTRL_TX_EN);
 
     arm_data_synchronization_barrier();
 }
 
-void arm_select_debug_uart(air_u32_t port) {
+void arm_select_debug_uart(air_u32_t port)
+{
 
     arm_uart_debug_port = port;
 }
 
-void arm_uart_transmit(char ch) {
+void arm_uart_transmit(char ch)
+{
 
     // Waits until txFIFO is empty
-    while((UART(arm_uart_debug_port)->status & ARM_UART_STATUS_TXEMPTY) == 0);
+    while ((UART(arm_uart_debug_port)->status & ARM_UART_STATUS_TXEMPTY) == 0)
+    {
+        ;
+    }
 
     UART(arm_uart_debug_port)->tx_rx_fifo = (air_u64_t)ch;
 }
- #endif /* DEBUG_MONITOR != 2 */
+#endif /* DEBUG_MONITOR != 2 */
