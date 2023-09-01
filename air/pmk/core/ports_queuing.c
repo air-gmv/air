@@ -11,39 +11,37 @@
  * @brief Queuing Ports functions
  */
 
+#include <multicore.h>
 #include <pmk.h>
 #include <ports.h>
-#include <printk.h>
-#include <workspace.h>
-#include <multicore.h>
-#include <segregation.h>
 #include <ports_queuing.h>
+#include <printk.h>
+#include <segregation.h>
+#include <workspace.h>
 
-void pmk_queuing_channel_init(pmk_channel_t *channel) {
+void pmk_queuing_channel_init(pmk_channel_t *channel)
+{
 
     air_u32_t i;
 
     /* get channel configuration */
-    pmk_queuing_config_t *config =
-            (pmk_queuing_config_t *)channel->configuration;
+    pmk_queuing_config_t *config = (pmk_queuing_config_t *)channel->configuration;
 
 #ifdef PMK_DEBUG
     printk("    queuing channel %02i %s\n", channel->id, channel->name);
 #endif
 
     /* allocate space for the queue */
-    config->queue = (pmk_message_slot_t *)pmk_workspace_alloc(
-            sizeof(pmk_message_slot_t) * config->max_nb_message);
+    config->queue = (pmk_message_slot_t *)pmk_workspace_alloc(sizeof(pmk_message_slot_t) * config->max_nb_message);
 
     /* initialize each message slot */
-    for (i = 0; i < config->max_nb_message; ++i) {
+    for (i = 0; i < config->max_nb_message; ++i)
+    {
         config->queue[i].length = 0;
         config->queue[i].timestamp = 0;
-        config->queue[i].message = (air_message_ptr_t)
-                pmk_workspace_alloc(config->max_message_size);
+        config->queue[i].message = (air_message_ptr_t)pmk_workspace_alloc(config->max_message_size);
 #ifdef PMK_DEBUG
-        printk("    :: queue %03i at 0x%p, msg: 0x%p\n",
-                i, &config->queue[i], config->queue[i].message);
+        printk("    :: queue %03i at 0x%p, msg: 0x%p\n", i, &config->queue[i], config->queue[i].message);
 #endif
     }
 
@@ -56,17 +54,15 @@ void pmk_queuing_channel_init(pmk_channel_t *channel) {
     return;
 }
 
-air_u32_t pmk_queuing_port_check_configuration(
-        pmk_port_t *port,
-        air_queuing_port_configuration_t *usr_config) {
+air_u32_t pmk_queuing_port_check_configuration(pmk_port_t *port, air_queuing_port_configuration_t *usr_config)
+{
 
     /* check if the parameters are valid */
-    pmk_queuing_config_t *port_config =
-            (pmk_queuing_config_t *)port->channel->configuration;
+    pmk_queuing_config_t *port_config = (pmk_queuing_config_t *)port->channel->configuration;
     if (port_config->max_message_size != usr_config->max_message_size ||
         port_config->max_nb_message != usr_config->max_nb_message ||
-        port_config->discipline != usr_config->port_discipline ||
-        port->direction != usr_config->port_direction) {
+        port_config->discipline != usr_config->port_discipline || port->direction != usr_config->port_direction)
+    {
 
         return 1;
     }
@@ -75,13 +71,12 @@ air_u32_t pmk_queuing_port_check_configuration(
     return 0;
 }
 
-air_status_code_e pmk_queuing_port_get_status(
-        core_context_t *context,
-        pmk_port_t *port, air_queuing_port_status_t *status) {
+air_status_code_e pmk_queuing_port_get_status(core_context_t *context, pmk_port_t *port,
+                                              air_queuing_port_status_t *status)
+{
 
     /* get channel configuration */
-    pmk_queuing_config_t *config =
-            (pmk_queuing_config_t *)port->channel->configuration;
+    pmk_queuing_config_t *config = (pmk_queuing_config_t *)port->channel->configuration;
 
     /* get port status */
     air_queuing_port_status_t l_status;
@@ -91,30 +86,31 @@ air_status_code_e pmk_queuing_port_get_status(
     l_status.port_direction = port->direction;
 
     /* copy status to partition */
-    if (pmk_segregation_put_user(context, l_status, status) != 0) {
+    if (pmk_segregation_put_user(context, l_status, status) != 0)
+    {
         return AIR_INVALID_POINTER;
     }
 
     return AIR_NO_ERROR;
 }
 
-air_status_code_e pmk_queuing_port_read(
-        core_context_t *context,
-        pmk_port_t *port, air_message_ptr_t msg,
-        air_sz_t *length, air_queuing_port_status_t *status) {
+air_status_code_e pmk_queuing_port_read(core_context_t *context, pmk_port_t *port, air_message_ptr_t msg,
+                                        air_sz_t *length, air_queuing_port_status_t *status)
+{
 
     /* get channel configuration */
-    pmk_queuing_config_t *config =
-            (pmk_queuing_config_t *)port->channel->configuration;
+    pmk_queuing_config_t *config = (pmk_queuing_config_t *)port->channel->configuration;
 
     /* check if no one else is reading the channel */
-    if (atomic_swap(1, &config->reading) == 1) {
+    if (atomic_swap(1, &config->reading) == 1)
+    {
 
         return AIR_NOT_AVAILABLE;
     }
 
     /* check if a message is available for read */
-    if (atomic_fetch(&config->count) == 0) {
+    if (atomic_fetch(&config->count) == 0)
+    {
 
         atomic_set(0, &config->reading);
         return AIR_NOT_AVAILABLE;
@@ -124,8 +120,9 @@ air_status_code_e pmk_queuing_port_read(
     pmk_message_slot_t *slot = &config->queue[config->first];
 
     /* copy message to partition space */
-    if (pmk_segregation_copy_to_user(context, msg, slot->message, slot->length) != 0 ||
-        pmk_segregation_put_user(context, slot->length, length) != 0) {
+    if ((pmk_segregation_copy_to_user(context, msg, slot->message, slot->length) != 0) != 0 ||
+        pmk_segregation_put_user(context, slot->length, length) != 0)
+    {
 
         atomic_set(0, &config->reading);
         return AIR_INVALID_POINTER;
@@ -142,35 +139,37 @@ air_status_code_e pmk_queuing_port_read(
     port->last_msg_validity = AIR_MESSAGE_VALID;
 
     /* check if an overflow occurred */
-    if (atomic_swap(0, &config->overflowed) == 1) {
+    if (atomic_swap(0, &config->overflowed) == 1)
+    {
         return AIR_INVALID_CONFIG;
     }
     return AIR_NO_ERROR;
 }
 
-air_status_code_e pmk_queuing_port_write(
-        core_context_t *context,
-        pmk_port_t *port, air_message_ptr_t msg,
-        air_sz_t length, air_queuing_port_status_t *status) {
+air_status_code_e pmk_queuing_port_write(core_context_t *context, pmk_port_t *port, air_message_ptr_t msg,
+                                         air_sz_t length, air_queuing_port_status_t *status)
+{
 
     /* get channel configuration */
-    pmk_queuing_config_t *config =
-            (pmk_queuing_config_t *)port->channel->configuration;
+    pmk_queuing_config_t *config = (pmk_queuing_config_t *)port->channel->configuration;
 
     /* check if length is valid */
-    if (length > config->max_message_size) {
+    if ((length > config->max_message_size) != 0)
+    {
 
         return AIR_INVALID_CONFIG;
     }
 
     /* check if no one else is writing in the queue */
-    if (atomic_swap(1, &config->writing) == 1) {
+    if (atomic_swap(1, &config->writing) == 1)
+    {
 
         return AIR_NOT_AVAILABLE;
     }
 
     /* check if the queue is full */
-    if (atomic_fetch(&config->count) >= config->max_nb_message) {
+    if (atomic_fetch(&config->count) >= config->max_nb_message)
+    {
 
         /* overflow in queue */
         atomic_set(1, &config->overflowed);
@@ -183,7 +182,8 @@ air_status_code_e pmk_queuing_port_write(
     pmk_message_slot_t *slot = &config->queue[last];
 
     /* copy message from partition space */
-    if (pmk_segregation_copy_from_user(context, slot->message, msg, length) != 0) {
+    if (pmk_segregation_copy_from_user(context, slot->message, msg, length) != 0)
+    {
 
         atomic_set(0, &config->writing);
         return AIR_INVALID_POINTER;

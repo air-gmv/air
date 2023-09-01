@@ -13,47 +13,42 @@
 #define CONFIGURE_INIT
 #include <air.h>
 
-
 #ifdef RTEMS48I
-	#include <pprintf.h>
+#include <pprintf.h>
 #else
-    #include <time.h>
-    #include <sys/time.h>
-    #include <rtems/score/timespec.h>
+#include <rtems/score/timespec.h>
+#include <sys/time.h>
+#include <time.h>
 #endif
 
-int andp=7;
+int andp = 7;
 
 #ifndef RTEMS48I
-static char *my_ctime( time_t t )
+static char *my_ctime(time_t t)
 {
-  static char b[32];
-  ctime_r(&t, b);
-  b[ strlen(b) - 1] = '\0';
-  return b;
+    static char b[32];
+    ctime_r(&t, b);
+    b[strlen(b) - 1] = '\0';
+    return b;
 }
 #endif
 
-void entry_point(void) 
+void entry_point(void)
 {
-    int i=0;
-	while(i<3)
-	{
+    int i = 0;
+    while (i < 3)
+    {
 
-        #ifdef RTEMS48I
-            pprintf( "\n\n*** RTEMS48I COVERAGE_ENABLED TEST **********\n" );
-        #else
-            struct timespec start;
-            clock_gettime( CLOCK_REALTIME, &start );
+#ifdef RTEMS48I
+        pprintf("\n\n*** RTEMS48I COVERAGE_ENABLED TEST **********\n");
+#else
+        struct timespec start;
+        clock_gettime(CLOCK_REALTIME, &start);
 
-            printf( "\n\n*** RTEMS5 COVERAGE_ENABLED TEST **********\n" );
-            printf( "Time is : %s:%ld\n", my_ctime(start.tv_sec), start.tv_nsec);
-        #endif
+        (void)printf("\n\n*** RTEMS5 COVERAGE_ENABLED TEST **********\n");
+        (void)printf("Time is : %s:%ld\n", my_ctime(start.tv_sec), start.tv_nsec);
+#endif
         i++;
         rtems_task_wake_after(10);
-
     }
-
 }
-
-

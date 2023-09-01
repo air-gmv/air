@@ -7,8 +7,8 @@
  */
 
 #include <air.h>
-#include <cpu.h>
 #include <configurations.h>
+#include <cpu.h>
 
 /**
  * @brief System trap table
@@ -23,7 +23,8 @@ extern volatile air_u32_t *isr_table[PMK_MAX_CORES];
  */
 void sparc_isr_handler();
 
-void isr_install_raw_handler(air_u32_t tn, void *new, void **old) {
+void isr_install_raw_handler(air_u32_t tn, void *new, void **old)
+{
 
     /* get real trap number */
     air_u32_t rtn = SPARC_REAL_TRAP_NUMBER(tn);
@@ -34,11 +35,12 @@ void isr_install_raw_handler(air_u32_t tn, void *new, void **old) {
     /* fetch old handler and apply new handler */
     air_syscall_disable_traps();
     *old = (void *)tbr[rtn];
-    tbr[rtn] = (air_u32_t)new;
+    tbr[rtn] = (air_u32_t) new;
     air_syscall_enable_traps();
 }
 
-void isr_install_handler(air_u32_t tn, void *new, void **old) {
+void isr_install_handler(air_u32_t tn, void *new, void **old)
+{
 
     /* get current core id */
     air_u32_t core_id = air_syscall_get_core_id();
@@ -57,6 +59,6 @@ void isr_install_handler(air_u32_t tn, void *new, void **old) {
 
     /* set the new vector handler */
     air_syscall_disable_traps();
-    isr_table[core_id][rtn] = (air_u32_t)new;
+    isr_table[core_id][rtn] = (air_u32_t) new;
     air_syscall_enable_traps();
 }
