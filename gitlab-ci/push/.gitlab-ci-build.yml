@@ -9,9 +9,11 @@ ARM-ZYNQZ1-build:
     script:
         - cd $CI_PROJECT_DIR/air
         - cp $UTILS/.arm_zynqz1_config .
-        - ./configure -f .arm_zynqz1_config
-        - make clean
-        - make -j4
+        - ./configure -f $UTILS/gitlab-runner/.arm_zynqz1_config
+        - make pmk
+        - make libs
+        - make pos
+        - make tools
 
 # ARM RVS PMK Instrumentation
 .RVS-ARM-ZYNQZ1-build:
