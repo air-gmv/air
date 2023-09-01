@@ -1,10 +1,10 @@
 #include <pthread.h>
-#include <semaphore.h>
-#include <stdio.h>
 #include <time.h>
+#include <stdio.h>
+#include <semaphore.h>
 
-#include "minteger.h"
 #include "msg_box.h"
+#include "minteger.h"
 #include "periodic_task.h"
 #include "simu.h"
 #include "utils.h"
@@ -33,20 +33,16 @@ m_integer LvlWater, LvlMeth;
    - If HLS is true, it sends "HighValue" to LvlWater m_integer
    - else, if LLS is false, it sends "LowValue" to LvlWater m_integer
 */
-void WaterLevelMonitoring_Body(void)
-{
-    int level = LowLevel;
+void WaterLevelMonitoring_Body(void) {
+  int level = LowLevel;
 
-    if ((ReadHLS()) != 0)
-    {
-        level = HighLevel;
-        MI_write(LvlWater, level);
-    }
-    else if (!ReadLLS())
-    {
-        level = LowLevel;
-        MI_write(LvlWater, level);
-    }
+  if (ReadHLS()) {
+    level=HighLevel;
+    MI_write (LvlWater, level);
+  } else if (!ReadLLS()) {
+    level=LowLevel;
+    MI_write (LvlWater, level);
+  }
 }
 
 /*****************************************************************************/
@@ -57,26 +53,20 @@ void WaterLevelMonitoring_Body(void)
    synchronization (semaphore synchro).
 */
 
-void MethaneMonitoring_Body(void)
-{
-    int level = Normal;
-    BYTE MS;
+void MethaneMonitoring_Body (void) {
+  int level = Normal;
+  BYTE MS;
 
-    MS = ReadMS();
-    if (MS > MS_L2)
-    {
-        level = Alarm2;
-    }
-    else if (MS > MS_L1)
-    {
-        level = Alarm1;
-    }
-    else
-    {
-        level = Normal;
-    }
-    MI_write(LvlMeth, level);
-    sem_post(&synchro);
+  MS=ReadMS();
+  if (MS>MS_L2) {
+    level=Alarm2;
+  } else if (MS>MS_L1) {
+    level=Alarm1;
+  } else {
+    level=Normal;
+  }
+  MI_write(LvlMeth, level);
+  sem_post(&synchro);
 }
 
 /*****************************************************************************/
@@ -92,42 +82,31 @@ void MethaneMonitoring_Body(void)
      left off.
 */
 
-void *PumpCtrl_Body(void *no_argument)
-{
-    int niveau_eau, niveau_alarme, alarme;
-    int cmd = 0;
-    for (;;)
-    {
-        sem_wait(&synchro);
-        niveau_alarme = MI_read(LvlMeth);
-        if (niveau_alarme == Normal)
-        {
-            alarme = 0;
-        }
-        else
-        {
-            alarme = 1;
-        }
-        msg_box_send(mbox_alarm, (char *)&alarme);
-
-        if (niveau_alarme == Alarm2)
-        {
-            cmd = 0;
-        }
-        else
-        {
-            niveau_eau = MI_read(LvlWater);
-            if (niveau_eau == HighLevel)
-            {
-                cmd = 1;
-            }
-            else if (niveau_eau == LowLevel)
-            {
-                cmd = 0;
-            }
-        }
-        CmdPump(cmd);
+void *PumpCtrl_Body(void *no_argument) {
+  int niveau_eau, niveau_alarme, alarme;
+  int cmd=0;
+  for (;;) {
+    sem_wait(&synchro);
+    niveau_alarme=MI_read(LvlMeth);
+    if (niveau_alarme==Normal) {
+      alarme=0;
+    } else {
+      alarme=1;
     }
+    msg_box_send (mbox_alarm,(char*)&alarme);
+
+    if (niveau_alarme==Alarm2) {
+      cmd=0;
+    } else {
+      niveau_eau=MI_read(LvlWater);
+      if (niveau_eau==HighLevel) {
+        cmd=1;
+      } else if (niveau_eau==LowLevel) {
+        cmd=0;
+      }
+    }
+    CmdPump(cmd);
+  }
 }
 
 /*****************************************************************************/
@@ -135,62 +114,58 @@ void *PumpCtrl_Body(void *no_argument)
    mbox_alarm, and calls CmdAlarm with the value read.
 */
 
-void *CmdAlarm_Body()
-{
-    int value;
-    for (;;)
-    {
-        msg_box_receive(mbox_alarm, (char *)&value);
-        CmdAlarm(value);
-    }
+void *CmdAlarm_Body() {
+  int value;
+  for (;;) {
+    msg_box_receive(mbox_alarm,(char*)&value);
+    CmdAlarm(value);
+  }
 }
 
 /*****************************************************************************/
 #ifdef RTEMS
-void *POSIX_Init()
-{
+void *POSIX_Init() {
 #else
-int main(void)
-{
+int main(void) {
 #endif /* RTEMS */
 
-    pthread_t T3, T4;
-    (void)printf("START\n");
+  pthread_t T3,T4;
+  printf ("START\n");
 
-    InitSimu(); /* Initialize simulator */
+  InitSimu(); /* Initialize simulator */
 
-    /* Initialize communication and synchronization primitives */
-    mbox_alarm = msg_box_init(sizeof(int));
-    sem_init(&synchro, 0, 0);
-    LvlWater = MI_init(10);
-    LvlMeth = MI_init(12);
+  /* Initialize communication and synchronization primitives */
+  mbox_alarm = msg_box_init(sizeof(int));
+  sem_init(&synchro,0,0);
+  LvlWater=MI_init(10);
+  LvlMeth=MI_init(12);
 
-    /* Create task WaterLevelMonitoring_Task */
-    struct timespec period;
-    period.tv_nsec = 250 * 1000 * 1000;
-    period.tv_sec = 0;
+  /* Create task WaterLevelMonitoring_Task */
+  struct timespec period;
+  period.tv_nsec = 250 * 1000 * 1000;
+  period.tv_sec  = 0 ;
 
-    create_periodic_task(period, WaterLevelMonitoring_Body);
+  create_periodic_task (period, WaterLevelMonitoring_Body);
 
-    /* Create task MethaneMonitoring_Task */
-    struct timespec period2;
-    period2.tv_nsec = 100 * 1000 * 1000;
-    period2.tv_sec = 0;
+  /* Create task MethaneMonitoring_Task */
+  struct timespec period2;
+  period2.tv_nsec = 100 * 1000 * 1000;
+  period2.tv_sec  = 0 ;
 
-    create_periodic_task(period2, MethaneMonitoring_Body);
+  create_periodic_task (period2, MethaneMonitoring_Body);
 
-    /* Create task PumpCtrl_Task */
-    pthread_create(&T3, NULL, PumpCtrl_Body, NULL);
+  /* Create task PumpCtrl_Task */
+  pthread_create(&T3,NULL,PumpCtrl_Body,NULL);
 
-    /* Create task CmdAlarm_Task */
-    pthread_create(&T4, NULL, CmdAlarm_Body, NULL);
+  /* Create task CmdAlarm_Task */
+  pthread_create(&T4,NULL,CmdAlarm_Body, NULL);
 
-    pthread_join(T3, 0);
+  pthread_join(T3,0);
 
 #ifndef RTEMS
-    return 0;
+  return 0;
 #else
-    return NULL;
+  return NULL;
 #endif
 }
 

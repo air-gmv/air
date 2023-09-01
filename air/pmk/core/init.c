@@ -9,7 +9,7 @@
  *  @file
  *  @author pfnf
  *  @brief PMK Initialization
- *
+ *  
  *  - Low level initialization:
  *      - Setup trap base trap tables
  *      - Architecture dependent operations
@@ -23,41 +23,40 @@
  *      - Health-Monitoring tables initialization
  *      - Partitions, Schedules and Channels initialization
  *      - BSP specific devices initialization
- *
+ *  	
  *  After the initialization, all cores remain in idle-loop until the first
  *  context switch is triggered by an interrupt
  */
 
-#include <bsp.h>
-#include <configurations.h>
-#include <error.h>
-#include <health_monitor.h>
-#include <multicore.h>
-#include <partition.h>
 #include <pmk.h>
+#include <bsp.h>
+#include <tod.h>
+#include <error.h>
 #include <ports.h>
 #include <printk.h>
 #include <schedule.h>
-#include <segregation.h>
-#include <tod.h>
+#include <multicore.h>
 #include <workspace.h>
+#include <partition.h>
+#include <segregation.h>
+#include <configurations.h>
+#include <health_monitor.h>
 
-/**
+/** 
  * @brief PMK initialization
  */
-void pmk_init(void)
-{
+void pmk_init(void) {
 
-    /* BSP Initialization */
-    if (bsp_core_init() != 0)
-    {
+	/* BSP Initialization */
+    if (bsp_core_init() != 0) {
         pmk_fatal_error(PMK_INTERNAL_ERROR_BSP, __func__, __FILE__, __LINE__);
     }
 
-    printk("\033[0m"
-           "-------------------------------------------------------------------------------\n"
-           " ** AIR v5.6.1 \n"
-           "-------------------------------------------------------------------------------\n");
+    printk(
+"\033[0m"
+"-------------------------------------------------------------------------------\n" \
+" ** AIR v5.6.1 \n" \
+"-------------------------------------------------------------------------------\n");
 
     /* USR configuration initialization */
     pmk_configurations_int();

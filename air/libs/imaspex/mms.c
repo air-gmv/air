@@ -5,7 +5,7 @@
  * found in the file LICENSE in this distribution or at
  * air/LICENSE
  */
-/**
+/** 
  * @file mms.c
  * @author sfbs
  * @brief ARINC 653 Part 2 Multiple Module Schedules: services interface
@@ -16,30 +16,26 @@
 extern int imaspex_tsal_init;
 extern air_clocktick_t imaspex_ns_per_tick;
 
-void SET_MODULE_SCHEDULE(
-    /*in */ SCHEDULE_ID_TYPE SCHEDULE_ID,
-    /*out*/ RETURN_CODE_TYPE *RETURN_CODE)
-{
+void SET_MODULE_SCHEDULE (
+	/*in */ SCHEDULE_ID_TYPE SCHEDULE_ID,
+	/*out*/ RETURN_CODE_TYPE *RETURN_CODE) {
 
     /* check TSAL init */
-    if (imaspex_tsal_init == 0)
-    {
+    if (imaspex_tsal_init == 0){
         *RETURN_CODE = INVALID_MODE;
         return;
     }
-
+	
     /* sets next module schedule to schedule_id via a system call*/
     *RETURN_CODE = air_syscall_set_schedule(SCHEDULE_ID);
 }
 
-void GET_MODULE_SCHEDULE_STATUS(
-    /*out*/ SCHEDULE_STATUS_TYPE *SCHEDULE_STATUS,
-    /*out*/ RETURN_CODE_TYPE *RETURN_CODE)
-{
-
+void GET_MODULE_SCHEDULE_STATUS (
+	/*out*/ SCHEDULE_STATUS_TYPE *SCHEDULE_STATUS,
+	/*out*/ RETURN_CODE_TYPE *RETURN_CODE) {
+	
     /* check TSAL init */
-    if (imaspex_tsal_init == 0)
-    {
+    if (imaspex_tsal_init == 0){
         *RETURN_CODE = INVALID_MODE;
         return;
     }
@@ -49,23 +45,21 @@ void GET_MODULE_SCHEDULE_STATUS(
     *RETURN_CODE = air_syscall_get_schedule_status(&status);
 
     /* convert status to ARINC status format */
-    if (*RETURN_CODE == NO_ERROR)
-    {
-        SCHEDULE_STATUS->TIME_OF_LAST_SCHEDULE_SWITCH = status.time_of_last_schedule_change * imaspex_ns_per_tick;
+    if (*RETURN_CODE == NO_ERROR) {
+        SCHEDULE_STATUS->TIME_OF_LAST_SCHEDULE_SWITCH =
+                status.time_of_last_schedule_change * imaspex_ns_per_tick;
         SCHEDULE_STATUS->CURRENT_SCHEDULE = status.current_schedule_id;
         SCHEDULE_STATUS->NEXT_SCHEDULE = status.next_schedule_id;
     }
 }
 
-void GET_MODULE_SCHEDULE_ID(
-    /*in */ SCHEDULE_NAME_TYPE SCHEDULE_NAME,
-    /*out*/ SCHEDULE_ID_TYPE *SCHEDULE_ID,
-    /*out*/ RETURN_CODE_TYPE *RETURN_CODE)
-{
+void GET_MODULE_SCHEDULE_ID (
+	/*in */ SCHEDULE_NAME_TYPE SCHEDULE_NAME,
+	/*out*/ SCHEDULE_ID_TYPE *SCHEDULE_ID,
+	/*out*/ RETURN_CODE_TYPE *RETURN_CODE) {
 
     /* check TSAL init */
-    if (imaspex_tsal_init == 0)
-    {
+    if (imaspex_tsal_init == 0){
         *RETURN_CODE = INVALID_MODE;
         return;
     }
