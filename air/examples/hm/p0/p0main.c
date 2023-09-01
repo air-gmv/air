@@ -7,11 +7,10 @@
  */
 
 #include <air.h>
-#include <pprintf.h>
 #include <rtems.h>
+#include <pprintf.h>
 
-int producer()
-{
+int producer() {
 
     long pid;
     air_status_code_e rc;
@@ -20,31 +19,31 @@ int producer()
     volatile int y = 0;
 
     rc = air_syscall_get_partition_id(NULL, &pid);
-    if (AIR_NO_ERROR != rc)
+    if(AIR_NO_ERROR != rc)
     {
-        (void)printf("P0main air_syscall_get_partition_id ERROR: %u\n", rc);
+        printf("P0main air_syscall_get_partition_id ERROR: %u\n", rc);
     }
 
     rc = air_syscall_get_partition_status(pid, &status);
-    if (AIR_NO_ERROR != rc)
+    if(AIR_NO_ERROR != rc)
     {
-        (void)printf("P0main air_syscall_get_partition_status ERROR: %u\n", rc);
+        printf("P0main air_syscall_get_partition_status ERROR: %u\n", rc);
     }
 
     /*Example on how to act differently if a HM restart action was selected*/
-    if (status.start_condition != AIR_START_CONDITION_HM_PARTITION_RESTART)
+    if(status.start_condition != AIR_START_CONDITION_HM_PARTITION_RESTART)
     {
         /*Force a division by 0*/
-        x = x / y;
+        x = x/y;
     }
 
     uint32_t tps = 1000000 / air_syscall_get_us_per_tick();
 
-    for (int i = 0; i < 3; i++)
+    for (int i=0; i<3; i++)
     {
-        (void)printf("In partition PO loop\n");
-        rtems_task_wake_after(tps / 2);
-        (void)printf("P0 : Waking up %d\n", x);
+        printf("In partition PO loop\n");
+        rtems_task_wake_after(tps/2);
+        printf("P0 : Waking up %d\n", x);
     }
 
     return AIR_SUCCESSFUL;

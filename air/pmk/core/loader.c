@@ -11,41 +11,40 @@
  *  @brief Functions to de-compress a partition into memory
  */
 
-#include <atomic.h>
-#include <error.h>
-#include <loader.h>
 #include <pmk.h>
+#include <error.h>
+#include <atomic.h>
+#include <loader.h>
 
 /**
  * @brief LZSS algorithm (MAGIC_NUMBER symbol)
  * @ingroup pmk_loader
  */
-#define MAGIC_NUMBER ('\xaa')
+#define MAGIC_NUMBER                                    ('\xaa')
 
 /**
  * @brief LZSS algorithm (EOP symbol)
  * @ingroup pmk_partition
  */
-#define EOP ('\x55')
+#define EOP                                             ('\x55')
 /**
  * @brief LZSS algorithm
  * @ingroup pmk_partition
  */
-#define WINDOW_SIZE (4096)
+#define WINDOW_SIZE                                     (4096)
 
 /**
  * @brief LZSS Packet header
  * @ingroup pmk_partition
  */
-typedef struct
-{
+typedef struct {
 
-    air_i8_t magic;           /**< Magic number                       */
-    air_u8_t parameters;      /**< Compression parameters             */
-    air_u8_t checksum;        /**< Compression checksum               */
-    air_u8_t dummy;           /**< Dummy offset                       */
-    air_u8_t encoded_size[4]; /**< Encoded_size size                  */
-    air_u8_t decoded_size[4]; /**< Decoded size                       */
+    air_i8_t magic;                   /**< Magic number                       */
+    air_u8_t parameters;             /**< Compression parameters             */
+    air_u8_t checksum;               /**< Compression checksum               */
+    air_u8_t dummy;                  /**< Dummy offset                       */
+    air_u8_t encoded_size[4];        /**< Encoded_size size                  */
+    air_u8_t decoded_size[4];        /**< Decoded size                       */
 
 } lzss_header_t;
 
@@ -64,8 +63,8 @@ static char dictionary[WINDOW_SIZE];
  * @return 0 if no errors occurred, 1 otherwise
  * @ingroup pmk_partition
  */
-static int lzss_decompress(air_u8_t *input, air_u8_t *output, air_sz_t output_size)
-{
+static int lzss_decompress(
+        air_u8_t *input, air_u8_t *output, air_sz_t output_size){
 
     int i, j, k, r, c;
     air_u32_t flags;
@@ -75,8 +74,7 @@ static int lzss_decompress(air_u8_t *input, air_u8_t *output, air_sz_t output_si
     lzss_header_t *header = (lzss_header_t *)input;
 
     /* check if the magic match */
-    if ((air_i8_t)header->magic != (air_i8_t)MAGIC_NUMBER)
-    {
+    if ((air_i8_t)header->magic  != (air_i8_t)MAGIC_NUMBER){
         return 1;
     }
 
@@ -84,16 +82,16 @@ static int lzss_decompress(air_u8_t *input, air_u8_t *output, air_sz_t output_si
     air_u32_t ws = (header->parameters & 0xF0) << 6;
     air_u8_t threshold = (header->parameters & 0x03) + 1;
     air_u32_t lhs = (1 << ((header->parameters & 0x0c) >> 2)) * 9;
-    air_sz_t input_size = (header->encoded_size[0] << 24) | (header->encoded_size[1] << 16) |
-                          (header->encoded_size[2] << 8) | (header->encoded_size[3]);
+    air_sz_t input_size = \
+            (header->encoded_size[0] << 24) | (header->encoded_size[1] << 16) |
+            (header->encoded_size[2] <<  8) | (header->encoded_size[3]);
 
     /* initialize carrets and input buffsers */
     input += sizeof(lzss_header_t);
 
     /* initialize dictionary window buffer  */
     r = ws - lhs;
-    for (i = 0; i < ws - lhs; ++i)
-    {
+    for (i = 0; i < ws - lhs; ++i) {
         dictionary[i] = ' ';
     }
 
@@ -103,16 +101,13 @@ static int lzss_decompress(air_u8_t *input, air_u8_t *output, air_sz_t output_si
 
     /* de-compress the input stream */
     flags = 0;
-    while (1)
-    {
+    while (1) {
 
         /* read the encoded/not encoded flag */
-        if (((flags >>= 1) & 0x100) == 0)
-        {
+        if (((flags >>= 1) & 0x100) == 0){
 
             /* check if we reached the end of the input stream */
-            if (input == input_end)
-            {
+            if (input == input_end) {
                 break;
             }
 
@@ -121,12 +116,10 @@ static int lzss_decompress(air_u8_t *input, air_u8_t *output, air_sz_t output_si
         }
 
         /* check if the flag indicates an encoded string */
-        if ((flags & 1) == 1)
-        {
+        if ((flags & 1) == 1){
 
             /* check if we reached the end of one of the streams */
-            if (input > input_end || (output + 1) > output_end)
-            {
+            if (input > input_end || (output + 1) > output_end) {
                 break;
             }
 
@@ -141,14 +134,11 @@ static int lzss_decompress(air_u8_t *input, air_u8_t *output, air_sz_t output_si
             dictionary[r++] = c;
             r &= (ws - 1);
 
-            /* the flag represents an encoded string */
-        }
-        else
-        {
+        /* the flag represents an encoded string */
+        } else {
 
             /* check if we reached the end of the input stream */
-            if ((input + 2) > input_end)
-            {
+            if ((input + 2) > input_end) {
                 break;
             }
 
@@ -156,20 +146,17 @@ static int lzss_decompress(air_u8_t *input, air_u8_t *output, air_sz_t output_si
             i = *input++;
             j = *input++;
             i |= ((j & 0xF0) << 4);
-            j = (j & 0x0F) + threshold;
+            j  =  (j & 0x0F) + threshold;
 
             /* check if we reached the end of the output stream */
-            if ((output + j) > output_end)
-            {
+            if ((output + j) > output_end) {
                 break;
             }
 
             /* copy dictionary entry to the output and update the dictionary */
-            for (k = 0; k <= j; k++)
-            {
+            for (k = 0; k <= j; k++) {
                 c = dictionary[(i + k) & (ws - 1)];
-                *output++ = c;
-                checksum ^= c;
+                *output++ = c; checksum ^= c;
                 dictionary[r++] = c;
                 r &= (ws - 1);
             }
@@ -177,38 +164,33 @@ static int lzss_decompress(air_u8_t *input, air_u8_t *output, air_sz_t output_si
     }
 
     /* checksum fail or unexpected end of streams */
-    if (checksum != header->checksum || *input != EOP)
-    {
+    if (checksum != header->checksum || *input != EOP){
         return 1;
     }
 
     return 0;
 }
 
-void pmk_partition_load(pmk_elf_t *elf, void *addr)
-{
+void pmk_partition_load(pmk_elf_t *elf, void *addr) {
 
     int i;
     static atomic_t loading;
 
     /* wait until other processor finishes loading */
-    while (atomic_swap(1, &loading) == 1)
-    {
-        ;
-    }
+    while (atomic_swap(1, &loading) == 1);
 
-    for (i = 0; i < elf->count; ++i)
-    {
+    for (i = 0; i < elf->count; ++i) {
 
         /* de-compress partition */
-        air_u32_t error =
-            lzss_decompress((air_u8_t *)(elf->data + (air_sz_t)elf->segments[i].offset),
-                            (air_u8_t *)((air_uptr_t)addr + elf->segments[i].addr), elf->segments[i].size);
+        air_u32_t error = lzss_decompress(
+                (air_u8_t *)(elf->data + (air_sz_t)elf->segments[i].offset),
+                (air_u8_t *)((air_uptr_t)addr + elf->segments[i].addr),
+                elf->segments[i].size);
 
         /* check if error occurred */
-        if (error != 0)
-        {
-            pmk_fatal_error(PMK_INTERNAL_ERROR_CONFIG, __func__, __FILE__, __LINE__);
+        if (error != 0) {
+            pmk_fatal_error(
+                    PMK_INTERNAL_ERROR_CONFIG, __func__, __FILE__, __LINE__);
         }
     }
 

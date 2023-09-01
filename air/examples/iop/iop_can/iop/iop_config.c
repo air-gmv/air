@@ -20,7 +20,8 @@ extern iop_physical_device_t physical_device_0;
 /**
  * @brief Physical devices list
  */
-static iop_physical_device_t *physical_device_list[2] = {
+static iop_physical_device_t *physical_device_list[2] = \
+{
     &physical_device_1,
     &physical_device_0,
 };
@@ -28,7 +29,8 @@ static iop_physical_device_t *physical_device_list[2] = {
 /**
  * @brief Logical devices list
  */
-static iop_logical_device_t *logical_device_list[2] = {
+static iop_logical_device_t *logical_device_list[2] = \
+{
     &logical_device_1,
     &logical_device_2,
 };
@@ -47,14 +49,25 @@ static iop_fragment_t fragments[1024];
  */
 iop_configuration_t usr_configuration = {
 
-    .wrappers = requests_storage,
-    .iop_buffers = iop_buffers,
-    .iop_buffers_storage = iop_buffers_storage,
-    .wrappers_count = 1024,
-    .fragments = fragments,
-    .fragment_count = 1024,
-    .time_to_live = 5,
+    .wrappers               = requests_storage,
+    .iop_buffers            = iop_buffers,
+    .iop_buffers_storage    = iop_buffers_storage,
+    .wrappers_count         = 1024,
+    .fragments              = fragments,
+    .fragment_count         = 1024,
+    .time_to_live           = 5,
 
-    .physical_devices = {.length = 2, .elements = physical_device_list},
-    .logical_devices = {.length = 2, .elements = logical_device_list},
-    .remote_ports = {.length = 4, .elements = remote_ports}};
+    .physical_devices       = {
+        .length             = 2,
+        .elements           = physical_device_list
+     },
+    .logical_devices       = {
+        .length             = 2,
+        .elements           = logical_device_list
+     },
+    .remote_ports           = {
+        .length             = 4,
+        .elements           = remote_ports
+    }
+};
+

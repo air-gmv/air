@@ -28,23 +28,23 @@
  *
  * \note the core context shouldn't be trashed at this point
  */
-void arm_core_context_save(pmk_core_ctrl_t *core)
-{
+void arm_core_context_save(pmk_core_ctrl_t *core) {
 
     void **isf = &(core->partition->context->isf_pointer);
     register air_u32_t r1, r2;
 
-    __asm__ volatile("mov %0, #18\n"
-                     "bfi %1, %0, #0, #5\n"
-                     "mrs %0, cpsr\n"
-                     "msr cpsr_c, %1\n"
-                     "str sp, [%2]\n"
-                     "msr cpsr_c, %0"
-                     : "=&r"(r1), "=&r"(r2)
-                     : "r"(isf)
-                     : "memory");
+    __asm__ volatile (
+            "mov %0, #18\n"
+            "bfi %1, %0, #0, #5\n"
+            "mrs %0, cpsr\n"
+            "msr cpsr_c, %1\n"
+            "str sp, [%2]\n"
+            "msr cpsr_c, %0"
+            : "=&r" (r1), "=&r" (r2)
+            : "r" (isf)
+            : "memory");
 
-    // arm_disable_fpu();
+    //arm_disable_fpu();
 }
 
 /**
@@ -52,37 +52,33 @@ void arm_core_context_save(pmk_core_ctrl_t *core)
  * The rest of the context restore is performed in exception.S (only the IRQ sp needs to be set
  * here). The MMU context also needs to be switched.
  */
-void arm_core_context_restore(pmk_core_ctrl_t *core)
-{
+void arm_core_context_restore(pmk_core_ctrl_t *core) {
 
     void *isf = core->context->isf_pointer;
     register air_u32_t r1, r2;
 
-    __asm__ volatile("mov %0, #18\n"
-                     "bfi %1, %0, #0, #5\n"
-                     "mrs %0, cpsr\n"
-                     "msr cpsr_c, %1\n"
-                     "mov sp, %2\n"
-                     "msr cpsr_c, %0"
-                     : "=&r"(r1), "=&r"(r2)
-                     : "r"(isf));
+    __asm__ volatile (
+            "mov %0, #18\n"
+            "bfi %1, %0, #0, #5\n"
+            "mrs %0, cpsr\n"
+            "msr cpsr_c, %1\n"
+            "mov sp, %2\n"
+            "msr cpsr_c, %0"
+            : "=&r" (r1), "=&r" (r2)
+            : "r" (isf));
 
     pmk_partition_t *partition = core->partition;
 
-    if (partition != NULL)
-    {
+    if (partition != NULL) {
 
-        if ((arm_is_mmu_enabled()) != 0)
-        {
+        if (arm_is_mmu_enabled()) {
 
             arm_mmu_change_context(partition->mmu_ctrl);
-        }
-        else
-        {
+        } else {
 
             arm_mmu_enable(partition->mmu_ctrl);
         }
     }
 
-    __asm__ volatile("clrex");
+    __asm__ volatile ("clrex");
 }
