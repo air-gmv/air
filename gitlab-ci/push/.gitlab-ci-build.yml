@@ -34,7 +34,7 @@ RVS-ARM-ZYNQZ1-build:
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
 
 # SPARC RVS PMK Instrumentation
-RVS-SPARC-LAYSIM-build:
+.RVS-SPARC-LAYSIM-build:
     stage: prepare-build
     tags: ["SPARC", "RVS"]
     needs: ["TASTE1_init"]
@@ -48,15 +48,16 @@ RVS-SPARC-LAYSIM-build:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
 
 # Build SPARC LEON4
-.SPARC-LEON4-build:
+SPARC-LEON4-build:
     stage: prepare-build
     tags: ["OTHER"]
     script:
-        - cd $CI_PROJECT_DIR/air
-        - cp ./../utils/gitlab-runner/.sparc_leon4_config .
+        - cp $UTILS/.sparc_leon4_config .
         - ./configure -f .sparc_leon4_config
         - make clean
         - make -j4
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
 
 # Build SPARC LEON3
 .SPARC-LEON3-build:
@@ -68,6 +69,8 @@ RVS-SPARC-LAYSIM-build:
         - ./configure -f .sparc_leon3_config
         - make clean
         - make -j4
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
 
 generate-test-yml:
     stage: prepare-build
@@ -93,3 +96,5 @@ generate-test-yml:
 #         - ./configure -f .sparc_tsim_config
 #         - make clean
 #         - make -j4
+#    rules:
+#        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
