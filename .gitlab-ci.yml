@@ -57,7 +57,7 @@ default:
         #        git clean -ffdx && git submodule foreach --recursive git clean -ffdx && echo $CI_COMMIT_SHORT_SHA > git-clean.lock; 
         #        git submodule update --init --recursive; 
         #        git submodule sync --recursive; 
-        #    fi 
+        #    fi
             
         - if ! test -d $STATE_FOLDER; then 
             (mkdir -p $STATE_FOLDER || true)
@@ -88,7 +88,7 @@ default:
         - export PATH=/opt/rtems-5.1-2019.07.25/bin:$PATH
         - export PATH=/opt/laysim-gr740:$PATH
 
-        #- export UTILS=$AIR/../utils/gitlab-runner
+        #- export UTILS=$AIR/../utils/gitlab-runner 
 
 placeholder:
     stage: .pre
