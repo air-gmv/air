@@ -13,6 +13,9 @@ ARM-ZYNQZ1-build:
         - make libs
         - make pos
         - make tools
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
 
 # ARM RVS PMK Instrumentation
 .RVS-ARM-ZYNQZ1-build:
