@@ -7,6 +7,6 @@ if ps aux | grep "[X]vfb" >/dev/null; then
     echo "The Xvfb process is running. Continuing."
 else
     echo "The Xvfb process is not running. Starting it now..."
-    echo "$TASTE_PW" | sudo -S Xvfb :99 &
+    Xvfb :99 &
     echo "The Xvfb process was successfully started."
 fi
