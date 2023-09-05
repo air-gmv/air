@@ -105,6 +105,7 @@ SPARC-LAYSIM-validation-test:
             *sparc-schedule
           else
             laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+          fi
         - make distclean -i # Ignore distclean errors
         - *check-and-publish
   rules:
