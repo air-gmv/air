@@ -9,10 +9,12 @@ ARM-ZYNQZ1-build:
     script:
         - cp $UTILS/.arm_zynqz1_config .
         - ./configure -f .arm_zynqz1_config
-        - make pmk
-        - make libs
-        - make pos
-        - make tools
+        #- make pmk
+        #- make libs
+        #- make pos
+        #- make tools
+        - make clean
+        - make -j4
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
