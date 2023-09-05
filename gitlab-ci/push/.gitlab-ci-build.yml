@@ -56,7 +56,7 @@ ARM-ZYNQZ1-build:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC] 
 
 # Build SPARC LEON4
-SPARC-LEON4-build:
+.SPARC-LEON4-build:
     stage: prepare-build
     tags: ["OTHER"]
     script:
@@ -72,8 +72,7 @@ SPARC-LEON4-build:
     stage: prepare-build
     tags: ["OTHER"]
     script:
-        - cd $CI_PROJECT_DIR/air
-        - cp ./../utils/gitlab-runner/.sparc_leon3_config .
+        - cp $UTILS/.sparc_leon3_config .
         - ./configure -f .sparc_leon3_config
         - make clean
         - make -j4
@@ -95,14 +94,13 @@ generate-test-yml:
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
 
 # Build SPARC TSIM 
-# SPARC-TSIM-build:
-#     stage: prepare-build
-#     tags: ["OTHER"]
-#     script:
-#         - cd $CI_PROJECT_DIR/air
-#         - cp ./../utils/gitlab-runner/.sparc_tsim_config .
-#         - ./configure -f .sparc_tsim_config
-#         - make clean
-#         - make -j4
-#    rules:
-#        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
+SPARC-TSIM-build:
+    stage: prepare-build
+    tags: ["OTHER"]
+    script:
+        - cp $UTILS/.sparc_tsim_config .
+        - ./configure -f .sparc_tsim_config
+        - make clean
+        - make -j4
+    rules:
+       - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
