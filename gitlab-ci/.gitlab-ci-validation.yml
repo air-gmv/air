@@ -101,7 +101,8 @@ SPARC-LAYSIM-validation-test:
   script: 
         - cd $AIR/examples/private-example/private/validation/$EXAMPLE
         - *build-executable
-        - if [ "$CI_PIPELINE_SOURCE" = "schedule" ]; then
+        - |
+          if [ "$CI_PIPELINE_SOURCE" = "schedule" ]; then
             sshpass -p $PASSWORD2 scp executable/AIRAPP.exe gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
             sshpass -p $PASSWORD2 scp $UTILS/gdb_sparc_rvs_coverage-ci.gdb gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
             sshpass -p $PASSWORD2 scp $UTILS/target_cmds_eth_sparc.bash gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
