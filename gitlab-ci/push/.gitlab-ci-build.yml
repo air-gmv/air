@@ -59,6 +59,7 @@ ARM-ZYNQZ1-build:
 SPARC-LEON4-build:
     stage: prepare-build
     tags: ["sparc-taste-debian1"]
+    needs: ["TASTE1_init"]
     script:
         - cp $UTILS/.sparc_leon4_config .
         - ./configure -f .sparc_leon4_config
