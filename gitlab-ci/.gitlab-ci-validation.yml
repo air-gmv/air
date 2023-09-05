@@ -36,7 +36,13 @@ ARM-QEMU-validation-test:
     script: 
         - cd $AIR/examples/private-example/private/validation/$EXAMPLE
         - *build-executable
-        - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
+        - |
+          if [ "$CI_PIPELINE_SOURCE" = "push" ]; then
+            ($UTILS/do_zynqz1_qemu.bash | tee testresult.txt)
+          else
+            ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt)
+          fi
+        - 
         - *check-and-publish
     rules:
         - if: '$CI_PIPELINE_SOURCE == "merge_request"'

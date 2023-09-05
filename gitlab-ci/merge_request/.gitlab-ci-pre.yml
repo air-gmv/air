@@ -30,17 +30,11 @@ ARM3_init:
 TASTE1_init:
     extends: .pre-job-template
     tags: ["sparc-taste-debian1"]
-    script:
-        - .$UTILS/enable_display.bash
 
 TASTE2_init:
     extends: .pre-job-template
     tags: ["sparc-taste-debian2"]
-    script:
-        - .$UTILS/enable_display.bash
 
 TASTE3_init:
     extends: .pre-job-template
     tags: ["sparc-taste-debian3"]
-    script:
-        - .$UTILS/enable_display.bash
