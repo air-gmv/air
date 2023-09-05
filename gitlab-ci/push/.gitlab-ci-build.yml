@@ -56,14 +56,16 @@ ARM-ZYNQZ1-build:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC] 
 
 # Build SPARC LEON4
-.SPARC-LEON4-build:
+SPARC-LEON4-build:
     stage: prepare-build
-    tags: ["OTHER"]
+    tags: ["sparc-taste-debian1"]
     script:
         - cp $UTILS/.sparc_leon4_config .
         - ./configure -f .sparc_leon4_config
-        - make clean
-        - make -j4
+        - make pmk
+        - make libs
+        - make pos
+        - make tools
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
 
@@ -94,7 +96,7 @@ generate-test-yml:
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
 
 # Build SPARC TSIM 
-SPARC-TSIM-build:
+.SPARC-TSIM-build:
     stage: prepare-build
     tags: ["OTHER"]
     script:
