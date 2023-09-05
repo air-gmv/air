@@ -34,6 +34,8 @@ TASTE1_init:
     extends: .pre-job-template
     tags: ["sparc-taste-debian1"]
     script:
+        - cd $UTILS
+        - ls
         - source "$UTILS/enable_display.bash"
 
 TASTE2_init:
