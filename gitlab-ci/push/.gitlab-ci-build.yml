@@ -42,7 +42,7 @@ ARM-ZYNQZ1-build:
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
 
 # SPARC RVS PMK Instrumentation
-RVS-SPARC-LAYSIM-build:
+.RVS-SPARC-LAYSIM-build:
     stage: prepare-build
     tags: ["SPARC", "RVS"]
     needs: ["TASTE1_init"]
@@ -56,7 +56,7 @@ RVS-SPARC-LAYSIM-build:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC] 
 
 # Build SPARC LEON4
-.SPARC-LEON4-build:
+SPARC-LEON4-build:
     stage: prepare-build
     tags: ["OTHER"]
     script:
