@@ -3,7 +3,7 @@
 
 .build-executable: &build-executable
     - $AIR/configure
-    - make clean
+    - make clean -i
     - make
     - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
 
@@ -39,7 +39,8 @@ ARM-QEMU-validation-test:
         - *build-executable
         - |
           if [ "$CI_PIPELINE_SOURCE" = "push" ]; then
-            ($UTILS/do_zynqz1_qemu.bash | tee testresult.txt)
+            cp 
+            ($UTILS/do_zynqz1_qemu.bash $UTILS | tee testresult.txt)
           else
             ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt)
           fi
