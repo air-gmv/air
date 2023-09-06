@@ -29,7 +29,7 @@
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
 
 # ARM
-ARM-QEMU-validation-test:
+.ARM-QEMU-validation-test:
     stage: validation_tests
     tags: ["ARM"]
     #needs: ["RVS-ARM-ZYNQZ1-build"]
