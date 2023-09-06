@@ -61,7 +61,7 @@ ARM-QEMU:
             - "bare_c"
 
 # SPARC
-.SPARC-LAYSIM:
+SPARC-LAYSIM:
     stage: examples
     tags: ["SPARC","LAYSIM"]
     #needs: ["RVS-SPARC-LAYSIM-build"]
