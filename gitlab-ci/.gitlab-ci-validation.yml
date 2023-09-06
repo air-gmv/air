@@ -39,7 +39,7 @@
         - *build-executable
         - |
           if [ "$CI_PIPELINE_SOURCE" = "push" ]; then
-            ($UTILS/do_zynqz1_qemu.bash $UTILS | tee testresult.txt)
+            $UTILS/do_zynqz1_qemu.bash $UTILS
           else
             ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt)
           fi
