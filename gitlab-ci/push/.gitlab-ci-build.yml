@@ -1,12 +1,6 @@
 # Gitlab CICD script for build stage
 # Author huca@GMV 2023
 
-enable_display1:
-    stage: prepare-build
-    tags: ["sparc-taste-debian1"]
-    script:
-        - source "$UTILS/enable_display.bash"
-
 # Build ARM ZYNQZ1
 ARM-ZYNQZ1-build:
     stage: prepare-build
