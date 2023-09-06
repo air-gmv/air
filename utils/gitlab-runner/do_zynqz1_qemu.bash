@@ -14,9 +14,11 @@ if [ $status -eq 0 ]; then
     echo TEST RTEMS5 OK
 else
     echo TEST RTEMS5 FAILED EXITING
+    pkill qemu-system-arm
     exit 1
 fi
 echo RTEMS5 test ended
+pkill qemu-system-arm
 
 
 
