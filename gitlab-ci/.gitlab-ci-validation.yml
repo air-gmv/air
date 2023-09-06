@@ -32,7 +32,7 @@
 .ARM-QEMU-validation-test:
     stage: validation_tests
     tags: ["ARM"]
-    #needs: ["RVS-ARM-ZYNQZ1-build"]
+    #needs: ["RVS-ARM-ZYNQZ1-build"] 
     needs: ["ARM-ZYNQZ1-build"]
     script: 
         - cd $AIR/examples/private-example/private/validation/$EXAMPLE
