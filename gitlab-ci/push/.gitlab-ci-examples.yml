@@ -1,6 +1,30 @@
 # Gitlab CICD script for example stage
 # Author huca@GMV 2023
 
+enable_display1:
+    stage: prepare-build
+    tags: ["sparc-taste-debian1"]
+    script:
+        - cd $UTILS
+        - chmod +x enable_display.sh
+        - ./enable_display.sh $TASTE_PASSWORD
+
+enable_display2:
+    stage: prepare-build
+    tags: ["sparc-taste-debian2"]
+    script:
+        - cd $UTILS
+        - chmod +x enable_display.sh
+        - ./enable_display.sh $TASTE_PASSWORD
+
+enable_display3:
+    stage: prepare-build
+    tags: ["sparc-taste-debian3"]
+    script:
+        - cd $UTILS
+        - chmod +x enable_display.sh
+        - ./enable_display.sh $TASTE_PASSWORD
+
 .build-executable: &build-executable
     - $AIR/configure
     - make clean -i
