@@ -18,7 +18,7 @@
     - script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash'" testresult.txt
     - sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $AIR/examples/private-example/private/validation/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
 
-.trigger-test:
+trigger-test:
     stage: validation_tests
     trigger:
         include:
