@@ -63,7 +63,7 @@ ARM-QEMU:
     timeout: 5 minutes
     artifacts:
         paths:
-            - ./executable/AIRAPP.exe
+            - $AIR/examples/$EXAMPLE/executable/AIRAPP.exe
     parallel:
       matrix:
         - EXAMPLE:
