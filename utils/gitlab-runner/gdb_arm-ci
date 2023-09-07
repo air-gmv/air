@@ -4,7 +4,7 @@ set confirm off
 set print elements 0
 
 target remote localhost:1234
-tbreak air_syscall_shutdown_module
+tbreak bsp_shutdown_core
 continue
 kill
 quit
