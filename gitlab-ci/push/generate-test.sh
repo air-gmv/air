@@ -22,11 +22,26 @@ default:
             
         - cd \$STATE_FOLDER
         - cd air
+
+        - export PATH=$\PATH:\$AIR
+        - export AIR_INSTALL=\$AIR/install
+        - export AIR_PMK=\$AIR_INSTALL/pmk
+        - export AIR_POS=\$AIR_INSTALL/pos
+
+        - export RTEMS410=/opt/rtems-4.10/bin
+        - export PATH=\$PATH:\$RTEMS410
+        - export RTEMS_MAKEFILE_PATH=\$AIR_POS/rtems5/rtems5-install/sparc-rtems5/gr740
+        - export PATH=\$PATH:/opt/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
+
+        - export DISPLAY=:99
+        - export PATH=/opt/rtems/5/bin:\$PATH
+        - export PATH=/opt/rtems-5.1-2019.07.25/bin:\$PATH
+        - export PATH=/opt/laysim-gr740:\$PATH
     
 .build-executable: &build-executable
     - \$AIR/configure
-    - make clean -i
-    - make -i
+    - make clean
+    - make
     - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
 
 .check-and-publish: &check-and-publish
