@@ -14,9 +14,6 @@ default:
         - git config --global credential.helper store
         - echo "https://\${GIT_HTTP_USERNAME}:\${CI_JOB_TOKEN}@$(AIR_GIT_REMOTE_HOSTNAME)" > ~/.git-credentials
 
-
-        
-            
         - if ! test -d \$STATE_FOLDER; then 
             (mkdir -p \$STATE_FOLDER || true)
           fi;
@@ -25,24 +22,18 @@ default:
         - cd \$AIR
         - ls
 
-        - export STATE_FOLDER=\$HOME/state/\$CI_COMMIT_SHA
-        - export AIR=\$STATE_FOLDER/air/
-        - export UTILS=\$AIR/../utils/gitlab-runner
-
-        - export PATH=$\PATH:\$AIR
-        - export AIR_INSTALL=\$AIR/install
-        - export AIR_PMK=\$AIR_INSTALL/pmk
-        - export AIR_POS=\$AIR_INSTALL/pos
-
-        - export RTEMS410=/opt/rtems-4.10/bin
-        - export PATH=\$PATH:\$RTEMS410
-        - export RTEMS_MAKEFILE_PATH=\$AIR_POS/rtems5/rtems5-install/sparc-rtems5/gr740
-        - export PATH=\$PATH:/opt/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
-
-        - export DISPLAY=:99
-        - export PATH=/opt/rtems/5/bin:\$PATH
-        - export PATH=/opt/rtems-5.1-2019.07.25/bin:\$PATH
-        - export PATH=/opt/laysim-gr740:\$PATH
+        #- export PATH=$\PATH:\$AIR
+        #- export AIR_INSTALL=\$AIR/install
+        #- export AIR_PMK=\$AIR_INSTALL/pmk
+        #- export AIR_POS=\$AIR_INSTALL/pos
+        #- export RTEMS410=/opt/rtems-4.10/bin
+        #- export PATH=\$PATH:\$RTEMS410
+        #- export RTEMS_MAKEFILE_PATH=\$AIR_POS/rtems5/rtems5-install/sparc-rtems5/gr740
+        #- export PATH=\$PATH:/opt/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
+        #- export DISPLAY=:99
+        #- export PATH=/opt/rtems/5/bin:\$PATH
+        #- export PATH=/opt/rtems-5.1-2019.07.25/bin:\$PATH
+        #- export PATH=/opt/laysim-gr740:\$PATH
     
 .build-executable: &build-executable
     - \$AIR/configure
