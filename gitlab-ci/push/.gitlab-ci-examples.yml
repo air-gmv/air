@@ -54,7 +54,7 @@ ARM-QEMU:
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
         #- ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true 
-        - ($UTILS/do_zynqz1_qemu.bash $UTILS | tee testresult.txt)
+        - ($UTILS/test.bash | tee testresult.txt)
         - make distclean -i
         - *check-and-publish
     rules:
