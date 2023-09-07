@@ -26,7 +26,7 @@ default:
 .build-executable: &build-executable
     - \$AIR/configure
     - make clean -i
-    - make
+    - make -i
     - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
 
 .check-and-publish: &check-and-publish
