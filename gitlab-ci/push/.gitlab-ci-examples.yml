@@ -61,6 +61,9 @@ ARM-QEMU:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/'
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
     timeout: 5 minutes
+    artifacts:
+        paths:
+            - ./executable/AIRAPP.exe
     parallel:
       matrix:
         - EXAMPLE:
