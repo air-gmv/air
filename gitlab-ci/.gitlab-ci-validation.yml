@@ -103,7 +103,7 @@ trigger-test:
 SPARC-LAYSIM-validation-test:
   stage: validation_tests
   tags: ["SPARC","LAYSIM"]
-  #needs: ["RVS-SPARC-LAYSIM-build"]
+  #needs: ["RVS-SPARC-LAYSIM-build"] 
   script: 
         - cd $AIR/examples/private-example/private/validation/$EXAMPLE
         - *build-executable
