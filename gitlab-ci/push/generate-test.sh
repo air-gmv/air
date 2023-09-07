@@ -30,7 +30,7 @@ default:
         #- export PATH=\$PATH:\$RTEMS410
         #- export RTEMS_MAKEFILE_PATH=\$AIR_POS/rtems5/rtems5-install/sparc-rtems5/gr740
         #- export PATH=\$PATH:/opt/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
-        #- export DISPLAY=:99
+        - export DISPLAY=:99
         - export PATH=/opt/rtems/5/bin:\$PATH
         - export PATH=/opt/rtems-5.1-2019.07.25/bin:\$PATH
         - export PATH=/opt/laysim-gr740:\$PATH
