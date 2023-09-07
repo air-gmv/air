@@ -97,7 +97,7 @@ generate-test-yml:
     stage: prepare-build
     script:
         - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
-        - chmod +x ../gitlab-ci/push/generate-test.sh
+        #- chmod +x ../gitlab-ci/push/generate-test.sh
         - ./../gitlab-ci/push/generate-test.sh $TEST_NUMBER
         - mv test.yml $CI_PROJECT_DIR
     artifacts:
