@@ -49,7 +49,7 @@
 .ARM-QEMU:
     stage: examples
     tags: ["ARM"]
-    #needs: ["RVS-ARM-ZYNQZ1-build"] 
+    #needs: ["RVS-ARM-ZYNQZ1-build"]
     needs: ["ARM-ZYNQZ1-build"]
     script:
         - cd $AIR/examples/$EXAMPLE
