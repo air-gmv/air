@@ -1,0 +1,11 @@
+set print pretty on
+set pagination off
+set confirm off
+set print elements 0
+
+target remote localhost:1234
+tbreak RVS_Output
+continue
+kill
+quit
+
