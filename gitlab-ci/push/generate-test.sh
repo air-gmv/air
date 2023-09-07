@@ -11,17 +11,23 @@ default:
     before_script:
         - sleep \$((\$RANDOM % 2)).\$RANDOM
 
-        - export STATE_FOLDER=\$HOME/state/\$CI_COMMIT_SHA
-        - export AIR=\$STATE_FOLDER/air/
-        - export UTILS=\$AIR/../utils/gitlab-runner
+        - git config --global credential.helper store
+        - echo "https://\${GIT_HTTP_USERNAME}:\${CI_JOB_TOKEN}@$(AIR_GIT_REMOTE_HOSTNAME)" > ~/.git-credentials
+
+
+        
             
         - if ! test -d \$STATE_FOLDER; then 
             (mkdir -p \$STATE_FOLDER || true)
           fi;
         - ./utils/gitlab-runner/check_central_server.bash;
             
-        - cd \$STATE_FOLDER
-        - cd air
+        - cd \$AIR
+        - ls
+
+        - export STATE_FOLDER=\$HOME/state/\$CI_COMMIT_SHA
+        - export AIR=\$STATE_FOLDER/air/
+        - export UTILS=\$AIR/../utils/gitlab-runner
 
         - export PATH=$\PATH:\$AIR
         - export AIR_INSTALL=\$AIR/install
@@ -53,7 +59,8 @@ ARM-QEMU-TEST-DEF-$TEST_NUMBER:
   script: 
       - cd \$AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
       - *build-executable
-      - (\$UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
+      - (\$UTILS/test.bash | tee testresult.txt)
+      - make distclean -i
       - *check-and-publish
   rules:
       - if: '\$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
