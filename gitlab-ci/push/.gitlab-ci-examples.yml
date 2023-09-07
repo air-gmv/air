@@ -76,7 +76,7 @@
 .SPARC-LAYSIM:
     stage: examples
     tags: ["SPARC","LAYSIM"]
-    #needs: ["RVS-SPARC-LAYSIM-build"] 
+    #needs: ["RVS-SPARC-LAYSIM-build"]
     script:
         - if [[ "$EXAMPLE" == "paranoia" || "$EXAMPLE" == "smp01" || "$EXAMPLE" == "smp02" ]]; then
             cd $AIR/examples/testsuites/$EXAMPLE;
