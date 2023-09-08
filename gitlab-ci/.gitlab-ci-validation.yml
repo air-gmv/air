@@ -107,7 +107,7 @@ ARM-QEMU-validation-test:
 # SPARC
 SPARC-LAYSIM-validation-test:
   stage: validation_tests
-  tags: ["SPARC","LAYSIM"]
+  tags: $RUNNER
   #needs: ["RVS-SPARC-LAYSIM-build"] 
   script: 
         - cd $AIR/examples/private-example/private/validation/$EXAMPLE
@@ -125,14 +125,15 @@ SPARC-LAYSIM-validation-test:
         - make distclean -i # Ignore distclean errors
         - *check-and-publish
   rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request"'
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
+        - if: '$CI_PIPELINE_SOURCE == "merge_request" && $RUNNER == "SPARC"'
+        - if: '$CI_PIPELINE_SOURCE == "schedule" && $RUNNER == "sparc-taste-debian1"'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ALL\]/ && $RUNNER == "SPARC"'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/ && $RUNNER == "SPARC"'
   timeout: 5 minutes
   parallel:
       matrix:
-        - EXAMPLE:
+        - RUNNER: ["sparc-taste-debian1", "SPARC"]
+          EXAMPLE:
           - "TEST-DEF-00009"
           - "TEST-DEF-00010"
           - "TEST-DEF-00012"
