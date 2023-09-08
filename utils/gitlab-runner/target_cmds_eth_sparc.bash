@@ -4,7 +4,7 @@
 #EFO
 
 ps -uax | grep grmon
-killall -9 grmon
+pkill -f "/opt/grmon-pro-2.0.92/bin/grmon -u -nb -eth 192.168.0.30 -gdb"
 
 #/opt/grmon-pro-2.0.92/bin/grmon -u -nb -eth 192.168.0.30 -gdb
 nohup /opt/grmon-pro-2.0.92/bin/grmon -u -nb -eth 192.168.0.30 -gdb &
@@ -14,6 +14,6 @@ nohup /opt/grmon-pro-2.0.92/bin/grmon -u -nb -eth 192.168.0.30 -gdb &
 
 cat output.txt
 
-killall -9 grmon
+pkill -f "/opt/grmon-pro-2.0.92/bin/grmon -u -nb -eth 192.168.0.30 -gdb"
 
 exit
