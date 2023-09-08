@@ -33,9 +33,9 @@ ARM-QEMU-validation-test:
     stage: validation_tests
     tags: ["ARM"]
     needs:
-      - job: ["RVS-ARM-ZYNQZ1-build"]
+      - job: RVS-ARM-ZYNQZ1-build
         optional: true
-      - job: ["ARM-ZYNQZ1-build"]
+      - job: ARM-ZYNQZ1-build
         optional: true
     script: 
         - cd $AIR/examples/private-example/private/validation/$EXAMPLE
