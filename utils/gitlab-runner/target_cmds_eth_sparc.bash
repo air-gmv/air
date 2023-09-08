@@ -10,9 +10,9 @@ pkill -f "/opt/grmon-pro-2.0.92/bin/grmon -u -nb -eth 192.168.0.30 -gdb"
 nohup /opt/grmon-pro-2.0.92/bin/grmon -u -nb -eth 192.168.0.30 -gdb &
 
 #/opt/rtems5/bin//sparc-rtems5-gdb -v AIRAPP.exe -x gdb_sparc_rvs_coverage-ci.gdb
-/opt/rtems5/bin/sparc-rtems5-gdb AIRAPP.exe -x gdb_sparc_rvs_coverage-ci.gdb
+/opt/rtems5/bin/sparc-rtems5-gdb AIRAPP.exe -x gdb_sparc_rvs_coverage-ci.gdb > gdb_output.txt 2>&1
 
-cat output.txt
+cat gdb_output.txt
 
 pkill -f "/opt/grmon-pro-2.0.92/bin/grmon -u -nb -eth 192.168.0.30 -gdb"
 

@@ -4,7 +4,6 @@ set confirm off
 set print elements 0
 
 target extended-remote :1234
-load
 tbreak RVS_Output
 run
 dump memory memdump.bin &rvs_all_data32_array &rvs_all_data32_array+1
