@@ -1,52 +1,63 @@
-# Welcome to AIR v5.6.1
+# Welcome to AIR v5.6.1b
 
 AIR has a user manual that you can request by e-mailing airproduct@gmv.com
 
-You have two ways of getting AIR
-1) Download from github at https://github.com/air-gmv/air
-2) AIR is intregrated in TASTE toolchain available at  https://taste.tuxfamily.org/
+You have two ways to obtain AIR:
+1) Download it from GitHub at https://github.com/air-gmv/air.
+2) AIR is integrated in the TASTE toolchain, which is available at https://taste.tuxfamily.org/ inside the ~/tool-src/air folder.
 
-Below is an example on installing and using AIR.
-This example is use SPARC target, if ARM read section 4.2.1 of user manual.
-To install AIR after cloning from git, you should do the following:
+Below is an example of how to install and use AIR. This example focuses on using the SPARC target. If you are using ARM, please refer to section 4.2.1 of the user manual.
+
+To install AIR after cloning it from git, follow these steps:
 
 
 ## 1 - Install RTEMS toolchain for RTEMS 5
-Execute the following:
+Execute the following commands:
 
 ```
 git clone git://git.rtems.org/rtems-source-builder.git rsb
-git checkout 5
 cd rsb
+git checkout 5
 ./source-builder/sb-check
 cd rtems
 ../source-builder/sb-set-builder --prefix=/opt/rtems/5 5/rtems-sparc
 ```
 Currently supported toolchain version : rtems-5.1-2019.07.25
 
-It maybe needed texinfo package, install by executing "sudo apt-get install texinfo" or similar command.
+### Troubleshooting installation problems:
+
+ - You may need the texinfo package, which can be installed by executing sudo apt-get install texinfo or a similar command.
+
+ - If the environment is not correctly set up, there might be missing Ubuntu dependencies. Run the following command to install the packages: `sudo apt install build-essential g++ gdb unzip pax bison flex texinfo python3-dev python-is-python3 libpython2-dev libncurses5-dev zlib1g-dev ninja-build pkg-config`
+
+- If build fails with the message 
+	>*prefix is not writable: /opt/rtems/5*
+
+	, run again with `sudo`. For more info check https://docs.rtems.org/branches/master/user/start/prefixes.html .
 
 
 ## 2 - Configure and build AIR
-AIR configure requires python-mako, if not installed execute (in case of Debian)
+AIR configuration requires python-mako. If it is not installed, execute the following commands (for Debian):
 
-    sudo apt-get install python-mako
+    sudo apt-get install python3-mako
     sudo apt install python3-tk
     sudo apt install python3-venv
 
 Clone AIR repo for example in */home/taste/work/*
 
 
-Add the *air_repo/air* to the PATH env variable, we recommend doing the following way in .bashrc file:
+Add the air_repo/air to the PATH environment variable. 
+We recommend doing it the following way in the .bashrc file:
 
     export AIR=/home/taste/work/AIR/air
     export PATH=$PATH:$AIR
 
-    git clone https://github.com/air-gmv/air.git
-RTEMS 5 tool chain should be in the PATH, e.g:
+Clone the AIR repository from https://github.com/air-gmv/air.git.
+
+The RTEMS 5 toolchain should be in the PATH, for example:
     `export PATH=$PATH:/opt/rtems/5/bin` 
 
-Board support package available depend from the chosen architecture:
+The board support package depends on the chosen architecture:
 - SPARC   
     -  laysim_gr740 
     - leon4    
@@ -63,8 +74,9 @@ AIR supports the following paravirtualized RTOS versions:
 - POSIX RTEMS 5
 - BARE OS (Metal-bare)
 
-AIR paravirtualized RTOS and AIR GUI are obtained via git submodules. For example to use AIR 
-RTEMS 5 version and AIR GUI please execute in root folder of the repository.
+The paravirtualized RTOS and AIR GUI for AIR are obtained via git submodules. 
+
+To use the AIR RTEMS 5 version and AIR GUI, please execute the following commands in the root folder of the repository:
 
     git submodule init air/pos/rtems5
     git submodule init air/tools/air-gui
@@ -78,12 +90,14 @@ On *air_repo/air* execute
 
     ./configure 
 
-Alternatively an alfa version is available of AIR GUI, by executing On *air_repo/air/tools/air-gui/* :
+Alternatively, an alpha version of AIR GUI is available. 
+To access it, execute the following command in the air_repo/air/tools/air-gui/ directory:
     ./launch.sh
 
 
 
-Configurator interface will enquire the user for options (architecture, BSP, FPU, Cache, Debugger, RTOS). For example
+The configurator interface will prompt the user for options (architecture, BSP, FPU, Cache, Debugger, RTOS). 
+For example:
 
 * Press 0 for sparc 
 * Press 2 for leon4
@@ -99,13 +113,14 @@ make
 ```
 
 ## 4- Build an example ready to run on a target board
+
 Go to any example inside *air_repo/air/examples*
 
 Execute
 
     ../../configure
 
-This generate the makefiles taking as input the XML configuration file.
+This will generate the makefiles taking the XML configuration file as input.
 
 It generates a parent makefile and then a makefile per partition inside the respective partition folder.
  
