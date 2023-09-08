@@ -23,12 +23,10 @@ ARM1_init:
 
 ARM2_init:
     extends: .pre-job-template
-    allow_failure: true
     tags: ["ARM2"]
 
 ARM3_init:
     extends: .pre-job-template
-    allow_failure: true
     tags: ["ARM3"]
         
 # TASTE
@@ -38,10 +36,8 @@ TASTE1_init:
 
 TASTE2_init:
     extends: .pre-job-template
-    allow_failure: true
     tags: ["sparc-taste-debian2"]
 
 TASTE3_init:
     extends: .pre-job-template
-    allow_failure: true
     tags: ["sparc-taste-debian3"]
