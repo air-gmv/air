@@ -107,7 +107,8 @@ ARM-QEMU-validation-test:
 # SPARC
 SPARC-LAYSIM-validation-test:
   stage: validation_tests
-  tags: $RUNNER
+  tags: 
+    - $RUNNER
   #needs: ["RVS-SPARC-LAYSIM-build"] 
   script: 
         - cd $AIR/examples/private-example/private/validation/$EXAMPLE
