@@ -32,7 +32,7 @@
     - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
 
 .check-and-publish: &check-and-publish
-#    - $AIR/../utils/gitlab-runner/testcheck.py
+#    - $AIR/../utils/gitlab-runner/testcheck.py 
     - $UTILS/publish_example.bash
 
 # ARM 

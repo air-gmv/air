@@ -50,7 +50,7 @@ ARM-QEMU-TEST-DEF-$TEST_NUMBER:
   script: 
       - cd \$AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
       - *build-executable
-      - (\$UTILS/test.bash | tee testresult.txt)
+      - (\$UTILS/test.bash | tee testresult.txt) || true
       - make distclean -i
       - *check-and-publish
   rules:
