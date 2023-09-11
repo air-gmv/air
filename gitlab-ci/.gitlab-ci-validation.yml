@@ -40,13 +40,13 @@ ARM-QEMU-validation-test:
     script: 
         - cd $AIR/examples/private-example/private/validation/$EXAMPLE
         - *build-executable
-        #- |
-        #  if [ "$CI_PIPELINE_SOURCE" = "push" ]; then
-        #    ($UTILS/test.bash | tee testresult.txt) || true
-        #  else
-        #    ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
-        #  fi
-        - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
+        - |
+          if [ "$CI_PIPELINE_SOURCE" = "push" ]; then
+            ($UTILS/test.bash | tee testresult.txt) || true
+          else
+            ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
+          fi
+        #- ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
         - make distclean -i # Ignore distclean errors 
         - *check-and-publish
     rules:
