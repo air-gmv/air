@@ -1,0 +1,23 @@
+generate-test-yml:
+    stage: solo_test
+    script:
+        - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
+        - ./../gitlab-ci/push/generate-test.sh $TEST_NUMBER
+        - mv test.yml $CI_PROJECT_DIR
+    artifacts:
+        paths:
+            - $CI_PROJECT_DIR/test.yml
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
+
+trigger-test:
+    stage: solo_test
+    needs: ["generate-test-yml"]
+    trigger:
+        include:
+            - artifact: $CI_PROJECT_DIR/test.yml
+              job: generate-test-yml
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[(ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'

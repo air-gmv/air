@@ -111,7 +111,7 @@ SPARC-LAYSIM-validation-test:
           else
             laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
           fi
-        - make distclean -i # Ignore distclean errors 
+        - make distclean -i # Ignore distclean errors
         - *check-and-publish
   rules:
         - if: '$CI_PIPELINE_SOURCE == "merge_request" && $RUNNER == "SPARC"'

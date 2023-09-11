@@ -22,6 +22,7 @@ stages:
     - prepare-build
     - examples
     - validation_tests
+    - solo_test # push pipeline only
     - report
 
 variables:
