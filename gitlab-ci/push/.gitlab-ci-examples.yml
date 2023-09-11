@@ -6,9 +6,9 @@ enable_display1:
     tags: ["sparc-taste-debian1"]
     script:
         - cd $UTILS
-        - timeout 90s bash enable_display.sh $TASTE_PASSWORD
+        - timeout 20s bash enable_display.sh $TASTE_PASSWORD
         #- ./enable_display.sh $TASTE_PASSWORD
-    timeout: 1m30s
+    timeout: 5m
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' 
 
