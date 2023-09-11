@@ -2,14 +2,14 @@
 # Author huca@GMV 2023
 
 # .pre are jobs ran before any other job in the pipeline
-# These jobs are used to check the state of VMs and to performn any specific VM action such as a cleanup.
+# These jobs are used to check the state of VMs and to performn any specific VM action such as a cleanup and a clone.
 # ARM and TASTE 1 are not allowed to fail since they are the only one with RVS license.
 .pre-job-template:
     stage: .pre
     variables:
         GIT_STRATEGY: clone
     before_script: 
-        - ''               # Prevents the before_script from running
+        - '' # Prevents the before_script from running
     script:
         - echo "Cloning repository into runner"
 

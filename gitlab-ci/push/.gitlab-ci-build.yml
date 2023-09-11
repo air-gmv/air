@@ -5,14 +5,10 @@
 ARM-ZYNQZ1-build:
     stage: prepare-build
     tags: ["ARM1"]
-    needs: ["ARM1_init", "enable_display1"]
+    needs: ["ARM1_init"]
     script:
         - cp $UTILS/.arm_zynqz1_config .
         - ./configure -f .arm_zynqz1_config
-        #- make pmk
-        #- make libs
-        #- make pos
-        #- make tools
         - make clean
         - make -j4
     rules:
@@ -23,14 +19,12 @@ ARM-ZYNQZ1-build:
 SPARC-GR740-build:
     stage: prepare-build
     tags: ["sparc-taste-debian1"]
-    needs: ["TASTE1_init", "enable_display1"]
+    needs: ["TASTE1_init"]
     script:
         - cp $UTILS/.sparc_gr740_config .
         - ./configure -f .sparc_gr740_config
-        - make pmk
-        - make libs
-        - make pos
-        - make tools
+        - make clean
+        - make -j4
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
 
@@ -38,7 +32,7 @@ generate-test-yml:
     stage: prepare-build
     script:
         - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
-        - ./../gitlab-ci/push/generate-test.sh $TEST_NUMBER
+        - . $PUSH_PIPELINE/generate-test.sh $TEST_NUMBER
         - mv test.yml $CI_PROJECT_DIR
     artifacts:
         paths:
@@ -52,14 +46,9 @@ generate-test-yml:
 .SPARC-LEON4-build:
     stage: prepare-build
     tags: ["sparc-taste-debian1"]
-    needs: ["TASTE1_init"]
     script:
         - cp $UTILS/.sparc_leon4_config .
         - ./configure -f .sparc_leon4_config
-        #- make pmk
-        #- make libs
-        #- make pos
-        #- make tools
         - make clean
         - make -j4
 

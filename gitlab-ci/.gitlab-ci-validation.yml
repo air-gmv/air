@@ -38,9 +38,8 @@ ARM-QEMU-validation-test:
             ($UTILS/test.bash | tee testresult.txt) || true
           else
             ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
-          fi
-        #- ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true 
-        - make distclean -i # Ignore distclean errors
+          fi 
+        - make distclean
         - *check-and-publish
     rules:
         - if: '$CI_PIPELINE_SOURCE == "merge_request"'

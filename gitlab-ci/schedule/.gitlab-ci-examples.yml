@@ -20,7 +20,7 @@ ARM-QEMU:
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
         - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true 
-        - make distclean -i
+        - make distclean
         - *check-and-publish
     timeout: 10 minutes
     parallel:
@@ -59,8 +59,5 @@ SPARC-LAYSIM:
             - "paranoia"
             - "smp01"
             - "smp02"
+            #- "math"
 
-# laysim-math:
-#    extends: .SPARC-LAYSIM-example-template
-#    variables: 
-#        EXAMPLE: "math"
