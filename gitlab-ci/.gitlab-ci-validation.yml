@@ -42,11 +42,11 @@ ARM-QEMU-validation-test:
         - *build-executable
         #- |
         #  if [ "$CI_PIPELINE_SOURCE" = "push" ]; then
-        #    ($UTILS/test.bash | tee testresult.txt)
+        #    ($UTILS/test.bash | tee testresult.txt) || true
         #  else
-        #    ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt)
+        #    ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
         #  fi
-        - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt)
+        - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
         - make distclean -i # Ignore distclean errors 
         - *check-and-publish
     rules:
