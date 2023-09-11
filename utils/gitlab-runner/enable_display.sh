@@ -10,3 +10,5 @@ else
     sudo -S <<< "$TASTE_PW" Xvfb :99 &
     echo "The Xvfb process was successfully started."
 fi
+
+exit 0
