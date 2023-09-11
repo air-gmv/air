@@ -1,7 +1,7 @@
 # Gitlab CICD script for example stage
 # Author huca@GMV 2023
 
-.enable_display1:
+enable_display1:
     stage: prepare-build
     tags: ["sparc-taste-debian1"]
     script:
@@ -12,7 +12,7 @@
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' 
 
-.enable_display2:
+enable_display2:
     stage: prepare-build
     tags: ["sparc-taste-debian2"]
     script:
@@ -23,7 +23,7 @@
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' 
 
-.enable_display3:
+enable_display3:
     stage: prepare-build
     tags: ["sparc-taste-debian3"]
     script:
