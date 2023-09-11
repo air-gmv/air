@@ -1,37 +1,6 @@
 # Gitlab CICD script for build stage
 # Author huca@GMV 2023
 
-enable_display1:
-    stage: prepare-build
-    tags: ["sparc-taste-debian1"]
-    script:
-        - cd $UTILS
-        - ./enable_display.sh $TASTE_PASSWORD
-    timeout: 1m30s
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' 
-
-enable_display2:
-    stage: prepare-build
-    tags: ["sparc-taste-debian2"]
-    script:
-        - cd $UTILS
-        - ./enable_display.sh $TASTE_PASSWORD
-    timeout: 1m30s
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' 
-
-enable_display3:
-    stage: prepare-build
-    tags: ["sparc-taste-debian3"]
-    script:
-        - cd $UTILS
-        - ./enable_display.sh $TASTE_PASSWORD
-    timeout: 1m30s
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' 
-
-
 # Build ARM ZYNQZ1
 ARM-ZYNQZ1-build:
     stage: prepare-build
