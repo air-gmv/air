@@ -1,11 +1,42 @@
 # Gitlab CICD script for build stage
 # Author huca@GMV 2023
 
+enable_display1:
+    stage: prepare-build
+    tags: ["sparc-taste-debian1"]
+    script:
+        - cd $UTILS
+        - ./enable_display.sh $TASTE_PASSWORD
+    timeout: 1m30s
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' 
+
+enable_display2:
+    stage: prepare-build
+    tags: ["sparc-taste-debian2"]
+    script:
+        - cd $UTILS
+        - ./enable_display.sh $TASTE_PASSWORD
+    timeout: 1m30s
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' 
+
+enable_display3:
+    stage: prepare-build
+    tags: ["sparc-taste-debian3"]
+    script:
+        - cd $UTILS
+        - ./enable_display.sh $TASTE_PASSWORD
+    timeout: 1m30s
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' 
+
+
 # Build ARM ZYNQZ1
 ARM-ZYNQZ1-build:
     stage: prepare-build
     tags: ["ARM1"]
-    needs: ["ARM1_init"]
+    needs: ["ARM1_init", "enable_display1"]
     script:
         - cp $UTILS/.arm_zynqz1_config .
         - ./configure -f .arm_zynqz1_config
@@ -18,37 +49,6 @@ ARM-ZYNQZ1-build:
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM] 
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
-
-# ARM RVS PMK Instrumentation
-.RVS-ARM-ZYNQZ1-build:
-    stage: prepare-build
-    tags: ["ARM", "RVS"]
-    needs: ["ARM1_init"]
-    script:
-        - sed -i 's/\.\/rvs_air\/scripts\/build_arm.bash/\.\/rvs_air\/scripts\/build_arm-ci.bash/g' air.rvsprj
-        - rvsdriver --project $AIR/air.rvsprj --integration arm-pmk-coverage --prepare --build
-        - bash $AIR/rvs_air/scripts/build_arm_pmk_archive-ci.bash
-        - rm -rf $AIR/install/pos/rtems5/rtems5-build
-        - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
-        - $UTILS/publish_to_central_server.bash
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM]  
-        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
-
-# SPARC RVS PMK Instrumentation
-.RVS-SPARC-LAYSIM-build:
-    stage: prepare-build
-    tags: ["SPARC", "RVS"]
-    needs: ["TASTE1_init"]
-    script:
-        - sed -i 's/\.\/rvs_air\/scripts\/build.bash/\.\/rvs_air\/scripts\/build-ci.bash/g' air.rvsprj
-        - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --prepare --build
-        - rm -rf $AIR/install/pos/rtems5/rtems5-build
-        - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
-        - $UTILS/publish_to_central_server.bash
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC] 
-
 
 # Build SPARC GR740 
 SPARC-GR740-build:
@@ -64,6 +64,19 @@ SPARC-GR740-build:
         - make tools
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
+
+generate-test-yml:
+    stage: prepare-build
+    script:
+        - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
+        - ./../gitlab-ci/push/generate-test.sh $TEST_NUMBER
+        - mv test.yml $CI_PROJECT_DIR
+    artifacts:
+        paths:
+            - $CI_PROJECT_DIR/test.yml
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
 
 
 # Build SPARC LEON4 
@@ -95,20 +108,6 @@ SPARC-GR740-build:
         - make -j4
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
-
-generate-test-yml:
-    stage: prepare-build
-    script:
-        - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
-        #- chmod +x ../gitlab-ci/push/generate-test.sh
-        - ./../gitlab-ci/push/generate-test.sh $TEST_NUMBER
-        - mv test.yml $CI_PROJECT_DIR
-    artifacts:
-        paths:
-            - $CI_PROJECT_DIR/test.yml
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
-        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
 
 # Build SPARC TSIM 
 .SPARC-TSIM-build:
