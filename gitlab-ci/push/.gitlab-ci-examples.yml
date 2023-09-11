@@ -1,19 +1,6 @@
 # Gitlab CICD script for example stage
 # Author huca@GMV 2023
 
-enable_display1:
-    stage: prepare-build
-    tags: ["sparc-taste-debian1"]
-    script:
-        #- timeout 20s bash $UTILS/enable_display.sh $TASTE_PASSWORD
-        #- ./enable_display.sh $TASTE_PASSWORD
-        #- xterm -e "bash $UTILS/enable_display.sh $TASTE_PASSWORD"
-        - nohup bash $UTILS/enable_display.sh $TASTE_PASSWORD &
-
-    timeout: 5m
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' 
-
 .build-executable: &build-executable
     - $AIR/configure
     - make clean
@@ -36,7 +23,7 @@ ARM-QEMU:
         - *build-executable
         #- ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
         - ($UTILS/test.bash | tee testresult.txt) || true
-        - make distclean -i
+        - make distclean
         - *check-and-publish
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/'
@@ -58,11 +45,8 @@ SPARC-LAYSIM:
     tags: ["SPARC","LAYSIM"]
     #needs: ["RVS-SPARC-LAYSIM-build"]
     script:
-        - if [[ "$EXAMPLE" == "paranoia" || "$EXAMPLE" == "smp01" || "$EXAMPLE" == "smp02" ]]; then
-            cd $AIR/examples/testsuites/$EXAMPLE;
-          else
-            cd $AIR/examples/$EXAMPLE;
-          fi
+        - TEST_DIR=$(if [[ "$EXAMPLE" == "paranoia" || "$EXAMPLE" == "smp01" || "$EXAMPLE" == "smp02" ]]; then echo "$AIR/examples/testsuites/$EXAMPLE"; else echo "$AIR/examples/$EXAMPLE"; fi)
+        - cd $TEST_DIR
         - *build-executable
         - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - make distclean -i
@@ -81,8 +65,5 @@ SPARC-LAYSIM:
             #- "paranoia"
             #- "smp01"
             #- "smp02"
-
-# laysim-math:
-#    extends: .SPARC-LAYSIM-example-template
-#    variables: 
-#        EXAMPLE: "math"
+            #- "math"
+            
