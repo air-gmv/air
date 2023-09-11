@@ -106,7 +106,7 @@ SPARC-LAYSIM-validation-test:
             sshpass -p $PASSWORD2 scp $UTILS/target_cmds_eth_sparc.bash gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
             script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash'" testresult.txt
             sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $AIR/examples/private-example/private/validation/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
-            sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/gdb_output.txt $TEST_DIR && echo "File transfer successful." || echo "File transfer failed."
+            sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/gdb_output.txt $AIR/examples/private-example/private/validation/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
             cat gdb_output.txt
           else
             laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
