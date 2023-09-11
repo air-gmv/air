@@ -50,12 +50,12 @@ ARM-QEMU:
     stage: examples
     tags: ["ARM"]
     #needs: ["RVS-ARM-ZYNQZ1-build"]
-    needs: ["ARM-ZYNQZ1-build"]
+    #needs: ["ARM-ZYNQZ1-build"]
     script:
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
-        #- ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
-        - ($UTILS/test.bash | tee testresult.txt)
+        - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
+        #- ($UTILS/test.bash | tee testresult.txt)
         - make distclean -i
         - *check-and-publish
     rules:
