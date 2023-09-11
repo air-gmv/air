@@ -11,16 +11,6 @@
     - $AIR/../utils/gitlab-runner/testcheck.py
     - $UTILS/publish_example.bash
 
-trigger-test:
-    stage: validation_tests
-    trigger:
-        include:
-            - artifact: $CI_PROJECT_DIR/test.yml
-              job: generate-test-yml
-    rules:
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[(ARM|SPARC)\]/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE =~ /\(\d{5}\)/'
-        - when: never
 # ARM
 ARM-QEMU-validation-test:
     stage: validation_tests
