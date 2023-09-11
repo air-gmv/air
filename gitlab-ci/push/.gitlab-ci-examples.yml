@@ -23,7 +23,7 @@ ARM-QEMU:
         - *build-executable
         #- ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
         - ($UTILS/test.bash | tee testresult.txt) || true
-        - make distclean
+        - make distclean -i
         - *check-and-publish
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/'
@@ -66,4 +66,4 @@ SPARC-LAYSIM:
             #- "smp01"
             #- "smp02"
             #- "math"
-            
+
