@@ -23,7 +23,7 @@ ARM-ZYNQZ1-build:
 SPARC-GR740-build:
     stage: prepare-build
     tags: ["sparc-taste-debian1"]
-    needs: ["TASTE1_init"]
+    needs: ["TASTE1_init", "enable_display1"]
     script:
         - cp $UTILS/.sparc_gr740_config .
         - ./configure -f .sparc_gr740_config
