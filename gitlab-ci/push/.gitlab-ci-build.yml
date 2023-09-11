@@ -74,10 +74,13 @@ SPARC-GR740-build:
     script:
         - cp $UTILS/.sparc_leon4_config .
         - ./configure -f .sparc_leon4_config
-        - make pmk
-        - make libs
-        - make pos
-        - make tools
+        #- make pmk
+        #- make libs
+        #- make pos
+        #- make tools
+        - make clean
+        - make -j4
+
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
 
