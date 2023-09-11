@@ -38,7 +38,6 @@ variables:
     AIR_POS: $AIR_INSTALL/pos
     RTEMS410: /opt/rtems-4.10/bin
     UTILS: $STATE_FOLDER/utils/gitlab-runner
-    PUSH_PIPELINE: $STATE_FOLDER/gitlab-ci/push
 
 default:
     retry: 1
