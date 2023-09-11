@@ -46,7 +46,7 @@ ARM-QEMU-validation-test:
           else
             ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
           fi
-        #- ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
+        #- ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true 
         - make distclean -i # Ignore distclean errors 
         - *check-and-publish
     rules:
