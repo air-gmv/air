@@ -5,9 +5,10 @@ enable_display1:
     stage: prepare-build
     tags: ["sparc-taste-debian1"]
     script:
-        - cd $UTILS
-        - timeout 20s bash enable_display.sh $TASTE_PASSWORD
-        #- ./enable_display.sh $TASTE_PASSWORD
+        #- timeout 20s bash $UTILS/enable_display.sh $TASTE_PASSWORD
+        #- ./enable_display.sh $TASTE_PASSWORD~
+        - xterm -e "bash $UTILS/enable_display.sh $TASTE_PASSWORD"
+
     timeout: 5m
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' 
