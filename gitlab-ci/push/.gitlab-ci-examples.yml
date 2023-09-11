@@ -6,8 +6,9 @@ enable_display1:
     tags: ["sparc-taste-debian1"]
     script:
         #- timeout 20s bash $UTILS/enable_display.sh $TASTE_PASSWORD
-        #- ./enable_display.sh $TASTE_PASSWORD~
-        - xterm -e "bash $UTILS/enable_display.sh $TASTE_PASSWORD"
+        #- ./enable_display.sh $TASTE_PASSWORD
+        #- xterm -e "bash $UTILS/enable_display.sh $TASTE_PASSWORD"
+        - nohup bash $UTILS/enable_display.sh $TASTE_PASSWORD &
 
     timeout: 5m
     rules:
