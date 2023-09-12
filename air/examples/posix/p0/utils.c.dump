@@ -87,116 +87,116 @@
     <directive file="air/examples/posix/p0/utils.h" linenr="18" str="#endif"/>
   </directivelist>
   <tokenlist>
-    <token id="0x558318ae0640" file="air/examples/posix/p0/utils.h" linenr="13" column="1" str="void" scope="0x558318b2a180" type="name"/>
-    <token id="0x558318d66220" file="air/examples/posix/p0/utils.h" linenr="13" column="6" str="add_timespec" scope="0x558318b2a180" type="name" function="0x558318ce5ba0"/>
-    <token id="0x558318b53500" file="air/examples/posix/p0/utils.h" linenr="13" column="19" str="(" scope="0x558318b2a180" link="0x558318ccc540" valueType-type="void" valueType-reference="None"/>
-    <token id="0x558318aa6830" file="air/examples/posix/p0/utils.h" linenr="13" column="20" str="struct" scope="0x558318b2a180" type="name"/>
-    <token id="0x558318b17a70" file="air/examples/posix/p0/utils.h" linenr="13" column="27" str="timespec" scope="0x558318b2a180" type="name" astParent="0x558318d663e0"/>
-    <token id="0x558318d663e0" file="air/examples/posix/p0/utils.h" linenr="13" column="36" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318d18a20" astOperand1="0x558318b17a70" astOperand2="0x558318d25cc0"/>
-    <token id="0x558318d25cc0" file="air/examples/posix/p0/utils.h" linenr="13" column="37" str="s" scope="0x558318b2a180" type="name" varId="1" astParent="0x558318d663e0"/>
-    <token id="0x558318d18a20" file="air/examples/posix/p0/utils.h" linenr="13" column="38" str="," scope="0x558318b2a180" astParent="0x558318b61390" astOperand1="0x558318d663e0" astOperand2="0x558318e1b010"/>
-    <token id="0x558318cdb8a0" file="air/examples/posix/p0/utils.h" linenr="14" column="20" str="const" scope="0x558318b2a180" type="name"/>
-    <token id="0x558318d929c0" file="air/examples/posix/p0/utils.h" linenr="14" column="26" str="struct" scope="0x558318b2a180" type="name"/>
-    <token id="0x558318afd460" file="air/examples/posix/p0/utils.h" linenr="14" column="33" str="timespec" scope="0x558318b2a180" type="name" astParent="0x558318e1b010"/>
-    <token id="0x558318e1b010" file="air/examples/posix/p0/utils.h" linenr="14" column="42" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318d18a20" astOperand1="0x558318afd460" astOperand2="0x558318e15520"/>
-    <token id="0x558318e15520" file="air/examples/posix/p0/utils.h" linenr="14" column="43" str="t1" scope="0x558318b2a180" type="name" varId="2" astParent="0x558318e1b010"/>
-    <token id="0x558318b61390" file="air/examples/posix/p0/utils.h" linenr="14" column="45" str="," scope="0x558318b2a180" astOperand1="0x558318d18a20" astOperand2="0x558318d2aa60"/>
-    <token id="0x558318b66cb0" file="air/examples/posix/p0/utils.h" linenr="15" column="20" str="const" scope="0x558318b2a180" type="name"/>
-    <token id="0x558318abb9f0" file="air/examples/posix/p0/utils.h" linenr="15" column="26" str="struct" scope="0x558318b2a180" type="name"/>
-    <token id="0x558318ce7420" file="air/examples/posix/p0/utils.h" linenr="15" column="33" str="timespec" scope="0x558318b2a180" type="name" astParent="0x558318d2aa60"/>
-    <token id="0x558318d2aa60" file="air/examples/posix/p0/utils.h" linenr="15" column="42" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318b61390" astOperand1="0x558318ce7420" astOperand2="0x558318aee480"/>
-    <token id="0x558318aee480" file="air/examples/posix/p0/utils.h" linenr="15" column="43" str="t2" scope="0x558318b2a180" type="name" varId="3" astParent="0x558318d2aa60"/>
-    <token id="0x558318ccc540" file="air/examples/posix/p0/utils.h" linenr="15" column="45" str=")" scope="0x558318b2a180" link="0x558318b53500"/>
-    <token id="0x558318c97090" file="air/examples/posix/p0/utils.h" linenr="15" column="46" str=";" scope="0x558318b2a180"/>
-    <token id="0x558318d7d180" file="air/examples/posix/p0/utils.c" linenr="3" column="1" str="void" scope="0x558318b2a180" type="name"/>
-    <token id="0x558318d18ec0" file="air/examples/posix/p0/utils.c" linenr="3" column="6" str="add_timespec" scope="0x558318b2a180" type="name" function="0x558318ce5ba0"/>
-    <token id="0x558318cb6c80" file="air/examples/posix/p0/utils.c" linenr="3" column="19" str="(" scope="0x558318b2a180" link="0x558318b3a100" valueType-type="void" valueType-reference="None"/>
-    <token id="0x558318b62810" file="air/examples/posix/p0/utils.c" linenr="3" column="20" str="struct" scope="0x558318b2a180" type="name"/>
-    <token id="0x558318b0e4d0" file="air/examples/posix/p0/utils.c" linenr="3" column="27" str="timespec" scope="0x558318b2a180" type="name" astParent="0x558318ce5ae0"/>
-    <token id="0x558318ce5ae0" file="air/examples/posix/p0/utils.c" linenr="3" column="36" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318bbf650" astOperand1="0x558318b0e4d0" astOperand2="0x558318ab0fc0"/>
-    <token id="0x558318ab0fc0" file="air/examples/posix/p0/utils.c" linenr="3" column="37" str="s" scope="0x558318b2a180" type="name" varId="4" variable="0x558318b7c170" astParent="0x558318ce5ae0" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
-    <token id="0x558318bbf650" file="air/examples/posix/p0/utils.c" linenr="3" column="38" str="," scope="0x558318b2a180" astParent="0x558318bc7440" astOperand1="0x558318ce5ae0" astOperand2="0x558318cd0cb0"/>
-    <token id="0x558318d754e0" file="air/examples/posix/p0/utils.c" linenr="4" column="20" str="const" scope="0x558318b2a180" type="name"/>
-    <token id="0x558318d51fe0" file="air/examples/posix/p0/utils.c" linenr="4" column="26" str="struct" scope="0x558318b2a180" type="name"/>
-    <token id="0x558318da7fe0" file="air/examples/posix/p0/utils.c" linenr="4" column="33" str="timespec" scope="0x558318b2a180" type="name" astParent="0x558318cd0cb0"/>
-    <token id="0x558318cd0cb0" file="air/examples/posix/p0/utils.c" linenr="4" column="42" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318bbf650" astOperand1="0x558318da7fe0" astOperand2="0x558318dd60c0"/>
-    <token id="0x558318dd60c0" file="air/examples/posix/p0/utils.c" linenr="4" column="43" str="t1" scope="0x558318b2a180" type="name" varId="5" variable="0x558318ab5c90" astParent="0x558318cd0cb0" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x558318bc7440" file="air/examples/posix/p0/utils.c" linenr="4" column="45" str="," scope="0x558318b2a180" astOperand1="0x558318bbf650" astOperand2="0x558318ad1d00"/>
-    <token id="0x558318bc1e70" file="air/examples/posix/p0/utils.c" linenr="5" column="20" str="const" scope="0x558318b2a180" type="name"/>
-    <token id="0x558318bb4340" file="air/examples/posix/p0/utils.c" linenr="5" column="26" str="struct" scope="0x558318b2a180" type="name"/>
-    <token id="0x558318d35fa0" file="air/examples/posix/p0/utils.c" linenr="5" column="33" str="timespec" scope="0x558318b2a180" type="name" astParent="0x558318ad1d00"/>
-    <token id="0x558318ad1d00" file="air/examples/posix/p0/utils.c" linenr="5" column="42" str="*" scope="0x558318b2a180" type="op" isArithmeticalOp="true" astParent="0x558318bc7440" astOperand1="0x558318d35fa0" astOperand2="0x558318d8dea0"/>
-    <token id="0x558318d8dea0" file="air/examples/posix/p0/utils.c" linenr="5" column="43" str="t2" scope="0x558318b2a180" type="name" varId="6" variable="0x558318afaa80" astParent="0x558318ad1d00" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x558318b3a100" file="air/examples/posix/p0/utils.c" linenr="5" column="45" str=")" scope="0x558318b2a180" link="0x558318cb6c80"/>
-    <token id="0x558318b2da30" file="air/examples/posix/p0/utils.c" linenr="6" column="1" str="{" scope="0x558318d97360" link="0x558318abe890"/>
-    <token id="0x558318d52500" file="air/examples/posix/p0/utils.c" linenr="7" column="3" str="s" scope="0x558318d97360" type="name" varId="4" variable="0x558318b7c170" astParent="0x558318ab4cb0" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
-    <token id="0x558318ab4cb0" file="air/examples/posix/p0/utils.c" linenr="7" column="4" str="." scope="0x558318d97360" astParent="0x558318b67580" astOperand1="0x558318d52500" astOperand2="0x558318b89300" originalName="->"/>
-    <token id="0x558318b89300" file="air/examples/posix/p0/utils.c" linenr="7" column="6" str="tv_sec" scope="0x558318d97360" type="name" varId="7" astParent="0x558318ab4cb0"/>
-    <token id="0x558318b67580" file="air/examples/posix/p0/utils.c" linenr="7" column="14" str="=" scope="0x558318d97360" type="op" isAssignmentOp="true" astOperand1="0x558318ab4cb0" astOperand2="0x558318b8f860"/>
-    <token id="0x558318d89040" file="air/examples/posix/p0/utils.c" linenr="7" column="16" str="t1" scope="0x558318d97360" type="name" varId="5" variable="0x558318ab5c90" astParent="0x558318b7d810" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x558318b7d810" file="air/examples/posix/p0/utils.c" linenr="7" column="18" str="." scope="0x558318d97360" astParent="0x558318b8f860" astOperand1="0x558318d89040" astOperand2="0x558318b83700" originalName="->"/>
-    <token id="0x558318b83700" file="air/examples/posix/p0/utils.c" linenr="7" column="20" str="tv_sec" scope="0x558318d97360" type="name" varId="8" astParent="0x558318b7d810"/>
-    <token id="0x558318b8f860" file="air/examples/posix/p0/utils.c" linenr="7" column="28" str="+" scope="0x558318d97360" type="op" isArithmeticalOp="true" astParent="0x558318b67580" astOperand1="0x558318b7d810" astOperand2="0x558318d3a920"/>
-    <token id="0x558318d17e80" file="air/examples/posix/p0/utils.c" linenr="7" column="30" str="t2" scope="0x558318d97360" type="name" varId="6" variable="0x558318afaa80" astParent="0x558318d3a920" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x558318d3a920" file="air/examples/posix/p0/utils.c" linenr="7" column="32" str="." scope="0x558318d97360" astParent="0x558318b8f860" astOperand1="0x558318d17e80" astOperand2="0x558318af0eb0" originalName="->"/>
-    <token id="0x558318af0eb0" file="air/examples/posix/p0/utils.c" linenr="7" column="34" str="tv_sec" scope="0x558318d97360" type="name" varId="9" astParent="0x558318d3a920"/>
-    <token id="0x558318b12770" file="air/examples/posix/p0/utils.c" linenr="7" column="40" str=";" scope="0x558318d97360"/>
-    <token id="0x558318b044a0" file="air/examples/posix/p0/utils.c" linenr="8" column="3" str="s" scope="0x558318d97360" type="name" varId="4" variable="0x558318b7c170" astParent="0x558318b96e60" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
-    <token id="0x558318b96e60" file="air/examples/posix/p0/utils.c" linenr="8" column="4" str="." scope="0x558318d97360" astParent="0x558318b7d9e0" astOperand1="0x558318b044a0" astOperand2="0x558318ba1170" originalName="->"/>
-    <token id="0x558318ba1170" file="air/examples/posix/p0/utils.c" linenr="8" column="6" str="tv_nsec" scope="0x558318d97360" type="name" varId="10" astParent="0x558318b96e60"/>
-    <token id="0x558318b7d9e0" file="air/examples/posix/p0/utils.c" linenr="8" column="14" str="=" scope="0x558318d97360" type="op" isAssignmentOp="true" astOperand1="0x558318b96e60" astOperand2="0x558318d51ef0"/>
-    <token id="0x558318cdb060" file="air/examples/posix/p0/utils.c" linenr="8" column="16" str="t1" scope="0x558318d97360" type="name" varId="5" variable="0x558318ab5c90" astParent="0x558318d10cf0" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x558318d10cf0" file="air/examples/posix/p0/utils.c" linenr="8" column="18" str="." scope="0x558318d97360" astParent="0x558318d51ef0" astOperand1="0x558318cdb060" astOperand2="0x558318d33870" originalName="->"/>
-    <token id="0x558318d33870" file="air/examples/posix/p0/utils.c" linenr="8" column="20" str="tv_nsec" scope="0x558318d97360" type="name" varId="11" astParent="0x558318d10cf0"/>
-    <token id="0x558318d51ef0" file="air/examples/posix/p0/utils.c" linenr="8" column="28" str="+" scope="0x558318d97360" type="op" isArithmeticalOp="true" astParent="0x558318b7d9e0" astOperand1="0x558318d10cf0" astOperand2="0x558318d7bf20"/>
-    <token id="0x558318b04140" file="air/examples/posix/p0/utils.c" linenr="8" column="30" str="t2" scope="0x558318d97360" type="name" varId="6" variable="0x558318afaa80" astParent="0x558318d7bf20" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
-    <token id="0x558318d7bf20" file="air/examples/posix/p0/utils.c" linenr="8" column="32" str="." scope="0x558318d97360" astParent="0x558318d51ef0" astOperand1="0x558318b04140" astOperand2="0x558318ad4830" originalName="->"/>
-    <token id="0x558318ad4830" file="air/examples/posix/p0/utils.c" linenr="8" column="34" str="tv_nsec" scope="0x558318d97360" type="name" varId="12" astParent="0x558318d7bf20"/>
-    <token id="0x558318bb6ec0" file="air/examples/posix/p0/utils.c" linenr="8" column="41" str=";" scope="0x558318d97360"/>
-    <token id="0x558318d50130" file="air/examples/posix/p0/utils.c" linenr="9" column="3" str="s" scope="0x558318d97360" type="name" varId="4" variable="0x558318b7c170" astParent="0x558318d56db0" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
-    <token id="0x558318d56db0" file="air/examples/posix/p0/utils.c" linenr="9" column="4" str="." scope="0x558318d97360" astParent="0x558318abb530" astOperand1="0x558318d50130" astOperand2="0x558318ce5640" originalName="->"/>
-    <token id="0x558318ce5640" file="air/examples/posix/p0/utils.c" linenr="9" column="6" str="tv_sec" scope="0x558318d97360" type="name" varId="7" astParent="0x558318d56db0"/>
-    <token id="0x558318abb530" file="air/examples/posix/p0/utils.c" linenr="9" column="13" str="+=" scope="0x558318d97360" type="op" isAssignmentOp="true" astOperand1="0x558318d56db0" astOperand2="0x558318b811f0"/>
-    <token id="0x558318ae5c50" file="air/examples/posix/p0/utils.c" linenr="9" column="16" str="s" scope="0x558318d97360" type="name" varId="4" variable="0x558318b7c170" astParent="0x558318cdb9e0" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
-    <token id="0x558318cdb9e0" file="air/examples/posix/p0/utils.c" linenr="9" column="17" str="." scope="0x558318d97360" values="0x558318d91170" astParent="0x558318b811f0" astOperand1="0x558318ae5c50" astOperand2="0x558318b0f930" originalName="->"/>
-    <token id="0x558318b0f930" file="air/examples/posix/p0/utils.c" linenr="9" column="19" str="tv_nsec" scope="0x558318d97360" type="name" varId="10" astParent="0x558318cdb9e0"/>
-    <token id="0x558318b811f0" file="air/examples/posix/p0/utils.c" linenr="9" column="26" str="/" scope="0x558318d97360" type="op" isArithmeticalOp="true" astParent="0x558318abb530" astOperand1="0x558318cdb9e0" astOperand2="0x558318ddc5a0"/>
-    <token id="0x558318ddc5a0" file="air/examples/posix/p0/utils.c" linenr="9" column="27" str="1000000000" scope="0x558318d97360" type="number" isInt="true" values="0x558318d91350" astParent="0x558318b811f0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x558318af90d0" file="air/examples/posix/p0/utils.c" linenr="9" column="37" str=";" scope="0x558318d97360"/>
-    <token id="0x558318d942e0" file="air/examples/posix/p0/utils.c" linenr="10" column="3" str="s" scope="0x558318d97360" type="name" varId="4" variable="0x558318b7c170" astParent="0x558318c99e10" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
-    <token id="0x558318c99e10" file="air/examples/posix/p0/utils.c" linenr="10" column="4" str="." scope="0x558318d97360" astParent="0x558318b645a0" astOperand1="0x558318d942e0" astOperand2="0x558318b4a970" originalName="->"/>
-    <token id="0x558318b4a970" file="air/examples/posix/p0/utils.c" linenr="10" column="6" str="tv_nsec" scope="0x558318d97360" type="name" varId="10" astParent="0x558318c99e10"/>
-    <token id="0x558318b645a0" file="air/examples/posix/p0/utils.c" linenr="10" column="14" str="%=" scope="0x558318d97360" type="op" isAssignmentOp="true" astOperand1="0x558318c99e10" astOperand2="0x558318c96fd0"/>
-    <token id="0x558318c96fd0" file="air/examples/posix/p0/utils.c" linenr="10" column="17" str="1000000000" scope="0x558318d97360" type="number" isInt="true" values="0x558318d37510" astParent="0x558318b645a0" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
-    <token id="0x558318d83df0" file="air/examples/posix/p0/utils.c" linenr="10" column="27" str=";" scope="0x558318d97360"/>
-    <token id="0x558318abe890" file="air/examples/posix/p0/utils.c" linenr="11" column="1" str="}" scope="0x558318d97360" link="0x558318b2da30"/>
+    <token id="0x55e316b76360" file="air/examples/posix/p0/utils.h" linenr="13" column="1" str="void" scope="0x55e31691d3b0" type="name"/>
+    <token id="0x55e3169feb10" file="air/examples/posix/p0/utils.h" linenr="13" column="6" str="add_timespec" scope="0x55e31691d3b0" type="name" function="0x55e316bd5280"/>
+    <token id="0x55e316c84ed0" file="air/examples/posix/p0/utils.h" linenr="13" column="19" str="(" scope="0x55e31691d3b0" link="0x55e3169ec9d0" valueType-type="void" valueType-reference="None"/>
+    <token id="0x55e3169089e0" file="air/examples/posix/p0/utils.h" linenr="13" column="20" str="struct" scope="0x55e31691d3b0" type="name"/>
+    <token id="0x55e316bea8e0" file="air/examples/posix/p0/utils.h" linenr="13" column="27" str="timespec" scope="0x55e31691d3b0" type="name" astParent="0x55e316b361c0"/>
+    <token id="0x55e316b361c0" file="air/examples/posix/p0/utils.h" linenr="13" column="36" str="*" scope="0x55e31691d3b0" type="op" isArithmeticalOp="true" astParent="0x55e316970730" astOperand1="0x55e316bea8e0" astOperand2="0x55e31695b3f0"/>
+    <token id="0x55e31695b3f0" file="air/examples/posix/p0/utils.h" linenr="13" column="37" str="s" scope="0x55e31691d3b0" type="name" varId="1" astParent="0x55e316b361c0"/>
+    <token id="0x55e316970730" file="air/examples/posix/p0/utils.h" linenr="13" column="38" str="," scope="0x55e31691d3b0" astParent="0x55e3169f67a0" astOperand1="0x55e316b361c0" astOperand2="0x55e316b530b0"/>
+    <token id="0x55e316bdc850" file="air/examples/posix/p0/utils.h" linenr="14" column="20" str="const" scope="0x55e31691d3b0" type="name"/>
+    <token id="0x55e3169ca0c0" file="air/examples/posix/p0/utils.h" linenr="14" column="26" str="struct" scope="0x55e31691d3b0" type="name"/>
+    <token id="0x55e316bc6990" file="air/examples/posix/p0/utils.h" linenr="14" column="33" str="timespec" scope="0x55e31691d3b0" type="name" astParent="0x55e316b530b0"/>
+    <token id="0x55e316b530b0" file="air/examples/posix/p0/utils.h" linenr="14" column="42" str="*" scope="0x55e31691d3b0" type="op" isArithmeticalOp="true" astParent="0x55e316970730" astOperand1="0x55e316bc6990" astOperand2="0x55e3169e4390"/>
+    <token id="0x55e3169e4390" file="air/examples/posix/p0/utils.h" linenr="14" column="43" str="t1" scope="0x55e31691d3b0" type="name" varId="2" astParent="0x55e316b530b0"/>
+    <token id="0x55e3169f67a0" file="air/examples/posix/p0/utils.h" linenr="14" column="45" str="," scope="0x55e31691d3b0" astOperand1="0x55e316970730" astOperand2="0x55e31696fb10"/>
+    <token id="0x55e316ba9ef0" file="air/examples/posix/p0/utils.h" linenr="15" column="20" str="const" scope="0x55e31691d3b0" type="name"/>
+    <token id="0x55e3169f7430" file="air/examples/posix/p0/utils.h" linenr="15" column="26" str="struct" scope="0x55e31691d3b0" type="name"/>
+    <token id="0x55e316c81210" file="air/examples/posix/p0/utils.h" linenr="15" column="33" str="timespec" scope="0x55e31691d3b0" type="name" astParent="0x55e31696fb10"/>
+    <token id="0x55e31696fb10" file="air/examples/posix/p0/utils.h" linenr="15" column="42" str="*" scope="0x55e31691d3b0" type="op" isArithmeticalOp="true" astParent="0x55e3169f67a0" astOperand1="0x55e316c81210" astOperand2="0x55e316b75560"/>
+    <token id="0x55e316b75560" file="air/examples/posix/p0/utils.h" linenr="15" column="43" str="t2" scope="0x55e31691d3b0" type="name" varId="3" astParent="0x55e31696fb10"/>
+    <token id="0x55e3169ec9d0" file="air/examples/posix/p0/utils.h" linenr="15" column="45" str=")" scope="0x55e31691d3b0" link="0x55e316c84ed0"/>
+    <token id="0x55e31690f470" file="air/examples/posix/p0/utils.h" linenr="15" column="46" str=";" scope="0x55e31691d3b0"/>
+    <token id="0x55e316b53730" file="air/examples/posix/p0/utils.c" linenr="3" column="1" str="void" scope="0x55e31691d3b0" type="name"/>
+    <token id="0x55e316c0d5f0" file="air/examples/posix/p0/utils.c" linenr="3" column="6" str="add_timespec" scope="0x55e31691d3b0" type="name" function="0x55e316bd5280"/>
+    <token id="0x55e316bb1540" file="air/examples/posix/p0/utils.c" linenr="3" column="19" str="(" scope="0x55e31691d3b0" link="0x55e316a1fc20" valueType-type="void" valueType-reference="None"/>
+    <token id="0x55e31699c0b0" file="air/examples/posix/p0/utils.c" linenr="3" column="20" str="struct" scope="0x55e31691d3b0" type="name"/>
+    <token id="0x55e316c40270" file="air/examples/posix/p0/utils.c" linenr="3" column="27" str="timespec" scope="0x55e31691d3b0" type="name" astParent="0x55e3169f6af0"/>
+    <token id="0x55e3169f6af0" file="air/examples/posix/p0/utils.c" linenr="3" column="36" str="*" scope="0x55e31691d3b0" type="op" isArithmeticalOp="true" astParent="0x55e316c1fd90" astOperand1="0x55e316c40270" astOperand2="0x55e316b50960"/>
+    <token id="0x55e316b50960" file="air/examples/posix/p0/utils.c" linenr="3" column="37" str="s" scope="0x55e31691d3b0" type="name" varId="4" variable="0x55e316948ea0" astParent="0x55e3169f6af0" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x55e316c1fd90" file="air/examples/posix/p0/utils.c" linenr="3" column="38" str="," scope="0x55e31691d3b0" astParent="0x55e316be24b0" astOperand1="0x55e3169f6af0" astOperand2="0x55e316b893a0"/>
+    <token id="0x55e316c12f70" file="air/examples/posix/p0/utils.c" linenr="4" column="20" str="const" scope="0x55e31691d3b0" type="name"/>
+    <token id="0x55e31696f8f0" file="air/examples/posix/p0/utils.c" linenr="4" column="26" str="struct" scope="0x55e31691d3b0" type="name"/>
+    <token id="0x55e316926740" file="air/examples/posix/p0/utils.c" linenr="4" column="33" str="timespec" scope="0x55e31691d3b0" type="name" astParent="0x55e316b893a0"/>
+    <token id="0x55e316b893a0" file="air/examples/posix/p0/utils.c" linenr="4" column="42" str="*" scope="0x55e31691d3b0" type="op" isArithmeticalOp="true" astParent="0x55e316c1fd90" astOperand1="0x55e316926740" astOperand2="0x55e316b9d860"/>
+    <token id="0x55e316b9d860" file="air/examples/posix/p0/utils.c" linenr="4" column="43" str="t1" scope="0x55e31691d3b0" type="name" varId="5" variable="0x55e316948dc0" astParent="0x55e316b893a0" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x55e316be24b0" file="air/examples/posix/p0/utils.c" linenr="4" column="45" str="," scope="0x55e31691d3b0" astOperand1="0x55e316c1fd90" astOperand2="0x55e316b484b0"/>
+    <token id="0x55e3169e30b0" file="air/examples/posix/p0/utils.c" linenr="5" column="20" str="const" scope="0x55e31691d3b0" type="name"/>
+    <token id="0x55e316c0d4d0" file="air/examples/posix/p0/utils.c" linenr="5" column="26" str="struct" scope="0x55e31691d3b0" type="name"/>
+    <token id="0x55e316c130a0" file="air/examples/posix/p0/utils.c" linenr="5" column="33" str="timespec" scope="0x55e31691d3b0" type="name" astParent="0x55e316b484b0"/>
+    <token id="0x55e316b484b0" file="air/examples/posix/p0/utils.c" linenr="5" column="42" str="*" scope="0x55e31691d3b0" type="op" isArithmeticalOp="true" astParent="0x55e316be24b0" astOperand1="0x55e316c130a0" astOperand2="0x55e31694c440"/>
+    <token id="0x55e31694c440" file="air/examples/posix/p0/utils.c" linenr="5" column="43" str="t2" scope="0x55e31691d3b0" type="name" varId="6" variable="0x55e31694d250" astParent="0x55e316b484b0" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x55e316a1fc20" file="air/examples/posix/p0/utils.c" linenr="5" column="45" str=")" scope="0x55e31691d3b0" link="0x55e316bb1540"/>
+    <token id="0x55e316b9e3f0" file="air/examples/posix/p0/utils.c" linenr="6" column="1" str="{" scope="0x55e316b828d0" link="0x55e3169c9f80"/>
+    <token id="0x55e316bace10" file="air/examples/posix/p0/utils.c" linenr="7" column="3" str="s" scope="0x55e316b828d0" type="name" varId="4" variable="0x55e316948ea0" astParent="0x55e316925b50" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x55e316925b50" file="air/examples/posix/p0/utils.c" linenr="7" column="4" str="." scope="0x55e316b828d0" astParent="0x55e3169256d0" astOperand1="0x55e316bace10" astOperand2="0x55e316c7e7a0" originalName="->"/>
+    <token id="0x55e316c7e7a0" file="air/examples/posix/p0/utils.c" linenr="7" column="6" str="tv_sec" scope="0x55e316b828d0" type="name" varId="7" astParent="0x55e316925b50"/>
+    <token id="0x55e3169256d0" file="air/examples/posix/p0/utils.c" linenr="7" column="14" str="=" scope="0x55e316b828d0" type="op" isAssignmentOp="true" astOperand1="0x55e316925b50" astOperand2="0x55e316bd4d80"/>
+    <token id="0x55e316c37f50" file="air/examples/posix/p0/utils.c" linenr="7" column="16" str="t1" scope="0x55e316b828d0" type="name" varId="5" variable="0x55e316948dc0" astParent="0x55e316bd8110" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x55e316bd8110" file="air/examples/posix/p0/utils.c" linenr="7" column="18" str="." scope="0x55e316b828d0" astParent="0x55e316bd4d80" astOperand1="0x55e316c37f50" astOperand2="0x55e316913160" originalName="->"/>
+    <token id="0x55e316913160" file="air/examples/posix/p0/utils.c" linenr="7" column="20" str="tv_sec" scope="0x55e316b828d0" type="name" varId="8" astParent="0x55e316bd8110"/>
+    <token id="0x55e316bd4d80" file="air/examples/posix/p0/utils.c" linenr="7" column="28" str="+" scope="0x55e316b828d0" type="op" isArithmeticalOp="true" astParent="0x55e3169256d0" astOperand1="0x55e316bd8110" astOperand2="0x55e316998c70"/>
+    <token id="0x55e316a2d4c0" file="air/examples/posix/p0/utils.c" linenr="7" column="30" str="t2" scope="0x55e316b828d0" type="name" varId="6" variable="0x55e31694d250" astParent="0x55e316998c70" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x55e316998c70" file="air/examples/posix/p0/utils.c" linenr="7" column="32" str="." scope="0x55e316b828d0" astParent="0x55e316bd4d80" astOperand1="0x55e316a2d4c0" astOperand2="0x55e31690eb90" originalName="->"/>
+    <token id="0x55e31690eb90" file="air/examples/posix/p0/utils.c" linenr="7" column="34" str="tv_sec" scope="0x55e316b828d0" type="name" varId="9" astParent="0x55e316998c70"/>
+    <token id="0x55e316bc2600" file="air/examples/posix/p0/utils.c" linenr="7" column="40" str=";" scope="0x55e316b828d0"/>
+    <token id="0x55e31694d420" file="air/examples/posix/p0/utils.c" linenr="8" column="3" str="s" scope="0x55e316b828d0" type="name" varId="4" variable="0x55e316948ea0" astParent="0x55e316b91f90" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x55e316b91f90" file="air/examples/posix/p0/utils.c" linenr="8" column="4" str="." scope="0x55e316b828d0" astParent="0x55e316b4e9d0" astOperand1="0x55e31694d420" astOperand2="0x55e316924fd0" originalName="->"/>
+    <token id="0x55e316924fd0" file="air/examples/posix/p0/utils.c" linenr="8" column="6" str="tv_nsec" scope="0x55e316b828d0" type="name" varId="10" astParent="0x55e316b91f90"/>
+    <token id="0x55e316b4e9d0" file="air/examples/posix/p0/utils.c" linenr="8" column="14" str="=" scope="0x55e316b828d0" type="op" isAssignmentOp="true" astOperand1="0x55e316b91f90" astOperand2="0x55e316c28620"/>
+    <token id="0x55e316bb0f80" file="air/examples/posix/p0/utils.c" linenr="8" column="16" str="t1" scope="0x55e316b828d0" type="name" varId="5" variable="0x55e316948dc0" astParent="0x55e3169f6a00" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x55e3169f6a00" file="air/examples/posix/p0/utils.c" linenr="8" column="18" str="." scope="0x55e316b828d0" astParent="0x55e316c28620" astOperand1="0x55e316bb0f80" astOperand2="0x55e316c47b30" originalName="->"/>
+    <token id="0x55e316c47b30" file="air/examples/posix/p0/utils.c" linenr="8" column="20" str="tv_nsec" scope="0x55e316b828d0" type="name" varId="11" astParent="0x55e3169f6a00"/>
+    <token id="0x55e316c28620" file="air/examples/posix/p0/utils.c" linenr="8" column="28" str="+" scope="0x55e316b828d0" type="op" isArithmeticalOp="true" astParent="0x55e316b4e9d0" astOperand1="0x55e3169f6a00" astOperand2="0x55e316924dd0"/>
+    <token id="0x55e316b756a0" file="air/examples/posix/p0/utils.c" linenr="8" column="30" str="t2" scope="0x55e316b828d0" type="name" varId="6" variable="0x55e31694d250" astParent="0x55e316924dd0" valueType-type="record" valueType-pointer="1" valueType-constness="1" valueType-reference="None"/>
+    <token id="0x55e316924dd0" file="air/examples/posix/p0/utils.c" linenr="8" column="32" str="." scope="0x55e316b828d0" astParent="0x55e316c28620" astOperand1="0x55e316b756a0" astOperand2="0x55e316bed600" originalName="->"/>
+    <token id="0x55e316bed600" file="air/examples/posix/p0/utils.c" linenr="8" column="34" str="tv_nsec" scope="0x55e316b828d0" type="name" varId="12" astParent="0x55e316924dd0"/>
+    <token id="0x55e316bceeb0" file="air/examples/posix/p0/utils.c" linenr="8" column="41" str=";" scope="0x55e316b828d0"/>
+    <token id="0x55e316a087a0" file="air/examples/posix/p0/utils.c" linenr="9" column="3" str="s" scope="0x55e316b828d0" type="name" varId="4" variable="0x55e316948ea0" astParent="0x55e3169495a0" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x55e3169495a0" file="air/examples/posix/p0/utils.c" linenr="9" column="4" str="." scope="0x55e316b828d0" astParent="0x55e316b79160" astOperand1="0x55e316a087a0" astOperand2="0x55e316c1e650" originalName="->"/>
+    <token id="0x55e316c1e650" file="air/examples/posix/p0/utils.c" linenr="9" column="6" str="tv_sec" scope="0x55e316b828d0" type="name" varId="7" astParent="0x55e3169495a0"/>
+    <token id="0x55e316b79160" file="air/examples/posix/p0/utils.c" linenr="9" column="13" str="+=" scope="0x55e316b828d0" type="op" isAssignmentOp="true" astOperand1="0x55e3169495a0" astOperand2="0x55e316b9b680"/>
+    <token id="0x55e316925210" file="air/examples/posix/p0/utils.c" linenr="9" column="16" str="s" scope="0x55e316b828d0" type="name" varId="4" variable="0x55e316948ea0" astParent="0x55e316995620" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x55e316995620" file="air/examples/posix/p0/utils.c" linenr="9" column="17" str="." scope="0x55e316b828d0" values="0x55e3169f66e0" astParent="0x55e316b9b680" astOperand1="0x55e316925210" astOperand2="0x55e31690fb60" originalName="->"/>
+    <token id="0x55e31690fb60" file="air/examples/posix/p0/utils.c" linenr="9" column="19" str="tv_nsec" scope="0x55e316b828d0" type="name" varId="10" astParent="0x55e316995620"/>
+    <token id="0x55e316b9b680" file="air/examples/posix/p0/utils.c" linenr="9" column="26" str="/" scope="0x55e316b828d0" type="op" isArithmeticalOp="true" astParent="0x55e316b79160" astOperand1="0x55e316995620" astOperand2="0x55e316c380f0"/>
+    <token id="0x55e316c380f0" file="air/examples/posix/p0/utils.c" linenr="9" column="27" str="1000000000" scope="0x55e316b828d0" type="number" isInt="true" values="0x55e316b30ed0" astParent="0x55e316b9b680" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x55e31694e800" file="air/examples/posix/p0/utils.c" linenr="9" column="37" str=";" scope="0x55e316b828d0"/>
+    <token id="0x55e316bb73a0" file="air/examples/posix/p0/utils.c" linenr="10" column="3" str="s" scope="0x55e316b828d0" type="name" varId="4" variable="0x55e316948ea0" astParent="0x55e3169f1d60" valueType-type="record" valueType-pointer="1" valueType-reference="None"/>
+    <token id="0x55e3169f1d60" file="air/examples/posix/p0/utils.c" linenr="10" column="4" str="." scope="0x55e316b828d0" astParent="0x55e316bc1690" astOperand1="0x55e316bb73a0" astOperand2="0x55e316912f20" originalName="->"/>
+    <token id="0x55e316912f20" file="air/examples/posix/p0/utils.c" linenr="10" column="6" str="tv_nsec" scope="0x55e316b828d0" type="name" varId="10" astParent="0x55e3169f1d60"/>
+    <token id="0x55e316bc1690" file="air/examples/posix/p0/utils.c" linenr="10" column="14" str="%=" scope="0x55e316b828d0" type="op" isAssignmentOp="true" astOperand1="0x55e3169f1d60" astOperand2="0x55e3169b5450"/>
+    <token id="0x55e3169b5450" file="air/examples/posix/p0/utils.c" linenr="10" column="17" str="1000000000" scope="0x55e316b828d0" type="number" isInt="true" values="0x55e316a2cec0" astParent="0x55e316bc1690" valueType-type="int" valueType-sign="signed" valueType-reference="None"/>
+    <token id="0x55e316986750" file="air/examples/posix/p0/utils.c" linenr="10" column="27" str=";" scope="0x55e316b828d0"/>
+    <token id="0x55e3169c9f80" file="air/examples/posix/p0/utils.c" linenr="11" column="1" str="}" scope="0x55e316b828d0" link="0x55e316b9e3f0"/>
   </tokenlist>
   <scopes>
-    <scope id="0x558318b2a180" type="Global">
+    <scope id="0x55e31691d3b0" type="Global">
       <functionList>
-        <function id="0x558318ce5ba0" token="0x558318d18ec0" tokenDef="0x558318d66220" name="add_timespec" type="Function">
-          <arg nr="1" variable="0x558318b7c170"/>
-          <arg nr="2" variable="0x558318ab5c90"/>
-          <arg nr="3" variable="0x558318afaa80"/>
+        <function id="0x55e316bd5280" token="0x55e316c0d5f0" tokenDef="0x55e3169feb10" name="add_timespec" type="Function">
+          <arg nr="1" variable="0x55e316948ea0"/>
+          <arg nr="2" variable="0x55e316948dc0"/>
+          <arg nr="3" variable="0x55e31694d250"/>
         </function>
       </functionList>
     </scope>
-    <scope id="0x558318d97360" type="Function" className="add_timespec" bodyStart="0x558318b2da30" bodyEnd="0x558318abe890" nestedIn="0x558318b2a180" function="0x558318ce5ba0"/>
+    <scope id="0x55e316b828d0" type="Function" className="add_timespec" bodyStart="0x55e316b9e3f0" bodyEnd="0x55e3169c9f80" nestedIn="0x55e31691d3b0" function="0x55e316bd5280"/>
   </scopes>
   <variables>
-    <var id="0x558318ab5c90" nameToken="0x558318dd60c0" typeStartToken="0x558318da7fe0" typeEndToken="0x558318cd0cb0" access="Argument" scope="0x558318d97360" constness="1" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
-    <var id="0x558318afaa80" nameToken="0x558318d8dea0" typeStartToken="0x558318d35fa0" typeEndToken="0x558318ad1d00" access="Argument" scope="0x558318d97360" constness="1" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
-    <var id="0x558318b7c170" nameToken="0x558318ab0fc0" typeStartToken="0x558318b0e4d0" typeEndToken="0x558318ce5ae0" access="Argument" scope="0x558318d97360" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x55e316948dc0" nameToken="0x55e316b9d860" typeStartToken="0x55e316926740" typeEndToken="0x55e316b893a0" access="Argument" scope="0x55e316b828d0" constness="1" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x55e316948ea0" nameToken="0x55e316b50960" typeStartToken="0x55e316c40270" typeEndToken="0x55e3169f6af0" access="Argument" scope="0x55e316b828d0" constness="0" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
+    <var id="0x55e31694d250" nameToken="0x55e31694c440" typeStartToken="0x55e316c130a0" typeEndToken="0x55e316b484b0" access="Argument" scope="0x55e316b828d0" constness="1" isArray="false" isClass="false" isConst="false" isExtern="false" isPointer="true" isReference="false" isStatic="false" isVolatile="false"/>
   </variables>
   <valueflow>
-    <values id="0x558318d91170">
-      <value symbolic="0x558318d51ef0" symbolic-delta="0" bound="Point" known="true" path="0"/>
-      <value symbolic="0x558318b96e60" symbolic-delta="0" bound="Point" known="true" path="0"/>
+    <values id="0x55e3169f66e0">
+      <value symbolic="0x55e316c28620" symbolic-delta="0" bound="Point" known="true" path="0"/>
+      <value symbolic="0x55e316b91f90" symbolic-delta="0" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x558318d91350">
+    <values id="0x55e316b30ed0">
       <value intvalue="1000000000" bound="Point" known="true" path="0"/>
     </values>
-    <values id="0x558318d37510">
+    <values id="0x55e316a2cec0">
       <value intvalue="1000000000" bound="Point" known="true" path="0"/>
     </values>
   </valueflow>
