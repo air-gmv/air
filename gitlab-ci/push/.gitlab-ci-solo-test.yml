@@ -2,7 +2,7 @@ generate-test-yml:
     stage: solo_test
     script:
         - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
-        - ./../gitlab-ci/push/generate-test.sh $TEST_NUMBER
+        - . $STATE_FOLDER/gitlab-ci/push/generate-test.sh $TEST_NUMBER
         - mv test.yml $CI_PROJECT_DIR
     artifacts:
         paths:
