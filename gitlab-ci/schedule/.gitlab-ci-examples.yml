@@ -12,7 +12,7 @@
     - $UTILS/publish_example.bash
 
 # ARM 
-.ARM-QEMU:
+ARM-QEMU:
     stage: examples
     tags: ["ARM"]
     needs: ["RVS-ARM-ZYNQZ1-build"]
