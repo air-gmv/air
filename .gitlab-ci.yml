@@ -48,17 +48,17 @@ default:
         - git config --global credential.helper store
         - echo "https://${GIT_HTTP_USERNAME}:${CI_JOB_TOKEN}@$(AIR_GIT_REMOTE_HOSTNAME)" > ~/.git-credentials
 
-        #- if ! test -f git-clean.lock;
-        #    then 
-        #        touch git-clean.lock;
-        #    fi
+        - if ! test -f git-clean.lock;
+            then 
+                touch git-clean.lock;
+            fi
 
-        #- if ! $(grep -Fxq $CI_COMMIT_SHORT_SHA git-clean.lock); 
-        #    then 
-        #        git clean -ffdx && git submodule foreach --recursive git clean -ffdx && echo $CI_COMMIT_SHORT_SHA > git-clean.lock; 
-        #        git submodule update --init --recursive; 
-        #        git submodule sync --recursive; 
-        #    fi
+        - if ! $(grep -Fxq $CI_COMMIT_SHORT_SHA git-clean.lock); 
+            then 
+                git clean -ffdx && git submodule foreach --recursive git clean -ffdx && echo $CI_COMMIT_SHORT_SHA > git-clean.lock; 
+                git submodule update --init --recursive; 
+                git submodule sync --recursive; 
+            fi
             
         - if ! test -d $STATE_FOLDER; then 
             (mkdir -p $STATE_FOLDER || true)
