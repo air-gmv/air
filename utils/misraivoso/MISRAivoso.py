@@ -1,8 +1,6 @@
 import xml.etree.ElementTree as ET
 import re
 import os
-import shutil
-import os
 import tkinter as tk
 import tkinter.ttk as ttk
 import subprocess
@@ -441,9 +439,13 @@ def fix_void_return(code, snippets):
 
             # Check if the void_line contains certain keywords
             if not re.search(r"(if|for|else|while|addBitToStream)", void_line):
+                if ("(void)" in snippet['snippet']):
+                    continue
                 updated_line = "(void)" + snippet['snippet']
                 for i, line in enumerate(code_lines):
                     if re.sub(r"\s", "", snippet['snippet']) == re.sub(r"\s", "", line):
+                        if ("\\" in updated_line):
+                            updated_line = updated_line.replace("\n", "")
                         code_lines[i] = updated_line
                         break
             elif not re.search(r"(addBitToStream)", void_line):
@@ -481,25 +483,6 @@ def extract_body(code_snippet):
         return control_statement, body
     else:
         return None, None
-
-
-def fix_printf_return(code):
-    """Fixes the usage of printf by adding a void cast to its return value."""
-    pattern = r'^\s*printf\s*\(.+\)\s*;'
-    matches = re.finditer(pattern, code, re.MULTILINE)
-    code_lines = code.split("\n")
-
-    for match in matches:
-        printf_line = match.group(0)
-        updated_line = "(void)" + printf_line
-
-        for i, line in enumerate(code_lines):
-            if line.strip() == printf_line.strip():
-                code_lines[i] = updated_line
-                break
-
-    code = "\n".join(code_lines)
-    return code
 
 
 def fix_unsigned(code, snippets):
@@ -555,9 +538,9 @@ def fix_dead_code(code, snippets):
     code = "\n".join(code_lines)
     return code
 
-# ----------------------------
+# --------------------------------------------------------
 # Functions auto ident C code
-# ----------------------------
+# --------------------------------------------------------
 
 
 def auto_indent_c_files(file_path):
@@ -574,9 +557,9 @@ def auto_indent_c_files(file_path):
     subprocess.run(['clang-format', '-style=microsoft', '-i', file_path])
 
 
-# ---------------------------------------
+# --------------------------------------------------------
 # Aux functions to get folders directory
-# ---------------------------------------
+# --------------------------------------------------------
 
 def get_folder_name(directory_path):
     """
@@ -594,9 +577,9 @@ def get_folder_name(directory_path):
     return last_folder_name
 
 
-# -----------------------------------
+# --------------------------------------------------------
 # Functions to build the Interface
-# -----------------------------------
+# --------------------------------------------------------
 
 def choose_directory(directory_entry):
     """
@@ -636,7 +619,7 @@ def choose_report_file(entry):
 def choose_files(src_files_list_entry):
     try:
         files = filedialog.askopenfilenames(
-            title="Select Files", filetypes=(("All Files", "*.*"), ("H Files", "*.h"), ("CC Files", "*.cc"), ("C Files", "*.c")))
+            title="Select Files or Folder", filetypes=(("All Files", "*.*"), ("H Files", "*.h"), ("CC Files", "*.cc"), ("C Files", "*.c")))
         if files:
             relative_paths = [os.path.relpath(
                 file_path, os.getcwd()) for file_path in files]
@@ -657,64 +640,6 @@ def open_readme():
 def open_html_report():
     report_path = "output/html/index.html"  # Update the path to the actual report
     webbrowser.open(report_path)
-
-
-def run_shell_script(directory_to_check, progress_bar, include_comments, delete_comments, src_file_list, flags):
-    if not directory_to_check:
-        messagebox.showerror("Error", "Please choose a directory to check.")
-        return
-    if (flags == 0):
-        # Update progress bar
-        progress_bar["value"] = 15
-        progress_bar.update()
-        directory = get_folder_name(directory_to_check)
-    else:
-        directory = directory_to_check
-
-    # Modify this part to run your shell script
-    shell_script_path = "utils/misraivoso/run_cppcheck.py"
-
-    shell_script_command = f"python3 {shell_script_path} {directory} --src-file-list '{src_file_list}'"
-    # Get the value of the include_comments_var
-
-    try:
-        subprocess.run(shell_script_command, shell=True, check=True)
-        if delete_comments == 1:
-            xml_path = "utils/misraivoso/output/cppcheck_out.xml"
-            snippets = extract_code_snippets(xml_path)
-            if (flags == 0):
-                progress_bar["value"] = 15
-                progress_bar.update()
-            remove_misra_comments_from_source(snippets, progress_bar, flags)
-            if (flags == 0):
-                messagebox.showinfo(
-                    "Success", "Check and report executed successfully.")
-            else:
-                print("\nCheck and report executed successfully.\n")
-        elif include_comments == 1:
-            xml_path = "utils/misraivoso/output/cppcheck_out.xml"
-            snippets = extract_code_snippets(xml_path)
-            if (flags == 0):
-                progress_bar["value"] = 15
-                progress_bar.update()
-            add_misra_comments_to_source(snippets, progress_bar, flags)
-            if (flags == 0):
-                messagebox.showinfo(
-                    "Success", "\nCheck and report executed successfully.")
-            else:
-                print("\nCheck and report executed successfully.\n")
-        else:
-            if (flags == 0):
-                progress_bar["value"] = 100
-                progress_bar.update()
-                messagebox.showinfo(
-                    "Success", "Check and report executed successfully.")
-            else:
-                print("\nCheck and report executed successfully.\n")
-
-    except subprocess.CalledProcessError as e:
-        messagebox.showerror(
-            "Error", f"An error occurred while running the shell script: {e}")
 
 
 def add_misra_comments_to_source(code_snippets, progress_bar, flags):
@@ -812,6 +737,41 @@ def remove_misra_comments_from_source(code_snippets, progress_bar, flags):
         auto_indent_c_files(file_path)
 
 
+def print_progress_bar(iteration, total, length=50):
+    percent = ("{0:.1f}").format(100 * (iteration / float(total)))
+    filled_length = int(length * iteration // total)
+    bar = '#' * filled_length + '-' * (length - filled_length)
+    print(f'\r[{bar}] {percent}% Complete', end='', flush=True)
+
+
+def _configure_button(button, bg_color):
+    """
+    Configure the appearance of a button.
+    """
+    button.config(
+        borderwidth=4,
+        bg=bg_color,
+        relief=tk.RAISED,
+        highlightthickness=2,
+        highlightbackground="red",
+        highlightcolor="red",
+        width=20,
+        fg="white"
+    )
+
+
+def block_button(gui_correction, run_button, directory_entry, xml_report_entry, specific_directory_entry, include_comments_var, delete_comments_var, src_files_list_entry, progress_bar, progress, flags):
+
+    if gui_correction == 1:
+        run_correction(directory_entry.get(),
+                       xml_report_entry.get(), progress, flags)
+        run_button.config(state='disabled')
+    elif gui_correction == 0:
+        run_shell_script(directory_entry.get(), specific_directory_entry.get(), progress_bar,
+                         include_comments_var.get(), delete_comments_var.get(), src_files_list_entry.get(), flags)
+        run_button.config(state='normal')
+
+
 def run_gui(flags):
     """
     Create and display the main graphical user interface (GUI) window for the Code Correction Tool.
@@ -831,7 +791,7 @@ def run_gui(flags):
         root.grid_rowconfigure(i, weight=1)
     for i in range(3):  # Update the range based on the number of column
         root.grid_columnconfigure(i, weight=1)
-
+    gui_correction = 0
     # Load and set the GUI icon
     icon_file_name = "misra_fixer_icon.gif"
     script_directory = os.path.dirname(os.path.abspath(__name__))
@@ -850,7 +810,7 @@ def run_gui(flags):
         root, text="Choose Directory", command=lambda: choose_directory(directory_entry))
     _configure_button(choose_directory_button, custom_color)
 
-    # Directory Selection Section
+    # File Selection Section
     src_files_list_label = tk.Label(
         root, text="Select Source Directory or Files:", pady=10, bg="#e6e6e6")
     src_files_list_entry = tk.Entry(root, width=50, bg="#ffe2e2")
@@ -858,11 +818,19 @@ def run_gui(flags):
         root, text="Choose Files", command=lambda: choose_files(src_files_list_entry))
     _configure_button(src_files_list_button, custom_color)
 
+    # Directory Selection Section
+    specific_directory_label = tk.Label(
+        root, text="Select Source Directory:", pady=10, bg="#e6e6e6")
+    specific_directory_entry = tk.Entry(root, width=50, bg="#ffe2e2")
+    choose_specific_directory_button = tk.Button(
+        root, text="Choose Directory 2", command=lambda: choose_directory(specific_directory_entry))
+    _configure_button(choose_specific_directory_button, custom_color)
+
     progress_bar = ttk.Progressbar(
         root, orient="horizontal", length=200, mode="determinate")
 
     run_shell_script_button = tk.Button(
-        root, text="Run Check and Report", command=lambda: run_shell_script(directory_entry.get(), progress_bar, include_comments_var.get(), delete_comments_var.get(), src_files_list_entry.get(), flags))
+        root, text="Run Check and Report", command=lambda: block_button(0, run_button, directory_entry, xml_report_entry, specific_directory_entry, include_comments_var, delete_comments_var, src_files_list_entry, progress_bar, progress, flags))
     _configure_button(run_shell_script_button, "#c81010")
 
     # Create a label as a separation title
@@ -871,8 +839,8 @@ def run_gui(flags):
     separation_label_1.grid(row=0, column=1, padx=20, pady=10)
 
     run_shell_script_button.grid(
-        row=3, column=1, padx=20, pady=10)
-    progress_bar.grid(row=5, column=1, padx=20, pady=10)
+        row=4, column=1, padx=20, pady=10)
+    progress_bar.grid(row=6, column=1, padx=20, pady=10)
 
     # XML Report File Selection Section
     xml_report_label = tk.Label(
@@ -885,24 +853,24 @@ def run_gui(flags):
     # Create a progress bar
     progress = ttk.Progressbar(
         root, orient="horizontal", length=300, mode="determinate")
-    progress.grid(row=11, column=1,
+    progress.grid(row=12, column=1,
                   padx=20, pady=20)  # Placed at the end
 
     # Run Correction Button Section
-    run_button = tk.Button(root, text="Run Correction", command=lambda: run_correction(
-        directory_entry.get(), xml_report_entry.get(), progress, flags))
+    run_button = tk.Button(root, text="Run Correction", command=lambda: block_button(1, run_button, directory_entry, xml_report_entry,
+                           specific_directory_entry, include_comments_var, delete_comments_var, src_files_list_entry, progress_bar, progress, flags))
     _configure_button(run_button, "#c81010")
 
     # Open HTML Report Button Section
     open_report_button = tk.Button(
         root, text="Open HTML Report", command=open_html_report)
     _configure_button(open_report_button, "#c81010")
-    open_report_button.grid(row=4, column=1, padx=20, pady=10)
+    open_report_button.grid(row=5, column=1, padx=20, pady=10)
 
     # Create a label as a separation title
     separation_label = tk.Label(
         root, text="Correction Section", bg="#e6e6e6", font=("Helvetica", 12, "bold"))
-    separation_label.grid(row=6, column=1, padx=20, pady=10)
+    separation_label.grid(row=7, column=1, padx=20, pady=10)
 
     # Organize widgets using grid layout
     directory_label.grid(row=1, column=0, sticky="nsew", padx=20, pady=10)
@@ -913,36 +881,41 @@ def run_gui(flags):
     src_files_list_entry.grid(row=2, column=1, padx=20, pady=10)
     src_files_list_button.grid(row=2, column=2, padx=20, pady=10)
 
-    xml_report_label.grid(row=8, column=0, sticky="nsew", padx=20, pady=10)
-    xml_report_entry.grid(row=8, column=1, padx=20, pady=10)
-    choose_xml_report_button.grid(row=8, column=2, padx=20, pady=10)
+    specific_directory_label.grid(
+        row=3, column=0, sticky="nsew", padx=20, pady=10)
+    specific_directory_entry.grid(row=3, column=1, padx=20, pady=10)
+    choose_specific_directory_button.grid(row=3, column=2, padx=20, pady=10)
 
-    run_button.grid(row=9, column=1, padx=20, pady=20)
+    xml_report_label.grid(row=9, column=0, sticky="nsew", padx=20, pady=10)
+    xml_report_entry.grid(row=9, column=1, padx=20, pady=10)
+    choose_xml_report_button.grid(row=9, column=2, padx=20, pady=10)
+
+    run_button.grid(row=10, column=1, padx=20, pady=20)
 
     # Check box to include comments
     include_comments_var = tk.IntVar()
     include_comments_checkbox = tk.Checkbutton(
         root, text="Include MISRA Comments", variable=include_comments_var, bg="#ffe2e2", font=("Helvetica", 12, "bold"))
     include_comments_checkbox.grid(
-        row=4, column=2, padx=20, pady=20, sticky="nsew")
+        row=5, column=2, padx=20, pady=20, sticky="nsew")
 
     # Check box to include comments
     delete_comments_var = tk.IntVar()
     delete_comments_checkbox = tk.Checkbutton(
         root, text="Delete MISRA Comments", variable=delete_comments_var, bg="#ffe2e2", font=("Helvetica", 12, "bold"))
     delete_comments_checkbox.grid(
-        row=3, column=2, padx=20, pady=20, sticky="nsew")
+        row=4, column=2, padx=20, pady=20, sticky="nsew")
 
     # Help Button Section
     help_button = tk.Button(root, text="Help", command=open_readme)
     _configure_button(help_button, "#c81010")  # Use a color of your choice
-    help_button.grid(row=10, column=1, padx=20,
+    help_button.grid(row=11, column=1, padx=20,
                      pady=10)  # Adjust row and column as needed
     # Define the steps
     steps = ["Step 1: Choose Directory to run check and report",
-             "Step 2: Run Check and Report",
-             "Step 3: Choose Correction Directory (same as check and report)",
-             "Step 4: Choose Output Directory (to save the corrected directory)",
+             "Step 2: Click in Choose Files if only specific files to check",
+             "Step 3: Click in Choose Directory 2 if only specific directory to check",
+             "Step 4: Run Check and Report",
              "Step 5: Choose XML Report, saved in output folder",
              "Step 6: Run Correction",
              "Step 7: Choose Corrected Directory to run check and report again",
@@ -952,7 +925,7 @@ def run_gui(flags):
     # Create a frame to hold the step buttons and information
     step_buttons_frame = tk.Frame(root, bg="#e6e6e6")
     step_buttons_frame.grid(
-        row=13, column=1, padx=20, pady=10, sticky="nsew")
+        row=14, column=1, padx=20, pady=10, sticky="nsew")
     step_buttons_frame.grid_rowconfigure(3, weight=1)
     step_buttons_frame.grid_columnconfigure(1, weight=1)
     # Create a frame for each step
@@ -1007,31 +980,77 @@ def run_gui(flags):
     root.mainloop()
 
 
-def _configure_button(button, bg_color):
-    """
-    Configure the appearance of a button.
-    """
-    button.config(
-        borderwidth=4,
-        bg=bg_color,
-        relief=tk.RAISED,
-        highlightthickness=2,
-        highlightbackground="red",
-        highlightcolor="red",
-        width=20,
-        fg="white"
-    )
+# --------------------------------------------------------
+# Main functions
+# --------------------------------------------------------
 
 
-# -----------------------------------
-# Main funtion
-# -----------------------------------
+def run_shell_script(directory_to_check, specific_directory, progress_bar, include_comments, delete_comments, src_file_list, flags):
+    if not directory_to_check:
+        messagebox.showerror("Error", "Please choose a directory to check.")
+        return
 
-def print_progress_bar(iteration, total, length=50):
-    percent = ("{0:.1f}").format(100 * (iteration / float(total)))
-    filled_length = int(length * iteration // total)
-    bar = '#' * filled_length + '-' * (length - filled_length)
-    print(f'\r[{bar}] {percent}% Complete', end='', flush=True)
+    shell_script_path = "utils/misraivoso/run_cppcheck.py"
+    # shell_script_path = "utils/misraivoso/run_cppcheck.py"
+
+    if (flags == 0):
+        # Update progress bar
+        progress_bar["value"] = 15
+        progress_bar.update()
+        directory = directory_to_check
+
+        if (src_file_list and specific_directory):
+            shell_script_command = f"python3 {shell_script_path} {directory} --src-file-list '{src_file_list} {specific_directory}'"
+        elif (src_file_list):
+            shell_script_command = f"python3 {shell_script_path} {directory} --src-file-list '{src_file_list}'"
+        elif (specific_directory):
+            shell_script_command = f"python3 {shell_script_path} {directory} --src-file-list '{specific_directory}'"
+        else:
+            shell_script_command = f"python3 {shell_script_path} {directory} --src-file-list '{directory}'"
+    else:
+        directory = directory_to_check
+        shell_script_command = f"python3 {shell_script_path} {directory} --src-file-list '{src_file_list}'"
+
+    try:
+        subprocess.run(shell_script_command, shell=True, check=True)
+        if delete_comments == 1:
+            xml_path = "output/cppcheck_out.xml"
+            # xml_path = "utils/misraivoso/output/cppcheck_out.xml"
+            snippets = extract_code_snippets(xml_path)
+            if (flags == 0):
+                progress_bar["value"] = 15
+                progress_bar.update()
+            remove_misra_comments_from_source(snippets, progress_bar, flags)
+            if (flags == 0):
+                messagebox.showinfo(
+                    "Success", "Check and report executed successfully.")
+            else:
+                print("\nCheck and report executed successfully.\n")
+        elif include_comments == 1:
+            xml_path = "output/cppcheck_out.xml"
+            # xml_path = "utils/misraivoso/output/cppcheck_out.xml"
+            snippets = extract_code_snippets(xml_path)
+            if (flags == 0):
+                progress_bar["value"] = 15
+                progress_bar.update()
+            add_misra_comments_to_source(snippets, progress_bar, flags)
+            if (flags == 0):
+                messagebox.showinfo(
+                    "Success", "\nCheck and report executed successfully.")
+            else:
+                print("\nCheck and report executed successfully.\n")
+        else:
+            if (flags == 0):
+                progress_bar["value"] = 100
+                progress_bar.update()
+                messagebox.showinfo(
+                    "Success", "Check and report executed successfully.")
+            else:
+                print("\nCheck and report executed successfully.\n")
+
+    except subprocess.CalledProcessError as e:
+        messagebox.showerror(
+            "Error", f"An error occurred while running the shell script: {e}")
 
 
 def run_correction(source_directory, report_file, progress, flags):
@@ -1098,7 +1117,6 @@ def run_correction(source_directory, report_file, progress, flags):
         corrected_code = fix_single_variable_conditions(corrected_code)
         corrected_code = fix_elseif_single_variable_conditions(corrected_code)
         corrected_code = fix_void_return(corrected_code, snippets)
-        corrected_code = fix_printf_return(corrected_code)
         corrected_code = fix_dead_code(corrected_code, snippets)
         #####################################################################################
 
@@ -1127,9 +1145,11 @@ def run_correction(source_directory, report_file, progress, flags):
 def run_with_flags(source_directory, include_comments, delete_comments, cppcheck, correction, src_file_list, flags):
 
     progress_bar = 0
-    xml_path = "utils/misraivoso/output/cppcheck_out.xml"
+    specific_directory = None
+    xml_path = "output/cppcheck_out.xml"
+    # xml_path = "utils/misraivoso/output/cppcheck_out.xml"
     if cppcheck or correction:
-        run_shell_script(source_directory, progress_bar,
+        run_shell_script(source_directory, specific_directory, progress_bar,
                          include_comments, delete_comments, src_file_list, flags)
 
     if correction:
@@ -1178,6 +1198,10 @@ def main():
         if not (args.cppcheck or args.correction):
             print(
                 "Error: Choose one of the options: --cppecheck or --correction, can't be both")
+            return
+
+        if args.correction and (args.include_comments or args.delete_comments):
+            print("Error: Include and delete comments only work with: --cppcheck")
             return
 
         flags = 1
