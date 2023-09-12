@@ -25,7 +25,7 @@ ARM-QEMU-validation-test:
         - *build-executable
         - |
           if [ "$CI_PIPELINE_SOURCE" = "push" ]; then
-            ($UTILS/test.bash | tee testresult.txt) || true
+            ($UTILS/arm-ci.bash | tee testresult.txt) || true
           else
             ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
           fi 
