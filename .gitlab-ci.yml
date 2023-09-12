@@ -39,6 +39,7 @@ variables:
     AIR_POS: $AIR_INSTALL/pos
     RTEMS410: /opt/rtems-4.10/bin
     UTILS: $STATE_FOLDER/utils/gitlab-runner
+    RTEMS_MAKEFILE_PATH: $AIR_POS/rtems5/rtems5-install/sparc-rtems5/gr740
 
 default:
     retry: 1
@@ -48,17 +49,17 @@ default:
         - git config --global credential.helper store
         - echo "https://${GIT_HTTP_USERNAME}:${CI_JOB_TOKEN}@$(AIR_GIT_REMOTE_HOSTNAME)" > ~/.git-credentials
 
-        - if ! test -f git-clean.lock;
-            then 
-                touch git-clean.lock;
-            fi
+        #- if ! test -f git-clean.lock;
+        #    then 
+        #        touch git-clean.lock;
+        #    fi
 
-        - if ! $(grep -Fxq $CI_COMMIT_SHORT_SHA git-clean.lock); 
-            then 
-                git clean -ffdx && git submodule foreach --recursive git clean -ffdx && echo $CI_COMMIT_SHORT_SHA > git-clean.lock; 
-                git submodule update --init --recursive; 
-                git submodule sync --recursive; 
-            fi
+        #- if ! $(grep -Fxq $CI_COMMIT_SHORT_SHA git-clean.lock); 
+        #    then 
+        #        git clean -ffdx && git submodule foreach --recursive git clean -ffdx && echo $CI_COMMIT_SHORT_SHA > git-clean.lock; 
+        #        git submodule update --init --recursive; 
+        #        git submodule sync --recursive; 
+        #    fi
             
         - if ! test -d $STATE_FOLDER; then 
             (mkdir -p $STATE_FOLDER || true)
@@ -71,25 +72,13 @@ default:
 
         - cd $AIR
 
-        #- cd $STATE_FOLDER
-        #- cd air
-        
-        - export PATH=$PATH:$AIR
-        #- export AIR_INSTALL=$AIR/install
-        #- export AIR_PMK=$AIR_INSTALL/pmk
-        #- export AIR_POS=$AIR_INSTALL/pos
-
-        #- export RTEMS410=/opt/rtems-4.10/bin
-        - export PATH=$PATH:$RTEMS410
-        - export RTEMS_MAKEFILE_PATH=$AIR_POS/rtems5/rtems5-install/sparc-rtems5/gr740
-        - export PATH=$PATH:/opt/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
-
         - export DISPLAY=:99
+        - export PATH=$PATH:$AIR
+        - export PATH=$PATH:$RTEMS410
+        - export PATH=$PATH:/opt/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
         - export PATH=/opt/rtems/5/bin:$PATH
         - export PATH=/opt/rtems-5.1-2019.07.25/bin:$PATH
         - export PATH=/opt/laysim-gr740:$PATH
-
-        #- export UTILS=$AIR/../utils/gitlab-runner 
 
 placeholder:
     stage: .pre
