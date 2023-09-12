@@ -159,7 +159,7 @@ parser = argparse.ArgumentParser(description='Run cppcheck.')
 parser.add_argument('source', type=str, help='main source code folder')
 parser.add_argument('--configuration', default="utils/misraivoso/configuration.hjson",
                     type=str, help='configuration file')
-parser.add_argument('--output', default="utils/misraivosooutput", type=str, help='output path')
+parser.add_argument('--output', default="utils/misraivoso/output", type=str, help='output path')
 # parser.add_argument('--configuration', default="utils/misraivoso/configuration.hjson", type=str, help='configuration file')
 # parser.add_argument('--output', default="utils/misraivoso/output", type=str, help='output path')
 parser.add_argument('--exclude', default=None, type=str,
