@@ -9,7 +9,7 @@
     - cp executable/AIRAPP.exe $CI_PROJECT_DIR
     
 .check-and-publish: &check-and-publish
-#    - $AIR/../utils/gitlab-runner/testcheck.py 
+    - $UTILS/testcheck.py 
     - $UTILS/publish_example.bash
 
 # ARM 
@@ -37,7 +37,7 @@ ARM-QEMU:
 SPARC-LAYSIM:
     stage: examples
     tags: ["SPARC","LAYSIM"]
-    #needs: ["RVS-SPARC-LAYSIM-build"]
+    needs: ["SPARC-GR740-build"]
     script:
         - TEST_DIR=$(if [[ "$EXAMPLE" == "paranoia" || "$EXAMPLE" == "smp01" || "$EXAMPLE" == "smp02" ]]; then echo "$AIR/examples/testsuites/$EXAMPLE"; else echo "$AIR/examples/$EXAMPLE"; fi)
         - cd $TEST_DIR
