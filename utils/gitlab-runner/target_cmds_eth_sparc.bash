@@ -1,4 +1,6 @@
 #!/bin/bash
+
+$EXAMPLE=$1
 wall << EFO
 GitLab CI/CD: SPARC test $EXAMPLE will try to run on board GR740
 EFO
