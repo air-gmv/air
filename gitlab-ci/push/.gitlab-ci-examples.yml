@@ -6,7 +6,6 @@
     - make clean
     - make
     - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
-    - cp executable/AIRAPP.exe $CI_PROJECT_DIR
     
 .check-and-publish: &check-and-publish
     - $UTILS/testcheck.py 
