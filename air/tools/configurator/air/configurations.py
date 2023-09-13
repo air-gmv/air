@@ -357,7 +357,7 @@ class Configuration(object):
     ##
     # @brief Copies the GitLab post-commit hook from utils/hooks to .git/hooks
     def copy_post_commit_hook(self):
-        air_directory = air.ROOT_DIRECTORY
+        air_directory = os.path.dirname(air.ROOT_DIRECTORY)
 
         # Define the source and destination paths
         source_file = os.path.join(air_directory, 'utils', 'hooks', 'post-commit')
