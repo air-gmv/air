@@ -16,6 +16,7 @@ import logging
 import traceback
 import utils.terminal as terminalutils
 import subprocess
+import shutil
 
 __OS_CONFIG_FILE__ = os.path.join(air.ROOT_DIRECTORY, '.air_config')
 
@@ -349,7 +350,26 @@ class Configuration(object):
                 supported_architectures[self.arch][self.bsp].defines[i] = "PMK_FPU_SUPPORT={flag}".format(flag=self.fpu_enabled*1)
             elif define.startswith("PMK_DEBUG"):
                 supported_architectures[self.arch][self.bsp].defines[i] = "PMK_DEBUG={flag}".format(flag=self.debug_enabled*1)
+                self.copy_post_commit_hook()  
+
         return supported_architectures[self.arch][self.bsp].defines
+
+    ##
+    # @brief Copies the GitLab post-commit hook from utils/hooks to .git/hooks
+    def copy_post_commit_hook(self):
+        air_directory = air.ROOT_DIRECTORY
+
+        # Define the source and destination paths
+        source_file = os.path.join(air_directory, 'utils', 'hooks', 'post-commit')
+        destination_directory = os.path.join(air_directory, '.git', 'hooks')
+
+        # Check if the source file exists
+        if os.path.exists(source_file):
+            # Copy the file from source to destination
+            shutil.copy(source_file, destination_directory)
+            print(f'File copied to {destination_directory}')
+        else:
+            print(f'Source file {source_file} does not exist.')
 
     ##
     # @brief Gets a list of supported POS
