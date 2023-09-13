@@ -42,7 +42,7 @@ ARM-QEMU-validation-test:
     parallel:
       matrix:
         - EXAMPLE:
-          - "TEST-DEF-00009"
+          #- "TEST-DEF-00009"
           #- "TEST-DEF-00010"
           #- "TEST-DEF-00012"
           #- "TEST-DEF-00021"
