@@ -2,18 +2,52 @@
 # Author huca@GMV 2023
 
 # Build ARM ZYNQZ1
-ARM-ZYNQZ1-build:
+.ARM-ZYNQZ1-build:
+    stage: prepare-build
+    tags: ["ARM1"]
+    needs: ["ARM1_init"]
+    script:
+        - cp $UTILS/.arm_zynqz1_config .
+        - ./configure -f .arm_zynqz1_config   
+        - make clean
+        - make -j4
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM] 
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
+
+
+TEST-ARM-ZYNQZ1-build:
     stage: prepare-build
     tags: ["ARM1"]
     needs: ["ARM1_init"]
     script:
         - cp $UTILS/.arm_zynqz1_config .
         - ./configure -f .arm_zynqz1_config
-        - make clean
-        - make -j4
+        
+        - git submodule update --init --recursive  # Initialize submodules
+        - |
+          if git submodule status | grep -q '^+'; then
+            echo "Submodule has changes, running make pos";
+            make pos;
+          else
+            latest_commit_sha=$(git rev-parse $(git rev-parse --abbrev-ref HEAD))  # Get the SHA of the latest commit
+            latest_state_folder="${STATE_FOLDER}/../${latest_commit_sha}"
+            if [ -d "$latest_state_folder" ]; then
+              echo "Copying pos from the latest state folder: $latest_state_folder";
+              cp -r "$latest_state_folder/air/pos" ./pos;
+           else
+              echo "No changes in the submodule, but no latest state folder found.";
+            fi
+          fi
+        - make pmk
+        - make libs
+        - make tools
+
+        #- make pos
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM] 
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
+
 
 # Build SPARC GR740 
 SPARC-GR740-build:
