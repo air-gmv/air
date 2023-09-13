@@ -7,7 +7,7 @@
 .pre-job-template:
     stage: .pre
     variables:
-        GIT_STRATEGY: none
+        GIT_STRATEGY: clone
     before_script: 
         - ''               # Prevents the before_script from running
     script:
@@ -15,15 +15,6 @@
         - if ! [[ -z $CLEANUP ]]; then 
             rm -rf /home/gitlab-runner/state/* ;
           fi
-
-        - git config --global credential.helper store
-        - echo "https://${GIT_HTTP_USERNAME}:${CI_JOB_TOKEN}@$(AIR_GIT_REMOTE_HOSTNAME)" > ~/.git-credentials
-            
-        - if ! test -d $STATE_FOLDER; then 
-            (mkdir -p $STATE_FOLDER || true)
-          fi;
-
-        - git clone git@$(AIR_GIT_REMOTE_HOSTNAME):AIR/air-dev.git $STATE_FOLDER
 
 # ARM
 ARM1_init:
