@@ -23,14 +23,14 @@ TEST-ARM-ZYNQZ1-build:
     script:
         - cp $UTILS/.arm_zynqz1_config .
         - ./configure -f .arm_zynqz1_config
-        
+
         - git submodule update --init --recursive  # Initialize submodules
         - |
           if git submodule status | grep -q '^+'; then
             echo "Submodule has changes, running make pos";
             make pos;
           else
-            latest_commit_sha=$(git rev-parse $(git rev-parse --abbrev-ref HEAD))  # Get the SHA of the latest commit
+            latest_commit_sha=$(git rev-parse HEAD^) 
             latest_state_folder="${STATE_FOLDER}/../${latest_commit_sha}"
             if [ -d "$latest_state_folder" ]; then
               echo "Copying pos from the latest state folder: $latest_state_folder";
