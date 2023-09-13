@@ -1,2 +1,45 @@
-#!/bin/sh
-curl --user assert:assertvm http://localhost:8080/job/git-commit-check/build?token=e3cbb98ff0193b98
+#!/bin/bash
+echo "Starting post-commit hook..."
+
+MESSAGE=$(git log -1 HEAD --pretty=format:%s)
+
+if [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\[(C|V)\] ]]; then
+
+  git push
+
+  if [[ $? -eq 0 ]]; then
+    echo "Push was successful."
+
+    if [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\[C\] ]]; then
+      extracted_tag="${BASH_REMATCH[1]}"
+      echo "Commit message starts with $extracted_tag[C]"
+
+      #git pull origin $local_branch
+      python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file-list air/ # [--include-comments] [--delete-comments]
+      git add .
+      git commit -m "[$extracted_tag] Changes done by MISRAivoso (correction)"
+      git push
+
+    elif [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\[V\] ]]; then
+      extracted_tag="${BASH_REMATCH[1]}"
+      echo "Commit message starts wi  th $extracted_tag[V]"
+
+      #git pull origin $local_branch
+      python3 utils/misraivoso/MISRAivoso.py --cppcheck --src air/ --src-file-list air/ # [--include-comments] [--delete-comments]
+      git add .
+      git commit -m "[$extracted_tag] Changes done by MISRAivoso (cppcheck)"
+      git push
+    else   
+      echo "Commit message does not match any pattern"
+    fi
+
+  else
+    echo "Push failed, please check your connection."
+    git reset --soft HEAD~1
+  fi
+
+else
+  echo "Ignoring MISRArules..."
+fi
+
+echo "Terminating post-commit hook..."
