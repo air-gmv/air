@@ -39,7 +39,7 @@ TEST-ARM-ZYNQZ1-build:
             echo "Latest State Folder: $latest_state_folder";
             if [ -d "$latest_state_folder" ]; then
               air_folder="$latest_state_folder/air"
-              pos_folder="$air_folder/pos"
+              pos_folder="$air_folder/install/pos"
               bare_folder="$pos_folder/bare"
               rtems5_folder="$pos_folder/rtems5"
               echo "Air folder $air_folder"
