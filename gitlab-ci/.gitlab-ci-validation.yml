@@ -20,6 +20,8 @@ ARM-QEMU-validation-test:
         optional: true
       - job: ARM-ZYNQZ1-build
         optional: true
+      - job: TEST-ARM-ZYNQZ1-build
+        optional: true
     script: 
         - cd $AIR/examples/private-example/private/validation/$EXAMPLE
         - *build-executable
