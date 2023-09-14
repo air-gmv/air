@@ -12,7 +12,7 @@
     - $UTILS/publish_example.bash
 
 # ARM
-.ARM-QEMU-validation-test:
+ARM-QEMU-validation-test:
     stage: validation_tests
     tags: ["ARM"]
     needs:
