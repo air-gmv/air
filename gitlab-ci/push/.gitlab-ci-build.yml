@@ -24,7 +24,7 @@ TEST-ARM-ZYNQZ1-build:
         - cp $UTILS/.arm_zynqz1_config .
         - ./configure -f .arm_zynqz1_config
 
-        - git submodule update --init --recursive  # Initialize submodules
+        - git submodule update --init --recursive  # Initialize submodules 
         - |
           if git submodule summary | grep -q 'air/pos/rtems5'; then
             echo "Submodule has changes, running make pos";
