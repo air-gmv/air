@@ -2,7 +2,7 @@
 # Author huca@GMV 2023
 
 # Build ARM ZYNQZ1
-.ARM-ZYNQZ1-build:
+ARM-ZYNQZ1-build:
     stage: prepare-build
     tags: ["ARM1"]
     needs: ["ARM1_init"]
@@ -16,7 +16,7 @@
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
 
 
-TEST-ARM-ZYNQZ1-build:
+.TEST-ARM-ZYNQZ1-build:
     stage: prepare-build
     tags: ["ARM1"]
     needs: ["ARM1_init"]
@@ -32,14 +32,16 @@ TEST-ARM-ZYNQZ1-build:
             echo "Submodule has changes, running make pos";
             make pos
           else
-            latest_commit_sha=$(git rev-parse HEAD^) 
-            echo "Latest Commit SHA: $latest_commit_sha"
-            latest_state_folder="/home/gitlab-runner/state/${latest_commit_sha}"
-            echo "Latest State Folder: $latest_state_folder"
+            latest_commit_sha=$(git rev-parse HEAD^);
+            echo "Latest Commit SHA: $latest_commit_sha";
+            latest_state_folder="/home/gitlab-runner/state/${latest_commit_sha}";
+            echo "Latest State Folder: $latest_state_folder";
             if [ -d "$latest_state_folder" ]; then
               echo "Copying pos from the latest state folder: $latest_state_folder";
-              mkdir -p install/pos
-              cp -r "$latest_state_folder/air/install/pos" ./install/pos;
+              mkdir -p install/bare;
+              mkdir install/rtems5;
+              cp -r "$latest_state_folder/air/install/bare" ./install/bare;
+              cp -r "$latest_state_folder/air/install/rtems5" ./install/rtems5;
             else
               echo "No changes in the submodule, but no latest state folder found.";
               make pos
