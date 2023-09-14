@@ -32,10 +32,11 @@ TEST-ARM-ZYNQZ1-build:
             echo "Submodule has changes, running make pos";
           else
             latest_commit_sha=$(git rev-parse HEAD^) 
+            echo $latest_commit_sha
             latest_state_folder="${STATE_FOLDER}/../${latest_commit_sha}"
             if [ -d "$latest_state_folder" ]; then
               echo "Copying pos from the latest state folder: $latest_state_folder";
-              cp -r "$latest_state_folder/air/install/pos" ./pos;
+              cp -r "$latest_state_folder/air/install/pos" ./install/pos;
             else
               echo "No changes in the submodule, but no latest state folder found.";
             fi
