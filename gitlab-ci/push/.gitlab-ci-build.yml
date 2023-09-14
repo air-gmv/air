@@ -26,7 +26,7 @@ ARM-ZYNQZ1-build:
 
         - make clean
         
-        - git submodule update --init --recursive  # Initialize submodules 
+        - git submodule update --init --recursive  # Initialize submodules
         - |
           if git submodule summary | grep -q 'air/pos/rtems5'; then
             echo "Submodule has changes, running make pos";
