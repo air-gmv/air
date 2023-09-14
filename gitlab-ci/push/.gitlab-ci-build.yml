@@ -30,6 +30,7 @@ TEST-ARM-ZYNQZ1-build:
         - |
           if git submodule summary | grep -q 'air/pos/rtems5'; then
             echo "Submodule has changes, running make pos";
+            make pos
           else
             latest_commit_sha=$(git rev-parse HEAD^) 
             echo "Latest Commit SHA: $latest_commit_sha"
@@ -41,10 +42,13 @@ TEST-ARM-ZYNQZ1-build:
               cp -r "$latest_state_folder/air/install/pos" ./install/pos;
             else
               echo "No changes in the submodule, but no latest state folder found.";
+              make pos
             fi
           fi
         
-        - make
+        - make -C pmk all
+        - make -C libs all
+        - make tools
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM] 
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
