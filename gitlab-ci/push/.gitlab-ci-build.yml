@@ -41,7 +41,10 @@ TEST-ARM-ZYNQZ1-build:
               air_folder="$latest_state_folder/air"
               pos_folder="$air_folder/pos"
               bare_folder="$pos_folder/bare"
-              rtems5_folder="$pos_folder/rtems5"  
+              rtems5_folder="$pos_folder/rtems5"
+              echo "Air folder $air_folder"
+              echo "Pos folder $pos_folder"
+              echo "Bare folder $bare_folder"
               if [ -d "$air_folder" ] && [ -d "$pos_folder" ] && [ -d "$bare_folder" ] && [ -d "$rtems5_folder" ]; then
                 if [ "$(ls -A "$bare_folder")" ] && [ "$(ls -A "$rtems5_folder")" ]; then
                   echo "Copying pos from the latest state folder: $latest_state_folder";
