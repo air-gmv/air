@@ -26,7 +26,7 @@ TEST-ARM-ZYNQZ1-build:
 
         - make clean
 
-        - latest_commit_sha=$(git rev-parse HEAD^)
+        - latest_commit_sha="1ca1819546f00417cee309f5692aac35a0f01dbf"
         - echo "Latest Commit SHA $latest_commit_sha"
         - latest_state_folder="/home/gitlab-runner/state/${latest_commit_sha}"
         - echo "Latest State Folder $latest_state_folder"
