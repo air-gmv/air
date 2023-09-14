@@ -367,9 +367,9 @@ class Configuration(object):
         if os.path.exists(source_file):
             # Copy the file from source to destination
             shutil.copy(source_file, destination_directory)
-            print(f"File copied to {destination_directory}")
+            print("File successfully copied.")
         else:
-            print(f"Source file {source_file} does not exist.")
+            print("Source file does not exist.")
 
     ##
     # @brief Gets a list of supported POS
