@@ -2,7 +2,7 @@
 # Author huca@GMV 2023
 
 # Build ARM ZYNQZ1
-.ARM-ZYNQZ1-build:
+ARM-ZYNQZ1-build:
     stage: prepare-build
     tags: ["ARM1"]
     needs: ["ARM1_init"]
@@ -16,7 +16,7 @@
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
 
 
-TEST-ARM-ZYNQZ1-build:
+.TEST-ARM-ZYNQZ1-build:
     stage: prepare-build
     tags: ["ARM1"]
     needs: ["ARM1_init"]
@@ -25,29 +25,23 @@ TEST-ARM-ZYNQZ1-build:
         - ./configure -f .arm_zynqz1_config
 
         - make clean
-        - make -C pmk all
         
         - git submodule update --init --recursive  # Initialize submodules 
         - |
           if git submodule summary | grep -q 'air/pos/rtems5'; then
             echo "Submodule has changes, running make pos";
-            make pos;
           else
             latest_commit_sha=$(git rev-parse HEAD^) 
             latest_state_folder="${STATE_FOLDER}/../${latest_commit_sha}"
             if [ -d "$latest_state_folder" ]; then
               echo "Copying pos from the latest state folder: $latest_state_folder";
-              cp -r "$latest_state_folder/air/pos" ./pos;
-           else
+              cp -r "$latest_state_folder/air/install/pos" ./pos;
+            else
               echo "No changes in the submodule, but no latest state folder found.";
-              make pos;
             fi
           fi
         
-        - make -C libs all
-        - make tools
-
-        #- make pos 
+        - make
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM] 
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
