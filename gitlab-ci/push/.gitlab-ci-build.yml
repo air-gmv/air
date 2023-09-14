@@ -64,7 +64,7 @@ TEST-ARM-ZYNQZ1-build:
             fi
           fi
         
-        - if $missing_pos; then
+        - if [ "$missing_pos" = false ]; then
             make pos
           fi
         - make -C pmk all
