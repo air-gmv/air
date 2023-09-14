@@ -7,8 +7,9 @@
  */
 /**
  * \file global_timer.c
- * \author lumm
- * \brief Global Timer setup and start.
+ * \author ansi
+ * \brief Generic Timer setup and start. The A53 cpu does not have a global timer, it is called a generic timer.
+ * It is very similar to the global timer of the A9 but the register access is different.
  */
 
 #include <timer.h>
@@ -20,46 +21,63 @@
 #include <printk.h>
 #endif
 
-#define GT ((global_timer_t *)XPAR_PS7_GLOBALTIMER_0_S_AXI_BASEADDR)
+#define IOU_SCNTRS ((iou_scntrs_module *)XPAR_PSU_IOU_SCNTRS_S_AXI_BASEADDR)
 
 void arm_init_global_timer(void) {
 
     /* in range 0-255 */
     air_u32_t us_per_tick = pmk_get_usr_us_per_tick();
-    air_u32_t prescaler = arm_determine_gt_prescaler(us_per_tick);
 
-    air_u32_t ctrl = ARM_GT_CTRL_PRESCALER(prescaler);
-    GT->ctrl = ctrl;
+    //First program the counter frequency
+    // According to the registers reference we must "program this register to match the clock frequency of the timestamp generator"
+    IOU_SCNTRS->base_freq_id = 0x5F5E100; //XPAR_PSU_CORTEXA53_0_TIMESTAMP_CLK_FREQ (100MHz) in hex
+    //Should it be XPAR_PSU_CORTEXA53_0_CPU_CLK_FREQ_HZ instead?
 
-    air_u32_t freq = XPAR_PS7_CORTEXA9_0_CPU_CLK_FREQ_HZ / 2000000;
+    // Use the CNTKCTL, Counter-timer Kernel Control register to setup the timer
+    // to generate an event periodically.
+    // Set the EVNTI, bits [7:4] to select wich bit of the counter register triggers the event (select the period ?)
 
-    air_u32_t autoinc = (air_u32_t)( (freq * us_per_tick) / ((prescaler + 1)) - 1 );
-    GT->autoinc = autoinc;
+    //TODO: Can i just write the value to the specific bits of the register or do i need to read it first and then write "what i want"|"what was alreadt there"?
+    __asm__ volatile ( "mcr 0b1111, 0b000, %0, 0b1110, 0b0001, 0b000\n"::"r" (1 << arm_determine_trigger_bit(us_per_tick) ) );
 
 #ifdef PMK_DEBUG
-    printk("\n :: Global Timer initialization\n"
-            "    global_timer_t at 0x%x\n"
-            "    GT ctrl = 0x%08x\n"
-            "    GT status = 0x%08x\n"
-            "    gt freq = %dMHz\n"
-            "    prescaler = %d\n"
-            "    us per tick = %d\n"
-            "    gt comparator = 0x%x\n\n",
-            GT, GT->ctrl, GT->irq_status, freq, prescaler, us_per_tick, GT->autoinc);
+    printk("\n :: Generic Timer initialization\n"
+            "    IOU_SCNTRS module at 0x%x\n"
+            "    trigger bit = %d\n\n",
+            IOU_SCNTRS, arm_determine_trigger_bit(us_per_tick) );
 #endif
 }
 
+air_u32_t arm_determine_trigger_bit(air_u32_t us_per_tick){
+    // The counter generates a tick every N clock pulses
+    // (From Ultrascle+ TRM, Timers and Counters -> Physical Counter section)
+    air_u32_t N = (XPAR_CPU_CORTEXA53_0_CPU_CLK_FREQ_HZ / 2) / 100000000;
+
+    // This means that it generates a tick every N/CPU_CLK_FREQ seconds;
+    // So the desired period is (in ticks)
+    air_u32_t period = (us_per_tick * 1E6) / (N/XPAR_CPU_CORTEXA53_0_CPU_CLK_FREQ_HZ);
+    
+    // Find the changing bit that represents the period
+    
+    //TODO: For now assume that it is the rightmost bit of the binary representation of the period, it is only true for powers of 2
+    if (period == 0) {
+        return 0;  // No set bits
+    }
+
+    air_u32_t position = -1;
+
+    // Right shift the period until the rightmost bit is 1.
+    while ((period & 1) == 0) {
+        period >>= 1;
+        position++;
+    }
+
+    return position;
+}
+
 void arm_start_global_timer(void) {
-
-    /* Start GT and set period to autoinc=usr_per_tick adjusted for frequency */
-    GT->ctrl &= ~(ARM_GT_CTRL_COMP_EN | ARM_GT_CTRL_TIMER_EN);
-    GT->cnt_lower = 0;
-    GT->cnt_upper = 0;
-    GT->comp_lower = GT->autoinc; // TODO should it start at 0 or GT->autoinc??
-    GT->comp_upper = 0;
-
-    GT->ctrl |= ARM_GT_CTRL_AUTOINC_EN | ARM_GT_CTRL_IRQ_EN |
-            ARM_GT_CTRL_COMP_EN | ARM_GT_CTRL_TIMER_EN;
+    // Set the EVNTEN, bit [2] of the CNTP_CTL register to enable the event stream?
+    __asm__ volatile ( "mcr 0b1111, 0b000, %0, 0b1110, 0b0001, 0b000\n"::"r" (1 << 2U ) );
 
     arm_instruction_synchronization_barrier();
 }
@@ -67,70 +85,68 @@ void arm_start_global_timer(void) {
 air_u64_t arm_read_global_timer(void) {
 
     air_u32_t lower = 0;
-    air_u32_t upper_1 = 0;
-    air_u32_t upper_2 = 0;
-    do {
-        upper_1 = GT->cnt_upper;
-        lower = GT->cnt_lower;
-        upper_2 = GT->cnt_upper;
-    } while (upper_1 != upper_2);
+    air_u32_t upper = 0;
+    
+    // Read the CNTPCT register
+    __asm__ volatile ("mrrc 0b1111, 0b0000, %0, %1, 0b0000\n":"=r" (lower), "=r" (upper) );
 
-    air_u64_t result = (air_u64_t) upper_2 << 32U | lower;
+    air_u64_t result = (air_u64_t) upper << 32U | lower;
 
 #ifdef PMK_DEBUG
-    printk("\n    :: gt->cnt = 0x%x%08x\n", upper_2, lower);
+    printk("\n    :: timer count = 0x%x%08x\n", upper, lower);
 #endif
     return result;
 }
 
-void arm_acknowledge_gt(void) {
-    GT->irq_status = 0x1;
-}
+// ??
+// void arm_acknowledge_gt(void) {
+//     GT->irq_status = 0x1;
+// }
 
-air_u32_t arm_determine_gt_prescaler(air_u32_t us_per_tick) {
+// air_u32_t arm_determine_gt_prescaler(air_u32_t us_per_tick) {
 
-    air_u32_t freq = XPAR_PS7_CORTEXA9_0_CPU_CLK_FREQ_HZ / 2000000;
-    air_u32_t prescaler_n, us_per_tick_calc;
-    air_u32_t prescaler = 0;
-    air_u64_t counter;
-    air_u32_t error;
-    air_u32_t best_error = ~(0x0);
+//     air_u32_t freq = XPAR_CPU_CORTEXA53_0_CPU_CLK_FREQ_HZ / 2000000;
+//     air_u32_t prescaler_n, us_per_tick_calc;
+//     air_u32_t prescaler = 0;
+//     air_u64_t counter;
+//     air_u32_t error;
+//     air_u32_t best_error = ~(0x0);
 
-#ifdef PMK_DEBUG_TIMER
-    printk("        :: global timer prescaler calculation\n"
-           "           us_per_tick = %d\n"
-           "           freq = %dMHz\n\n", us_per_tick, freq);
-#endif
+// #ifdef PMK_DEBUG_TIMER
+//     printk("        :: global timer prescaler calculation\n"
+//            "           us_per_tick = %d\n"
+//            "           freq = %dMHz\n\n", us_per_tick, freq);
+// #endif
 
-    for (prescaler_n = 256; prescaler_n > 0; prescaler_n--) {
+//     for (prescaler_n = 256; prescaler_n > 0; prescaler_n--) {
 
-        counter = (air_u64_t)( ((us_per_tick * freq) / (prescaler_n + 1)) - 1 );
+//         counter = (air_u64_t)( ((us_per_tick * freq) / (prescaler_n + 1)) - 1 );
 
-#ifdef PMK_DEBUG_TIMER
-        air_u32_t c_l = (air_u32_t)(counter & 0xffffffff);
-        air_u32_t c_h = (air_u32_t)(counter >> 32U);
-        printk("        counter = 0x%x %08x\n", c_h, c_l);
-#endif
+// #ifdef PMK_DEBUG_TIMER
+//         air_u32_t c_l = (air_u32_t)(counter & 0xffffffff);
+//         air_u32_t c_h = (air_u32_t)(counter >> 32U);
+//         printk("        counter = 0x%x %08x\n", c_h, c_l);
+// #endif
 
-        us_per_tick_calc = (air_u32_t)(((counter + 1) * (prescaler_n + 1)) / freq);
+//         us_per_tick_calc = (air_u32_t)(((counter + 1) * (prescaler_n + 1)) / freq);
 
-        error = us_per_tick - us_per_tick_calc;
-#ifdef PMK_DEBUG_TIMER
-        printk("        prescaler %ld -> error %ld\n"
-               "        us_per_tick %ld, us_per_tick_calc %ld\n",
-               prescaler_n, error, us_per_tick, us_per_tick_calc);
-#endif
-        if (error == 0) {
-            best_error = error;
-            prescaler = prescaler_n;
-            break;
-        }
+//         error = us_per_tick - us_per_tick_calc;
+// #ifdef PMK_DEBUG_TIMER
+//         printk("        prescaler %ld -> error %ld\n"
+//                "        us_per_tick %ld, us_per_tick_calc %ld\n",
+//                prescaler_n, error, us_per_tick, us_per_tick_calc);
+// #endif
+//         if (error == 0) {
+//             best_error = error;
+//             prescaler = prescaler_n;
+//             break;
+//         }
 
-        if (error < best_error) {
-            best_error = error;
-            prescaler = prescaler_n;
-        }
-    }
+//         if (error < best_error) {
+//             best_error = error;
+//             prescaler = prescaler_n;
+//         }
+//     }
 
-    return prescaler;
-}
+//     return prescaler;
+// }
