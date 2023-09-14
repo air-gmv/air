@@ -25,28 +25,44 @@ TEST-ARM-ZYNQZ1-build:
         - ./configure -f .arm_zynqz1_config
 
         - make clean
-        
-        - git submodule update --init --recursive  # Initialize submodules
+
+        - latest_commit_sha=$(git rev-parse HEAD^)
+        - echo "Latest Commit SHA $latest_commit_sha"
+        - latest_state_folder="/home/gitlab-runner/state/${latest_commit_sha}"
+        - echo "Latest State Folder $latest_state_folder"
         - |
-          if git submodule summary | grep -q 'air/pos/rtems5'; then
-            echo "Submodule has changes, running make pos";
-            make pos
+          if [ -d "$latest_state_folder" ]; then
+            echo "Copying pos from the latest state folder: $latest_state_folder";
+            mkdir -p install/pos/bare;
+            mkdir install/pos/rtems5;
+            cp -r "$latest_state_folder/air/install/pos/bare" ./install/pos/bare;
+            cp -r "$latest_state_folder/air/install/pos/rtems5" ./install/pos/rtems5;
           else
-            latest_commit_sha=$(git rev-parse HEAD^);
-            echo "Latest Commit SHA: $latest_commit_sha";
-            latest_state_folder="/home/gitlab-runner/state/${latest_commit_sha}";
-            echo "Latest State Folder: $latest_state_folder";
-            if [ -d "$latest_state_folder" ]; then
-              echo "Copying pos from the latest state folder: $latest_state_folder";
-              mkdir -p install/bare;
-              mkdir install/rtems5;
-              cp -r "$latest_state_folder/air/install/bare" ./install/bare;
-              cp -r "$latest_state_folder/air/install/rtems5" ./install/rtems5;
-            else
-              echo "No changes in the submodule, but no latest state folder found.";
-              make pos
-            fi
+            echo "No changes in the submodule, but no latest state folder found.";
+            make pos
           fi
+        
+        #- git submodule update --init --recursive  # Initialize submodules
+        #- |
+        #  if git submodule summary | grep -q 'air/pos/rtems5'; then
+        #    echo "Submodule has changes, running make pos";
+        #    make pos
+        #  else
+        #    latest_commit_sha=$(git rev-parse HEAD^);
+        #    echo "Latest Commit SHA: $latest_commit_sha";
+        #    latest_state_folder="/home/gitlab-runner/state/${latest_commit_sha}";
+        #    echo "Latest State Folder: $latest_state_folder";
+        #    if [ -d "$latest_state_folder" ]; then
+        #      echo "Copying pos from the latest state folder: $latest_state_folder";
+        #      mkdir -p install/bare;
+        #      mkdir install/rtems5;
+        #      cp -r "$latest_state_folder/air/install/pos/bare" ./install/bare;
+        #      cp -r "$latest_state_folder/air/install/pos/rtems5" ./install/rtems5;
+        #    else
+        #      echo "No changes in the submodule, but no latest state folder found.";
+        #      make pos
+        #    fi
+        #  fi
         
         - make -C pmk all
         - make -C libs all
