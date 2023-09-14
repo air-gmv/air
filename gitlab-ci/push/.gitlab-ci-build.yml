@@ -37,6 +37,7 @@ TEST-ARM-ZYNQZ1-build:
               cp -r "$latest_state_folder/air/pos" ./pos;
            else
               echo "No changes in the submodule, but no latest state folder found.";
+              make pos;
             fi
           fi
         - make pmk
