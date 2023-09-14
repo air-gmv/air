@@ -2,7 +2,7 @@
 # Author huca@GMV 2023
 
 # Build ARM ZYNQZ1
-ARM-ZYNQZ1-build:
+.ARM-ZYNQZ1-build:
     stage: prepare-build
     tags: ["ARM1"]
     needs: ["ARM1_init"]
@@ -16,7 +16,7 @@ ARM-ZYNQZ1-build:
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
 
 
-.TEST-ARM-ZYNQZ1-build:
+TEST-ARM-ZYNQZ1-build:
     stage: prepare-build
     tags: ["ARM1"]
     needs: ["ARM1_init"]
@@ -40,7 +40,7 @@ ARM-ZYNQZ1-build:
             fi
           fi
         - make pmk
-        - make libs
+        - make -C libs all
         - make tools
 
         #- make pos 
