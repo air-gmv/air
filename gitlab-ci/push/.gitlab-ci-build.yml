@@ -33,10 +33,8 @@ TEST-ARM-ZYNQZ1-build:
         - |
           if [ -d "$latest_state_folder" ]; then
             echo "Copying pos from the latest state folder: $latest_state_folder";
-            mkdir -p install/pos/bare;
-            mkdir install/pos/rtems5;
-            cp -r "$latest_state_folder/air/install/pos/bare" ./install/pos/bare;
-            cp -r "$latest_state_folder/air/install/pos/rtems5" ./install/pos/rtems5;
+            mkdir install
+            cp -r "$latest_state_folder/air/install/pos" ./install;
           else
             echo "No changes in the submodule, but no latest state folder found.";
             make pos
