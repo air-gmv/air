@@ -12,27 +12,25 @@
  *  @brief AIR Partition Assembler
  */
 
+#include <fcntl.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <unistd.h>
-#include <fcntl.h>
 
-#include <lzss.h>
-#include <libelf.h>
 #include <common.h>
+#include <libelf.h>
+#include <lzss.h>
 
-#define HEADER \
-"--------------------------------------------------------------------------\n" \
-"  AIR Partition Assembler v1.0 (alpha)                                    \n" \
-"--------------------------------------------------------------------------\n"
+#define HEADER                                                                                                         \
+    "--------------------------------------------------------------------------\n"                                     \
+    "  AIR Partition Assembler v1.0 (alpha)                                    \n"                                     \
+    "--------------------------------------------------------------------------\n"
 
-#define VALID_ADDR(addr, base_origin, base_length) \
-    ((addr) >= (base_origin) && (addr) < ((base_origin) + (base_length)))
+#define VALID_ADDR(addr, base_origin, base_length) ((addr) >= (base_origin) && (addr) < ((base_origin) + (base_length)))
 
-#define VALID_ADDR_RANGE(origin, length, base_origin, base_length) \
-    (VALID_ADDR((origin), (base_origin), (base_length)) && \
-    (((origin) + (length)) <= ((base_origin) + (base_length))))
+#define VALID_ADDR_RANGE(origin, length, base_origin, base_length)                                                     \
+    (VALID_ADDR((origin), (base_origin), (base_length)) && (((origin) + (length)) <= ((base_origin) + (base_length))))
 
 /**
  * @brief Generates tool outpot
@@ -47,19 +45,22 @@ extern void generate_output(p_data *p_elfs, uint32_t p_count);
  * @param[out] size Size of the file
  * @return File memory block pointer
  */
-char *read_file(const char *filename, size_t *size){
+char *read_file(const char *filename, size_t *size)
+{
 
     int fd;
     char *file;
     size_t count;
 
     /* open file */
-    if ((fd = open(filename, O_RDWR, 0777)) == -1){
+    if ((fd = open(filename, O_RDWR, 0777)) == -1)
+    {
         errx(EX_NOINPUT, " open() failed - %s", strerror(errno));
     }
 
     /* get file size */
-    if ((*size = count = lseek(fd, 0L, SEEK_END)) == -1){
+    if ((*size = count = lseek(fd, 0L, SEEK_END)) == -1)
+    {
         errx(EX_DATAERR, " lseek() failed - %s", strerror(errno));
     }
 
@@ -68,7 +69,8 @@ char *read_file(const char *filename, size_t *size){
 
     /* Read file into memory */
     lseek(fd, 0, 0);
-    while (count > 0){
+    while (count > 0)
+    {
         char *offset = file + *size - count;
         int i = read(fd, offset, count);
         count -= i;
@@ -84,16 +86,20 @@ char *read_file(const char *filename, size_t *size){
  * @param argc number of input arguments
  * @param argv input arguments
  */
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 
     /* print header */
     printf(HEADER "\n");
 
     /* check input arguments */
-    if (argc == 1 || (argc - 1) % 3 != 0) {
+    if (argc == 1 || (argc - 1) % 3 != 0)
+    {
 
-        errx(EX_USAGE, "invalid number of arguments...\n" \
-                       "usage: %s [<ELF 0> <ORIGIN> <LENGTH>] ...\n", argv[0]);
+        errx(EX_USAGE,
+             "invalid number of arguments...\n"
+             "usage: %s [<ELF 0> <ORIGIN> <LENGTH>] ...\n",
+             argv[0]);
     }
 
     int errors = 0;
@@ -103,22 +109,23 @@ int main(int argc, char **argv) {
     uint32_t i, j;
     uint32_t p_count = (argc - 1) / 3;
     p_data *p_elfs = (p_data *)safe_malloc(sizeof(p_data) * p_count);
-    for (i = 0; i < p_count; ++i) {
+    for (i = 0; i < p_count; ++i)
+    {
 
-        /* get partition data */ //p0.exe
+        /* get partition data */ // p0.exe
         p_elfs[i].filename = argv[i * 3 + 1];
         p_elfs[i].mem_origin = strtoll(argv[i * 3 + 2], NULL, 16); // 0x41000000
         p_elfs[i].mem_length = strtoll(argv[i * 3 + 3], NULL, 16); // 0x00100000
         p_elfs[i].elf_data = read_file(p_elfs[i].filename, &p_elfs[i].size);
 
-        printf("    Partition %02i - %06i KB - Memory: [0x%08x:0x%08x]\n",
-               i, (int)(p_elfs[i].size / 1024), (int)(p_elfs[i].mem_origin),
-               (int)(p_elfs[i].mem_origin + p_elfs[i].mem_length - 1));
+        printf("    Partition %02i - %06i KB - Memory: [0x%08x:0x%08x]\n", i, (int)(p_elfs[i].size / 1024),
+               (int)(p_elfs[i].mem_origin), (int)(p_elfs[i].mem_origin + p_elfs[i].mem_length - 1));
     }
 
     /* process partition elf */
     printf("\n :: Compressing partitions ELFs :: \n");
-    for (i = 0; i < p_count; ++i) {
+    for (i = 0; i < p_count; ++i)
+    {
 
         char *elf = p_elfs[i].elf_data;
 
@@ -134,31 +141,34 @@ int main(int argc, char **argv) {
 
         /* get ELF entry point and check if it is valid */
         p_elfs[i].entry = elf_correct_uint32(Ehdr->e_entry, t_is_big, m_is_big);
-        if (!VALID_ADDR(
-            p_elfs[i].entry, p_elfs[i].mem_origin, p_elfs[i].mem_length)) {
+        if (!VALID_ADDR(p_elfs[i].entry, p_elfs[i].mem_origin, p_elfs[i].mem_length))
+        {
 
-            printf("\n    Partition %02i entry point is outside the " \
-                   "defined memory region...\n\n", i);
+            printf("\n    Partition %02i entry point is outside the "
+                   "defined memory region...\n\n",
+                   i);
             ++errors;
             continue;
         }
 
-        printf("\n    Partition %02i (entry point: 0x%08x)\n\n",
-                i, elf_correct_uint32(Ehdr->e_entry, t_is_big, m_is_big));
+        printf("\n    Partition %02i (entry point: 0x%08x)\n\n", i,
+               elf_correct_uint32(Ehdr->e_entry, t_is_big, m_is_big));
 
         /* get usable program sections */
         uint32_t ps_count = 0;
         size_t wc_lzss_size = 0;
-        for (j = 0; j < phnum; ++j){
+        for (j = 0; j < phnum; ++j)
+        {
 
             /* get the program header values in the current machine format */
             uint64_t type, memsz, filesz;
-            type =   elf_correct_uint32(Phdr[j].p_type,   t_is_big, m_is_big);
-            memsz =  elf_correct_uint32(Phdr[j].p_memsz,  t_is_big, m_is_big);
+            type = elf_correct_uint32(Phdr[j].p_type, t_is_big, m_is_big);
+            memsz = elf_correct_uint32(Phdr[j].p_memsz, t_is_big, m_is_big);
             filesz = elf_correct_uint32(Phdr[j].p_filesz, t_is_big, m_is_big);
 
             /* check if the program segment is usable */
-            if (1 == type && filesz <= memsz && memsz > 0){
+            if (1 == type && filesz <= memsz && memsz > 0)
+            {
                 wc_lzss_size += memsz + memsz / 2 + 256;
                 ++ps_count;
             }
@@ -175,33 +185,36 @@ int main(int argc, char **argv) {
         uint32_t prg_count = 0;
         uint32_t ct_size = 0;
         char *compressed_offset = p_elfs[i].segments;
-        for (j = 0; j < phnum; ++j){
+        for (j = 0; j < phnum; ++j)
+        {
 
             /* get the program header values in the current machine format */
             uint64_t type, memsz, filesz, v_addr, offset;
-            type   = elf_correct_uint32(Phdr[j].p_type,   t_is_big, m_is_big);
-            memsz  = elf_correct_uint32(Phdr[j].p_memsz,  t_is_big, m_is_big);
+            type = elf_correct_uint32(Phdr[j].p_type, t_is_big, m_is_big);
+            memsz = elf_correct_uint32(Phdr[j].p_memsz, t_is_big, m_is_big);
             filesz = elf_correct_uint32(Phdr[j].p_filesz, t_is_big, m_is_big);
-            v_addr = elf_correct_uint32(Phdr[j].p_vaddr,  t_is_big, m_is_big);
+            v_addr = elf_correct_uint32(Phdr[j].p_vaddr, t_is_big, m_is_big);
             offset = elf_correct_uint32(Phdr[j].p_offset, t_is_big, m_is_big);
 
             /* check if the program segment is usable */
-            if (1 == type && filesz <= memsz && memsz > 0){
+            if (1 == type && filesz <= memsz && memsz > 0)
+            {
 
                 /* check if segment is inside the memory region */
-                if (!VALID_ADDR_RANGE(
-                    v_addr, memsz, p_elfs[i].mem_origin, p_elfs[i].mem_length)){
+                if (!VALID_ADDR_RANGE(v_addr, memsz, p_elfs[i].mem_origin, p_elfs[i].mem_length))
+                {
 
-                    printf("        Partition %02i, segment %02i is outside " \
-                           "the defined memory region...\n", i, j);
+                    printf("        Partition %02i, segment %02i is outside "
+                           "the defined memory region...\n",
+                           i, j);
                     ++errors;
                     continue;
                 }
 
                 /* extract segment into new buffer */
                 char *segment = (char *)safe_malloc(sizeof(char) * memsz);
-                memset(segment, '\0', memsz);               /* add 0 padding */
-                memcpy(segment, elf + offset, filesz);      /* copy segment  */
+                memset(segment, '\0', memsz);          /* add 0 padding */
+                memcpy(segment, elf + offset, filesz); /* copy segment  */
 
                 p_elfs[i].sizes[prg_count] = memsz;
                 p_elfs[i].addrs[prg_count] = v_addr - p_elfs[i].mem_origin;
@@ -213,10 +226,8 @@ int main(int argc, char **argv) {
                 ct_size += c_size;
                 ++prg_count;
 
-                printf(
-                    "        Program segment %02i:  %06i ->  %06i (%6.3f)\n",
-                    j, (int)(memsz / 1024), (int)(c_size / 1024),
-                    (float)(memsz / (float)c_size));
+                printf("        Program segment %02i:  %06i ->  %06i (%6.3f)\n", j, (int)(memsz / 1024),
+                       (int)(c_size / 1024), (float)(memsz / (float)c_size));
 
                 /* free segment */
                 free(segment);
@@ -225,32 +236,35 @@ int main(int argc, char **argv) {
 
         p_elfs[i].c_size = ct_size;
 
-        if (ct_size > 0) {
-            printf("         Total Compression:  %06i ->  %06i (%6.3f)\n",
-                    (int)(p_elfs[i].size / 1024), (int)(ct_size / 1024),
-                    (float)(p_elfs[i].size / (float)ct_size));
-        } else {
+        if (ct_size > 0)
+        {
+            printf("         Total Compression:  %06i ->  %06i (%6.3f)\n", (int)(p_elfs[i].size / 1024),
+                   (int)(ct_size / 1024), (float)(p_elfs[i].size / (float)ct_size));
+        }
+        else
+        {
             printf("        Total Compression:     ------\n");
         }
     }
 
-
     printf("\n :: Generating output file :: \n\n");
 
     /* check if the output can be generated */
-    if (errors == 0) {
+    if (errors == 0)
+    {
 
         generate_output(p_elfs, p_count);
         printf("    Done!\n\n");
+    }
+    else
+    {
 
-    } else {
-
-        fprintf(stderr,
-                "    Errors occurred while processing the partitions ELFs\n\n");
+        fprintf(stderr, "    Errors occurred while processing the partitions ELFs\n\n");
     }
 
     /* free all used memory */
-    for (i = 0; i < p_count; ++i) {
+    for (i = 0; i < p_count; ++i)
+    {
         free(p_elfs[i].elf_data);
         free(p_elfs[i].segments);
     }

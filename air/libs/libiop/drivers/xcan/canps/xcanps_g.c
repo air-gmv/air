@@ -33,19 +33,11 @@
 *
 *******************************************************************/
 
-#include "xparameters.h"
 #include "xcanps.h"
+#include "xparameters.h"
 
 /*
-* The configuration table for devices
-*/
+ * The configuration table for devices
+ */
 
-XCanPs_Config XCanPs_ConfigTable[XPAR_XCANPS_NUM_INSTANCES] =
-{
-	{
-		XPAR_PS7_CAN_0_DEVICE_ID,
-		XPAR_PS7_CAN_0_BASEADDR
-	}
-};
-
-
+XCanPs_Config XCanPs_ConfigTable[XPAR_XCANPS_NUM_INSTANCES] = {{XPAR_PS7_CAN_0_DEVICE_ID, XPAR_PS7_CAN_0_BASEADDR}};
