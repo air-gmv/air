@@ -28,7 +28,7 @@ TEST-ARM-ZYNQZ1-build:
         - . $STATE_FOLDER/gitlab-ci/push/make_test.sh
 
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message starts with [ALL] or [ARM]
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message starts with [ALL] or [ARM] 
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
 
 # Build SPARC GR740 
