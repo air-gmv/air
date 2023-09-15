@@ -45,7 +45,7 @@ else
   fi
 fi
 
-if [ "$missing_pos" = true ]; then
+if $missing_pos; then
   echo "Error: Unable to copy 'pos' or missing required subdirectories."
   make pos
 fi
