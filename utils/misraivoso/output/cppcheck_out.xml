@@ -397,9 +397,13 @@
             <location file="air/libs/libiop/drivers/cpsw/iop_cpsw.c" line="422" column="23"/>
             <symbol>aut_neg_cnt</symbol>
         </error>
-        <error id="constParameter" severity="style" msg="Parameter &apos;eth_addr&apos; can be declared with const" verbose="Parameter &apos;eth_addr&apos; can be declared with const" cwe="398" file0="air/libs/libiop/drivers/cpsw/iop_cpsw.c">
-            <location file="air/libs/libiop/drivers/cpsw/iop_cpsw.c" line="126" column="61" info="Parameter &apos;eth_addr&apos; can be declared with const"/>
-            <symbol>eth_addr</symbol>
+        <error id="constParameter" severity="style" msg="Parameter &apos;mac1&apos; can be declared with const" verbose="Parameter &apos;mac1&apos; can be declared with const" cwe="398" file0="air/libs/libiop/drivers/cpsw/iop_cpsw.c">
+            <location file="air/libs/libiop/include/eth_support.h" line="95" column="50" info="Parameter &apos;mac1&apos; can be declared with const"/>
+            <symbol>mac1</symbol>
+        </error>
+        <error id="constParameter" severity="style" msg="Parameter &apos;mac2&apos; can be declared with const" verbose="Parameter &apos;mac2&apos; can be declared with const" cwe="398" file0="air/libs/libiop/drivers/cpsw/iop_cpsw.c">
+            <location file="air/libs/libiop/include/eth_support.h" line="95" column="66" info="Parameter &apos;mac2&apos; can be declared with const"/>
+            <symbol>mac2</symbol>
         </error>
         <error id="constParameter" severity="style" msg="Parameter &apos;ip1&apos; can be declared with const" verbose="Parameter &apos;ip1&apos; can be declared with const" cwe="398" file0="air/libs/libiop/drivers/cpsw/iop_cpsw.c">
             <location file="air/libs/libiop/include/eth_support.h" line="90" column="49" info="Parameter &apos;ip1&apos; can be declared with const"/>
@@ -409,13 +413,9 @@
             <location file="air/libs/libiop/include/eth_support.h" line="90" column="64" info="Parameter &apos;ip2&apos; can be declared with const"/>
             <symbol>ip2</symbol>
         </error>
-        <error id="constParameter" severity="style" msg="Parameter &apos;mac1&apos; can be declared with const" verbose="Parameter &apos;mac1&apos; can be declared with const" cwe="398" file0="air/libs/libiop/drivers/cpsw/iop_cpsw.c">
-            <location file="air/libs/libiop/include/eth_support.h" line="95" column="50" info="Parameter &apos;mac1&apos; can be declared with const"/>
-            <symbol>mac1</symbol>
-        </error>
-        <error id="constParameter" severity="style" msg="Parameter &apos;mac2&apos; can be declared with const" verbose="Parameter &apos;mac2&apos; can be declared with const" cwe="398" file0="air/libs/libiop/drivers/cpsw/iop_cpsw.c">
-            <location file="air/libs/libiop/include/eth_support.h" line="95" column="66" info="Parameter &apos;mac2&apos; can be declared with const"/>
-            <symbol>mac2</symbol>
+        <error id="constParameter" severity="style" msg="Parameter &apos;eth_addr&apos; can be declared with const" verbose="Parameter &apos;eth_addr&apos; can be declared with const" cwe="398" file0="air/libs/libiop/drivers/cpsw/iop_cpsw.c">
+            <location file="air/libs/libiop/drivers/cpsw/iop_cpsw.c" line="126" column="61" info="Parameter &apos;eth_addr&apos; can be declared with const"/>
+            <symbol>eth_addr</symbol>
         </error>
         <error id="constParameter" severity="style" msg="Parameter &apos;eth_addr&apos; can be declared with const" verbose="Parameter &apos;eth_addr&apos; can be declared with const" cwe="398" file0="air/libs/libiop/drivers/cpsw/iop_cpsw.c">
             <location file="air/libs/libiop/drivers/cpsw/iop_cpsw.c" line="154" column="65" info="Parameter &apos;eth_addr&apos; can be declared with const"/>
