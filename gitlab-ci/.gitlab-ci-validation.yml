@@ -37,9 +37,8 @@ ARM-QEMU-validation-test:
     rules:
         - if: '$CI_PIPELINE_SOURCE == "merge_request"'
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ALL\]/'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[SCHED\]/'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ARM\]/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ALL\].*/'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ARM\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
     timeout: 5 minutes
     parallel:
@@ -119,8 +118,8 @@ SPARC-LAYSIM-validation-test:
   rules:
         - if: '$CI_PIPELINE_SOURCE == "merge_request" && $RUNNER == "SPARC"'
         - if: '$CI_PIPELINE_SOURCE == "schedule" && $RUNNER == "sparc-taste-debian1"'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[ALL\]/ && $RUNNER == "SPARC"'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /^\[SPARC\]/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/ && $RUNNER == "SPARC"'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ALL\].*/ && $RUNNER == "SPARC"'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[SPARC\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/ && $RUNNER == "SPARC"'
   timeout: 5 minutes
   parallel:
       matrix:
