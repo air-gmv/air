@@ -21,7 +21,9 @@ if [ -d "$latest_state_folder" ]; then
 
       if [ -d "$pos_folder" ] && [ -n "$(ls -A "$pos_folder")" ]; then
         echo "Copying pos from the latest state folder: $latest_state_folder"
-        cp -r "$install_folder/pos" ./install
+        #cp -r "$install_folder/pos" ./install
+        mkdir install/pos
+        cp -r "$latest_state_folder/install/pos/." "install/pos/"
         need_pos=false
       fi
 
