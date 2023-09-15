@@ -152,16 +152,16 @@
         <error id="internalError" severity="information" msg="Bailing out from checking air/examples/iop/iop_taste_api/sampling/sampling.c since there was an internal error: Failed to execute &apos;python3 /usr/lib/x86_64-linux-gnu/cppcheck/addons/runaddon.py /usr/lib/x86_64-linux-gnu/cppcheck/addons/misra.py --cli --rule-texts=misra-rules-to-correct.txt --suppress-rules 1.2,1,4,2.3,2.4,2.5,2.6,2.7,4.2,5.9,7.2,8.7,8.8,8.9,8.11,8.13,9.2,9.4,10.3,10.4,10.5,10.6,10.7,11.1,11.2,11.3,11.4,11.5,11.6,11.9,12.1,12.3,12.4,13.3,13.4,15.1,15.4,15.5,15.7,16.5,16.6,16.7,17.1,17.2,17.5,17.8,18.4,18.5,19.2,20.1,20.5,20.10,21.12,22.8,22.9,22.10 air/examples/iop/iop_taste_api/sampling/sampling.c.dump&apos;. Fatal error: file is not found: misra-rules-to-correct.txt" verbose="Bailing out from checking air/examples/iop/iop_taste_api/sampling/sampling.c since there was an internal error: Failed to execute &apos;python3 /usr/lib/x86_64-linux-gnu/cppcheck/addons/runaddon.py /usr/lib/x86_64-linux-gnu/cppcheck/addons/misra.py --cli --rule-texts=misra-rules-to-correct.txt --suppress-rules 1.2,1,4,2.3,2.4,2.5,2.6,2.7,4.2,5.9,7.2,8.7,8.8,8.9,8.11,8.13,9.2,9.4,10.3,10.4,10.5,10.6,10.7,11.1,11.2,11.3,11.4,11.5,11.6,11.9,12.1,12.3,12.4,13.3,13.4,15.1,15.4,15.5,15.7,16.5,16.6,16.7,17.1,17.2,17.5,17.8,18.4,18.5,19.2,20.1,20.5,20.10,21.12,22.8,22.9,22.10 air/examples/iop/iop_taste_api/sampling/sampling.c.dump&apos;. Fatal error: file is not found: misra-rules-to-correct.txt">
             <location file="air/examples/iop/iop_taste_api/sampling/sampling.c" line="0" column="0"/>
         </error>
-        <error id="constParameter" severity="style" msg="Parameter &apos;A&apos; can be declared with const" verbose="Parameter &apos;A&apos; can be declared with const" cwe="398" file0="air/examples/math/p0/math.c">
-            <location file="air/examples/math/p0/math.c" line="33" column="21" info="Parameter &apos;A&apos; can be declared with const"/>
-            <symbol>A</symbol>
-        </error>
         <error id="constParameter" severity="style" msg="Parameter &apos;B&apos; can be declared with const" verbose="Parameter &apos;B&apos; can be declared with const" cwe="398" file0="air/examples/math/p0/math.c">
             <location file="air/examples/math/p0/math.c" line="33" column="31" info="Parameter &apos;B&apos; can be declared with const"/>
             <symbol>B</symbol>
         </error>
         <error id="constParameter" severity="style" msg="Parameter &apos;A&apos; can be declared with const" verbose="Parameter &apos;A&apos; can be declared with const" cwe="398" file0="air/examples/math/p0/math.c">
             <location file="air/examples/math/p0/math.c" line="48" column="24" info="Parameter &apos;A&apos; can be declared with const"/>
+            <symbol>A</symbol>
+        </error>
+        <error id="constParameter" severity="style" msg="Parameter &apos;A&apos; can be declared with const" verbose="Parameter &apos;A&apos; can be declared with const" cwe="398" file0="air/examples/math/p0/math.c">
+            <location file="air/examples/math/p0/math.c" line="33" column="21" info="Parameter &apos;A&apos; can be declared with const"/>
             <symbol>A</symbol>
         </error>
         <error id="internalError" severity="information" msg="Bailing out from checking air/examples/math/p0/math.c since there was an internal error: Failed to execute &apos;python3 /usr/lib/x86_64-linux-gnu/cppcheck/addons/runaddon.py /usr/lib/x86_64-linux-gnu/cppcheck/addons/misra.py --cli --rule-texts=misra-rules-to-correct.txt --suppress-rules 1.2,1,4,2.3,2.4,2.5,2.6,2.7,4.2,5.9,7.2,8.7,8.8,8.9,8.11,8.13,9.2,9.4,10.3,10.4,10.5,10.6,10.7,11.1,11.2,11.3,11.4,11.5,11.6,11.9,12.1,12.3,12.4,13.3,13.4,15.1,15.4,15.5,15.7,16.5,16.6,16.7,17.1,17.2,17.5,17.8,18.4,18.5,19.2,20.1,20.5,20.10,21.12,22.8,22.9,22.10 air/examples/math/p0/math.c.dump&apos;. Fatal error: file is not found: misra-rules-to-correct.txt" verbose="Bailing out from checking air/examples/math/p0/math.c since there was an internal error: Failed to execute &apos;python3 /usr/lib/x86_64-linux-gnu/cppcheck/addons/runaddon.py /usr/lib/x86_64-linux-gnu/cppcheck/addons/misra.py --cli --rule-texts=misra-rules-to-correct.txt --suppress-rules 1.2,1,4,2.3,2.4,2.5,2.6,2.7,4.2,5.9,7.2,8.7,8.8,8.9,8.11,8.13,9.2,9.4,10.3,10.4,10.5,10.6,10.7,11.1,11.2,11.3,11.4,11.5,11.6,11.9,12.1,12.3,12.4,13.3,13.4,15.1,15.4,15.5,15.7,16.5,16.6,16.7,17.1,17.2,17.5,17.8,18.4,18.5,19.2,20.1,20.5,20.10,21.12,22.8,22.9,22.10 air/examples/math/p0/math.c.dump&apos;. Fatal error: file is not found: misra-rules-to-correct.txt">
@@ -401,10 +401,6 @@
             <location file="air/libs/libiop/drivers/cpsw/iop_cpsw.c" line="126" column="61" info="Parameter &apos;eth_addr&apos; can be declared with const"/>
             <symbol>eth_addr</symbol>
         </error>
-        <error id="constParameter" severity="style" msg="Parameter &apos;eth_addr&apos; can be declared with const" verbose="Parameter &apos;eth_addr&apos; can be declared with const" cwe="398" file0="air/libs/libiop/drivers/cpsw/iop_cpsw.c">
-            <location file="air/libs/libiop/drivers/cpsw/iop_cpsw.c" line="154" column="65" info="Parameter &apos;eth_addr&apos; can be declared with const"/>
-            <symbol>eth_addr</symbol>
-        </error>
         <error id="constParameter" severity="style" msg="Parameter &apos;ip1&apos; can be declared with const" verbose="Parameter &apos;ip1&apos; can be declared with const" cwe="398" file0="air/libs/libiop/drivers/cpsw/iop_cpsw.c">
             <location file="air/libs/libiop/include/eth_support.h" line="90" column="49" info="Parameter &apos;ip1&apos; can be declared with const"/>
             <symbol>ip1</symbol>
@@ -420,6 +416,10 @@
         <error id="constParameter" severity="style" msg="Parameter &apos;mac2&apos; can be declared with const" verbose="Parameter &apos;mac2&apos; can be declared with const" cwe="398" file0="air/libs/libiop/drivers/cpsw/iop_cpsw.c">
             <location file="air/libs/libiop/include/eth_support.h" line="95" column="66" info="Parameter &apos;mac2&apos; can be declared with const"/>
             <symbol>mac2</symbol>
+        </error>
+        <error id="constParameter" severity="style" msg="Parameter &apos;eth_addr&apos; can be declared with const" verbose="Parameter &apos;eth_addr&apos; can be declared with const" cwe="398" file0="air/libs/libiop/drivers/cpsw/iop_cpsw.c">
+            <location file="air/libs/libiop/drivers/cpsw/iop_cpsw.c" line="154" column="65" info="Parameter &apos;eth_addr&apos; can be declared with const"/>
+            <symbol>eth_addr</symbol>
         </error>
         <error id="internalError" severity="information" msg="Bailing out from checking air/libs/libiop/drivers/cpsw/iop_cpsw.c since there was an internal error: Failed to execute &apos;python3 /usr/lib/x86_64-linux-gnu/cppcheck/addons/runaddon.py /usr/lib/x86_64-linux-gnu/cppcheck/addons/misra.py --cli --rule-texts=misra-rules-to-correct.txt --suppress-rules 1.2,1,4,2.3,2.4,2.5,2.6,2.7,4.2,5.9,7.2,8.7,8.8,8.9,8.11,8.13,9.2,9.4,10.3,10.4,10.5,10.6,10.7,11.1,11.2,11.3,11.4,11.5,11.6,11.9,12.1,12.3,12.4,13.3,13.4,15.1,15.4,15.5,15.7,16.5,16.6,16.7,17.1,17.2,17.5,17.8,18.4,18.5,19.2,20.1,20.5,20.10,21.12,22.8,22.9,22.10 air/libs/libiop/drivers/cpsw/iop_cpsw.c.dump&apos;. Fatal error: file is not found: misra-rules-to-correct.txt" verbose="Bailing out from checking air/libs/libiop/drivers/cpsw/iop_cpsw.c since there was an internal error: Failed to execute &apos;python3 /usr/lib/x86_64-linux-gnu/cppcheck/addons/runaddon.py /usr/lib/x86_64-linux-gnu/cppcheck/addons/misra.py --cli --rule-texts=misra-rules-to-correct.txt --suppress-rules 1.2,1,4,2.3,2.4,2.5,2.6,2.7,4.2,5.9,7.2,8.7,8.8,8.9,8.11,8.13,9.2,9.4,10.3,10.4,10.5,10.6,10.7,11.1,11.2,11.3,11.4,11.5,11.6,11.9,12.1,12.3,12.4,13.3,13.4,15.1,15.4,15.5,15.7,16.5,16.6,16.7,17.1,17.2,17.5,17.8,18.4,18.5,19.2,20.1,20.5,20.10,21.12,22.8,22.9,22.10 air/libs/libiop/drivers/cpsw/iop_cpsw.c.dump&apos;. Fatal error: file is not found: misra-rules-to-correct.txt">
             <location file="air/libs/libiop/drivers/cpsw/iop_cpsw.c" line="0" column="0"/>
