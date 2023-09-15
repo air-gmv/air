@@ -14,7 +14,7 @@ ARM-ZYNQZ1-build:
         - ./configure -f .arm_zynqz1_config   
         - make clean
         - make -j4
-        #- . $STATE_FOLDER/gitlab-ci/push/make.sh
+        #- . $STATE_FOLDER/gitlab-ci/push/make.sh 
         #- . $STATE_FOLDER/gitlab-ci/push/make_test.sh
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message contains [ALL] or [ARM]
