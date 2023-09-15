@@ -42,7 +42,7 @@ default:
     - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
 
 .check-and-publish: &check-and-publish
-    - \$AIR/../utils/gitlab-runner/testcheck.py
+    - \$UTILS/testcheck.py
     - \$UTILS/publish_example.bash
 
 ARM-QEMU-TEST-DEF-$TEST_NUMBER:
@@ -55,6 +55,7 @@ ARM-QEMU-TEST-DEF-$TEST_NUMBER:
       - *check-and-publish
   rules:
       - if: '\$CI_COMMIT_MESSAGE =~ /.*\[ARM\].*/'
+      - if: '\$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
 
 SPARC-LAYSIM-TEST-DEF-$TEST_NUMBER:
   tags: ["SPARC","LAYSIM"]
