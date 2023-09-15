@@ -3,7 +3,7 @@ echo "Starting post-commit hook..."
 
 MESSAGE=$(git log -1 HEAD --pretty=format:%s)
 
-if [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\[(C|V)\] ]]; then
+if [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\s*\[C|V\]|\[C|V\]\s*\[(ARM|SPARC|ALL)\] ]]; then
   # Push current commit to remote repository
   git push
 
@@ -11,22 +11,16 @@ if [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\[(C|V)\] ]]; then
     echo "Push was successful."
 
     # If commit message matches regex, execute MISRAivoso, create a new commit and push it
-    if [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\[C\] ]]; then
-      extracted_tag="${BASH_REMATCH[1]}"
-      echo "Commit message starts with $extracted_tag[C]"
-
+    if [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\s*\[C\]|\[C\]\s*\[(ARM|SPARC|ALL)\] ]]; then
       python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file-list air/ # [--include-comments] [--delete-comments]
       git add .
-      git commit -m "[$extracted_tag] Changes done by MISRAivoso (correction)"
+      git commit -m "Changes done by MISRAivoso (correction)"
       git push
 
-    elif [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\[V\] ]]; then
-      extracted_tag="${BASH_REMATCH[1]}"
-      echo "Commit message starts with $extracted_tag[V]"
-
+    elif [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\s*\[V\]|\[V\]\s*\[(ARM|SPARC|ALL)\] ]]; then
       python3 utils/misraivoso/MISRAivoso.py --cppcheck --src air/ --src-file-list air/ # [--include-comments] [--delete-comments]
       git add .
-      git commit -m "[$extracted_tag] Changes done by MISRAivoso (cppcheck)"
+      git commit -m "Changes done by MISRAivoso (cppcheck)"
       git push
     else   
       echo "Commit message does not match any pattern"
