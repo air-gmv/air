@@ -991,7 +991,6 @@ def run_shell_script(directory_to_check, specific_directory, progress_bar, inclu
         return
 
     shell_script_path = "utils/misraivoso/run_cppcheck.py"
-    # shell_script_path = "utils/misraivoso/run_cppcheck.py"
 
     if (flags == 0):
         # Update progress bar
@@ -1015,7 +1014,6 @@ def run_shell_script(directory_to_check, specific_directory, progress_bar, inclu
         subprocess.run(shell_script_command, shell=True, check=True)
         if delete_comments == 1:
             xml_path = "utils/misraivoso/output/cppcheck_out.xml"
-            # xml_path = "utils/misraivoso/output/cppcheck_out.xml"
             snippets = extract_code_snippets(xml_path)
             if (flags == 0):
                 progress_bar["value"] = 15
@@ -1027,8 +1025,7 @@ def run_shell_script(directory_to_check, specific_directory, progress_bar, inclu
             else:
                 print("\nCheck and report executed successfully.\n")
         elif include_comments == 1:
-            xml_path = "output/cppcheck_out.xml"
-            # xml_path = "utils/misraivoso/output/cppcheck_out.xml"
+            xml_path = "utils/misraivoso/output/cppcheck_out.xml"
             snippets = extract_code_snippets(xml_path)
             if (flags == 0):
                 progress_bar["value"] = 15
@@ -1146,7 +1143,7 @@ def run_with_flags(source_directory, include_comments, delete_comments, cppcheck
 
     progress_bar = 0
     specific_directory = None
-    xml_path = "output/cppcheck_out.xml"
+    xml_path = "utils/misraivoso/output/cppcheck_out.xml"
     # xml_path = "utils/misraivoso/output/cppcheck_out.xml"
     if cppcheck or correction:
         run_shell_script(source_directory, specific_directory, progress_bar,
