@@ -1,8 +1,11 @@
 # Gitlab CICD script for build stage
 # Author huca@GMV 2023
 
+# Note: make_test.sh might not cover some edge cases. The same goes for make.sh.
+#       In the event of both scripts failing for whatever reason, revert to "make -j4"
+
 # Build ARM ZYNQZ1
-.ARM-ZYNQZ1-build:
+ARM-ZYNQZ1-build:
     stage: prepare-build
     tags: ["ARM1"]
     needs: ["ARM1_init"]
@@ -10,26 +13,12 @@
         - cp $UTILS/.arm_zynqz1_config .
         - ./configure -f .arm_zynqz1_config   
         - make clean
-        - make -j4
+        - . $STATE_FOLDER/gitlab-ci/push/make_test.sh     # might not cover some edge cases
+        #- . $STATE_FOLDER/gitlab-ci/push/make.sh
+        #- make -j4
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message starts with [ALL] or [ARM]
-        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
-
-
-TEST-ARM-ZYNQZ1-build:
-    stage: prepare-build
-    tags: ["ARM1"]
-    needs: ["ARM1_init"]
-    script:
-        - cp $UTILS/.arm_zynqz1_config .
-        - ./configure -f .arm_zynqz1_config
-
-        - make clean
-        - . $STATE_FOLDER/gitlab-ci/push/make_test.sh
-
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message starts with [ALL] or [ARM]
-        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message contains [ALL] or [ARM]
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'       # message does not contain any [...]
 
 # Build SPARC GR740 
 .SPARC-GR740-build:
@@ -40,21 +29,11 @@ TEST-ARM-ZYNQZ1-build:
         - cp $UTILS/.sparc_gr740_config .
         - ./configure -f .sparc_gr740_config
         - make clean
-        - make -j4
+        - . $STATE_FOLDER/gitlab-ci/push/make_test.sh     # might not cover some edge cases
+        #- . $STATE_FOLDER/gitlab-ci/push/make.sh
+        #- make -j4
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message starts with [ALL] or [SPARC]
-
-TEST-SPARC-GR740-build:
-    stage: prepare-build
-    tags: ["sparc-taste-debian1"]
-    needs: ["TASTE1_init"]
-    script:
-        - cp $UTILS/.sparc_gr740_config .
-        - ./configure -f .sparc_gr740_config
-        - make clean
-        - . $STATE_FOLDER/gitlab-ci/push/make_test.sh
-    rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message starts with [ALL] or [SPARC]
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message contains [ALL] or [SPARC]
 
 # Build SPARC LEON4 
 .SPARC-LEON4-build:
@@ -67,7 +46,7 @@ TEST-SPARC-GR740-build:
         - make -j4
 
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC] 
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message contains [ALL] or [SPARC] 
 
 # Build SPARC LEON3
 .SPARC-LEON3-build:
@@ -79,7 +58,7 @@ TEST-SPARC-GR740-build:
         - make clean
         - make -j4
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message contains [ALL] or [SPARC]
 
 # Build SPARC TSIM 
 .SPARC-TSIM-build:
@@ -91,4 +70,4 @@ TEST-SPARC-GR740-build:
         - make clean
         - make -j4
     rules:
-       - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
+       - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message contains [ALL] or [SPARC]

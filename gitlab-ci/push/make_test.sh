@@ -56,7 +56,9 @@ git submodule update --init --recursive # Initialize submodules
 
 if git submodule summary | grep -q -e 'air/pos/rtems48i' -e 'air/pos/rtems5'; then
   echo "Submodule has changes, running make pos"
-  rm -rf install/pos
+  if [ -d "/install/pos" ]; then
+    rm -rf install/pos
+  fi
   make pos
   need_pos=false
 fi
