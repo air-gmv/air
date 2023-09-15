@@ -49,3 +49,7 @@ if $missing_pos; then
   echo "Error: Unable to copy 'pos' or missing required subdirectories."
   make pos
 fi
+
+make -C libs all
+make -C pmk all
+make tools
