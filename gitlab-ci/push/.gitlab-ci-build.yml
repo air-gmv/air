@@ -20,7 +20,7 @@ ARM-ZYNQZ1-build:
         - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message contains [ALL] or [ARM]
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'       # message does not contain any [...]
 
-# Build SPARC GR740 
+# Build SPARC GR740
 SPARC-GR740-build:
     stage: prepare-build
     tags: ["sparc-taste-debian1"]
