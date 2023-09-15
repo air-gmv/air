@@ -86,7 +86,7 @@ SPARC-GR740-build:
         - make clean
         - make -j4
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' # message starts with [ALL] or [SPARC]
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message starts with [ALL] or [SPARC]
 
 # Build SPARC LEON4 
 .SPARC-LEON4-build:
