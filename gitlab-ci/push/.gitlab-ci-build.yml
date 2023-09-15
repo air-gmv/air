@@ -18,7 +18,7 @@ ARM-ZYNQZ1-build:
         #- make -j4
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message contains [ALL] or [ARM]
-        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'       # message does not contain any [...] 
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'       # message does not contain any [...]
 
 # Build SPARC GR740 
 SPARC-GR740-build:
