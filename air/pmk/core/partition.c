@@ -11,20 +11,19 @@
  * @brief Partitions initialization and context switch
  */
 
-#include <barrier.h>
-#include <bsp.h>
-#include <configurations.h>
-#include <ipc.h>
 #include <pmk.h>
+#include <bsp.h>
+#include <ipc.h>
 #include <ports.h>
+#include <barrier.h>
 #include <workspace.h>
+#include <configurations.h>
 
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif
 
-void pmk_partitions_init(void)
-{
+void pmk_partitions_init(void) {
 
     int i, j;
 
@@ -37,13 +36,12 @@ void pmk_partitions_init(void)
     pmk_list_t *list = pmk_get_usr_partitions();
 
     /* setup the partition table */
-    for (i = 0; i < list->length; ++i)
-    {
+    for(i = 0; i < list->length; ++i){
 
         partition = pmk_get_from_list(pmk_partition_t, list, i);
 
 #ifdef PMK_DEBUG
-        printk("    partition %02i - %s\n", i, partition->name);
+    printk("    partition %02i - %s\n", i, partition->name);
 #endif
 
         /* define the partition index */
@@ -60,20 +58,20 @@ void pmk_partitions_init(void)
         partition->state = AIR_PARTITION_STATE_NOT_RUN;
 
         /* allocate space for the partition context switch and virtual core */
-        partition->context = pmk_workspace_alloc(sizeof(core_context_t) * partition->cores);
+        partition->context =
+                pmk_workspace_alloc(sizeof(core_context_t) * partition->cores);
 
         /* initialize each core context */
-        for (j = 0; j < partition->cores; ++j)
-        {
+        for (j = 0; j < partition->cores; ++j) {
             core_context_init(&partition->context[j], j);
         }
 
         /* allocate space for the partition virtual to real core mapping */
-        partition->core_mapping = pmk_workspace_alloc(sizeof(air_u32_t) * PMK_MAX_CORES);
+        partition->core_mapping =
+                pmk_workspace_alloc(sizeof(air_u32_t) * PMK_MAX_CORES);
 
         /* initialize each core context */
-        for (j = 0; j < PMK_MAX_CORES; ++j)
-        {
+        for (j = 0; j < PMK_MAX_CORES; ++j) {
             partition->core_mapping[j] = PMK_MAX_CORES;
         }
 
@@ -95,56 +93,51 @@ void pmk_partitions_init(void)
  * @param partition partition control structure
  * @param context current core context structure
  */
-void pmk_partition_start(pmk_partition_t *partition, core_context_t *context)
-{
+void pmk_partition_start(pmk_partition_t *partition, core_context_t *context) {
 
-    /* reset elapsed ticks and last tick */
-    partition->elapsed_ticks = 0;
-    partition->last_clock_tick = 0;
+   /* reset elapsed ticks and last tick */
+   partition->elapsed_ticks = 0;
+   partition->last_clock_tick = 0;
 
-    /* reset entry point */
-    core_context_set_entry_point(context, NULL);
+   /* reset entry point */
+   core_context_set_entry_point(context, NULL);
 
-    /* partition virtual core 0 needs to perform some extra work */
-    if (core_context_id(context) == 0)
-    {
+   /* partition virtual core 0 needs to perform some extra work */
+   if (core_context_id(context) == 0) {
 
-        /* set entry point from the ELF */
-        core_context_set_entry_point(context, partition->elf->entry);
-        /* set partition state to running */
-        partition->state = AIR_PARTITION_STATE_RUNNING;
-    }
+       /* set entry point from the ELF */
+       core_context_set_entry_point(context, partition->elf->entry);
+       /* set partition state to running */
+       partition->state = AIR_PARTITION_STATE_RUNNING;
+   }
 
-    /* setup the partition context */
-    core_context_setup_partition(context, partition);
-    return;
+   /* setup the partition context */
+   core_context_setup_partition(context, partition);
+   return;
 }
 
 /**
  * @brief Halts a partition
  * @param partition partition control structure
  */
-void pmk_partition_halt(pmk_partition_t *partition)
-{
+void pmk_partition_halt(pmk_partition_t *partition) {
 
     air_u32_t i;
 
     /* get current core */
     air_u32_t core_id = bsp_get_core_id();
-    for (i = 0; i < partition->cores; ++i)
-    {
+    for (i = 0; i < partition->cores; ++i) {
 
         /* partition is running */
-        if (partition->core_mapping[i] < PMK_MAX_CORES && partition->core_mapping[i] != core_id)
-        {
+        if (partition->core_mapping[i] < PMK_MAX_CORES &&
+            partition->core_mapping[i] != core_id) {
 
-            core_context_set_ipc_message(&partition->context[i], PMK_IPC_TRASH_PARTITION_CORE);
+            core_context_set_ipc_message(&partition->context[i],
+                    PMK_IPC_TRASH_PARTITION_CORE);
             bsp_interrupt_core(partition->core_mapping[i], BSP_IPC_IRQ);
 
-            /* partition is not running */
-        }
-        else
-        {
+        /* partition is not running */
+        } else {
 
             core_context_setup_idle(&partition->context[i]);
         }
@@ -159,8 +152,7 @@ void pmk_partition_halt(pmk_partition_t *partition)
  * @brief Restarts a partition
  * @param partition partition control structure
  */
-void pmk_partition_restart(pmk_partition_t *partition)
-{
+void pmk_partition_restart(pmk_partition_t *partition) {
 
     air_u32_t i;
     air_u32_t vcpus = 0x00000000;
@@ -169,53 +161,41 @@ void pmk_partition_restart(pmk_partition_t *partition)
 
     /*Identify all running vcpu*/
     for (i = 0; i < partition->cores; ++i)
-        if ((partition->core_mapping[i] < PMK_MAX_CORES) != 0)
-        {
+        if (partition->core_mapping[i] < PMK_MAX_CORES)
             vcpus |= 1 << i;
-        }
 
-    if (!vcpus)
-    { /*No vcpu running. Assign vcpu 0 for partition reload*/
+    if(!vcpus)
+    {   /*No vcpu running. Assign vcpu 0 for partition reload*/
         core_context_setup_reload_partition(&partition->context[0], partition);
         for (i = 1; i < partition->cores; ++i)
-        {
             core_context_setup_idle(&partition->context[i]);
-        }
     }
     else
-    { /*Theres vcpu running. Assign the first we find to go partition reload right away*/
-        for (i = 0; i < partition->cores; i++)
-        {
-            if (vcpus & (1 << i))
+    {   /*Theres vcpu running. Assign the first we find to go partition reload right away*/
+        for(i = 0; i < partition->cores; i++){
+            if(vcpus & (1 << i))
             {
                 if (partition->core_mapping[i] != bsp_get_core_id())
                 {
-                    if (1 << i & (vcpus & (-vcpus)))
-                    {
-                        core_context_set_ipc_message(&partition->context[i], PMK_IPC_PARTITION_RESTART);
-                    }
-
+                    if(1 << i  & (vcpus & (-vcpus)))
+                        core_context_set_ipc_message(&partition->context[i],
+                            PMK_IPC_PARTITION_RESTART);
                     else
-                    {
-                        core_context_set_ipc_message(&partition->context[i], PMK_IPC_TRASH_PARTITION_CORE);
-                    }
+                        core_context_set_ipc_message(&partition->context[i],
+                            PMK_IPC_TRASH_PARTITION_CORE);
 
                     bsp_interrupt_core(partition->core_mapping[i], BSP_IPC_IRQ);
                 }
                 else
                 {
-                    if (1 << i & (vcpus & (-vcpus)))
-                    {
+                    if(1 << i  & (vcpus & (-vcpus))) {
                         core_context_setup_reload_partition(&partition->context[i], partition);
-                    }
-                    else
-                    {
+                    } else {
                         core_context_setup_idle(&partition->context[i]);
                     }
                 }
             }
-            else
-            {
+            else {
                 core_context_setup_idle(&partition->context[i]);
             }
         }
@@ -227,8 +207,7 @@ void pmk_partition_restart(pmk_partition_t *partition)
  * @brief Reload ELF into partition's memory
  * @param partition partition control structure
  */
-void pmk_partition_reload(pmk_partition_t *partition)
-{
+void pmk_partition_reload(pmk_partition_t *partition) {
 
     cpu_preemption_flags_t flags = (0x0F << 8);
 
@@ -236,8 +215,8 @@ void pmk_partition_reload(pmk_partition_t *partition)
     printk(" pmk_partition_reload\n");
     printk("    partition: 0x%08x\n", partition);
     printk("   partition->mmu_ctrl = 0x%08x, partition->mmap->v_addr = 0x%08x, phy_addr = 0x%08x\n",
-           partition->mmu_ctrl, partition->mmap->v_addr,
-           cpu_get_physical_addr(partition->mmu_ctrl, partition->mmap->v_addr));
+        partition->mmu_ctrl, partition->mmap->v_addr, cpu_get_physical_addr(partition->mmu_ctrl, partition->mmap->v_addr)
+    );
 #endif
 
     /* reload partition */
@@ -261,17 +240,14 @@ void pmk_partition_reload(pmk_partition_t *partition)
  * @param pid partition Id
  * @return partition configuration pointer if Id is valid, NULL otherwise
  */
-pmk_partition_t *pmk_get_partition_by_id(air_identifier_t pid)
-{
+pmk_partition_t *pmk_get_partition_by_id(air_identifier_t pid) {
 
     air_u32_t i;
     pmk_partition_t *found = NULL;
     pmk_list_t *list = pmk_get_usr_partitions();
-    for (i = 0; i < list->length; ++i)
-    {
+    for(i = 0; i < list->length; ++i){
         pmk_partition_t *partition = pmk_get_from_list(pmk_partition_t, list, i);
-        if (pid == partition->id)
-        {
+        if (pid == partition->id) {
             found = partition;
         }
     }
@@ -283,17 +259,15 @@ pmk_partition_t *pmk_get_partition_by_id(air_identifier_t pid)
  * @param name partition name
  * @return partition configuration pointer if name is valid, NULL otherwise
  */
-pmk_partition_t *pmk_get_partition_by_name(air_name_ptr_t name)
-{
+pmk_partition_t *pmk_get_partition_by_name(air_name_ptr_t name) {
 
     air_u32_t i;
     pmk_partition_t *found = NULL;
     pmk_list_t *list = pmk_get_usr_partitions();
-    for (i = 0; i < list->length; ++i)
-    {
-        pmk_partition_t *partition = pmk_get_from_list(pmk_partition_t, list, i);
-        if (strncmp(name, partition->name, sizeof(air_name_t)) == 0)
-        {
+    for(i = 0; i < list->length; ++i){
+        pmk_partition_t *partition =
+                pmk_get_from_list(pmk_partition_t, list, i);
+        if (strncmp(name, partition->name, sizeof(air_name_t)) == 0) {
             found = partition;
         }
     }

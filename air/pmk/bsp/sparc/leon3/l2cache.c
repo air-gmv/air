@@ -11,30 +11,29 @@
  * @brief L2 Cache support definitions and functions
  */
 
-#include <air_arch.h>
-#include <amba.h>
-#include <l2cache.h>
 #include <pmk.h>
+#include <amba.h>
+#include <air_arch.h>
+#include <l2cache.h>
 
 /**
  * @brief L2Cache register map structure
  * @ingroup bsp_leon_l2cache
  */
-typedef struct
-{
+typedef struct {
 
-    volatile air_u32_t ctrl;          /**< Control register               */
-    volatile air_u32_t stat;          /**< Status register                */
-    volatile air_u32_t flush_mem;     /**< Flush (memory address)         */
-    volatile air_u32_t flust_index;   /**< Flush (set, index)             */
-    volatile air_u32_t dummy[10];     /**< Reserved                       */
-    volatile air_u32_t err_stat;      /**< Error Status/Control           */
-    volatile air_u32_t err_addr;      /**< Error address                  */
-    volatile air_u32_t tag_check;     /**< TAG-check-bit                  */
-    volatile air_u32_t data_check;    /**< Data-check-bit                 */
-    volatile air_u32_t scruber_ctrl;  /**< Scrub Control/Status           */
-    volatile air_u32_t scruber_delay; /**< Scrub delay                    */
-    volatile air_u32_t err_injection; /**< Error injection                */
+    volatile air_u32_t ctrl;             /**< Control register               */
+    volatile air_u32_t stat;             /**< Status register                */
+    volatile air_u32_t flush_mem;        /**< Flush (memory address)         */
+    volatile air_u32_t flust_index;      /**< Flush (set, index)             */
+    volatile air_u32_t dummy[10];        /**< Reserved                       */
+    volatile air_u32_t err_stat;         /**< Error Status/Control           */
+    volatile air_u32_t err_addr;         /**< Error address                  */
+    volatile air_u32_t tag_check;        /**< TAG-check-bit                  */
+    volatile air_u32_t data_check;       /**< Data-check-bit                 */
+    volatile air_u32_t scruber_ctrl;     /**< Scrub Control/Status           */
+    volatile air_u32_t scruber_delay;    /**< Scrub delay                    */
+    volatile air_u32_t err_injection;    /**< Error injection                */
 
 } l2cache_regmap_t;
 
@@ -42,17 +41,16 @@ typedef struct
  * @brief L2 Cache control internal structure
  * @ingroup bsp_leon_l2cache
  */
-typedef struct
-{
+typedef struct {
 
-    int found;                /**< Device availability flag       */
-    int minor;                /**< Device minor number            */
-    unsigned int irq;         /**< Device IRQ                     */
-    unsigned int nmtrr;       /**< Number of MTRR registers       */
-    unsigned int nways;       /**< Number of ways                 */
-    unsigned int cache_size;  /**< Cache size (in kB)             */
-    unsigned int cachel_size; /**< Cache line size (bytes)        */
-    l2cache_regmap_t *regs;   /**< Device configuration registers */
+    int found;                          /**< Device availability flag       */
+    int minor;                          /**< Device minor number            */
+    unsigned int irq;                   /**< Device IRQ                     */
+    unsigned int nmtrr;                 /**< Number of MTRR registers       */
+    unsigned int nways;                 /**< Number of ways                 */
+    unsigned int cache_size;            /**< Cache size (in kB)             */
+    unsigned int cachel_size;           /**< Cache line size (bytes)        */
+    l2cache_regmap_t *regs;             /**< Device configuration registers */
 
 } l2cache_ctrl_t;
 
@@ -62,12 +60,11 @@ typedef struct
  */
 static l2cache_ctrl_t l2cache_ctrl;
 
-void l2cache_set_replacement_policy(l2cache_reppol_e repol)
-{
+
+void l2cache_set_replacement_policy(l2cache_reppol_e repol) {
 
     /* check if the found was found */
-    if (l2cache_ctrl.found == 0)
-    {
+    if (l2cache_ctrl.found == 0) {
         return;
     }
 
@@ -76,25 +73,22 @@ void l2cache_set_replacement_policy(l2cache_reppol_e repol)
     return;
 }
 
-void l2cache_flush(air_uptr_t address, l2cache_rflush_mode_e mode, int disable)
-{
+void l2cache_flush(air_uptr_t address, l2cache_rflush_mode_e mode, int disable) {
 
     /* check if the found was found */
-    if (l2cache_ctrl.found == 0)
-    {
+    if (l2cache_ctrl.found == 0) {
         return;
     }
 
-    l2cache_ctrl.regs->flush_mem = (address & ~0x1F) | ((disable & 0x01) << 3) | mode;
+    l2cache_ctrl.regs->flush_mem =
+            (address & ~0x1F) | ((disable & 0x01) << 3) | mode;
     return;
 }
 
-void l2cache_set_write_policy(l2cache_writepol_e wp)
-{
+void l2cache_set_write_policy(l2cache_writepol_e wp) {
 
     /* check if the found was found */
-    if (l2cache_ctrl.found == 0)
-    {
+    if (l2cache_ctrl.found == 0) {
         return;
     }
 
@@ -106,15 +100,15 @@ void l2cache_set_write_policy(l2cache_writepol_e wp)
 
     switch (wp)
     {
-    /* Set copy back mode */
-    case COPY_BACK:
-        l2cache_ctrl.regs->ctrl = (l2cache_ctrl.regs->ctrl & ~(1 << 1));
-        break;
+        /* Set copy back mode */
+        case COPY_BACK:
+            l2cache_ctrl.regs->ctrl = (l2cache_ctrl.regs->ctrl & ~(1 << 1));
+            break;
 
-    /* Set write-through mode */
-    case WRITE_THROUGH:
-        l2cache_ctrl.regs->ctrl = (l2cache_ctrl.regs->ctrl & ~(1 << 1)) | (1 << 1);
-        break;
+        /* Set write-through mode */
+        case WRITE_THROUGH:
+            l2cache_ctrl.regs->ctrl = (l2cache_ctrl.regs->ctrl & ~(1 << 1)) | (1 << 1);
+            break;
     }
 
     /* return cache to the previous enable state */
@@ -122,32 +116,28 @@ void l2cache_set_write_policy(l2cache_writepol_e wp)
     return;
 }
 
-void l2cache_set_number_of_locked_ways(int locked)
-{
+void l2cache_set_number_of_locked_ways(int locked) {
 
     /* check if the found was found */
-    if (l2cache_ctrl.found == 0)
-    {
+    if (l2cache_ctrl.found == 0) {
         return;
     }
 
     /* check if the number of ways is valid */
-    if (locked > l2cache_ctrl.nways)
-    {
+    if (locked > l2cache_ctrl.nways) {
         return;
     }
 
     /* set number of locked ways */
-    l2cache_ctrl.regs->ctrl = (l2cache_ctrl.regs->ctrl & ~(0x07 << 8)) | ((locked & 0x07) << 8);
+    l2cache_ctrl.regs->ctrl = (l2cache_ctrl.regs->ctrl & ~(0x07 << 8)) |
+                         ((locked & 0x07) << 8);
     return;
 }
 
-void l2cache_set_bus_usage_mode(l2cacge_statys_mode_e mode)
-{
+void l2cache_set_bus_usage_mode(l2cacge_statys_mode_e mode) {
 
     /* check if the found was found */
-    if (l2cache_ctrl.found == 0)
-    {
+    if (l2cache_ctrl.found == 0) {
         return;
     }
 
@@ -156,12 +146,10 @@ void l2cache_set_bus_usage_mode(l2cacge_statys_mode_e mode)
     return;
 }
 
-void l2cache_hit_rate_mode(l2cacge_statys_mode_e mode)
-{
+void l2cache_hit_rate_mode(l2cacge_statys_mode_e mode) {
 
     /* check if the found was found */
-    if (l2cache_ctrl.found == 0)
-    {
+    if (l2cache_ctrl.found == 0) {
         return;
     }
 
@@ -170,12 +158,10 @@ void l2cache_hit_rate_mode(l2cacge_statys_mode_e mode)
     return;
 }
 
-void l2cache_enable_core(void)
-{
+void l2cache_enable_core(void) {
 
     /* check if the found was found */
-    if (l2cache_ctrl.found == 0)
-    {
+    if (l2cache_ctrl.found == 0) {
         return;
     }
 
@@ -184,12 +170,10 @@ void l2cache_enable_core(void)
     return;
 }
 
-void l2cache_disable_core(void)
-{
+void l2cache_disable_core(void) {
 
     /* check if the controler was found */
-    if (l2cache_ctrl.found == 0)
-    {
+    if (l2cache_ctrl.found == 0) {
         return;
     }
 
@@ -198,21 +182,20 @@ void l2cache_disable_core(void)
     return;
 }
 
-int l2cache_init(void)
-{
+int l2cache_init(void) {
 
     amba_ahb_dev_t dev;
 
     /* look for the L2Cache device */
-    l2cache_ctrl.found = amba_get_ahb_device(&amba_confarea, VENDOR_GAISLER, GAISLER_L2CACHE, &dev);
+    l2cache_ctrl.found = amba_get_ahb_device(
+            &amba_confarea, VENDOR_GAISLER, GAISLER_L2CACHE, &dev);
 
-    if (l2cache_ctrl.found > 0)
-    {
+    if (l2cache_ctrl.found > 0) {
 
         /* store the device data */
         l2cache_ctrl.minor = dev.ver;
-        l2cache_ctrl.irq = dev.irq;
-        l2cache_ctrl.regs = (l2cache_regmap_t *)dev.start[1];
+        l2cache_ctrl.irq   = dev.irq;
+        l2cache_ctrl.regs  = (l2cache_regmap_t *)dev.start[1];
 
         /* extract device capabilities */
         l2cache_ctrl.cachel_size = (((l2cache_ctrl.regs->stat & (1 << 24)) >> 24) + 1) * 32;

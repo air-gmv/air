@@ -14,17 +14,17 @@
 
 #include <stdbool.h>
 
+
 #include "libelf.h"
 
 /**
  * @brief Checks if the machine is big or little endian
  * @return true if big endian, false otherwise
  */
-bool elf_machine_is_bigendian()
-{
+bool elf_machine_is_bigendian() {
 
     volatile int32_t num = 1;
-    return *(int8_t *)&num == 1 ? false : true;
+    return *(int8_t*)&num == 1 ? false : true;
 }
 
 /**
@@ -39,16 +39,18 @@ bool elf_machine_is_bigendian()
  *  Fixes the endianness of a uint16_t based on the value source endianness and
  *  target value endianness
  */
-uint16_t elf_correct_uint16(uint16_t value, bool source_big_endian, bool target_big_endian)
-{
+uint16_t elf_correct_uint16(uint16_t value,
+                            bool source_big_endian,
+                            bool target_big_endian){
 
     uint32_t ret = value;
 
     /* Swap bytes if the sorces are diferent */
-    if ((source_big_endian && !target_big_endian) || (!source_big_endian && target_big_endian))
-    {
+    if ((source_big_endian && !target_big_endian) ||
+        (!source_big_endian && target_big_endian)){
 
-        ret = (value << 8) | (value >> 8);
+        ret = (value << 8) | (value>> 8 );
+
     }
 
     return ret;
@@ -66,17 +68,19 @@ uint16_t elf_correct_uint16(uint16_t value, bool source_big_endian, bool target_
  *  Fixes the endianness of a uint32_t based on the value source endianness and
  *  target value endianness
  */
-uint32_t elf_correct_uint32(uint32_t value, bool source_big_endian, bool target_big_endian)
-{
+uint32_t elf_correct_uint32(uint32_t value,
+                            bool source_big_endian,
+                            bool target_big_endian){
 
     uint32_t ret = value;
 
     /* Swap bytes if the sorces are diferent */
-    if ((source_big_endian && !target_big_endian) || (!source_big_endian && target_big_endian))
-    {
+    if ((source_big_endian && !target_big_endian) ||
+        (!source_big_endian && target_big_endian)){
 
-        ret = ((value >> 24) & 0x000000ff) | ((value << 8) & 0x00ff0000) | ((value >> 8) & 0x0000ff00) |
-              ((value << 24) & 0xff000000);
+        ret = ((value >> 24) & 0x000000ff) | ((value << 8 ) & 0x00ff0000) |
+              ((value >> 8 ) & 0x0000ff00) | ((value << 24) & 0xff000000);
+
     }
 
     return ret;
@@ -90,22 +94,20 @@ uint32_t elf_correct_uint32(uint32_t value, bool source_big_endian, bool target_
  *
  *  Valides an ELF for 32 for sparc by examing the file header
  */
-unsigned char elf_check(unsigned char *in_buffer)
-{
+unsigned char elf_check(unsigned char *in_buffer){
 
     unsigned char ret = 1;
     Elf32_Ehdr *Ehdr = (Elf32_Ehdr *)in_buffer;
 
     /* Check header: ([0x7f]ELF for valid elf files) */
-    if (0x7f != Ehdr->e_ident[0] || 'E' != Ehdr->e_ident[1] || 'L' != Ehdr->e_ident[2] || 'F' != Ehdr->e_ident[3])
-    {
+    if (0x7f != Ehdr->e_ident[0] || 'E' != Ehdr->e_ident[1] ||
+        'L' != Ehdr->e_ident[2] || 'F' != Ehdr->e_ident[3]){
         // printf(" elf_check() invalid magic number \n");
         ret = 0;
     }
 
     /* Check data class: (1 for 32 bits objects) */
-    if (ret && 1 != Ehdr->e_ident[4])
-    {
+    if (ret && 1 != Ehdr->e_ident[4]){
         // printf(" elf_check() invalid class\n");
         ret = 0;
     }
@@ -115,29 +117,25 @@ unsigned char elf_check(unsigned char *in_buffer)
     bool fbig = Ehdr->e_ident[5] == 2 ? true : false;
 
     /* Check machine: (2 for sparc) */
-    if (ret && 2 != elf_correct_uint16(Ehdr->e_machine, fbig, mbig))
-    {
+    if (ret && 2 != elf_correct_uint16(Ehdr->e_machine, fbig, mbig)){
         // printf(" elf_check() invalid machine code\n");
         ret = 0;
     }
 
     /* Check version: (1 for current) */
-    if (ret && 1 != elf_correct_uint32(Ehdr->e_version, fbig, mbig))
-    {
+    if (ret && 1 != elf_correct_uint32(Ehdr->e_version, fbig, mbig)){
         // printf(" elf_check() invalid version\n");
         ret = 0;
     }
 
     /* Check type: (2 for executable) */
-    if (ret && 2 != elf_correct_uint16(Ehdr->e_type, fbig, mbig))
-    {
+    if (ret && 2 != elf_correct_uint16(Ehdr->e_type, fbig, mbig)){
         // printf(" elf_check() invalid type\n");
         ret = 0;
     }
 
     /* Check if the file contains program segements */
-    if (ret && 0 >= elf_correct_uint16(Ehdr->e_phnum, fbig, mbig))
-    {
+    if (ret && 0 >= elf_correct_uint16(Ehdr->e_phnum, fbig, mbig)){
         // printf(" elf_check() doesn't contain program segments\n");
         ret = 0;
     }

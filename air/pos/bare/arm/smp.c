@@ -21,15 +21,13 @@
 volatile air_uptr_t *isr_table[PMK_MAX_CORES];
 volatile air_u32_t __isr_table[PMK_MAX_CORES * ARM_IRQ_COUNT];
 
-void arm_pos_smp_init(void)
-{
+void arm_pos_smp_init(void) {
 
     air_u32_t i;
 
-    for (i = 0; i < PMK_MAX_CORES; ++i)
-    {
+    for (i = 0; i < PMK_MAX_CORES; ++i) {
 
-        isr_table[i] = &__isr_table[i * ARM_IRQ_COUNT];
+        isr_table[i] = &__isr_table[i*ARM_IRQ_COUNT];
     }
 
     return;

@@ -5,71 +5,65 @@
  * found in the file LICENSE in this distribution or at
  * air/LICENSE
  */
-/**
+/** 
  *  @file health_monitor.c
  *  @author pfnf
  *	@brief Health Monitor functionality
- *
+ *	
  *	The Health Monitor in PMK follows the ARINC 653 specifications.
  *	The HM tables for the Module are stored in the PMK shared-area and
  *	each partition holds the its specific HM tables in its control structure
- *
+ *	
  *	An HM event is passed to the Guest OS by injecting a trap in its execution
  */
 
-#include <bsp.h>
-#include <configurations.h>
-#include <health_monitor.h>
-#include <ipc.h>
-#include <multicore.h>
 #include <pmk.h>
+#include <bsp.h>
+#include <ipc.h>
 #include <printk.h>
 #include <workspace.h>
+#include <multicore.h>
+#include <configurations.h>
+#include <health_monitor.h>
 
-void pmk_module_shutdown(pmk_core_ctrl_t *core)
-{
+void pmk_module_shutdown(pmk_core_ctrl_t *core) {
 
     /* shutdown all configured cores */
     air_u32_t i;
-    for (i = 0; i < air_shared_area.configured_cores; ++i)
-    {
+    for (i = 0; i < air_shared_area.configured_cores; ++i) {
 
         /* shutdown current core directly */
-        if (air_shared_area.core[i].idx == core->idx)
-        {
+        if (air_shared_area.core[i].idx == core->idx) {
 
             bsp_shutdown_core(core);
 
-            /* shutdown core via IPC message */
-        }
-        else
-        {
+        /* shutdown core via IPC message */
+        } else {
 
-            core_context_set_ipc_message(air_shared_area.core[i].context, PMK_IPC_MODULE_SHUTDOWN);
+            core_context_set_ipc_message(
+                    air_shared_area.core[i].context,
+                    PMK_IPC_MODULE_SHUTDOWN);
         }
     }
 }
 
-void pmk_module_restart(pmk_core_ctrl_t *core)
-{
+void pmk_module_restart(pmk_core_ctrl_t *core) {
 
     /* restart all configured cores */
     air_u32_t i;
-    for (i = 0; i < air_shared_area.configured_cores; ++i)
-    {
+    for (i = 0; i < air_shared_area.configured_cores; ++i) {
 
         /* restart current core directly */
-        if (air_shared_area.core[i].idx == core->idx)
-        {
+        if (air_shared_area.core[i].idx == core->idx) {
 
-            bsp_restart_core(core);
+        	bsp_restart_core(core);
 
-            /* restart core via IPC message */
-        }
-        else
-        {
+        /* restart core via IPC message */
+        } else {
 
-            core_context_set_ipc_message(air_shared_area.core[i].context, PMK_IPC_MODULE_RESTART);
+            core_context_set_ipc_message(
+                    air_shared_area.core[i].context,
+                    PMK_IPC_MODULE_RESTART);
         }
     }
 }
@@ -77,8 +71,7 @@ void pmk_module_restart(pmk_core_ctrl_t *core)
 /**
  * @brief Health-Monitor Initialization
  */
-void pmk_hm_init()
-{
+void pmk_hm_init() {
 
 #ifdef PMK_DEBUG
     printk(" :: Health-Monitor initialization\n");
@@ -102,39 +95,39 @@ void pmk_hm_init()
  * @param state_id current core state id
  * @param error_id current error id
  */
-void pmk_hm_isr_handler_module_level(pmk_core_ctrl_t *core, air_state_e state_id, air_error_e error_id)
-{
+void pmk_hm_isr_handler_module_level(pmk_core_ctrl_t *core,
+                                     air_state_e state_id,
+                                     air_error_e error_id) {
 
     /* setup the undefined action */
     pmk_hm_action_id action_id = PMK_ACTION_UNDEFINED;
-
-    printk("HM Module level error \n");
+    
+    printk ("HM Module level error \n");
 
     /* lookup for the action in Module Health-Monitor table */
-    pmk_hm_action_id *actions = (pmk_hm_action_id *)air_shared_area.hm_module_table[state_id];
-    if (actions != NULL)
-    {
+    pmk_hm_action_id *actions =
+            (pmk_hm_action_id *)air_shared_area.hm_module_table[state_id];
+    if (actions != NULL) {
 
         action_id = actions[error_id];
     }
 
     /* perform the action */
-    switch (action_id)
-    {
+    switch (action_id) {
 
-    /* reset module */
-    case PMK_ACTION_RESET:
-        pmk_module_restart(core);
-        break;
+        /* reset module */
+        case PMK_ACTION_RESET:
+            pmk_module_restart(core);
+            break;
 
-    /* shutdown module */
-    case PMK_ACTION_SHUTDOWN:
-        pmk_module_shutdown(core);
-        break;
+        /* shutdown module */
+        case PMK_ACTION_SHUTDOWN:
+            pmk_module_shutdown(core);
+            break;
 
-    /* ignore error */
-    default:
-        break;
+        /* ignore error */
+        default:
+            break;
     }
 }
 
@@ -144,13 +137,15 @@ void pmk_hm_isr_handler_module_level(pmk_core_ctrl_t *core, air_state_e state_id
  * @param state_id current core state id
  * @param error_id current error id
  */
-void pmk_hm_isr_handler_partition_level(pmk_core_ctrl_t *core, air_state_e state_id, air_error_e error_id)
-{
+void pmk_hm_isr_handler_partition_level(
+        pmk_core_ctrl_t *core,
+        air_state_e state_id,
+        air_error_e error_id) {
 
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
     pmk_partition_t *partition = core->partition;
-    printk("HM Partition %d state id %d, error id %d \n", partition->id, state_id, error_id);
+    printk ("HM Partition %d state id %d, error id %d \n", partition->id, state_id, error_id);
 
     partition->events |= AIR_EVENT_HEALTH_MONITOR;
 
@@ -159,65 +154,64 @@ void pmk_hm_isr_handler_partition_level(pmk_core_ctrl_t *core, air_state_e state
 
     /* lookup for the action_id in Partition Health-Monitor table */
     pmk_hm_action_id action_id = PMK_ACTION_UNDEFINED;
-    pmk_hm_action_id *actions = (pmk_hm_action_id *)partition->hm_table[state_id];
-    if (partition->hm_table[state_id] != NULL)
-    {
+    pmk_hm_action_id *actions =
+            (pmk_hm_action_id *)partition->hm_table[state_id];
+    if (partition->hm_table[state_id] != NULL) {
 
         action_id = actions[error_id];
     }
 
     /* perform the action_id */
-    switch (action_id)
-    {
+    switch (action_id) {
 
-    /* set partition in idle mode */
-    case PMK_ACTION_IDLE:
-        printk("HM Taking Action Idle\n\n");
+        /* set partition in idle mode */
+        case PMK_ACTION_IDLE:
+            printk ("HM Taking Action Idle\n\n");
 
-        /* disable preemption */
-        cpu_disable_preemption(flags);
+            /* disable preemption */
+            cpu_disable_preemption(flags);
 
-        /* halt partition */
-        pmk_partition_halt(partition);
-        partition->mode = AIR_MODE_IDLE;
-        break;
+            /* halt partition */
+            pmk_partition_halt(partition);
+            partition->mode = AIR_MODE_IDLE;
+            break;
 
-    /* cold restart the partition */
-    case PMK_ACTION_COLD_START:
-        printk("HM Taking Action Cold Start\n\n");
+        /* cold restart the partition */
+        case PMK_ACTION_COLD_START:
+            printk ("HM Taking Action Cold Start\n\n");
 
-        /* disable preemption */
-        cpu_disable_preemption(flags);
+            /* disable preemption */
+            cpu_disable_preemption(flags);
 
-        /* cold restart partition */
-        pmk_partition_restart(partition);
-        partition->mode = AIR_MODE_COLD_START;
-        partition->start_condition = AIR_START_CONDITION_HM_PARTITION_RESTART;
-        break;
+            /* cold restart partition */
+            pmk_partition_restart(partition);
+            partition->mode = AIR_MODE_COLD_START;
+            partition->start_condition = AIR_START_CONDITION_HM_PARTITION_RESTART;
+            break;
 
-    /* warm restart the partition */
-    case PMK_ACTION_WARM_START:
-        printk("HM Taking Action Warm Start\n\n");
+        /* warm restart the partition */
+        case PMK_ACTION_WARM_START:
+            printk ("HM Taking Action Warm Start\n\n");
 
-        /* disable preemption */
-        cpu_disable_preemption(flags);
+            /* disable preemption */
+            cpu_disable_preemption(flags);
 
-        /* warm restart partition */
-        pmk_partition_restart(partition);
-        partition->mode = AIR_MODE_WARM_START;
-        partition->start_condition = AIR_START_CONDITION_HM_PARTITION_RESTART;
-        break;
+            /* warm restart partition */
+            pmk_partition_restart(partition);
+            partition->mode = AIR_MODE_WARM_START;
+            partition->start_condition = AIR_START_CONDITION_HM_PARTITION_RESTART;
+            break;
 
-    /* ignore event and pass it to the partition callback */
-    default:
-        printk("HM Taking Action Ignore\n\n");
+        /* ignore event and pass it to the partition callback */
+        default:
+            printk ("HM Taking Action Ignore\n\n");
 
-        /* disable preemption */
-        cpu_disable_preemption(flags);
+            /* disable preemption */
+            cpu_disable_preemption(flags);
 
-        /* add HM event */
-        core_context_add_hm_event(context, state_id, error_id);
-        break;
+            /* add HM event */
+            core_context_add_hm_event(context, state_id, error_id);
+            break;
     }
 }
 
@@ -225,8 +219,7 @@ void pmk_hm_isr_handler_partition_level(pmk_core_ctrl_t *core, air_state_e state
  * @brief Health-Monitor ISR handler
  * @param error_id current error id to be handled
  */
-void pmk_hm_isr_handler(air_error_e error_id)
-{
+void pmk_hm_isr_handler(air_error_e error_id) {
 
     air_u32_t core_id = bsp_get_core_id();
     pmk_core_ctrl_t *core_ctrl = &air_shared_area.core[core_id];
@@ -236,20 +229,19 @@ void pmk_hm_isr_handler(air_error_e error_id)
     pmk_hm_level_id level = air_shared_area.hm_system_table[state][error_id];
 
     /* perform the HM action according to the handling level */
-    switch (level)
-    {
+    switch (level) {
 
-    /* error at module level */
-    case PMK_ERROR_LEVEL_MODULE:
-        pmk_hm_isr_handler_module_level(core_ctrl, state, error_id);
-        break;
+        /* error at module level */
+        case PMK_ERROR_LEVEL_MODULE:
+            pmk_hm_isr_handler_module_level(core_ctrl, state, error_id);
+            break;
 
-    /* error at partition level */
-    case PMK_ERROR_LEVEL_PARTITION:
-    case PMK_ERROR_LEVEL_PROCESS:
-    default:
-        pmk_hm_isr_handler_partition_level(core_ctrl, state, error_id);
-        break;
+        /* error at partition level */
+        case PMK_ERROR_LEVEL_PARTITION:
+        case PMK_ERROR_LEVEL_PROCESS:
+        default:
+            pmk_hm_isr_handler_partition_level(core_ctrl, state, error_id);
+            break;
     }
 }
 
@@ -260,13 +252,14 @@ void pmk_hm_isr_handler(air_error_e error_id)
  * By setting the system state, the behavior of the Health-Monitor is
  * changed according to the system configuration
  */
-void pmk_hm_set_core_state(air_state_e state)
-{
+void pmk_hm_set_core_state(air_state_e state) {
 
     air_u32_t core_id = bsp_get_core_id();
 
     /* apply the system state */
-    core_context_set_system_state(air_shared_area.core[core_id].context, state);
+    core_context_set_system_state(
+            air_shared_area.core[core_id].context,
+            state);
 }
 
 /**
@@ -276,15 +269,15 @@ void pmk_hm_set_core_state(air_state_e state)
  * By setting the system state, the behavior of the Health-Monitor is
  * changed according to the system configuration
  */
-void pmk_hm_set_state(air_state_e state)
-{
+void pmk_hm_set_state(air_state_e state) {
 
     air_u32_t i;
 
     /* apply the system state to all cores */
-    for (i = 0; i < air_shared_area.configured_cores; ++i)
-    {
+    for (i = 0; i < air_shared_area.configured_cores; ++i) {
 
-        core_context_set_system_state(air_shared_area.core[i].context, state);
+        core_context_set_system_state(
+                air_shared_area.core[i].context,
+                state);
     }
 }
