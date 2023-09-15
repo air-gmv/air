@@ -6,16 +6,18 @@
  * air/LICENSE
  */
 
-#include <bsp.h>
 #include <iop.h>
+#include <bsp.h>
 #include <iop_support.h>
 #include <xuart_support.h>
 
-void uart_copy_header(iop_physical_device_t *iop_dev, iop_wrapper_t *wrapper, iop_header_t *header)
-{
+void uart_copy_header(
+        iop_physical_device_t *iop_dev,
+        iop_wrapper_t *wrapper,
+        iop_header_t *header){
 
     /* get underlying UART device */
-    //    iop_can_device_t *uart_dev = (iop_uart_device_t *)iop_uart->driver;
+//    iop_can_device_t *uart_dev = (iop_uart_device_t *)iop_uart->driver;
 
     /* get underlying IOP buffer */
     iop_buffer_t *iop_buf = wrapper->buffer;
@@ -30,8 +32,9 @@ void uart_copy_header(iop_physical_device_t *iop_dev, iop_wrapper_t *wrapper, io
 
 /* This function compares the ID on the wrapper
  * to the ID  of a given header. */
-air_u32_t uart_compare_header(iop_wrapper_t *wrapper, iop_header_t *header)
-{
+air_u32_t uart_compare_header(
+        iop_wrapper_t *wrapper,
+        iop_header_t *header){
 
 #if 0
     uart_header_t *uart_header1 = (uart_header_t *) header;
@@ -47,11 +50,9 @@ air_u32_t uart_compare_header(iop_wrapper_t *wrapper, iop_header_t *header)
     return 1;
 }
 
-void uart_prebuild_header(uart_header_t *header)
-{
+void uart_prebuild_header(uart_header_t *header){
     /* If ID not defined */
-    if (header->id == 0)
-    {
+    if(header->id == 0){
         header->id = 255;
     }
 }

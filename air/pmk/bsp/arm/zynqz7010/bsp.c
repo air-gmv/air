@@ -10,18 +10,18 @@
  * \author lumm
  * \brief BSP core routines
  */
-#include <a9mpcore.h>
 #include <bsp.h>
+#include <a9mpcore.h>
 #include <cache.h>
-#include <ddr.h>
-#include <gic.h>
-#include <hm.h>
 #include <isr.h>
+#include <hm.h>
 #include <mmu.h>
-#include <printk.h>
-#include <slcr.h>
+#include <gic.h>
 #include <timer.h>
+#include <slcr.h>
 #include <uart.h>
+#include <ddr.h>
+#include <printk.h>
 
 static pmk_barrier_t initialization_barrier;
 /**
@@ -31,25 +31,22 @@ static pmk_barrier_t initialization_barrier;
  * L1 only and higher levels are not maintained and seen by the CP15. So no
  * special care to limit levels on the secondary are required there.
  */
-void bsp_start_hook(void)
-{
+void bsp_start_hook(void) {
 
     air_u32_t sctlr = arm_cp15_get_system_control();
 
     /*
      * If the I and D caches on and MMU are enabled, then disable them
      */
-    if ((sctlr & (ARM_SCTLR_I | ARM_SCTLR_C | ARM_SCTLR_M)) != 0)
-    {
-        if ((sctlr & (ARM_SCTLR_C | ARM_SCTLR_M)) != 0)
-        {
+    if (sctlr & (ARM_SCTLR_I | ARM_SCTLR_C | ARM_SCTLR_M) ) {
+        if ( sctlr & (ARM_SCTLR_C | ARM_SCTLR_M) ) {
             /*
              * If the data cache is on then ensure that it is clean
              * before switching off to be extra careful.
              */
             arm_data_cache_clean();
         }
-        sctlr &= ~(ARM_SCTLR_I | ARM_SCTLR_C | ARM_SCTLR_M);
+        sctlr &= ~( ARM_SCTLR_I | ARM_SCTLR_C | ARM_SCTLR_M );
         arm_cp15_set_system_control(sctlr);
     }
 
@@ -65,21 +62,17 @@ void bsp_start_hook(void)
     arm_instruction_synchronization_barrier();
 }
 
-air_u32_t bsp_core_init(void)
-{
+air_u32_t bsp_core_init(void) {
 
     air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
 
-    if (cpu_id != 0)
-    {
+    if(cpu_id != 0)
         pmk_barrier_wait(&initialization_barrier, bsp_get_core_id());
-    }
 
     arm_a9mpcore_start_hook(cpu_id);
     arm_set_vector_base();
 
-    if (cpu_id == 0)
-    {
+    if(cpu_id == 0) {
 #if DEBUG_MONITOR != 2
         arm_select_debug_uart(0);
 #endif /* DEBUG_MONITOR != 2	*/
@@ -98,25 +91,23 @@ air_u32_t bsp_core_init(void)
     gic_init(cpu_id);
     arm_mmu_init();
 
-    // TODO Do I need to copy from LoadMA to VMA???
-    //  bsp_start_copy_sections();
+    //TODO Do I need to copy from LoadMA to VMA???
+    // bsp_start_copy_sections();
 
     return 0;
 }
 
-void bsp_core_ready(void)
-{
+void bsp_core_ready(void) {
 
     air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
     arm_cp15_setup_Per_CPU(cpu_id);
 
     arm_setup_ipc(cpu_id);
 
-    // MMU
-    // arm_mmu_enable(partition->mmu_ctrl);
+    //MMU
+    //arm_mmu_enable(partition->mmu_ctrl);
 
-    if (cpu_id == 0)
-    {
+    if(cpu_id == 0) {
 
         arm_init_global_timer();
         arm_clear_pending();
@@ -124,18 +115,15 @@ void bsp_core_ready(void)
 
     arm_enable_interrupts();
 
-    if (cpu_id == 0)
-    {
+    if (cpu_id == 0) {
 
         arm_start_global_timer();
     }
 }
 
-void bsp_boot_core(air_u32_t cpu_id, void *entry_point)
-{
+void bsp_boot_core(air_u32_t cpu_id, void *entry_point) {
 
-    if (cpu_id != 0)
-    {
+    if (cpu_id != 0) {
         volatile air_uptr_t *start_addr = (air_uptr_t *)0xfffffff0;
         arm_data_synchronization_barrier();
         arm_instruction_synchronization_barrier();
@@ -147,13 +135,11 @@ void bsp_boot_core(air_u32_t cpu_id, void *entry_point)
 }
 
 /* Resets all cores */
-void bsp_restart_core(pmk_core_ctrl_t *core_ctx)
-{
+void bsp_restart_core(pmk_core_ctrl_t *core_ctx) {
     arm_ps_reset();
 }
 
-void bsp_shutdown_core(pmk_core_ctrl_t *core_ctx)
-{
+void bsp_shutdown_core(pmk_core_ctrl_t *core_ctx) {
 
     printk("\nAIR has been terminaded by the application.\n");
 
@@ -183,28 +169,23 @@ void bsp_shutdown_core(pmk_core_ctrl_t *core_ctx)
     /* 10. increase clock divider (0x3f) and slow down CPU clock */
     arm_set_cpu_clock_divisor(0x3f);
 
-    while (1)
-    {
-        ;
-    }
+    while(1);
 
     return;
 }
 
-void bsp_interrupt_broadcast(air_u32_t dummy)
-{
+void bsp_interrupt_broadcast(air_u32_t dummy) {
     arm_generate_swi(ARM_SGI_TARGET_OTHERS, 0, 0, BSP_IPC_PCS);
 }
 
-void bsp_idle_loop(void)
-{
+
+void bsp_idle_loop(void) {
 
 #ifdef PMK_DEBUG_IDLE
     printk("\n    wfi w/ ttbr at 0x%x\n\n", arm_cp15_get_translation_table0_base());
 #endif
     arm_data_synchronization_barrier();
-    while (true)
-    {
-        __asm__ volatile("wfi");
+    while(true) {
+        __asm__ volatile ("wfi");
     }
 }

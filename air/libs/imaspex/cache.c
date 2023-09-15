@@ -5,7 +5,7 @@
  * found in the file LICENSE in this distribution or at
  * air/LICENSE
  */
-/**
+/** 
  * @file cache.c
  * @author cdcs
  * @brief  IMASPEX's cache services implementation
@@ -15,58 +15,52 @@
 
 extern int imaspex_tsal_init;
 
-void FLUSH_CACHE(CACHE_TYPE CACHE, RETURN_CODE_TYPE *RETURN_CODE)
-{
-
+void FLUSH_CACHE(CACHE_TYPE CACHE, RETURN_CODE_TYPE *RETURN_CODE){
+	
     /* check TSAL init */
-    if (imaspex_tsal_init == 0)
-    {
+    if (imaspex_tsal_init == 0){
         *RETURN_CODE = INVALID_MODE;
         return;
     }
 
-    /* syscall to flush cache */
-    *RETURN_CODE = air_syscall_flush_cache(CACHE);
+	/* syscall to flush cache */
+	*RETURN_CODE = air_syscall_flush_cache(CACHE);
 }
 
-void ACTIVATE_CACHE(CACHE_TYPE CACHE, RETURN_CODE_TYPE *RETURN_CODE)
-{
-
+void ACTIVATE_CACHE(CACHE_TYPE CACHE, RETURN_CODE_TYPE *RETURN_CODE){
+	
     /* check TSAL init */
-    if (imaspex_tsal_init == 0)
-    {
+    if (imaspex_tsal_init == 0){
         *RETURN_CODE = INVALID_MODE;
         return;
     }
+	
+	/* syscall to flush cache */
+	*RETURN_CODE = air_syscall_enable_cache(CACHE);
 
-    /* syscall to flush cache */
-    *RETURN_CODE = air_syscall_enable_cache(CACHE);
 }
 
-void DEACTIVATE_CACHE(CACHE_TYPE CACHE, RETURN_CODE_TYPE *RETURN_CODE)
-{
-
+void DEACTIVATE_CACHE(CACHE_TYPE CACHE, RETURN_CODE_TYPE *RETURN_CODE){
+	
     /* check TSAL init */
-    if (imaspex_tsal_init == 0)
-    {
+    if (imaspex_tsal_init == 0){
         *RETURN_CODE = INVALID_MODE;
         return;
     }
+	
+	/* syscall to flush cache */
+	*RETURN_CODE = air_syscall_disable_cache(CACHE);
 
-    /* syscall to flush cache */
-    *RETURN_CODE = air_syscall_disable_cache(CACHE);
 }
 
-void FREEZE_CACHE(CACHE_TYPE CACHE, RETURN_CODE_TYPE *RETURN_CODE)
-{
-
+void FREEZE_CACHE(CACHE_TYPE CACHE, RETURN_CODE_TYPE *RETURN_CODE){
+	
     /* check TSAL init */
-    if (imaspex_tsal_init == 0)
-    {
+    if (imaspex_tsal_init == 0){
         *RETURN_CODE = INVALID_MODE;
         return;
     }
-
-    /* syscall to flush cache */
-    *RETURN_CODE = air_syscall_freeze_cache(CACHE);
+	
+	/* syscall to flush cache */
+	*RETURN_CODE = air_syscall_freeze_cache(CACHE);
 }

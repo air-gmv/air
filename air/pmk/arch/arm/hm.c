@@ -13,9 +13,9 @@
  * TODO better undef logic
  */
 
-#include <air.h>
-#include <cp15.h>
 #include <hm.h>
+#include <cp15.h>
+#include <air.h>
 #include <svc.h>
 
 #ifdef PMK_DEBUG
@@ -29,12 +29,9 @@ static air_boolean_t arm_hm_undef_is_fpu(air_u32_t ret_addr, air_boolean_t is_T3
  * the PMK will call a cpu_hm_init(), so it is here for compatibility and
  * future is necessary
  */
-void arm_hm_init(void)
-{
-}
+void arm_hm_init(void) {}
 
-air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core)
-{
+air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) {
 
     arm_exception_e hm_id = frame->exception_name;
     air_uptr_t *ret = NULL;
@@ -50,10 +47,9 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
      *
      * ARM Architecture Reference Manual ARMv7-A/R edition ARM DDI 0406C.d (ID040418)
      */
-    __asm__ volatile("clrex");
+    __asm__ volatile ("clrex");
 
-    switch (hm_id)
-    {
+    switch(hm_id) {
 
     /*
      * spsr: SPSR
@@ -62,12 +58,9 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
     case AIR_ARM_EXCEPTION_UNDEF:
 
         /* FPU Lazy Switching */
-        if ((arm_hm_undef_is_fpu(*(air_uptr_t *)frame->ret_addr, (frame->ret_psr & ARM_PSR_T))) != 0)
-        {
+        if (arm_hm_undef_is_fpu(*(air_uptr_t *)frame->ret_addr, (frame->ret_psr & ARM_PSR_T))) {
             error_id = AIR_FLOAT_ERROR;
-        }
-        else
-        {
+        } else {
             error_id = AIR_UNIMPLEMENTED_ERROR;
         }
 
@@ -112,27 +105,23 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
     }
 
 #ifdef PMK_DEBUG
-    printk("HM event  ARM id %d  FSR = 0x%08x  FAR = 0x%08x  LR = 0x%08x\n", hm_id, fsr, far, (int)frame->ret_addr);
+    printk("HM event  ARM id %d  FSR = 0x%08x  FAR = 0x%08x  LR = 0x%08x\n",
+            hm_id, fsr, far, (int)frame->ret_addr);
 #endif
 
-    psr = core->context->vcpu.psr;
-    core->context->vcpu.psr |= ARM_PSR_I; // disable virtual interrupts
+    psr = core->context->vcpu.psr; 
+    core->context->vcpu.psr |= ARM_PSR_I;   //disable virtual interrupts
 
     pmk_hm_isr_handler(error_id);
 
-    core->context->vcpu.psr = psr; // restore virtual psr
-
+    core->context->vcpu.psr = psr;          //restore virtual psr
+   
     if (!core->context->trash)
-    {
         ret = arm_partition_hm_handler(hm_id, core);
-    }
 
 #ifdef PMK_DEBUG
     if (ret != NULL)
-    {
         printk("hm_handler ret = 0x%x\n", (int)ret);
-    }
-
 #endif
 
     return ret;
@@ -145,15 +134,11 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
  * \param core pmk_core_ctrl_t
  * \return POS HM return address
  */
-static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
-{
+static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
 
     arm_virtual_cpu_t *vcpu = &core->context->vcpu;
     air_uptr_t *vbar = vcpu->vbar;
-    if (vbar == NULL)
-    {
-        return NULL;
-    }
+    if (vbar == NULL) return NULL;
 
     air_u32_t psr = vcpu->psr;
     air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
@@ -162,58 +147,48 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
 
     arm_interrupt_stack_frame_t *frame = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
 
-    // if previous mode is user or system, and the virtual mode is SVC, update the virtual psr and SVC SP
-    if (((frame->ret_psr & ARM_PSR_MODE_MASK) == ARM_PSR_USR) || ((frame->ret_psr & ARM_PSR_MODE_MASK) == ARM_PSR_SYS))
-    {
-        if ((vcpu->psr & ARM_PSR_MODE_MASK) == ARM_PSR_SVC)
-        {
-            vcpu->psr &= ~(ARM_PSR_MODE_MASK);
-            vcpu->psr |= ARM_PSR_IRQ;
-            core->context->sp_svc = frame->usr_sp;
-        }
+    //if previous mode is user or system, and the virtual mode is SVC, update the virtual psr and SVC SP
+    if (((frame->ret_psr & ARM_PSR_MODE_MASK) == ARM_PSR_USR) || ((frame->ret_psr & ARM_PSR_MODE_MASK) == ARM_PSR_SYS)){
+         if ((vcpu->psr & ARM_PSR_MODE_MASK) == ARM_PSR_SVC){
+             vcpu->psr &= ~(ARM_PSR_MODE_MASK);
+             vcpu->psr |= ARM_PSR_IRQ;
+             core->context->sp_svc = frame->usr_sp;
+         }
     }
 
-    // determine whether faulty instruction is 16 or 32bit in order to define the offset
+    //determine whether faulty instruction is 16 or 32bit in order to define the offset
     air_u32_t ret_offset;
-    air_u32_t instr = *(air_uptr_t *)frame->ret_addr;
-    if ((((frame->ret_psr) & ARM_PSR_T) != 0) && ((instr & 0xF800) < 0xE800)) // see armv7 reference manual, A6.1
-    {
-        ret_offset = 2;
-    }
-
+    air_u32_t instr= *(air_uptr_t *)frame->ret_addr;
+    if( (((frame->ret_psr) & ARM_PSR_T) != 0) && ((instr & 0xF800) < 0xE800)) //see armv7 reference manual, A6.1
+        ret_offset=2;
     else
-    {
-        ret_offset = 4;
-    }
+        ret_offset=4;
 
-    // if virtual aborts are enabled, go to virtual exception handler
-    if (!psr_a)
-    {
+    //if virtual aborts are enabled, go to virtual exception handler
+    if (!psr_a) {
         pmk_hm_event_t *hm_event = (pmk_hm_event_t *)core->context->hm_event;
-        if ((hm_event->nesting > 0) != 0)
-        {
+        if (hm_event->nesting > 0) {
 
             vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
 
-            switch (hm_event->error_id)
-            {
+            switch (hm_event->error_id) {
             case AIR_POWER_ERROR:
                 ret_addr = vbar + 0;
                 break;
 
             case AIR_UNIMPLEMENTED_ERROR:
                 ret_addr = vbar + 1;
-                frame->ret_addr += ret_offset;
+                frame->ret_addr+=ret_offset;
                 break;
 
             case AIR_VIOLATION_ERROR:
                 ret_addr = vbar + 3;
-                frame->ret_addr += 4;
+                frame->ret_addr+=4;
                 break;
 
             case AIR_SEGMENTATION_ERROR:
                 ret_addr = vbar + 4;
-                frame->ret_addr += ret_offset;
+                frame->ret_addr+=ret_offset;
                 break;
 
             case AIR_IO_ERROR:
@@ -223,17 +198,17 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
 
             case AIR_FLOAT_ERROR:
 #if PMK_FPU_SUPPORT
-                // core->context->vfp_context->fpexc|=ARM_VFP_FPEXC_ENABLE;
-                frame->vfp_context.fpexc |= ARM_VFP_FPEXC_ENABLE;
+                //core->context->vfp_context->fpexc|=ARM_VFP_FPEXC_ENABLE;
+                frame->vfp_context.fpexc|=ARM_VFP_FPEXC_ENABLE;
 #endif
-                // arm_restore_fpu(core->context->vfp_context);
+                //arm_restore_fpu(core->context->vfp_context);
                 arm_restore_fpu(frame);
                 arm_syscall_rett(core);
                 ret_addr = vbar + 1;
-                frame->ret_addr += ret_offset;
+                frame->ret_addr+=ret_offset;
                 break;
-
-            case AIR_ARITHMETIC_ERROR:    // overflow
+    
+            case AIR_ARITHMETIC_ERROR: //overflow
             case AIR_DIVISION_BY_0_ERROR: // /0
             default:
                 break;
@@ -244,25 +219,27 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
     return ret_addr;
 }
 
-static air_boolean_t arm_hm_undef_is_fpu(air_u32_t instr, air_boolean_t is_T32)
-{
+static air_boolean_t arm_hm_undef_is_fpu(air_u32_t instr, air_boolean_t is_T32) {
 
     air_boolean_t is_fpu = false;
 
-    if ((is_T32) != 0)
-    {
+    if (is_T32) {
 
-        if (((((instr & 0xef00) != 0) != 0) == 0xef00) || ((instr & 0x0e10ef00) == 0x0a00ee00) ||
-            ((instr & 0x0e00ee00) == 0x0a00ec00) || ((instr & 0xff10) == 0xf900) ||
-            ((instr & 0x0e10ef00) == 0x0a10ee00) || ((instr & 0x0e00efe0) == 0x0a00ec40))
+        if ( ((instr & 0xef00) == 0xef00) ||
+                ((instr & 0x0e10ef00) == 0x0a00ee00) ||
+                ((instr & 0x0e00ee00) == 0x0a00ec00) ||
+                ((instr & 0xff10) == 0xf900) ||
+                ((instr & 0x0e10ef00) == 0x0a10ee00) ||
+                ((instr & 0x0e00efe0) == 0x0a00ec40) )
 
             is_fpu = true;
-    }
-    else
-    {
-        if (((((instr & 0xfe000000) != 0) != 0) == 0xf2000000) || ((instr & 0x0f000e10) == 0x0e000a00) ||
-            ((instr & 0x0e000e00) == 0x0c000a00) || ((instr & 0xff100000) == 0xf4000000) ||
-            ((instr & 0x0f000e10) == 0x0e000a10) || ((instr & 0x0fe00e00) == 0x0c400a00))
+    } else {
+        if ( ((instr & 0xfe000000) == 0xf2000000) ||
+                ((instr & 0x0f000e10) == 0x0e000a00) ||
+                ((instr & 0x0e000e00) == 0x0c000a00) ||
+                ((instr & 0xff100000) == 0xf4000000) ||
+                ((instr & 0x0f000e10) == 0x0e000a10) ||
+                ((instr & 0x0fe00e00) == 0x0c400a00) )
 
             is_fpu = true;
     }
