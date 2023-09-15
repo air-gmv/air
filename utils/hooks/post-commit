@@ -3,36 +3,24 @@ echo "Starting post-commit hook..."
 
 MESSAGE=$(git log -1 HEAD --pretty=format:%s)
 
-if [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\s*\[C|V\]|\[C|V\]\s*\[(ARM|SPARC|ALL)\]|\[C|V\] ]]; then
-  # Push current commit to remote repository
+# Push current commit to remote repository
+git push
+
+if [[ $? -eq 0 ]]; then
+  echo "Push was successful."
+  
+  python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file-list air/pmk # [--include-comments] [--delete-comments]
+  python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file-list air/libs
+  python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file-list air/pos/bare
+  python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file-list air/tools
+  git add .
+  git commit -m "$MESSAGE (MISRA)"
   git push
 
-  if [[ $? -eq 0 ]]; then
-    echo "Push was successful."
-
-    # If commit message matches regex, execute MISRAivoso, create a new commit and push it
-    if [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\s*\[C\]|\[C\]\s*\[(ARM|SPARC|ALL)\]|\[C\] ]]; then
-      python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file-list air/ # [--include-comments] [--delete-comments]
-      git add .
-      git commit -m "Changes done by MISRAivoso (correction)"
-      git push
-
-    elif [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\s*\[V\]|\[V\]\s*\[(ARM|SPARC|ALL)\]|\[V\] ]]; then
-      python3 utils/misraivoso/MISRAivoso.py --cppcheck --src air/ --src-file-list air/ # [--include-comments] [--delete-comments]
-      git add .
-      git commit -m "Changes done by MISRAivoso (cppcheck)"
-      git push
-    else   
-      echo "Commit message does not match any pattern"
-    fi
-
-  else
-    echo "Push failed, please check your connection."
-    git reset --soft HEAD~1
-  fi
-
 else
-  echo "Ignoring MISRArules..."
+  echo "Push failed, please check your connection."
+  git reset --soft HEAD~1
+
 fi
 
 echo "Terminating post-commit hook..."
