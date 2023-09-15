@@ -1,6 +1,6 @@
 generate-test-yml:
     stage: solo_test
-    #needs: ["SPARC-GR740-build"]
+    #needs: ["SPARC-GR740-build"] 
     script:
         - export TEST_NUMBER=$(echo $CI_COMMIT_MESSAGE | sed -nE 's/.*([0-9]{5}).*/\1/p')
         - . $STATE_FOLDER/gitlab-ci/push/generate-test.sh $TEST_NUMBER
