@@ -25,7 +25,8 @@ extern volatile air_uptr_t *isr_table[PMK_MAX_CORES];
 
 typedef void (*isr)(void);
 
-void isr_install_handler(air_u32_t id, void *new, void **old) {
+void isr_install_handler(air_u32_t id, void *new, void **old)
+{
 
     /* get current core id */
     air_u32_t core_id = air_syscall_get_core_id();
@@ -33,11 +34,12 @@ void isr_install_handler(air_u32_t id, void *new, void **old) {
     /* get old vector handle */
     air_syscall_disable_traps();
     *old = (void *)isr_table[core_id][id];
-    isr_table[core_id][id] = (air_u32_t)new;
+    isr_table[core_id][id] = (air_u32_t) new;
     air_syscall_enable_traps();
 }
 
-void pos_hm_undef(pos_hm_stack *hm_stack){
+void pos_hm_undef(pos_hm_stack *hm_stack)
+{
 
     /* get current core id */
     air_u32_t core_id = air_syscall_get_core_id();
@@ -46,10 +48,10 @@ void pos_hm_undef(pos_hm_stack *hm_stack){
     pprintf("\n** POS UNDEFINED ERROR**\n");
 #endif
     ((isr)isr_table[core_id][AIR_IRQ_HM_EVENT])();
-
 }
 
-void pos_hm_pref_abort(pos_hm_stack *hm_stack){
+void pos_hm_pref_abort(pos_hm_stack *hm_stack)
+{
 
     /* get current core id */
     air_u32_t core_id = air_syscall_get_core_id();
@@ -60,7 +62,8 @@ void pos_hm_pref_abort(pos_hm_stack *hm_stack){
     ((isr)isr_table[core_id][AIR_IRQ_HM_EVENT])();
 }
 
-void pos_hm_data_abort(pos_hm_stack *hm_stack){
+void pos_hm_data_abort(pos_hm_stack *hm_stack)
+{
 
     /* get current core id */
     air_u32_t core_id = air_syscall_get_core_id();

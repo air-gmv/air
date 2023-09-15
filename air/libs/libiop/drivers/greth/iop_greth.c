@@ -5,7 +5,7 @@
  * found in the file LICENSE.RTEMS in this distribution or at
  * http://www.rtems.com/license/LICENSE.
  */
-/** 
+/**
  * @file IOPgreth.c
  *
  * @ingroup Drivers
@@ -16,12 +16,11 @@
  * Interrupts and dependency from the RTEMS BSD TCP/IP stack were removed.
  */
 
-
 #include <air.h>
 #include <bsp.h>
-#include <iop_greth.h>
 #include <eth_support.h>
 #include <iop_error.h>
+#include <iop_greth.h>
 
 //#define AUTONEG_ENABLED
 
@@ -32,49 +31,52 @@
 
 #define GRETH_INIT_TIMEOUT_S 3
 
-/** 
+/**
  * @brief Read a PHY register using MDIO
  * @param phy_addr Address of the target PHY
  * @param reg_addr Offset of the target register
  * @return register contents; 0 if there was an error
  */
-static uint32_t read_mii(
-        greth_softc_t *greth, uint32_t phy_addr, uint32_t reg_addr){
+static uint32_t read_mii(greth_softc_t *greth, uint32_t phy_addr, uint32_t reg_addr)
+{
 
     /*return value*/
     uint32_t rv;
     int32_t tstart, tnow;
     int32_t tpus = air_syscall_get_us_per_tick();
 
-//    tstart =rtems_clock_get_uptime_seconds();
-    tstart=(air_syscall_get_elapsed_ticks()*tpus)/1000000;
+    //    tstart =rtems_clock_get_uptime_seconds();
+    tstart = (air_syscall_get_elapsed_ticks() * tpus) / 1000000;
 
     /* wait for MDIO to be ready */
-    while (greth->regs->mdio_ctrl & GRETH_MDIO_BUSY) {
-//        tnow=rtems_clock_get_uptime_seconds();
-        tnow=(air_syscall_get_elapsed_ticks()*tpus)/1000000;
+    while (greth->regs->mdio_ctrl & GRETH_MDIO_BUSY)
+    {
+        //        tnow=rtems_clock_get_uptime_seconds();
+        tnow = (air_syscall_get_elapsed_ticks() * tpus) / 1000000;
         /*Check if we surpasses allowed time*/
-        if ( (tnow-tstart) > GRETH_INIT_TIMEOUT_S ){
-            iop_debug("    greth - failed to read default value after %d msec\n",(tnow-tstart) );
+        if ((tnow - tstart) > GRETH_INIT_TIMEOUT_S)
+        {
+            iop_debug("    greth - failed to read default value after %d msec\n", (tnow - tstart));
             return 0;
         }
     }
 
     /* write phyaddr and reg offset to MDIO ctrl */
-    greth->regs->mdio_ctrl =
-            (phy_addr << 11) | (reg_addr << 6) | GRETH_MDIO_READ;
+    greth->regs->mdio_ctrl = (phy_addr << 11) | (reg_addr << 6) | GRETH_MDIO_READ;
 
-//    tstart =rtems_clock_get_uptime_seconds();
-    tstart=(air_syscall_get_elapsed_ticks()*tpus)/1000000;
+    //    tstart =rtems_clock_get_uptime_seconds();
+    tstart = (air_syscall_get_elapsed_ticks() * tpus) / 1000000;
 
     /* wait for MDIO to ready */
-    while (greth->regs->mdio_ctrl & GRETH_MDIO_BUSY) {
-//        tnow=rtems_clock_get_uptime_seconds();
-        tnow=(air_syscall_get_elapsed_ticks()*tpus)/1000000;
+    while (greth->regs->mdio_ctrl & GRETH_MDIO_BUSY)
+    {
+        //        tnow=rtems_clock_get_uptime_seconds();
+        tnow = (air_syscall_get_elapsed_ticks() * tpus) / 1000000;
 
         /*Check if we surpasses allowed time*/
-        if ( (tnow-tstart) > GRETH_INIT_TIMEOUT_S ){
-            iop_debug("    greth - failed to read default value after %d msec\n",(tnow-tstart) );
+        if ((tnow - tstart) > GRETH_INIT_TIMEOUT_S)
+        {
+            iop_debug("    greth - failed to read default value after %d msec\n", (tnow - tstart));
             return 0;
         }
     }
@@ -86,7 +88,8 @@ static uint32_t read_mii(
         rv = ((greth->regs->mdio_ctrl >> 16) & 0xFFFF);
 
     /* we had an error */
-    else {
+    else
+    {
         iop_debug("    greth - failed to read MMI\n");
         rv = 0;
     }
@@ -94,62 +97,64 @@ static uint32_t read_mii(
     return rv;
 }
 
-/** 
+/**
  * @brief write to a PHY register using MDIO
  * @param phy_addr Address of the target PHY
  * @param reg_addr Offset of the target register
  * @param data Data to be written to the register
  */
-static void write_mii(
-        greth_softc_t *greth, uint32_t phy_addr,
-        uint32_t reg_addr, uint32_t data){
+static void write_mii(greth_softc_t *greth, uint32_t phy_addr, uint32_t reg_addr, uint32_t data)
+{
 
     int32_t tstart, tnow;
     int32_t tpus = air_syscall_get_us_per_tick();
 
-//    tstart =rtems_clock_get_uptime_seconds();
-    tstart=(air_syscall_get_elapsed_ticks()*tpus)/1000000;
+    //    tstart =rtems_clock_get_uptime_seconds();
+    tstart = (air_syscall_get_elapsed_ticks() * tpus) / 1000000;
 
     /* wait for MDIO  to be ready */
-    while (greth->regs->mdio_ctrl & GRETH_MDIO_BUSY) {
-//        tnow=rtems_clock_get_uptime_seconds();
-        tnow=(air_syscall_get_elapsed_ticks()*tpus)/1000000;
+    while (greth->regs->mdio_ctrl & GRETH_MDIO_BUSY)
+    {
+        //        tnow=rtems_clock_get_uptime_seconds();
+        tnow = (air_syscall_get_elapsed_ticks() * tpus) / 1000000;
 
         /*Check if we surpasses allowed time*/
-        if ( (tnow-tstart)  > GRETH_INIT_TIMEOUT_S ){
+        if ((tnow - tstart) > GRETH_INIT_TIMEOUT_S)
+        {
             iop_debug("    greth - failed to write MMI - timeout1\n");
             return;
         }
     }
 
     /* set up the  write operation in ctrl register */
-    greth->regs->mdio_ctrl =
-            ((data & 0xFFFF) << 16) | (phy_addr << 11) |
-            (reg_addr << 6) | GRETH_MDIO_WRITE;
+    greth->regs->mdio_ctrl = ((data & 0xFFFF) << 16) | (phy_addr << 11) | (reg_addr << 6) | GRETH_MDIO_WRITE;
 
-//    tstart =rtems_clock_get_uptime_seconds();
-    tstart=(air_syscall_get_elapsed_ticks()*tpus)/1000000;
+    //    tstart =rtems_clock_get_uptime_seconds();
+    tstart = (air_syscall_get_elapsed_ticks() * tpus) / 1000000;
 
     /* wait for MDIO  to be ready */
-    while (greth->regs->mdio_ctrl & GRETH_MDIO_BUSY) {
- //       tnow=rtems_clock_get_uptime_seconds();
-        tnow=(air_syscall_get_elapsed_ticks()*tpus)/1000000;
+    while (greth->regs->mdio_ctrl & GRETH_MDIO_BUSY)
+    {
+        //       tnow=rtems_clock_get_uptime_seconds();
+        tnow = (air_syscall_get_elapsed_ticks() * tpus) / 1000000;
 
         /*Check if we surpasses allowed time*/
-        if ( (tnow-tstart)  > GRETH_INIT_TIMEOUT_S ){
+        if ((tnow - tstart) > GRETH_INIT_TIMEOUT_S)
+        {
             iop_debug("    greth - failed to write MMI - timeout2\n");
             return;
         }
     }
 }
 
-/** 
+/**
  * @brief initialize GRETH core
  * @param device Ethernet device configuration pointer
  */
-static int greth_initialize_hardware(iop_eth_device_t *device){
-	
-	int i;
+static int greth_initialize_hardware(iop_eth_device_t *device)
+{
+
+    int i;
     int phyaddr;
     int phyctrl;
     int phystatus;
@@ -158,63 +163,66 @@ static int greth_initialize_hardware(iop_eth_device_t *device){
     greth_regs *regs;
     unsigned int msecs;
 
-	greth_softc_t *sc = (greth_softc_t *)device->dev.driver;
-
+    greth_softc_t *sc = (greth_softc_t *)device->dev.driver;
 
     iop_debug("    GRETH hardware initialization (0%08x)\n", sc->regs);
 
-	regs = sc->regs;
-	/**
-	 *	Reset the controller.
-	 */
+    regs = sc->regs;
+    /**
+     *	Reset the controller.
+     */
     regs->ctrl = 0;
-    regs->ctrl = GRETH_CTRL_RST;	/* Reset ON */
-    regs->ctrl = 0;					/* Reset OFF */
-	
-	 /* Check if mac is gbit capable*/
-    sc->gbit_mac = (regs->ctrl >> 27) & 1;  
-    
+    regs->ctrl = GRETH_CTRL_RST; /* Reset ON */
+    regs->ctrl = 0;              /* Reset OFF */
+
+    /* Check if mac is gbit capable*/
+    sc->gbit_mac = (regs->ctrl >> 27) & 1;
+
     /* Get the phy address which assumed to have been set
        correctly with the reset value in hardware*/
     phyaddr = (regs->mdio_ctrl >> 11) & 0x1F;
-    
+
     /* get phy control register default values */
     phyctrl = read_mii(sc, phyaddr, 0);
-    if((phyctrl & 0x8000) || (phyctrl == 0))
+    if ((phyctrl & 0x8000) || (phyctrl == 0))
+    {
         return AIR_DEVICE_ERROR;
-    
+    }
 
     /* reset PHY and wait for completion */
     write_mii(sc, phyaddr, 0, 0x8000 | phyctrl);
-    
+
     phyctrl = read_mii(sc, phyaddr, 0);
-    if((phyctrl & 0x8000) || (phyctrl == 0))
+    if ((phyctrl & 0x8000) || (phyctrl == 0))
+    {
         return AIR_DEVICE_ERROR;
-	
-	/* clear device's capabilities*/
+    }
+
+    /* clear device's capabilities*/
     sc->gb = 0;
     sc->fd = 0;
     sc->sp = 0;
     sc->auto_neg = 0;
     sc->auto_neg_time = 0;
-	
-	/** 
-	 *  Check if PHY is autoneg capable and then determine operating mode, 
-     *  otherwise force it to 10 Mbit halfduplex 
-	 */
-	
-	/* Is the core autonegotiating?*/
-	if ((phyctrl >> 12) & 1) {
-	
-		/* we are capable of autoneg*/
-		msecs = 0;
-		sc->auto_neg = 1;
-		
-	#ifdef AUTONEG_ENABLED
+
+    /**
+     *  Check if PHY is autoneg capable and then determine operating mode,
+     *  otherwise force it to 10 Mbit halfduplex
+     */
+
+    /* Is the core autonegotiating?*/
+    if ((phyctrl >> 12) & 1)
+    {
+
+        /* we are capable of autoneg*/
+        msecs = 0;
+        sc->auto_neg = 1;
+
+#ifdef AUTONEG_ENABLED
         int32_t tpus = air_syscall_get_us_per_tick();
-        air_time_t tstart = {0,0};
-        air_time_t tnow = {0,0};
-		/* try to get current time*/
+        air_time_t tstart = {0, 0};
+        air_time_t tnow = {0, 0};
+        /* try to get current time*/
 #if 0	
         struct timeval tstart, tnow;
 
@@ -237,152 +245,165 @@ static int greth_initialize_hardware(iop_eth_device_t *device){
 			rtems_clock_get_tod_timeval(&tstart); // Use for RTEMS 5
 		}
 #endif
-        if(air_syscall_get_tod(&tstart) == AIR_INVALID_CONFIG)
+        if (air_syscall_get_tod(&tstart) == AIR_INVALID_CONFIG)
+        {
             air_syscall_set_tod(&tstart);
-	#endif
+        }
 
-		/*wait for auto negotiation to complete*/
-		while (!(((phystatus = read_mii(sc, phyaddr, 1)) >> 5) & 1)) {
-		
-		#ifdef AUTONEG_ENABLED
+#endif
 
-			/*Get current time*/
-//            rtems_clock_get_tod_timeval(&tnow); // For RTEMS 5
+        /*wait for auto negotiation to complete*/
+        while (!(((phystatus = read_mii(sc, phyaddr, 1)) >> 5) & 1))
+        {
+
+#ifdef AUTONEG_ENABLED
+
+            /*Get current time*/
+            //            rtems_clock_get_tod_timeval(&tnow); // For RTEMS 5
             air_syscall_get_tod(&tnow);
 
-			/*calculate deltat between now and tstart*/
-			msecs = (tnow.tv_sec-tstart.tv_sec)*1000+(tnow.tv_nsec-tstart.tv_nsec)/1000000;
-			// /*Check if we surpasses autoneg time*/
-			if ( msecs > GRETH_AUTONEGO_TIMEOUT_MS ){
-				
-				/*autoneg timed out*/
-				sc->auto_neg_time = msecs;
-				iop_debug("    Auto negotiation timed out. Selecting default config\n");
-				
-				/** @todo i don't like this. why use reg from before reset???*/
-				tmp1 = read_mii(sc, phyaddr, 0);
-				
-				/* gbit?*/
-				sc->gb = ((phyctrl >> 6) & 1) && !((phyctrl >> 13) & 1);
-				
-				/*speed: 10 or 100 mbit?*/
-				sc->sp = !((phyctrl >> 6) & 1) && ((phyctrl >> 13) & 1);
-				
-				/*full duplex?*/
-				sc->fd = (phyctrl >> 8) & 1;
-				
-				goto auto_neg_done;
-			}
-		#endif
-		}
-		
-		/*autonegotiation completed within time*/
-		sc->auto_neg_time = msecs;
-		
-		/*read autoneg results*/
-		sc->phydev.adv = read_mii(sc, phyaddr, 4);
-		sc->phydev.part = read_mii(sc, phyaddr, 5);
-		
-		/* extended status register available*/
-		if ((phystatus >> 8) & 1) {
-		
-			/* read regs*/
-			sc->phydev.extadv = read_mii(sc, phyaddr, 9);
-			sc->phydev.extpart = read_mii(sc, phyaddr, 10);
-			
-			/* Check gbit capabilities: FD=FullDuplex HD=HalfDuplex */
-		    if ( (sc->phydev.extadv & GRETH_MII_EXTADV_1000FD) &&
-				(sc->phydev.extpart & GRETH_MII_EXTPRT_1000FD)) {
-				   sc->gb = 1;
-				   sc->fd = 1;
-		    }
-		    if ( (sc->phydev.extadv & GRETH_MII_EXTADV_1000HD) &&
-				(sc->phydev.extpart & GRETH_MII_EXTPRT_1000HD)) {
-				   sc->gb = 1;
-				   sc->fd = 0;
-		    }
-		}
-		
-		/*If we are not gbit*/
-		if ((sc->gb == 0) || ((sc->gb == 1) && (sc->gbit_mac == 0))) {
-			
-			/*Check capabilities: FD=FullDuplex HD=HalfDuplex */
-			if ( (sc->phydev.adv & GRETH_MII_100TXFD) &&
-				 (sc->phydev.part & GRETH_MII_100TXFD)) {
-					sc->sp = 1;
-					sc->fd = 1;
-			}
-			if ( (sc->phydev.adv & GRETH_MII_100TXHD) &&
-				 (sc->phydev.part & GRETH_MII_100TXHD)) {
-					sc->sp = 1;
-					sc->fd = 0;
-			}
-			if ( (sc->phydev.adv & GRETH_MII_10FD) &&
-				 (sc->phydev.part & GRETH_MII_10FD)) {
-					sc->fd = 1;
-			}
-		}
-    }
+            /*calculate deltat between now and tstart*/
+            msecs = (tnow.tv_sec - tstart.tv_sec) * 1000 + (tnow.tv_nsec - tstart.tv_nsec) / 1000000;
+            // /*Check if we surpasses autoneg time*/
+            if (msecs > GRETH_AUTONEGO_TIMEOUT_MS)
+            {
 
+                /*autoneg timed out*/
+                sc->auto_neg_time = msecs;
+                iop_debug("    Auto negotiation timed out. Selecting default config\n");
+
+                /** @todo i don't like this. why use reg from before reset???*/
+                tmp1 = read_mii(sc, phyaddr, 0);
+
+                /* gbit?*/
+                sc->gb = ((phyctrl >> 6) & 1) && !((phyctrl >> 13) & 1);
+
+                /*speed: 10 or 100 mbit?*/
+                sc->sp = !((phyctrl >> 6) & 1) && ((phyctrl >> 13) & 1);
+
+                /*full duplex?*/
+                sc->fd = (phyctrl >> 8) & 1;
+
+                goto auto_neg_done;
+            }
+#endif
+        }
+
+        /*autonegotiation completed within time*/
+        sc->auto_neg_time = msecs;
+
+        /*read autoneg results*/
+        sc->phydev.adv = read_mii(sc, phyaddr, 4);
+        sc->phydev.part = read_mii(sc, phyaddr, 5);
+
+        /* extended status register available*/
+        if ((phystatus >> 8) & 1)
+        {
+
+            /* read regs*/
+            sc->phydev.extadv = read_mii(sc, phyaddr, 9);
+            sc->phydev.extpart = read_mii(sc, phyaddr, 10);
+
+            /* Check gbit capabilities: FD=FullDuplex HD=HalfDuplex */
+            if (((sc->phydev.extadv & GRETH_MII_EXTADV_1000FD) && (sc->phydev.extpart & GRETH_MII_EXTPRT_1000FD)) != 0)
+            {
+                sc->gb = 1;
+                sc->fd = 1;
+            }
+            if (((sc->phydev.extadv & GRETH_MII_EXTADV_1000HD) && (sc->phydev.extpart & GRETH_MII_EXTPRT_1000HD)) != 0)
+            {
+                sc->gb = 1;
+                sc->fd = 0;
+            }
+        }
+
+        /*If we are not gbit*/
+        if ((sc->gb == 0) || ((sc->gb == 1) && (sc->gbit_mac == 0)))
+        {
+
+            /*Check capabilities: FD=FullDuplex HD=HalfDuplex */
+            if (((sc->phydev.adv & GRETH_MII_100TXFD) && (sc->phydev.part & GRETH_MII_100TXFD)) != 0)
+            {
+                sc->sp = 1;
+                sc->fd = 1;
+            }
+            if (((sc->phydev.adv & GRETH_MII_100TXHD) && (sc->phydev.part & GRETH_MII_100TXHD)) != 0)
+            {
+                sc->sp = 1;
+                sc->fd = 0;
+            }
+            if (((sc->phydev.adv & GRETH_MII_10FD) && (sc->phydev.part & GRETH_MII_10FD)) != 0)
+            {
+                sc->fd = 1;
+            }
+        }
+    }
 
 #ifdef AUTONEG_ENABLED
 auto_neg_done:
 #endif
     iop_debug("    auto negotiation done\n");
 
-	/* zero out device information*/
+    /* zero out device information*/
     sc->phydev.vendor = 0;
     sc->phydev.device = 0;
     sc->phydev.rev = 0;
-	
-	/* read PHY status register*/
+
+    /* read PHY status register*/
     phystatus = read_mii(sc, phyaddr, 1);
-    
+
     /* Read out PHY info if extended registers are available */
-    if (phystatus & 1) {
-		
-		/* these registers contain PHY information*/
-		tmp1 = read_mii(sc, phyaddr, 2);
-		tmp2 = read_mii(sc, phyaddr, 3);
-		
-		/*obtain vendor dev and revision information*/
-		sc->phydev.vendor = (tmp1 << 6) | ((tmp2 >> 10) & 0x3F);
-		sc->phydev.rev = tmp2 & 0xF;
-		sc->phydev.device = (tmp2 >> 4) & 0x3F;
+    if ((phystatus & 1) != 0)
+    {
+
+        /* these registers contain PHY information*/
+        tmp1 = read_mii(sc, phyaddr, 2);
+        tmp2 = read_mii(sc, phyaddr, 3);
+
+        /*obtain vendor dev and revision information*/
+        sc->phydev.vendor = (tmp1 << 6) | ((tmp2 >> 10) & 0x3F);
+        sc->phydev.rev = tmp2 & 0xF;
+        sc->phydev.device = (tmp2 >> 4) & 0x3F;
     }
 
     /* Force to 10 mbit half duplex if the 10/100 MAC is used with a 1000 PHY*/
     /* check if marvell 88EE1111 PHY. Needs special reset handling */
-    if ((phystatus & 1) && (sc->phydev.vendor == 0x005043) && (sc->phydev.device == 0x0C)) {
-		if (((sc->gb) && !(sc->gbit_mac)) || !((phyctrl >> 12) & 1)) {
-			/*select speed!*/
-			write_mii(sc, phyaddr, 0, sc->sp << 13);
-			write_mii(sc, phyaddr, 0, 0x8000);
-			sc->gb = 0;
-			sc->sp = 0;
-			sc->fd = 0;
-		}
-    } else {
-		if (((sc->gb) && !(sc->gbit_mac))  || !((phyctrl >> 12) & 1)) {
-			/*select speed!*/
-			write_mii(sc, phyaddr, 0, sc->sp << 13);
-			sc->gb = 0;
-			sc->sp = 0;
-			sc->fd = 0;
-		}
+    if ((phystatus & 1) && (sc->phydev.vendor == 0x005043) && (sc->phydev.device == 0x0C))
+    {
+        if (((sc->gb) && !(sc->gbit_mac)) || !((phyctrl >> 12) & 1))
+        {
+            /*select speed!*/
+            write_mii(sc, phyaddr, 0, sc->sp << 13);
+            write_mii(sc, phyaddr, 0, 0x8000);
+            sc->gb = 0;
+            sc->sp = 0;
+            sc->fd = 0;
+        }
     }
-    
-	/*wait for PHY to be ready*/
-    phyctrl = read_mii(sc, phyaddr, 0);
-    if((phyctrl & 0x8000) || (phyctrl == 0))          
-        return AIR_DEVICE_ERROR;
+    else
+    {
+        if (((sc->gb) && !(sc->gbit_mac)) || !((phyctrl >> 12) & 1))
+        {
+            /*select speed!*/
+            write_mii(sc, phyaddr, 0, sc->sp << 13);
+            sc->gb = 0;
+            sc->sp = 0;
+            sc->fd = 0;
+        }
+    }
 
-	
-	/**
-	 *	Reset the controller.
-	 */
+    /*wait for PHY to be ready*/
+    phyctrl = read_mii(sc, phyaddr, 0);
+    if ((phyctrl & 0x8000) || (phyctrl == 0))
+    {
+        return AIR_DEVICE_ERROR;
+    }
+
+    /**
+     *	Reset the controller.
+     */
     regs->ctrl = 0;
-    regs->ctrl = GRETH_CTRL_RST;	/* Reset ON */
+    regs->ctrl = GRETH_CTRL_RST; /* Reset ON */
     regs->ctrl = 0;
 
     /* Initialize rx/tx descriptor pointers */
@@ -395,110 +416,113 @@ auto_neg_done:
     sc->txdesc = (greth_rxtxdesc *)(((air_u32_t)sc->txdesc + 1024) & ~(1024 - 1));
     sc->rxdesc = (greth_rxtxdesc *)((((air_u32_t)sc->rxdesc + 1024) & ~(1024 - 1)) + 1024);
 
-	/* insert the descriptor table address in the HW register*/
+    /* insert the descriptor table address in the HW register*/
     regs->txdesc = (uint32_t)air_syscall_get_physical_addr((air_uptr_t)sc->txdesc);
     regs->rxdesc = (uint32_t)air_syscall_get_physical_addr((air_uptr_t)sc->rxdesc);
 
     /* setup IOP buffers */
-    setup_iop_buffers(
-            sc->iop_buffers,
-            sc->iop_buffers_storage,
-            device->rx_count + device->tx_count);
+    setup_iop_buffers(sc->iop_buffers, sc->iop_buffers_storage, device->rx_count + device->tx_count);
 
-	/* setup TX descriptors */
-	for (i = 0; i < device->tx_count; i++){
+    /* setup TX descriptors */
+    for (i = 0; i < device->tx_count; i++)
+    {
 
-		/* clear descriptor control*/
-	    sc->txdesc[i].ctrl = 0;
+        /* clear descriptor control*/
+        sc->txdesc[i].ctrl = 0;
 
-	    /* map an IOP buffer to the descriptor */
-	    sc->tx_iop_buffer[i] = &sc->iop_buffers[i];
+        /* map an IOP buffer to the descriptor */
+        sc->tx_iop_buffer[i] = &sc->iop_buffers[i];
 
-	    /* get descriptor physical address*/
-		sc->txdesc[i].addr = sc->tx_iop_buffer[i]->p_addr;
-   }
+        /* get descriptor physical address*/
+        sc->txdesc[i].addr = sc->tx_iop_buffer[i]->p_addr;
+    }
 
     /* setup RX descriptors */
-        iop_debug("uintprt_t %d\n", sizeof(uintptr_t));
-	for (i = 0; i < device->rx_count; i++){
+    iop_debug("uintprt_t %d\n", sizeof(uintptr_t));
+    for (i = 0; i < device->rx_count; i++)
+    {
 
         /* map an IOP buffer to the descriptor */
         sc->rx_iop_buffer[i] = &sc->iop_buffers[device->tx_count + i];
 
 #ifdef DBG_BUFFERS
-        iop_debug(" IOP :: Mapping IO buffer %d on v_addr 0x%06x\n", i, sc->rx_iop_buffer[i]->v_addr );
-#endif    
+        iop_debug(" IOP :: Mapping IO buffer %d on v_addr 0x%06x\n", i, sc->rx_iop_buffer[i]->v_addr);
+#endif
         /* get descriptor physical address*/
-		sc->rxdesc[i].addr = sc->rx_iop_buffer[i]->p_addr;
-		sc->rxdesc[i].ctrl = GRETH_RXD_ENABLE;
+        sc->rxdesc[i].addr = sc->rx_iop_buffer[i]->p_addr;
+        sc->rxdesc[i].ctrl = GRETH_RXD_ENABLE;
 
 #ifdef DBG_BUFFERS
-        iop_debug(" IOP :: descriptor physical address 0x%06x\n", sc->rxdesc[i].addr );
+        iop_debug(" IOP :: descriptor physical address 0x%06x\n", sc->rxdesc[i].addr);
 #endif
-
     }
 
-	/* active wrap bit in last table descriptor*/
+    /* active wrap bit in last table descriptor*/
     sc->rxdesc[sc->rxbufs - 1].ctrl |= GRETH_RXD_WRAP;
 
-	/* set our MAC address */
-    regs->mac_addr_msb = device->mac[0] << 8  | device->mac[1];
-    regs->mac_addr_lsb = device->mac[2] << 24 | device->mac[3] << 16 |
-                         device->mac[4] << 8  | device->mac[5];
+    /* set our MAC address */
+    regs->mac_addr_msb = device->mac[0] << 8 | device->mac[1];
+    regs->mac_addr_lsb = device->mac[2] << 24 | device->mac[3] << 16 | device->mac[4] << 8 | device->mac[5];
 
     /* clear status*/
     regs->status = 0xffffffff;
-	
-	/* enable RX and setup speeds and duplex*/
-	regs->ctrl |= GRETH_CTRL_RXEN | (sc->fd << 4) | (sc->sp << 7) | (sc->gb << 8);
-//        regs->ctrl |= GRETH_CTRL_RXEN | (sc->fd << 4) | (0 << 7) | (0 << 8);
-	iop_debug("  HArdware init done! leaving gigabit capabilities %d\n", sc->gb);
-        return AIR_SUCCESSFUL;
+
+    /* enable RX and setup speeds and duplex*/
+    regs->ctrl |= GRETH_CTRL_RXEN | (sc->fd << 4) | (sc->sp << 7) | (sc->gb << 8);
+    //        regs->ctrl |= GRETH_CTRL_RXEN | (sc->fd << 4) | (0 << 7) | (0 << 8);
+    iop_debug("  HArdware init done! leaving gigabit capabilities %d\n", sc->gb);
+    return AIR_SUCCESSFUL;
 }
 
-uint32_t greth_validate_packet(iop_eth_device_t *dev, eth_header_t *packet) {
+uint32_t greth_validate_packet(iop_eth_device_t *dev, eth_header_t *packet)
+{
 
     /*check packet type*/
-    if(packet->type == HTONS(ETH_HDR_ARP_TYPE)){
+    if (packet->type == HTONS(ETH_HDR_ARP_TYPE))
+    {
         /*arp packet found*/
         return 1;
     }
 
-    if(packet->type == HTONS(ETH_HDR_IP_TYPE)){
+    if (packet->type == HTONS(ETH_HDR_IP_TYPE))
+    {
         /* check if the packet was for us */
-        if (!eth_compare_mac((uint16_t*)dev->mac, (uint16_t*)packet->dst_mac) ||
-                          !eth_compare_ip((uint16_t *)dev->ip, (uint16_t*)packet->dst_ip)){
-      //      iop_debug("invalid packet - wrong address\n");
+        if (!eth_compare_mac((uint16_t *)dev->mac, (uint16_t *)packet->dst_mac) ||
+            !eth_compare_ip((uint16_t *)dev->ip, (uint16_t *)packet->dst_ip))
+        {
+            //      iop_debug("invalid packet - wrong address\n");
             return -1;
         }
 
         /* check the if IP version is valid */
-        if (packet->vhl != 0x45) {
-       //     iop_debug("invalid packet - ipv\n");
+        if (packet->vhl != 0x45)
+        {
+            //     iop_debug("invalid packet - ipv\n");
             return -1;
         }
 
         /* check if the packet is an UDP packet */
-        if (packet->proto != IPV4_HDR_PROTO) {
-       //     iop_debug("invalid packet - not udp\n");
+        if (packet->proto != IPV4_HDR_PROTO)
+        {
+            //     iop_debug("invalid packet - not udp\n");
             return -1;
         }
 
         /* check if the checksum is valid */
-        if (eth_ipv4_chksum((uint8_t *)packet) != (uint16_t)0xFFFF) {
-       //     iop_debug("invalid packet - wrong checksum\n");
+        if (eth_ipv4_chksum((uint8_t *)packet) != (uint16_t)0xFFFF)
+        {
+            //     iop_debug("invalid packet - wrong checksum\n");
             return -1;
         }
 
         return 0;
     }
 
-    iop_debug("other packet %d\n", packet->type );
+    iop_debug("other packet %d\n", packet->type);
     return -1;
 }
 
-
-/** 
+/**
  *  \param [in]  sc	: internal driver structure
  *  \param [in]  b : pointer to header
  *  \param [in]  d : pointer to data
@@ -507,151 +531,177 @@ uint32_t greth_validate_packet(iop_eth_device_t *dev, eth_header_t *packet) {
  *
  *  \brief reads data from Ethernet
  **/
-static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper, iop_eth_device_t *device){
-	
-    uint32_t len = 0, status = 0, error=0;
+static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper, iop_eth_device_t *device)
+{
+
+    uint32_t len = 0, status = 0, error = 0;
 
     /* read if the descriptor is not enabled */
-    while(!((status = sc->rxdesc[sc->rx_ptr].ctrl) & GRETH_RXD_ENABLE)){
+    while (!((status = sc->rxdesc[sc->rx_ptr].ctrl) & GRETH_RXD_ENABLE))
+    {
 
         /*Check for errors*/
-        if ((status & GRETH_RXD_TOOLONG) || (status & GRETH_RXD_DRIBBLE) ||
-            (status & GRETH_RXD_CRCERR)  || (status & GRETH_RXD_OVERRUN) ||
-            (status & GRETH_RXD_LENERR)  || 
-            (status & 0x7FF) < sizeof(eth_header_t)- sizeof(ethproto_header_t)) {
-                error = 1;
-                iop_debug("IO :: error greth recieve %d desc %d len %d %d 0x%06x\n", 
-                            status,sc->rx_ptr, (status & 0x7FF), sc->regs->status, sc->rxdesc[sc->rx_ptr].addr);
-
+        if (((status & GRETH_RXD_TOOLONG) != 0) || (status & GRETH_RXD_DRIBBLE) || (status & GRETH_RXD_CRCERR) ||
+            (status & GRETH_RXD_OVERRUN) || (status & GRETH_RXD_LENERR) ||
+            (status & 0x7FF) < sizeof(eth_header_t) - sizeof(ethproto_header_t))
+        {
+            error = 1;
+            iop_debug("IO :: error greth recieve %d desc %d len %d %d 0x%06x\n", status, sc->rx_ptr, (status & 0x7FF),
+                      sc->regs->status, sc->rxdesc[sc->rx_ptr].addr);
         }
 
-        if(error==0){
-            iop_debug("desc %d 0x%06x len %d\n",sc->rx_ptr, sc->rxdesc[sc->rx_ptr].addr, status & 0x7FF );
+        if (error == 0)
+        {
+            iop_debug("desc %d 0x%06x len %d\n", sc->rx_ptr, sc->rxdesc[sc->rx_ptr].addr, status & 0x7FF);
             /* get packet length */
             len = status & 0x7FF;
 
             /*get free fragment*/
             iop_fragment_t *frag = obtain_free_fragment();
-            if(frag==NULL){
+            if (frag == NULL)
+            {
                 /*no more free fragments*/
                 iop_raise_error(OUT_OF_MEMORY);
                 return -1;
             }
-
 
             /*get packet header*/
             memcpy(&frag->header, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, sizeof(eth_header_t));
 
             int valid = -1;
 
-            if((valid = greth_validate_packet(device, &frag->header.eth_header)) == 0){
+            if ((valid = greth_validate_packet(device, &frag->header.eth_header)) == 0)
+            {
                 /*IP packet udp handle packet fragments*/
 
-                unsigned int pack_seq = (((unsigned int)frag->header.eth_header.ipoffset[0] & 0x1f)<<8) + frag->header.eth_header.ipoffset[1];
+                unsigned int pack_seq = (((unsigned int)frag->header.eth_header.ipoffset[0] & 0x1f) << 8) +
+                                        frag->header.eth_header.ipoffset[1];
 
                 /*is there a sequence number?*/
-                if(pack_seq == 0){ 
+                if (pack_seq == 0)
+                {
 
-                    if(!iop_chain_is_empty(&wrapper->fragment_queue)){
+                    if (!iop_chain_is_empty(&wrapper->fragment_queue))
+                    {
                         /*iop_chain already had fragments from old uncomplete packet, release them.*/
                         iop_fragment_t *frag_aux;
-                        while(!iop_chain_is_empty(&wrapper->fragment_queue)){
+                        while (!iop_chain_is_empty(&wrapper->fragment_queue))
+                        {
                             frag_aux = obtain_fragment(&wrapper->fragment_queue);
                             release_fragment(frag_aux);
                         }
                     }
-
 
                     /*set descriptor info to wrapper*/
                     memcpy(wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, len);
 
                     frag->header_size = sizeof(eth_header_t);
                     frag->payload = wrapper->buffer->v_addr + frag->header_size;
-                    frag->payload_size = len-frag->header_size; 
+                    frag->payload_size = len - frag->header_size;
 
                     iop_chain_append(&wrapper->fragment_queue, &frag->node);
 
-                    wrapper->buffer->header_off=0;
+                    wrapper->buffer->header_off = 0;
                     wrapper->buffer->header_size = frag->header_size;
-                    wrapper->buffer->payload_off= frag->header_size;
+                    wrapper->buffer->payload_off = frag->header_size;
                     wrapper->buffer->payload_size = frag->payload_size;
 
                     iop_debug("seq 0 desc %d %d\n", sc->rx_ptr, frag->header.eth_header.ipoffset[0]);
-
-                }else{
+                }
+                else
+                {
                     /*packet with sequence number in order?*/
-                    if(iop_chain_is_empty(&wrapper->fragment_queue)){
+                    if ((iop_chain_is_empty(&wrapper->fragment_queue)) != 0)
+                    {
                         /*No chain, assume out of order packet*/
                         iop_debug("seq outof order desc %d %d\n", sc->rx_ptr, pack_seq);
                         release_fragment(frag);
                         len = 0;
-                    }else{
-                        iop_fragment_t *last_frag= (iop_fragment_t *)wrapper->fragment_queue.last;
-                        unsigned int last_pack_seq = (((unsigned int)last_frag->header.eth_header.ipoffset[0] & 0x1f)<<8) + last_frag->header.eth_header.ipoffset[1];
+                    }
+                    else
+                    {
+                        iop_fragment_t *last_frag = (iop_fragment_t *)wrapper->fragment_queue.last;
+                        unsigned int last_pack_seq =
+                            (((unsigned int)last_frag->header.eth_header.ipoffset[0] & 0x1f) << 8) +
+                            last_frag->header.eth_header.ipoffset[1];
 
-                        if(last_pack_seq + 185 != pack_seq){ /*TODO magic number 185*/
+                        if (last_pack_seq + 185 != pack_seq)
+                        { /*TODO magic number 185*/
                             /*wrong sequence number trash this fragment*/
                             iop_debug("seq wrong desc %d %d", sc->rx_ptr, last_pack_seq);
                             release_fragment(frag);
-                            len=0;
-                        }else{
+                            len = 0;
+                        }
+                        else
+                        {
 
                             /*At this point we have a fragmented packet with correct sequence number*/
 
                             frag->header_size = sizeof(eth_header_t) - sizeof(ethproto_header_t);
                             frag->payload = last_frag->payload + last_frag->payload_size;
-                            frag->payload_size = len - frag->header_size; 
+                            frag->payload_size = len - frag->header_size;
 
                             /*set descriptor info to wrapper*/
-                            memcpy(frag->payload, sc->rx_iop_buffer[sc->rx_ptr]->v_addr+frag->header_size, frag->payload_size);
+                            memcpy(frag->payload, sc->rx_iop_buffer[sc->rx_ptr]->v_addr + frag->header_size,
+                                   frag->payload_size);
                             wrapper->buffer->payload_size += frag->payload_size;
                             iop_chain_append(&wrapper->fragment_queue, &frag->node);
-                            iop_debug("seq correct desc %d %d %d\n", sc->rx_ptr, wrapper->buffer->payload_size, pack_seq);
-
+                            iop_debug("seq correct desc %d %d %d\n", sc->rx_ptr, wrapper->buffer->payload_size,
+                                      pack_seq);
                         }
                     }
                 }
-            }else{
+            }
+            else
+            {
                 /*is packet arp?*/
-                if(valid == 1){
+                if (valid == 1)
+                {
                     iop_debug("arp packet desc %d\n", sc->rx_ptr);
                     /*set ARP wrapper: ARP wrapper is only released after ARP reply has been sent*/
-                    static iop_wrapper_t *arp_wrapper=NULL;
-                    if(arp_wrapper==NULL)
-                        arp_wrapper=obtain_free_wrapper();
-                    else{
+                    static iop_wrapper_t *arp_wrapper = NULL;
+                    if (arp_wrapper == NULL)
+                    {
+                        arp_wrapper = obtain_free_wrapper();
+                    }
+
+                    else
+                    {
                         release_wrapper(arp_wrapper);
-                        arp_wrapper=obtain_free_wrapper();
+                        arp_wrapper = obtain_free_wrapper();
                     }
 
                     /*set descriptor info to wrapper*/
-                   memcpy(arp_wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, len);
+                    memcpy(arp_wrapper->buffer->v_addr, sc->rx_iop_buffer[sc->rx_ptr]->v_addr, len);
 
-                    arp_wrapper->buffer->header_off=0;
+                    arp_wrapper->buffer->header_off = 0;
                     arp_wrapper->buffer->header_size = sizeof(eth_header_t);
-                    arp_wrapper->buffer->payload_off= sizeof(eth_header_t);
+                    arp_wrapper->buffer->payload_off = sizeof(eth_header_t);
                     arp_wrapper->buffer->payload_size = len;
 
                     /*swap original wrapper buffer for ARP wrapper buffer*/
-                    wrapper->buffer=arp_wrapper->buffer;
+                    wrapper->buffer = arp_wrapper->buffer;
 
                     /*release unused fragment*/
                     release_fragment(frag);
-
-                }else{
+                }
+                else
+                {
                     iop_debug("invalid desc %d %d\n", sc->rx_ptr, wrapper->buffer->payload_size);
                     release_fragment(frag);
-                    len=0;
+                    len = 0;
                 }
-
             }
         }
 
         /* re-activate descriptor */
-        if (sc->rx_ptr == sc->rxbufs - 1) {
+        if (sc->rx_ptr == sc->rxbufs - 1)
+        {
             /* this is the last descriptor so enable it and activate WRAP*/
             sc->rxdesc[sc->rx_ptr].ctrl = GRETH_RXD_ENABLE | GRETH_RXD_WRAP;
-        } else {
+        }
+        else
+        {
             /* just enable the descriptor */
             sc->rxdesc[sc->rx_ptr].ctrl = GRETH_RXD_ENABLE;
         }
@@ -661,16 +711,17 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper, iop_eth_d
         /*enable reception*/
         sc->regs->ctrl |= GRETH_CTRL_RXEN;
 
-        if(error)
+        if ((error) != 0)
+        {
             return -1;
+        }
 
         return len;
     }
     return 0;
 }
 
-
-/** 
+/**
  *  \param [in]  sc	: internal driver structure
  *  \param [in]  wrapper : wrapper with buffer to tx
  *
@@ -678,53 +729,60 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper, iop_eth_d
  *
  *  \brief writes data to ethernet
  **/
-static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
+static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper)
+{
 
     /* get the size of the packet to send */
     uint16_t len = 0;
 
     /*sanity check*/
-    if(iop_chain_is_empty(&wrapper->fragment_queue)){
+    if ((iop_chain_is_empty(&wrapper->fragment_queue)) != 0)
+    {
         iop_debug("fragment chain empty\n");
         return -1; /*change to error tag*/
     }
 
     /*fetch next fragment on wrapper to send*/
-    iop_fragment_t *frag=obtain_fragment(&wrapper->fragment_queue);
+    iop_fragment_t *frag = obtain_fragment(&wrapper->fragment_queue);
 
     /* check if there are descriptor available */
-    while (sc->txdesc[sc->tx_ptr].ctrl & GRETH_TXD_ENABLE){
+    while (sc->txdesc[sc->tx_ptr].ctrl & GRETH_TXD_ENABLE)
+    {
         /* Are we allowed to block?*/
-        if (sc->tx_blocking) {
+        if ((sc->tx_blocking) != 0)
+        {
 
-             /* wait a moment for any TX descriptors to get available */
-            //rtems_task_wake_after(sc->wait_ticks);
-
-        } else {
+            /* wait a moment for any TX descriptors to get available */
+            // rtems_task_wake_after(sc->wait_ticks);
+        }
+        else
+        {
             /* We can't block waiting, so we return */
             iop_debug("tx can't block\n");
             return 0;
         }
-
     }
 
-    len=frag->header_size + frag->payload_size;
+    len = frag->header_size + frag->payload_size;
 
     /*Copy header to descriptor*/
-    memcpy(sc->tx_iop_buffer[sc->tx_ptr]->v_addr, &frag->header, frag->header_size );
+    memcpy(sc->tx_iop_buffer[sc->tx_ptr]->v_addr, &frag->header, frag->header_size);
 
     /*Copy payload to descriptor*/
-    memcpy(sc->tx_iop_buffer[sc->tx_ptr]->v_addr+frag->header_size, frag->payload, frag->payload_size );
+    memcpy(sc->tx_iop_buffer[sc->tx_ptr]->v_addr + frag->header_size, frag->payload, frag->payload_size);
     iop_debug("TX - size %d %d 0x%06x desc %d\n", frag->header_size, frag->payload_size, frag->payload, sc->tx_ptr);
     /* enable descriptor*/
-    if (sc->tx_ptr < sc->txbufs - 1) {
+    if ((sc->tx_ptr < sc->txbufs - 1) != 0)
+    {
 
         /* re enable descriptor and write total data length*/
         sc->txdesc[sc->tx_ptr].ctrl = GRETH_TXD_ENABLE | len;
-    } else {
+    }
+    else
+    {
 
         /* this is last descriptor so also activate WRAP */
-        sc->txdesc[sc->tx_ptr].ctrl = GRETH_TXD_WRAP | GRETH_TXD_ENABLE | len ;
+        sc->txdesc[sc->tx_ptr].ctrl = GRETH_TXD_WRAP | GRETH_TXD_ENABLE | len;
         iop_debug("TX - LAST DESCRIPTOR %d\n", sc->tx_ptr);
     }
 
@@ -739,23 +797,23 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper){
     return len;
 }
 
-
-uint32_t greth_initialize(iop_device_driver_t *iop_dev, void *arg) {
+uint32_t greth_initialize(iop_device_driver_t *iop_dev, void *arg)
+{
 
     amba_apb_dev_t apbgreth;
     iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
     struct greth_softc *sc = (struct greth_softc *)(device->dev.driver);
 
-    amba_confarea_t * ptrarea = (amba_confarea_t *)air_syscall_get_ambaconf();
+    amba_confarea_t *ptrarea = (amba_confarea_t *)air_syscall_get_ambaconf();
 
     /* Enable Eth Clock gate */
-    clock_gating_enable(ptrarea, GATE_ETH0+device->id);
+    clock_gating_enable(ptrarea, GATE_ETH0 + device->id);
 
     memset(&apbgreth, 0, sizeof(amba_apb_dev_t));
 
     /* Scan for MAC APB slave interface */
-    if (amba_get_apb_slave(ptrarea, VENDOR_GAISLER, GAISLER_ETHMAC,
-                                    device->id, &apbgreth) != 1){
+    if (amba_get_apb_slave(ptrarea, VENDOR_GAISLER, GAISLER_ETHMAC, device->id, &apbgreth) != 1)
+    {
         iop_debug("    GRETH device not found...\n");
         return AIR_DEVICE_NOT_FOUND;
     }
@@ -777,42 +835,47 @@ uint32_t greth_initialize(iop_device_driver_t *iop_dev, void *arg) {
     return AIR_SUCCESSFUL;
 }
 
-uint32_t greth_open(iop_device_driver_t *iop_dev, void *arg) {
+uint32_t greth_open(iop_device_driver_t *iop_dev, void *arg)
+{
 
     air_status_code_e status = AIR_SUCCESSFUL;
     iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
     struct greth_softc *sc = (struct greth_softc *)(device->dev.driver);
 
-    if(!sc->started)
+    if (!sc->started)
+    {
         status = AIR_NOT_AVAILABLE;
+    }
 
     /*Initialize the eth core*/
-    status= greth_initialize_hardware(device);
+    status = greth_initialize_hardware(device);
 
     return status;
 }
 
-
-uint32_t greth_close(iop_device_driver_t *iop_dev, void *arg) {
+uint32_t greth_close(iop_device_driver_t *iop_dev, void *arg)
+{
 
     iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
     struct greth_softc *sc = (struct greth_softc *)(device->dev.driver);
 
-    if(!sc->started)
+    if (!sc->started)
+    {
         return AIR_NOT_AVAILABLE;
+    }
 
     /**
      *  Reset the controller.
      */
-    sc->regs->ctrl = 0;		        	/* RX/TX OFF */
-    sc->regs->ctrl = GRETH_CTRL_RST;	/* Reset ON */
-    sc->regs->ctrl = 0;	         		/* Reset OFF */
+    sc->regs->ctrl = 0;              /* RX/TX OFF */
+    sc->regs->ctrl = GRETH_CTRL_RST; /* Reset ON */
+    sc->regs->ctrl = 0;              /* Reset OFF */
 
     return AIR_SUCCESSFUL;
 }
 
-
-uint32_t greth_read(iop_device_driver_t *iop_dev, void *arg) {
+uint32_t greth_read(iop_device_driver_t *iop_dev, void *arg)
+{
 
     int count;
     iop_wrapper_t *wrapper = (iop_wrapper_t *)arg;
@@ -820,56 +883,61 @@ uint32_t greth_read(iop_device_driver_t *iop_dev, void *arg) {
     greth_softc_t *sc = (greth_softc_t *)device->dev.driver;
 
     /* check if driver was initialized */
-	if(!sc->started) {
+    if (!sc->started)
+    {
         iop_debug("drivernot started\n");
-		return AIR_NOT_AVAILABLE;
-	}
-
-	/* sanity check */
-	if (wrapper == NULL || wrapper->buffer == NULL){
-        iop_debug("greth_read invalid wrapper\n");
-		return AIR_INVALID_PARAM;
-	}
-
-	/* While we have read no data*/
-	while ((count = greth_hw_receive(sc, wrapper, device)) == 0) {
-		/* Are we allowed to block?*/
-		if (sc->rx_blocking) {
-		
-			/* wait a moment for any RX descriptors to get available */
-			//rtems_task_wake_after(sc->wait_ticks);
-
-		} else {
-			/* We can't block waiting, so we return */
-			iop_debug("rx can't block\n");
-			return AIR_NO_ACTION;
-		}
+        return AIR_NOT_AVAILABLE;
     }
 
-    if(count < 0){
+    /* sanity check */
+    if (wrapper == NULL || wrapper->buffer == NULL)
+    {
+        iop_debug("greth_read invalid wrapper\n");
+        return AIR_INVALID_PARAM;
+    }
+
+    /* While we have read no data*/
+    while ((count = greth_hw_receive(sc, wrapper, device)) == 0)
+    {
+        /* Are we allowed to block?*/
+        if ((sc->rx_blocking) != 0)
+        {
+
+            /* wait a moment for any RX descriptors to get available */
+            // rtems_task_wake_after(sc->wait_ticks);
+        }
+        else
+        {
+            /* We can't block waiting, so we return */
+            iop_debug("rx can't block\n");
+            return AIR_NO_ACTION;
+        }
+    }
+
+    if (count < 0)
+    {
         iop_debug("read error\n");
         return AIR_DEVICE_ERROR;
     }
 
-	return AIR_SUCCESSFUL;
+    return AIR_SUCCESSFUL;
 }
 
-uint32_t greth_reset(iop_device_driver_t *iop_dev){
+uint32_t greth_reset(iop_device_driver_t *iop_dev)
+{
     /**
      *   *  Reset the controller.
      **/
     iop_debug("GRETH_RESET!!!\n");
-//    clock_gating_disable(&ambapp_plb, GATE_ETH0);
+    //    clock_gating_disable(&ambapp_plb, GATE_ETH0);
     iop_debug("GRETH0 clock disabled\n");
-//    clock_gating_enable(&ambapp_plb, GATE_ETH0);
+    //    clock_gating_enable(&ambapp_plb, GATE_ETH0);
     iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
 
     /*Initialize the eth core*/
     greth_initialize_hardware(device);
 
     iop_debug("GRETH0 initialized\n");
-
-
 
 #if 0
      clock_gating_enable(&ambapp_plb, GATE_ETH0);
@@ -936,26 +1004,29 @@ uint32_t greth_reset(iop_device_driver_t *iop_dev){
        /* enable RX and setup speeds and duplex*/
        sc->regs->ctrl |= GRETH_CTRL_RXEN | (sc->fd << 4) | (sc->sp << 7) | (sc->gb << 8);
 #endif
-        return 1;
+    return 1;
 }
 
-uint32_t greth_write(iop_device_driver_t *iop_dev, void *arg) {
+uint32_t greth_write(iop_device_driver_t *iop_dev, void *arg)
+{
 
     iop_wrapper_t *wrapper = (iop_wrapper_t *)arg;
     iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
     greth_softc_t *sc = (greth_softc_t *)device->dev.driver;
 
-	if(!sc->started)
-		return AIR_NOT_AVAILABLE;
-		
+    if (!sc->started)
+    {
+        return AIR_NOT_AVAILABLE;
+    }
+
     /* Verify user arguments consistency*/
-    if (wrapper == NULL ||
-        wrapper->buffer == NULL ||
-        wrapper->buffer->payload_size == 0){
-        iop_debug(" greth_write :: arguments inconsistent wrapper 0x%06x buffer 0x%06x paylaod %d\n", wrapper, wrapper->buffer, wrapper->buffer->payload_size);
+    if (wrapper == NULL || wrapper->buffer == NULL || wrapper->buffer->payload_size == 0)
+    {
+        iop_debug(" greth_write :: arguments inconsistent wrapper 0x%06x buffer 0x%06x paylaod %d\n", wrapper,
+                  wrapper->buffer, wrapper->buffer->payload_size);
         return AIR_INVALID_PARAM;
     }
 
     greth_hw_send(sc, wrapper);
-	return AIR_SUCCESSFUL;
+    return AIR_SUCCESSFUL;
 }
