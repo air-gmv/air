@@ -3,7 +3,7 @@ echo "Starting post-commit hook..."
 
 MESSAGE=$(git log -1 HEAD --pretty=format:%s)
 
-if [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\s*\[C|V\]|\[C|V\]\s*\[(ARM|SPARC|ALL)\] ]]; then
+if [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\s*\[C|V\]|\[C|V\]\s*\[(ARM|SPARC|ALL)\]|\[C|V\] ]]; then
   # Push current commit to remote repository
   git push
 
@@ -11,13 +11,13 @@ if [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\s*\[C|V\]|\[C|V\]\s*\[(ARM|SPARC|ALL)\] ]]
     echo "Push was successful."
 
     # If commit message matches regex, execute MISRAivoso, create a new commit and push it
-    if [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\s*\[C\]|\[C\]\s*\[(ARM|SPARC|ALL)\] ]]; then
+    if [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\s*\[C\]|\[C\]\s*\[(ARM|SPARC|ALL)\]|\[C\] ]]; then
       python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file-list air/ # [--include-comments] [--delete-comments]
       git add .
       git commit -m "Changes done by MISRAivoso (correction)"
       git push
 
-    elif [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\s*\[V\]|\[V\]\s*\[(ARM|SPARC|ALL)\] ]]; then
+    elif [[ $MESSAGE =~ \[(ARM|SPARC|ALL)\]\s*\[V\]|\[V\]\s*\[(ARM|SPARC|ALL)\]|\[V\] ]]; then
       python3 utils/misraivoso/MISRAivoso.py --cppcheck --src air/ --src-file-list air/ # [--include-comments] [--delete-comments]
       git add .
       git commit -m "Changes done by MISRAivoso (cppcheck)"
