@@ -30,7 +30,6 @@ else
     if [ -d "$air_folder" ] && [ -d "$pos_folder" ] && [ -d "$bare_folder" ] && [ -d "$rtems5_folder" ]; then
       if [ "$(ls -A "$bare_folder")" ] && [ "$(ls -A "$rtems5_folder")" ]; then
         echo "Copying pos from the latest state folder: $latest_state_folder"
-        mkdir install
         cp -r "$latest_state_folder/air/install/pos" ./install
       else
         echo "Either 'bare' or 'rtems5' directory is empty."
