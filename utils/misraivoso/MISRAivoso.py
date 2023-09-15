@@ -1014,7 +1014,7 @@ def run_shell_script(directory_to_check, specific_directory, progress_bar, inclu
     try:
         subprocess.run(shell_script_command, shell=True, check=True)
         if delete_comments == 1:
-            xml_path = "output/cppcheck_out.xml"
+            xml_path = "utils/misraivoso/output/cppcheck_out.xml"
             # xml_path = "utils/misraivoso/output/cppcheck_out.xml"
             snippets = extract_code_snippets(xml_path)
             if (flags == 0):
