@@ -252,7 +252,7 @@ static air_boolean_t arm_hm_undef_is_fpu(air_u32_t instr, air_boolean_t is_T32)
     if ((is_T32) != 0)
     {
 
-        if ((((instr & 0xef00) != 0) == 0xef00) || ((instr & 0x0e10ef00) == 0x0a00ee00) ||
+        if (((((instr & 0xef00) != 0) != 0) == 0xef00) || ((instr & 0x0e10ef00) == 0x0a00ee00) ||
             ((instr & 0x0e00ee00) == 0x0a00ec00) || ((instr & 0xff10) == 0xf900) ||
             ((instr & 0x0e10ef00) == 0x0a10ee00) || ((instr & 0x0e00efe0) == 0x0a00ec40))
 
@@ -260,7 +260,7 @@ static air_boolean_t arm_hm_undef_is_fpu(air_u32_t instr, air_boolean_t is_T32)
     }
     else
     {
-        if ((((instr & 0xfe000000) != 0) == 0xf2000000) || ((instr & 0x0f000e10) == 0x0e000a00) ||
+        if (((((instr & 0xfe000000) != 0) != 0) == 0xf2000000) || ((instr & 0x0f000e10) == 0x0e000a00) ||
             ((instr & 0x0e000e00) == 0x0c000a00) || ((instr & 0xff100000) == 0xf4000000) ||
             ((instr & 0x0f000e10) == 0x0e000a10) || ((instr & 0x0fe00e00) == 0x0c400a00))
 

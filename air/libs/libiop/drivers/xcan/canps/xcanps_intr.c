@@ -290,7 +290,7 @@ void XCanPs_IntrHandler(void *InstancePtr)
         }
     }
 
-    if ((((PendingIntr & (XCANPS_IXR_RXFWMFLL_MASK | XCANPS_IXR_RXNEMP_MASK) != 0)) != (u32)0) &&
+    if (((((PendingIntr & (XCANPS_IXR_RXFWMFLL_MASK | XCANPS_IXR_RXNEMP_MASK) != 0) != 0)) != (u32)0) &&
         (CanPtr->RecvHandler != NULL))
     {
 
