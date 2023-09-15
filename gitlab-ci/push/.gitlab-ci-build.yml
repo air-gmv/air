@@ -25,7 +25,7 @@ TEST-ARM-ZYNQZ1-build:
         - ./configure -f .arm_zynqz1_config
 
         - make clean
-        - ./make.sh
+        - . $STATE_FOLDER/gitlab-ci/push/make.sh
 
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message starts with [ALL] or [ARM] 
@@ -52,7 +52,7 @@ TEST-SPARC-GR740-build:
         - cp $UTILS/.sparc_gr740_config .
         - ./configure -f .sparc_gr740_config
         - make clean
-        - ./make.sh
+        - . $STATE_FOLDER/gitlab-ci/push/make.sh
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message starts with [ALL] or [SPARC]
 
