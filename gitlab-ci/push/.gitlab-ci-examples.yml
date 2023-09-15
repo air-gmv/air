@@ -41,7 +41,7 @@ SPARC-LAYSIM:
         - make distclean -i
         - $UTILS/testcheck.py
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|SPARC)\]/' 
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' 
     timeout: 5 minutes
     parallel:
       matrix:
