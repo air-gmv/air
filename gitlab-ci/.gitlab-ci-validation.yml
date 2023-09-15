@@ -97,7 +97,9 @@ SPARC-LAYSIM-validation-test:
     - job: RVS-SPARC-LAYSIM-build
       optional: true
     - job: SPARC-GR740-build
-      optional: true  
+      optional: true
+    - job: TEST-SPARC-GR740-build
+      optional: true 
   script: 
         - cd $AIR/examples/private-example/private/validation/$EXAMPLE
         - *build-executable

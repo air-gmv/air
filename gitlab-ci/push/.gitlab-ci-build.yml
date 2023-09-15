@@ -26,47 +26,7 @@ TEST-ARM-ZYNQZ1-build:
 
         - make clean
         
-        - git submodule update --init --recursive  # Initialize submodules
-        - |
-          missing_pos=false
-          if git submodule summary | grep -q 'air/pos/rtems5'; then
-            echo "Submodule has changes, running make pos";
-            make pos
-          else
-            latest_commit_sha=$(git rev-parse HEAD^);
-            echo "Latest Commit SHA: $latest_commit_sha";
-            latest_state_folder="/home/gitlab-runner/state/${latest_commit_sha}";
-            echo "Latest State Folder: $latest_state_folder";
-            if [ -d "$latest_state_folder" ]; then
-              air_folder="$latest_state_folder/air"
-              pos_folder="$air_folder/install/pos"
-              bare_folder="$pos_folder/bare"
-              rtems5_folder="$pos_folder/rtems5"
-              echo "Air folder $air_folder"
-              echo "Pos folder $pos_folder"
-              echo "Bare folder $bare_folder"
-              if [ -d "$air_folder" ] && [ -d "$pos_folder" ] && [ -d "$bare_folder" ] && [ -d "$rtems5_folder" ]; then
-                if [ "$(ls -A "$bare_folder")" ] && [ "$(ls -A "$rtems5_folder")" ]; then
-                  echo "Copying pos from the latest state folder: $latest_state_folder";
-                  mkdir install
-                  cp -r "$latest_state_folder/air/install/pos" ./install;
-                else
-                  echo "Either 'bare' or 'rtems5' directory is empty."
-                  missing_pos=false
-                fi
-              else
-                echo "Missing one or more required subdirectories: 'air', 'pos', 'bare', or 'rtems5'."
-                missing_pos=true
-              fi
-            else
-              echo "No changes in the submodule, but no latest state folder found.";
-              missing_pos=true
-            fi
-          fi
-        
-        - if $missing_pos; then
-            make pos;
-          fi
+        - ./make.sh
         - make -C pmk all
         - make -C libs all
         - make tools
@@ -76,7 +36,7 @@ TEST-ARM-ZYNQZ1-build:
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
 
 # Build SPARC GR740 
-SPARC-GR740-build:
+.SPARC-GR740-build:
     stage: prepare-build
     tags: ["sparc-taste-debian1"]
     needs: ["TASTE1_init"]
@@ -85,6 +45,21 @@ SPARC-GR740-build:
         - ./configure -f .sparc_gr740_config
         - make clean
         - make -j4
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message starts with [ALL] or [SPARC]
+
+TEST-SPARC-GR740-build:
+    stage: prepare-build
+    tags: ["sparc-taste-debian1"]
+    needs: ["TASTE1_init"]
+    script:
+        - cp $UTILS/.sparc_gr740_config .
+        - ./configure -f .sparc_gr740_config
+        - make clean
+        - ./make.sh
+        - make -C pmk all
+        - make -C libs all
+        - make tools
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message starts with [ALL] or [SPARC]
 

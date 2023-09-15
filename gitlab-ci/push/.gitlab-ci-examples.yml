@@ -32,7 +32,7 @@ ARM-QEMU:
 SPARC-LAYSIM:
     stage: examples
     tags: ["SPARC","LAYSIM"]
-    needs: ["SPARC-GR740-build"]
+    #needs: ["SPARC-GR740-build"]
     script:
         - TEST_DIR=$(if [[ "$EXAMPLE" == "paranoia" || "$EXAMPLE" == "smp01" || "$EXAMPLE" == "smp02" ]]; then echo "$AIR/examples/testsuites/$EXAMPLE"; else echo "$AIR/examples/$EXAMPLE"; fi)
         - cd $TEST_DIR
