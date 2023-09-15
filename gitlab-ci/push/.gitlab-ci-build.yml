@@ -12,7 +12,7 @@
         - make clean
         - make -j4
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message starts with [ALL] or [ARM] 
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message starts with [ALL] or [ARM]
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
 
 
@@ -72,7 +72,7 @@ TEST-ARM-ZYNQZ1-build:
         - make tools
 
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/' # message starts with [ALL] or [ARM] 
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message starts with [ALL] or [ARM] 
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
 
 # Build SPARC GR740 
