@@ -124,7 +124,7 @@ air_status_code_e pmk_queuing_port_read(
     pmk_message_slot_t *slot = &config->queue[config->first];
 
     /* copy message to partition space */
-    if (pmk_segregation_copy_to_user(context, msg, slot->message, slot->length) != 0 ||
+if((pmk_segregation_copy_to_user(context, msg, slot->message, slot->length) != 0) != 0 ||
         pmk_segregation_put_user(context, slot->length, length) != 0) {
 
         atomic_set(0, &config->reading);
@@ -158,7 +158,7 @@ air_status_code_e pmk_queuing_port_write(
             (pmk_queuing_config_t *)port->channel->configuration;
 
     /* check if length is valid */
-    if (length > config->max_message_size) {
+if((length > config->max_message_size) != 0) {
 
         return AIR_INVALID_CONFIG;
     }

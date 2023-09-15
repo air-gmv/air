@@ -71,7 +71,7 @@ void arm_core_context_restore(pmk_core_ctrl_t *core) {
 
     if (partition != NULL) {
 
-        if (arm_is_mmu_enabled()) {
+if((arm_is_mmu_enabled()) != 0) {
 
             arm_mmu_change_context(partition->mmu_ctrl);
         } else {

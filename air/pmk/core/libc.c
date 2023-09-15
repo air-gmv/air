@@ -30,7 +30,7 @@ void *memcpy(void *destination , const void *source , air_sz_t length)
     const air_i32_t *i_source;
     air_u32_t i_len = (air_u32_t) length;
 
-    if(((AIR_CHECK_LEN128(i_len)) == 0U) &&
+if((((AIR_CHECK_LEN128(i_len) != 0)) == 0U) &&
        ((AIR_MEM_ALIGN((air_u32_t) source , (air_u32_t) destination)) == 0))
     {
         i_destination = (air_i32_t*) b_destination;

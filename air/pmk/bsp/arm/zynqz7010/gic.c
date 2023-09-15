@@ -83,8 +83,12 @@ void gic_init(air_u32_t cpu_id) {
 void arm_generate_swi(air_u32_t cpu_filter,
         air_u32_t cpu_list, air_u32_t nonsecure, air_u32_t sgi_id) {
 
-    if (cpu_filter == ARM_SGI_TARGET_LIST && cpu_list == 0)
+if(cpu_filter == ARM_SGI_TARGET_LIST && cpu_list == 0)
+{
         return;
+}
+
+
 
     ICD->icdsgir =
             (ARM_SGI_TARGET(cpu_filter) |

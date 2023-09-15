@@ -84,7 +84,8 @@ void *sparc_register_vector_trap_handler(air_u32_t n, void *handler) {
 
 void *sparc_install_vector_trap_handler(air_u32_t n, void *handler) {
 
-    sparc_install_raw_trap_handler(n, sparc_isr_handler_entry);
+(void)    sparc_install_raw_trap_handler(n, sparc_isr_handler_entry);
+
     void *old_handler = (void *)sparc_isr_vector[n];
     sparc_isr_vector[n] = (air_u32_t)handler;
     return old_handler;
