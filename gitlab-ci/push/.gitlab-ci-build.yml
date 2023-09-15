@@ -31,9 +31,7 @@ SPARC-GR740-build:
         - make clean
         - make -j4
         #- . $STATE_FOLDER/gitlab-ci/push/make.sh
-        #- . $STATE_FOLDER/gitlab-ci/push/make_test.sh
-        
-        
+        #- . $STATE_FOLDER/gitlab-ci/push/make_test.sh  
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message contains [ALL] or [SPARC]
 
@@ -46,7 +44,6 @@ SPARC-GR740-build:
         - ./configure -f .sparc_leon4_config
         - make clean
         - make -j4
-
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message contains [ALL] or [SPARC] 
 
