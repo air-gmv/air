@@ -21,7 +21,7 @@ ARM-ZYNQZ1-build:
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'       # message does not contain any [...]
 
 # Build SPARC GR740 
-.SPARC-GR740-build:
+SPARC-GR740-build:
     stage: prepare-build
     tags: ["sparc-taste-debian1"]
     needs: ["TASTE1_init"]
