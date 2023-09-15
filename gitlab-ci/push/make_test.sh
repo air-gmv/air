@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Try to copy install folder if there exists one
-latest_commit_sha=$(git rev-parse HEAD^)
+#latest_commit_sha=$(git rev-parse HEAD^)
+latest_commit_sha=daeecee913d1d2aae9e80ec77206d82634a56dfa
 echo "Latest Commit SHA: $latest_commit_sha"
 latest_state_folder="/home/gitlab-runner/state/${latest_commit_sha}"
 echo "Latest State Folder: $latest_state_folder"
@@ -12,6 +13,8 @@ need_pmk=true
 need_tools=true
 if [ -d "$latest_state_folder" ]; then
   install_folder="$latest_state_folder/air/install"
+
+
     
   if [ -d "$install_folder" ]; then
       libs_folder="$install_folder/libs"
@@ -19,11 +22,11 @@ if [ -d "$latest_state_folder" ]; then
       pos_folder="$install_folder/pos"
       tools_folder="$install_folder/tools"
 
+      mkdir install
+
       if [ -d "$pos_folder" ] && [ -n "$(ls -A "$pos_folder")" ]; then
         echo "Copying pos from the latest state folder: $latest_state_folder"
-        #cp -r "$install_folder/pos" ./install
-        mkdir install/pos
-        cp -r "$latest_state_folder/install/pos/." "install/pos/"
+        cp -r "$install_folder/pos" ./install/pos
         need_pos=false
       fi
 
