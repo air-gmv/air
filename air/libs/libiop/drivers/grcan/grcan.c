@@ -717,7 +717,7 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
 
 #if 0
 	/* RX Semaphore created with count = 0 */
-if(( rtems_semaphore_create(rtems_build_name('G', 'C', 'R', '0' + pDev->minor) != 0),
+if((( rtems_semaphore_create(rtems_build_name('G', 'C', 'R', '0' + pDev->minor) != 0) != 0),
 		0,
 		RTEMS_FIFO|RTEMS_SIMPLE_BINARY_SEMAPHORE|RTEMS_NO_INHERIT_PRIORITY|\
 		RTEMS_LOCAL|RTEMS_NO_PRIORITY_CEILING,
@@ -729,7 +729,7 @@ if(( rtems_semaphore_create(rtems_build_name('G', 'C', 'R', '0' + pDev->minor) !
 	DBG("rx_sem successful with ID: %d\n", (int)pDev->rx_sem);
 	/* TX Semaphore created with count = 0 */
 
-if((rtems_semaphore_create(rtems_build_name('G', 'C', 'T', '0' + pDev->minor) != 0),
+if(((rtems_semaphore_create(rtems_build_name('G', 'C', 'T', '0' + pDev->minor) != 0) != 0),
 			0,
 			RTEMS_FIFO|RTEMS_SIMPLE_BINARY_SEMAPHORE|RTEMS_NO_INHERIT_PRIORITY|\
 			RTEMS_LOCAL|RTEMS_NO_PRIORITY_CEILING,
@@ -740,7 +740,7 @@ if((rtems_semaphore_create(rtems_build_name('G', 'C', 'T', '0' + pDev->minor) !=
 	}
 	DBG("tx_sem successful with ID: %d\n", (int) pDev->tx_sem);
 	/* TX Empty Semaphore created with count = 0 */
-if(( rtems_semaphore_create(rtems_build_name('G', 'C', 'E', '0' + pDev->minor) != 0),
+if((( rtems_semaphore_create(rtems_build_name('G', 'C', 'E', '0' + pDev->minor) != 0) != 0),
 		0,
 		RTEMS_FIFO|RTEMS_SIMPLE_BINARY_SEMAPHORE|RTEMS_NO_INHERIT_PRIORITY|\
 		RTEMS_LOCAL|RTEMS_NO_PRIORITY_CEILING,
@@ -751,7 +751,7 @@ if(( rtems_semaphore_create(rtems_build_name('G', 'C', 'E', '0' + pDev->minor) !
 	}
 	DBG("txempty_sem successful with ID: %d\n", (int) pDev->txempty_sem);
 	/* Device Semaphore created with count = 1 */
-if(( rtems_semaphore_create(rtems_build_name('G', 'C', 'A', '0' + pDev->minor) != 0),
+if((( rtems_semaphore_create(rtems_build_name('G', 'C', 'A', '0' + pDev->minor) != 0) != 0),
 		1,
 		RTEMS_FIFO|RTEMS_SIMPLE_BINARY_SEMAPHORE|RTEMS_NO_INHERIT_PRIORITY|\
 		RTEMS_LOCAL|RTEMS_NO_PRIORITY_CEILING,
@@ -792,7 +792,7 @@ air_status_code_e iop_grcan_open_internal(iop_device_driver_t *iop_dev, void *ar
 #if 0
 	/* Wait until we get semaphore */
 	DBG("Attempting to take semaphore ID: %d\n", pDev->dev_sem);
-if((rtems_semaphore_obtain(pDev->dev_sem, RTEMS_WAIT, RTEMS_NO_TIMEOUT) != 0)
+if(((rtems_semaphore_obtain(pDev->dev_sem, RTEMS_WAIT, RTEMS_NO_TIMEOUT) != 0) != 0)
 		!= AIR_SUCCESSFUL) {
 		DBG("Failed to obtain the semaphore. Returning...\n");
 		return AIR_DEVICE_ERROR;

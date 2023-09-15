@@ -214,7 +214,7 @@ air_uptr_t *arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core)
                 vgic->rpr = ((vgic->ilist[id] >> 23) & 0x1f);
 
                 vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
-                if ((((frame->ret_psr & ARM_PSR_MODE_MASK) != 0) == ARM_PSR_USR) ||
+                if (((((frame->ret_psr & ARM_PSR_MODE_MASK) != 0) != 0) == ARM_PSR_USR) ||
                     ((frame->ret_psr & ARM_PSR_MODE_MASK) == ARM_PSR_SYS))
                 {
                     if ((vcpu->psr & ARM_PSR_MODE_MASK) != ARM_PSR_IRQ)

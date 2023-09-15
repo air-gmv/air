@@ -120,7 +120,7 @@ air_status_code_e pmk_queuing_port_read(core_context_t *context, pmk_port_t *por
     pmk_message_slot_t *slot = &config->queue[config->first];
 
     /* copy message to partition space */
-    if ((pmk_segregation_copy_to_user(context, msg, slot->message, slot->length) != 0) != 0 ||
+    if (((pmk_segregation_copy_to_user(context, msg, slot->message, slot->length) != 0) != 0) != 0 ||
         pmk_segregation_put_user(context, slot->length, length) != 0)
     {
 

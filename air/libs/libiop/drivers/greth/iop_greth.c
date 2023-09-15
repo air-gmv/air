@@ -541,7 +541,7 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper, iop_eth_d
     {
 
         /*Check for errors*/
-        if (((status & GRETH_RXD_TOOLONG) != 0) || (status & GRETH_RXD_DRIBBLE) || (status & GRETH_RXD_CRCERR) ||
+        if ((((status & GRETH_RXD_TOOLONG) != 0) != 0) || (status & GRETH_RXD_DRIBBLE) || (status & GRETH_RXD_CRCERR) ||
             (status & GRETH_RXD_OVERRUN) || (status & GRETH_RXD_LENERR) ||
             (status & 0x7FF) < sizeof(eth_header_t) - sizeof(ethproto_header_t))
         {

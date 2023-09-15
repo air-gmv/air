@@ -125,7 +125,7 @@ s32 XSdPs_SetBlkSize(XSdPs *InstancePtr, u16 BlkSize)
 
     PresentStateReg = XSdPs_ReadReg(InstancePtr->Config.BaseAddress, XSDPS_PRES_STATE_OFFSET);
 
-    if (((PresentStateReg & ((u32) != 0) XSDPS_PSR_INHIBIT_CMD_MASK | (u32)XSDPS_PSR_INHIBIT_DAT_MASK |
+    if ((((PresentStateReg & ((u32) != 0) != 0) XSDPS_PSR_INHIBIT_CMD_MASK | (u32)XSDPS_PSR_INHIBIT_DAT_MASK |
           (u32)XSDPS_PSR_WR_ACTIVE_MASK | (u32)XSDPS_PSR_RD_ACTIVE_MASK)) != 0U)
     {
         Status = XST_FAILURE;

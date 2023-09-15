@@ -202,7 +202,7 @@ s32 XSdPs_CfgInitialize(XSdPs *InstancePtr, XSdPs_Config *ConfigPtr, u32 Effecti
     InstancePtr->Dma64BitAddr = 0U;
 
     /* Disable bus power and issue emmc hw reset */
-    if (((XSdPs_ReadReg16(InstancePtr->Config.BaseAddress, XSDPS_HOST_CTRL_VER_OFFSET) != 0) &
+    if ((((XSdPs_ReadReg16(InstancePtr->Config.BaseAddress, XSDPS_HOST_CTRL_VER_OFFSET) != 0) != 0) &
          XSDPS_HC_SPEC_VER_MASK) == XSDPS_HC_SPEC_V3)
         XSdPs_WriteReg8(InstancePtr->Config.BaseAddress, XSDPS_POWER_CTRL_OFFSET, XSDPS_PC_EMMC_HW_RST_MASK);
     else
@@ -690,7 +690,7 @@ s32 XSdPs_CardInitialize(XSdPs *InstancePtr)
             goto RETURN_PATH;
         }
 
-        if ((((SCR[2] & SCR_SPEC_VER_3) != 0) != 0U) && (ReadBuff[13] >= UHS_SDR50_SUPPORT) &&
+        if (((((SCR[2] & SCR_SPEC_VER_3) != 0) != 0) != 0U) && (ReadBuff[13] >= UHS_SDR50_SUPPORT) &&
             (InstancePtr->Config.BusWidth == XSDPS_WIDTH_8) &&
 #if defined(ARMR5) || (__aarch64__) || (ARMA53_32) || (PSU_PMU)
             (XGetPSVersion_Info() > XPS_VERSION_1) &&
@@ -807,7 +807,7 @@ s32 XSdPs_CardInitialize(XSdPs *InstancePtr)
         InstancePtr->SectorCount |= (u32)ExtCsd[EXT_CSD_SEC_COUNT_BYTE2] << 8;
         InstancePtr->SectorCount |= (u32)ExtCsd[EXT_CSD_SEC_COUNT_BYTE1];
 
-        if ((((ExtCsd[EXT_CSD_DEVICE_TYPE_BYTE] & EXT_CSD_DEVICE_TYPE_HIGH_SPEED) != 0) != 0U) &&
+        if (((((ExtCsd[EXT_CSD_DEVICE_TYPE_BYTE] & EXT_CSD_DEVICE_TYPE_HIGH_SPEED) != 0) != 0) != 0U) &&
             (InstancePtr->BusWidth >= XSDPS_4_BIT_WIDTH))
         {
             InstancePtr->Mode = XSDPS_HIGH_SPEED_MODE;
@@ -874,7 +874,7 @@ s32 XSdPs_CardInitialize(XSdPs *InstancePtr)
             InstancePtr->Config_TapDelay = XSdPs_ddr50_tapdelay;
 #endif
         }
-        else if ((((ExtCsd[EXT_CSD_DEVICE_TYPE_BYTE] & EXT_CSD_DEVICE_TYPE_HIGH_SPEED) != 0) != 0U) &&
+        else if (((((ExtCsd[EXT_CSD_DEVICE_TYPE_BYTE] & EXT_CSD_DEVICE_TYPE_HIGH_SPEED) != 0) != 0) != 0U) &&
 
                  (InstancePtr->BusWidth >= XSDPS_4_BIT_WIDTH))
         {
@@ -1160,7 +1160,7 @@ s32 XSdPs_CmdTransfer(XSdPs *InstancePtr, u32 Cmd, u32 Arg, u32 BlkCnt)
     if ((Cmd != CMD21) && (Cmd != CMD19))
     {
         PresentStateReg = XSdPs_ReadReg(InstancePtr->Config.BaseAddress, XSDPS_PRES_STATE_OFFSET);
-        if ((((PresentStateReg & (XSDPS_PSR_INHIBIT_DAT_MASK | XSDPS_PSR_INHIBIT_DAT_MASK) != 0)) != 0U) &&
+        if (((((PresentStateReg & (XSDPS_PSR_INHIBIT_DAT_MASK | XSDPS_PSR_INHIBIT_DAT_MASK) != 0) != 0)) != 0U) &&
             ((CommandReg & XSDPS_DAT_PRESENT_SEL_MASK) != 0U))
         {
             Status = XST_FAILURE;
@@ -1176,7 +1176,7 @@ s32 XSdPs_CmdTransfer(XSdPs *InstancePtr, u32 Cmd, u32 Arg, u32 BlkCnt)
         StatusReg = XSdPs_ReadReg16(InstancePtr->Config.BaseAddress, XSDPS_NORM_INTR_STS_OFFSET);
         if ((Cmd == CMD21) || (Cmd == CMD19))
         {
-            if (((XSdPs_ReadReg16(InstancePtr->Config.BaseAddress, XSDPS_NORM_INTR_STS_OFFSET) != 0) &
+            if ((((XSdPs_ReadReg16(InstancePtr->Config.BaseAddress, XSDPS_NORM_INTR_STS_OFFSET) != 0) != 0) &
                  XSDPS_INTR_BRR_MASK) != 0U)
             {
                 XSdPs_WriteReg16(InstancePtr->Config.BaseAddress, XSDPS_NORM_INTR_STS_OFFSET, XSDPS_INTR_BRR_MASK);

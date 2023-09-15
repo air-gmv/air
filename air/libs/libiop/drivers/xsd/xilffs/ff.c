@@ -4803,7 +4803,7 @@ static FRESULT find_volume(                    /* FR_OK(0): successful, !=0: an 
             && ld_word(fs->win + BPB_FSInfo32) == 1 && move_window(fs, bsect + 1) == FR_OK)
         {
             fs->fsi_flag = 0;
-            if ((ld_word(fs->win + BS_55AA) != 0) == 0xAA55 /* Load FSInfo data if available */
+            if (((ld_word(fs->win + BS_55AA) != 0) != 0) == 0xAA55 /* Load FSInfo data if available */
                 && ld_dword(fs->win + FSI_LeadSig) == 0x41615252 && ld_dword(fs->win + FSI_StrucSig) == 0x61417272)
             {
 #if (FF_FS_NOFSINFO & 1) == 0
@@ -8451,7 +8451,7 @@ FRESULT f_mkfs(const TCHAR *path, /* Logical drive number */
 
     /* Update partition information */
     if (FF_MULTI_PARTITION && part != 0)
-    {   /* Created in the existing partition */
+    { /* Created in the existing partition */
         /* Update system ID in the partition table */
         if (disk_read(pdrv, buf, 0, 1) != RES_OK)
         {
@@ -8767,7 +8767,7 @@ TCHAR *f_gets(TCHAR *buff, /* Pointer to the string buffer to read */
         }
 
 #if FF_LFN_UNICODE == 1 || FF_LFN_UNICODE == 3 /* Output it in UTF-16/32 encoding */
-                                       if (FF_LFN_UNICODE == 1 && dc >= 0x10000)
+        if (FF_LFN_UNICODE == 1 && dc >= 0x10000)
         { /* Out of BMP at UTF-16? */
             *p++ = (TCHAR)(0xD800 | ((dc >> 10) - 0x40));
             nc++;                       /* Make and output high surrogate */
@@ -8781,7 +8781,7 @@ TCHAR *f_gets(TCHAR *buff, /* Pointer to the string buffer to read */
         }
 
 #elif FF_LFN_UNICODE == 2 /* Output it in UTF-8 encoding */
-            if (dc < 0x80)
+        if (dc < 0x80)
         { /* 1-byte */
             *p++ = (TCHAR)dc;
             nc++;
@@ -8821,28 +8821,28 @@ TCHAR *f_gets(TCHAR *buff, /* Pointer to the string buffer to read */
     }
 
 #else /* Byte-by-byte without any conversion (ANSI/OEM API) */
-len -= 1;                                                  /* Make a room for the terminator */
-while (nc < len)
-{
-    f_read(fp, s, 1, &rc);
-    if (rc != 1)
+    len -= 1; /* Make a room for the terminator */
+    while (nc < len)
     {
-        break;
-    }
+        f_read(fp, s, 1, &rc);
+        if (rc != 1)
+        {
+            break;
+        }
 
-    dc = s[0];
-    if (FF_USE_STRFUNC == 2 && dc == '\r')
-    {
-        continue;
-    }
+        dc = s[0];
+        if (FF_USE_STRFUNC == 2 && dc == '\r')
+        {
+            continue;
+        }
 
-    *p++ = (TCHAR)dc;
-    nc++;
-    if (dc == '\n')
-    {
-        break;
+        *p++ = (TCHAR)dc;
+        nc++;
+        if (dc == '\n')
+        {
+            break;
+        }
     }
-}
 #endif
 
     *p = 0;               /* Terminate the string */

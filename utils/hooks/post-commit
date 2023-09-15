@@ -16,10 +16,6 @@ if [[ $? -eq 0 ]]; then
     python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file "$FILE"
   done
 
-  python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file-list air/pmk # [--include-comments] [--delete-comments]
-  python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file-list air/libs
-  python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file-list air/pos/bare
-  python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file-list air/tools
   git add .
   git commit -m "$MESSAGE (MISRA)"
   git push

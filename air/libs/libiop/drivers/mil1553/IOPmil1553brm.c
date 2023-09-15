@@ -886,7 +886,7 @@ uint32_t brm_initialize(iop_device_driver_t *iop_dev, void *arg)
     DBG("Registering BRM core at [0x%x] irq %d, minor %d\n", brm->regs, brm->irqno, minor);
 #if 0
 	/* Device Semaphore created with count = 1 */
-if(( rtems_semaphore_create(rtems_build_name('B', 'M', 'D', '0'+minor) != 0),
+if((( rtems_semaphore_create(rtems_build_name('B', 'M', 'D', '0'+minor) != 0) != 0),
 				1,
 				RTEMS_FIFO|RTEMS_SIMPLE_BINARY_SEMAPHORE|RTEMS_NO_INHERIT_PRIORITY|RTEMS_LOCAL|RTEMS_NO_PRIORITY_CEILING, 
 				0,
@@ -1066,7 +1066,7 @@ uint32_t brm_read(iop_device_driver_t *iop_dev, void *arg)
                     current = READ_DMA(&brm->desc[descriptor].cur);
 
                     /* Check for Buffer overlap: There was a Wrap in the buffer and current > last_read*/
-                    if ((((tmp = READ_REG(&brm->desc[descriptor].ctrl) != 0)) & 0x80) &&
+                    if (((((tmp = READ_REG(&brm->desc[descriptor].ctrl) != 0) != 0)) & 0x80) &&
                         (current > brm->last_read[descriptor]))
                     {
 
