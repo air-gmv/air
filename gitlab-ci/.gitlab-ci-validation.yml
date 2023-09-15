@@ -1,5 +1,5 @@
 # Gitlab CICD script for validation stage
-# Author huca@GMV 2023
+# Author huca@GMV 2023 
 
 .build-executable: &build-executable
     - $AIR/configure
