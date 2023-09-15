@@ -20,8 +20,6 @@ ARM-QEMU-validation-test:
         optional: true
       - job: ARM-ZYNQZ1-build
         optional: true
-      - job: TEST-ARM-ZYNQZ1-build
-        optional: true
     script: 
         - cd $AIR/examples/private-example/private/validation/$EXAMPLE
         - *build-executable
@@ -98,8 +96,6 @@ SPARC-LAYSIM-validation-test:
       optional: true
     - job: SPARC-GR740-build
       optional: true
-    - job: TEST-SPARC-GR740-build
-      optional: true 
   script: 
         - cd $AIR/examples/private-example/private/validation/$EXAMPLE
         - *build-executable

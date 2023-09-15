@@ -4,7 +4,7 @@
 # Note: make_test.sh might not cover some edge cases. The same goes for make.sh.
 #       In the event of both scripts failing for whatever reason, revert to "make -j4"
 
-# Build ARM ZYNQZ1
+# Build ARM ZYNQZ1 
 ARM-ZYNQZ1-build:
     stage: prepare-build
     tags: ["ARM1"]
