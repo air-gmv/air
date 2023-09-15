@@ -14,45 +14,54 @@
 #include <cache.h>
 #include <cp15.h>
 
-void arm_instruction_cache_invalidate(void) {
+void arm_instruction_cache_invalidate(void)
+{
     air_arm_cp15_instruction_cache_invalidate();
 }
 
-void arm_data_cache_invalidate(void) {
+void arm_data_cache_invalidate(void)
+{
     air_u32_t clidr = air_arm_cp15_get_cache_level_id();
     air_u32_t loc = (clidr >> 24U) & 0b111;
     air_u32_t level = 0;
 
-    for (level = 0; level < loc; ++level) {
+    for (level = 0; level < loc; ++level)
+    {
         air_u32_t ctype = (clidr >> (3U * level)) & 0b111;
 
         /* Check if this level has a data cache or unified cache */
-        if (((ctype & (0x6)) == 2) || (ctype == 4)) {
+        if (((ctype & (0x6)) == 2) || (ctype == 4))
+        {
             arm_cache_invalidate_level(level, CP15_CSSELR_DATA);
         }
     }
 }
 
-void arm_data_cache_clean(void) {
+void arm_data_cache_clean(void)
+{
     air_u32_t clidr = air_arm_cp15_get_cache_level_id();
     air_u32_t loc = (clidr >> 24U) & 0b111;
     air_u32_t level = 0;
 
-    for (level = 0; level < loc; ++level) {
+    for (level = 0; level < loc; ++level)
+    {
         air_u32_t ctype = (clidr >> (3U * level)) & 0b111;
 
         /* Check if this level has a data cache or unified cache */
-        if ( (ctype == 0b010) || (ctype == 0b100) ) {
+        if ((ctype == 0b010) || (ctype == 0b100))
+        {
             arm_data_cache_clean_level(level);
         }
     }
 }
 
-void arm_tlb_invalidate(void) {
+void arm_tlb_invalidate(void)
+{
     air_arm_cp15_tlb_invalidate();
 }
 
-void arm_branch_predictor_invalidate(void) {
+void arm_branch_predictor_invalidate(void)
+{
     air_arm_cp15_branch_predictor_invalidate_all();
 }
 
@@ -60,7 +69,8 @@ void arm_branch_predictor_invalidate(void) {
  * \todo
  * TODO in RTEMS they disable interrupts for some reason
  */
-air_u32_t arm_cache_get_size_id_for_level(air_u32_t level) {
+air_u32_t arm_cache_get_size_id_for_level(air_u32_t level)
+{
 
     air_u32_t ccsidr;
 
@@ -77,7 +87,8 @@ air_u32_t arm_cache_get_size_id_for_level(air_u32_t level) {
  * LineSize = log(#words) - 2
  * => L = log2(2^(LineSize + 2) * 4)
  */
-air_u32_t arm_cache_get_line_shift(air_u32_t ccsidr) {
+air_u32_t arm_cache_get_line_shift(air_u32_t ccsidr)
+{
     return (ccsidr & 0x7) + 4;
 }
 
@@ -85,7 +96,8 @@ air_u32_t arm_cache_get_line_shift(air_u32_t ccsidr) {
  * \details
  * Associativity + 1
  */
-air_u32_t arm_cache_get_associativity(air_u32_t ccsidr) {
+air_u32_t arm_cache_get_associativity(air_u32_t ccsidr)
+{
     return ((ccsidr >> 3U) & 0x3ff) + 1;
 }
 
@@ -93,7 +105,8 @@ air_u32_t arm_cache_get_associativity(air_u32_t ccsidr) {
  * \details
  * NumSets + 1
  */
-air_u32_t arm_cache_get_number_sets(air_u32_t ccsidr) {
+air_u32_t arm_cache_get_number_sets(air_u32_t ccsidr)
+{
     return ((ccsidr >> 13U) & 0x7fff) + 1;
 }
 
@@ -101,11 +114,13 @@ air_u32_t arm_cache_get_number_sets(air_u32_t ccsidr) {
  * \details
  * Register Size - Associativity
  */
-air_u32_t arm_cache_get_way_shift(air_u32_t associativity) {
+air_u32_t arm_cache_get_way_shift(air_u32_t associativity)
+{
     return __builtin_clz(associativity - 1);
 }
 
-void arm_cache_invalidate_level(air_u32_t level, air_u8_t InD) {
+void arm_cache_invalidate_level(air_u32_t level, air_u8_t InD)
+{
     air_u32_t ccsidr;
     air_u32_t line_shift;
     air_u32_t num_sets;
@@ -122,19 +137,20 @@ void arm_cache_invalidate_level(air_u32_t level, air_u8_t InD) {
     associativity = arm_cache_get_associativity(ccsidr);
     way_shift = arm_cache_get_way_shift(associativity);
 
-    for (set = 0; set < num_sets; set++) {
-        for (way = 0; way < associativity; way++) {
+    for (set = 0; set < num_sets; set++)
+    {
+        for (way = 0; way < associativity; way++)
+        {
 
-            air_u32_t set_way = (way << way_shift)
-                | (set << line_shift)
-                | (level << 1U);
+            air_u32_t set_way = (way << way_shift) | (set << line_shift) | (level << 1U);
 
             air_arm_cp15_data_cache_invalidate_line_by_set_and_way(set_way);
         }
     }
 }
 
-void arm_data_cache_clean_level(air_u32_t level) {
+void arm_data_cache_clean_level(air_u32_t level)
+{
     air_u32_t ccsidr;
     air_u32_t line_shift;
     air_u32_t num_sets;
@@ -151,12 +167,12 @@ void arm_data_cache_clean_level(air_u32_t level) {
     associativity = arm_cache_get_associativity(ccsidr);
     way_shift = arm_cache_get_way_shift(associativity);
 
-    for (set = 0; set < num_sets; set++) {
-        for (way = 0; way < associativity; way++) {
+    for (set = 0; set < num_sets; set++)
+    {
+        for (way = 0; way < associativity; way++)
+        {
 
-            air_u32_t set_way = (way << way_shift)
-                | (set << line_shift)
-                | (level << 1U);
+            air_u32_t set_way = (way << way_shift) | (set << line_shift) | (level << 1U);
 
             air_arm_cp15_data_cache_clean_line_by_set_and_way(set_way);
         }

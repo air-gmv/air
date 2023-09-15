@@ -13,19 +13,19 @@
  */
 
 #include <air.h>
-#include <pmk.h>
-#include <cpu.h>
-#include <sparc.h>
-#include <schedule.h>
-#include <partition.h>
-#include <multicore.h>
 #include <configurations.h>
+#include <cpu.h>
+#include <multicore.h>
+#include <partition.h>
+#include <pmk.h>
+#include <schedule.h>
+#include <sparc.h>
 
+#define DEFINE(s, v) asm volatile("\n->" #s " %0 " #v : : "i"(v))
+#define COMMENT(c) asm volatile("\n->#" c)
 
-#define DEFINE(s, v)     asm volatile("\n->" #s " %0 " #v : : "i" (v))
-#define COMMENT(c)       asm volatile("\n->#" c)
-
-int main(void) {
+int main(void)
+{
 
     COMMENT("CPU Stack Frame Offsets and Size");
     DEFINE(CPU_STACK_FRAME_L0_OFFSET, air_offsetof(sparc_stack_frame_t, l0));
