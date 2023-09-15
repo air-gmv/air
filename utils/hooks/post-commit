@@ -8,7 +8,14 @@ git push
 
 if [[ $? -eq 0 ]]; then
   echo "Push was successful."
-  
+
+  CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r HEAD)
+
+  # Loop through the list of changed files and apply MISRAivoso.py to each one
+  for FILE in $CHANGED_FILES; do
+    python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file "$FILE"
+  done
+
   python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file-list air/pmk # [--include-comments] [--delete-comments]
   python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file-list air/libs
   python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file-list air/pos/bare
