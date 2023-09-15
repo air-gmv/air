@@ -13,33 +13,41 @@
 
 #include <barrier.h>
 
-
-void pmk_barrier_init(pmk_barrier_t *barrier, air_u32_t size) {
+void pmk_barrier_init(pmk_barrier_t *barrier, air_u32_t size)
+{
 
     int i;
     barrier->sense = 0;
     barrier->size = size;
 
     atomic_set(size, &barrier->count);
-    for (i = 0; i < PMK_MAX_CORES; ++i) {
+    for (i = 0; i < PMK_MAX_CORES; ++i)
+    {
         barrier->local_sense[i] = barrier->sense;
     }
 }
 
-void pmk_barrier_wait(pmk_barrier_t *barrier, air_u32_t core_id) {
+void pmk_barrier_wait(pmk_barrier_t *barrier, air_u32_t core_id)
+{
 
     /* swap local sense */
     barrier->local_sense[core_id] = ~barrier->local_sense[core_id];
 
     /* last core remaining ? */
-    if (atomic_fetch_dec(&barrier->count) == 0) {
+    if (atomic_fetch_dec(&barrier->count) == 0)
+    {
 
         atomic_set(barrier->size, &barrier->count);
         barrier->sense = barrier->local_sense[core_id];
 
-    /* no? wait for last core */
-    } else {
+        /* no? wait for last core */
+    }
+    else
+    {
 
-        while (barrier->sense != barrier->local_sense[core_id]);
+        while (barrier->sense != barrier->local_sense[core_id])
+        {
+            ;
+        }
     }
 }

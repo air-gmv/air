@@ -11,18 +11,15 @@
  * @brief System calls related to partitions
  */
 
+#include <configurations.h>
+#include <multicore.h>
 #include <pmk.h>
 #include <printk.h>
-#include <multicore.h>
-#include <segregation.h>
-#include <configurations.h>
 #include <schedule.h>
+#include <segregation.h>
 
-
-air_status_code_e pmk_syscall_get_partition_id(
-        pmk_core_ctrl_t *core,
-        air_name_ptr_t name,
-        air_identifier_t *pid) {
+air_status_code_e pmk_syscall_get_partition_id(pmk_core_ctrl_t *core, air_name_ptr_t name, air_identifier_t *pid)
+{
 
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
@@ -32,10 +29,12 @@ air_status_code_e pmk_syscall_get_partition_id(
     cpu_enable_preemption(flags);
 
     /* get other partition id */
-    if (NULL != name) {
+    if (NULL != name)
+    {
 
         /* check partition permissions */
-        if ((partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0) {
+        if ((partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0)
+        {
 
             /* disable preemption and return */
             cpu_disable_preemption(flags);
@@ -44,8 +43,8 @@ air_status_code_e pmk_syscall_get_partition_id(
 
         /* copy partition name to PMK space */
         air_name_t local_name;
-        if (pmk_segregation_copy_from_user(
-                context, local_name, name, sizeof(air_name_t)) != 0) {
+        if (pmk_segregation_copy_from_user(context, local_name, name, sizeof(air_name_t)) != 0)
+        {
 
             /* disable preemption and return */
             cpu_disable_preemption(flags);
@@ -57,7 +56,8 @@ air_status_code_e pmk_syscall_get_partition_id(
     }
 
     /* check if partition exists */
-    if (NULL == partition) {
+    if (NULL == partition)
+    {
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
@@ -65,7 +65,8 @@ air_status_code_e pmk_syscall_get_partition_id(
     }
 
     /* pass id to partition */
-    if (pmk_segregation_put_user(context, partition->id, pid) != 0) {
+    if (pmk_segregation_put_user(context, partition->id, pid) != 0)
+    {
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
@@ -77,10 +78,9 @@ air_status_code_e pmk_syscall_get_partition_id(
     return AIR_NO_ERROR;
 }
 
-air_status_code_e pmk_syscall_get_partition_status(
-        pmk_core_ctrl_t *core,
-        air_identifier_t pid,
-        air_partition_status_t *status) {
+air_status_code_e pmk_syscall_get_partition_status(pmk_core_ctrl_t *core, air_identifier_t pid,
+                                                   air_partition_status_t *status)
+{
 
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
@@ -90,10 +90,12 @@ air_status_code_e pmk_syscall_get_partition_status(
     cpu_enable_preemption(flags);
 
     /* get other partition status */
-    if (pid >= 0 && partition->id != pid) {
+    if (pid >= 0 && partition->id != pid)
+    {
 
         /* check partition permissions */
-        if ((partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0) {
+        if ((partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0)
+        {
 
             /* disable preemption and return */
             cpu_disable_preemption(flags);
@@ -105,7 +107,8 @@ air_status_code_e pmk_syscall_get_partition_status(
     }
 
     /* check if partition exists */
-    if (NULL == partition) {
+    if (NULL == partition)
+    {
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
@@ -126,7 +129,8 @@ air_status_code_e pmk_syscall_get_partition_status(
     local_status.restart_count = partition->restart_count;
 
     /* copy status to partition */
-    if (pmk_segregation_put_user(context, local_status, status) != 0) {
+    if (pmk_segregation_put_user(context, local_status, status) != 0)
+    {
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
@@ -138,88 +142,97 @@ air_status_code_e pmk_syscall_get_partition_status(
     return AIR_NO_ERROR;
 }
 
-air_status_code_e pmk_syscall_set_partition_mode(
-        pmk_core_ctrl_t *core_ctrl,
-        air_identifier_t pid,
-        air_operating_mode_e mode) {
+air_status_code_e pmk_syscall_set_partition_mode(pmk_core_ctrl_t *core_ctrl, air_identifier_t pid,
+                                                 air_operating_mode_e mode)
+{
 
     pmk_partition_t *partition = core_ctrl->partition;
 
     /* set other partition mode */
-    if (partition->id != pid && pid != -1) {
+    if (partition->id != pid && pid != -1)
+    {
 
         /* check for valid permissions */
-        if ((partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0){
+        if ((partition->permissions & AIR_PERMISSION_SET_PARTITION_MODE) == 0)
+        {
 
             return AIR_INVALID_CONFIG;
         }
 
         /* get other partition */
         partition = pmk_get_partition_by_id(pid);
-        if (NULL == partition) {
+        if (NULL == partition)
+        {
 
             return AIR_INVALID_PARAM;
         }
 
         /* check if the state is valid for other partition */
-        if (AIR_MODE_NORMAL == mode) {
+        if (AIR_MODE_NORMAL == mode)
+        {
 
             return AIR_INVALID_MODE;
         }
     }
 
     /* check if mode is valid */
-    if (mode < AIR_MODE_IDLE || mode > AIR_MODE_NORMAL) {
+    if (mode < AIR_MODE_IDLE || mode > AIR_MODE_NORMAL)
+    {
 
         return AIR_INVALID_PARAM;
     }
 
     /* check if action is necessary */
     if ((AIR_MODE_IDLE == mode && AIR_MODE_IDLE == partition->mode) ||
-        (AIR_MODE_NORMAL == mode && AIR_MODE_NORMAL == partition->mode)) {
+        (AIR_MODE_NORMAL == mode && AIR_MODE_NORMAL == partition->mode))
+    {
 
         return AIR_NO_ACTION;
     }
 
     /* check if the mode is valid */
-    if (AIR_MODE_WARM_START == mode && AIR_MODE_COLD_START == partition->mode) {
+    if (AIR_MODE_WARM_START == mode && AIR_MODE_COLD_START == partition->mode)
+    {
 
-       return AIR_INVALID_MODE;
+        return AIR_INVALID_MODE;
     }
 
     /* Avoid any change while partition is initializing*/
-    if(AIR_PARTITION_STATE_INIT == partition->state){
+    if (AIR_PARTITION_STATE_INIT == partition->state)
+    {
 
-       return AIR_NOT_AVAILABLE;
+        return AIR_NOT_AVAILABLE;
     }
 
     /* apply state to the partition */
     partition->mode = mode;
-    switch (mode) {
+    switch (mode)
+    {
 
-        /* restart partition */
-        case AIR_MODE_COLD_START:
-        case AIR_MODE_WARM_START:
-            pmk_partition_restart(partition);
-            partition->start_condition = AIR_START_CONDITION_PARTITION_RESTART;
-            break;
+    /* restart partition */
+    case AIR_MODE_COLD_START:
+    case AIR_MODE_WARM_START:
+        pmk_partition_restart(partition);
+        partition->start_condition = AIR_START_CONDITION_PARTITION_RESTART;
+        break;
 
-        /* halt partition */
-        case AIR_MODE_IDLE:
-            pmk_partition_halt(partition);
-            break;
+    /* halt partition */
+    case AIR_MODE_IDLE:
+        pmk_partition_halt(partition);
+        break;
 
-        /* set to normal */
-        default:
-            /* no action is required */
-            break;
+    /* set to normal */
+    default:
+        /* no action is required */
+        break;
     }
 
     /* return no error */
     return AIR_NO_ERROR;
 }
 
-void pmk_syscall_end_window(pmk_core_ctrl_t *core) {
+void pmk_syscall_end_window(pmk_core_ctrl_t *core)
+{
 
     pmk_partition_t *partition = core->partition;
 
@@ -248,7 +261,8 @@ void pmk_syscall_end_window(pmk_core_ctrl_t *core) {
     core->context = &pmk_core_idle_context[core->idx];
 }
 
-void pmk_syscall_putchar(pmk_core_ctrl_t *core, char ch) {
+void pmk_syscall_putchar(pmk_core_ctrl_t *core, char ch)
+{
 #if DEBUG_MONITOR != 2
     /* allow partition to be preempted */
     cpu_preemption_flags_t flags;
@@ -262,7 +276,8 @@ void pmk_syscall_putchar(pmk_core_ctrl_t *core, char ch) {
 }
 
 #if DEBUG_MONITOR != 2
-air_u32_t pmk_syscall_print(pmk_core_ctrl_t *core, char *buffer, air_sz_t len) {
+air_u32_t pmk_syscall_print(pmk_core_ctrl_t *core, char *buffer, air_sz_t len)
+{
 
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
@@ -273,10 +288,12 @@ air_u32_t pmk_syscall_print(pmk_core_ctrl_t *core, char *buffer, air_sz_t len) {
     /* print buffer */
     char ch;
     air_u32_t count;
-    for (count = 0; count < len; ++count) {
+    for (count = 0; count < len; ++count)
+    {
 
         /* get character from user land */
-        if (pmk_segregation_get_user(context, ch, buffer) != 0 || ch == '\0') {
+        if (pmk_segregation_get_user(context, ch, buffer) != 0 || ch == '\0')
+        {
             break;
         }
 

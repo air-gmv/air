@@ -1,25 +1,23 @@
 #include <lzss.h>
-#include <string.h>
 #include <stdint.h>
+#include <string.h>
 
-#define N                                       (4096)
-#define F                                       (18)
-#define THRESHOLD                               (2)
-#define NIL                                     (N)
+#define N (4096)
+#define F (18)
+#define THRESHOLD (2)
+#define NIL (N)
 
 unsigned char text_buf[N + F - 1];
 int match_position, match_length, lson[N + 1], rson[N + 257], dad[N + 1];
 unsigned long textsize = 0, codesize = 0, printcount = 0;
 unsigned char CHECKSUM;
 
-
-
-
-int PutPacketInfo (unsigned char *buf){
+int PutPacketInfo(unsigned char *buf)
+{
     lzss_header_t PH;
 
     PH.MAGIC = MAGIC_NUMBER;
-    PH.PARAMS = (unsigned char) (((N >> 6) & 0xf0) | ((((F / 18) % 3) << 2) & 0x0c) | (THRESHOLD - 1));
+    PH.PARAMS = (unsigned char)(((N >> 6) & 0xf0) | ((((F / 18) % 3) << 2) & 0x0c) | (THRESHOLD - 1));
     PH.dummy = '\0';
     PH.CHECKSUM = CHECKSUM;
     PH.ENCODED_SIZE[0] = (codesize >> 24);
@@ -30,14 +28,22 @@ int PutPacketInfo (unsigned char *buf){
     PH.DECODED_SIZE[1] = textsize >> 16;
     PH.DECODED_SIZE[2] = textsize >> 8;
     PH.DECODED_SIZE[3] = textsize;
-    memcpy (buf, &PH, sizeof (lzss_header_t));
+    memcpy(buf, &PH, sizeof(lzss_header_t));
     return 0;
 }
 
-void InitTree (void) {
+void InitTree(void)
+{
     int i;
-    for (i = N + 1; i <= N + 256; ++i) rson[i] = NIL;
-    for (i = 0; i < N; ++i) dad[i] = NIL;
+    for (i = N + 1; i <= N + 256; ++i)
+    {
+        rson[i] = NIL;
+    }
+
+    for (i = 0; i < N; ++i)
+    {
+        dad[i] = NIL;
+    }
 }
 
 void InsertNode(int r)
@@ -51,39 +57,50 @@ void InsertNode(int r)
     rson[r] = lson[r] = NIL;
     match_length = 0;
     for (;;)
+    {
+        if (cmp >= 0)
         {
-            if (cmp >= 0)
-                {
-                    if (rson[p] != NIL)
-                        p = rson[p];
-                    else
-                        {
-                            rson[p] = r;
-                            dad[r] = p;
-                            return;
-                        }
-                }
+            if (rson[p] != NIL)
+            {
+                p = rson[p];
+            }
+
             else
-                {
-                    if (lson[p] != NIL)
-                        p = lson[p];
-                    else
-                        {
-                            lson[p] = r;
-                            dad[r] = p;
-                            return;
-                        }
-                }
-            for (i = 1; i < F; i++)
-                if ((cmp = key[i] - text_buf[p + i]) != 0)
-                    break;
-            if (i > match_length)
-                {
-                    match_position = p;
-                    if ((match_length = i) >= F)
-                        break;
-                }
+            {
+                rson[p] = r;
+                dad[r] = p;
+                return;
+            }
         }
+        else
+        {
+            if (lson[p] != NIL)
+            {
+                p = lson[p];
+            }
+
+            else
+            {
+                lson[p] = r;
+                dad[r] = p;
+                return;
+            }
+        }
+        for (i = 1; i < F; i++)
+            if ((cmp = key[i] - text_buf[p + i]) != 0)
+            {
+                break;
+            }
+
+        if (i > match_length)
+        {
+            match_position = p;
+            if ((match_length = i) >= F)
+            {
+                break;
+            }
+        }
+    }
 
     dad[r] = dad[p];
     lson[r] = lson[p];
@@ -91,138 +108,172 @@ void InsertNode(int r)
     dad[lson[p]] = r;
     dad[rson[p]] = r;
     if (rson[dad[p]] == p)
-    rson[dad[p]] = r;
+    {
+        rson[dad[p]] = r;
+    }
+
     else
-    lson[dad[p]] = r;
+    {
+        lson[dad[p]] = r;
+    }
+
     dad[p] = NIL;
 }
 
-void DeleteNode (int p)
+void DeleteNode(int p)
 {
     int q;
 
     if (dad[p] == NIL)
-    return;
+    {
+        return;
+    }
+
     if (rson[p] == NIL)
-    q = lson[p];
+    {
+        q = lson[p];
+    }
+
     else if (lson[p] == NIL)
-    q = rson[p];
+    {
+        q = rson[p];
+    }
+
     else
+    {
+        q = lson[p];
+        if (rson[q] != NIL)
         {
-            q = lson[p];
-            if (rson[q] != NIL)
-                {
-                    do
-                        {
-                            q = rson[q];
-                        }
-                    while (rson[q] != NIL);
-                    rson[dad[q]] = lson[q];
-                    dad[lson[q]] = dad[q];
-                    lson[q] = lson[p];
-                    dad[lson[p]] = q;
-                }
-            rson[q] = rson[p];
-            dad[rson[p]] = q;
+            do
+            {
+                q = rson[q];
+            } while (rson[q] != NIL);
+            rson[dad[q]] = lson[q];
+            dad[lson[q]] = dad[q];
+            lson[q] = lson[p];
+            dad[lson[p]] = q;
         }
+        rson[q] = rson[p];
+        dad[rson[p]] = q;
+    }
     dad[q] = dad[p];
     if (rson[dad[p]] == p)
-    rson[dad[p]] = q;
+    {
+        rson[dad[p]] = q;
+    }
+
     else
-    lson[dad[p]] = q;
+    {
+        lson[dad[p]] = q;
+    }
+
     dad[p] = NIL;
 }
 
-
-
-void Encode(unsigned char *inbuf, unsigned char *outbuf, int buflen, int oindex){
+void Encode(unsigned char *inbuf, unsigned char *outbuf, int buflen, int oindex)
+{
     int i, c, len, r, s, last_match_length, code_buf_ptr;
     unsigned char code_buf[17], mask;
 
     int lindex = 0;
 
     CHECKSUM = 0xff;
-    InitTree ();
+    InitTree();
     code_buf[0] = 0;
     code_buf_ptr = mask = 1;
     s = 0;
     r = N - F;
     for (i = s; i < r; i++)
-    text_buf[i] = ' ';
+    {
+        text_buf[i] = ' ';
+    }
+
     for (len = 0; len < F && (lindex < buflen); len++)
+    {
+        c = inbuf[lindex++];
+        CHECKSUM ^= c;
+        text_buf[r + len] = c;
+    }
+    if ((textsize = len) == 0)
+    {
+        return;
+    }
+
+    for (i = 1; i <= F; i++)
+    {
+        InsertNode(r - i);
+    }
+
+    InsertNode(r);
+    do
+    {
+        if (match_length > len)
+        {
+            match_length = len;
+        }
+
+        if (match_length <= THRESHOLD)
+        {
+            match_length = 1;
+            code_buf[0] |= mask;
+            code_buf[code_buf_ptr++] = text_buf[r];
+        }
+        else
+        {
+            code_buf[code_buf_ptr++] = (unsigned char)match_position;
+            code_buf[code_buf_ptr++] =
+                (unsigned char)(((match_position >> 4) & 0xf0) | (match_length - (THRESHOLD + 1)));
+        }
+        if ((mask <<= 1) == 0)
+        {
+            memcpy(&outbuf[oindex], code_buf, code_buf_ptr);
+            oindex += code_buf_ptr;
+            codesize += code_buf_ptr;
+            code_buf[0] = 0;
+            code_buf_ptr = mask = 1;
+        }
+        last_match_length = match_length;
+        for (i = 0; i < last_match_length && (lindex < buflen); i++)
         {
             c = inbuf[lindex++];
             CHECKSUM ^= c;
-            text_buf[r + len] = c;
+            DeleteNode(s);
+            text_buf[s] = c;
+            if (s < F - 1)
+            {
+                text_buf[s + N] = c;
+            }
+
+            s = (s + 1) & (N - 1);
+            r = (r + 1) & (N - 1);
+            InsertNode(r);
         }
-    if ((textsize = len) == 0) return;
-    for (i = 1; i <= F; i++)
-    InsertNode (r - i);
-    InsertNode (r);
-    do
+        if ((textsize += i) > printcount)
         {
-            if (match_length > len)
-                match_length = len;
-            if (match_length <= THRESHOLD)
-                {
-                    match_length = 1;
-                    code_buf[0] |= mask;
-                    code_buf[code_buf_ptr++] = text_buf[r];
-                }
-            else
-                {
-                    code_buf[code_buf_ptr++] = (unsigned char) match_position;
-                    code_buf[code_buf_ptr++] = (unsigned char)
-                        (((match_position >> 4) & 0xf0)
-                         | (match_length - (THRESHOLD + 1)));
-                }
-            if ((mask <<= 1) == 0)
-                {
-                    memcpy (&outbuf[oindex], code_buf, code_buf_ptr);
-                    oindex += code_buf_ptr;
-                    codesize += code_buf_ptr;
-                    code_buf[0] = 0;
-                    code_buf_ptr = mask = 1;
-                }
-            last_match_length = match_length;
-            for (i = 0; i < last_match_length && (lindex < buflen); i++)
-                {
-                    c = inbuf[lindex++];
-                    CHECKSUM ^= c;
-                    DeleteNode (s);
-                    text_buf[s] = c;
-                    if (s < F - 1)
-                        text_buf[s + N] = c;
-                    s = (s + 1) & (N - 1);
-                    r = (r + 1) & (N - 1);
-                    InsertNode (r);
-                }
-            if ((textsize += i) > printcount)
-                {
-                    printcount += 1024;
-                }
-            while (i++ < last_match_length)
-                {
-                    DeleteNode (s);
-                    s = (s + 1) & (N - 1);
-                    r = (r + 1) & (N - 1);
-                    if (--len)
-                        InsertNode (r);
-                }
+            printcount += 1024;
         }
-    while (len > 0);
+        while (i++ < last_match_length)
+        {
+            DeleteNode(s);
+            s = (s + 1) & (N - 1);
+            r = (r + 1) & (N - 1);
+            if ((--len) != 0)
+            {
+                InsertNode(r);
+            }
+        }
+    } while (len > 0);
     if (code_buf_ptr > 1)
-        {
-            memcpy (&outbuf[oindex], code_buf, code_buf_ptr);
-            oindex += code_buf_ptr;
-            codesize += code_buf_ptr;
-        }
+    {
+        memcpy(&outbuf[oindex], code_buf, code_buf_ptr);
+        oindex += code_buf_ptr;
+        codesize += code_buf_ptr;
+    }
     outbuf[oindex++] = EOP;
 }
 
-
-
-size_t lzss_compress(char *inbuf, char *outbuf, size_t size){
+size_t lzss_compress(char *inbuf, char *outbuf, size_t size)
+{
 
     textsize = 0;
     codesize = 0;
