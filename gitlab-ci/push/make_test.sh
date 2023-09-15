@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # Try to copy install folder if there exists one
-#latest_commit_sha=$(git rev-parse HEAD^)
-latest_commit_sha=daeecee913d1d2aae9e80ec77206d82634a56dfa
+latest_commit_sha=$(git rev-parse HEAD^)
 echo "Latest Commit SHA: $latest_commit_sha"
 latest_state_folder="/home/gitlab-runner/state/${latest_commit_sha}"
 echo "Latest State Folder: $latest_state_folder"
@@ -14,8 +13,6 @@ need_tools=true
 if [ -d "$latest_state_folder" ]; then
   install_folder="$latest_state_folder/air/install"
 
-
-    
   if [ -d "$install_folder" ]; then
       libs_folder="$install_folder/libs"
       pmk_folder="$install_folder/pmk"
