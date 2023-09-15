@@ -399,7 +399,7 @@ inline static air_u32_t arm_enable_preemption(void) {
 
     if ((psr & ARM_PSR_MODE_MASK) != ARM_PSR_USR) {
 
-        if (irq_mask) {
+if((irq_mask) != 0) {
             arm_enable_interrupts();
         }
     }

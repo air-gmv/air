@@ -161,14 +161,22 @@ void pmk_partition_restart(pmk_partition_t *partition) {
 
     /*Identify all running vcpu*/
     for (i = 0; i < partition->cores; ++i)
-        if (partition->core_mapping[i] < PMK_MAX_CORES)
+if((partition->core_mapping[i] < PMK_MAX_CORES) != 0)
+{
             vcpus |= 1 << i;
+}
+
+
 
     if(!vcpus)
     {   /*No vcpu running. Assign vcpu 0 for partition reload*/
         core_context_setup_reload_partition(&partition->context[0], partition);
-        for (i = 1; i < partition->cores; ++i)
+for(i = 1; i < partition->cores; ++i)
+{
             core_context_setup_idle(&partition->context[i]);
+}
+
+
     }
     else
     {   /*Theres vcpu running. Assign the first we find to go partition reload right away*/

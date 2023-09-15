@@ -146,8 +146,12 @@ __FORCE_INLINE static void arm_ddr_self_refresh(void) {
     DDRC->ctrl_reg1 |= (1 << 12);
     DDRC->DRAM_param_reg3 |= (1 << 23);
 
-    while((DDRC->mode_sts_reg & 0x7) != 3) {
+while((DDRC->mode_sts_reg & 0x7) != 3) {
+{
         if (++timeout > 1000) return;
+}
+
+
     };
 
     timeout = 0;

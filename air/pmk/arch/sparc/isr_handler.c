@@ -48,8 +48,12 @@ static void *sparc_partition_isr_virtualization(
         tn = timer_ctrl.irq;
     }
     else
-        if(tn == BSP_IPC_IRQ)
+if(tn == BSP_IPC_IRQ)
+{
             return NULL;
+}
+
+
 
     /* get an easy pointer to the virtual core structure */
     sparc_virtual_cpu_t *vcpu = &core_ctx->vcpu;
