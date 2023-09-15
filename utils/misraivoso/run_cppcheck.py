@@ -19,7 +19,7 @@ CPPCHECK_EXE = ['cppcheck']
 
 # Misra rules - relative to this script
 MISRA_RULES = os.path.dirname(
-    os.path.abspath(__file__)) + '/misra-rules-all.txt'
+    os.path.abspath(__file__)) + '/utils/misraivoso/misra-rules-all.txt'
 MISRA_CONFIG = os.path.dirname(os.path.abspath(__file__)) + '/misra.json'
 
 # Out files, relative to an output folder passed as parameter

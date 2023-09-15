@@ -554,7 +554,7 @@ def auto_indent_c_files(file_path):
         None
     """
     # Run clang-format with Microsoft style and inplace modification of the file
-    subprocess.run(['clang-format', '-style=microsoft', '-i', file_path])
+    #subprocess.run(['clang-format', '-style=microsoft', '-i', file_path])
 
 
 # --------------------------------------------------------
