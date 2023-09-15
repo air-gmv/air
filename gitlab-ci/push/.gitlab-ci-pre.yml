@@ -9,7 +9,7 @@
     variables:
         GIT_STRATEGY: clone
     before_script: 
-        - '' # Prevents the before_script from running 
+        - '' # Prevents the before_script from running
     script:
         - echo "Cloning repository into runner"
     rules:
