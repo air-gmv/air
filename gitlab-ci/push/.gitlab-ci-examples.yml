@@ -19,7 +19,7 @@ ARM-QEMU:
         - make distclean -i
         - $UTILS/testcheck.py 
     rules:
-        - if: '$CI_COMMIT_MESSAGE =~ /^\[(ALL|ARM)\]/'
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/'
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
     timeout: 5 minutes
     parallel:

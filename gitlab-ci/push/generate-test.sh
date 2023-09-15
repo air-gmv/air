@@ -54,8 +54,7 @@ ARM-QEMU-TEST-DEF-$TEST_NUMBER:
       - make distclean -i
       - *check-and-publish
   rules:
-      - if: '\$CI_COMMIT_MESSAGE =~ /^\[ARM\]/'
-      - if: '\$CI_COMMIT_MESSAGE !~ /^\[SPARC\]/'
+      - if: '\$CI_COMMIT_MESSAGE =~ /.*\[ARM\].*/'
 
 SPARC-LAYSIM-TEST-DEF-$TEST_NUMBER:
   tags: ["SPARC","LAYSIM"]
@@ -66,6 +65,6 @@ SPARC-LAYSIM-TEST-DEF-$TEST_NUMBER:
         - make distclean -i # Ignore distclean errors
         - *check-and-publish
   rules:
-        - if: '\$CI_COMMIT_MESSAGE =~ /^\[SPARC\]/'
+        - if: '\$CI_COMMIT_MESSAGE =~ /.*\[SPARC\].*/'
 
 EOF
