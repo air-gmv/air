@@ -66,7 +66,7 @@ fi
 # Make anything that wasn't copied
 if $need_pos; then
     echo "Copying pos failed or folder was empty, running make pos all"
-    make -C pos all
+    make pos
 fi
 
 if $need_libs; then
