@@ -42,7 +42,7 @@ if git submodule summary | grep -q -e 'air/pos/rtems48i' -e 'air/pos/rtems5'; th
 fi
 
 # Make anything that still needs to be made
-make pos
-make pmk
-make libs
+make -C pos all
+make -C pmk all
+make -C libs all
 make tools
