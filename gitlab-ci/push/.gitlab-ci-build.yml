@@ -13,9 +13,9 @@ ARM-ZYNQZ1-build:
         - cp $UTILS/.arm_zynqz1_config .
         - ./configure -f .arm_zynqz1_config   
         - make clean
+        - make -j4
+        #- . $STATE_FOLDER/gitlab-ci/push/make.sh
         #- . $STATE_FOLDER/gitlab-ci/push/make_test.sh
-        - . $STATE_FOLDER/gitlab-ci/push/make.sh
-        #- make -j4
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message contains [ALL] or [ARM]
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'       # message does not contain any [...]
@@ -29,9 +29,11 @@ SPARC-GR740-build:
         - cp $UTILS/.sparc_gr740_config .
         - ./configure -f .sparc_gr740_config
         - make clean
+        - make -j4
+        #- . $STATE_FOLDER/gitlab-ci/push/make.sh
         #- . $STATE_FOLDER/gitlab-ci/push/make_test.sh
-        - . $STATE_FOLDER/gitlab-ci/push/make.sh
-        #- make -j4
+        
+        
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message contains [ALL] or [SPARC]
 
