@@ -14,8 +14,8 @@
 
 #include <slcr.h>
 
-#define PSS_RST_CTRL (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x200)
-#define A9_CPU_RST_CTRL (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x244)
+#define PSS_RST_CTRL (air_uptr_t *)(XPAR_PSU_FPD_SLCR_SECURE_S_AXI_BASEADDR + 0x200)
+#define A9_CPU_RST_CTRL (air_uptr_t *)(XPAR_PSU_FPD_SLCR_SECURE_S_AXI_BASEADDR + 0x244)
 
 void arm_peripheral_soft_reset(void) {
 
@@ -41,9 +41,9 @@ void arm_ps_reset(void) {
 }
 
 
-#define ARM_PLL_CTRL (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x100)
-#define DDR_PLL_CTRL (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x104)
-#define IO_PLL_CTRL (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x108)
+#define ARM_PLL_CTRL (air_uptr_t *)(XPAR_PSU_FPD_SLCR_SECURE_S_AXI_BASEADDR + 0x100)
+#define DDR_PLL_CTRL (air_uptr_t *)(XPAR_PSU_FPD_SLCR_SECURE_S_AXI_BASEADDR + 0x104)
+#define IO_PLL_CTRL (air_uptr_t *)(XPAR_PSU_FPD_SLCR_SECURE_S_AXI_BASEADDR + 0x108)
 
 void arm_pll_bypass_mode(void) {
 
@@ -59,7 +59,7 @@ void arm_pll_shutdown(void) {
     *IO_PLL_CTRL |= (1 << 1);
 }
 
-#define ARM_CLK_CTRL (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x120)
+#define ARM_CLK_CTRL (air_uptr_t *)(XPAR_PSU_FPD_SLCR_SECURE_S_AXI_BASEADDR + 0x120)
 
 void arm_set_cpu_clock_divisor(air_u32_t divisor) {
 

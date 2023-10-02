@@ -21,6 +21,7 @@
 // #include <workspace.h>
 // #include <gic.h>
 // #include <uart.h>
+#include <cp15.h>
 #include <bsp_console.h>
 #include <bsp_ipc.h>            // for AIR core to use ipc.c
 #include <bsp_segregation.h>    // for AIR core to use segregation.c

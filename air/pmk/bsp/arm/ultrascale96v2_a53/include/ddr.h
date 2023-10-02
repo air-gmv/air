@@ -14,7 +14,6 @@
 #ifndef DDR_H_
 #define DDR_H_
 
-#include <a9mpcore.h>
 #include <parameters.h>
 
 typedef struct {
@@ -133,11 +132,11 @@ typedef struct {
     air_u32_t lpddr_ctrl3;
 } ddrc_t;
 
-#define DDRC ((ddrc_t *)XPAR_PS7_DDRC_0_S_AXI_BASEADDR)
+#define DDRC ((ddrc_t *)XPAR_PSU_DDRC_0_BASEADDR)
 
 
-#define DDR_CLK_CTRL (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x124)
-#define DCI_CLK_CTRL (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x128)
+#define DDR_CLK_CTRL (air_uptr_t *)(XPAR_PSU_FPD_SLCR_SECURE_0_S_AXI_BASEADDR + 0x124)
+#define DCI_CLK_CTRL (air_uptr_t *)(XPAR_PSU_FPD_SLCR_SECURE_0_S_AXI_BASEADDR + 0x128)
 
 __FORCE_INLINE static void arm_ddr_self_refresh(void) {
 

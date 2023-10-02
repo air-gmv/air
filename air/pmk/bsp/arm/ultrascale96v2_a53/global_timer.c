@@ -23,31 +23,6 @@
 
 #define IOU_SCNTRS ((iou_scntrs_module *)XPAR_PSU_IOU_SCNTRS_S_AXI_BASEADDR)
 
-void arm_init_global_timer(void) {
-
-    /* in range 0-255 */
-    air_u32_t us_per_tick = pmk_get_usr_us_per_tick();
-
-    //First program the counter frequency
-    // According to the registers reference we must "program this register to match the clock frequency of the timestamp generator"
-    IOU_SCNTRS->base_freq_id = 0x5F5E100; //XPAR_PSU_CORTEXA53_0_TIMESTAMP_CLK_FREQ (100MHz) in hex
-    //Should it be XPAR_PSU_CORTEXA53_0_CPU_CLK_FREQ_HZ instead?
-
-    // Use the CNTKCTL, Counter-timer Kernel Control register to setup the timer
-    // to generate an event periodically.
-    // Set the EVNTI, bits [7:4] to select wich bit of the counter register triggers the event (select the period ?)
-
-    //TODO: Can i just write the value to the specific bits of the register or do i need to read it first and then write "what i want"|"what was alreadt there"?
-    __asm__ volatile ( "mcr 0b1111, 0b000, %0, 0b1110, 0b0001, 0b000\n"::"r" (1 << arm_determine_trigger_bit(us_per_tick) ) );
-
-#ifdef PMK_DEBUG
-    printk("\n :: Generic Timer initialization\n"
-            "    IOU_SCNTRS module at 0x%x\n"
-            "    trigger bit = %d\n\n",
-            IOU_SCNTRS, arm_determine_trigger_bit(us_per_tick) );
-#endif
-}
-
 air_u32_t arm_determine_trigger_bit(air_u32_t us_per_tick){
     // The counter generates a tick every N clock pulses
     // (From Ultrascle+ TRM, Timers and Counters -> Physical Counter section)
@@ -75,9 +50,40 @@ air_u32_t arm_determine_trigger_bit(air_u32_t us_per_tick){
     return position;
 }
 
+void arm_acknowledge_gt(void) {
+    //TODO ???
+    return;
+}
+
+
+void arm_init_global_timer(void) {
+
+    /* in range 0-255 */
+    air_u32_t us_per_tick = pmk_get_usr_us_per_tick();
+
+    //First program the counter frequency
+    // According to the registers reference we must "program this register to match the clock frequency of the timestamp generator"
+    IOU_SCNTRS->base_freq_id = 0x5F5E100; //XPAR_PSU_CORTEXA53_0_TIMESTAMP_CLK_FREQ (100MHz) in hex
+    //Should it be XPAR_PSU_CORTEXA53_0_CPU_CLK_FREQ_HZ instead?
+
+    // Use the CNTKCTL, Counter-timer Kernel Control register to setup the timer
+    // to generate an event periodically.
+    // Set the EVNTI, bits [7:4] to select wich bit of the counter register triggers the event (select the period ?)
+
+    //TODO: Can i just write the value to the specific bits of the register or do i need to read it first and then write "what i want"|"what was alreadt there"?
+    __asm__ volatile ( "mcr p15, 0, %0, c14, c1, 0\n"::"r" (1 << arm_determine_trigger_bit(us_per_tick) ) );
+
+#ifdef PMK_DEBUG
+    printk("\n :: Generic Timer initialization\n"
+            "    IOU_SCNTRS module at 0x%x\n"
+            "    trigger bit = %d\n\n",
+            IOU_SCNTRS, arm_determine_trigger_bit(us_per_tick) );
+#endif
+}
+
 void arm_start_global_timer(void) {
     // Set the EVNTEN, bit [2] of the CNTP_CTL register to enable the event stream?
-    __asm__ volatile ( "mcr 0b1111, 0b000, %0, 0b1110, 0b0001, 0b000\n"::"r" (1 << 2U ) );
+    __asm__ volatile ( "mcr p15, 0, %0, c14, c2, 1\n"::"r" (1 << 2U ) );
 
     arm_instruction_synchronization_barrier();
 }
@@ -88,7 +94,7 @@ air_u64_t arm_read_global_timer(void) {
     air_u32_t upper = 0;
     
     // Read the CNTPCT register
-    __asm__ volatile ("mrrc 0b1111, 0b0000, %0, %1, 0b0000\n":"=r" (lower), "=r" (upper) );
+    __asm__ volatile ("mrrc p15, 0, %0, %1, c14\n":"=r" (lower), "=r" (upper) );
 
     air_u64_t result = (air_u64_t) upper << 32U | lower;
 
