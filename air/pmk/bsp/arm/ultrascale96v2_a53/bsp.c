@@ -11,7 +11,6 @@
  * \brief BSP core routines
  */
 #include <bsp.h>
-#include <a9mpcore.h>
 #include <cache.h>
 #include <isr.h>
 #include <hm.h>
@@ -69,7 +68,7 @@ air_u32_t bsp_core_init(void) {
     if(cpu_id != 0)
         pmk_barrier_wait(&initialization_barrier, bsp_get_core_id());
 
-    arm_a9mpcore_start_hook(cpu_id);
+    // arm_a9mpcore_start_hook(cpu_id);
     arm_set_vector_base();
 
     if(cpu_id == 0) {
@@ -149,13 +148,13 @@ void bsp_shutdown_core(pmk_core_ctrl_t *core_ctx) {
     /* 2. configure wake-up device */
     /* 3. enable l2 cache dynamic clock gating */
     /* 4. enable scu standby mode */
-    arm_scu_standy_enable();
+    // arm_scu_standy_enable();
 
     /* 5. enable topswitch clock stop */
-    *(air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x16c) |= 1;
+    *(air_uptr_t *)(XPAR_PSU_FPD_SLCR_SECURE_0_S_AXI_BASEADDR + 0x16c) |= 1;
 
     /* 6. enable cortex-a9 dynamic clock gating */
-    arm_cp15_enable_dynamic_clock_gating();
+    // arm_cp15_enable_dynamic_clock_gating();
 
     /* 7. put external DDR into self-refresh mode */
     arm_ddr_self_refresh();

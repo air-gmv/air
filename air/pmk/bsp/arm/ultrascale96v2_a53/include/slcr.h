@@ -16,7 +16,8 @@
 #ifndef SLCR_H_
 #define SLCR_H_
 
-#include <a9mpcore.h>
+#include <armv7.h>
+#include <cp15.h>
 #include <parameters.h>
 
 #define UART_CLK_CTRL_CLKACT0_ENABLE    (1U << 0)
@@ -53,7 +54,7 @@ typedef struct {                        /* 0xf800 0000*/
     air_u32_t slcr_locksta;             /* 0x00c */
 } slcr_t;
 
-#define SLCR ((slcr_t *)XPAR_PS7_SLCR_0_S_AXI_BASEADDR)
+#define SLCR ((slcr_t *)XPAR_PSU_FPD_SLCR_SECURE_0_S_AXI_BASEADDR)
 
 __FORCE_INLINE static void arm_slcr_lock(void) {
     SLCR->slcr_lock = SLCR_LOCK_KEY;
