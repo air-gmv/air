@@ -23,7 +23,7 @@
 /**< ************************ ICD Register Access ****************************/
 /**< ICDDCR - Distributor Control Register */
 __FORCE_INLINE static void arm_gic_disable(void) {
-    ICD->gicd_ctlr &= 0b00; // ~(3U << 0);
+    ICD->gicd_ctlr &= ~(3U << 0); //0b11..1100
 }
 
 __FORCE_INLINE static void arm_gic_enable(void) {
@@ -36,14 +36,15 @@ __FORCE_INLINE static air_u32_t arm_is_gic_enabled(void) {
 
 /**< GICD_TYPER - Interrupt Controller Type Register */
 __FORCE_INLINE static air_u32_t arm_get_it_lines(void) {
-    // Indicates the maximum number of interrupts that the Distributor supports.
-    return (ICD->gicd_typer & 0x1f); // 0x1f = 00011111, aka get 5 first bits 
+    // Indicates the maximum number of SPIs that the gic supports
+    // Determines the number of instances of registers like the isenabler, icenabler and so on 
+    return (ICD->gicd_typer & 0b0011111); //& 00011111, aka get 5 first bits 
 }
 
 #define ZYNQ_MAX_INT 256
 __FORCE_INLINE static air_u32_t arm_get_int_count(void) {
     air_u32_t int_count = (arm_get_it_lines() + 1) * 32;
-    return (int_count <= ZYNQ_MAX_INT) ? int_count : ZYNQ_MAX_INT;
+    return int_count;
 }
 
 __FORCE_INLINE static air_u32_t arm_ic_processor_count(void) {
@@ -52,41 +53,45 @@ __FORCE_INLINE static air_u32_t arm_ic_processor_count(void) {
 
 /* GICD_ISENABLER - Interrupt Set-Enable Registers*/
 __FORCE_INLINE static void arm_int_enable(air_u32_t id) {
-    ICD->gicd_isenabler[id/32] = (1U << (id & 0x1f));
+    ICD->gicd_isenabler[id] = (1U << (id & 0x1f));
 }
 
 /**< GICD_IGROUP - Interrupt Group Registers */
 __FORCE_INLINE static void arm_int_set_grp1(void) {
     for (air_u32_t i = 0; i < arm_get_it_lines(); ++i) {
-        ICD->gicd_igroup[i/32] = 0xffffffff;
+        ICD->gicd_igroup[i] = 0xffffffff;
     }
 }
 
 __FORCE_INLINE static void arm_int_set_grp0(air_u32_t int_id) {
-    ICD->gicd_igroup[int_id/32] = (1U << int_id % 32);
+    ICD->gicd_igroup[int_id] = (1U << int_id % 32);
 }
 
 /**< ICDICER - Interrupt Clear-Enable Register */
 __FORCE_INLINE static void arm_int_clear() {
     for (air_u32_t i = 0; i < arm_get_it_lines(); ++i) {
-        ICD->gicd_icenabler[i/32] = 0xffffffff;
+        ICD->gicd_icenabler[i] = 0xffffffff;
     }
 }
 
+// Disables SGIs with ids 15 - 0
+// Disables PPIs with ids 31 - 16
 __FORCE_INLINE static void arm_sgi_ppi_disable(void) {
     ICD->gicd_icenabler[0] = 0xffffffff;
 }
 
+// Disables SPIs with ids starting at id 32
 __FORCE_INLINE static void arm_spi_disable(void) {
     for (air_u32_t i = 1; i < arm_get_it_lines(); ++i) {
-        ICD->gicd_icenabler[i/32] = 0xffffffff;
+        ICD->gicd_icenabler[i] = 0xffffffff;
     }
 }
 
 /**< ICDICPR  - Interrupt Clear-Pending Register*/
+// Clears pending SPIs with ids starting ate id 32
 __FORCE_INLINE static void arm_clear_pending(void) {
     for (air_u32_t i = 1; i < arm_get_it_lines(); ++i) {
-        ICD->gicd_icpendr[i/32] = 0xffffffff;
+        ICD->gicd_icpendr[i] = 0xffffffff;
     }
 }
 
