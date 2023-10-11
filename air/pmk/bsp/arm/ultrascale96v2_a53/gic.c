@@ -65,7 +65,7 @@ void gic_init(air_u32_t cpu_id) {
     /* See the gicv2 architecture specification for an indepth explanation of the following fields */
     air_u32_t int_mask = 0xff; /* all interrupts accepted */
     
-    // Setting a mask provides an interrupt priotity filter.
+    // Setting a mask provides an interrupt priority filter.
     // Only interrupts with higher priority than the mask are signaled to the processor.
     arm_set_int_mask(int_mask);
 
