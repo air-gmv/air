@@ -18,6 +18,7 @@
 #include <timer.h>
 
 #ifdef PMK_DEBUG_ISR
+#include <cp15.h>
 #include <printk.h>
 air_u32_t counter = 0;
 void arm_isr_handler_print_frame(arm_interrupt_stack_frame_t *frame, const char txt[5]);
