@@ -20,28 +20,64 @@
 #include <cp15.h>
 #include <parameters.h>
 
-#define UART_CLK_CTRL_CLKACT0_ENABLE    (1U << 0)
-#define UART_CLK_CTRL_CLKACT1_ENABLE    (1U << 1)
-#define UART_CLK_CTRL_SRCSEL(mask)      (mask << 4)
-#define UART_CLK_CTRL_DIVISOR(val)      (val << 8)
+/*
+* CRF_APB Module: FPD Clock and Reset Control Registers
+*/
 
-#define MIO_PIN_SLOW_CMOS_EDGE          0x0
-#define MIO_PIN_FAST_CMOS_EDGE          0x1
+typedef struct {                        
+    air_u32_t err_ctrl;                      
+    air_u32_t ir_status;                
+    air_u32_t ir_mask;              
+    air_u32_t ir_enable;            
+    air_u32_t ir_disable;    
+    air_u32_t reserved[2];
+    air_u32_t crf_wprot;            
+    //.. More registers, not needed           
+} crf_apb_t;
 
-#define MIO_PIN_IO_LVCMOS18             (0x1)
-#define MIO_PIN_IO_LVCMOS25             (0x2)
-#define MIO_PIN_IO_LVCMOS33             (0x3)
-#define MIO_PIN_IO_HSTL                 (0x4)
+#define CRF_APB ((crf_apb_t *)XPAR_PSU_CRF_APB_S_AXI_BASEADDR)
 
-#define MIO_PIN_TRI_ENABLE              (1U << 0)
-#define MIO_PIN_L0_SEL(mask)            (mask << 1)
-#define MIO_PIN_L1_SEL(mask)            (mask << 2)
-#define MIO_PIN_L2_SEL(mask)            (mask << 3)
-#define MIO_PIN_L3_SEL(mask)            (mask << 5)
-#define MIO_PIN_SPEED(val)              (val << 8)
-#define MIO_PIN_IO_TYPE(val)            (val << 9)
-#define MIO_PIN_PULLUP(val)             (val << 12)
-#define MIO_PIN_DISABLE_RCVR            (1U << 13)
+__FORCE_INLINE static void arm_crf_apb_ir_disable(void) {
+    CRF_APB->ir_disable = 1;
+}
+
+__FORCE_INLINE static void arm_crf_apb_ir_enable(void) {
+    CRF_APB->ir_enable = 1;
+}
+
+__FORCE_INLINE static void arm_crf_apb_get_status(void) {
+    return CRF_APB->ir_status;
+}
+
+__FORCE_INLINE static void arm_crf_apb_clear_status(void) {
+    CRF_APB->ir_status = 1;
+}
+
+
+/**< ************************ SLCR ****************************/
+
+// #define UART_CLK_CTRL_CLKACT0_ENABLE    (1U << 0)
+// #define UART_CLK_CTRL_CLKACT1_ENABLE    (1U << 1)
+// #define UART_CLK_CTRL_SRCSEL(mask)      (mask << 4)
+// #define UART_CLK_CTRL_DIVISOR(val)      (val << 8)
+
+// #define MIO_PIN_SLOW_CMOS_EDGE          0x0
+// #define MIO_PIN_FAST_CMOS_EDGE          0x1
+
+// #define MIO_PIN_IO_LVCMOS18             (0x1)
+// #define MIO_PIN_IO_LVCMOS25             (0x2)
+// #define MIO_PIN_IO_LVCMOS33             (0x3)
+// #define MIO_PIN_IO_HSTL                 (0x4)
+
+// #define MIO_PIN_TRI_ENABLE              (1U << 0)
+// #define MIO_PIN_L0_SEL(mask)            (mask << 1)
+// #define MIO_PIN_L1_SEL(mask)            (mask << 2)
+// #define MIO_PIN_L2_SEL(mask)            (mask << 3)
+// #define MIO_PIN_L3_SEL(mask)            (mask << 5)
+// #define MIO_PIN_SPEED(val)              (val << 8)
+// #define MIO_PIN_IO_TYPE(val)            (val << 9)
+// #define MIO_PIN_PULLUP(val)             (val << 12)
+// #define MIO_PIN_DISABLE_RCVR            (1U << 13)
 
 #define SLCR_UNLOCK_KEY                 0xDF0D
 #define SLCR_LOCK_KEY                   0x767B
