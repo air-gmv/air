@@ -50,14 +50,14 @@ typedef struct {                           /* 0x00F9000000 (ACPU_GIC)*/
     volatile air_u32_t gicd_ctlr;          /* 0x10000 */ //Distributor Control Register
     volatile air_u32_t gicd_typer;         /* 0x10004 */ //Interrupt Controller Type Register
     volatile air_u32_t gicd_iidr;          /* 0x10008 */ //Distributor Implementer Identification Register
-    volatile air_u32_t reserved0[28];      /* 0x1000c - 0x1007c */
-    volatile air_u32_t gicd_igroup[6];     /* 0x10080 - 0x100fc */ //Interrupt Group Registers
-    volatile air_u32_t gicd_isenabler[6];  /* 0x10100 - 0x1017c */ //Interrupt Set-Enable Registers
-    volatile air_u32_t gicd_icenabler[6];  /* 0x10180 - 0x101fc */ //Interrupt Clear-Enable Registers
-    volatile air_u32_t gicd_ispendr[6];    /* 0x10200 - 0x1027c */ //Interrupt Set-Pending Registers
-    volatile air_u32_t gicd_icpendr[6];    /* 0x10280 - 0x102fc */ //Interrupt Clear-Pending Registers
-    volatile air_u32_t gicd_isactiver[6];  /* 0x10300 - 0x1037c */ //Interrupt Set-Active Registers
-    volatile air_u32_t gicd_icactiver[6];  /* 0x10380 - 0x103fc */ //Interrupt Clear-Active Registers
+    volatile air_u32_t reserved0[29];      /* 0x1000c - 0x1007c */
+    volatile air_u32_t gicd_igroup[7];     /* 0x10080 - 0x100fc */ //Interrupt Group Registers
+    volatile air_u32_t gicd_isenabler[7];  /* 0x10100 - 0x1017c */ //Interrupt Set-Enable Registers
+    volatile air_u32_t gicd_icenabler[7];  /* 0x10180 - 0x101fc */ //Interrupt Clear-Enable Registers
+    volatile air_u32_t gicd_ispendr[7];    /* 0x10200 - 0x1027c */ //Interrupt Set-Pending Registers
+    volatile air_u32_t gicd_icpendr[7];    /* 0x10280 - 0x102fc */ //Interrupt Clear-Pending Registers
+    volatile air_u32_t gicd_isactiver[7];  /* 0x10300 - 0x1037c */ //Interrupt Set-Active Registers
+    volatile air_u32_t gicd_icactiver[7];  /* 0x10380 - 0x103fc */ //Interrupt Clear-Active Registers
     volatile air_u8_t gicd_ipriority[48];  /* 0x10400 - 0x107f8 */ //Interrupt Priority Registers
     volatile air_u32_t reserved1;          /* 0x107fc */
     volatile air_u8_t gicd_itargetsr[48];  /* 0x10800 - 0x10bf8 */ //Interrupt Processor Targets Registers
