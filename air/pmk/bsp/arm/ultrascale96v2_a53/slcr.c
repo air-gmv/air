@@ -7,8 +7,8 @@
  */
 /**
  * \file slcr.c
- * \author trcpse
- * \brief functions to handle the slcr
+ * \author ansi
+ * \brief Functions to handle the slcr
  *
  */
 
@@ -19,13 +19,15 @@
 
 void arm_peripheral_soft_reset(void) {
 
-    if (arm_slcr_is_locked()) arm_slcr_unlock();
+    return;
 
-    *A9_CPU_RST_CTRL |= PERI_RST;
-    arm_instruction_synchronization_barrier();
-    *A9_CPU_RST_CTRL &= ~PERI_RST;
+    // if (arm_slcr_is_locked()) arm_slcr_unlock();
 
-    if (!arm_slcr_is_locked()) arm_slcr_lock();
+    // *A9_CPU_RST_CTRL |= PERI_RST;
+    // arm_instruction_synchronization_barrier();
+    // *A9_CPU_RST_CTRL &= ~PERI_RST;
+
+    // if (!arm_slcr_is_locked()) arm_slcr_lock();
 }
 
 void arm_ps_reset(void) {
