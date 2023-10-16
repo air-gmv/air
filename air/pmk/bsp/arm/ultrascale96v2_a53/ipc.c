@@ -19,12 +19,12 @@
 void arm_setup_ipc(air_u32_t cpu_id) {
 
     if (cpu_id == 0) {
-        // arm_isr_install_handler(ARM_A9MPCORE_IRQ_GT, pmk_partition_scheduler);
+        arm_isr_install_handler(ARM_A53_IRQ_SPT, pmk_partition_scheduler);
         arm_isr_install_handler(BSP_IPC_IRQ, pmk_partition_scheduler);
         arm_isr_install_handler(BSP_IPC_PCS, pmk_ipc_handler);
     }
 
-    // arm_int_set_priority(ARM_A9MPCORE_IRQ_GT, 0);
+    arm_int_set_priority(ARM_A53_IRQ_SPT, 0);
     arm_int_set_priority(BSP_IPC_IRQ, 0);
     arm_int_set_priority(BSP_IPC_PCS, 0);
 
