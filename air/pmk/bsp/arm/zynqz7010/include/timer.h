@@ -19,15 +19,14 @@
 /**
  * \brief Global Timer
  */
-#define ARM_GT_CTRL_TIMER_EN            (1U << 0)
-#define ARM_GT_CTRL_COMP_EN             (1U << 1)
-#define ARM_GT_CTRL_IRQ_EN              (1U << 2)
-#define ARM_GT_CTRL_AUTOINC_EN          (1U << 3)
-#define ARM_GT_CTRL_PRESCALER(value) \
-        ((value < 256) ? value << 8 : (255U << 8))
+#define ARM_GT_CTRL_TIMER_EN (1U << 0)
+#define ARM_GT_CTRL_COMP_EN (1U << 1)
+#define ARM_GT_CTRL_IRQ_EN (1U << 2)
+#define ARM_GT_CTRL_AUTOINC_EN (1U << 3)
+#define ARM_GT_CTRL_PRESCALER(value) ((value < 256) ? value << 8 : (255U << 8))
 
-
-typedef struct {
+typedef struct
+{
     volatile air_u32_t cnt_lower;
     volatile air_u32_t cnt_upper;
     volatile air_u32_t ctrl;
@@ -47,31 +46,31 @@ air_u32_t arm_determine_gt_prescaler(air_u32_t us_per_tick);
 /**
  * \brief Triple Timer Counter
  */
-#define ARM_TTC_CLK_CTRL_PS_EN          (1U << 0)
-#define ARM_TTC_CLK_CTRL_PS(val)        ((val & 0xf) << 1)
-#define ARM_TTC_CLK_CTRL_SRC            (1U << 5)
-#define ARM_TTC_CLK_CTRL_EXT_EDGE       (1U << 6)
+#define ARM_TTC_CLK_CTRL_PS_EN (1U << 0)
+#define ARM_TTC_CLK_CTRL_PS(val) ((val & 0xf) << 1)
+#define ARM_TTC_CLK_CTRL_SRC (1U << 5)
+#define ARM_TTC_CLK_CTRL_EXT_EDGE (1U << 6)
 
-#define ARM_TTC_CNT_CTRL_DIS            (1U << 0)
-#define ARM_TTC_CNT_CTRL_INTV           (1U << 1)
-#define ARM_TTC_CNT_CTRL_DEC            (1U << 2)
-#define ARM_TTC_CNT_CTRL_MTC            (1U << 3)
-#define ARM_TTC_CNT_CTRL_RST            (1U << 4)
-#define ARM_TTC_CNT_CTRL_EN_WAVE        (1U << 5)
-#define ARM_TTC_CNT_CTRL_POL_WAVE       (1U << 6)
+#define ARM_TTC_CNT_CTRL_DIS (1U << 0)
+#define ARM_TTC_CNT_CTRL_INTV (1U << 1)
+#define ARM_TTC_CNT_CTRL_DEC (1U << 2)
+#define ARM_TTC_CNT_CTRL_MTC (1U << 3)
+#define ARM_TTC_CNT_CTRL_RST (1U << 4)
+#define ARM_TTC_CNT_CTRL_EN_WAVE (1U << 5)
+#define ARM_TTC_CNT_CTRL_POL_WAVE (1U << 6)
 
-#define ARM_TTC_INTV_CNT(val)           ((val & 0xffff) << 0)
-#define ARM_TTC_MTC_CNT(val)            ((val & 0xffff) << 0)
+#define ARM_TTC_INTV_CNT(val) ((val & 0xffff) << 0)
+#define ARM_TTC_MTC_CNT(val) ((val & 0xffff) << 0)
 
-#define ARM_TTC_INT_EN_INTV             (1U << 0)
-#define ARM_TTC_INT_EN_MTC1             (1U << 1)
-#define ARM_TTC_INT_EN_MTC2             (1U << 2)
-#define ARM_TTC_INT_EN_MTC3             (1U << 3)
-#define ARM_TTC_INT_EN_OVR              (1U << 4)
-#define ARM_TTC_INT_EN_E                (1U << 5)
+#define ARM_TTC_INT_EN_INTV (1U << 0)
+#define ARM_TTC_INT_EN_MTC1 (1U << 1)
+#define ARM_TTC_INT_EN_MTC2 (1U << 2)
+#define ARM_TTC_INT_EN_MTC3 (1U << 3)
+#define ARM_TTC_INT_EN_OVR (1U << 4)
+#define ARM_TTC_INT_EN_E (1U << 5)
 
-
-typedef struct {
+typedef struct
+{
     volatile air_u32_t clk_ctrl_1;
     volatile air_u32_t clk_ctrl_2;
     volatile air_u32_t clk_ctrl_3;

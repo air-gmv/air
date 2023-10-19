@@ -58,7 +58,7 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
     case AIR_ARM_EXCEPTION_UNDEF:
 
         /* FPU Lazy Switching */
-if((arm_hm_undef_is_fpu(*(air_uptr_t *)frame->ret_addr, (frame->ret_psr & ARM_PSR_T))) != 0) {
+        if (arm_hm_undef_is_fpu(*(air_uptr_t *)frame->ret_addr, (frame->ret_psr & ARM_PSR_T))) {
             error_id = AIR_FLOAT_ERROR;
         } else {
             error_id = AIR_UNIMPLEMENTED_ERROR;
@@ -116,20 +116,12 @@ if((arm_hm_undef_is_fpu(*(air_uptr_t *)frame->ret_addr, (frame->ret_psr & ARM_PS
 
     core->context->vcpu.psr = psr;          //restore virtual psr
    
-if(!core->context->trash)
-{
+    if (!core->context->trash)
         ret = arm_partition_hm_handler(hm_id, core);
-}
-
-
 
 #ifdef PMK_DEBUG
-if(ret != NULL)
-{
+    if (ret != NULL)
         printk("hm_handler ret = 0x%x\n", (int)ret);
-}
-
-
 #endif
 
     return ret;
@@ -167,30 +159,21 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
     //determine whether faulty instruction is 16 or 32bit in order to define the offset
     air_u32_t ret_offset;
     air_u32_t instr= *(air_uptr_t *)frame->ret_addr;
-if( (((frame->ret_psr) & ARM_PSR_T) != 0) && ((instr & 0xF800) < 0xE800)) //see armv7 reference manual, A6.1
-{
+    if( (((frame->ret_psr) & ARM_PSR_T) != 0) && ((instr & 0xF800) < 0xE800)) //see armv7 reference manual, A6.1
         ret_offset=2;
-}
-
-
-else
-{
+    else
         ret_offset=4;
-}
-
-
 
     //if virtual aborts are enabled, go to virtual exception handler
     if (!psr_a) {
         pmk_hm_event_t *hm_event = (pmk_hm_event_t *)core->context->hm_event;
-if((hm_event->nesting > 0) != 0) {
+        if (hm_event->nesting > 0) {
 
             vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
 
             switch (hm_event->error_id) {
             case AIR_POWER_ERROR:
-                ret_addr = vbar ;
-
+                ret_addr = vbar + 0;
                 break;
 
             case AIR_UNIMPLEMENTED_ERROR:
@@ -240,9 +223,9 @@ static air_boolean_t arm_hm_undef_is_fpu(air_u32_t instr, air_boolean_t is_T32) 
 
     air_boolean_t is_fpu = false;
 
-if((is_T32) != 0) {
+    if (is_T32) {
 
-if(( ((instr & 0xef00) != 0) == 0xef00) ||
+        if ( ((instr & 0xef00) == 0xef00) ||
                 ((instr & 0x0e10ef00) == 0x0a00ee00) ||
                 ((instr & 0x0e00ee00) == 0x0a00ec00) ||
                 ((instr & 0xff10) == 0xf900) ||
@@ -251,7 +234,7 @@ if(( ((instr & 0xef00) != 0) == 0xef00) ||
 
             is_fpu = true;
     } else {
-if(( ((instr & 0xfe000000) != 0) == 0xf2000000) ||
+        if ( ((instr & 0xfe000000) == 0xf2000000) ||
                 ((instr & 0x0f000e10) == 0x0e000a00) ||
                 ((instr & 0x0e000e00) == 0x0c000a00) ||
                 ((instr & 0xff100000) == 0xf4000000) ||

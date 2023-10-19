@@ -38,8 +38,8 @@ void bsp_start_hook(void) {
     /*
      * If the I and D caches on and MMU are enabled, then disable them
      */
-if((sctlr & (ARM_SCTLR_I | ARM_SCTLR_C | ARM_SCTLR_M) ) != 0) {
-if(( sctlr & (ARM_SCTLR_C | ARM_SCTLR_M) ) != 0) {
+    if (sctlr & (ARM_SCTLR_I | ARM_SCTLR_C | ARM_SCTLR_M) ) {
+        if ( sctlr & (ARM_SCTLR_C | ARM_SCTLR_M) ) {
             /*
              * If the data cache is on then ensure that it is clean
              * before switching off to be extra careful.
@@ -66,12 +66,8 @@ air_u32_t bsp_core_init(void) {
 
     air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
 
-if(cpu_id != 0)
-{
+    if(cpu_id != 0)
         pmk_barrier_wait(&initialization_barrier, bsp_get_core_id());
-}
-
-
 
     arm_a9mpcore_start_hook(cpu_id);
     arm_set_vector_base();
@@ -189,11 +185,7 @@ void bsp_idle_loop(void) {
     printk("\n    wfi w/ ttbr at 0x%x\n\n", arm_cp15_get_translation_table0_base());
 #endif
     arm_data_synchronization_barrier();
-while(true) {
-{
+    while(true) {
         __asm__ volatile ("wfi");
-}
-
-
     }
 }

@@ -92,7 +92,7 @@ rtems_task Init(rtems_task_argument ignored) {
     %endif
     /* call entry point */
     if (${partition.entry_point} != NULL) {
-        ${partition.entry_point}();
+        (void)${partition.entry_point}();
     }
 
 #ifdef COVERAGE_ENABLED
