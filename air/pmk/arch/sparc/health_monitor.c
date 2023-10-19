@@ -326,42 +326,29 @@ void sparc_healthmonitor_init() {
      * 0x0A - tag overflow
      * 0x0B - watchpoint_detected
      */
-(void)    sparc_install_vector_trap_handler(0x01, sparc_hm_handler);
-
-(void)    sparc_install_vector_trap_handler(0x02, sparc_hm_handler);
-
-(void)    sparc_install_vector_trap_handler(0x03, sparc_hm_handler);
-
-(void)    sparc_install_vector_trap_handler(0x04, sparc_hm_handler);
-
-(void)    sparc_install_vector_trap_handler(0x07, sparc_hm_handler);
-
-(void)    sparc_install_vector_trap_handler(0x08, sparc_hm_handler);
-
-(void)    sparc_install_vector_trap_handler(0x09, sparc_hm_handler);
-
-(void)    sparc_install_vector_trap_handler(0x0A, sparc_hm_handler);
-
-(void)    sparc_install_vector_trap_handler(0x0B, sparc_hm_handler);
-
+    sparc_install_vector_trap_handler(0x01, sparc_hm_handler);
+    sparc_install_vector_trap_handler(0x02, sparc_hm_handler);
+    sparc_install_vector_trap_handler(0x03, sparc_hm_handler);
+    sparc_install_vector_trap_handler(0x04, sparc_hm_handler);
+    sparc_install_vector_trap_handler(0x07, sparc_hm_handler);
+    sparc_install_vector_trap_handler(0x08, sparc_hm_handler);
+    sparc_install_vector_trap_handler(0x09, sparc_hm_handler);
+    sparc_install_vector_trap_handler(0x0A, sparc_hm_handler);
+    sparc_install_vector_trap_handler(0x0B, sparc_hm_handler);
 
     /*
      * 0x20 r_register_access_error
      * 0x21 instruction_access_error
      */
-(void)    sparc_install_vector_trap_handler(0x20, sparc_hm_handler);
-
-(void)    sparc_install_vector_trap_handler(0x21, sparc_hm_handler);
-
+    sparc_install_vector_trap_handler(0x20, sparc_hm_handler);
+    sparc_install_vector_trap_handler(0x21, sparc_hm_handler);
 
     /*
      * 0x24 cp_disabled
      * 0x25 unimplemented_FLUSH
      */
-(void)    sparc_install_vector_trap_handler(0x24, sparc_hm_handler);
-
-(void)    sparc_install_vector_trap_handler(0x25, sparc_hm_handler);
-
+    sparc_install_vector_trap_handler(0x24, sparc_hm_handler);
+    sparc_install_vector_trap_handler(0x25, sparc_hm_handler);
 
     /*
      * 0x28 cp_exception
@@ -370,22 +357,15 @@ void sparc_healthmonitor_init() {
      * 0x2B data_store_error
      * 0x2C data_access_MMU_miss
      */
-(void)    sparc_install_vector_trap_handler(0x28, sparc_hm_handler);
-
-(void)    sparc_install_vector_trap_handler(0x29, sparc_hm_handler);
-
-(void)    sparc_install_vector_trap_handler(0x2A, sparc_hm_handler);
-
-(void)    sparc_install_vector_trap_handler(0x2B, sparc_hm_handler);
-
-(void)    sparc_install_vector_trap_handler(0x2C, sparc_hm_handler);
-
+    sparc_install_vector_trap_handler(0x28, sparc_hm_handler);
+    sparc_install_vector_trap_handler(0x29, sparc_hm_handler);
+    sparc_install_vector_trap_handler(0x2A, sparc_hm_handler);
+    sparc_install_vector_trap_handler(0x2B, sparc_hm_handler);
+    sparc_install_vector_trap_handler(0x2C, sparc_hm_handler);
 
     /* 0x3C instruction_access_MMU_miss */
-(void)    sparc_install_vector_trap_handler(0x3C, sparc_hm_handler);
-
+    sparc_install_vector_trap_handler(0x3C, sparc_hm_handler);
 
     /* 0xF0 raise application error */
-(void)    sparc_install_vector_trap_handler(0xF0, sparc_hm_handler);
-
+    sparc_install_vector_trap_handler(0xF0, sparc_hm_handler);
 }

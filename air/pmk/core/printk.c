@@ -54,12 +54,8 @@ static void print_number(
     int count = 0;
     char buffer[24];
     long unsigned i;
-while((i = number / base) > 0) {
-{
+    while ((i = number / base) > 0) {
         buffer[count++] = (number - (i * base));
-}
-
-
         number = i;
     }
     buffer[count++] = number;
@@ -108,12 +104,8 @@ static void vprintk(const char *fmt, va_list args) {
             }
 
             /* get format width */
-while(*fmt >= '0' && *fmt <= '9') {
-{
+            while (*fmt >= '0' && *fmt <= '9') {
                 width = (width * 10) + (*fmt - '0');
-}
-
-
                 ++fmt;
             }
 

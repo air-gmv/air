@@ -115,8 +115,7 @@ void pmk_multicore_init(void) {
 void pmk_core_initialize(void){
 
     /* perform per-core BSP initialization */
-(void)    bsp_core_init();
-
+    bsp_core_init();
 
     /* wait for other cores to initialize */
     pmk_barrier_wait(&initialization_barrier, bsp_get_core_id());

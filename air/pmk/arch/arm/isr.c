@@ -52,12 +52,8 @@ air_uptr_t * arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t
 #ifdef PMK_DEBUG_ISR
 #ifdef PMK_DEBUG_TICKS
     printk("|");
-if(!(++counter % 20))
-{
+    if(!(++counter % 20))
         printk(" %d\n", counter);
-}
-
-
 #endif
 #ifdef PMK_DEBUG_TIMER
 #define GT ((global_timer_t *)XPAR_PS7_GLOBALTIMER_0_S_AXI_BASEADDR)
@@ -101,12 +97,8 @@ if(!(++counter % 20))
     if (core->partition != NULL) {
         air_u32_t mode = frame->ret_psr & ARM_PSR_MODE_MASK;
         // only perform virtual handler if the previous mode was USR or SYS
-if( (mode == ARM_PSR_USR) || (mode == ARM_PSR_SYS))
-{
+        if ( (mode == ARM_PSR_USR) || (mode == ARM_PSR_SYS))
             ret = arm_partition_isr_handler(id, core);
-}
-
-
     }
 
     arm_end_of_int(ack);
@@ -137,18 +129,14 @@ air_uptr_t * arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
     air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
     air_uptr_t * vbar = vcpu->vbar;
 
-if(vbar == NULL)
-{
+    if (vbar == NULL)
         return ret;
-}
-
-
 
     /* abort have higher priority than IRQ, soo if any pending and cpu is accepting they go 1st */
     if (!psr_a) {
 
         pmk_hm_event_t *hm_event = (pmk_hm_event_t *)core->context->hm_event;
-if((hm_event->nesting > 0) != 0) {
+        if (hm_event->nesting > 0) {
 
             vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
 
@@ -184,9 +172,9 @@ if((hm_event->nesting > 0) != 0) {
     /*the IRQ exception can only be taken if the IRQ mask bit is 0*/
     if (!psr_i) {
         //virtual interrupts are enabled:
-if(((vgic->vm_ctrl & 0x1)) != 0) {
+        if ((vgic->vm_ctrl & 0x1)) {
             //the current interrupt priority is higher than the priority mask:
-if((((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) != 0) {
+            if (((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) {
 
                 vgic->pmr = ((vgic->ilist[id] >> 23) & 0x1f); //updates priority mask
 
@@ -212,7 +200,7 @@ if((((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) != 0) {
                 //set the state of the interrupt to pending
                 vgic->ilist[id] |= (1U << 28);
                 //change the highest priority pending if the current interrupt priority is higher
-if((((vgic->ilist[id] >> 23) & 0x1f) < ((vgic->ilist[(vgic->hppir & 0x3ff)] >> 23) & 0x1f)) != 0) {
+                if (((vgic->ilist[id] >> 23) & 0x1f) < ((vgic->ilist[(vgic->hppir & 0x3ff)] >> 23) & 0x1f)) {
                     vgic->hppir = ((vgic->ilist[id] >> 23) & 0x1f);
                 }
             }
@@ -220,7 +208,7 @@ if((((vgic->ilist[id] >> 23) & 0x1f) < ((vgic->ilist[(vgic->hppir & 0x3ff)] >> 2
     } else {
 
         vgic->ilist[id] |= (1U << 28);
-if((((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) != 0) {
+        if (((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) {
             vgic->hppir = ((vgic->ilist[id] >> 23) & 0x1f);
         }
     }
@@ -246,12 +234,8 @@ void arm_isr_handler_print_frame(arm_interrupt_stack_frame_t *frame, const char 
 #ifdef PMK_DEBUG_PARTITION
     printk("\n        partition memory contents\n");
     for (air_u32_t i = 0; i < 0x400; i += 4) {
-if(!(i%16))
-{
+        if (!(i%16))
             printk("\n");
-}
-
-
         printk("0x%08x: 0x%08x   ", (0x10000000+i), *((air_u32_t *)(0x10000000+i)));
     }
     printk("\n");

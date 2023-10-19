@@ -96,7 +96,7 @@ air_status_code_e pmk_sampling_port_get_status(
     l_status.time_stamp = slot->timestamp;
     l_status.updated = atomic_fetch(&port->updated);
     l_status.last_msg_validity = port->last_msg_validity;
-if(((air_shared_area.schedule_ctrl->total_ticks - l_status.time_stamp) != 0) >
+    if ((air_shared_area.schedule_ctrl->total_ticks - l_status.time_stamp) >
         l_status.refresh_period) {
         l_status.message_age = AIR_MESSAGE_STALE;
     } else {
@@ -127,12 +127,8 @@ air_status_code_e pmk_sampling_port_read(
     }
 
     /* check if port is being written */
-if((atomic_fetch(&config->writing)) != 0)
-{
+    if (atomic_fetch(&config->writing))
         return AIR_NOT_AVAILABLE;
-}
-
-
 
     /* get current slot */
     air_u32_t slot_idx = atomic_fetch(&config->current_slot);
@@ -152,7 +148,7 @@ if((atomic_fetch(&config->writing)) != 0)
         time_stamp = slot->timestamp;
 
         /* set message validity */
-if(((air_shared_area.schedule_ctrl->total_ticks - slot->timestamp) != 0) >
+          if ((air_shared_area.schedule_ctrl->total_ticks - slot->timestamp) >
               config->refresh_period) {
               validity = AIR_MESSAGE_INVALID;
           } else {
@@ -176,7 +172,7 @@ if(((air_shared_area.schedule_ctrl->total_ticks - slot->timestamp) != 0) >
 
             /* conditional mode */
             case AIR_SAMPLING_MODE_CONDITIONAL:
-if((slot->timestamp > l_status.time_stamp) != 0) {
+                if (slot->timestamp > l_status.time_stamp) {
                     rc = AIR_NO_ERROR;
                 }
                 break;
@@ -192,7 +188,7 @@ if((slot->timestamp > l_status.time_stamp) != 0) {
     if (rc == AIR_NO_ERROR) {
 
         /* copy message to partition space */
-if((pmk_segregation_copy_to_user(context, msg, slot->message, slot->length) != 0) != 0 ||
+        if (pmk_segregation_copy_to_user(context, msg, slot->message, slot->length) != 0 ||
             pmk_segregation_put_user(context, slot->length, length)) {
             return AIR_INVALID_POINTER;
         }
@@ -232,7 +228,7 @@ air_status_code_e pmk_sampling_port_write(
             (pmk_sampling_config_t *)port->channel->configuration;
 
     /* check if length is valid */
-if((length > config->max_message_size) != 0) {
+    if (length > config->max_message_size) {
 
         return AIR_INVALID_CONFIG;
     }

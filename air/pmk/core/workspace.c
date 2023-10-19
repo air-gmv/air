@@ -88,8 +88,7 @@ void pmk_workspace_init(void) {
     workspace_size = (air_sz_t)&air_kernel_memory_end - (air_sz_t)&air_workspace;
 
     /* clear air workspace */
-(void)    memset(&air_workspace, 0x0, workspace_size);
-
+    memset(&air_workspace, 0x0, workspace_size);
 
 #ifdef PMK_DEBUG
     printk("    initial memory block: 0x%08x\n", current_pointer);

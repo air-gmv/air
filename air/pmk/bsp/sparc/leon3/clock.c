@@ -59,8 +59,7 @@ void bsp_clock_start(void) {
     air_u32_t i;
 
     /* install scheduler service routine */
-(void)    sparc_install_vector_trap_handler(timer_ctrl.irq, pmk_partition_scheduler);
-
+    sparc_install_vector_trap_handler(timer_ctrl.irq, pmk_partition_scheduler);
 
     /* setup priorities */
     irqmp_interrupt_set_priority(timer_ctrl.irq, 1);
@@ -75,12 +74,10 @@ void bsp_clock_start(void) {
     }
 
     /* install handler for the IPC */
-(void)    sparc_install_vector_trap_handler(BSP_IPC_IRQ, pmk_ipc_handler);
-
+    sparc_install_vector_trap_handler(BSP_IPC_IRQ, pmk_ipc_handler);
 
     /* install handler for the IPC */
-(void)    sparc_install_vector_trap_handler(BSP_IPC_PCS, pmk_partition_scheduler);
-
+    sparc_install_vector_trap_handler(BSP_IPC_PCS, pmk_partition_scheduler);
 
     /* configure and arm timer */
     volatile timer_regmap_t *timer_regs = (volatile timer_regmap_t *)timer_ctrl.regs;
