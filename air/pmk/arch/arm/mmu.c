@@ -28,6 +28,7 @@
 static air_uptr_t *arm_ln_table[2];
 static air_u32_t arm_ln_index[2] = {0, 0};
 const air_u32_t ln_entries[2] = {TTBR0_ENTRIES, TTL2_ENTRIES};
+
 const air_u32_t ln_unit[2] = {SECTION_SIZE, PAGE_SIZE};
 
 static air_u32_t arm_mmu_get_index(void *addr, air_u32_t n) {
@@ -52,8 +53,12 @@ static air_uptr_t *arm_mmu_get_table(air_u32_t n) {
     air_u32_t e;
     air_uptr_t *table = arm_ln_table[n] + arm_ln_index[n];
 
-    for (e = 0; e < ln_entries[n]; ++e)
+for(e = 0; e < ln_entries[n]; ++e)
+{
         table[e] = 0;
+}
+
+
 
     arm_ln_index[n] += ln_entries[n];
 
@@ -76,10 +81,11 @@ static air_u32_t arm_get_mmu_permissions(
 
     /* if a memory position is device, it cannot be cacheable.
      * for a write-through cache, if it is cacheable, it can be buffereable */
-    if (permissions & PMK_MMU_DEVICE) {
+if((permissions & PMK_MMU_DEVICE) != 0) {
         access_mask |= MMU_ATTR_B;
         permissions &= ~(PMK_MMU_DEVICE | PMK_MMU_CACHEABLE);
-    } else if (permissions & PMK_MMU_CACHEABLE) {
+    } else if((permissions & PMK_MMU_CACHEABLE) != 0) {
+
         access_mask |= MMU_ATTR_C;
         permissions &= ~(PMK_MMU_CACHEABLE);
     }
@@ -311,6 +317,7 @@ void arm_mmu_enable(arm_mmu_context_t *ctx) {
     arm_cp15_set_CONTEXTIDR(0);
     arm_instruction_synchronization_barrier();
     air_u32_t ttbr0 = ((air_u32_t)ctx->ttbr0 & ~(TTBR0_SIZE - 1)) | (0b0010011);
+
     arm_cp15_set_translation_table0_base(ttbr0);
 #if TTBR_N
     arm_cp15_set_translation_table1_base((air_u32_t)ctx->ttbr1 & ~(TTBR1_SIZE - 1) | (0b0010011));
@@ -356,9 +363,11 @@ void arm_segregation_init(void) {
             (arch_configuration_t *)pmk_get_arch_configuration();
 
     air_u32_t arm_l1_table_size = configuration->mmu_l1_tables_entries * TTBR0_SIZE;
+
     air_u32_t arm_l2_table_size = configuration->mmu_l2_tables_entries * TTL2_SIZE;
 
     arm_ln_table[0] = pmk_workspace_aligned_alloc(arm_l1_table_size, TTBR0_SIZE);
+
     arm_ln_table[1] = pmk_workspace_aligned_alloc(arm_l2_table_size, TTL2_SIZE);
 
     /* setup partition MMU control structure for each partition */
@@ -409,8 +418,12 @@ void arm_map_memory(
         printk("       size after unit    = 0x%08x\n", size);
 #endif
 
-        if (size % unit != 0)
+if(size % unit != 0)
+{
             pmk_fatal_error(PMK_INTERNAL_ERROR_BSP, __func__, __FILE__, __LINE__);
+}
+
+
 
         arm_mmu_map_l1(ctrl->ttbr0, p_addr, v_addr, unit, size, permissions, 0);
     }
@@ -420,14 +433,19 @@ air_u32_t arm_segregation_memcpy(
         arm_core_context_t *core_ctx, void *dst, void *src, air_sz_t size) {
 
     /* todo MMU disable faults. DOESNT EXIST ON ARM */
-    memcpy(dst, src, size);
+(void)    memcpy(dst, src, size);
+
     return 0;
 }
 
 air_u32_t arm_segregation_access_valid(void *addr) {
 
-    if ((air_u32_t)addr < PMK_PARTITION_BASE_ADDR)
+if((air_u32_t)addr < PMK_PARTITION_BASE_ADDR)
+{
         return 0;
+}
+
+
 
     return 1;
 }
@@ -435,8 +453,12 @@ air_u32_t arm_segregation_access_valid(void *addr) {
 air_u32_t arm_copy_to_user(
         arm_core_context_t *core_ctx, void *dst, void *src, air_sz_t size) {
 
-    if (!arm_segregation_access_valid(dst))
+if(!arm_segregation_access_valid(dst))
+{
         return 1;
+}
+
+
 
     return arm_segregation_memcpy(core_ctx, dst, src, size);
 }
@@ -444,8 +466,12 @@ air_u32_t arm_copy_to_user(
 air_u32_t arm_copy_from_user(
         arm_core_context_t *core_ctx, void *dst, void *src, air_sz_t size) {
 
-    if (!arm_segregation_access_valid(src))
+if(!arm_segregation_access_valid(src))
+{
         return 1;
+}
+
+
 
     return arm_segregation_memcpy(core_ctx, dst, src, size);
 }
@@ -473,23 +499,35 @@ air_uptr_t *arm_get_physical_addr(arm_mmu_context_t *context, void *v_addr) {
             break;
 
         case MMU_LPAGE:
-            if (((air_u32_t)pt_ptr[idx] & MMU_ACCESS_UP(MMU_L2, MMU_LPAGE)))
+if((((air_u32_t)pt_ptr[idx] & MMU_ACCESS_UP(MMU_L2, MMU_LPAGE))) != 0)
+{
                 p_addr = (air_uptr_t *)(((air_u32_t)pt_ptr[idx] & 0xffff0000) | ((air_u32_t)v_addr & 0x0000ffff));
+}
+
+
 
             break;
         // small page 1x
         case MMU_PAGE1:
         case MMU_PAGE2:
-            if (((air_u32_t)pt_ptr[idx] & MMU_ACCESS_UP(MMU_L2, MMU_PAGE)))
+if((((air_u32_t)pt_ptr[idx] & MMU_ACCESS_UP(MMU_L2, MMU_PAGE))) != 0)
+{
                 p_addr = (air_uptr_t *)(((air_u32_t)pt_ptr[idx] & 0xfffff000) | ((air_u32_t)v_addr & 0x00000fff));
+}
+
+
 
             break;
         }
         break;
 
     case MMU_SECTION:
-        if (((air_u32_t)ttbr[idx] & MMU_ACCESS_UP(MMU_L1, MMU_SECTION)))
+if((((air_u32_t)ttbr[idx] & MMU_ACCESS_UP(MMU_L1, MMU_SECTION))) != 0)
+{
             p_addr = (air_uptr_t *)(((air_u32_t)ttbr[idx] & 0xfff00000) | ((air_u32_t)v_addr & 0x000fffff));
+}
+
+
 
         break;
 

@@ -327,7 +327,8 @@ void sparc_map_memory(
         size = ((size) + ((unit) - 1)) & ~((unit) - 1);
 
         /* fill tables */
-        sparc_mmu_fill_table(
+(void)        sparc_mmu_fill_table(
+
                 ctrl->l1_tables, p_addr, v_addr,
                 0, unit, size, sparc_permissions);
     }
@@ -382,7 +383,8 @@ static air_u32_t sparc_segregation_memcpy(
     sparc_mmu_disable_faults(core_ctx);
 
     /* memory copy */
-    memcpy(dst, src, size);
+(void)    memcpy(dst, src, size);
+
 
     /* return state of faults */
     return sparc_mmu_enable_faults(core_ctx);

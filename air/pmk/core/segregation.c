@@ -90,7 +90,8 @@ void pmk_segregation_int(void) {
             pmk_partition_t *partition = shm_partition->partition;
 
             /* clear the 1st n bytes of the shared area */
-            memset((void *)p_addr, 0x0, PMK_SHARED_MEMORY_CLEAR);
+(void)            memset((void *)p_addr, 0x0, PMK_SHARED_MEMORY_CLEAR);
+
 
             /* map the Shared Memory Area for partition access */
             cpu_segregation_map_memory(

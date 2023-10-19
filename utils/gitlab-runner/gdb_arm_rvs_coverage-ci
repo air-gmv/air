@@ -9,4 +9,3 @@ continue
 dump memory memdump.bin &rvs_all_data32_array &rvs_all_data32_array+1
 kill
 quit
-
