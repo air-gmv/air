@@ -297,7 +297,7 @@ void core_context_remove_hm_event(core_context_t *context) {
     pmk_hm_event_t *hm_event = (pmk_hm_event_t *)context->hm_event;
 
     /* consume current HM event */
-    if(hm_event->nesting > 0)
+if((hm_event->nesting > 0) != 0)
     {
         --hm_event->nesting;
         if (hm_event->nesting == 0) {

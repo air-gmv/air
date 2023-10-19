@@ -50,6 +50,7 @@ static void sparc_syscall_os_handler(
 
         /* get physical address */
         case AIR_SYSCALL_GET_P_ADDR:
+
             isf->i0 = (air_u32_t)sparc_get_physical_addr(
                     core->partition->mmu_ctrl,
                     (void *)isf->i0);
@@ -57,6 +58,7 @@ static void sparc_syscall_os_handler(
 
         /* get partition id */
         case AIR_SYSCALL_GET_PARTITION_ID:
+
             isf->i0 = (air_u32_t)pmk_syscall_get_partition_id(
                     core,
                     (air_name_ptr_t)isf->i0,
@@ -65,6 +67,7 @@ static void sparc_syscall_os_handler(
 
         /* get partition status */
         case AIR_SYSCALL_GET_PARTITION_STATUS:
+
             isf->i0 = (air_u32_t)pmk_syscall_get_partition_status(
                     core,
                     (air_identifier_t)isf->i0,
@@ -73,6 +76,7 @@ static void sparc_syscall_os_handler(
 
         /* set partition mode */
         case AIR_SYSCALL_SET_PARTITION_MODE:
+
             isf->i0 = (air_u32_t)pmk_syscall_set_partition_mode(
                     core,
                     (air_identifier_t)isf->i0,
@@ -81,6 +85,7 @@ static void sparc_syscall_os_handler(
 
         /* get schedule id */
         case AIR_SYSCALL_GET_SCHEDULE_ID:
+
             isf->i0 = (air_u32_t)pmk_syscall_get_schedule_id(
                     core,
                     (air_name_ptr_t)isf->i0,
@@ -89,6 +94,7 @@ static void sparc_syscall_os_handler(
 
         /* get schedule status */
         case AIR_SYSCALL_GET_SCHEDULE_STATUS:
+
             isf->i0 = (air_u32_t)pmk_syscall_get_schedule_status(
                     core,
                     (air_schedule_status_t *)isf->i0);
@@ -96,6 +102,7 @@ static void sparc_syscall_os_handler(
 
         /* set schedule */
         case AIR_SYSCALL_SET_SCHEDULE:
+
             isf->i0 = (air_u32_t)pmk_syscall_set_schedule(
                     core,
                     (air_identifier_t)isf->i0);
@@ -103,6 +110,7 @@ static void sparc_syscall_os_handler(
 
         /* get time of day */
         case AIR_SYSCALL_GET_TIME_OF_DAY:
+
             isf->i0 = (air_u32_t)pmk_syscall_get_tod(
                     core,
                     (air_time_t *)isf->i0);
@@ -110,6 +118,7 @@ static void sparc_syscall_os_handler(
 
         /* set time of day */
         case AIR_SYSCALL_SET_TIME_OF_DAY:
+
             isf->i0 = (air_u32_t)pmk_syscall_set_tod(
                     core,
                     (air_time_t *)isf->i0);
@@ -117,6 +126,7 @@ static void sparc_syscall_os_handler(
 
         /* get port id */
         case AIR_SYSCALL_GET_PORT_ID:
+
             isf->i0 = (air_u32_t)pmk_syscall_get_port_id(
                     core,
                     (air_port_type_e)isf->i0,
@@ -126,6 +136,7 @@ static void sparc_syscall_os_handler(
 
         /* create port */
         case AIR_SYSCALL_CREATE_PORT:
+
             isf->i0 = (air_u32_t)pmk_syscall_create_port(
                     core,
                     (air_port_type_e)isf->i0,
@@ -136,6 +147,7 @@ static void sparc_syscall_os_handler(
 
         /* get port status */
         case AIR_SYSCALL_GET_PORT_STATUS:
+
             isf->i0 = (air_u32_t)pmk_syscall_get_port_status(
                 core,
                 (air_port_type_e)isf->i0,
@@ -145,6 +157,7 @@ static void sparc_syscall_os_handler(
 
         /* read port */
         case AIR_SYSCALL_READ_PORT:
+
             isf->i0 = (air_u32_t)pmk_syscall_read_port(
                     core,
                     (air_port_type_e)isf->i0,
@@ -156,6 +169,7 @@ static void sparc_syscall_os_handler(
 
         /* write port */
         case AIR_SYSCALL_WRITE_PORT:
+
             isf->i0 = (air_u32_t)pmk_syscall_write_port(
                     core,
                     (air_port_type_e)isf->i0,
@@ -168,6 +182,7 @@ static void sparc_syscall_os_handler(
         /* get shared memory information */
         case AIR_SYSCALL_GET_SHARED_AREA:
 
+
             isf->i0 = (air_u32_t)pmk_syscall_get_sharedmemory(
                     core,
                     (air_name_ptr_t)isf->i0,
@@ -176,6 +191,7 @@ static void sparc_syscall_os_handler(
 
         /* set system state */
         case AIR_SYSCALL_SET_SYSTEM_STATE:
+
             isf->i0 = (air_u32_t)pmk_syscall_set_system_state(
                     core,
                     (air_state_e)isf->i0);
@@ -183,6 +199,7 @@ static void sparc_syscall_os_handler(
 
         /* get health-monitor event */
         case AIR_SYSCALL_GET_HM_EVENT:
+
             isf->i0 = (air_u32_t)pmk_syscall_get_hm_event(
                     core,
                     (air_hm_event_t *)isf->i0);
@@ -190,17 +207,20 @@ static void sparc_syscall_os_handler(
 
         /* raise health-monitor event */
         case AIR_SYSCALL_RAISE_HM_EVENT:
+
             pmk_hm_isr_handler((air_error_e)isf->i0);
             break;
 
         /* print partition character */
         case AIR_SYSCALL_PUTCHAR:
+
             pmk_syscall_putchar(core, (char)isf->i0);
             break;
             
 #if DEBUG_MONITOR != 2
         /* print partition buffer */
         case AIR_SYSCALL_PRINT:
+
             isf->i0 = (air_u32_t)pmk_syscall_print(
                     core,
                     (char *)isf->i0,
@@ -210,11 +230,13 @@ static void sparc_syscall_os_handler(
 
         /* get AMBA Plug & Play configuration area struct address */
         case AIR_SYSCALL_GET_AMBACONF:
+
             isf->i0 = (air_u32_t)&amba_confarea;
             break;
 
         /* finish partition execution on current window */
         case AIR_SYSCALL_END_WINDOW:
+
             pmk_syscall_end_window(core);
             break;
 
@@ -244,31 +266,37 @@ void sparc_trap_table_int() {
 
             /* system calls for the guest OS */
             case AIR_SYSCALL_OS_TRAP:
-                sparc_install_raw_trap_handler(tn, sparc_os_syscall);
+(void)                sparc_install_raw_trap_handler(tn, sparc_os_syscall);
+
                 break;
 
             /* SPARC virtualization system calls for the guest OS */
             case AIR_SYSCALL_SPARC_TRAP:
-                sparc_install_raw_trap_handler(tn, sparc_virt_syscall);
+(void)                sparc_install_raw_trap_handler(tn, sparc_virt_syscall);
+
                 break;
 
             /* SPARC windows flush system calls */
             case AIR_SYSCALL_FLUSH_TRAP:
-                sparc_install_raw_trap_handler(tn, sparc_window_flush_handler);
+(void)                sparc_install_raw_trap_handler(tn, sparc_window_flush_handler);
+
                 break;
 
             /* SPARC supervisor PIL swap */
             case 0xFF:
-                sparc_install_raw_trap_handler(tn, sparc_supervisor_swap_pil);
+(void)                sparc_install_raw_trap_handler(tn, sparc_supervisor_swap_pil);
+
                 break;
 
             default:
-                sparc_install_raw_trap_handler(tn, sparc_isr_handler_entry);
+(void)                sparc_install_raw_trap_handler(tn, sparc_isr_handler_entry);
+
                 break;
         }
     }
 
     /* install PMK OS system call C support */
-    sparc_register_vector_trap_handler(
+(void)    sparc_register_vector_trap_handler(
+
             AIR_SYSCALL_OS_TRAP, sparc_syscall_os_handler);
 }

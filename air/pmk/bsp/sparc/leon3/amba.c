@@ -199,7 +199,7 @@ static void amba_search_ahb_masters(
         unsigned int conf = *amba_conf->ahb_slaves.addr[i];
 
         /* device is AHB->AHB bus bridge */
-        if (get_vendor(conf) == VENDOR_GAISLER &&
+if((get_vendor(conf) != 0) == VENDOR_GAISLER &&
             get_device(conf) == GAISLER_AHB2AHB) {
 
             /* get bridge IO area */
@@ -211,7 +211,7 @@ static void amba_search_ahb_masters(
         }
 
         /* found an AHB->APB bus bridge */
-        if (get_vendor(conf) == VENDOR_GAISLER &&
+if((get_vendor(conf) != 0) == VENDOR_GAISLER &&
             get_device(conf) == GAISLER_APBMST) {
 
             /* get bridge IO area */
@@ -383,8 +383,12 @@ int amba_get_number_apbslv_devices (
 
         /* get configuration word */
         air_u32_t conf = *amba_conf->apb_slaves.addr[i];
-        if (get_vendor(conf) == vendor && get_device(conf) == device)
+if(get_vendor(conf) == vendor && get_device(conf) == device)
+{
             ++count;
+}
+
+
     }
     return count;
 }
@@ -395,8 +399,12 @@ int clock_gating_enable(amba_confarea_t* clk_amba_bus, clock_gating_device core_
     amba_apb_dev_t ambadev;
 
     /* Get AMBA AHB device info from Plug&Play */
-    if(amba_get_apb_slave(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE, 0, &ambadev) == 0)
+if(amba_get_apb_slave(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE, 0, &ambadev) == 0)
+{
         return 0;
+}
+
+
 
     /* From LEON4 UM:
      * To enable the clock for a core, the following procedure should be applied
@@ -437,8 +445,12 @@ int clock_gating_disable(amba_confarea_t* clk_amba_bus, clock_gating_device core
     amba_apb_dev_t ambadev;
 
     /* Get AMBA AHB device info from Plug&Play */
-    if(amba_get_apb_slave(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE, 0, &ambadev) == 0)
+if(amba_get_apb_slave(clk_amba_bus, VENDOR_GAISLER, GAISLER_CLKGATE, 0, &ambadev) == 0)
+{
         return 0;
+}
+
+
 
     /* Copy pointer to device's memory mapped registers */
     clkgate_regs *gate_regs = (void *)ambadev.start;

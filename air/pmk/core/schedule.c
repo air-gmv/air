@@ -50,7 +50,7 @@ void pmk_scheduler_init(void) {
 	pmk_list_t *list = pmk_get_schedules();
 	pmk_schedule_list = (pmk_schedule_t *)list->elements;
 
-	if (list->length > 1) {
+if((list->length > 1) != 0) {
 
 	    /* for a configuration with MMS */
 	    for (i = 0; i < list->length; ++i) {
@@ -139,7 +139,7 @@ void pmk_apply_next_schedule(pmk_core_ctrl_t *core) {
         partition->events |= AIR_EVENT_SCHEDULE_CHANGE;
 
         /* apply schedule change action */
-        if (partition_schedule->action > PMK_SCHED_CHANGE_ACTION_IGNORE)
+if((partition_schedule->action > PMK_SCHED_CHANGE_ACTION_IGNORE) != 0)
         {
             /* Only apply action for previously started partition in NORMAL mode*/
             if(AIR_MODE_NORMAL == partition->mode && partition->state == AIR_PARTITION_STATE_READY)

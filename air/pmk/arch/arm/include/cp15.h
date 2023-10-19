@@ -172,7 +172,7 @@ __FORCE_INLINE static air_u32_t arm_is_hivecs(void) {
 
 __FORCE_INLINE static void arm_disable_hivecs(void) {
     air_u32_t sctlr = arm_cp15_get_system_control();
-    if (sctlr & ARM_SCTLR_V) {
+if((sctlr & ARM_SCTLR_V) != 0) {
         sctlr &= ~(ARM_SCTLR_V);
         arm_cp15_set_system_control(sctlr);
     }
@@ -189,7 +189,7 @@ __FORCE_INLINE static void arm_enable_hivecs(void) {
 // TODO arm_get_monitor_exception_base_address
 __FORCE_INLINE static air_u32_t arm_cp15_get_exception_base_address(void) {
 
-    if (arm_is_hivecs()) {
+if((arm_is_hivecs()) != 0) {
         return 0xffff0000;
     }
 
