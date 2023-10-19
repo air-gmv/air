@@ -13,3 +13,6 @@
 #[submodule "utils/misraivoso"]
 #	path = utils/misraivoso
 #	url = https://$(AIR_GIT_REMOTE_HOSTNAME)/AIR/misraivoso.git
+[submodule "utils/misraivoso"]
+	path = utils/misraivoso
+	url = https://$(AIR_GIT_REMOTE_HOSTNAME)/AIR/misraivoso.git
