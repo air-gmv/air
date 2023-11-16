@@ -13,66 +13,59 @@
 #include <stdarg.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/*
- *  Return a pointer to the POSIX name that is slightly
- *  beyond the legal limit.
- */
-const char *Get_Too_Long_Name(void);
+    /*
+     *  Return a pointer to the POSIX name that is slightly
+     *  beyond the legal limit.
+     */
+    const char *Get_Too_Long_Name(void);
 
-/*
- *  Return a pointer to the longest legal POSIX name.
- */
-const char *Get_Longest_Name(void);
+    /*
+     *  Return a pointer to the longest legal POSIX name.
+     */
+    const char *Get_Longest_Name(void);
 
-/*
- *  Spin for specified number of ticks.
- */
-void rtems_test_spin_for_ticks(int ticks);
+    /*
+     *  Spin for specified number of ticks.
+     */
+    void rtems_test_spin_for_ticks(int ticks);
 
-/*
- *  Spin until the next clock tick
- */
-void rtems_test_spin_until_next_tick( void );
+    /*
+     *  Spin until the next clock tick
+     */
+    void rtems_test_spin_until_next_tick(void);
 
-/*********************************************************************/
-/*********************************************************************/
-/**************              TMTEST SUPPORT             **************/
-/*********************************************************************/
-/*********************************************************************/
+    /*********************************************************************/
+    /*********************************************************************/
+    /**************              TMTEST SUPPORT             **************/
+    /*********************************************************************/
+    /*********************************************************************/
 
-/*
- *  Type of method used for timing operations
- */
-typedef void (*rtems_time_test_method_t)(
-  int    iteration,
-  void  *argument
-);
+    /*
+     *  Type of method used for timing operations
+     */
+    typedef void (*rtems_time_test_method_t)(int iteration, void *argument);
 
-/*
- *  Obtain baseline timing information for benchmark tests.
- */
-void rtems_time_test_measure_operation(
-  const char               *description,
-  rtems_time_test_method_t  operation,
-  void                     *argument,
-  int                       iterations,
-  int                       overhead
-);
+    /*
+     *  Obtain baseline timing information for benchmark tests.
+     */
+    void rtems_time_test_measure_operation(const char *description, rtems_time_test_method_t operation, void *argument,
+                                           int iterations, int overhead);
 
-/*********************************************************************/
-/*********************************************************************/
-/**************              TEST SUPPORT               **************/
-/*********************************************************************/
-/*********************************************************************/
+    /*********************************************************************/
+    /*********************************************************************/
+    /**************              TEST SUPPORT               **************/
+    /*********************************************************************/
+    /*********************************************************************/
 
-void locked_print_initialize(void);
+    void locked_print_initialize(void);
 
-int locked_printf(const char *fmt, ...);
+    int locked_printf(const char *fmt, ...);
 
-int locked_vprintf(const char *fmt, va_list ap);
+    int locked_vprintf(const char *fmt, va_list ap);
 
 #ifdef __cplusplus
 };

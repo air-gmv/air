@@ -33,6 +33,7 @@ $(patsubst %.S,$(TARGET_BUILD)/%.o,$(SOURCE_FILES)))
 
 # built in libraries include files
 TARGET_CPPFLAGS+=${'\\'}
+-DPMK_${os_configuration.arch.upper()}${'\\'}
 % if partition.is_system:
 -DPMK_MAX_CORES=${os_configuration.get_available_cores()}${'\\'}
 %if os_configuration.arch == "arm":

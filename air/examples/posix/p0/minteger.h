@@ -7,10 +7,11 @@
 
 #include <pthread.h>
 
-typedef struct s_m_integer {
-  int value;
-  pthread_mutex_t mutex;
-} *m_integer;
+typedef struct s_m_integer
+{
+    int value;
+    pthread_mutex_t mutex;
+} * m_integer;
 
 m_integer MI_init(int priority);
 /* Initialize a m_integer entity, priority is used to configure the mutex */

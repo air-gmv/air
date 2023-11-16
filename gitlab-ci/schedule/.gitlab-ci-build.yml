@@ -1,0 +1,28 @@
+# Gitlab CICD script for build stage
+# Author huca@GMV 2023
+
+# ARM RVS PMK Instrumentation
+RVS-ARM-ZYNQZ1-build:
+    stage: prepare-build
+    tags: ["ARM", "RVS"]
+    needs: ["ARM1_init"]
+    script:
+        - sed -i 's/\.\/rvs_air\/scripts\/build_arm.bash/\.\/rvs_air\/scripts\/build_arm-ci.bash/g' air.rvsprj
+        - rvsdriver --project $AIR/air.rvsprj --integration arm-pmk-coverage --prepare --build
+        - bash $AIR/rvs_air/scripts/build_arm_pmk_archive-ci.bash
+        - rm -rf $AIR/install/pos/rtems5/rtems5-build
+        - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
+        - $UTILS/publish_to_central_server.bash
+
+# SPARC RVS PMK Instrumentation
+RVS-SPARC-LAYSIM-build:
+    stage: prepare-build
+    tags: ["SPARC", "RVS"]
+    needs: ["TASTE1_init"]
+    script:
+        - sed -i 's/\.\/rvs_air\/scripts\/build.bash/\.\/rvs_air\/scripts\/build-ci.bash/g' air.rvsprj
+        - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --prepare --build
+        - rm -rf $AIR/install/pos/rtems5/rtems5-build
+        - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
+        - $UTILS/publish_to_central_server.bash
+        

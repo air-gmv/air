@@ -137,7 +137,7 @@ mmap = MMAP(kernel_space=[0x60000000, 0x01000000],
             default_unit=1 << 18)
 
 # specific defines
-defines = ['PMK_FPU_SUPPORT=1']
+defines = ['PMK_FPU_SUPPORT=1','PMK_DEBUG=0']
 
 # Architecture dependent configuration
 arch_configure = air_sparc.get_sparc_configuration

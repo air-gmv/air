@@ -6,36 +6,39 @@
  * air/LICENSE
  */
 
-#include <rtems.h>
 #include <a653.h>
 #include <imaspex.h>
 #include <pprintf.h>
+#include <rtems.h>
 
 SAMPLING_PORT_ID_TYPE SEND_PORT;
 
-void error_message(RETURN_CODE_TYPE rc) {
+void error_message(RETURN_CODE_TYPE rc)
+{
 
-    switch (rc) {
-        case INVALID_CONFIG:
-            pprintf("WRITE_SAMPLING_MESSAGE error Invalid Config\n");
-            break;
-        case INVALID_PARAM:
-            pprintf("WRITE_SAMPLING_MESSAGE error Invalid Param\n");
-            break;
-        case INVALID_MODE:
-            pprintf("WRITE_SAMPLING_MESSAGE error Invalid Mode\n");
-            break;
-        default:
-            pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
-            break;
+    switch (rc)
+    {
+    case INVALID_CONFIG:
+        pprintf("WRITE_SAMPLING_MESSAGE error Invalid Config\n");
+        break;
+    case INVALID_PARAM:
+        pprintf("WRITE_SAMPLING_MESSAGE error Invalid Param\n");
+        break;
+    case INVALID_MODE:
+        pprintf("WRITE_SAMPLING_MESSAGE error Invalid Mode\n");
+        break;
+    default:
+        pprintf("WRITE_SAMPLING_MESSAGE error %d\n", rc);
+        break;
     }
 }
 
-/*---------------------------------------------------------	
+/*---------------------------------------------------------
  *		function: test										*
- *			outputs a simple string via a sampling port		* 
+ *			outputs a simple string via a sampling port		*
 ------------------------------------------------------------*/
-void test(PARTITION_ID_TYPE self_id) {
+void test(PARTITION_ID_TYPE self_id)
+{
 
     char sample[3] = "S0 ";
     /* get the number of ticks per second */
@@ -47,8 +50,9 @@ void test(PARTITION_ID_TYPE self_id) {
     rtems_interval time;
 
     int i = 0;
-    while (i < 10) {
-        
+    while (i < 10)
+    {
+
         sample[1] = 48 + i;
 #ifdef RTEMS48I
         rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time);
@@ -57,9 +61,11 @@ void test(PARTITION_ID_TYPE self_id) {
 #endif
         pprintf("Partition %d at time %d sending: %s\n", self_id, time, sample);
 
-        WRITE_SAMPLING_MESSAGE(SEND_PORT, (MESSAGE_ADDR_TYPE) sample, 3, &rc);
+        WRITE_SAMPLING_MESSAGE(SEND_PORT, (MESSAGE_ADDR_TYPE)sample, 3, &rc);
         if (NO_ERROR != rc)
+        {
             error_message(rc);
+        }
 
         /*identify the string with an integer index*/
 
@@ -78,7 +84,8 @@ void test(PARTITION_ID_TYPE self_id) {
     air_syscall_shutdown_module();
 }
 
-int entry_func() {
+int entry_func()
+{
 
     RETURN_CODE_TYPE rc;
 
@@ -95,7 +102,8 @@ int entry_func() {
 
     /*Getting my own partition id*/
     GET_PARTITION_ID(&self_id, &rc);
-    if (NO_ERROR != rc) {
+    if (NO_ERROR != rc)
+    {
         pprintf("GET_PARTITION_ID error %d\n", rc);
     }
 
@@ -107,20 +115,24 @@ int entry_func() {
     SYSTEM_TIME_TYPE PERIOD = 1000000000ll;
 
     CREATE_SAMPLING_PORT(NAME, SIZE, SOURCE, PERIOD, &SEND_PORT, &rc);
-    if (NO_ERROR != rc) {
+    if (NO_ERROR != rc)
+    {
         pprintf("CREATE_SAMPLING_PORT error %d\n", rc);
     }
 #ifdef RTEMS48I
-    if (RTEMS_SUCCESSFUL == rtems_task_create(name, 15, 4096, mode, mode_mask, &id)) {
+    if (RTEMS_SUCCESSFUL == rtems_task_create(name, 15, 4096, mode, mode_mask, &id))
+    {
         rtems_task_start(id, test, self_id);
     }
 #else
-    if (RTEMS_SUCCESSFUL == rtems_task_create(name, 15, 4096, mode, attribute_set, &id)) {
-        rtems_task_start(id, (rtems_task_entry) test, self_id);
+    if (RTEMS_SUCCESSFUL == rtems_task_create(name, 15, 4096, mode, attribute_set, &id))
+    {
+        rtems_task_start(id, (rtems_task_entry)test, self_id);
     }
 #endif
     SET_PARTITION_MODE(NORMAL, &rc);
-    if (NO_ERROR != rc) {
+    if (NO_ERROR != rc)
+    {
         pprintf("SET_PARTITION_MODE error %d\n", rc);
     }
 

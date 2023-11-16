@@ -16,15 +16,19 @@
 /**
  * @brief Partition entry point
  */
-void entry_point() {
+void entry_point()
+{
 
     air_sharedmemory_t sharedmemory;
 
     /* get shared memory area */
-    if (air_syscall_get_sharedmemory("DEBUG", &sharedmemory) == AIR_NO_ERROR) {
+    if (air_syscall_get_sharedmemory("DEBUG", &sharedmemory) == AIR_NO_ERROR)
+    {
 
-    /* shared memory not available to run the test... */
-    } else {
+        /* shared memory not available to run the test... */
+    }
+    else
+    {
 
         /* shutdown module */
         air_syscall_shutdown_module();
@@ -32,10 +36,13 @@ void entry_point() {
 
     char *message = (char *)sharedmemory.address;
 
-    for(;;)
+    for (;;)
     {
-        while(!*message);
-    
+        while (!*message)
+        {
+            ;
+        }
+
         air_syscall_print(message, 1);
         message++;
     }
