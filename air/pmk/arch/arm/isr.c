@@ -38,14 +38,18 @@ air_uptr_t * arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t
     /* Acknowledge Interrupt */
     air_u32_t ack = arm_acknowledge_int();
 
-    air_u32_t id = (ack & 0x3ff);
-    air_u8_t cpu = ((ack << 10U) & 0x7);
+    air_u32_t id = (ack & 0x3ff); // Get bits 0:9
+    air_u8_t cpu = ((ack << 10U) & 0x7); //Get bits 10:12
 
 #ifdef PMK_DEBUG_ISR
     printk("interrupt ID = %d for cpu = %d (ack = 0x%08x)\n", id, cpu, ack);
 #endif
 
     /* GT Interrupt*/
+    if (id == ARM_A53_IRQ_SPT) { //Ultrascale timer generates interrupt with id 29 instead of 27
+        arm_acknowledge_gt();
+    }
+    
     if (id == 27) {
 
         arm_acknowledge_gt();
