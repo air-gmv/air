@@ -46,10 +46,11 @@ air_uptr_t * arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t
 #endif
 
     /* GT Interrupt*/
+    #ifdef PMK_ARM_ULTRASCALE96V2_A53
     if (id == ARM_A53_IRQ_SPT) { //Ultrascale timer generates interrupt with id 29 instead of 27
         arm_acknowledge_gt();
     }
-    
+    #endif
     if (id == 27) {
 
         arm_acknowledge_gt();
