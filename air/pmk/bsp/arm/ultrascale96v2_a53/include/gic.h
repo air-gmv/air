@@ -43,6 +43,7 @@ __FORCE_INLINE static air_u32_t arm_get_it_lines(void) {
 
 #define ZYNQ_MAX_INT 256
 __FORCE_INLINE static air_u32_t arm_get_int_count(void) {
+    //Maximum number of interrupts that the GIC Supports
     air_u32_t int_count = (arm_get_it_lines() + 1) * 32;
     return int_count;
 }
@@ -53,23 +54,23 @@ __FORCE_INLINE static air_u32_t arm_ic_processor_count(void) {
 
 /* GICD_ISENABLER - Interrupt Set-Enable Registers*/
 __FORCE_INLINE static void arm_int_enable(air_u32_t id) {
-    ICD->gicd_isenabler[id] = (1U << (id & 0x1f));
+    ICD->gicd_isenabler[id/32] = (1U << (id % 32));
 }
 
 /**< GICD_IGROUP - Interrupt Group Registers */
 __FORCE_INLINE static void arm_int_set_grp1(void) {
-    for (air_u32_t i = 0; i < arm_get_it_lines(); ++i) {
+    for (air_u32_t i = 0; i < arm_get_it_lines()+1; ++i) {
         ICD->gicd_igroup[i] = 0xffffffff;
     }
 }
 
 __FORCE_INLINE static void arm_int_set_grp0(air_u32_t int_id) {
-    ICD->gicd_igroup[int_id] = (1U << int_id % 32);
+    ICD->gicd_igroup[int_id/32] = (1U << int_id % 32);
 }
 
 /**< ICDICER - Interrupt Clear-Enable Register */
 __FORCE_INLINE static void arm_int_clear() {
-    for (air_u32_t i = 0; i < arm_get_it_lines(); ++i) {
+    for (air_u32_t i = 0; i < arm_get_it_lines()+1; ++i) {
         ICD->gicd_icenabler[i] = 0xffffffff;
     }
 }
@@ -82,15 +83,15 @@ __FORCE_INLINE static void arm_sgi_ppi_disable(void) {
 
 // Disables SPIs with ids starting at id 32
 __FORCE_INLINE static void arm_spi_disable(void) {
-    for (air_u32_t i = 1; i < arm_get_it_lines(); ++i) {
+    for (air_u32_t i = 1; i < arm_get_it_lines()+1; ++i) {
         ICD->gicd_icenabler[i] = 0xffffffff;
     }
 }
 
-/**< ICDICPR  - Interrupt Clear-Pending Register*/
-// Clears pending SPIs with ids starting ate id 32
+/*Interrupt Clear-Pending Register*/
+// Clears all pending interrupts
 __FORCE_INLINE static void arm_clear_pending(void) {
-    for (air_u32_t i = 1; i < arm_get_it_lines(); ++i) {
+    for (air_u32_t i = 0; i < arm_get_it_lines()+1; ++i) {
         ICD->gicd_icpendr[i] = 0xffffffff;
     }
 }

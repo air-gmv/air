@@ -44,42 +44,39 @@ typedef struct {
     ////
 } ic_cpu_t;
 
-// GIC400 Module Registers (on Zynq Ultrascale+ Registers Reference)
-                                           /* OFFSETS */
+// // GIC400 Module Registers (on Zynq Ultrascale+ Registers Reference)
+//                                            /* OFFSETS */
 typedef struct {                           /* 0x00F9000000 (ACPU_GIC)*/
     volatile air_u32_t gicd_ctlr;          /* 0x10000 */ //Distributor Control Register
     volatile air_u32_t gicd_typer;         /* 0x10004 */ //Interrupt Controller Type Register
     volatile air_u32_t gicd_iidr;          /* 0x10008 */ //Distributor Implementer Identification Register
-    volatile air_u32_t reserved0[29];      /* 0x1000c - 0x1007c */
-    volatile air_u32_t gicd_igroup[7];     /* 0x10080 - 0x100fc */ //Interrupt Group Registers
-    volatile air_u32_t gicd_isenabler[7];  /* 0x10100 - 0x1017c */ //Interrupt Set-Enable Registers
-    volatile air_u32_t gicd_icenabler[7];  /* 0x10180 - 0x101fc */ //Interrupt Clear-Enable Registers
-    volatile air_u32_t gicd_ispendr[7];    /* 0x10200 - 0x1027c */ //Interrupt Set-Pending Registers
-    volatile air_u32_t gicd_icpendr[7];    /* 0x10280 - 0x102fc */ //Interrupt Clear-Pending Registers
-    volatile air_u32_t gicd_isactiver[7];  /* 0x10300 - 0x1037c */ //Interrupt Set-Active Registers
-    volatile air_u32_t gicd_icactiver[7];  /* 0x10380 - 0x103fc */ //Interrupt Clear-Active Registers
-    volatile air_u8_t gicd_ipriority[48];  /* 0x10400 - 0x107f8 */ //Interrupt Priority Registers
-    volatile air_u32_t reserved1;          /* 0x107fc */
-    volatile air_u8_t gicd_itargetsr[48];  /* 0x10800 - 0x10bf8 */ //Interrupt Processor Targets Registers
-    volatile air_u32_t reserved2;          /* 0x10bfc */
-    volatile air_u32_t gicd_icfgr[12];     /* 0x10c00 - 0x10cfc */ //Interrupt Configuration Registers
-    volatile air_u32_t reserved3[63];      /* 0x10d00 - 0x10dfc */
-
+    volatile air_u32_t reserved0[29];      
+    volatile air_u32_t gicd_igroup[32];      /* Starts at 0x10080 */ //Interrupt Group Registers - There are (ITLinesBumber + 1) igroup registers   
+    volatile air_u32_t gicd_isenabler[32];   /* Starts at 0x10100 */ //Interrupt Set-Enable Registers - There are (ITLinesBumber + 1) isenabler registers
+    volatile air_u32_t gicd_icenabler[32];   /* Starts at 0x10180 */ //Interrupt Clear-Enable Registers - There are (ITLinesBumber + 1) icenabler registers
+    volatile air_u32_t gicd_ispendr[32];     /* Starts at 0x10200 */ //Interrupt Set-Pending Registers - There are (ITLinesBumber + 1) ispendr registers
+    volatile air_u32_t gicd_icpendr[32];     /* Starts at 0x10280 */ //Interrupt Clear-Pending Registers - There are (ITLinesBumber + 1) icpendr registers
+    volatile air_u32_t gicd_isactiver[32];   /* Starts at 0x10300 */ //Interrupt Set-Active Registers- There are (ITLinesBumber + 1) isactive registers
+    volatile air_u32_t gicd_icactiver[32];   /* Starts at 0x10380 */ //Interrupt Clear-Active Registers- There are (ITLinesBumber + 1) icactive registers
+    volatile air_u32_t gicd_ipriority[256];   /* Starts at 0x10400 */ //Interrupt Priority Registers - There are 8 * (ITLinesBumber + 1) ipriority registers       
+    volatile air_u32_t gicd_itargetsr[256];   /* Starts at 0x10800 */ //Interrupt Processor Targets Registers - There are 8 * (ITLinesBumber + 1) itargets registers     
+    volatile air_u32_t gicd_icfgr[64];       /* Starts at 0x10c00 */ //Interrupt Configuration Registers - There are 2 * (ITLinesBumber + 1) icfg registers     
+    
     // Implementation defined registers
     volatile air_u32_t gicd_ppisr;         /* 0x10d00 */ //Private Peripheral Interrupt Status Registers
-    volatile air_u32_t gicd_spisr[5];      /* 0x10d04 - 0x10d14 */ //Shared Peripheral Interrupt Status Registers
-    volatile air_u32_t reserved4[57];      /* 0x10d18 - 0x10dfc */
+    volatile air_u32_t gicd_spisr[5];      /* Starts at0x10d04 */ //Shared Peripheral Interrupt Status Registers
+    volatile air_u32_t reserved11[122];      /* 0x10d18 - 0x10dfc */
     ////
     
     volatile air_u32_t gicd_sgir;          /* 0x10f00 */ //Software Generated Interrupt Register (SGI)
-    volatile air_u32_t reserved5[8];       /* 0x10f04 - 0x10f0c */
-    volatile air_u32_t gicd_cpendsgir[4];  /* 0x10f10 - 0x10f1c */ //SGI Clear-Pendind Registers 
-    volatile air_u32_t gicd_spendsgir[4];  /* 0x10f20 - 0x10f2c */ //SGI Set-Pendind Registers 
-    volatile air_u32_t reserved6[39];      /* 0x10f30 - 0x10fcc */
+    volatile air_u32_t reserved12[3];       
+    volatile air_u32_t gicd_cpendsgir[4];  /* Starts at 0x10f10 */ //SGI Clear-Pendind Registers 
+    volatile air_u32_t gicd_spendsgir[4];  /* starts at 0x10f20 */ //SGI Set-Pendind Registers 
+    volatile air_u32_t reserved13[40];      /* 0x10f30 - 0x10fcc */
     
     // Implementation defined registers
-    volatile air_u32_t gicd_pidr4_7[4];   /* 0x10fd0 - 0x10fdc */ //Peripheral Identification 4 to 7 Registers 
-    volatile air_u32_t gicd_pidr0_3[4];   /* 0x10fe0 - 0x10fec */ //Peripheral Identification 0 to 3 Registers 
+    volatile air_u32_t gicd_pidr4_7[4];   /* Starts at 0x10fd0 */ //Peripheral Identification 4 to 7 Registers 
+    volatile air_u32_t gicd_pidr0_3[4];   /* Starts at 0c10fe0 */ //Peripheral Identification 0 to 3 Registers 
     volatile air_u32_t gicd_cidr[4];      /* 0x10ff0 - 0x10ffc */ //Component Identification Registers 
     ////
 } ic_distributor_t;
