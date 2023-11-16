@@ -83,20 +83,12 @@ typedef struct
 
 #ifndef PMK_ARM_ULTRASCALE96V2_A53
 /* Private CPU Interrupts (PPI) (for A9MPCORE) */
-<<<<<<< HEAD
 #define ARM_A9MPCORE_IRQ_GT         27
 #define ARM_A9MPCORE_IRQ_NFIQ       28
 #define ARM_A9MPCORE_IRQ_PT         29
 #define ARM_A9MPCORE_IRQ_PW         30
 #define ARM_A9MPCORE_IRQ_NIRQ       31
 #endif /* PMK_ARM_ULTRASCALE96V2_A53 */
-=======
-#define ARM_A9MPCORE_IRQ_GT 27
-#define ARM_A9MPCORE_IRQ_NFIQ 28
-#define ARM_A9MPCORE_IRQ_PT 29
-#define ARM_A9MPCORE_IRQ_PW 30
-#define ARM_A9MPCORE_IRQ_NIRQ 31
->>>>>>> dev
 
 /* Shared Peripheral Interrupts (SPI)*/
 #define ZYNQ_IRQ_CPU_0 32
