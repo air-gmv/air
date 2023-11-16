@@ -44,7 +44,8 @@ void debug_libtest()
  * @param shm_name name of the shared memory for the test report
  * @return number of times that the partition have been reseted
  */
-air_u32_t test_partition_init(air_name_ptr_t shm_name) {
+air_u32_t test_partition_init(air_name_ptr_t shm_name)
+{
 
     /* clear local pointers */
     test_control = NULL;
@@ -52,17 +53,25 @@ air_u32_t test_partition_init(air_name_ptr_t shm_name) {
     air_sharedmemory_t sharedmemory;
 
     /* get partition configuration */
-    air_syscall_get_partition_status(-1, &partition);
+    (void)air_syscall_get_partition_status(-1, &partition);
+
     /* get shared memory area */
-    if (air_syscall_get_sharedmemory(shm_name, &sharedmemory) == AIR_NO_ERROR) {
-        test_control = (test_control_t *) sharedmemory.address;
-    } else {
+    if (air_syscall_get_sharedmemory(shm_name, &sharedmemory) == AIR_NO_ERROR)
+    {
+        test_control = (test_control_t *)sharedmemory.address;
+    }
+    else
+    {
         /* shutdown partition */
         pprintf("Error: Failed getting shared memory\n");
-        air_syscall_set_partition_mode(-1, AIR_MODE_IDLE);
+        (void)air_syscall_set_partition_mode(-1, AIR_MODE_IDLE);
     }
     /* busy wait until the until the test controller initializes */
-    while (test_control->test_id == 0);
+    while (test_control->test_id == 0)
+    {
+        ;
+    }
+
     /* get the current partition buffer */
     partition_buffer = &test_control->buffers[partition.index];
     /* return number of partition restarts */
@@ -77,38 +86,49 @@ air_u32_t test_partition_init(air_name_ptr_t shm_name) {
  *
  * @note This function blocks until the global test step allows it to run
  */
-air_u32_t test_step_announce(air_u32_t id, announce_flags flags) {
-    //air_partition_status_t status;
+air_u32_t test_step_announce(air_u32_t id, announce_flags flags)
+{
+    // air_partition_status_t status;
 
-    if(libtest_debug)
-        printf ("libtest: step_announce id = %d, control step id = %d\n", 
-                id, test_control->step_id);
+    if ((libtest_debug) != 0)
+    {
+        (void)printf("libtest: step_announce id = %d, control step id = %d\n", id, test_control->step_id);
+    }
 
     /* wait for the current step */
-    while (id > test_control->step_id);
-    if(libtest_debug)
-        printf ("libtest: Freeing id = %d\n", id);
+    while (id > test_control->step_id)
+    {
+        ;
+    }
+
+    if ((libtest_debug) != 0)
+    {
+        (void)printf("libtest: Freeing id = %d\n", id);
+    }
 
     /* advance the current partition test step */
-    if ((flags & SILENT) != 0) {
+    if ((flags & SILENT) != 0)
+    {
         test_control->step_id = id + 1;
     }
 
     /* mark that partition finish its test steps */
-    if ((flags & FINISH) != 0) {
+    if ((flags & FINISH) != 0)
+    {
         partition_buffer->p_done = 1;
     }
 
     /* control partition test step iterations  */
-    if (partition_buffer->step_id != id) {
+    if (partition_buffer->step_id != id)
+    {
         partition_buffer->iterations = 0;
     }
 
     /* store the current step as the current step */
     partition_buffer->step_id = id;
     partition_buffer->flags = flags;
-    //air_syscall_get_partition_status(-1, &status);
-    //printf ("Test %d Partition %d: Window %d\n", id, status.identifier, status.window_id);
+    // air_syscall_get_partition_status(-1, &status);
+    // printf ("Test %d Partition %d: Window %d\n", id, status.identifier, status.window_id);
     return id;
 }
 
@@ -119,29 +139,31 @@ air_u32_t test_step_announce(air_u32_t id, announce_flags flags) {
  * @param line of the test step condition
  * @param res result of the test step
  */
-void test_step_report(char *cond, int tvalue, char *file, int line, test_result res) {
+void test_step_report(char *cond, int tvalue, char *file, int line, test_result res)
+{
 
     /* store the test step result */
     partition_buffer->p_pass &= res;
 
     /* print error line */
-    if (TEST_FAILURE == res) {
-        printf("TEST| STEP ID %04x ITERATION %03x| FAILED\n",
-                partition_buffer->step_id,
-                partition_buffer->iterations);
+    if (TEST_FAILURE == res)
+    {
+        (void)printf("TEST| STEP ID %04x ITERATION %03x| FAILED\n", partition_buffer->step_id,
+                     partition_buffer->iterations);
 
-        if (file != NULL) {
-            pprintf("p%i (%s:%i) : %s %d\n",
-                    partition.index, file, line, cond, tvalue);
-        } else {
-            pprintf("p%i: %s %d \n",
-                    partition.index, cond, tvalue);
+        if (file != NULL)
+        {
+            pprintf("p%i (%s:%i) : %s %d\n", partition.index, file, line, cond, tvalue);
+        }
+        else
+        {
+            pprintf("p%i: %s %d \n", partition.index, cond, tvalue);
         }
     }
 
     /* increment test step if required */
-    if (partition_buffer->iterations == 0 &&
-            (partition_buffer->flags & SILENT) == 0) {
+    if (partition_buffer->iterations == 0 && (partition_buffer->flags & SILENT) == 0)
+    {
 
         test_control->step_id = partition_buffer->step_id + 1;
     }
@@ -157,10 +179,14 @@ void test_step_report(char *cond, int tvalue, char *file, int line, test_result 
  * @note Passing SUCCESS as result after a test step fail will not mark the
  *       test as successful
  */
-void test_finish(test_result result) {
+void test_finish(test_result result)
+{
     partition_buffer->p_done = 1;
     partition_buffer->p_pass &= result;
-    for (;;);
+    for (;;)
+    {
+        ;
+    }
 }
 
 /**
@@ -170,7 +196,8 @@ void test_finish(test_result result) {
  * @note Passing SUCCESS as result after a test step fail will not mark the
  *       test as successful
  */
-void test_finish_and_continue(test_result result) {
+void test_finish_and_continue(test_result result)
+{
     partition_buffer->p_done = 1;
     partition_buffer->p_pass &= result;
 }

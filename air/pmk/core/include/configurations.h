@@ -1,10 +1,11 @@
 /*
- * Copyright (C) 2014  GMVIS Skysoft S.A.
+ * Copyright (C) 2014-2023  GMVIS Skysoft S.A.
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
- * air/LICENSE
+ * https://github.com/air-gmv/air/tree/master/LICENSE
  */
+
 /**
  * @file configurations.h
  * @author pfnf
@@ -14,8 +15,8 @@
 #ifndef __CONFIGURATIONS_H__
 #define __CONFIGURATIONS_H__
 
-#include <pmk.h>
 #include <health_monitor.h>
+#include <pmk.h>
 
 /**
  * @defgroup pmk_configuration PMK - Application Configuration
@@ -26,39 +27,28 @@
 /**
  *  @brief Configuration Magic number
  */
-#define PMK_CONFIG_MAGIC_NUMBER                     (0xDEADC0DE)
+#define PMK_CONFIG_MAGIC_NUMBER (0xDEADC0DE)
 
 /**
  * @brief Number of bytes to clear in each shared memory block
  */
-#define PMK_SHARED_MEMORY_CLEAR                     (64)
+#define PMK_SHARED_MEMORY_CLEAR (64)
 
 /**
  * @brief Application Configuration Table
  */
-typedef struct {
-
-    /** Configuration magic                                                 */
-    air_u32_t magic;
-    /** Number of configured cores                                          */
-    air_u32_t cores;
-    /** Micro-seconds per tick                                              */
-    air_clocktick_t us_per_tick;
-    /** List of partitions                                                  */
-    pmk_list_t partitions;
-    /** List of schedules                                                   */
-    pmk_list_t schedules;
-    /** List of shared memory blocks                                        */
-    pmk_list_t sharedareas;
-    /** List of channels                                                    */
-    pmk_list_t channels;
-    /** System state HM table                                               */
-    pmk_hm_level_list_t *hm_system_table;
-    /** Module HM table                                                     */
-    pmk_hm_action_list_t **hm_module_table;
-    /** Architecture dependent configuration                                */
-    arch_configuration_t *arch_configuration;
-
+typedef struct
+{
+    air_u32_t magic;                          /**< Configuration magic */
+    air_u32_t cores;                          /**< Number of configured cores */
+    air_clocktick_t us_per_tick;              /**< Micro-seconds per tick */
+    pmk_list_t partitions;                    /**< List of partitions */
+    pmk_list_t schedules;                     /**< List of schedules */
+    pmk_list_t sharedareas;                   /**< List of shared memory blocks */
+    pmk_list_t channels;                      /**< List of channels */
+    pmk_hm_level_list_t *hm_system_table;     /**< System state HM table */
+    pmk_hm_action_list_t **hm_module_table;   /**< Module HM table */
+    arch_configuration_t *arch_configuration; /**< Architecture dependent configuration */
 } pmk_configuration_t;
 
 /**
@@ -75,8 +65,8 @@ void pmk_configurations_int(void);
  * @brief Get Module Partitions
  * @return List of partitions
  */
-static inline  pmk_list_t *pmk_get_usr_partitions(void) {
-
+static inline pmk_list_t *pmk_get_usr_partitions(void)
+{
     return &pmk_configuration->partitions;
 }
 
@@ -84,8 +74,8 @@ static inline  pmk_list_t *pmk_get_usr_partitions(void) {
  * @brief Get Module Schedules
  * @return List of schedules
  */
-static inline  pmk_list_t *pmk_get_schedules(void) {
-
+static inline pmk_list_t *pmk_get_schedules(void)
+{
     return &pmk_configuration->schedules;
 }
 
@@ -93,8 +83,8 @@ static inline  pmk_list_t *pmk_get_schedules(void) {
  * @brief Get the Module Channels
  * @return List of channels
  */
-static inline  pmk_list_t *pmk_get_usr_channels(void) {
-
+static inline pmk_list_t *pmk_get_usr_channels(void)
+{
     return &pmk_configuration->channels;
 }
 
@@ -102,17 +92,17 @@ static inline  pmk_list_t *pmk_get_usr_channels(void) {
  * @brief Get the number of configured cores
  * @return Number of configured cores
  */
-static inline  air_u32_t pmk_get_usr_configured_cores(void) {
-
+static inline air_u32_t pmk_get_usr_configured_cores(void)
+{
     return pmk_configuration->cores;
 }
 
 /**
- * @brief Get the number of configured mirco-seconds per tick
+ * @brief Get the number of configured micro-seconds per tick
  * @return Number of micro-seconds per tick
  */
-static inline  air_u32_t pmk_get_usr_us_per_tick(void) {
-
+static inline air_clocktick_t pmk_get_usr_us_per_tick(void)
+{
     return pmk_configuration->us_per_tick;
 }
 
@@ -120,8 +110,8 @@ static inline  air_u32_t pmk_get_usr_us_per_tick(void) {
  * @brief Get the number of configured nano-seconds per tick
  * @return Number of nano-seconds per tick
  */
-static inline  air_u32_t pmk_get_usr_ns_per_tick(void) {
-
+static inline air_clocktick_t pmk_get_usr_ns_per_tick(void)
+{
     return pmk_configuration->us_per_tick * 1000;
 }
 
@@ -129,8 +119,8 @@ static inline  air_u32_t pmk_get_usr_ns_per_tick(void) {
  * @brief Gets the Health-Monitor System State table
  * @returns Health-Monitor System State table pointer
  */
-static inline pmk_hm_level_list_t *pmk_get_usr_hm_system_table(void) {
-
+static inline pmk_hm_level_list_t *pmk_get_usr_hm_system_table(void)
+{
     return pmk_configuration->hm_system_table;
 }
 
@@ -138,8 +128,8 @@ static inline pmk_hm_level_list_t *pmk_get_usr_hm_system_table(void) {
  * @brief Gets the module Health-Monitor Table
  * @returns Module Health-Monitor System State table pointer
  */
-static inline  pmk_hm_action_list_t **pmk_get_usr_hm_module_table(void) {
-
+static inline pmk_hm_action_list_t **pmk_get_usr_hm_module_table(void)
+{
     return pmk_configuration->hm_module_table;
 }
 
@@ -147,8 +137,8 @@ static inline  pmk_hm_action_list_t **pmk_get_usr_hm_module_table(void) {
  * @brief Get architecture dependent configuration
  * @return Configuration pointer
  */
-static inline  arch_configuration_t *pmk_get_arch_configuration(void) {
-
+static inline arch_configuration_t *pmk_get_arch_configuration(void)
+{
     return pmk_configuration->arch_configuration;
 }
 
@@ -156,8 +146,8 @@ static inline  arch_configuration_t *pmk_get_arch_configuration(void) {
  * @brief Get the shared memory areas
  * @return Shared memory areas list pointer
  */
-static inline pmk_list_t *pmk_get_shared_memory_areas(void) {
-
+static inline pmk_list_t *pmk_get_shared_memory_areas(void)
+{
     return &pmk_configuration->sharedareas;
 }
 

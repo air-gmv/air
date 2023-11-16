@@ -100,11 +100,12 @@ class Configuration(object):
     # @param self object pointer
     # @param arch target architecture
     # @param bsp target board support package
-    def __init__(self, arch, bsp, fpu_enabled, debug_monitor, pos_select):
+    def __init__(self, arch, bsp, fpu_enabled, debug_enabled,debug_monitor, pos_select):
 
         self.arch = arch.lower()
         self.bsp = bsp.lower()
         self.fpu_enabled = fpu_enabled
+        self.debug_enabled = debug_enabled
         self.debug_monitor = debug_monitor
         self.debug_mode = False
         #logging.info ('Initializing Configuration class architecture: %s, bsp: %s', self.arch, self.bsp)
@@ -201,7 +202,7 @@ class Configuration(object):
     ##
     # @brief Gets the target compiler
     def get_target_compiler(self):
-        msoft_float = self.grep ("Makefile.inc", "msoft")
+        msoft_float = self.grep("Makefile.inc", "msoft")
         if self.fpu_enabled:
             if msoft_float:
                 os.system("patch --force -p2 -R -s < tools/configurator/disable_fpu.patch")
@@ -342,6 +343,12 @@ class Configuration(object):
     # @brief Get target defines
     # @return Target configuration defines
     def get_target_defines(self):
+        for i,define in enumerate(supported_architectures[self.arch][self.bsp].defines):
+            if define.startswith("PMK_FPU_SUPPORT"):
+                print()
+                supported_architectures[self.arch][self.bsp].defines[i] = "PMK_FPU_SUPPORT={flag}".format(flag=self.fpu_enabled*1)
+            elif define.startswith("PMK_DEBUG"):
+                supported_architectures[self.arch][self.bsp].defines[i] = "PMK_DEBUG={flag}".format(flag=self.debug_enabled*1)
         return supported_architectures[self.arch][self.bsp].defines
 
     ##
@@ -554,7 +561,7 @@ def save_configuration(os_configuration, logger):
 
     try:
         fd = open(__OS_CONFIG_FILE__, 'wb+') #because pickle.dump writes in binary 
-        pickle.dump( (os_configuration.arch, os_configuration.bsp, os_configuration.fpu_enabled, os_configuration.debug_monitor, savepos), fd)
+        pickle.dump( (os_configuration.arch, os_configuration.bsp, os_configuration.fpu_enabled, os_configuration.debug_enabled, os_configuration.debug_monitor, savepos), fd)
         fd.close()
 
     except Exception as why:
@@ -573,8 +580,8 @@ def load_configuration(logger, config=__OS_CONFIG_FILE__):
     # try to load the configuration
     try:
         fd = open(config, 'rb')
-        arch, bsp, fpu_enabled, debug_monitor, pos_select = pickle.load(fd)
-        os_configuration = Configuration(arch, bsp, fpu_enabled, debug_monitor, pos_select)
+        arch, bsp, fpu_enabled, debug_enabled, debug_monitor, pos_select = pickle.load(fd)
+        os_configuration = Configuration(arch, bsp, fpu_enabled,debug_enabled, debug_monitor, pos_select)
         fd.close()
         return os_configuration
     except: 

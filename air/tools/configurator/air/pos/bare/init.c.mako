@@ -77,7 +77,7 @@ int main(void) {
 
     /* call entry point */
     if (${partition.entry_point} != NULL) {
-        ${partition.entry_point}();
+        (void) ${partition.entry_point}();
     }
 
     return 0;

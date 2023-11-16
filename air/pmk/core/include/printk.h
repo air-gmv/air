@@ -11,9 +11,8 @@
  *  @brief printk definition
  */
 
-
 #include <stdarg.h>
- 
+
 #ifndef __PRINTK_H__
 #define __PRINTK_H__
 #if DEBUG_MONITOR != 2
@@ -29,7 +28,6 @@ void printk(const char *fmt, ...);
 void pmk_console_outbyte(char ch);
 
 #else
-#define printk //disabled
-#endif /* DEBUG_MONITOR != 2 */
-#endif /* __PRINTK_H__ */
-
+#define printk // disabled
+#endif         /* DEBUG_MONITOR != 2 */
+#endif         /* __PRINTK_H__ */

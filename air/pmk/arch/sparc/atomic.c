@@ -22,24 +22,23 @@
  * @brief Implements SPARC atomic operations
  */
 
-#include <sparc.h>
 #include <atomic.h>
+#include <sparc.h>
 
 /**
  * @brief Number of spin locks to be used by the atomic operations
  */
-#define ATOMIC_HASH_SIZE                       (4)
+#define ATOMIC_HASH_SIZE (4)
 
 /**
  * @brief Spin lock hash function selector
  */
-#define ATOMIC_HASH(a) \
-        (&__atomic_hash[(((air_uptr_t)a) >> 8) & (ATOMIC_HASH_SIZE - 1)])
+#define ATOMIC_HASH(a) (&__atomic_hash[(((air_uptr_t)a) >> 8) & (ATOMIC_HASH_SIZE - 1)])
 
 /**
  * @brief Array of spin locks to be used by the atomic operations
  */
-air_u32_t __atomic_hash[ATOMIC_HASH_SIZE] = { 0 };
+air_u32_t __atomic_hash[ATOMIC_HASH_SIZE] = {0};
 
 /**
  * @brief SPARC atomic addition
@@ -47,7 +46,8 @@ air_u32_t __atomic_hash[ATOMIC_HASH_SIZE] = { 0 };
  * @param v atomic value pointer
  * @return modified atomic value
  */
-air_i32_t sparc_atomic_add(air_i32_t i, atomic_t *v) {
+air_i32_t sparc_atomic_add(air_i32_t i, atomic_t *v)
+{
 
     air_i32_t ret;
     air_u32_t isr_level;
@@ -69,7 +69,8 @@ air_i32_t sparc_atomic_add(air_i32_t i, atomic_t *v) {
  * @param v atomic value pointer
  * @return previous atomic value
  */
-air_i32_t sparc_atomic_swap(air_i32_t i, atomic_t *v) {
+air_i32_t sparc_atomic_swap(air_i32_t i, atomic_t *v)
+{
 
     air_i32_t ret;
     air_u32_t isr_level;
@@ -91,7 +92,8 @@ air_i32_t sparc_atomic_swap(air_i32_t i, atomic_t *v) {
  * @param v atomic value pointer
  * @return modified atomic value
  */
-air_i32_t sparc_atomic_and(air_i32_t i, atomic_t *v) {
+air_i32_t sparc_atomic_and(air_i32_t i, atomic_t *v)
+{
 
     air_i32_t ret;
     air_u32_t isr_level;
@@ -113,7 +115,8 @@ air_i32_t sparc_atomic_and(air_i32_t i, atomic_t *v) {
  * @param v atomic value pointer
  * @return modified atomic value
  */
-air_i32_t sparc_atomic_or(air_i32_t i, atomic_t *v) {
+air_i32_t sparc_atomic_or(air_i32_t i, atomic_t *v)
+{
 
     air_i32_t ret;
     air_u32_t isr_level;
@@ -135,7 +138,8 @@ air_i32_t sparc_atomic_or(air_i32_t i, atomic_t *v) {
  * @param v atomic value pointer
  * @return modified atomic value
  */
-air_i32_t sparc_atomic_xor(air_i32_t i, atomic_t *v) {
+air_i32_t sparc_atomic_xor(air_i32_t i, atomic_t *v)
+{
 
     air_i32_t ret;
     air_u32_t isr_level;

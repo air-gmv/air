@@ -145,3 +145,5 @@ air/air.rvsprj.data
 
 #VS Code
 .vscode/
+# Dump files
+*.dump
