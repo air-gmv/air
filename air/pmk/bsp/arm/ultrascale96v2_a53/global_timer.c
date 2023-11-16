@@ -24,7 +24,13 @@
 #define IOU_SCNTRS ((iou_scntrs_module *)XPAR_PSU_IOU_SCNTRS_S_AXI_BASEADDR)
 
 void arm_acknowledge_gt(void) {   
-    arm_disable_global_timer();
+    //To acknowledge the timer we can:
+    // Disable the timer, but then it must be enabled again
+    // Set IMASK in the control register (CNTP)
+    // Update the comparator
+    
+    // arm_disable_global_timer();
+    arm_set_tval( pmk_get_usr_us_per_tick() * 200 ); //like in the initialization
     return;
 }
 
