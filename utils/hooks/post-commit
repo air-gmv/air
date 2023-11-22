@@ -3,27 +3,14 @@ echo "Starting post-commit hook..."
 
 MESSAGE=$(git log -1 HEAD --pretty=format:%s)
 
-# Push current commit to remote repository
-git push
+CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r HEAD)
 
-if [[ $? -eq 0 ]]; then
-  echo "Push was successful."
+# Loop through the list of changed files and apply MISRAivoso.py to each one
+for FILE in $CHANGED_FILES; do
+  python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file "$FILE"
+done
 
-  CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r HEAD)
-
-  # Loop through the list of changed files and apply MISRAivoso.py to each one
-  for FILE in $CHANGED_FILES; do
-    python3 utils/misraivoso/MISRAivoso.py --correction --src air/ --src-file "$FILE"
-  done
-
-  git add .
-  git commit -m "$MESSAGE (MISRA)"
-  git push
-
-else
-  echo "Push failed, please check your connection."
-  git reset --soft HEAD~1
-
-fi
+git add .
+git commit -m "$MESSAGE (MISRA)"
 
 echo "Terminating post-commit hook..."
