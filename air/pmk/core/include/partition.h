@@ -15,10 +15,10 @@
 #define __PARTITION_H__
 
 #ifndef ASM
+#include <pmk.h>
+#include <loader.h>
 #include <barrier.h>
 #include <health_monitor.h>
-#include <loader.h>
-#include <pmk.h>
 #include <segregation.h>
 
 /**
@@ -27,11 +27,10 @@
  * @{
  */
 
-/**
+/** 
  * @brief Partition internal structure
  */
-typedef struct
-{
+typedef struct {
 
     /** Partition sequential index                                          */
     air_u32_t idx;
@@ -133,14 +132,16 @@ pmk_partition_t *pmk_get_partition_by_name(air_name_ptr_t name);
  * @param context the core context responsible for the reload
  * @param partition the partition to be reloaded
  */
-void core_context_setup_reload_partition(core_context_t *context, pmk_partition_t *partition);
+void core_context_setup_reload_partition(
+        core_context_t *context, pmk_partition_t *partition);
 
 /**
  * @brief Setups a core partition context
  * @param context core context
  * @param partition partition information
  */
-void core_context_setup_partition(core_context_t *context, pmk_partition_t *partition);
+void core_context_setup_partition(
+        core_context_t *context, pmk_partition_t *partition);
 
 /** @} */
 

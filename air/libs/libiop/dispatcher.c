@@ -5,7 +5,7 @@
  * found in the file LICENSE in this distribution or at
  * air/LICENSE
  */
-/** 
+/**
  * @file
  * @author cdcs
  * @brief Contains the dispatcher tasks and auxiliary functions
@@ -13,7 +13,7 @@
  * The dispatcher is the IOP component that is responsible for distributing
  * incoming requests through the various logical devices and operations.
  * It is also responsible for sending replies to those requests.
- */  
+ */
 
 #include <iop.h>
 #include <iop_mms.h>
@@ -31,37 +31,37 @@ extern air_u32_t last_task_ticks;
  *
  *  The values of the service request are validated against possible values
  */
-air_status_code_e validate_service_request(iop_wrapper_t *incoming){
+air_status_code_e validate_service_request(iop_wrapper_t *incoming)
+{
 
     air_status_code_e status = AIR_SUCCESSFUL;
 
     /* check incomming validity */
-    if(incoming == NULL){
+    if (incoming == NULL)
+    {
         status = AIR_INVALID_PARAM;
         return status;
     }
 
     /* check operation*/
-    if((incoming->request.operation != WRITE) &&
-       (incoming->request.operation != WRITE_ACK) &&
-       (incoming->request.operation != READ)){
+    if ((incoming->request.operation != WRITE) && (incoming->request.operation != WRITE_ACK) &&
+        (incoming->request.operation != READ))
+    {
 
         status = AIR_INVALID_MODE;
-
     }
 
     /* check size */
-    if(incoming->request.ssize > (sizeof(service_request_t) - REQUEST_HEADER_SIZE)){
+    if ((incoming->request.ssize > (sizeof(service_request_t) - REQUEST_HEADER_SIZE)) != 0)
+    {
         status = AIR_INVALID_SIZE;
     }
 
     /** @todo validate device in incoming request */
 
     return status;
-
 }
 #endif
-
 
 #ifdef CODE_ON_HOLD
 /**
@@ -75,12 +75,14 @@ air_status_code_e validate_service_request(iop_wrapper_t *incoming){
  *
  *  @todo remove return code. Validation is made in other function
  */
-air_status_code_e process_service_request(iop_wrapper_t *incoming, int reply_addr) {
+air_status_code_e process_service_request(iop_wrapper_t *incoming, int reply_addr)
+{
 
     air_status_code_e rc = AIR_SUCCESSFUL;
 
     /* check if request is valid */
-    if (NULL == incoming){
+    if (NULL == incoming)
+    {
         return AIR_INVALID_PARAM;
     }
 #if 0
@@ -111,7 +113,7 @@ air_status_code_e process_service_request(iop_wrapper_t *incoming, int reply_add
             incoming->reply_to = reply_addr;
 
             /* see if there is pre fetched data */
-            if(iop_chain_is_empty(&ldev->rcvqueue)){
+if((iop_chain_is_empty(&ldev->rcvqueue)) != 0){
 
                 /*There is no data on this device yet, add request to queue*/
                 iop_chain_append(
@@ -164,51 +166,47 @@ air_status_code_e process_service_request(iop_wrapper_t *incoming, int reply_add
 }
 #endif
 
-
-/** 
+/**
  *  \brief reads all data from a queuing port that is used by the remote port
- *  system. Read data is placed on a request structure which is initialized 
+ *  system. Read data is placed on a request structure which is initialized
  *  with default values and then forwarded to the target logical device
  *
  *  Any error found during read is notified to FDIR.
- *  
+ *
  *  \param [in] rport: current remote port being processed
  */
-static void process_remote_port(iop_port_t *port){
+static void process_remote_port(iop_port_t *port)
+{
 
     air_status_code_e rc = AIR_NO_ERROR;
     iop_debug(" IOP :: process_remote_port\n");
-    while (rc != AIR_NOT_AVAILABLE) {
+    while (rc != AIR_NOT_AVAILABLE)
+    {
         /* get a empty request wrapper from the wrapper chain*/
         iop_wrapper_t *wrapper = obtain_free_wrapper();
 
         /* check if an empty wrapper was available */
-        if (wrapper == NULL) {
+        if (wrapper == NULL)
+        {
             iop_raise_error(NO_REQUESTS);
             break;
         }
 
         /* get the message space */
-        uint8_t *message = (uint8_t *)
-                ((uintptr_t)wrapper->buffer->v_addr + sizeof(iop_header_t));
-              /* read regular message */
+        uint8_t *message = (uint8_t *)((uintptr_t)wrapper->buffer->v_addr + sizeof(iop_header_t));
+        /* read regular message */
         air_sampling_port_status_t status;
         status.operation = AIR_SAMPLING_MODE_REGULAR;
 
         /* read from port */
         air_sz_t size;
-        rc = air_syscall_read_port(
-                port->type,
-                (air_identifier_t)port->id,
-                (air_message_ptr_t)message,
-                &size,
-                &status);
+        rc = air_syscall_read_port(port->type, (air_identifier_t)port->id, (air_message_ptr_t)message, &size, &status);
 
         /* if no errors occurred */
         if (rc == AIR_NO_ERROR && size > 0 &&
             (port->type == AIR_QUEUING_PORT ||
-            (port->type == AIR_SAMPLING_PORT &&
-             status.last_msg_validity == AIR_MESSAGE_VALID))) {
+             (port->type == AIR_SAMPLING_PORT && status.last_msg_validity == AIR_MESSAGE_VALID)))
+        {
             /* setup the wrapper properties */
             wrapper->buffer->payload_off = sizeof(iop_header_t);
             wrapper->buffer->payload_size = size;
@@ -216,26 +214,27 @@ static void process_remote_port(iop_port_t *port){
             wrapper->buffer->header_size = sizeof(iop_header_t);
 
             /* append data to aimed device */
-            iop_chain_append(
-                    &port->device->sendqueue, &wrapper->node);
+            iop_chain_append(&port->device->sendqueue, &wrapper->node);
 
             /* if this an sampling port, the processing is over */
-            if (port->type == AIR_SAMPLING_PORT) {
+            if (port->type == AIR_SAMPLING_PORT)
+            {
                 rc = AIR_NOT_AVAILABLE;
-             }
-
-        } else {
+            }
+        }
+        else
+        {
             /* release the wrapper */
             release_wrapper(wrapper);
             rc = AIR_NOT_AVAILABLE;
             iop_debug("IOP :: process remote port errors\n");
         }
 
-//        rtems_task_wake_after(1);
+        //        rtems_task_wake_after(1);
     }
 }
 #ifdef CODE_ON_HOLD
-/** 
+/**
  *  \brief iterates over all queuing ports that are used by the request/reply
  *   system and receives any incomming requests. These requests are then
  *   dispatched according with their target device and operation.
@@ -244,54 +243,53 @@ static void process_remote_port(iop_port_t *port){
  *   is found not valid and the user requested a ACK, a reply is generated to
  *   inform the user that its request failed. If the user requested a non ACK
  *   service and the request is not valid, the request is simply freed without
- *   infroming the user. 
+ *   infroming the user.
  *
  **/
-static void process_request_port(iop_port_t *port){
-
+static void process_request_port(iop_port_t *port)
+{
 
     air_status_code_e rc = AIR_NO_ERROR;
 
-    while (rc != AIR_NOT_AVAILABLE) {
+    while (rc != AIR_NOT_AVAILABLE)
+    {
 
         /* get a empty request wrapper from the wrapper chain*/
-        request_wrapper_t *incoming_request =
-                extract_request_wrapper(&usr_configuration.empty_requests);
+        request_wrapper_t *incoming_request = extract_request_wrapper(&usr_configuration.empty_requests);
 
         /* check if an empty wrapper was available */
-        if (incoming_request == NULL) {
+        if (incoming_request == NULL)
+        {
             iop_raise_error(NO_REQUESTS);
             break;
         }
 
         /* read from port */
         air_sz_t size;
-        rc = air_syscall_read_port(
-                port->type,
-                (air_identifier_t)port->id,
-                (air_message_ptr_t)&incoming_request->request.generic_data[0],
-                &size,
-                NULL);
+        rc = air_syscall_read_port(port->type, (air_identifier_t)port->id,
+                                   (air_message_ptr_t)&incoming_request->request.generic_data[0], &size, NULL);
 
         /* if no errors occurred */
-        if (rc == AIR_NO_ERROR) {
+        if (rc == AIR_NO_ERROR)
+        {
 
             /* validate service_request before processing it */
-            rtems_status_code status =
-                    validate_service_request(incoming_request);
+            rtems_status_code status = validate_service_request(incoming_request);
 
             /* if request is valid */
-            if (status == RTEMS_SUCCESSFUL) {
+            if (status == RTEMS_SUCCESSFUL)
+            {
 
                 /* dispatch current incoming request */
                 process_service_request(incoming_request, port->id);
 
-            /* request is not valid, but the user wants a reply */
-            } else if (incoming_request->doreply == 1) {
+                /* request is not valid, but the user wants a reply */
+            }
+            else if (incoming_request->doreply == 1)
+            {
 
                 /* get a new reply wrapper */
-                reply_wrapper_t *reply_wrapper = extract_reply_wrapper(
-                                        &usr_configuration.empty_replys);
+                reply_wrapper_t *reply_wrapper = extract_reply_wrapper(&usr_configuration.empty_replys);
 
                 /* request is not valid */
                 reply_wrapper->reply.status = RTEMS_INVALID_NUMBER;
@@ -302,18 +300,23 @@ static void process_request_port(iop_port_t *port){
                 /* avoid Releasing the incoming request twice */
                 status = RTEMS_SUCCESSFUL;
 
-            /* release request */
-            } else {
+                /* release request */
+            }
+            else
+            {
 
                 /* release request */
                 free_request_wrapper(incoming_request);
             }
 
             /* if this an sampling port, the processing is over */
-            if (port->type == AIR_SAMPLING_PORT) {
-                 rc = AIR_NOT_AVAILABLE;
+            if (port->type == AIR_SAMPLING_PORT)
+            {
+                rc = AIR_NOT_AVAILABLE;
             }
-        } else {
+        }
+        else
+        {
 
             /* release request */
             free_request_wrapper(incoming_request);
@@ -328,56 +331,57 @@ static void process_request_port(iop_port_t *port){
  *  then accordingly with their target logical device and operation.
  *  It does the same operation for the remote ports.
  *
- *  Since this is the first task to run in each partition release point, it 
+ *  Since this is the first task to run in each partition release point, it
  *  also updates the request and reply timers.
  */
-void pre_dispatcher(){
-
+void pre_dispatcher()
+{
 
     uint32_t i;
 
-//	iop_debug("\n :: IOP - pre-dispatcher running!\n");
+    //	iop_debug("\n :: IOP - pre-dispatcher running!\n");
 
-	/* Get execution window reference time */
+    /* Get execution window reference time */
     /* this  call is for RTEMS 4.8, it is not deprecated */
-//	 rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &last_task_ticks);
-    
-     /* If we switch to RTEMS 5 use  this one */
-//   last_task_ticks = rtems_clock_get_ticks_since_boot();
+    //	 rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &last_task_ticks);
+
+    /* If we switch to RTEMS 5 use  this one */
+    //   last_task_ticks = rtems_clock_get_ticks_since_boot();
 
     last_task_ticks = air_syscall_get_elapsed_ticks();
-	//iop_debug("  :: IOP - pre-dispatcher read this time %d\n", last_task_ticks);
+    // iop_debug("  :: IOP - pre-dispatcher read this time %d\n", last_task_ticks);
 
-	/* check for schedule changes */
-	iop_change_schedule();
+    /* check for schedule changes */
+    iop_change_schedule();
 
-	/* update requests and replies timers */
-	update_timers();
+    /* update requests and replies timers */
+    update_timers();
 
-	/* iterate over all remote ports*/
+    /* iterate over all remote ports*/
 
-	for (i = 0; i < usr_configuration.remote_ports.length; ++i){
+    for (i = 0; i < usr_configuration.remote_ports.length; ++i)
+    {
 
-		/* get port */
-		iop_port_t *port = get_remote_port(i);
-		/* only receive data from destination ports (linked to a device) */
-		if(port->device != NULL){
-			/* obtain and process data from current port */
-			process_remote_port(port);
-		}
-	}
+        /* get port */
+        iop_port_t *port = get_remote_port(i);
+        /* only receive data from destination ports (linked to a device) */
+        if (port->device != NULL)
+        {
+            /* obtain and process data from current port */
+            process_remote_port(port);
+        }
+    }
 
 #ifdef CODE_ON_HOLD
-	/* iterate over all request ports*/
-	for (i = 0; i < usr_configuration.request_ports.length; i += 2){
-		/* get port */
-		iop_port_t *port =
-				&((iop_port_t *)
-						usr_configuration.request_ports.elements)[i];
-		/* obtain request data from current port */
-		process_request_port(port);
-		iop_debug(" Processed port request\n");
-	}
+    /* iterate over all request ports*/
+    for (i = 0; i < usr_configuration.request_ports.length; i += 2)
+    {
+        /* get port */
+        iop_port_t *port = &((iop_port_t *)usr_configuration.request_ports.elements)[i];
+        /* obtain request data from current port */
+        process_request_port(port);
+        iop_debug(" Processed port request\n");
+    }
 #endif
 }
 
@@ -391,29 +395,29 @@ void pre_dispatcher(){
  *  again. In every retry a timer is incremented. When this timer reaches
  *  a user defined values, the reply is freed.
  */
-void pos_dispatcher(){
+void pos_dispatcher()
+{
 
-//    iop_wrapper_t *reply_wrapper;
-//    iop_chain_control error;
-//    iop_chain_initialize_empty(&error);
+    //    iop_wrapper_t *reply_wrapper;
+    //    iop_chain_control error;
+    //    iop_chain_initialize_empty(&error);
 
     /* main task */
-    //iop_debug(" :: IOP - pos-dispatcher start!\n");
+    // iop_debug(" :: IOP - pos-dispatcher start!\n");
 
-    //OLD MAIN LOOP
-	/* wait for next partition release point */
-	//iop_task_sleep(0);
-	
+    // OLD MAIN LOOP
+    /* wait for next partition release point */
+    // iop_task_sleep(0);
 
-//	iop_debug("\n :: IOP - pos-dispatcher doing nothing!\n");
+    //	iop_debug("\n :: IOP - pos-dispatcher doing nothing!\n");
 
-//	rtems_interval time;
-//	/*rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time); // use this for rtems 4.8 */
-//  time = rtems_clock_get_ticks_since_boot(); // use this for rtems 5
-//	char preamble[] = " pos-dispatcher time: ";
-//	append_to_message(&msg_relay, preamble, 26); //52
-//	append_time_to_message(&msg_relay, time, 22+26);//22+52
-//	iop_debug("Relay at dispatcher: %s\n", msg_relay);
+    //	rtems_interval time;
+    //	/*rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time); // use this for rtems 4.8 */
+    //  time = rtems_clock_get_ticks_since_boot(); // use this for rtems 5
+    //	char preamble[] = " pos-dispatcher time: ";
+    //	append_to_message(&msg_relay, preamble, 26); //52
+    //	append_time_to_message(&msg_relay, time, 22+26);//22+52
+    //	iop_debug("Relay at dispatcher: %s\n", msg_relay);
 
 #if 0
 	/* verify if the number of retries was exceeded */

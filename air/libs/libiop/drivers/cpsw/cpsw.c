@@ -1365,7 +1365,9 @@ void CPSWContextSave(CPSWCONTEXT *contextPtr)
 
     contextPtr->aleCtrl = HWREG(contextPtr->aleBase + CPSW_ALE_CONTROL);
     contextPtr->alePortCtl[0] = HWREG(contextPtr->aleBase + CPSW_ALE_PORTCTL(0));
+
     contextPtr->alePortCtl[1] = HWREG(contextPtr->aleBase + CPSW_ALE_PORTCTL(1));
+
     contextPtr->alePortCtl[2] = HWREG(contextPtr->aleBase + CPSW_ALE_PORTCTL(2));
 
     for (idx = 0; idx < CPSW_MAX_NUM_ALE_ENTRY; idx++)
@@ -1383,13 +1385,17 @@ void CPSWContextSave(CPSWCONTEXT *contextPtr)
     contextPtr->port1Vlan = HWREG(contextPtr->port1Base + CPSW_PORT_PORT_VLAN);
     contextPtr->port2Vlan = HWREG(contextPtr->port2Base + CPSW_PORT_PORT_VLAN);
     contextPtr->cpdmaRxFB = HWREG(contextPtr->cpdmaBase + CPSW_CPDMA_RX_FREEBUFFER(0));
+
     contextPtr->cpdmaTxCtl = HWREG(contextPtr->cpdmaBase + CPSW_CPDMA_TX_CONTROL);
     contextPtr->cpdmaRxCtl = HWREG(contextPtr->cpdmaBase + CPSW_CPDMA_RX_CONTROL);
     contextPtr->cpdmaRxHdp = HWREG(contextPtr->cpdmaBase + CPSW_CPDMA_RX_HDP(0));
+
     contextPtr->txIntMaskSet = HWREG(contextPtr->cpdmaBase + CPSW_CPDMA_TX_INTMASK_SET);
-    contextPtr->wrCoreIntTxPulse = HWREG(contextPtr->wrBase + CPSW_WR_C_RX_THRESH_EN(0) + 0x04);
+    contextPtr->wrCoreIntTxPulse = HWREG(contextPtr->wrBase + CPSW_WR_C_RX_THRESH_EN(0) x04);
+
     contextPtr->rxIntMaskSet = HWREG(contextPtr->cpdmaBase + CPSW_CPDMA_RX_INTMASK_SET);
-    contextPtr->wrCoreIntRxPulse = HWREG(contextPtr->wrBase + CPSW_WR_C_RX_THRESH_EN(0) + 0x08);
+    contextPtr->wrCoreIntRxPulse = HWREG(contextPtr->wrBase + CPSW_WR_C_RX_THRESH_EN(0) x08);
+
     contextPtr->sl1MacCtl = HWREG(contextPtr->sl1Base + CPSW_SL_MACCONTROL);
     contextPtr->sl2MacCtl = HWREG(contextPtr->sl2Base + CPSW_SL_MACCONTROL);
 }
@@ -1417,7 +1423,9 @@ void CPSWContextRestore(CPSWCONTEXT *contextPtr)
 
     HWREG(contextPtr->aleBase + CPSW_ALE_CONTROL) = contextPtr->aleCtrl;
     HWREG(contextPtr->aleBase + CPSW_ALE_PORTCTL(0)) = contextPtr->alePortCtl[0];
+
     HWREG(contextPtr->aleBase + CPSW_ALE_PORTCTL(1)) = contextPtr->alePortCtl[1];
+
     HWREG(contextPtr->aleBase + CPSW_ALE_PORTCTL(2)) = contextPtr->alePortCtl[2];
 
     for (idx = 0; idx < CPSW_MAX_NUM_ALE_ENTRY; idx++)
@@ -1435,13 +1443,17 @@ void CPSWContextRestore(CPSWCONTEXT *contextPtr)
     HWREG(contextPtr->port1Base + CPSW_PORT_PORT_VLAN) = contextPtr->port1Vlan;
     HWREG(contextPtr->port2Base + CPSW_PORT_PORT_VLAN) = contextPtr->port2Vlan;
     HWREG(contextPtr->cpdmaBase + CPSW_CPDMA_RX_FREEBUFFER(0)) = contextPtr->cpdmaRxFB;
+
     HWREG(contextPtr->cpdmaBase + CPSW_CPDMA_TX_CONTROL) = contextPtr->cpdmaTxCtl;
     HWREG(contextPtr->cpdmaBase + CPSW_CPDMA_RX_CONTROL) = contextPtr->cpdmaRxCtl;
     HWREG(contextPtr->cpdmaBase + CPSW_CPDMA_RX_HDP(0)) = contextPtr->cpdmaRxHdp;
+
     HWREG(contextPtr->cpdmaBase + CPSW_CPDMA_TX_INTMASK_SET) = contextPtr->txIntMaskSet;
-    HWREG(contextPtr->wrBase + CPSW_WR_C_RX_THRESH_EN(0) + 0x04) = contextPtr->wrCoreIntTxPulse;
+    HWREG(contextPtr->wrBase + CPSW_WR_C_RX_THRESH_EN(0) x04) = contextPtr->wrCoreIntTxPulse;
+
     HWREG(contextPtr->cpdmaBase + CPSW_CPDMA_RX_INTMASK_SET) = contextPtr->rxIntMaskSet;
-    HWREG(contextPtr->wrBase + CPSW_WR_C_RX_THRESH_EN(0) + 0x08) = contextPtr->wrCoreIntRxPulse;
+    HWREG(contextPtr->wrBase + CPSW_WR_C_RX_THRESH_EN(0) x08) = contextPtr->wrCoreIntRxPulse;
+
     HWREG(contextPtr->sl1Base + CPSW_SL_MACCONTROL) = contextPtr->sl1MacCtl;
     HWREG(contextPtr->sl2Base + CPSW_SL_MACCONTROL) = contextPtr->sl2MacCtl;
 }

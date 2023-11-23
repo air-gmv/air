@@ -57,39 +57,38 @@
 extern void CPSWClkEnable(void);
 extern void CPSWPinMuxSetup(void);
 
-
 /**
  * @brief CPSW device setup
  * @param dev Device setup
  */
-static void cpsw_setup_eth0(cpsw_device_t *dev) {
+static void cpsw_setup_eth0(cpsw_device_t *dev)
+{
 
     /* device base registers */
-    dev->ss_base        = CPSW0_SS_REGS;
-    dev->mdio_base      = CPSW0_MDIO_REGS;
-    dev->wrpr_base      = CPSW0_WR_REGS;
-    dev->cpdma_base     = CPSW0_CPDMA_REGS;
-    dev->ale_base       = CPSW0_ALE_REGS;
-    dev->cppi_ram_base  = CPSW0_CPPI_RAM_REGS;
+    dev->ss_base = CPSW0_SS_REGS;
+    dev->mdio_base = CPSW0_MDIO_REGS;
+    dev->wrpr_base = CPSW0_WR_REGS;
+    dev->cpdma_base = CPSW0_CPDMA_REGS;
+    dev->ale_base = CPSW0_ALE_REGS;
+    dev->cppi_ram_base = CPSW0_CPPI_RAM_REGS;
     dev->host_port_base = CPSW0_PORT_0_REGS;
 
     /* device slave port 1 */
-    dev->port[PORT_1].port_base     = CPSW0_PORT_1_REGS;
-    dev->port[PORT_1].sliver_base   = CPSW0_SLIVER_1_REGS;
+    dev->port[PORT_1].port_base = CPSW0_PORT_1_REGS;
+    dev->port[PORT_1].sliver_base = CPSW0_SLIVER_1_REGS;
 #ifdef CPSW0_PORT_1_PHY_ADDR
-    dev->port[PORT_1].phy_addr      = CPSW0_PORT_1_PHY_ADDR;
-    dev->port[PORT_1].phy_gbps      = CPSW0_PORT_1_PHY_GIGABIT;
+    dev->port[PORT_1].phy_addr = CPSW0_PORT_1_PHY_ADDR;
+    dev->port[PORT_1].phy_gbps = CPSW0_PORT_1_PHY_GIGABIT;
 #endif
 
     /* device slave port 2 */
-    dev->port[PORT_2].port_base     = CPSW0_PORT_2_REGS;
-    dev->port[PORT_2].sliver_base   = CPSW0_SLIVER_2_REGS;
+    dev->port[PORT_2].port_base = CPSW0_PORT_2_REGS;
+    dev->port[PORT_2].sliver_base = CPSW0_SLIVER_2_REGS;
 #ifdef CPSW0_PORT_2_PHY_ADDR
-    dev->port[PORT_2].phy_addr      = CPSW0_PORT_2_PHY_ADDR;
-    dev->port[PORT_2].phy_gbps      = CPSW0_PORT_2_PHY_GIGABIT;
+    dev->port[PORT_2].phy_addr = CPSW0_PORT_2_PHY_ADDR;
+    dev->port[PORT_2].phy_gbps = CPSW0_PORT_2_PHY_GIGABIT;
 #endif
 }
-
 
 /**
  * @brief Gives the index of the ALE entry which is free
@@ -97,18 +96,20 @@ static void cpsw_setup_eth0(cpsw_device_t *dev) {
  * @return index of the ALE entry which is free
  *         -1 if entry not found
  */
-static int32_t cpsw_ale_entry_match_free(cpsw_device_t *cpsw_config) {
+static int32_t cpsw_ale_entry_match_free(cpsw_device_t *cpsw_config)
+{
 
     int32_t idx;
     unsigned int ale_entry[ALE_ENTRY_NUM_WORDS];
 
     /* check which ALE entry is free starting from 0th entry */
-    for (idx = 0; idx < ALE_MAX_ENTRIES; idx++) {
+    for (idx = 0; idx < ALE_MAX_ENTRIES; idx++)
+    {
         CPSWALETableEntryGet(cpsw_config->ale_base, idx, ale_entry);
 
         /* break if the table entry is free */
-        if (((*(((char *)ale_entry) + ALE_ENTRY_TYPE_IDX)) &
-                ALE_ENTRY_TYPE) == ALE_ENTRY_FREE) {
+        if (((*(((char *)ale_entry) + ALE_ENTRY_TYPE_IDX)) & ALE_ENTRY_TYPE) == ALE_ENTRY_FREE)
+        {
             return idx;
         }
     }
@@ -122,24 +123,25 @@ static int32_t cpsw_ale_entry_match_free(cpsw_device_t *cpsw_config) {
  * @param port Slave port number
  * @param eth_addr Ethernet address
  */
-static void cpsw_ale_unicastentry_set(
-        cpsw_device_t *cpsw_config, uint32_t port, uint8_t *eth_addr) {
+static void cpsw_ale_unicastentry_set(cpsw_device_t *cpsw_config, uint32_t port, uint8_t *eth_addr)
+{
 
     volatile uint32_t cnt;
     volatile int32_t idx;
     unsigned int ale_entry[ALE_ENTRY_NUM_WORDS] = {0, 0, 0};
 
-    for(cnt = 0; cnt < ALE_ETHARP_HWADDR_LEN; cnt++) {
-        *(((char *)ale_entry) + cnt) = eth_addr[ALE_ETHARP_HWADDR_LEN - cnt -1];
+    for (cnt = 0; cnt < ALE_ETHARP_HWADDR_LEN; cnt++)
+    {
+        *(((char *)ale_entry) + cnt) = eth_addr[ALE_ETHARP_HWADDR_LEN - cnt - 1];
     }
 
     *(((char *)ale_entry) + ALE_UCAST_ENTRY_TYPE) = ALE_ENTRY_UCAST;
-    *(((char *)ale_entry) + ALE_UCAST_ENTRY_DLR_PORT_BLK_SEC) =
-                                   (port << ALE_UCAST_ENTRY_PORT_SHIFT);
+    *(((char *)ale_entry) + ALE_UCAST_ENTRY_DLR_PORT_BLK_SEC) = (port << ALE_UCAST_ENTRY_PORT_SHIFT);
 
     idx = cpsw_ale_entry_match_free(cpsw_config);
 
-    if (idx < ALE_MAX_ENTRIES) {
+    if (idx < ALE_MAX_ENTRIES)
+    {
         CPSWALETableEntrySet(cpsw_config->ale_base, idx, ale_entry);
     }
 }
@@ -150,24 +152,23 @@ static void cpsw_ale_unicastentry_set(
  * @param portmask Port mask for the port number
  * @param eth_addr Ethernet Address
  */
-static void cpsw_ale_multicastentry_set(
-        cpsw_device_t *cpsw_config, uint32_t portmask, uint8_t *eth_addr) {
+static void cpsw_ale_multicastentry_set(cpsw_device_t *cpsw_config, uint32_t portmask, uint8_t *eth_addr)
+{
 
     volatile uint32_t cnt;
     volatile int32_t idx;
     unsigned int ale_entry[ALE_ENTRY_NUM_WORDS] = {0, 0, 0};
 
     idx = cpsw_ale_entry_match_free(cpsw_config);
-    if (idx < ALE_MAX_ENTRIES ) {
-        for (cnt = 0; cnt < ALE_ETHARP_HWADDR_LEN; cnt++) {
-            *(((uint8_t *)ale_entry) + cnt) =
-                    eth_addr[ALE_ETHARP_HWADDR_LEN - cnt -1];
+    if (idx < ALE_MAX_ENTRIES)
+    {
+        for (cnt = 0; cnt < ALE_ETHARP_HWADDR_LEN; cnt++)
+        {
+            *(((uint8_t *)ale_entry) + cnt) = eth_addr[ALE_ETHARP_HWADDR_LEN - cnt - 1];
         }
 
-        *(((uint8_t *)ale_entry) + ALE_MCAST_ENTRY_TYPE_FWD_STATE) =
-                ALE_ENTRY_MCAST;
-        *(((uint8_t *)ale_entry) + ALE_MCAST_ENTRY_PORTMASK_SUP) |=
-                (portmask << ALE_MCAST_ENTRY_PORTMASK_SHIFT);
+        *(((uint8_t *)ale_entry) + ALE_MCAST_ENTRY_TYPE_FWD_STATE) = ALE_ENTRY_MCAST;
+        *(((uint8_t *)ale_entry) + ALE_MCAST_ENTRY_PORTMASK_SUP) |= (portmask << ALE_MCAST_ENTRY_PORTMASK_SHIFT);
 
         CPSWALETableEntrySet(cpsw_config->ale_base, idx, ale_entry);
     }
@@ -177,7 +178,8 @@ static void cpsw_ale_multicastentry_set(
  * @brief Reclaim TX descriptors already sent
  * @param eth_ctrl Ethernet device configuration
  */
-static void cpsw_reclaim_tx_bd(iop_eth_device_t *eth_ctrl) {
+static void cpsw_reclaim_tx_bd(iop_eth_device_t *eth_ctrl)
+{
 
     /* device configuration */
     cpsw_device_t *cpsw_config = (cpsw_device_t *)eth_ctrl->dev.driver;
@@ -189,15 +191,16 @@ static void cpsw_reclaim_tx_bd(iop_eth_device_t *eth_ctrl) {
     volatile cpdma_bd_t *curr_bd = send_head;
 
     /* get the start of packet descriptor */
-    while ((curr_bd->flags_pktlen & CPDMA_BD_SOP) != 0) {
+    while ((curr_bd->flags_pktlen & CPDMA_BD_SOP) != 0)
+    {
 
         /* check if transmission is over */
-        if ((curr_bd->flags_pktlen & CPDMA_BD_OWNER) != 0) {
+        if ((curr_bd->flags_pktlen & CPDMA_BD_OWNER) != 0)
+        {
 
             iop_debug("     !!! RETRANSMIT !!!\n");
 
-            CPSWCPDMATxHdrDescPtrWrite(
-                    cpsw_config->cpdma_base, (uint32_t)curr_bd, 0);
+            CPSWCPDMATxHdrDescPtrWrite(cpsw_config->cpdma_base, (uint32_t)curr_bd, 0);
             return;
         }
 
@@ -205,24 +208,29 @@ static void cpsw_reclaim_tx_bd(iop_eth_device_t *eth_ctrl) {
         ++txch->free_num;
 
         /* traverse till the end of the packet and free its descriptors */
-        while ((curr_bd->flags_pktlen & CPDMA_BD_EOP) == 0) {
+        while ((curr_bd->flags_pktlen & CPDMA_BD_EOP) == 0)
+        {
 
             curr_bd = curr_bd->next;
             ++txch->free_num;
 
-            if (txch->free_num == eth_ctrl->tx_count) {
+            if (txch->free_num == eth_ctrl->tx_count)
+            {
                 break;
             }
         }
 
         /* clear SOP and EOP from the descriptors */
         send_head->flags_pktlen &= ~CPDMA_BD_SOP;
-        curr_bd->flags_pktlen   &= ~CPDMA_BD_EOP;
+        curr_bd->flags_pktlen &= ~CPDMA_BD_EOP;
 
         /* set the correct free descriptor for the next transmission */
-        if(curr_bd->next == NULL) {
+        if (curr_bd->next == NULL)
+        {
             txch->send_head = txch->free_head;
-        } else {
+        }
+        else
+        {
             txch->send_head = curr_bd->next;
         }
 
@@ -239,7 +247,8 @@ static void cpsw_reclaim_tx_bd(iop_eth_device_t *eth_ctrl) {
  * @brief Reclaim RX descriptors already sent
  * @param eth_ctrl Ethernet device configuration
  */
-static void cpsw_reclaim_rx_bd(iop_eth_device_t *eth_ctrl) {
+static void cpsw_reclaim_rx_bd(iop_eth_device_t *eth_ctrl)
+{
 
     /* device configuration */
     cpsw_device_t *cpsw_config = (cpsw_device_t *)eth_ctrl->dev.driver;
@@ -258,7 +267,8 @@ static void cpsw_reclaim_rx_bd(iop_eth_device_t *eth_ctrl) {
     saved_free_num = rxch->free_num;
     last_bd = rxch->recv_tail;
 
-    while (rxch->free_num > 0) {
+    while (rxch->free_num > 0)
+    {
         curr_bd->bufoff_len = (uint16_t)IOP_BUFFER_SIZE;
         curr_bd->flags_pktlen = CPDMA_BD_OWNER;
         last_bd = curr_bd;
@@ -267,7 +277,8 @@ static void cpsw_reclaim_rx_bd(iop_eth_device_t *eth_ctrl) {
     }
 
     /* check if any DB is allocated */
-    if(saved_free_num == rxch->free_num) {
+    if (saved_free_num == rxch->free_num)
+    {
         return;
     }
 
@@ -277,11 +288,13 @@ static void cpsw_reclaim_rx_bd(iop_eth_device_t *eth_ctrl) {
      * If the entire ring is traversed, curr_bd will be NULL. In that case,
      * write the Rx HDP in order to continue reception
      */
-    if(curr_bd != NULL) {
-      rxch->free_head = curr_bd;
-    } else {
-      CPSWCPDMARxHdrDescPtrWrite(
-              cpsw_config->cpdma_base, (uint32_t)recv_head, 0);
+    if (curr_bd != NULL)
+    {
+        rxch->free_head = curr_bd;
+    }
+    else
+    {
+        CPSWCPDMARxHdrDescPtrWrite(cpsw_config->cpdma_base, (uint32_t)recv_head, 0);
     }
 
     recv_tail->next = recv_head;
@@ -290,9 +303,9 @@ static void cpsw_reclaim_rx_bd(iop_eth_device_t *eth_ctrl) {
     last_bd->next = NULL;
 
     /* check if the reception it over */
-    if (recv_tail->flags_pktlen & CPDMA_BD_EOQ) {
-        CPSWCPDMARxHdrDescPtrWrite(
-                cpsw_config->cpdma_base, (uint32_t)recv_head, 0);
+    if ((recv_tail->flags_pktlen & CPDMA_BD_EOQ) != 0)
+    {
+        CPSWCPDMARxHdrDescPtrWrite(cpsw_config->cpdma_base, (uint32_t)recv_head, 0);
     }
 }
 
@@ -300,7 +313,8 @@ static void cpsw_reclaim_rx_bd(iop_eth_device_t *eth_ctrl) {
  * @brief CPDMA initialization
  * @param eth_ctrl Ethernet device configuration
  */
-static void cpsw_cpdma_init(iop_eth_device_t *eth_ctrl) {
+static void cpsw_cpdma_init(iop_eth_device_t *eth_ctrl)
+{
 
     iop_debug("    CPDMA initialization\n");
 
@@ -313,14 +327,15 @@ static void cpsw_cpdma_init(iop_eth_device_t *eth_ctrl) {
 
     /* initialize the TX channel */
     txch = &cpsw_config->txch;
-    txch->free_head = (volatile cpdma_bd_t*)(cpsw_config->cppi_ram_base);
+    txch->free_head = (volatile cpdma_bd_t *)(cpsw_config->cppi_ram_base);
     txch->send_head = txch->free_head;
     txch->send_tail = NULL;
 
     /* allocate the TX descriptors */
     count = eth_ctrl->tx_count;
     iop_debug("    setting TX buffers descriptors (%i)\n", count);
-    if (count == 0 || count > MAX_DESCRIPTORS) {
+    if (count == 0 || count > MAX_DESCRIPTORS)
+    {
         eth_ctrl->tx_count = count = MAX_DESCRIPTORS;
         iop_debug("    warning: defaulting to %i descriptors...\n", count);
     }
@@ -330,7 +345,8 @@ static void cpsw_cpdma_init(iop_eth_device_t *eth_ctrl) {
     /* create the TX ring of buffer descriptors */
     txch->free_num = count;
     curr_bd = txch->free_head;
-    while (count > 0) {
+    while (count > 0)
+    {
         curr_bd->next = curr_bd + 1;
         curr_bd->iop_buffer = &cpsw_config->iop_buffers[idx++];
         curr_bd->bufptr = (uint32_t)curr_bd->iop_buffer->p_addr;
@@ -343,15 +359,15 @@ static void cpsw_cpdma_init(iop_eth_device_t *eth_ctrl) {
 
     /* initialize the RC channel */
     rxch = &cpsw_config->rxch;
-    rxch->free_head = (volatile cpdma_bd_t *)
-            (cpsw_config->cppi_ram_base + (SIZE_CPPI_RAM >> 1));
+    rxch->free_head = (volatile cpdma_bd_t *)(cpsw_config->cppi_ram_base + (SIZE_CPPI_RAM >> 1));
     rxch->recv_head = rxch->free_head;
     rxch->recv_tail = NULL;
 
     /* allocate the RX descriptors */
     count = eth_ctrl->rx_count;
     iop_debug("    setting RX buffers descriptors (%i)\n", count);
-    if (count == 0 || count > MAX_DESCRIPTORS) {
+    if (count == 0 || count > MAX_DESCRIPTORS)
+    {
         eth_ctrl->rx_count = count = MAX_DESCRIPTORS;
         iop_debug("    warning: defaulting to %i descriptors...\n", count);
     }
@@ -359,7 +375,8 @@ static void cpsw_cpdma_init(iop_eth_device_t *eth_ctrl) {
     /* create the RX ring of buffer descriptors */
     rxch->free_num = count;
     curr_bd = rxch->free_head;
-    while (count > 0) {
+    while (count > 0)
+    {
         curr_bd->next = curr_bd + 1;
         curr_bd->iop_buffer = &cpsw_config->iop_buffers[idx++];
         curr_bd->bufptr = (uint32_t)curr_bd->iop_buffer->p_addr;
@@ -379,8 +396,7 @@ static void cpsw_cpdma_init(iop_eth_device_t *eth_ctrl) {
 
     /* close the ring  */
     last_bd->next = NULL;
-    CPSWCPDMARxHdrDescPtrWrite(
-            cpsw_config->cpdma_base, (uint32_t)(rxch->recv_head), 0);
+    CPSWCPDMARxHdrDescPtrWrite(cpsw_config->cpdma_base, (uint32_t)(rxch->recv_head), 0);
 }
 
 /**
@@ -389,21 +405,36 @@ static void cpsw_cpdma_init(iop_eth_device_t *eth_ctrl) {
  * @param partnr_ablty Partner supported abilities
  * @param gbps_partnr_ablty
  */
-static void cpsw_ablty_debug(
-        uint32_t adv_val, uint32_t partnr_ablty, uint32_t gbps_partnr_ablty) {
+static void cpsw_ablty_debug(uint32_t adv_val, uint32_t partnr_ablty, uint32_t gbps_partnr_ablty)
+{
 
-    if(gbps_partnr_ablty & PHY_LINK_PARTNER_1000BT_FD) {
+    if ((gbps_partnr_ablty & PHY_LINK_PARTNER_1000BT_FD) != 0)
+    {
         iop_debug("    transfer mode: 1000 Mbps\n");
-    } else {
-        if ((adv_val & partnr_ablty) & PHY_100BTX_FD) {
+    }
+    else
+    {
+        if (((adv_val & partnr_ablty) & PHY_100BTX_FD) != 0)
+        {
             iop_debug("    transfer mode: 100 Mbps Full Duplex\n");
-        } else if ((adv_val & partnr_ablty) & PHY_100BTX) {
+        }
+        else if (((adv_val & partnr_ablty) & PHY_100BTX) != 0)
+
+        {
             iop_debug("    transfer mode: 100 Mbps Half Duplex\n");
-        } else if ((adv_val & partnr_ablty) & PHY_10BT_FD) {
+        }
+        else if (((adv_val & partnr_ablty) & PHY_10BT_FD) != 0)
+
+        {
             iop_debug("    transfer mode: 10 Mbps Full Duplex\n");
-        } else if ((adv_val & partnr_ablty) & PHY_10BT) {
+        }
+        else if (((adv_val & partnr_ablty) & PHY_10BT) != 0)
+
+        {
             iop_debug("    transfer mode: 10 Mbps Half Duplex\n");
-        } else {
+        }
+        else
+        {
             iop_debug("    no Valid Transfer Mode is detected\n");
         }
     }
@@ -415,8 +446,8 @@ static void cpsw_ablty_debug(
  * @param port_num
  * @return
  */
-static int32_t cpsw_autoneg_config(
-        cpsw_device_t *cpsw_config, uint32_t port) {
+static int32_t cpsw_autoneg_config(cpsw_device_t *cpsw_config, uint32_t port)
+{
 
     uint32_t transfer_mode = 0;
     volatile uint32_t aut_neg_cnt = 200;
@@ -426,11 +457,14 @@ static int32_t cpsw_autoneg_config(
     adv_val = (PHY_100BTX | PHY_100BTX_FD | PHY_10BT | PHY_10BT_FD);
 
     /* Advertise only 1Gbps if the PHY can handle it */
-    if(1 == cpsw_config->port[port -1].phy_gbps) {
+    if (1 == cpsw_config->port[port - 1].phy_gbps)
+    {
         gig_adv_val = PHY_1000BT_FD;
         partnr_ablty = 1;
         gbps_partnr_ablty = 1;
-    } else {
+    }
+    else
+    {
         gig_adv_val = 0;
         partnr_ablty = 1;
         gbps_partnr_ablty = 0;
@@ -439,49 +473,65 @@ static int32_t cpsw_autoneg_config(
     iop_debug("    auto-negotiating on port %i\n", port);
 
     /* auto-negotiation */
-    if (PhyAutoNegotiate(
-            cpsw_config->mdio_base, cpsw_config->port[port -1].phy_addr,
-            &adv_val, &gig_adv_val) == 1) {
+    if (PhyAutoNegotiate(cpsw_config->mdio_base, cpsw_config->port[port - 1].phy_addr, &adv_val, &gig_adv_val) == 1)
+    {
 
-        while (aut_neg_cnt) {
+        while (aut_neg_cnt)
+        {
             /*TODO add wait routine to substitute the following func*/
-//            rtems_task_wake_after(50);
-            if (PhyAutoNegStatusGet(cpsw_config->mdio_base,
-                                    cpsw_config->port[port -1].phy_addr) == 1) {
+            //            rtems_task_wake_after(50);
+            if (PhyAutoNegStatusGet(cpsw_config->mdio_base, cpsw_config->port[port - 1].phy_addr) == 1)
+            {
                 break;
             }
             aut_neg_cnt--;
         }
 
-        if (aut_neg_cnt == 0) {
+        if (aut_neg_cnt == 0)
+        {
             return -1;
         }
 
         /* get what the partner supports */
-        PhyPartnerAbilityGet(cpsw_config->mdio_base,
-                             cpsw_config->port[port -1].phy_addr,
-                             &partnr_ablty, &gbps_partnr_ablty);
-
+        PhyPartnerAbilityGet(cpsw_config->mdio_base, cpsw_config->port[port - 1].phy_addr, &partnr_ablty,
+                             &gbps_partnr_ablty);
 
         cpsw_ablty_debug(adv_val, partnr_ablty, gbps_partnr_ablty);
 
         /* determine the transfer mode */
-        if(gbps_partnr_ablty & PHY_LINK_PARTNER_1000BT_FD) {
+        if ((gbps_partnr_ablty & PHY_LINK_PARTNER_1000BT_FD) != 0)
+        {
             transfer_mode = CPSW_SLIVER_GIG_FULL_DUPLEX;
-        } else {
-            if ((adv_val & partnr_ablty) & PHY_100BTX_FD) {
-                transfer_mode = CPSW_SLIVER_NON_GIG_FULL_DUPLEX;
-            } else if ((adv_val & partnr_ablty) & PHY_100BTX) {
-                transfer_mode = CPSW_SLIVER_NON_GIG_HALF_DUPLEX;
-            } else if ((adv_val & partnr_ablty) & PHY_10BT_FD) {
-                transfer_mode = CPSW_SLIVER_INBAND | CPSW_SLIVER_NON_GIG_FULL_DUPLEX;
-            } else if ((adv_val & partnr_ablty) & PHY_10BT) {
-                transfer_mode = CPSW_SLIVER_INBAND | CPSW_SLIVER_NON_GIG_HALF_DUPLEX;
-            } else {
-                return -1;
-          }
         }
-    } else {
+        else
+        {
+            if (((adv_val & partnr_ablty) & PHY_100BTX_FD) != 0)
+            {
+                transfer_mode = CPSW_SLIVER_NON_GIG_FULL_DUPLEX;
+            }
+            else if (((adv_val & partnr_ablty) & PHY_100BTX) != 0)
+
+            {
+                transfer_mode = CPSW_SLIVER_NON_GIG_HALF_DUPLEX;
+            }
+            else if (((adv_val & partnr_ablty) & PHY_10BT_FD) != 0)
+
+            {
+                transfer_mode = CPSW_SLIVER_INBAND | CPSW_SLIVER_NON_GIG_FULL_DUPLEX;
+            }
+            else if (((adv_val & partnr_ablty) & PHY_10BT) != 0)
+
+            {
+                transfer_mode = CPSW_SLIVER_INBAND | CPSW_SLIVER_NON_GIG_HALF_DUPLEX;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+    }
+    else
+    {
         return -1;
     }
 
@@ -495,28 +545,29 @@ static int32_t cpsw_autoneg_config(
  * @param slv_port_num
  * @return
  */
-static int32_t cpsw_phylink_config(
-        cpsw_device_t *cpswinst, uint32_t slv_port_num) {
+static int32_t cpsw_phylink_config(cpsw_device_t *cpswinst, uint32_t slv_port_num)
+{
 
     iop_debug("    configuring PHY link for port %i\n", slv_port_num);
 
     /* check if ethernet PHY is present or not */
-    if (0 == (MDIOPhyAliveStatusGet(cpswinst->mdio_base)
-             & (1 << cpswinst->port[slv_port_num - 1].phy_addr))) {
+    if (0 == (MDIOPhyAliveStatusGet(cpswinst->mdio_base) & (1 << cpswinst->port[slv_port_num - 1].phy_addr)))
+    {
 
         iop_debug("    ethernet PHY for port %i not found...\n", slv_port_num);
         return -1;
     }
 
     /* auto-negotiate the PHY configurations */
-    if (cpsw_autoneg_config(cpswinst, slv_port_num) == -1) {
+    if (cpsw_autoneg_config(cpswinst, slv_port_num) == -1)
+    {
         iop_debug("    auto-negotiation failed...\n");
         return -1;
     }
 
     /* check if PHY link is there or not */
-    if(PhyLinkStatusGet(cpswinst->mdio_base,
-            cpswinst->port[slv_port_num - 1].phy_addr, 1000) == 0) {
+    if (PhyLinkStatusGet(cpswinst->mdio_base, cpswinst->port[slv_port_num - 1].phy_addr, 1000) == 0)
+    {
         iop_debug("    PHY link for port %i not found...\n", slv_port_num);
         return -1;
     }
@@ -525,8 +576,8 @@ static int32_t cpsw_phylink_config(
     return 0;
 }
 
-
-static void cpsw_device_init(iop_eth_device_t *device) {
+static void cpsw_device_init(iop_eth_device_t *device)
+{
 
     /* initialize MDIO */
     MDIOInit(CPSW0_MDIO_REGS, MDIO_FREQ_INPUT, MDIO_FREQ_OUTPUT);
@@ -563,9 +614,7 @@ static void cpsw_device_init(iop_eth_device_t *device) {
 
     /* setup the multi-cast entry */
     uint8_t multicast_mac[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-    cpsw_ale_multicastentry_set(cpswinst,
-                                  PORT_0_MASK | PORT_1_MASK | PORT_2_MASK,
-                                  multicast_mac);
+    cpsw_ale_multicastentry_set(cpswinst, PORT_0_MASK | PORT_1_MASK | PORT_2_MASK, multicast_mac);
 
     /* setup uni-cast entry */
     cpsw_ale_unicastentry_set(cpswinst, 0, device->mac);
@@ -573,17 +622,15 @@ static void cpsw_device_init(iop_eth_device_t *device) {
     CPSWPortSrcAddrSet(cpswinst->port[1].port_base, device->mac);
 
     /* setup IOP buffers */
-    setup_iop_buffers(
-            cpswinst->iop_buffers,
-            cpswinst->iop_buffers_storage,
-            device->rx_count + device->tx_count);
+    setup_iop_buffers(cpswinst->iop_buffers, cpswinst->iop_buffers_storage, device->rx_count + device->tx_count);
 
     /* initialize the buffer descriptors for CPDMA */
     cpsw_cpdma_init(device);
 
     /* configure PHYs */
-    cpsw_phylink_config(cpswinst, 1);
-    cpsw_phylink_config(cpswinst, 2);
+    (void)cpsw_phylink_config(cpswinst, 1);
+
+    (void)cpsw_phylink_config(cpswinst, 2);
 
     iop_debug("    enable transmission and reception\n");
 
@@ -594,7 +641,8 @@ static void cpsw_device_init(iop_eth_device_t *device) {
     CPSWCPDMARxEnable(cpswinst->cpdma_base);
 }
 
-static uint16_t cpsw_transmit(cpsw_device_t *cpswinst, iop_wrapper_t *wrapper) {
+static uint16_t cpsw_transmit(cpsw_device_t *cpswinst, iop_wrapper_t *wrapper)
+{
 
     volatile cpdma_bd_t *curr_bd, *bd_to_send, *bd_end;
 
@@ -602,13 +650,15 @@ static uint16_t cpsw_transmit(cpsw_device_t *cpswinst, iop_wrapper_t *wrapper) {
     txch *txch = &cpswinst->txch;
 
     /* check if we have enough descriptors */
-    if (txch->free_num == 0) {
+    if (txch->free_num == 0)
+    {
         return 0;
     }
 
     /* set minimum length of the CPSW device */
     uint16_t length = get_buffer_size(wrapper->buffer);
-    if (length < 60) {
+    if (length < 60)
+    {
         length = 60;
     }
 
@@ -653,15 +703,18 @@ static uint16_t cpsw_transmit(cpsw_device_t *cpswinst, iop_wrapper_t *wrapper) {
     /* update next free descriptor */
     txch->free_head = curr_bd;
 
-    if (txch->send_tail == NULL) {
+    if (txch->send_tail == NULL)
+    {
         CPSWCPDMATxHdrDescPtrWrite(cpswinst->cpdma_base, (uint32_t)bd_to_send, 0);
-
-    } else {
+    }
+    else
+    {
 
         curr_bd = txch->send_tail;
         curr_bd->next = bd_to_send;
 
-        if ((curr_bd->flags_pktlen & CPDMA_BD_EOQ) != 0) {
+        if ((curr_bd->flags_pktlen & CPDMA_BD_EOQ) != 0)
+        {
             CPSWCPDMATxHdrDescPtrWrite(cpswinst->cpdma_base, (uint32_t)bd_to_send, 0);
         }
     }
@@ -670,7 +723,8 @@ static uint16_t cpsw_transmit(cpsw_device_t *cpswinst, iop_wrapper_t *wrapper) {
     return length;
 }
 
-static int16_t cpsw_receive(cpsw_device_t *cpswinst, iop_wrapper_t *wrapper) {
+static int16_t cpsw_receive(cpsw_device_t *cpswinst, iop_wrapper_t *wrapper)
+{
 
     int32_t len = 0;
 
@@ -681,13 +735,15 @@ static int16_t cpsw_receive(cpsw_device_t *cpswinst, iop_wrapper_t *wrapper) {
     volatile cpdma_bd_t *curr_bd = rxch->recv_head;
 
     /* check if the descriptor contains data */
-    if ((curr_bd->flags_pktlen & CPDMA_BD_OWNER) != CPDMA_BD_OWNER) {
+    if ((curr_bd->flags_pktlen & CPDMA_BD_OWNER) != CPDMA_BD_OWNER)
+    {
 
         /* get the total length of the packet */
         len = (curr_bd->flags_pktlen & CPDMA_BD_PKTLEN_MASK) - 4;
 
         /* check if the packet is valid */
-        if (len > 0) {
+        if (len > 0)
+        {
 
             /* swap buffers */
             iop_buffer_t *swap = wrapper->buffer;
@@ -701,8 +757,10 @@ static int16_t cpsw_receive(cpsw_device_t *cpswinst, iop_wrapper_t *wrapper) {
             wrapper->buffer->payload_off = 42;
             wrapper->buffer->payload_size = len - 42;
 
-        /* no valid packet received */
-        } else {
+            /* no valid packet received */
+        }
+        else
+        {
 
             len = 0;
         }
@@ -718,7 +776,8 @@ static int16_t cpsw_receive(cpsw_device_t *cpswinst, iop_wrapper_t *wrapper) {
         rxch->free_num++;
 
         /* check if the DMA engine took the last descriptor */
-        if(curr_bd == NULL) {
+        if (curr_bd == NULL)
+        {
             rxch->recv_head = rxch->free_head;
             return (int16_t)len;
         }
@@ -728,26 +787,27 @@ static int16_t cpsw_receive(cpsw_device_t *cpswinst, iop_wrapper_t *wrapper) {
     return (int16_t)len;
 }
 
-
-air_status_code_e cpsw_initialize(iop_device_driver_t *iop_dev, void *arg) {
+air_status_code_e cpsw_initialize(iop_device_driver_t *iop_dev, void *arg)
+{
 
     cpsw_device_init((iop_eth_device_t *)iop_dev);
     return AIR_SUCCESSFUL;
 }
 
-air_status_code_e cpsw_open(iop_device_driver_t *iop_dev, void *arg) {
+air_status_code_e cpsw_open(iop_device_driver_t *iop_dev, void *arg)
+{
 
     return AIR_SUCCESSFUL;
 }
 
-
-air_status_code_e cpsw_close(iop_device_driver_t *iop_dev, void *arg) {
+air_status_code_e cpsw_close(iop_device_driver_t *iop_dev, void *arg)
+{
 
     return AIR_SUCCESSFUL;
 }
 
-
-air_status_code_e cpsw_read(iop_device_driver_t *iop_dev, void *arg) {
+air_status_code_e cpsw_read(iop_device_driver_t *iop_dev, void *arg)
+{
 
     air_status_code_e rc = AIR_SUCCESSFUL;
     iop_wrapper_t *wrapper = (iop_wrapper_t *)arg;
@@ -755,54 +815,60 @@ air_status_code_e cpsw_read(iop_device_driver_t *iop_dev, void *arg) {
     cpsw_device_t *cpswinst = (cpsw_device_t *)device->dev.driver;
 
     /* check if driver was initialized */
-    if(!cpswinst->started) {
-        rc =  AIR_DEVICE_NOT_FOUND;
+    if (!cpswinst->started)
+    {
+        rc = AIR_DEVICE_NOT_FOUND;
     }
 
     /* sanity check */
-    if (wrapper == NULL || wrapper->buffer == NULL){
-        rc =  AIR_INVALID_PARAM;
+    if (wrapper == NULL || wrapper->buffer == NULL)
+    {
+        rc = AIR_INVALID_PARAM;
     }
 
     /* read packet */
-    if (rc == AIR_SUCCESSFUL && cpsw_receive(cpswinst, wrapper) == 0) {
+    if (rc == AIR_SUCCESSFUL && cpsw_receive(cpswinst, wrapper) == 0)
+    {
         rc = AIR_NO_ACTION;
     }
 
     /* free RX descriptors */
-    if (rc != AIR_DEVICE_NOT_FOUND) {
+    if (rc != AIR_DEVICE_NOT_FOUND)
+    {
         cpsw_reclaim_rx_bd(device);
     }
 
     return rc;
 }
 
-
-air_status_code_e cpsw_write(iop_device_driver_t *iop_dev, void *arg) {
+air_status_code_e cpsw_write(iop_device_driver_t *iop_dev, void *arg)
+{
 
     air_status_code_e rc = AIR_SUCCESSFUL;
     iop_wrapper_t *wrapper = (iop_wrapper_t *)arg;
     iop_eth_device_t *device = (iop_eth_device_t *)iop_dev;
     cpsw_device_t *cpswinst = (cpsw_device_t *)device->dev.driver;
 
-    if(!cpswinst->started) {
+    if (!cpswinst->started)
+    {
         rc = AIR_DEVICE_NOT_FOUND;
     }
 
     /* Verify user arguments consistency*/
-    if (wrapper == NULL ||
-        wrapper->buffer == NULL ||
-        wrapper->buffer->payload_size == 0){
+    if (wrapper == NULL || wrapper->buffer == NULL || wrapper->buffer->payload_size == 0)
+    {
         rc = AIR_INVALID_PARAM;
     }
 
     /* send packet */
-    if (rc == AIR_SUCCESSFUL && cpsw_transmit(cpswinst, wrapper) == 0) {
+    if (rc == AIR_SUCCESSFUL && cpsw_transmit(cpswinst, wrapper) == 0)
+    {
         rc = AIR_NO_ACTION;
     }
 
     /* free TX descriptors */
-    if (rc != AIR_DEVICE_NOT_FOUND) {
+    if (rc != AIR_DEVICE_NOT_FOUND)
+    {
         cpsw_reclaim_tx_bd(device);
     }
 
