@@ -30,10 +30,6 @@
 #include <workspace.h>
 #include <amba.h>
 
-#ifdef PMK_DEBUG
-#include <printk.h>
-#endif
-
 extern void leon_idle_loop();
 
 
@@ -51,23 +47,6 @@ static inline air_u32_t bsp_get_core_id(void) {
     air_u32_t id;
     __asm__ __volatile__("rd     %%asr17,%0\n\t" : "=r" (id) : );
     return ((id >> 28) & 0xFF);
-}
-
-/**
-* @brief Detect board's silicon revision number
-*/
-static inline air_u32_t bsp_get_revision_version(void){
-#ifdef PMK_DEBUG
-    printk("Detecting GR740 Revision... ");
-#endif
-    /* Read MPSTAT register for Internal controler 1 */
-    air_u32_t* mpstat = (air_u32_t*) 0xFF904010 ;
-    /* Isolate 26th bit which contains an indicaiton on the silicon revision version */
-    air_u32_t revision_version = (*mpstat >> 26) & 1 ;
-#ifdef PMK_DEBUG
-    printk("%d ", revision_version);
-#endif
-    return revision_version ;
 }
 
 /**

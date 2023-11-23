@@ -56,7 +56,7 @@ void pmk_module_restart(pmk_core_ctrl_t *core) {
         /* restart current core directly */
         if (air_shared_area.core[i].idx == core->idx) {
 
-        	bsp_restart_core(core);
+            bsp_shutdown_core(core);
 
         /* restart core via IPC message */
         } else {

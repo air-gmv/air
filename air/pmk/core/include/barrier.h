@@ -26,8 +26,7 @@
 /**
  *  @brief Synchronization barrier
  */
-typedef struct
-{
+typedef struct {
 
     /** maximum of cores that barrier can hold                          */
     air_u32_t size;

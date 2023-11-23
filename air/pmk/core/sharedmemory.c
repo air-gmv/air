@@ -12,61 +12,55 @@
  *        partitions
  */
 
-#include <configurations.h>
-#include <partition.h>
 #include <pmk.h>
+#include <partition.h>
 #include <sharedmemory.h>
+#include <configurations.h>
 
-pmk_shm_t *pmk_sharedmemory_get_by_id(air_identifier_t id)
-{
+pmk_shm_t *pmk_sharedmemory_get_by_id(air_identifier_t id) {
 
     int i;
     pmk_shm_t *found = NULL;
     pmk_list_t *list = pmk_get_shared_memory_areas();
-    for (i = 0; i < list->length; ++i)
-    {
+    for(i = 0; i < list->length; ++i) {
         pmk_shm_t *sharedmemory = pmk_get_from_list(pmk_shm_t, list, i);
-        if (sharedmemory->id == id)
-        {
+        if (sharedmemory->id == id) {
             found = sharedmemory;
         }
     }
     return found;
 }
 
-pmk_shm_t *pmk_sharedmemory_get_by_name(air_name_ptr_t name)
-{
+pmk_shm_t *pmk_sharedmemory_get_by_name(air_name_ptr_t name) {
 
     int i;
     pmk_shm_t *found = NULL;
     pmk_list_t *list = pmk_get_shared_memory_areas();
-    for (i = 0; i < list->length; ++i)
-    {
+    for(i = 0; i < list->length; ++i) {
         pmk_shm_t *sharedmemory = pmk_get_from_list(pmk_shm_t, list, i);
-        if (strncmp(name, sharedmemory->name, sizeof(air_name_t)) == 0)
-        {
+        if (strncmp(name, sharedmemory->name, sizeof(air_name_t)) == 0) {
             found = sharedmemory;
         }
     }
     return found;
 }
 
-pmk_shm_partition_t *pmk_sharedmemory_is_accessible_to_partition(pmk_shm_t *sharedarea, pmk_partition_t *partition)
-{
+pmk_shm_partition_t *pmk_sharedmemory_is_accessible_to_partition(
+        pmk_shm_t *sharedarea,
+        pmk_partition_t *partition) {
 
     int i;
     pmk_shm_partition_t *found = NULL;
     pmk_list_t *list = &sharedarea->partitions;
 
-    for (i = 0; i < list->length; ++i)
-    {
+    for (i = 0; i < list->length; ++i) {
 
         /* get partition permissions from list */
-        pmk_shm_partition_t *partition_permissions = pmk_get_from_list(pmk_shm_partition_t, list, i);
+        pmk_shm_partition_t *partition_permissions =
+                pmk_get_from_list(pmk_shm_partition_t, list, i);
 
         /* check if the permissions refer to the current partition */
-        if (partition_permissions->partition == partition)
-        {
+        if (partition_permissions->partition == partition) {
             found = partition_permissions;
         }
     }

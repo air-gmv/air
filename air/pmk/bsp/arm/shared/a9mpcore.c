@@ -13,11 +13,9 @@
 
 #include <a9mpcore.h>
 
-void arm_a9mpcore_start_hook(air_u32_t cpu_id)
-{
+void arm_a9mpcore_start_hook(air_u32_t cpu_id) {
 
-    if (cpu_id == 0)
-    {
+    if (cpu_id == 0) {
         /* Enable SCU */
         SCU->ctrl |= CTRL_SCU_EN;
     }

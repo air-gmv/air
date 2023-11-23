@@ -112,7 +112,8 @@ void __gcov_exit()
     pprintf("on gcov_exit for %s\n", gcov_info_filename(tmp->info));
     while (tmp)
     {
-        unsigned bytesNeeded = convert_to_gcda(0, tmp->info);
+        unsigned int bytesNeeded = convert_to_gcda(0, tmp->info);
+
         char buffer[bytesNeeded];
         if (!buffer)
         {
@@ -120,7 +121,8 @@ void __gcov_exit()
             return;
         }
 
-        convert_to_gcda(buffer, tmp->info);
+        (void)convert_to_gcda(buffer, tmp->info);
+
         pprintf("Emitting %6d bytes for %s\n", bytesNeeded, gcov_info_filename(tmp->info));
         tmp = tmp->next;
     }
