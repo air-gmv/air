@@ -53,8 +53,7 @@ air_u32_t test_partition_init(air_name_ptr_t shm_name)
     air_sharedmemory_t sharedmemory;
 
     /* get partition configuration */
-    (void)air_syscall_get_partition_status(-1, &partition);
-
+    air_syscall_get_partition_status(-1, &partition);
     /* get shared memory area */
     if (air_syscall_get_sharedmemory(shm_name, &sharedmemory) == AIR_NO_ERROR)
     {
@@ -64,7 +63,7 @@ air_u32_t test_partition_init(air_name_ptr_t shm_name)
     {
         /* shutdown partition */
         pprintf("Error: Failed getting shared memory\n");
-        (void)air_syscall_set_partition_mode(-1, AIR_MODE_IDLE);
+        air_syscall_set_partition_mode(-1, AIR_MODE_IDLE);
     }
     /* busy wait until the until the test controller initializes */
     while (test_control->test_id == 0)
@@ -92,7 +91,7 @@ air_u32_t test_step_announce(air_u32_t id, announce_flags flags)
 
     if ((libtest_debug) != 0)
     {
-        (void)printf("libtest: step_announce id = %d, control step id = %d\n", id, test_control->step_id);
+        printf("libtest: step_announce id = %d, control step id = %d\n", id, test_control->step_id);
     }
 
     /* wait for the current step */
@@ -103,7 +102,7 @@ air_u32_t test_step_announce(air_u32_t id, announce_flags flags)
 
     if ((libtest_debug) != 0)
     {
-        (void)printf("libtest: Freeing id = %d\n", id);
+        printf("libtest: Freeing id = %d\n", id);
     }
 
     /* advance the current partition test step */
@@ -148,8 +147,7 @@ void test_step_report(char *cond, int tvalue, char *file, int line, test_result 
     /* print error line */
     if (TEST_FAILURE == res)
     {
-        (void)printf("TEST| STEP ID %04x ITERATION %03x| FAILED\n", partition_buffer->step_id,
-                     partition_buffer->iterations);
+        printf("TEST| STEP ID %04x ITERATION %03x| FAILED\n", partition_buffer->step_id, partition_buffer->iterations);
 
         if (file != NULL)
         {
