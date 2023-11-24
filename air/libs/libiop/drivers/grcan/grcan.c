@@ -926,9 +926,7 @@ uint32_t iop_grcan_read(iop_device_driver_t *iop_dev, void *arg)
     req_cnt = 1; /* Process one message at the time */
 
     if ((!iop_buffer) || (req_cnt < 1))
-    {
         return AIR_INVALID_SIZE;
-    }
 
     if (pDev->started != STATE_STARTED)
     {
@@ -1005,9 +1003,7 @@ uint32_t iop_grcan_write(iop_device_driver_t *iop_dev, void *arg)
     }
 
     if ((pDev->started != STATE_STARTED) || pDev->config.silent || pDev->flushing)
-    {
         return AIR_INVALID_MODE;
-    }
 
     req_cnt = 1;
 

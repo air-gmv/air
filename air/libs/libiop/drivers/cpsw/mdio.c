@@ -40,8 +40,8 @@
  */
 
 /* HW Macros and Peripheral Defines */
-#include "hw_mdio.h"
 #include "hw_types.h"
+#include "hw_mdio.h"
 
 /* Driver APIs */
 #include "mdio.h"

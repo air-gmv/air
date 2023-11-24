@@ -185,18 +185,14 @@ static int greth_initialize_hardware(iop_eth_device_t *device)
     /* get phy control register default values */
     phyctrl = read_mii(sc, phyaddr, 0);
     if ((phyctrl & 0x8000) || (phyctrl == 0))
-    {
         return AIR_DEVICE_ERROR;
-    }
 
     /* reset PHY and wait for completion */
     write_mii(sc, phyaddr, 0, 0x8000 | phyctrl);
 
     phyctrl = read_mii(sc, phyaddr, 0);
     if ((phyctrl & 0x8000) || (phyctrl == 0))
-    {
         return AIR_DEVICE_ERROR;
-    }
 
     /* clear device's capabilities*/
     sc->gb = 0;
@@ -395,9 +391,7 @@ auto_neg_done:
     /*wait for PHY to be ready*/
     phyctrl = read_mii(sc, phyaddr, 0);
     if ((phyctrl & 0x8000) || (phyctrl == 0))
-    {
         return AIR_DEVICE_ERROR;
-    }
 
     /**
      *	Reset the controller.

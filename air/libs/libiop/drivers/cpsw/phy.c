@@ -39,9 +39,9 @@
  *
  */
 
-#include "phy.h"
 #include "hw_types.h"
 #include "mdio.h"
+#include "phy.h"
 
 #define PHY_ADV_VAL_MASK (0x01e0)
 #define PHY_GIG_ADV_VAL_MASK (0x0300)
