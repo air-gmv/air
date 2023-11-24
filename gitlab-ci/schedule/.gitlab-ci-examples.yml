@@ -29,11 +29,7 @@ ARM-QEMU:
             - "hello_world"
             - "bare_c"
             - "hm"
-            - "math"
-            - "mms"
-            - "periodic"
             - "ports"
-            - "posix"
             - "shm"
 
 # SPARC

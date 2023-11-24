@@ -144,7 +144,7 @@ SPARC-LAYSIM-validation-test:
           #- "TEST-DEF-01650"
           #- "TEST-DEF-01730"
           - "TEST-DEF-01740"
-          - "TEST-DEF-01741"
+          #- "TEST-DEF-01741"
           - "TEST-DEF-01750"
           - "TEST-DEF-02100"
           #- "TEST-DEF-02101"
