@@ -25,36 +25,39 @@
 /**
  * @brief Generic Timer control structure
  */
-typedef struct {
+typedef struct
+{
 
-    volatile void *regs;    /**< Base register*/
-    air_u32_t irq;           /**< IRQ number  */
-    air_u32_t frequency;     /**< Frequency   */
+    volatile void *regs; /**< Base register*/
+    air_u32_t irq;       /**< IRQ number  */
+    air_u32_t frequency; /**< Frequency   */
 
 } timer_ctrl_t;
 
 /**
  * @brief LEON registers per timer
  */
-typedef struct {
+typedef struct
+{
 
-   volatile air_u32_t value;
-   volatile air_u32_t reload;
-   volatile air_u32_t conf;
-   volatile air_u32_t dummy;
+    volatile air_u32_t value;
+    volatile air_u32_t reload;
+    volatile air_u32_t conf;
+    volatile air_u32_t dummy;
 
 } timer_subtype_t;
 
 /**
  * @brief LEON timer register map
  */
-typedef struct {
+typedef struct
+{
 
-   volatile air_u32_t scaler_value;
-   volatile air_u32_t scaler_reload;
-   volatile air_u32_t status;
-   volatile air_u32_t dummy;
-   timer_subtype_t timer[8];
+    volatile air_u32_t scaler_value;
+    volatile air_u32_t scaler_reload;
+    volatile air_u32_t status;
+    volatile air_u32_t dummy;
+    timer_subtype_t timer[8];
 
 } timer_regmap_t;
 

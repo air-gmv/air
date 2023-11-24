@@ -25,7 +25,6 @@
  */
 void pmk_trap_table(void);
 
-
 /**
  * @brief Core idle context's
  */
@@ -40,8 +39,9 @@ static pmk_barrier_t initialization_barrier;
 /**
  * @brief
  */
-void pmk_multicore_init(void) {
-    
+void pmk_multicore_init(void)
+{
+
     air_u32_t i;
     air_u32_t available_cores = 0;
     air_u32_t configured_cores = 0;
@@ -51,11 +51,12 @@ void pmk_multicore_init(void) {
 #endif
 
     /* get the hardware available cores, and the required cores */
-    available_cores  = bsp_get_number_of_cores();
+    available_cores = bsp_get_number_of_cores();
     configured_cores = pmk_get_usr_configured_cores();
 
     /* invalid configuration */
-    if (0 == configured_cores || configured_cores > available_cores) {
+    if (0 == configured_cores || configured_cores > available_cores)
+    {
         pmk_fatal_error(PMK_INTERNAL_ERROR_CONFIG, __func__, __FILE__, __LINE__);
     }
 
@@ -69,11 +70,10 @@ void pmk_multicore_init(void) {
     /* allocate the required core structures and its respective interrupt stack
      * pointers in the workspace shared area
      */
-    pmk_core_idle_context =
-            pmk_workspace_alloc(sizeof(core_context_t) * configured_cores);
-    air_shared_area.core =
-            pmk_workspace_alloc(sizeof(pmk_core_ctrl_t) * configured_cores);
-    for (i = 0; i < configured_cores; ++i){
+    pmk_core_idle_context = pmk_workspace_alloc(sizeof(core_context_t) * configured_cores);
+    air_shared_area.core = pmk_workspace_alloc(sizeof(pmk_core_ctrl_t) * configured_cores);
+    for (i = 0; i < configured_cores; ++i)
+    {
 
 #ifdef PMK_DEBUG
         printk("    core control %i (0x%08x):\n", i, &air_shared_area.core[i]);
@@ -94,7 +94,8 @@ void pmk_multicore_init(void) {
     pmk_barrier_init(&initialization_barrier, configured_cores);
 
     /* boot configured cores */
-    for(i = 1; i < configured_cores; ++i) {
+    for (i = 1; i < configured_cores; ++i)
+    {
         bsp_boot_core(i, pmk_trap_table);
     }
 
@@ -112,10 +113,11 @@ void pmk_multicore_init(void) {
  * @brief C initialization function for secondary cores.
  * @note called from pmk_init_core
  */
-void pmk_core_initialize(void){
+void pmk_core_initialize(void)
+{
 
     /* perform per-core BSP initialization */
-    bsp_core_init();
+    (void)bsp_core_init();
 
     /* wait for other cores to initialize */
     pmk_barrier_wait(&initialization_barrier, bsp_get_core_id());
@@ -127,7 +129,8 @@ void pmk_core_initialize(void){
     bsp_idle_loop();
 }
 
-pmk_core_ctrl_t *pmk_get_current_core_ctrl(void) {
+pmk_core_ctrl_t *pmk_get_current_core_ctrl(void)
+{
 
     air_u32_t idx = bsp_get_core_id();
     return &air_shared_area.core[idx];

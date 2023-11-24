@@ -20,11 +20,12 @@
  * @brief Partition ELF load-able segment information
  * @ingroup pmk_partition
  */
-typedef struct {
+typedef struct
+{
 
-    void *addr;                     /**< segment address            */
-    air_uptr_t offset;               /**< segment data offset        */
-    air_sz_t size;                    /**< segment memory size        */
+    void *addr;        /**< segment address            */
+    air_uptr_t offset; /**< segment data offset        */
+    air_sz_t size;     /**< segment memory size        */
 
 } pmk_segment_t;
 
@@ -32,12 +33,13 @@ typedef struct {
  * @brief Partition compressed ELF information
  * @ingroup pmk_partition
  */
-typedef struct {
+typedef struct
+{
 
-    void *entry;                    /**< entry point            */
-    air_u32_t count;                 /**< segment count          */
-    pmk_segment_t *segments;        /**< program segments       */
-    air_u8_t *data;                  /**< compress program       */
+    void *entry;             /**< entry point            */
+    air_u32_t count;         /**< segment count          */
+    pmk_segment_t *segments; /**< program segments       */
+    air_u8_t *data;          /**< compress program       */
 
 } pmk_elf_t;
 

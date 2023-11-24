@@ -27,7 +27,8 @@ extern air_u32_t air_configuration;
  */
 pmk_configuration_t *pmk_configuration;
 
-void pmk_configurations_int(void) {
+void pmk_configurations_int(void)
+{
 
     /* get pointer to module configuration */
     pmk_configuration = (pmk_configuration_t *)(&air_configuration);
@@ -37,7 +38,8 @@ void pmk_configurations_int(void) {
 #endif
 
     /* check if configuration is valid */
-    if (pmk_configuration->magic != PMK_CONFIG_MAGIC_NUMBER) {
+    if (pmk_configuration->magic != PMK_CONFIG_MAGIC_NUMBER)
+    {
         pmk_fatal_error(PMK_INTERNAL_ERROR_CONFIG, __func__, __FILE__, __LINE__);
     }
     return;

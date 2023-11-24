@@ -35,7 +35,8 @@
  * such as the owner partition and the core schedule for the current module
  * schedule
  */
-typedef struct {
+typedef struct
+{
 
     /**< core index                                                         */
     air_u32_t idx;
@@ -63,7 +64,8 @@ typedef struct {
  *  core control structure as well to the current schedule and system/module
  *  health-monitor tables
  */
-typedef struct {
+typedef struct
+{
 
     /** Numner of configured cores */
     air_u32_t configured_cores;
@@ -114,7 +116,6 @@ extern pmk_sharedarea_t air_shared_area;
 
 /** @} */
 
-
 /**
  * @brief Partition scheduler
  * @param isf Interrupt Stack Frame
@@ -122,7 +123,6 @@ extern pmk_sharedarea_t air_shared_area;
  * @ingroup pmk_scheduler
  */
 void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core);
-
 
 /**
  * @brief IPC trap handler
