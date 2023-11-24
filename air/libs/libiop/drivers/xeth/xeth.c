@@ -167,7 +167,7 @@ air_u32_t iop_xeth_read(iop_device_driver_t *iop_dev, void *arg)
         return AIR_INVALID_PARAM;
     }
 
-    if ((xs->rx_bd[xs->rx_ptr].addr & 0x1) != 0)
+    if (xs->rx_bd[xs->rx_ptr].addr & 0x1)
     {
         // Received an Ethernet Packet
 
@@ -218,7 +218,7 @@ air_u32_t iop_xeth_read(iop_device_driver_t *iop_dev, void *arg)
             else
             {
 
-                if ((iop_chain_is_empty(&wrapper->fragment_queue)) != 0)
+                if (iop_chain_is_empty(&wrapper->fragment_queue))
                 {
                     // Out of order Fragment
 
@@ -324,7 +324,7 @@ air_u32_t iop_xeth_write(iop_device_driver_t *iop_dev, void *arg)
         return AIR_INVALID_PARAM;
     }
 
-    if ((iop_chain_is_empty(&wrapper->fragment_queue)) != 0)
+    if (iop_chain_is_empty(&wrapper->fragment_queue))
     {
         return AIR_INVALID_SIZE;
     }

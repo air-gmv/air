@@ -303,7 +303,7 @@ static void cpsw_reclaim_rx_bd(iop_eth_device_t *eth_ctrl)
     last_bd->next = NULL;
 
     /* check if the reception it over */
-    if ((recv_tail->flags_pktlen & CPDMA_BD_EOQ) != 0)
+    if (recv_tail->flags_pktlen & CPDMA_BD_EOQ)
     {
         CPSWCPDMARxHdrDescPtrWrite(cpsw_config->cpdma_base, (uint32_t)recv_head, 0);
     }
@@ -408,13 +408,13 @@ static void cpsw_cpdma_init(iop_eth_device_t *eth_ctrl)
 static void cpsw_ablty_debug(uint32_t adv_val, uint32_t partnr_ablty, uint32_t gbps_partnr_ablty)
 {
 
-    if ((gbps_partnr_ablty & PHY_LINK_PARTNER_1000BT_FD) != 0)
+    if (gbps_partnr_ablty & PHY_LINK_PARTNER_1000BT_FD)
     {
         iop_debug("    transfer mode: 1000 Mbps\n");
     }
     else
     {
-        if (((adv_val & partnr_ablty) & PHY_100BTX_FD) != 0)
+        if ((adv_val & partnr_ablty) & PHY_100BTX_FD)
         {
             iop_debug("    transfer mode: 100 Mbps Full Duplex\n");
         }
@@ -499,13 +499,13 @@ static int32_t cpsw_autoneg_config(cpsw_device_t *cpsw_config, uint32_t port)
         cpsw_ablty_debug(adv_val, partnr_ablty, gbps_partnr_ablty);
 
         /* determine the transfer mode */
-        if ((gbps_partnr_ablty & PHY_LINK_PARTNER_1000BT_FD) != 0)
+        if (gbps_partnr_ablty & PHY_LINK_PARTNER_1000BT_FD)
         {
             transfer_mode = CPSW_SLIVER_GIG_FULL_DUPLEX;
         }
         else
         {
-            if (((adv_val & partnr_ablty) & PHY_100BTX_FD) != 0)
+            if ((adv_val & partnr_ablty) & PHY_100BTX_FD)
             {
                 transfer_mode = CPSW_SLIVER_NON_GIG_FULL_DUPLEX;
             }

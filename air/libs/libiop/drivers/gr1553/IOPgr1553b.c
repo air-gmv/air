@@ -83,15 +83,15 @@ uint32_t gr1553b_initialize(iop_device_driver_t *iop_dev, void *arg)
     GR1553B_WRITE_REG(&bdev->regs->bm_ctrl, 0);
 
     /* Verify if BM mode is supported  */
-    if ((GR1553B_READ_REG(&bdev->regs->bm_stat) & GR1553B_BM_STAT_BMSUP) != 0)
+    if (GR1553B_READ_REG(&bdev->regs->bm_stat) & GR1553B_BM_STAT_BMSUP)
     {
         bdev->available_modes |= FEAT_BM;
     }
-    if ((GR1553B_READ_REG(&bdev->regs->bc_stat) & GR1553B_BC_STAT_BCSUP) != 0)
+    if (GR1553B_READ_REG(&bdev->regs->bc_stat) & GR1553B_BC_STAT_BCSUP)
     {
         bdev->available_modes |= FEAT_BC;
     }
-    if ((GR1553B_READ_REG(&bdev->regs->rt_stat) & GR1553B_RT_STAT_RTSUP) != 0)
+    if (GR1553B_READ_REG(&bdev->regs->rt_stat) & GR1553B_RT_STAT_RTSUP)
     {
         bdev->available_modes |= FEAT_RT;
     }

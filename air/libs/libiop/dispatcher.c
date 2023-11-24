@@ -113,7 +113,7 @@ air_status_code_e process_service_request(iop_wrapper_t *incoming, int reply_add
             incoming->reply_to = reply_addr;
 
             /* see if there is pre fetched data */
-if((iop_chain_is_empty(&ldev->rcvqueue)) != 0){
+            if(iop_chain_is_empty(&ldev->rcvqueue)){
 
                 /*There is no data on this device yet, add request to queue*/
                 iop_chain_append(
