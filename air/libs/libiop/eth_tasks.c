@@ -70,7 +70,7 @@ void eth_writer(air_uptr_t arg)
         if (eth_driver->dev.write((iop_device_driver_t *)eth_driver, wrapper) == AIR_SUCCESSFUL)
         {
             /*all fragments sent?*/
-            if ((iop_chain_is_empty(&wrapper->fragment_queue)) != 0)
+            if (iop_chain_is_empty(&wrapper->fragment_queue))
             {
                 release_wrapper(wrapper);
                 wrapper = NULL;

@@ -185,14 +185,18 @@ static int greth_initialize_hardware(iop_eth_device_t *device)
     /* get phy control register default values */
     phyctrl = read_mii(sc, phyaddr, 0);
     if ((phyctrl & 0x8000) || (phyctrl == 0))
+    {
         return AIR_DEVICE_ERROR;
+    }
 
     /* reset PHY and wait for completion */
     write_mii(sc, phyaddr, 0, 0x8000 | phyctrl);
 
     phyctrl = read_mii(sc, phyaddr, 0);
     if ((phyctrl & 0x8000) || (phyctrl == 0))
+    {
         return AIR_DEVICE_ERROR;
+    }
 
     /* clear device's capabilities*/
     sc->gb = 0;
@@ -301,12 +305,12 @@ static int greth_initialize_hardware(iop_eth_device_t *device)
             sc->phydev.extpart = read_mii(sc, phyaddr, 10);
 
             /* Check gbit capabilities: FD=FullDuplex HD=HalfDuplex */
-            if (((sc->phydev.extadv & GRETH_MII_EXTADV_1000FD) && (sc->phydev.extpart & GRETH_MII_EXTPRT_1000FD)) != 0)
+            if ((sc->phydev.extadv & GRETH_MII_EXTADV_1000FD) && (sc->phydev.extpart & GRETH_MII_EXTPRT_1000FD))
             {
                 sc->gb = 1;
                 sc->fd = 1;
             }
-            if (((sc->phydev.extadv & GRETH_MII_EXTADV_1000HD) && (sc->phydev.extpart & GRETH_MII_EXTPRT_1000HD)) != 0)
+            if ((sc->phydev.extadv & GRETH_MII_EXTADV_1000HD) && (sc->phydev.extpart & GRETH_MII_EXTPRT_1000HD))
             {
                 sc->gb = 1;
                 sc->fd = 0;
@@ -318,17 +322,17 @@ static int greth_initialize_hardware(iop_eth_device_t *device)
         {
 
             /*Check capabilities: FD=FullDuplex HD=HalfDuplex */
-            if (((sc->phydev.adv & GRETH_MII_100TXFD) && (sc->phydev.part & GRETH_MII_100TXFD)) != 0)
+            if ((sc->phydev.adv & GRETH_MII_100TXFD) && (sc->phydev.part & GRETH_MII_100TXFD))
             {
                 sc->sp = 1;
                 sc->fd = 1;
             }
-            if (((sc->phydev.adv & GRETH_MII_100TXHD) && (sc->phydev.part & GRETH_MII_100TXHD)) != 0)
+            if ((sc->phydev.adv & GRETH_MII_100TXHD) && (sc->phydev.part & GRETH_MII_100TXHD))
             {
                 sc->sp = 1;
                 sc->fd = 0;
             }
-            if (((sc->phydev.adv & GRETH_MII_10FD) && (sc->phydev.part & GRETH_MII_10FD)) != 0)
+            if ((sc->phydev.adv & GRETH_MII_10FD) && (sc->phydev.part & GRETH_MII_10FD))
             {
                 sc->fd = 1;
             }
@@ -349,7 +353,7 @@ auto_neg_done:
     phystatus = read_mii(sc, phyaddr, 1);
 
     /* Read out PHY info if extended registers are available */
-    if ((phystatus & 1) != 0)
+    if (phystatus & 1)
     {
 
         /* these registers contain PHY information*/
@@ -391,7 +395,9 @@ auto_neg_done:
     /*wait for PHY to be ready*/
     phyctrl = read_mii(sc, phyaddr, 0);
     if ((phyctrl & 0x8000) || (phyctrl == 0))
+    {
         return AIR_DEVICE_ERROR;
+    }
 
     /**
      *	Reset the controller.
@@ -535,7 +541,7 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper, iop_eth_d
     {
 
         /*Check for errors*/
-        if (((status & GRETH_RXD_TOOLONG) != 0) || (status & GRETH_RXD_DRIBBLE) || (status & GRETH_RXD_CRCERR) ||
+        if ((status & GRETH_RXD_TOOLONG) || (status & GRETH_RXD_DRIBBLE) || (status & GRETH_RXD_CRCERR) ||
             (status & GRETH_RXD_OVERRUN) || (status & GRETH_RXD_LENERR) ||
             (status & 0x7FF) < sizeof(eth_header_t) - sizeof(ethproto_header_t))
         {
@@ -605,7 +611,7 @@ static int greth_hw_receive(greth_softc_t *sc, iop_wrapper_t *wrapper, iop_eth_d
                 else
                 {
                     /*packet with sequence number in order?*/
-                    if ((iop_chain_is_empty(&wrapper->fragment_queue)) != 0)
+                    if (iop_chain_is_empty(&wrapper->fragment_queue))
                     {
                         /*No chain, assume out of order packet*/
                         iop_debug("seq outof order desc %d %d\n", sc->rx_ptr, pack_seq);
@@ -730,7 +736,7 @@ static int greth_hw_send(greth_softc_t *sc, iop_wrapper_t *wrapper)
     uint16_t len = 0;
 
     /*sanity check*/
-    if ((iop_chain_is_empty(&wrapper->fragment_queue)) != 0)
+    if (iop_chain_is_empty(&wrapper->fragment_queue))
     {
         iop_debug("fragment chain empty\n");
         return -1; /*change to error tag*/

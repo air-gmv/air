@@ -100,14 +100,14 @@ void gr1553bc_stop(grb_priv *priv, int options)
     ctrl = GR1553BC_KEY;
 
     /* Verify which lists we have to stop processing */
-    if ((options & 0x1) != 0)
+    if (options & 0x1)
     {
 
         /* Stop synchronous list */
         ctrl |= GR1553B_BC_ACT_SCSTP;
     }
 
-    if ((options & 0x2) != 0)
+    if (options & 0x2)
     {
 
         /* Stop assynchronous list */

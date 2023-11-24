@@ -209,31 +209,31 @@ static int router_config_set(router_priv_t *priv, router_config_t *cfg)
     }
 
     /* Write only configuration bits in Config register */
-    if ((cfg->flags & ROUTER_FLG_CFG) != 0)
+    if (cfg->flags & ROUTER_FLG_CFG)
     {
         REG_WRITE(&priv->regs->cfgsts, (cfg->config << 2));
     }
 
     /* Write Instance ID to Version Register */
-    if ((cfg->flags & ROUTER_FLG_IID) != 0)
+    if (cfg->flags & ROUTER_FLG_IID)
     {
         REG_WRITE(&priv->regs->ver, cfg->iid);
     }
 
     /* Write startup-clock-divisor Register */
-    if ((cfg->flags & ROUTER_FLG_IDIV) != 0)
+    if (cfg->flags & ROUTER_FLG_IDIV)
     {
         REG_WRITE(&priv->regs->idiv, cfg->idiv);
     }
 
     /* Write Timer Prescaler Register */
-    if ((cfg->flags & ROUTER_FLG_TPRES) != 0)
+    if (cfg->flags & ROUTER_FLG_TPRES)
     {
         REG_WRITE(&priv->regs->tprescaler, cfg->timer_prescaler);
     }
 
     /* Write Timer Reload Register */
-    if ((cfg->flags & ROUTER_FLG_TRLD) != 0)
+    if (cfg->flags & ROUTER_FLG_TRLD)
     {
         for (i = 0; i <= priv->nports; i++)
         {
@@ -331,21 +331,21 @@ static int router_port_ctrl(router_priv_t *priv, router_port *port)
     }
 
     ctrl = port->ctrl;
-    if ((port->flag & ROUTER_PORTFLG_GET_CTRL) != 0)
+    if (port->flag & ROUTER_PORTFLG_GET_CTRL)
     {
         ctrl = REG_READ(&priv->regs->pctrl[port->port]);
     }
     sts = port->sts;
-    if ((port->flag & ROUTER_PORTFLG_GET_STS) != 0)
+    if (port->flag & ROUTER_PORTFLG_GET_STS)
     {
         sts = REG_READ(&priv->regs->psts[port->port]);
     }
 
-    if ((port->flag & ROUTER_PORTFLG_SET_CTRL) != 0)
+    if (port->flag & ROUTER_PORTFLG_SET_CTRL)
     {
         REG_WRITE(&priv->regs->pctrl[port->port], port->ctrl);
     }
-    if ((port->flag & ROUTER_PORTFLG_SET_STS) != 0)
+    if (port->flag & ROUTER_PORTFLG_SET_STS)
     {
         REG_WRITE(&priv->regs->psts[port->port], port->sts);
     }

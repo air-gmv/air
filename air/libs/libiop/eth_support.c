@@ -251,7 +251,7 @@ static int eth_handle_fragments(iop_wrapper_t *wrapper)
     static unsigned int head;
 
     /*if is a fragment or there were fragments and this packet has a sequence number*/
-    if ((packet->ipoffset[0] & 0x20 || (frags && pack_seq)) != 0)
+    if (packet->ipoffset[0] & 0x20 || (frags && pack_seq))
     {
         /*TODO Handle multiple fragmented packets*/
         if (frags * 185 == pack_seq)

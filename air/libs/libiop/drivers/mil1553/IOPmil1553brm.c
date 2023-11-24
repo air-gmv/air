@@ -1059,14 +1059,14 @@ uint32_t brm_read(iop_device_driver_t *iop_dev, void *arg)
             {
 
                 /* Search in the descriptor table for an accessed descriptor*/
-                if ((READ_REG(&brm->desc[descriptor].ctrl) & 0x10) != 0)
+                if (READ_REG(&brm->desc[descriptor].ctrl) & 0x10)
                 {
 
                     /* This Descriptor was acessed*/
                     current = READ_DMA(&brm->desc[descriptor].cur);
 
                     /* Check for Buffer overlap: There was a Wrap in the buffer and current > last_read*/
-                    if ((((tmp = READ_REG(&brm->desc[descriptor].ctrl) != 0)) & 0x80) &&
+                    if (((tmp = READ_REG(&brm->desc[descriptor].ctrl)) & 0x80) &&
                         (current > brm->last_read[descriptor]))
                     {
 
@@ -1491,7 +1491,7 @@ air_status_code_e brm_control(brm_priv *brm, void *arg)
             return ret;
         }
 
-        if ((brm->mode & (BRM_MODE_RT | BRM_MODE_BM)) != 0)
+        if (brm->mode & (BRM_MODE_RT | BRM_MODE_BM))
         {
             start_operation(brm);
         }
@@ -1690,14 +1690,14 @@ air_status_code_e brm_control(brm_priv *brm, void *arg)
         {
 
             /* TODO: ?*/
-            if ((READ_DMA(&brm->bcmem->descs[i].ctrl) & 1) != 0)
+            if (READ_DMA(&brm->bcmem->descs[i].ctrl) & 1)
             {
 
                 /* Set BAME */
                 brm->cur_list[i].ctrl |= 0x8000;
             }
             /* if this is a RT Transmit command, copy received data */
-            if ((brm->cur_list[i].ctrl & BC_TR) != 0)
+            if (brm->cur_list[i].ctrl & BC_TR)
             {
 
                 /* obtain word count*/
@@ -1761,7 +1761,7 @@ static void check_hw_errors(brm_priv *brm, unsigned int event_status, int signal
 
     /*Verify errors*/
     /*DMA fail*/
-    if ((pending & BRM_DMAF_IRQ) != 0)
+    if (pending & BRM_DMAF_IRQ)
     {
         FUNCDBG("BRM: BRM_DMAF_IRQ\n\r");
         event_status |= BRM_DMAF_IRQ;
@@ -1769,7 +1769,7 @@ static void check_hw_errors(brm_priv *brm, unsigned int event_status, int signal
     }
 
     /*Buffer Wrap fail*/
-    if ((pending & BRM_WRAPF_IRQ) != 0)
+    if (pending & BRM_WRAPF_IRQ)
     {
         FUNCDBG("BRM: BRM_WRAPF_IRQ\n\r");
         event_status |= BRM_WRAPF_IRQ;
@@ -1777,7 +1777,7 @@ static void check_hw_errors(brm_priv *brm, unsigned int event_status, int signal
     }
 
     /*TODO: ?*/
-    if ((pending & BRM_TAPF_IRQ) != 0)
+    if (pending & BRM_TAPF_IRQ)
     {
         FUNCDBG("BRM: BRM_TAPF_IRQ\n\r");
         event_status |= BRM_TAPF_IRQ;
@@ -1787,7 +1787,7 @@ static void check_hw_errors(brm_priv *brm, unsigned int event_status, int signal
     /* Copy current mask to status mask */
     if ((event_status) != 0)
     {
-        if ((event_status & 0xffff0000) != 0)
+        if (event_status & 0xffff0000)
         {
             brm->status &= 0x0000ffff;
         }
@@ -1838,7 +1838,7 @@ static void check_errors(brm_priv *brm)
             pending = iiw;
 
             /*Bus Controller Illegal Command Error*/
-            if ((pending & BRM_BC_ILLCMD_IRQ) != 0)
+            if (pending & BRM_BC_ILLCMD_IRQ)
             {
 
                 // TODO: REMOVE
@@ -1854,7 +1854,7 @@ static void check_errors(brm_priv *brm)
             }
 
             /*RT Illegal Command Error*/
-            if ((pending & BRM_RT_ILLCMD_IRQ) != 0)
+            if (pending & BRM_RT_ILLCMD_IRQ)
             {
                 FUNCDBG("BRM: BRM_RT_ILLCMD_IRQ\n\r");
 
@@ -1875,7 +1875,7 @@ static void check_errors(brm_priv *brm)
             }
 
             /*Illegal Operation*/
-            if ((pending & BRM_ILLOP_IRQ) != 0)
+            if (pending & BRM_ILLOP_IRQ)
             {
                 FUNCDBG("BRM: BRM_ILLOP_IRQ\n\r");
                 // TODO: REMOVE
@@ -1895,7 +1895,7 @@ static void check_errors(brm_priv *brm)
             }
 
             /*memory error*/
-            if ((pending & BRM_MERR_IRQ) != 0)
+            if (pending & BRM_MERR_IRQ)
             {
                 FUNCDBG("BRM: BRM_MERR_IRQ\n\r");
 

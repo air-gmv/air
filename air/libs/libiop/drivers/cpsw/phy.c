@@ -380,7 +380,7 @@ unsigned int PhyLinkStatusGet(unsigned int mdioBaseAddr, unsigned int phyAddr, v
         /* First read the BSR of the PHY */
         (void)MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_BSR, &linkStatus);
 
-        if ((linkStatus & PHY_LINK_STATUS) != 0)
+        if (linkStatus & PHY_LINK_STATUS)
         {
             return TRUE;
         }

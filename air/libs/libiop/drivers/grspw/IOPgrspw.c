@@ -59,7 +59,7 @@
 #define SPACEWIRE_DBGC(c, fmt, args...)                                                                                \
     do                                                                                                                 \
     {                                                                                                                  \
-        if ((DEBUG_SPACEWIRE_FLAGS & c) != 0)                                                                          \
+        if (DEBUG_SPACEWIRE_FLAGS & c)                                                                                 \
         {                                                                                                              \
             iop_debug(" : %03d @ %18s()]:" fmt, __LINE__, __FUNCTION__, ##args);                                       \
         }                                                                                                              \
@@ -245,7 +245,7 @@ void spw_hw_handle_errors(SPW_DEV *pDev)
     {
 
         /*If a error was signaled*/
-        if ((status & (SPW_STATUS_CE | SPW_STATUS_ER | SPW_STATUS_DE | SPW_STATUS_PE | SPW_STATUS_WE)) != 0)
+        if (status & (SPW_STATUS_CE | SPW_STATUS_ER | SPW_STATUS_DE | SPW_STATUS_PE | SPW_STATUS_WE))
         {
 
             /*Send an event to the error handler task TODO: replace by rtems-edi error handler*/
@@ -268,31 +268,31 @@ void spw_hw_handle_errors(SPW_DEV *pDev)
     }
 
     /*Account any found errors on the device's statistics*/
-    if ((status & SPW_STATUS_CE) != 0)
+    if (status & SPW_STATUS_CE)
     {
         pDev->stat.credit_err++;
     }
-    if ((status & SPW_STATUS_ER) != 0)
+    if (status & SPW_STATUS_ER)
     {
         pDev->stat.escape_err++;
     }
-    if ((status & SPW_STATUS_DE) != 0)
+    if (status & SPW_STATUS_DE)
     {
         pDev->stat.disconnect_err++;
     }
-    if ((status & SPW_STATUS_PE) != 0)
+    if (status & SPW_STATUS_PE)
     {
         pDev->stat.parity_err++;
     }
-    if ((status & SPW_STATUS_WE) != 0)
+    if (status & SPW_STATUS_WE)
     {
         pDev->stat.write_sync_err++;
     }
-    if ((status & SPW_STATUS_IA) != 0)
+    if (status & SPW_STATUS_IA)
     {
         pDev->stat.invalid_address++;
     }
-    if ((status & SPW_STATUS_EE) != 0)
+    if (status & SPW_STATUS_EE)
     {
         pDev->stat.early_ep++;
     }
@@ -325,7 +325,7 @@ void spw_check_tx(SPW_DEV *pDev)
         ctrl = SPW_READ((volatile void *)&pDev->tx[pDev->tx_sent].ctrl);
 
         /*Is the current descriptor enabled*/
-        if ((ctrl & SPW_TXBD_EN) != 0)
+        if (ctrl & SPW_TXBD_EN)
         {
 
             /*The descriptor is enabled so its data was not yet sent*/
@@ -336,7 +336,7 @@ void spw_check_tx(SPW_DEV *pDev)
         pDev->stat.packets_sent++;
 
         /*Verify link errors*/
-        if ((ctrl & SPW_TXBD_LE) != 0)
+        if (ctrl & SPW_TXBD_LE)
         {
 
             /*Increment link error count*/
@@ -423,7 +423,7 @@ uint32_t spw_initialize(iop_device_driver_t *iop_dev, void *arg)
     /*get default configuration*/
     defconf = user_config;
 
-    if ((amba_get_apb_slave(amba_bus, VENDOR_GAISLER, GAISLER_SPW, cores_init, &dev)) != 0)
+    if (amba_get_apb_slave(amba_bus, VENDOR_GAISLER, GAISLER_SPW, cores_init, &dev))
     {
 
         /*store core version in device's structure*/
@@ -736,7 +736,7 @@ uint32_t spw_read(iop_device_driver_t *iop_dev, void *arg)
 
     iop_buffer->payload_size = count;
 #ifdef DEBUG_SPACEWIRE_ONOFF
-    if ((DEBUG_SPACEWIRE_FLAGS & DBGSPW_DUMP) != 0)
+    if (DEBUG_SPACEWIRE_FLAGS & DBGSPW_DUMP)
     {
         int k;
         for (k = 0; k < count; k++)
@@ -1781,7 +1781,7 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, uint8_t *hdr, unsigned int dle
     ctrl = SPW_READ((volatile void *)&pDev->tx[cur].ctrl);
 
     /*Current Descriptor is enabled, so we have no more available descriptors*/
-    if ((ctrl & SPW_TXBD_EN) != 0)
+    if (ctrl & SPW_TXBD_EN)
     {
         return 0;
     }
@@ -1793,7 +1793,7 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, uint8_t *hdr, unsigned int dle
     (void)memcpy(txh, hdr, hlen);
 
 #ifdef DEBUG_SPACEWIRE_ONOFF
-    if ((DEBUG_SPACEWIRE_FLAGS & DBGSPW_DUMP) != 0)
+    if (DEBUG_SPACEWIRE_FLAGS & DBGSPW_DUMP)
     {
         for (k = 0; k < hlen; k++)
         {
@@ -1805,7 +1805,7 @@ int spw_hw_send(SPW_DEV *pDev, unsigned int hlen, uint8_t *hdr, unsigned int dle
         }
         iop_debug("\n");
     }
-    if ((DEBUG_SPACEWIRE_FLAGS & DBGSPW_DUMP) != 0)
+    if (DEBUG_SPACEWIRE_FLAGS & DBGSPW_DUMP)
     {
         for (k = 0; k < dlen; k++)
         {
@@ -1973,7 +1973,7 @@ int spw_hw_receive(SPW_DEV *pDev, uint8_t *b, int c)
     ctrl = SPW_READ((volatile void *)&pDev->rx[cur].ctrl);
 
     /*Check if the descriptor is enabled*/
-    if ((ctrl & SPW_RXBD_EN) != 0)
+    if (ctrl & SPW_RXBD_EN)
     {
         /*Descriptor is enabled, so we didn't received anything*/
         return rxlen;
@@ -2122,25 +2122,25 @@ void spw_rxnext(SPW_DEV *pDev)
 void check_rx_errors(SPW_DEV *pDev, int ctrl)
 {
     /*Check different errors and increment its statistics*/
-    if ((ctrl & SPW_RXBD_EEP) != 0)
+    if (ctrl & SPW_RXBD_EEP)
     {
         pDev->stat.rx_eep_err++;
     }
-    if ((ctrl & SPW_RXBD_EHC) != 0)
+    if (ctrl & SPW_RXBD_EHC)
     {
         if ((pDev->config.check_rmap_err) != 0)
         {
             pDev->stat.rx_rmap_header_crc_err++;
         }
     }
-    if ((ctrl & SPW_RXBD_EDC) != 0)
+    if (ctrl & SPW_RXBD_EDC)
     {
         if ((pDev->config.check_rmap_err) != 0)
         {
             pDev->stat.rx_rmap_data_crc_err++;
         }
     }
-    if ((ctrl & SPW_RXBD_ETR) != 0)
+    if (ctrl & SPW_RXBD_ETR)
     {
         pDev->stat.rx_truncated++;
     }

@@ -528,15 +528,15 @@ static int grcan_hw_read_try(grcan_priv *pDev, struct grcan_regs *regs, CANMsg *
             /* Read CAN message from DMA buffer */
             tmp.head[0] = READ_DMA_WORD(&source->head[0]);
             tmp.head[1] = READ_DMA_WORD(&source->head[1]);
-            if ((tmp.head[1] & 0x4) != 0)
+            if (tmp.head[1] & 0x4)
             {
                 iop_debug("overrun\n");
             }
-            if ((tmp.head[1] & 0x2) != 0)
+            if (tmp.head[1] & 0x2)
             {
                 iop_debug("bus-off mode\n");
             }
-            if ((tmp.head[1] & 0x1) != 0)
+            if (tmp.head[1] & 0x1)
             {
                 iop_debug("error-passive mode\n");
             }
@@ -698,7 +698,7 @@ int iop_grcan_device_init(iop_device_driver_t *iop_dev)
      * Auto Detect the CAN core frequency by assuming that the system frequency is
      * is the same as the CAN core frequency.
      */
-    if ((amba_get_apb_slave(ambabus, VENDOR_GAISLER, GAISLER_GPTIMER, 0, &gptimer)) != 0)
+    if (amba_get_apb_slave(ambabus, VENDOR_GAISLER, GAISLER_GPTIMER, 0, &gptimer))
     {
         /*Timer memory mapped registers*/
         tregs = (timer_regmap_t *)gptimer.start;
@@ -926,7 +926,9 @@ uint32_t iop_grcan_read(iop_device_driver_t *iop_dev, void *arg)
     req_cnt = 1; /* Process one message at the time */
 
     if ((!iop_buffer) || (req_cnt < 1))
+    {
         return AIR_INVALID_SIZE;
+    }
 
     if (pDev->started != STATE_STARTED)
     {
@@ -1003,7 +1005,9 @@ uint32_t iop_grcan_write(iop_device_driver_t *iop_dev, void *arg)
     }
 
     if ((pDev->started != STATE_STARTED) || pDev->config.silent || pDev->flushing)
+    {
         return AIR_INVALID_MODE;
+    }
 
     req_cnt = 1;
 
