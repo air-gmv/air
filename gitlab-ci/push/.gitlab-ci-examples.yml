@@ -27,6 +27,8 @@ ARM-QEMU:
         - EXAMPLE:
             - "hello_world"
             - "bare_c"
+            - "ports"
+            - "shm"
 
 # SPARC
 SPARC-LAYSIM:

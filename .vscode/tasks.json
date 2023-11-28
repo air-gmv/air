@@ -1,0 +1,126 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "configure",
+      "type": "shell",
+      "command": "../../configure",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/${input:projectPath}"
+      },
+
+    },
+    {
+      "label": "make",
+      "type": "shell",
+      "command": "make all",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/${input:projectPath}"
+      }
+    },
+    {
+      "label": "startQEMU",
+      "type": "shell",
+      "command": "qemu-system-arm",
+      "args": [
+        //"-c", "qemu-system-arm -M arm-generic-fdt-7series -serial mon:stdio -display none -dtb /home/gmv/system.dtb -s -S -kernel ${workspaceFolder}/${input:projectPath}/executable/AIRAPP.exe &"
+        //"-hold",
+        // "-e",
+        // "/home/gmv/qemu-bash.sh"
+        // "qemu-system-arm",
+        //"-daemonize",
+        "-M", "arm-generic-fdt-7series",
+        //"-no-reboot",
+        "-serial", "mon:stdio",
+        "-display", "none",
+        "-dtb", "/home/gmv/system.dtb",
+        "-s", 
+        "-S",
+        "-kernel", "${workspaceFolder}/${input:projectPath}/executable/AIRAPP.exe"
+        // "&"
+        // Add any other QEMU arguments here
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      // "presentation": {
+      //   "reveal": "always",
+      //   "panel": "dedicated"
+      // }
+      // "runOptions": {
+      //   "runOn": "folderOpen"
+      // },
+      // "isBackground": true,
+      // "problemMatcher": [
+      //   {
+      //     "pattern": [
+      //       {
+      //         "regexp": ".",
+      //         "file": 1,
+      //         "location": 2,
+      //         "message": 3
+      //       }
+      //     ],
+      //     "background": {
+      //       "activeOnStart": true,
+      //       "beginsPattern": ".",
+      //       "endsPattern": "."
+      //     }
+      //   }
+      // ]
+    },
+    // {
+    //   "label": "disown",
+    //   "type": "shell",
+    //   "command": "disown",
+    //   "group": {
+    //     "kind": "build",
+    //     "isDefault": true
+    //   }
+    // },
+    {
+      "label": "configureMakeAndQEMU",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOrder": "sequence",
+      "dependsOn": ["configure", "make", "startQEMU"]
+    },
+  ],
+  "inputs": [
+    {
+      "id": "projectPath",
+      "type": "command",
+      "command": "extension.commandvariable.promptStringRemember",
+      "args": {
+        "key": "project",
+        "description": "Enter the path to the project folder:"
+      }
+    }
+  ]
+  // "inputs": [
+  //     {
+  //       "id": "projectPath",
+  //       "type": "command",
+  //       "command": "extension.commandvariable.remember",
+  //       "args": { "key": "project" }
+  //     }
+  // ]
+  // "inputs": [
+  //     {
+  //       "id": "projectPath",
+  //       "type": "promptString",
+  //       "description": "Enter the path to the project folder:"
+  //     }
+  //   ]
+}
