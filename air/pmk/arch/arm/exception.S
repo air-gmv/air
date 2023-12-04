@@ -13,6 +13,9 @@
  * saves return status and global registers in the IRQ stack and branches to hm routines in SVC mode
  * the IRQ stack is used exclusively as the ISF.
  *
+ * More information about exception handling in ARM Compiler Software Development Guide, chapter 5
+ *
+ *
  */
 
 #ifndef ASM
@@ -28,124 +31,128 @@
 
     .arm
     .syntax unified
-
+                                            // -> means "points to"
 global(exception_undef)
 
-    push    {r12, r14}
-    mrs     r12, spsr
-    tst     r12, #ARM_PSR_T
-    subne   lr, #2                          //thumb
-    subeq   lr, #4                          //arm
-    srsdb   sp, #ARM_PSR_IRQ
-    pop     {r12, r14}
+    push    {r12, r14}                      // Save r12 and r14 in the stack of current mode
+    mrs     r12, spsr                       // Get spsr to r12
+    tst     r12, #ARM_PSR_T                 // Test for thumb execution state
+    subne   lr, #2                          // thumb
+    subeq   lr, #4                          // arm
+    srsdb   sp, #ARM_PSR_IRQ                // Save LR and SPSR in IRQ stack 
+    pop     {r12, r14}                      // Restore back r12 and r14
 
-    mov     r14, #AIR_ARM_EXCEPTION_UNDEF
-    stmdb   sp, {r12, r14}
-    sub     r12, sp, #8
-    cpsid   aif, #ARM_PSR_IRQ
+    mov     r14, #AIR_ARM_EXCEPTION_UNDEF   // Save in r14 exception name
+    stmdb   sp, {r12, r14}                  // Save in the stack r12 and 14 (decrease the stack pointer before)
+    sub     r12, sp, #8                     // r12 -> ( r12, r14(exception name)) in the abort stack
+    cpsid   aif, #ARM_PSR_IRQ               // Change processor state to IRQ mode and disable all interrupts
 
-    sub     sp, #24
+    sub     sp, #24                         // SP to point to r11 (6 * 4bytes = 24bytes)
 #if PMK_FPU_SUPPORT
-    sub     sp, #264
+    sub     sp, #ARM_VFP_CONTEXT_SIZE       // FP context
 #endif
-    push    {r0-r11}
-    add     r7, sp, #48
+    push    {r0-r11}                        // Pushes r0 to r11 into the stack
+    add     r7, sp, #48                     // r7 -> r11, sp -> next context, r12 ->(r12, exception name)
 
-    ldm     r12, {r5, r6}
-    stmia   r7!, {r5, r6}
+    ldm     r12, {r5, r6}                   // Load what was pointed by r12 (r12, exception name) into r5 and r6
+    stmia   r7!, {r5, r6}                   // Store r5 and r6 (r12, exception name) into addr pointed by r7 (IRQ stack) and r7 -> just after exception name 
 
 #if PMK_FPU_SUPPORT
-    add     r7, #264
+    add     r7, #ARM_VFP_CONTEXT_SIZE       // FP context
 #endif
 
-    ldr     r0, [r7, #12]                   // spsr
+    ldr     r0, [r7, #12]                   // Save SPSR in r0 (needed for save_previous). 12 = 3*4bytes, ret_psr is 3 words after usr_spr0
 
     b       save_previous
 
 global(exception_svc)
 
-    push    {r0, r1}
-    mrs     r1, cpsr
-    bic     r0, r1, #ARM_PSR_MODE_MASK
-    orr     r0, #ARM_PSR_IRQ
-    msr     cpsr, r0     // change into IRQ mode to check the contexts in the IRQ stack
+    push    {r0, r1}                        // Save the svc's r0 and r1 in stack of current mode
+    mrs     r1, cpsr                        // Get cpsr to r1
+    bic     r0, r1, #ARM_PSR_MODE_MASK      // r0 = r1 AND NOT #ARM_PSR_MODE_MASK 
+    orr     r0, #ARM_PSR_IRQ                // Set the IRQ mode bit in r0 
+    msr     cpsr, r0                        // Change into IRQ mode 
+
+    // Cant we do cpsid aif, #ARM_PSR_IRQ ??? Instead of the above 3 instructions, we still need to save cpsr tho
 
 svc_is_empty:
-// check if the sp is pointing to a vacant space (if not, search for one)
-// to avoid corrupting contexts that have yet to be restored
-    sub     r0, sp, #72
+    // Must check if the sp is pointing to a vacant space (if not, search for one)
+    // It's to avoid corrupting contexts that have yet to be restored
+
+    sub     r0, sp, #sizeof_arm_interrupt_stack_frame_t // The "normal" context
 #if PMK_FPU_SUPPORT
-    sub     r0, #264
+    sub     r0, #ARM_VFP_CONTEXT_SIZE       // FP context  (r0 -> start of the context)  
 #endif
-    ldr     r0, [r0, #52]                   //exception name
-    cmp     r0, #0
+    ldr     r0, [r0, #52]                   // Exception name (13*4bytes = 52) 
+    cmp     r0, #0                          // Check the exception name
     //beq     svc_cont //(easier to debug)
-    subne   sp, #72
+    subne   sp, #sizeof_arm_interrupt_stack_frame_t // If not 0 then there is smthg there, update the SP to try again 
 #if PMK_FPU_SUPPORT
-    subne   sp, #264
+    subne   sp, #ARM_VFP_CONTEXT_SIZE       // FP context
 #endif
-    bne     svc_is_empty
+    bne     svc_is_empty                    // If not empty then go again
 
-//svc_cont: //(easier to debug)
-    msr     cpsr, r1     //restore the svc cpsr
+    // Found an empty space, so save the svc context
+    msr     cpsr, r1                        // Restore the svc cpsr (We are from now on on supervisor mode)
+    pop     {r0, r1}                        // And restore original registers
 
-    pop     {r0, r1}    //restore original registers
+    srsdb   sp, #ARM_PSR_IRQ                // Save return state (LR and SRSR) in the IRQ stack
 
-    /*--Now we can save the svc context--*/
+    push    {r0,r1}                         // Save r0 and r1 in the stack
+    mrs     r1, spsr                        // Get SPSR to r1   
+    tst     r1, #ARM_PSR_T                  // Test for thumb execution state
+    ldrneh  r0, [lr, #-2]                   // if thumb then load half word from lr-2
+    bicne   r0, r0, #0xff00                 // and get "comment" field
+    ldreq   r0, [lr, #-4]                   // if arm then load a word
+    biceq   r0, r0, #0xff000000             // and get "comment" field
 
-    srsdb   sp, #ARM_PSR_IRQ  // save return state (lr and spsr) in the IRQ stack
+    // "Comment" field is the name used in the manual, it is the svc number
+    // r0 now contains SVC number
+    // r1 now contains pointer to stacked registers
 
-    push    {r0,r1}
-    mrs     r1, spsr
-    tst     r1, #ARM_PSR_T
-    ldrneh  r0, [lr, #-2]           //thumb
-    bicne   r0, r0, #0xff00
-    ldreq   r0, [lr, #-4]           //arm
-    biceq   r0, r0, #0xff000000
+    cmp     r0, #AIR_SYSCALL_ARM_RETT       // Check if it is the return syscall
+    pop     {r0,r1}                         // Restore the svc's original r0 and r1
 
-    cmp     r0, #(AIR_SYSCALL_ARM_RETT)  /* Checks if svc is air_syscall_rett*/
-    pop     {r0,r1}
+    mov     r14, #AIR_ARM_EXCEPTION_SWI     // Save in r14 exception name
+    stmdb   sp, {r12, r14}                  // Save in the stack r12 and 14 (decrease the stack pointer before)
+    sub     r12, sp, #8                     // r12 -> ( r12, r14(exception name)) in the supervisor stack
+    cpsid   aif, #ARM_PSR_IRQ               // Change to IRQ mode and disable all interrupts
 
-    mov     r14, #AIR_ARM_EXCEPTION_SWI
-    stmdb   sp, {r12, r14}
-    sub     r12, sp, #8
-    cpsid   aif, #ARM_PSR_IRQ
-
-    beq     arm_rett    // if svc is the return syscall, we can skip storing the context
-
-    sub     sp, #24
+    beq     arm_rett                        // If svc is the return syscall, go to return
+                                            // If not, continue to save context
+    sub     sp, #24                         // SP to point to r11 (6 * 4bytes = 24bytes)
 #if PMK_FPU_SUPPORT
-    sub     sp, #264
-#endif
-
-    push    {r0-r11}
-    add     r7, sp, #48
-
-    ldm     r12, {r5, r6}
-    stmia   r7!, {r5, r6}
-
-#if PMK_FPU_SUPPORT
-    add     r7, #264
+    sub     sp, #ARM_VFP_CONTEXT_SIZE       // FP context
 #endif
 
-    ldr     r0, [r7, #12]                   // spsr
+    push    {r0-r11}                        // Save r0 to r11 into the stack
+    add     r7, sp, #48                     // r7 -> r11, sp -> next context, r12 -> (r12, exception name)
+
+    ldm     r12, {r5, r6}                   // Load what was pointed by r12 (r12, exception name) into r5 and r6
+    stmia   r7!, {r5, r6}                   // Store r5 and r6 (r12, exception name) into addr pointed by r7 (IRQ stack) and r7 -> just after exception name
+
+#if PMK_FPU_SUPPORT
+    add     r7, #ARM_VFP_CONTEXT_SIZE       // FP context
+#endif
+
+    ldr     r0, [r7, #12]                   // Save SPSR in r0 (needed for save_previous). 12 = 3*4bytes, ret_psr is 3 words after usr_sp
 
     b       save_previous
 
-arm_rett:
-    mov     r2, sp
+arm_rett:                                   // The return syscall (we are in supervisor mode)
+    mov     r2, sp                          // r2 -> sp
 #if PMK_FPU_SUPPORT
-    add     r2, 264
+    add     r2, #ARM_VFP_CONTEXT_SIZE       // FP context
 #endif
-    ldr     r0, [r2, #68]
-    and     r0, #(ARM_PSR_MODE_MASK)
-    cmp     r0, #(ARM_PSR_USR)      //context switch happens in user or system mode
-    cmpne   r0, #(ARM_PSR_SYS)
-    add     r4, sp, #0
-    bne     arm_return
+    ldr     r0, [r2, #68]                   // 68 = 17 * 4bytes, 17 is the number of fields in the struct with context, so (r2 + 68) -> ret_psr, r0 = ret_psr
+    and     r0, #ARM_PSR_MODE_MASK          // Check the return mode
+    cmp     r0, #ARM_PSR_USR                // Check USR
+    cmpne   r0, #ARM_PSR_SYS                // Check SYS
+    add     r4, sp, #0                      // r4 -> SP // Is this the same as mov r4, sp ?
+    bne     arm_return                      // Return if return mode is not USR or SYS
 
     // if we use virtual ARM modes:
-    mrc     p15, 0, r1, c13, c0, 4          // get Per_CPU core
+    mrc     p15, 0, r1, c13, c0, 4          // get Per_CPU core // Get the core number?
     ldr     r1, [r1, #offsetof_pmk_core_ctrl_t_context]
     ldr     r1, [r1, #144]                  //get virtual svc sp
 
@@ -164,7 +171,7 @@ arm_rett:
 search_context_above:
     add     r4, #72
 #if PMK_FPU_SUPPORT
-    add     r4, #264
+    add     r4, #ARM_VFP_CONTEXT_SIZE
     ldr     r0, [r4, #320]
 #else
     ldr     r0, [r4, #56]
@@ -182,7 +189,7 @@ search_context_above:
 search_context_below:
     sub     r4, #72
 #if PMK_FPU_SUPPORT
-    sub     r4, #264
+    sub     r4, #ARM_VFP_CONTEXT_SIZE
     ldr     r0, [r4, #320]
 #else
     ldr     r0, [r4, #56]
@@ -210,8 +217,8 @@ arm_return:
     BL2C    print_nocontext
     b       arm_return*/
 
-global(exception_pref_abort)
-
+global(exception_pref_abort) //This is the exact same as exception_data_abort, can we make it a "function"?
+    // When there is a prefetch abort LR points to the instruction at the address following the one that caused the abort, so we need to subtract 4 to get the one that caused the abort
     sub     lr, #4
     srsdb   sp, #ARM_PSR_IRQ
 
@@ -222,7 +229,7 @@ global(exception_pref_abort)
 
     sub     sp, #24
 #if PMK_FPU_SUPPORT
-    sub     sp, #264
+    sub     sp, #ARM_VFP_CONTEXT_SIZE       // FP context
 #endif
 
     push    {r0-r11}
@@ -232,7 +239,7 @@ global(exception_pref_abort)
     stmia   r7!, {r5, r6}
 
 #if PMK_FPU_SUPPORT
-    add     r7, #264
+    add     r7, #ARM_VFP_CONTEXT_SIZE
 #endif
 
     ldr     r0, [r7, #12]                   // spsr
@@ -240,31 +247,31 @@ global(exception_pref_abort)
     b       save_previous
 
 global(exception_data_abort)
+    // When there is a data abort LR points points two instructions beyond the instruction that caused the abort, so we need to subtract 8 instead of 4 to get the one that caused the abort
+    sub     lr, #8                          // Save instruction that led to data abort in LR of current supervisor mode
+    srsdb   sp, #ARM_PSR_IRQ                // Save LR and PSR in IRQ stack
 
-    sub     lr, #8
-    srsdb   sp, #ARM_PSR_IRQ
+    mov     r14, #AIR_ARM_EXCEPTION_DATA_ABORT // Save in r14 exception name 
+    stmdb   sp, {r12, r14}                  // Save in the stack r12 and 14 (decrease the stack pointer before) 
+    sub     r12, sp, #8                     // r12 -> ( r12, r14(exception name)) in the abort stack
+    cpsid   aif, #ARM_PSR_IRQ               // Change to IRQ mode and disable ALL interrupts
 
-    mov     r14, #AIR_ARM_EXCEPTION_DATA_ABORT
-    stmdb   sp, {r12, r14}
-    sub     r12, sp, #8
-    cpsid   aif, #ARM_PSR_IRQ
-
-    sub     sp, #24
+    sub     sp, #24                         // SP to point to r11 (6 * 4bytes = 24bytes)
 #if PMK_FPU_SUPPORT
-    sub     sp, #264
+    sub     sp, #ARM_VFP_CONTEXT_SIZE       // FP context
 #endif
 
-    push    {r0-r11}
-    add     r7, sp, #48
+    push    {r0-r11}                        // Now push the gen purpose regs into the IRQ stack
+    add     r7, sp, #48                     // r7 -> r11, sp -> next context, r12 ->(r12, exception name)
 
-    ldm     r12, {r5, r6}
-    stmia   r7!, {r5, r6}
+    ldm     r12, {r5, r6}                   // Load what was pointed by r12 (r12, exception name) into r5 and r6
+    stmia   r7!, {r5, r6}                   // Store r5 and r6 (r12, exception name) into addr pointed by r7 (IRQ stack) and r7 -> just after exception name 
 
 #if PMK_FPU_SUPPORT
-    add     r7, #264
+    add     r7, #ARM_VFP_CONTEXT_SIZE       // FP context
 #endif
 
-    ldr     r0, [r7, #12]                   // spsr
+    ldr     r0, [r7, #12]                   // Save SPSR in r0 (needed for save_previous). 12 = 3*4bytes, ret_psr is 3 words after usr_sp
 
     b       save_previous
 
@@ -281,7 +288,7 @@ global(exception_fiq)
 
     sub     sp, #16
 #if PMK_FPU_SUPPORT
-    sub     sp, #264
+    sub     sp, #ARM_VFP_CONTEXT_SIZE
 #endif
 
     push    {r0-r11}
@@ -291,7 +298,7 @@ global(exception_fiq)
     stmia   r7!, {r11, r14}
 
 #if PMK_FPU_SUPPORT
-    add     r7, #264
+    add     r7, #ARM_VFP_CONTEXT_SIZE
 #endif
 
     ldr     r0, [r7, #12]                   // spsr
@@ -301,43 +308,43 @@ global(exception_fiq)
 
 global(exception_irq)
 
-    sub     lr, #4
+    sub     lr, #4                          // Save the instruction before the exception occured
 
-    cpsid   aif, #ARM_PSR_FIQ //since the FIQ stack is not being used,
-    push    {r0-r3}          //store these values there so as to not corrupt the IRQ stack
-    cpsid   aif, #ARM_PSR_IRQ
+    cpsid   aif, #ARM_PSR_FIQ               // Change to FIQ mode, since the FIQ stack is not being used.
+    push    {r0-r3}                         // Store r0-r3 in the FIQ stack to not corrupt the IRQ stack
+    cpsid   aif, #ARM_PSR_IRQ               // Go back to IRQ mode
 
-// check if the previous mode is USR or SYS.
+    // Check if the previous mode is USR or SYS.
     mrs     r0, spsr
-    and     r0, #(ARM_PSR_MODE_MASK)
-    cmp     r0, #(ARM_PSR_USR)
-    cmpne   r0, #(ARM_PSR_SYS)
-    bne     irq_cont //if not, continue without changing SP
+    and     r0, #ARM_PSR_MODE_MASK
+    cmp     r0, #ARM_PSR_USR
+    cmpne   r0, #ARM_PSR_SYS
+    bne     irq_cont                        // If not, continue
 
-// if it is, check if this context has already been stored. If so, replace it
-    mrs     r0, cpsr
-    mov     r1, r0
-    orr     r1, #(ARM_PSR_SYS) //change to system mode
-    msr     cpsr, r1
-    mov     r1, sp             //get user sp
-    msr     cpsr, r0
+    // If previous mode was USR or SYS check if this context has already been stored. If so, replace it. (Why?)
+    mrs     r0, cpsr                        // Get CPSR to r0
+    mov     r1, r0                          // Copy CPSR to r1
+    orr     r1, #ARM_PSR_SYS                // Set system mode
+    msr     cpsr, r1                        // Change to system mode
+    mov     r1, sp                          // Get user sp (in system mode SP is the same as the user SP )
+    msr     cpsr, r0                        // Change back to previous mode
+                                            // Why did we do this?
+    mov     r3, sp                          // r3 -> sp
 
-    mov     r3, sp
-
-    add     r3, #72
+    add     r3, #72                         // r3 -> context
 #if PMK_FPU_SUPPORT
-    add     r3, #264
+    add     r3, #ARM_VFP_CONTEXT_SIZE       // FP context
 #endif
 
 find_context:
-    ldr     r0, [r3, #52]       //get exception name
-    cmp     r0, #AIR_ARM_EXCEPTION_IRQ  // is IRQ?
+    ldr     r0, [r3, #52]                   // Get exception name
+    cmp     r0, #AIR_ARM_EXCEPTION_IRQ      // Check if it is IRQ?
     bgt     irq_cont
-    cmpne   r0, 0               // is context empty?
-    addne   r3, 72              // if neither, keep looking in the contexts above
+    cmpne   r0, 0                           // If not IRQ check if this context is empty?
+    addne   r3, 72                          // If neither, keep looking in the contexts above
 
 #if PMK_FPU_SUPPORT
-    add     r3, #264
+    add     r3, #ARM_VFP_CONTEXT_SIZE       // FP context
 #endif
 
     bne     find_context
@@ -363,12 +370,12 @@ irq_cont:
 
     sub     sp, #16
 #if PMK_FPU_SUPPORT
-    sub     sp, #264
+    sub     sp, #ARM_VFP_CONTEXT_SIZE
 #endif
     push    {r0-r12, r14}
     add     r7, sp, #56
 #if PMK_FPU_SUPPORT
-    add     r7, #264
+    add     r7, #ARM_VFP_CONTEXT_SIZE
 #endif
     mrs     r0, spsr
 
@@ -427,7 +434,7 @@ c_handler:
 restore:
     add     sp, #56                         // usr_sp
 #if PMK_FPU_SUPPORT
-    add     sp, #264
+    add     sp, #ARM_VFP_CONTEXT_SIZE
 #endif
 
     pop     {r0-r3}
@@ -458,7 +465,7 @@ restore:
     vmrs    r4, fpexc
     orr     r4, #(ARM_VFP_FPEXC_ENABLE)
     vmsr    fpexc, r4
-    sub     sp,  #264
+    sub     sp,  #ARM_VFP_CONTEXT_SIZE
     add     r6,  sp, #56
     ldmia   r6!, {r4, r5}
     vldmia  r6!, {d0-d15}
@@ -476,7 +483,7 @@ restore:
     add     sp, #12
 
 #if PMK_FPU_SUPPORT
-    add     sp, #264
+    add     sp, #ARM_VFP_CONTEXT_SIZE
 #endif
 
     rfe     sp!
@@ -486,7 +493,7 @@ virtual:
 
     add     sp, #56
 #if PMK_FPU_SUPPORT
-    add     sp, #264
+    add     sp, #ARM_VFP_CONTEXT_SIZE
 #endif
 
     pop     {r0-r3}                         // usr_sp, usr_lr, ret_addr, ret_psr
@@ -522,7 +529,7 @@ virtual_return:
     vmrs    r4, fpexc
     orr     r4, #(ARM_VFP_FPEXC_ENABLE)
     vmsr    fpexc, r4
-    sub     sp,  #264
+    sub     sp,  #ARM_VFP_CONTEXT_SIZE
     add     r6,  sp, #56
     ldmia   r6!, {r4, r5}
     vldmia  r6!, {d0-d15}
