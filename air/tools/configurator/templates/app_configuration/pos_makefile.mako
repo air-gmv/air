@@ -65,11 +65,11 @@ ${'\t\t'}-nostdlib -nodefaultlibs -nostartfiles${'\\'}
 ${'\t\t'}-T${os.path.join('$(AIR_POS)', pos_config.name, 'include', 'linkcmds.ld')}${'\\'}
 ${'\t\t'}--start-group${'\\'}
 ${'\t\t'}--build-id=none${'\\'}
-% if partition.is_system:
-${'\t\t'}$(AIR_PMK)/pmk.a${'\\'}
 ${'\t\t'}$(TARGET_BUILD)/libc.a${'\\'}
 ${'\t\t'}$(TARGET_BUILD)/libgcc.a${'\\'}
 ${'\t\t'}$(TARGET_BUILD)/libm.a${'\\'}
+% if partition.is_system:
+${'\t\t'}$(AIR_PMK)/pmk.a${'\\'}
 % endif
 ${'\t\t'}${os.path.join('$(AIR_POS)', pos_config.name, '{0}.a'.format(pos_config.name))}${'\\'}
 % for i, libname in enumerate(partition.libraries):
