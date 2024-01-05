@@ -30,5 +30,11 @@ void isr_install_handler(air_u32_t tn, void *new, void **old);
 
 void arm_pos_smp_init(void);
 
+/**
+ * @brief Wake core after
+ * @param ticks Number of ticks of sleep
+ */
+void wake_after(air_clocktick_t ticks);
+
 #endif /* ASM */
 #endif /* ARM_POS_BARE_H */
