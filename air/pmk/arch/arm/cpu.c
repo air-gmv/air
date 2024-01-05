@@ -178,6 +178,14 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
         context->sp_svc = stack;
         context->sp_irq = stack - ((partition->mmap->size)/2);
 
+        int sp_original = arm_get_sp();
+        int new_sp;
+        new_sp = sp_original - partition->id * (0x600); //TODO: magic number, to review
+        if(new_sp != sp_original) {
+            context->svc_sp=new_sp;
+        }
+        else
+            context->svc_sp=0;
 
         /*Enable virtual interrupts*/
         context->vgic.vm_ctrl = 1;
