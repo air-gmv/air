@@ -21,6 +21,16 @@
 volatile air_uptr_t *isr_table[PMK_MAX_CORES];
 volatile air_u32_t __isr_table[PMK_MAX_CORES * ARM_IRQ_COUNT];
 
+void wake_after(air_clocktick_t ticks) {
+    if (ticks <= 0) return;
+
+    air_clocktick_t it = air_syscall_get_elapsed_ticks();
+    while (1) {
+        air_clocktick_t ft = air_syscall_get_elapsed_ticks();
+        if ((ft - it) >= ticks) break;
+    }
+}
+
 void arm_pos_smp_init(void) {
 
     air_u32_t i;
