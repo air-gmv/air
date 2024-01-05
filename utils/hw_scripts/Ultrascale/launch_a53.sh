@@ -25,7 +25,7 @@ ipcrm -a
 
 putty /dev/ttyUSB7 -serial -sercfg "115200,8,n,1,N" &
 
-xsct -interactive $AIR../utils/hw_scripts/Ultrascale/launch_a53_app.tcl
+xsct -interactive $AIR../utils/hw_scripts/Ultrascale/launch_a53.tcl
 
 rm -f /var/lock/ultrascale.lock
 

@@ -38,11 +38,11 @@ void arm_set_tval(air_u32_t val){
     //Set the TVAL in CNTP_TVAL register
     __asm__ volatile ( "mcr p15, 0, %0, c14, c2, 0\n"::"r" (val) );
 
-    #ifdef PMK_DEBUG_TIMER
-    val = 0;
-    __asm__ volatile ( "mrc p15, 0, %0, c14, c2, 0\n":"=r" (val) );
-    printk("\t CNTP_TVAL register = 0x%x\n", val);
-    #endif
+    // #ifdef PMK_DEBUG_TIMER
+    // val = 0;
+    // __asm__ volatile ( "mrc p15, 0, %0, c14, c2, 0\n":"=r" (val) );
+    // printk("\t CNTP_TVAL register = 0x%x\n", val);
+    // #endif
     return;
 }
 
