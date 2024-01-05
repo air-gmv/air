@@ -29,9 +29,9 @@ if {$fsbl == 1 } {
     puts "Initializing with psu_init"
     source $env(AIR)/../utils/hw_scripts/Ultrascale/psu_init.tcl
     psu_init
-    after 1000
+    after 500
     psu_ps_pl_isolation_removal
-    after 1000
+    after 500
     psu_ps_pl_reset_config
     catch {psu_protection}
 }
