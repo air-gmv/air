@@ -16,7 +16,11 @@ ${makoutils.cfileHeader("rtems_config.h", "RTEMS configuration")}
 /**
  * @brief Standard RTEMS configuration
  */
-#define CONFIGURE_INIT_TASK_ATTRIBUTES RTEMS_FLOATING_POINT
+
+%if air.PERMISSION_FPU in partition.permissions:
+    #define CONFIGURE_INIT_TASK_ATTRIBUTES                  RTEMS_FLOATING_POINT
+%endif
+
 
 #define CONFIGURE_MICROSECONDS_PER_TICK ${tps_to_mpt()}
 
