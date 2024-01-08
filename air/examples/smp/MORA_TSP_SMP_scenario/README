@@ -1,0 +1,23 @@
+MORA TSP SCNARIO 3.4.1 TSP-SMP SCENARIO WITH ONE-TO-ALL TASK AFFINITY
+
+In this scenario more than one core is assigned to a partition. These partitions running in RTEMS SMP
+configuration will have the default EDF scheduling of tasks. The default one-to-all thread to core affinity
+by the scheduler is used i.e. the scheduler decides the core on which a task should run at any given
+time.
+
+        25ms | 25ms | 25ms | 25ms | 25ms | 25ms | 25ms | 25ms | 25ms | 25ms |
+Core0 | <------------- P0 -------------> | <P4> | <P0> |      | <P0> |      |
+Core1 |      | <---------> | <-------P1-------> | <---------- P5 ---------> |
+Core2 |      | <---P2----> |      | <-- P3 ---> | <-----------------------> |
+Core3 |      | <---------> |      | <---------> |                           |
+
+P0 - IO
+P1 - Mission Manager
+P2 - Thermal Control
+P3 - Power Control
+P4 - AOCS
+P5 - Payload
+
+
+Partitions P2, P3, and P5 need to define CONFIGURE_MAXIMUM_SEMAPHORES in rtems_config.h after configure.
+Ex: #define CONFIGURE_MAXIMUM_SEMAPHORES 1
