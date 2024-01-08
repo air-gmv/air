@@ -72,7 +72,7 @@ global(exception_svc)
     bic     r0, r1, #ARM_PSR_MODE_MASK      // r0 = r1 AND NOT #ARM_PSR_MODE_MASK 
     orr     r0, #ARM_PSR_IRQ                // Set the IRQ mode bit in r0 
     msr     cpsr, r0                        // Change into IRQ mode 
-
+/*
     // Cant we do cpsid aif, #ARM_PSR_IRQ ??? Instead of the above 3 instructions, we still need to save cpsr tho
 
 svc_is_empty:
@@ -92,8 +92,8 @@ svc_is_empty:
 #endif
     bne     svc_is_empty                    // If not empty then go again
 
-    // Found an empty space, so save the svc context
-    msr     cpsr, r1                        // Restore the svc cpsr (We are from now on on supervisor mode)
+    // Found an empty space, so save the svc context*/ 
+    msr     cpsr, r1                       // Restore the svc cpsr (We are from now on on supervisor mode)
     pop     {r0, r1}                        // And restore original registers
 
     srsdb   sp, #ARM_PSR_IRQ                // Save return state (LR and SRSR) in the IRQ stack
@@ -149,21 +149,21 @@ arm_rett:                                   // The return syscall (we are in sup
     cmp     r0, #ARM_PSR_USR                // Check USR
     cmpne   r0, #ARM_PSR_SYS                // Check SYS
     add     r4, sp, #0                      // r4 -> SP // Is this the same as mov r4, sp ?
-    bne     arm_return                      // Return if return mode is not USR or SYS
+   /* bne     arm_return                      // Return if return mode is not USR or SYS
 
     // if we use virtual ARM modes:
     mrc     p15, 0, r1, c13, c0, 4          // get Per_CPU core // Get the core number?
     ldr     r1, [r1, #offsetof_pmk_core_ctrl_t_context]
     ldr     r1, [r1, #144]                  //get virtual svc sp
 
-/* //if we don't use virtual ARM modes:
+ //if we don't use virtual ARM modes:
     mrs     r0, cpsr
     mov     r1, r0
     orr     r1, #(ARM_PSR_SYS) //change to system mode
     msr     cpsr, r1
     mov     r1, sp             //get user sp
     msr     cpsr, r0
-*/
+
     ldr     r0, [r2, #56]       //get return sp (svc) TODO: what if previous virtual mode is not svc?
     cmp     r1, r0              //if return sp is different from usr sp then we know
     beq     arm_return          //that a context switch took place in the POS IRQ handler
@@ -202,7 +202,7 @@ search_context_below:
     bne     search_context_below
     cmp     r0, r1
     bne     search_context_below
-
+*/
 
 arm_return:
     mrc     p15, 0, r0, c13, c0, 4  // get Per_CPU core
@@ -309,13 +309,13 @@ global(exception_fiq)
 global(exception_irq)
 
     sub     lr, #4                          // Save the instruction before the exception occured
-
+/* 
     cpsid   aif, #ARM_PSR_FIQ               // Change to FIQ mode, since the FIQ stack is not being used.
     push    {r0-r3}                         // Store r0-r3 in the FIQ stack to not corrupt the IRQ stack
     cpsid   aif, #ARM_PSR_IRQ               // Go back to IRQ mode
 
     // Check if the previous mode is USR or SYS.
-    mrs     r0, spsr
+   mrs     r0, spsr
     and     r0, #ARM_PSR_MODE_MASK
     cmp     r0, #ARM_PSR_USR
     cmpne   r0, #ARM_PSR_SYS
@@ -362,7 +362,7 @@ irq_cont:
     cpsid   aif, #ARM_PSR_FIQ
     pop     {r0-r3}
     cpsid   aif, #ARM_PSR_IRQ
-
+*/
    /*--Now we can save the irq context--*/
 
     srsdb   sp, #ARM_PSR_IRQ
