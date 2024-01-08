@@ -67,8 +67,8 @@ include $(PROJECT_ROOT)/make/leaf.cfg
 CPPFLAGS+=${'\\'}
 -DPMK_${os_configuration.arch.upper()}${'\\'}
 -DPMK_${os_configuration.arch.upper()}_${os_configuration.bsp.upper()}${'\\'}
-% if partition.is_system:
 -DPMK_MAX_CORES=${os_configuration.get_available_cores()}${'\\'}
+% if partition.is_system:
 % for i, directory in enumerate(kernel_headers):
 -I${directory}${'\\'}
 % endfor
