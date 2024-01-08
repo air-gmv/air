@@ -213,6 +213,8 @@ typedef struct
     void *hm_event;              /**< health-monitor event           */
     air_u32_t sp_svc;            /* < virtual svc stack pointer      */
     air_u32_t sp_irq;            /* < virtual irq stack pointer      */
+    air_u32_t svc_sp;            /* < virtual irq stack pointer      */
+    air_u32_t reserved;
 } arm_core_context_t;
 
 /**
@@ -379,6 +381,18 @@ __FORCE_INLINE static air_u32_t arm_get_cpsr(void)
 __FORCE_INLINE static void arm_set_cpsr(air_u32_t val)
 {
     __asm__ volatile("msr cpsr, %0\n" ::"r"(val));
+}
+
+__FORCE_INLINE static air_u32_t arm_get_sp(void)
+{
+    air_u32_t reg;
+    __asm__ volatile("mov %0, sp\n" : "=r"(reg));
+    return reg;
+}
+
+__FORCE_INLINE static void arm_set_sp(air_u32_t val)
+{
+    __asm__ volatile("mov sp, %0\n" : "=r"(val));
 }
 
 __FORCE_INLINE static void arm_disable_interrupts()
