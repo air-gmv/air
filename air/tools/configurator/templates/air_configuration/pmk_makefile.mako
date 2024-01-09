@@ -46,7 +46,6 @@ TARGET_CPPFLAGS+=${'\\'}
 -DPMK_${os_configuration.arch.upper()}${'\\'}
 -DPMK_${os_configuration.arch.upper()}_${os_configuration.bsp.upper()}${'\\'}
 -DPMK_PARTITION_BASE_ADDR=${hex(mmap.partition_space[0])}${'\\'}
-
 <%
     defines      = os_configuration.get_target_defines()
 %>\
