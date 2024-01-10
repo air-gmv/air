@@ -107,7 +107,6 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
         frame->r0 = (air_u32_t)(us_per_tick & 0xffffffff);
         frame->r1 = (air_u32_t)((us_per_tick & 0xffffffff00000000) >> 32);
         break;
-
     case AIR_SYSCALL_GET_ELAPSED_TICKS:
         // Get the elapsed ticks since system start
         elapsed = arm_syscall_get_elapsed_ticks(core);

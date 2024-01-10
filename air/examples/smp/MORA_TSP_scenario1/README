@@ -1,0 +1,21 @@
+MORA TSP SCNARIO 3.2.1 ONE CORE ALLOCATION TO A SINGLE PARTITION
+
+One partition is continuously running on a dedicated core while other partitions can share rest of the
+cores.
+
+        25ms | 25ms | 25ms | 25ms | 25ms | 25ms | 25ms | 25ms | 25ms | 25ms |
+Core0 | <---------------------------- P0 ---------------------------------> |
+Core1 | <P1> | <--- P2 --> | <--- P3 --> | <P4> | <P2> | <------ P5 ------> |
+Core2 |                                                                     |
+Core3 |                                                                     |
+
+P0 - IO
+P1 - Mission Manager
+P2 - Thermal Control
+P3 - Power Control
+P4 - AOCS
+P5 - Payload
+
+Partitions P2, P3, and P5 need to define CONFIGURE_MAXIMUM_SEMAPHORES in rtems_config.h after configure.
+Ex: #define CONFIGURE_MAXIMUM_SEMAPHORES 1
+
