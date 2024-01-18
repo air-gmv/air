@@ -15,8 +15,8 @@
 #ifndef __CONFIGURATIONS_H__
 #define __CONFIGURATIONS_H__
 
-#include <health_monitor.h>
 #include <pmk.h>
+#include <health_monitor.h>
 
 /**
  * @defgroup pmk_configuration PMK - Application Configuration

@@ -1,16 +1,16 @@
 /**
- *  @file 
+ *  @file
  *  @brief Header for GR1553 BC mode
  *
  *  COPYRIGHT (c) 2011.
  *  GMV-SKYSOFT
- *	
- *  Modifications: 
+ *
+ *  Modifications:
  *    - Back port to RTEMS 4.8 (no drvmgr)
  *    - Removed Interrupts
  *
  *  @author Cl�udio Silva
- *	
+ *
  */
 /*  GR1553B BC driver
  *
@@ -46,37 +46,40 @@
 #include <IOPgr1553b.h>
 
 /* A BC descriptor accessed as is */
-struct gr1553bc_bd_raw {
-	volatile uint32_t words[4];
+struct gr1553bc_bd_raw
+{
+    volatile uint32_t words[4];
 };
 
 /* A BC descriptor accessed as a transfer descriptor */
-struct gr1553bc_bd_tr {
-	volatile uint32_t settings[2];
-	volatile uint32_t dptr;
-	volatile uint32_t status;
+struct gr1553bc_bd_tr
+{
+    volatile uint32_t settings[2];
+    volatile uint32_t dptr;
+    volatile uint32_t status;
 };
 
 /* A BC descriptor accessed as a conditional descriptor */
-struct gr1553bc_bd_cond {
-	volatile uint32_t cond;
-	volatile uint32_t bdptr;
-	volatile uint32_t padding[2];
+struct gr1553bc_bd_cond
+{
+    volatile uint32_t cond;
+    volatile uint32_t bdptr;
+    volatile uint32_t padding[2];
 };
 
 /* A BC descriptor accessed any way */
 union gr1553bc_bd {
-	struct gr1553bc_bd_raw raw;
-	struct gr1553bc_bd_tr tr;
-	struct gr1553bc_bd_cond cond;
-
+    struct gr1553bc_bd_raw raw;
+    struct gr1553bc_bd_tr tr;
+    struct gr1553bc_bd_cond cond;
 };
 
-typedef struct {
-	iop_chain_node node;				/**< RTEMS Chain Node */
-	unsigned char subaddr;			/**< RT subaddress */
-	unsigned char wcmc;				/**< Word Count / Mode Code */
-	void *cmd_ptr;					/**< pointer to command */
+typedef struct
+{
+    iop_chain_node node;   /**< RTEMS Chain Node */
+    unsigned char subaddr; /**< RT subaddress */
+    unsigned char wcmc;    /**< Word Count / Mode Code */
+    void *cmd_ptr;         /**< pointer to command */
 } write_cmd_shortcut_t;
 
 /* Alignment of a descriptor */
@@ -85,20 +88,20 @@ typedef struct {
 /* End of list marker */
 #define GR1553BC_TR_EOL 0x80ffffff
 
-#define GR1553BC_BD_TYPE	0x80000000
+#define GR1553BC_BD_TYPE 0x80000000
 
 /* Condition descriptor bits */
-#define GR1553BC_UNCOND_JMP	0x820000ff
-#define GR1553BC_UNCOND_IRQ	0x860000ff
-#define GR1553BC_UNCOND_NOJMP	0x82000000
+#define GR1553BC_UNCOND_JMP 0x820000ff
+#define GR1553BC_UNCOND_IRQ 0x860000ff
+#define GR1553BC_UNCOND_NOJMP 0x82000000
 
 /* Transfer descriptor bits */
-#define GR1553BC_TR_DUMMY_0	0x00000000
-#define GR1553BC_TR_DUMMY_1	0x80000000
+#define GR1553BC_TR_DUMMY_0 0x00000000
+#define GR1553BC_TR_DUMMY_1 0x80000000
 
-#define GR1553BC_TR_TIME	0x0000ffff
+#define GR1553BC_TR_TIME 0x0000ffff
 
-#define GR1553BC_TR_EXTTRIG	0x40000000
+#define GR1553BC_TR_EXTTRIG 0x40000000
 
 #define GR1553BC_STATUS_ACESSED 0x80000000
 

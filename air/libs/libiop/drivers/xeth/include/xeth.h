@@ -5,41 +5,36 @@
  * found in the file LICENSE in this distribution or at
  * $(AIR_GIT_REMOTE_URL)/AIR/air-dev/-/blob/dev/LICENSE
  */
-/** 
+/**
  * @file xeth.h
  * @author TTAO
  * @brief XETH Ethernet Driver - Macros and Definitions
  *        Based on the Zynq-7000 SoC Technical Reference Manual
  */
 
-
 #ifndef __XETH_H__
 #define __XETH_H__
-
-
 
 #include <air.h>
 #include <iop.h>
 #include <eth_support.h>
 
-
-
 /**
  * Xilinx Mac Address Registers
  */
-typedef struct xeth_mac_regs {
+typedef struct xeth_mac_regs
+{
 
     volatile uint32_t mac_addr_lsb;
     volatile uint32_t mac_addr_msb;
 
 } xeth_mac_regs;
 
-
-
 /**
  * Xilinx Main Ethernet Registers
  */
-typedef struct xeth_regs {
+typedef struct xeth_regs
+{
 
     volatile uint32_t nw_ctrl;
     volatile uint32_t nw_config;
@@ -56,24 +51,22 @@ typedef struct xeth_regs {
 
 } xeth_regs;
 
-
-
 /**
  * Buffer Descriptor Entry
  */
-typedef struct xeth_bd {
+typedef struct xeth_bd
+{
 
     uint32_t addr;
     volatile uint32_t config;
 
 } xeth_bd;
 
-
-
 /**
  * Ethernet Device Control Structure
  */
-typedef struct xeth_struct{
+typedef struct xeth_struct
+{
 
     xeth_regs *regs;
     xeth_mac_regs *mac_regs;
@@ -92,8 +85,6 @@ typedef struct xeth_struct{
 
 } xeth_struct;
 
-
-
 /**
  * Initializes and Configures the Ethernet Driver.
  * @param iop_dev Ethernet Device Configuration
@@ -103,8 +94,6 @@ typedef struct xeth_struct{
  */
 air_u32_t iop_xeth_init(iop_device_driver_t *iop_dev, void *arg);
 
-
-
 /**
  * Configures Buffers and Buffers Descriptors.
  * Enables the Ethernet Controller.
@@ -113,8 +102,6 @@ air_u32_t iop_xeth_init(iop_device_driver_t *iop_dev, void *arg);
  * @return AIR_SUCCESSFUL if the Ethernet Controller was successfully enabled
  */
 air_u32_t iop_xeth_open(iop_device_driver_t *iop_dev, void *arg);
-
-
 
 /**
  * Reads from the Ethernet Device.
@@ -126,8 +113,6 @@ air_u32_t iop_xeth_open(iop_device_driver_t *iop_dev, void *arg);
  */
 air_u32_t iop_xeth_read(iop_device_driver_t *iop_dev, void *arg);
 
-
-
 /**
  * Writes in the Ethernet Device.
  * @param iop_dev Ethernet Device Configuration
@@ -138,8 +123,6 @@ air_u32_t iop_xeth_read(iop_device_driver_t *iop_dev, void *arg);
  */
 air_u32_t iop_xeth_write(iop_device_driver_t *iop_dev, void *arg);
 
-
-
 /**
  * Disables the Ethernet Controller.
  * @param iop_dev Ethernet Device Configuration
@@ -147,6 +130,5 @@ air_u32_t iop_xeth_write(iop_device_driver_t *iop_dev, void *arg);
  * @return AIR_SUCCESSFUL if the Ethernet Controller was successfully disabled
  */
 air_u32_t iop_xeth_close(iop_device_driver_t *iop_dev, void *arg);
-
 
 #endif /* __XETH_H__ */

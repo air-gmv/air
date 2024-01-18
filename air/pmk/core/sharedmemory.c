@@ -12,10 +12,10 @@
  *        partitions
  */
 
-#include <configurations.h>
-#include <partition.h>
 #include <pmk.h>
+#include <partition.h>
 #include <sharedmemory.h>
+#include <configurations.h>
 
 pmk_shm_t *pmk_sharedmemory_get_by_id(air_identifier_t id)
 {
