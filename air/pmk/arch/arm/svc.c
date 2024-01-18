@@ -61,6 +61,14 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
         // Enable traps
         arm_syscall_enable_traps(core);
         break;
+    case AIR_SYSCALL_ARM_DISABLE_ABORTS:
+        // Disable traps
+        arm_syscall_disable_aborts(core);
+        break;
+    case AIR_SYSCALL_ARM_ENABLE_ABORTS:
+        // Enable traps
+        arm_syscall_enable_aborts(core);
+        break;
     case AIR_SYSCALL_ARM_DISABLE_FPU:
         // Disable FPU
         frame->r0  = arm_syscall_disable_fpu(core);

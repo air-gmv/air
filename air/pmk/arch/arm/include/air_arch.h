@@ -115,6 +115,14 @@ extern "C"
      */
     void air_syscall_enable_traps(void);
     /**
+     * \brief ARM system call: disable virtual aborts
+     */
+    void air_syscall_disable_aborts(void);
+    /**
+     * \brief ARM system call: enable virtual aborts
+     */
+    void air_syscall_enable_aborts(void);
+    /**
      * \brief ARM system call: disable FPU
      * \return NO_ERROR if the partition have permissions to control the FPU
      *         INVALID_CONFIG otherwise
@@ -234,16 +242,18 @@ extern "C"
 #define AIR_SYSCALL_ARM_GET_IRQ_MASK_REGISTER 14
 #define AIR_SYSCALL_ARM_SET_IRQ_MASK_REGISTER 15
 #define AIR_SYSCALL_ARM_SET_IRQ_FORCE_REGISTER 16
-#define AIR_SYSCALL_ARM_COUNT 16
+#define AIR_SYSCALL_ARM_DISABLE_ABORTS 17
+#define AIR_SYSCALL_ARM_ENABLE_ABORTS 18
+#define AIR_SYSCALL_ARM_COUNT 18
 
 /**
  * \brief Defined as the number of ARM paravirtualization system calls,
  *  as ARM uses only one virtual syscall table, the syscalls ids defined in
  *  air.h are a continuation of these
  */
-#define AIR_SYSCALL_ARCH_COUNT 17
+#define AIR_SYSCALL_ARCH_COUNT 19
 
-#define AIR_SYSCALL_ARM_ACK_INT 18
-#define AIR_SYSCALL_ARM_END_INT 19
+#define AIR_SYSCALL_ARM_ACK_INT 20
+#define AIR_SYSCALL_ARM_END_INT 21
 
 #endif /* AIR_ARCH_H_ */
