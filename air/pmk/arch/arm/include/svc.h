@@ -22,6 +22,8 @@ air_u32_t arm_syscall_disable_interrupts(pmk_core_ctrl_t *core);
 void arm_syscall_enable_interrupts(pmk_core_ctrl_t *core);
 void arm_syscall_disable_traps(pmk_core_ctrl_t *core);
 void arm_syscall_enable_traps(pmk_core_ctrl_t *core);
+void arm_syscall_disable_aborts(pmk_core_ctrl_t *core);
+void arm_syscall_enable_aborts(pmk_core_ctrl_t *core);
 air_u32_t arm_syscall_disable_fpu(pmk_core_ctrl_t *core);
 void arm_syscall_enable_fpu(pmk_core_ctrl_t *core);
 air_u32_t arm_syscall_get_tbr(pmk_core_ctrl_t *core);
