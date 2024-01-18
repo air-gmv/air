@@ -212,11 +212,11 @@ air_uptr_t * arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
             }
         }
     } else {
-
-        vgic->ilist[id] |= (1U << 28);
-        if (((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) {
-            vgic->hppir = ((vgic->ilist[id] >> 23) & 0x1f);
-        }
+        // TODO: CHECK THIS INTERRUPT HANDLING, COMMENTING IT OUT FOR NOW (NOT NEEDED IN BARE)
+        // vgic->ilist[id] |= (1U << 28); //Set the interrupt as pending
+        // if (((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) { //then checks for priority
+        //     vgic->hppir = ((vgic->ilist[id] >> 23) & 0x1f);
+        // }
     }
 
     return ret;
