@@ -22,7 +22,6 @@
 #include <printk.h>
 #endif
 
-static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core);
 static air_boolean_t arm_hm_undef_is_fpu(air_u32_t ret_addr, air_boolean_t is_T32);
 
 /**
@@ -134,7 +133,12 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
  * \param core pmk_core_ctrl_t
  * \return POS HM return address
  */
-static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
+air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
+    pmk_hm_event_t *hm_event = (pmk_hm_event_t *)core->context->hm_event;
+
+    if (hm_event->nesting <= 0) {
+        return NULL;
+    }
 
     arm_virtual_cpu_t *vcpu = &core->context->vcpu;
     air_uptr_t *vbar = vcpu->vbar;
@@ -166,7 +170,6 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
 
     //if virtual aborts are enabled, go to virtual exception handler
     if (!psr_a) {
-        pmk_hm_event_t *hm_event = (pmk_hm_event_t *)core->context->hm_event;
         if (hm_event->nesting > 0) {
 
             vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
@@ -210,7 +213,9 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
     
             case AIR_ARITHMETIC_ERROR: //overflow
             case AIR_DIVISION_BY_0_ERROR: // /0
-            default:
+            default: //Or if any error defined by the user
+            	ret_addr = vbar + 1;
+				frame->ret_addr+=ret_offset;
                 break;
             }
         }
