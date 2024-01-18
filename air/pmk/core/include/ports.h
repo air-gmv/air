@@ -28,21 +28,23 @@
 /**
  * @brief Channel Control & Configuration Structure
  */
-typedef struct {
+typedef struct
+{
 
-    air_identifier_t id;            /**< Channel Id                         */
-    air_port_type_e type;           /**< Channel type                       */
-    void *configuration;            /**< Channel configuration              */
-    pmk_list_t src;                 /**< Channel source ports               */
-    pmk_list_t dst;                 /**< Channel destination ports          */
-    air_name_t name;                /**< Channel name                       */
+    air_identifier_t id;  /**< Channel Id                         */
+    air_port_type_e type; /**< Channel type                       */
+    void *configuration;  /**< Channel configuration              */
+    pmk_list_t src;       /**< Channel source ports               */
+    pmk_list_t dst;       /**< Channel destination ports          */
+    air_name_t name;      /**< Channel name                       */
 
 } pmk_channel_t;
 
 /**
  * @brief Port Control & Configuration Structure
  */
-typedef struct {
+typedef struct
+{
 
     /**< Port Id                                                            */
     air_identifier_t id;
@@ -66,11 +68,12 @@ typedef struct {
 /**
  * @brief Message Slot structure
  */
-typedef struct {
+typedef struct
+{
 
-    air_message_ptr_t message;      /**< Message pointer                    */
-    air_sz_t length;                  /**< Message Length                     */
-    air_clocktick_t timestamp;      /**< Message time stamp                 */
+    air_message_ptr_t message; /**< Message pointer                    */
+    air_sz_t length;           /**< Message Length                     */
+    air_clocktick_t timestamp; /**< Message time stamp                 */
 
 } pmk_message_slot_t;
 
@@ -85,8 +88,7 @@ void pmk_channels_init(void);
  * @param name Name of the port
  * @return port Pointer if port name exists, NULL otherwise
  */
-pmk_port_t *pmk_port_get_from_partition_by_name(
-        pmk_partition_t *partition, air_name_ptr_t name);
+pmk_port_t *pmk_port_get_from_partition_by_name(pmk_partition_t *partition, air_name_ptr_t name);
 
 /**
  * @brief Gets a port from the partition
@@ -96,8 +98,7 @@ pmk_port_t *pmk_port_get_from_partition_by_name(
  * @return port Pointer if the port was found and its type is correct,
  *         NULL otherwise
  */
-pmk_port_t *pmk_port_get_from_partition_by_id(
-        pmk_partition_t *partition, air_identifier_t id, air_port_type_e type);
+pmk_port_t *pmk_port_get_from_partition_by_id(pmk_partition_t *partition, air_identifier_t id, air_port_type_e type);
 
 /**
  * @brief Update channel ports

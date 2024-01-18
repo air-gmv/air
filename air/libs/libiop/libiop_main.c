@@ -18,7 +18,8 @@
  *
  */
 
-void iop_main_loop(void){
+void iop_main_loop(void)
+{
 
     iop_debug(" :: creating & launching worker tasks\n");
 
@@ -32,19 +33,20 @@ void iop_main_loop(void){
 #endif
 
     iop_physical_device_t *devs[usr_configuration.physical_devices.length];
-    for(i =0; i < usr_configuration.physical_devices.length; i++){
+    for (i = 0; i < usr_configuration.physical_devices.length; i++)
+    {
         devs[i] = get_physical_device(i);
     }
 
-
-    for(;;)
+    for (;;)
     {
         pre_dispatcher();
         pre_router();
 
         /* run all the device drivers writer and reader functions */
 
-        for(i = 0; i < usr_configuration.physical_devices.length; i++){
+        for (i = 0; i < usr_configuration.physical_devices.length; i++)
+        {
 
             devs[i]->writer_task((air_uptr_t)devs[i]);
             devs[i]->reader_task((air_uptr_t)devs[i]);
@@ -55,9 +57,11 @@ void iop_main_loop(void){
 
 #ifdef COVERAGE_ENABLED
         iop_debug("  IOP :: air-dev-cov checking time\n");
-        if(rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time2)==AIR_SUCCESSFUL){
+        if (rtems_clock_get(RTEMS_CLOCK_GET_TICKS_SINCE_BOOT, &time2) == AIR_SUCCESSFUL)
+        {
             iop_debug("  IOP :: air-dev-cov times is %d %d\n", time2, time1);
-            if((time2-time1)>6000){
+            if ((time2 - time1) > 6000)
+            {
                 iop_debug("  IOP :: air-dev-cov timeout on libiop\n");
                 break;
             }

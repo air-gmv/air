@@ -12,10 +12,10 @@
  */
 
 #if DEBUG_MONITOR != 2
+#include <pmk.h>
 #include <amba.h>
 #include <clock.h>
 #include <console.h>
-#include <pmk.h>
 
 /**
  * @brief LEON UART Registers map
@@ -63,7 +63,7 @@ int console_init(void)
 
     /* find and initialize the UART */
     amba_apb_dev_t uart_device;
-    if ((amba_get_apb_slave(&amba_confarea, VENDOR_GAISLER, GAISLER_APBUART, -1, &uart_device)) != 0)
+    if (amba_get_apb_slave(&amba_confarea, VENDOR_GAISLER, GAISLER_APBUART, -1, &uart_device))
     {
 
         uart_regs = (volatile uart_regmap_t *)uart_device.start;

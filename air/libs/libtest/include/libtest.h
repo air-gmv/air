@@ -15,8 +15,8 @@
 #define __LIBTEST_H__
 
 #include <air.h>
-#include <pprintf.h>
 #include <stdarg.h>
+#include <pprintf.h>
 
 /**
  * @brief Size of the partition internal buffer

@@ -11,10 +11,10 @@
  *  @brief Functions to de-compress a partition into memory
  */
 
-#include <atomic.h>
-#include <error.h>
-#include <loader.h>
 #include <pmk.h>
+#include <error.h>
+#include <atomic.h>
+#include <loader.h>
 
 /**
  * @brief LZSS algorithm (MAGIC_NUMBER symbol)

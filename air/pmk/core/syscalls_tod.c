@@ -17,7 +17,8 @@
 #include <segregation.h>
 #include <configurations.h>
 
-air_status_code_e pmk_syscall_get_tod(pmk_core_ctrl_t *core, air_time_t *tod) {
+air_status_code_e pmk_syscall_get_tod(pmk_core_ctrl_t *core, air_time_t *tod)
+{
 
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
@@ -26,7 +27,8 @@ air_status_code_e pmk_syscall_get_tod(pmk_core_ctrl_t *core, air_time_t *tod) {
     cpu_enable_preemption(flags);
 
     /* check if the system time is defined */
-    if (pmk_tod_defined != 1) {
+    if (pmk_tod_defined != 1)
+    {
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
@@ -34,7 +36,8 @@ air_status_code_e pmk_syscall_get_tod(pmk_core_ctrl_t *core, air_time_t *tod) {
     }
 
     /* copy ToD to the partition */
-    if (pmk_segregation_put_user(context, pmk_tod_now, tod) != 0) {
+    if (pmk_segregation_put_user(context, pmk_tod_now, tod) != 0)
+    {
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
@@ -46,7 +49,8 @@ air_status_code_e pmk_syscall_get_tod(pmk_core_ctrl_t *core, air_time_t *tod) {
     return AIR_NO_ERROR;
 }
 
-air_status_code_e pmk_syscall_set_tod(pmk_core_ctrl_t *core, air_time_t *tod) {
+air_status_code_e pmk_syscall_set_tod(pmk_core_ctrl_t *core, air_time_t *tod)
+{
 
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
@@ -56,7 +60,8 @@ air_status_code_e pmk_syscall_set_tod(pmk_core_ctrl_t *core, air_time_t *tod) {
     cpu_enable_preemption(flags);
 
     /* check if the partition have permissions to set the system time */
-    if ((partition->permissions & AIR_PERMISSION_SET_TOD) == 0) {
+    if ((partition->permissions & AIR_PERMISSION_SET_TOD) == 0)
+    {
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
@@ -65,7 +70,8 @@ air_status_code_e pmk_syscall_set_tod(pmk_core_ctrl_t *core, air_time_t *tod) {
 
     /* copy ToD from the partition */
     air_time_t local_tod;
-    if (pmk_segregation_get_user(context, local_tod, tod) != 0) {
+    if (pmk_segregation_get_user(context, local_tod, tod) != 0)
+    {
 
         /* disable preemption and return */
         cpu_disable_preemption(flags);
@@ -73,7 +79,7 @@ air_status_code_e pmk_syscall_set_tod(pmk_core_ctrl_t *core, air_time_t *tod) {
     }
 
     /* apply new ToD */
-    pmk_tod_now.tv_sec  = local_tod.tv_sec;
+    pmk_tod_now.tv_sec = local_tod.tv_sec;
     pmk_tod_now.tv_nsec = local_tod.tv_nsec;
     pmk_tod_defined = 1;
 

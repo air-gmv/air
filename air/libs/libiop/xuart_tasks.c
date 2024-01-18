@@ -16,7 +16,6 @@
 #include <iop_support.h>
 #include <xuart_support.h>
 
-
 /**
  *  @brief Task that writes pending write requests to UART
  *  @param [in] arg
@@ -28,9 +27,10 @@
  *  If the user didn't request a reply then the write will be retried until the
  *  request times out.
  */
-void xuart_writer(air_uptr_t arg){
+void xuart_writer(air_uptr_t arg)
+{
 
-    //iop_debug("\n :: IOP - UART-writer running!\n");
+    // iop_debug("\n :: IOP - UART-writer running!\n");
     air_u32_t rc;
     /* get task physical device */
     iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
@@ -42,18 +42,24 @@ void xuart_writer(air_uptr_t arg){
     iop_uart_device_t *uart_driver = (iop_uart_device_t *)pdev->driver;
 
     /* empty send queue */
-    while (!iop_chain_is_empty(&pdev->sendqueue)) {
+    while (!iop_chain_is_empty(&pdev->sendqueue))
+    {
         iop_wrapper_t *wrapper = obtain_wrapper(&pdev->sendqueue);
         /* write to the device */
-        rc= uart_driver->dev.write((iop_device_driver_t *)uart_driver, wrapper);
-        if (rc == AIR_SUCCESSFUL){
+        rc = uart_driver->dev.write((iop_device_driver_t *)uart_driver, wrapper);
+        if (rc == AIR_SUCCESSFUL)
+        {
             release_wrapper(wrapper);
-            //iop_debug("xuart writer write successful");
-
-        } else {
-            if(rc == AIR_NOT_AVAILABLE)
-                iop_chain_prepend(&pdev->sendqueue, &wrapper->node);   //* re-queue failed transmissions. Time to live will manage the queue */
-            else{
+            // iop_debug("xuart writer write successful");
+        }
+        else
+        {
+            if (rc == AIR_NOT_AVAILABLE)
+                iop_chain_prepend(
+                    &pdev->sendqueue,
+                    &wrapper->node); //* re-queue failed transmissions. Time to live will manage the queue */
+            else
+            {
                 iop_debug("\n:: Writer Error :: \n");
                 break;
             }
@@ -75,10 +81,10 @@ void xuart_writer(air_uptr_t arg){
  *  Failed reads are reported to FDIR
  *
  */
-void xuart_reader(air_uptr_t arg){
+void xuart_reader(air_uptr_t arg)
+{
 
-
-    //iop_debug("\n :: IOP - UART-reader running!\n");
+    // iop_debug("\n :: IOP - UART-reader running!\n");
 
     /* get task physical device */
     iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
@@ -92,25 +98,29 @@ void xuart_reader(air_uptr_t arg){
 
     air_u32_t i;
     air_u32_t reads = pdev->reads_per_period[air_schedule.current_schedule_index];
-    for (i = 0; i < reads; ++i){
+    for (i = 0; i < reads; ++i)
+    {
 
         /* get an empty reply wrapper */
         iop_wrapper_t *wrapper = obtain_free_wrapper();
 
         /* sanity check */
-        if (wrapper == NULL) {
+        if (wrapper == NULL)
+        {
             iop_raise_error(OUT_OF_MEMORY);
             break;
         }
 
         /* read from the device */
-        if (driver->dev.read((iop_device_driver_t *)driver, wrapper) == AIR_SUCCESSFUL) {
+        if (driver->dev.read((iop_device_driver_t *)driver, wrapper) == AIR_SUCCESSFUL)
+        {
             iop_chain_append(&pdev->rcvqueue, &wrapper->node);
             wrapper = NULL;
         }
 
         /* free wrapper if it wasn't used */
-        if (wrapper != NULL) {
+        if (wrapper != NULL)
+        {
             release_wrapper(wrapper);
         }
     }

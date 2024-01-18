@@ -33,4 +33,4 @@ extern air_schedule_status_t air_schedule;
  */
 extern air_partition_status_t air_partition;
 
-#endif  /* __MMS_H__ */
+#endif /* __MMS_H__ */
