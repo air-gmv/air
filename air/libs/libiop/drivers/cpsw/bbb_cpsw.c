@@ -37,10 +37,10 @@
  *
  */
 
-#include "hw_cm_per.h"
+#include "soc_AM335x.h"
 #include "hw_control_AM335x.h"
 #include "hw_types.h"
-#include "soc_AM335x.h"
+#include "hw_cm_per.h"
 
 /******************************************************************************
 **                       INTERNAL MACRO DEFINITIONS

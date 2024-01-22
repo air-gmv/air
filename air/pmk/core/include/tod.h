@@ -27,7 +27,7 @@ extern int pmk_tod_defined;
 
 /* System Time of Day */
 extern air_time_t pmk_tod_now;
-   
+
 /**
  *  @brief Time of Day initialization support
  */

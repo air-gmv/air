@@ -1,0 +1,84 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+  // {
+  //   "name": "Start QEMU",
+  //   "type": "cppdbg",
+  //   "request": "launch",
+  //   "program": "/opt/qemu/bin/qemu-system-arm",
+  //   "args": [
+  //     //"-c", "qemu-system-arm -M arm-generic-fdt-7series -serial mon:stdio -display none -dtb /home/gmv/system.dtb -s -S -kernel ${workspaceFolder}/${input:projectPath}/executable/AIRAPP.exe &"
+  //     // "qemu-system-arm",
+  //     "-M", "arm-generic-fdt-7series",
+  //     //"-no-reboot",
+  //     "-serial", "mon:stdio",
+  //     "-display", "none",
+  //     "-dtb", "/home/gmv/system.dtb",
+  //     "-s", 
+  //     "-S",
+  //     "-kernel", "${workspaceFolder}/${input:projectPath}/executable/AIRAPP.exe",
+  //     // "&"
+  //     // Add any other QEMU arguments here
+  //   ],
+  //   "stopAtEntry": false,
+  //   "cwd": "${workspaceFolder}",
+  //   "environment": [],
+  //   "externalConsole": false,
+  //   //"MIMode": "gdb",
+  //   "preLaunchTask": "configureMakeAndQEMU"
+  // },
+  // {
+  //   "name": "Debug ARM",
+  //   "type": "gdb",
+  //   "request": "attach",
+  //   "executable": "${workspaceFolder}/${input:projectPath}/executable/AIRAPP.exe",
+  //   "target": "localhost:1234",
+  //   "remote": true,
+  //   "cwd": "${workspaceFolder}/${input:projectPath}", 
+  //   "gdbpath": "/opt/rtems/5/bin/arm-rtems5-gdb",
+  //   "preLaunchTask": "configureMakeAndQEMU"
+  // },
+    {
+      "name": "Debug ARM",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/${input:projectPath}/executable/AIRAPP.exe",
+      "cwd": "${workspaceFolder}/${input:projectPath}",
+      "MIMode": "gdb",
+      "externalConsole": false,
+      "setupCommands": [
+        // {
+        //   "description": "Enable pretty-printing for gdb",
+        //   "text": "-enable-pretty-printing",
+        //   "ignoreFailures": true
+        // },
+        {
+          "description": "Specify target remote",
+          "text": "target extended-remote :1234"
+        }
+      ],
+      "miDebuggerPath": "/opt/rtems/5/bin/arm-rtems5-gdb",
+      //"miDebuggerServerAddress": "localhost:1234"
+      //"preLaunchTask": "configureMakeAndQEMU"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "projectPath",
+      "type": "command",
+      "command": "extension.commandvariable.remember",
+      "args": { "key": "project" }
+    }
+  ]
+  // "inputs": [
+  //   {
+  //     "id": "projectPath",
+  //     "type": "command",
+  //     "command": "extension.commandvariable.promptStringRemember",
+  //     "args": {
+  //       "key": "project",
+  //       "description": "Enter the path to the project folder (currently on ~/air-dev/):"
+  //     }
+  //   }
+  // ]
+}

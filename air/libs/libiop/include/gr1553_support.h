@@ -21,7 +21,7 @@
  *  @brief Bus Controller command block interface
  *
  *  This interface is used to define a mil-std command list. Commands defined
- *  in this list are executed by the mil-std core. It is possible to branch 
+ *  in this list are executed by the mil-std core. It is possible to branch
  *  between commands and to create dummy commands. The following options are
  *  available:
  *
@@ -32,7 +32,7 @@
  *		 bit 17	(ETRIG)		: Wait for external trigger
  *	     bit 16	(EXCL)		: Time Slot is exclusive
  *		 bit 15:14 (N/A)	: Reserved
- *		 bit 13 (AB)		: Bus Selection 1 - Bus B, 0 - Bus A  
+ *		 bit 13 (AB)		: Bus Selection 1 - Bus B, 0 - Bus A
  *		 bit 12 (T/R)		: Transmit or Receive
  * 		 bit 11:8 (NRET)	: Number of Retries
  *		 bit 7:5 (N/A)	 	: Reserved
@@ -43,14 +43,14 @@
  *  subaddr[1] must be zero for non RT-RT transfers.
  *
  */
-typedef struct {
-	unsigned int 	ccw;			/**< Command Control Word */
-    unsigned char  	rtaddr[2];   	/**< RT address */
-    unsigned char  	subaddr[2];		/**< RT subaddress */
-    unsigned int 	branch_offset;	/**< Branch offset */
-	unsigned int 	time_slot;		/**< Time this command will use */
+typedef struct
+{
+    unsigned int ccw;           /**< Command Control Word */
+    unsigned char rtaddr[2];    /**< RT address */
+    unsigned char subaddr[2];   /**< RT subaddress */
+    unsigned int branch_offset; /**< Branch offset */
+    unsigned int time_slot;     /**< Time this command will use */
 } bc_command_t;
-
 
 #define TB_BIT 0x80000000
 #define DUMMY_BIT 0x00080000
@@ -73,19 +73,17 @@ typedef struct {
 #define CCW_LOOP TB_BIT
 #define CCW_END END_BIT
 
-typedef struct {
-	/* Generic device configuration */
-	iop_device_driver_t dev;
+typedef struct
+{
+    /* Generic device configuration */
+    iop_device_driver_t dev;
 
 } iop_1553_device_t;
 
 /* These do nothing */
 uint32_t gr1553_compare_header(iop_wrapper_t *wrapper, iop_header_t *header);
 
-void gr1553_copy_header(
-        iop_physical_device_t *iop_dev,
-        iop_wrapper_t *wrapper,
-        iop_header_t *header);
+void gr1553_copy_header(iop_physical_device_t *iop_dev, iop_wrapper_t *wrapper, iop_header_t *header);
 
 void gr1553_read_task(air_uptr_t arg);
 void gr1553_write_task(air_uptr_t arg);

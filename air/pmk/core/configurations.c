@@ -11,10 +11,10 @@
  * @brief Functions (geters) to access the application configurations
  */
 
-#include <configurations.h>
-#include <error.h>
 #include <pmk.h>
+#include <error.h>
 #include <printk.h>
+#include <configurations.h>
 
 /**
  * @brief Beginning of the application configuration (from link commands)

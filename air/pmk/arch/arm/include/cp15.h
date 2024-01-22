@@ -194,7 +194,7 @@ __FORCE_INLINE static air_u32_t arm_is_hivecs(void)
 __FORCE_INLINE static void arm_disable_hivecs(void)
 {
     air_u32_t sctlr = arm_cp15_get_system_control();
-    if ((sctlr & ARM_SCTLR_V) != 0)
+    if (sctlr & ARM_SCTLR_V)
     {
         sctlr &= ~(ARM_SCTLR_V);
         arm_cp15_set_system_control(sctlr);
