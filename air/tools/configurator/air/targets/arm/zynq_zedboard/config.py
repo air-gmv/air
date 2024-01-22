@@ -22,7 +22,7 @@ def iop_arch(config, partition):
 description = "AIR OS for ARM-ZYNQ Z1"
 
 # Target Number of cores
-cores = 1
+cores = 2
 
 # Kernel Compiler with FPU
 kernel_compiler = dict(
@@ -145,7 +145,7 @@ mmap = MMAP(kernel_space=[0x00100000, 0x0ff00000],
             default_unit=1 << 20)
 
 # specific defines
-defines = ['PMK_FPU_SUPPORT=0', 'PMK_SMP=0','PMK_DEBUG']
+defines = ['PMK_FPU_SUPPORT=0', 'PMK_SMP','PMK_DEBUG']
 
 # Architecture dependent configuration
 arch_configure = air_arm.get_arm_configuration
