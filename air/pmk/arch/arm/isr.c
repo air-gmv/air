@@ -41,7 +41,7 @@ air_uptr_t *arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t 
     air_u32_t ack = arm_acknowledge_int();
 
     air_u32_t id = (ack & 0x3ff);
-    air_u8_t cpu = ((ack << 10U) & 0x7);
+    air_u8_t cpu = ((ack >> 10U) & 0x7);
 
 #ifdef PMK_DEBUG_ISR
     printk("interrupt ID = %d for cpu = %d (ack = 0x%08x)\n", id, cpu, ack);

@@ -4,9 +4,8 @@ PC=$(uname -n)
 
 
 function write() {
-	
 	if test $PC != "$1" ; then
-		rsync -azvrh . gitlab-runner@$2:$(pwd)
+		rsync -azvrh . gitlab-runner@$2:$(pwd/memdump.bin)
 		echo "Published files to main server."
 	fi
 
