@@ -22,7 +22,7 @@ def iop_arch(config, partition):
 description = "AIR OS for ARM-ZYNQ Z7010"
 
 # Target Number of cores
-cores = 1
+cores = 2
 
 # Kernel Compiler with FPU
 kernel_compiler = dict(
@@ -73,16 +73,16 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     'arch/arm/syscalls_virtualization.c',
     # BSP files
     'bsp/arm/shared/a9mpcore.c',
-    'bsp/arm/zynqz7000/bsp.c',
-    'bsp/arm/zynqz7000/gic.c',
-    'bsp/arm/zynqz7000/global_timer.c',
-    'bsp/arm/zynqz7000/ipc.c',
-    'bsp/arm/zynqz7000/segregation.c',
-    'bsp/arm/zynqz7000/triple_timer.c',
-    'bsp/arm/zynqz7000/uart.c',
-    'bsp/arm/zynqz7000/slcr.c',
-    'bsp/arm/zynqz7000/xilinx/xil_assert.c',
-    'bsp/arm/zynqz7000/xilinx/xil_io.c',
+    'bsp/arm/zynqz7010/bsp.c',
+    'bsp/arm/zynqz7010/gic.c',
+    'bsp/arm/zynqz7010/global_timer.c',
+    'bsp/arm/zynqz7010/ipc.c',
+    'bsp/arm/zynqz7010/segregation.c',
+    'bsp/arm/zynqz7010/triple_timer.c',
+    'bsp/arm/zynqz7010/uart.c',
+    'bsp/arm/zynqz7010/slcr.c',
+    'bsp/arm/zynqz7010/xilinx/xil_assert.c',
+    'bsp/arm/zynqz7010/xilinx/xil_io.c',
     # Core files
     'core/error.c',
     'core/barrier.c',
@@ -116,14 +116,14 @@ kernel_headers = set(utils.flatten([
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'core'), ['.h', '.ld']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'arch', 'arm'), ['.h', '.ld']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'shared'), ['.h', '.ld']),
-    file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'zynqz7000'), ['.h', '.ld']),
+    file_tools.getFilesByExtensions(path.join(SOURCE_PMK_DIRECTORY, 'bsp', 'arm', 'zynqz7010'), ['.h', '.ld']),
 ]))
 
 # Lib AIR sources
 libair_sources = set(utils.flatten([
     file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'core'), ['.c']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'arch', 'arm'), ['.c', '.S']),
-    file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'zynqz7000'), ['.c', '.S']),
+    file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'zynqz7010'), ['.c', '.S']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'shared'), ['.c', '.S']),
 ]))
 
@@ -142,7 +142,7 @@ mmap = MMAP(kernel_space=[0x00100000, 0x0ff00000],
             default_unit=1 << 20)
 
 # specific defines
-defines = ['PMK_FPU_SUPPORT=0', 'PMK_SMP=0','PMK_DEBUG']
+defines = ['PMK_FPU_SUPPORT=0', 'PMK_SMP=1','PMK_DEBUG']
 
 # Architecture dependent configuration
 arch_configure = air_arm.get_arm_configuration
