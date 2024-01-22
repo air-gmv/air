@@ -8,7 +8,7 @@
     - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
 
 .check-and-publish: &check-and-publish
-    - $UTILS/testcheck.py 
+    - $UTILS/example_check.py 
     - $UTILS/publish_example.bash
 
 # ARM 

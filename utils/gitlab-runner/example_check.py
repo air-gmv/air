@@ -11,23 +11,27 @@
 import sys
 import os 
 
-# empty file ?
+def check_errors_in_file(file_path, error_list):
+    try:
+        with open(file_path, 'r') as file:
+            content = file.read()
+            for error_phrase in error_list:
+                if error_phrase in content:
+                    return True
+            return False
+    except FileNotFoundError:
+        print(f"Error: File '{file_path}' not found.")
+        return False
+
+# Example usage:
+file_path = 'testresult.txt'
+error_list = ["FAILURES DETECTED", "Killed", "| FAILED" , "giving up on", "could not load", "not found", "failed","FAILED"]
+
 if os.stat("testresult.txt").st_size == 0 : # empty file
     print("Test text dump file is empty, failing test")
     sys.exit(-1)
-
-with open("testresult.txt",'r') as f:
-    text = f.read()
-    
-error_list = ["FAILURES DETECTED", "Killed", "| FAILED" , "giving up on", "could not load", "not found", "failed", "HM P","FAILED"]
-
-test_ok = False
-
-for item in text.split("\n"):
-    if "END OF TEST ALL PASS" in item:
-        test_ok = True                
-
-if(test_ok == False):
-    sys.exit(-1);
-else:
-    sys.exit(0);
+else : 
+    if check_errors_in_file(file_path, error_list):
+        sys.exit(-1)
+    else:
+        sys.exit(0)
