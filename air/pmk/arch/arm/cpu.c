@@ -144,7 +144,6 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
 
         /* setup partition real PSR */
         /* check if the partition have supervisor permissions */
-#if PMK_FPU_SUPPORT
         if (partition->permissions == AIR_PERMISSION_SUPERVISOR) {
 
             isf->ret_psr = (ARM_PSR_SYS);
@@ -152,6 +151,7 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
         } else {
             isf->ret_psr = (ARM_PSR_USR);
         }
+#if PMK_FPU_SUPPORT
         if ((partition->permissions & AIR_PERMISSION_FPU_CONTROL) != 0) {
             //context->vfp_context->fpscr &=0xFFF8FFFF;
             isf->vfp_context.fpexc = (ARM_VFP_FPEXC_ENABLE);
