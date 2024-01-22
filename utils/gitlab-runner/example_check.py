@@ -20,11 +20,10 @@ def check_errors_in_file(file_path, error_list):
                     return True
             return False
     except FileNotFoundError:
-        print(f"Error: File '{file_path}' not found.")
         return False
 
 # Example usage:
-file_path = 'testresult.txt'
+file_path = "testresult.txt"
 error_list = ["FAILURES DETECTED", "Killed", "| FAILED" , "giving up on", "could not load", "not found", "failed","FAILED"]
 
 if os.stat("testresult.txt").st_size == 0 : # empty file
