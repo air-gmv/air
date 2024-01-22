@@ -21,22 +21,11 @@ with open("testresult.txt",'r') as f:
     
 error_list = ["FAILURES DETECTED", "Killed", "| FAILED" , "giving up on", "could not load", "not found", "failed", "HM P","FAILED"]
 
-test_ok = True
+test_ok = False
 
-for word in error_list:
-    for item in text.split("\n"):
-        if word in item:
-            test_ok = False
-            if (word == error_list[0]) or (word == error_list[3]):
-                sys.stderr.write("Unit Test Failure\n")
-            if (word == error_list[1]):
-                sys.stderr.write("Test Timeout Failure\n")
-            if (word == error_list[3]):
-                sys.stderr.write("Test Timeout, Board was locked\n") 
-            if (word == error_list[4]) or (word == error_list[5]):
-                sys.stderr.write("Failed to Load\n")
-        if "END OF TEST ALL PASS" in item:
-            test_ok = True                
+for item in text.split("\n"):
+    if "END OF TEST ALL PASS" in item:
+        test_ok = True                
 
 if(test_ok == False):
     sys.exit(-1);
