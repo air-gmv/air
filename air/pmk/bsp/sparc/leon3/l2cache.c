@@ -11,10 +11,10 @@
  * @brief L2 Cache support definitions and functions
  */
 
-#include <air_arch.h>
-#include <amba.h>
-#include <l2cache.h>
 #include <pmk.h>
+#include <amba.h>
+#include <air_arch.h>
+#include <l2cache.h>
 
 /**
  * @brief L2Cache register map structure

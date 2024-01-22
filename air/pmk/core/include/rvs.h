@@ -22,27 +22,26 @@
 #ifndef __RVS_H__
 #define __RVS_H__
 
-
 #ifndef ASM
-/** 
- * @brief Initialise the instrumentation library 
+/**
+ * @brief Initialise the instrumentation library
  */
-void RVS_Init (void);
+void RVS_Init(void);
 
-/** 
- * @brief Output the current coverage data  
+/**
+ * @brief Output the current coverage data
  */
-void RVS_Output (void);
+void RVS_Output(void);
 
-/** 
- * @brief Set the build id for the instrumented source code 
+/**
+ * @brief Set the build id for the instrumented source code
  */
-void RVS_Build_Id (const char* build_id);
+void RVS_Build_Id(const char *build_id);
 
-/** 
+/**
  * @brief Set the start of a new test
  */
-//void RVS_Begin_Test (unsigned int test_id, char* test_description);
+// void RVS_Begin_Test (unsigned int test_id, char* test_description);
 void RVS_instrument_init(int i_n, void *i_p);
 
 #endif /* ASM */

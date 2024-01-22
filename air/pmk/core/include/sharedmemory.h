@@ -15,8 +15,8 @@
 #ifndef __SHARED_MEMORY_H__
 #define __SHARED_MEMORY_H__
 
-#include <partition.h>
 #include <pmk.h>
+#include <partition.h>
 
 /**
  * @brief Shared-memory block

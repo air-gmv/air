@@ -15,10 +15,10 @@
 #define __PARTITION_H__
 
 #ifndef ASM
+#include <pmk.h>
+#include <loader.h>
 #include <barrier.h>
 #include <health_monitor.h>
-#include <loader.h>
-#include <pmk.h>
 #include <segregation.h>
 
 /**

@@ -16,7 +16,8 @@
 #include <gic.h>
 #include <workspace.h>
 
-void arm_setup_ipc(air_u32_t cpu_id) {
+void arm_setup_ipc(air_u32_t cpu_id)
+{
 
     if (cpu_id == 0) {
         arm_isr_install_handler(ARM_A9MPCORE_IRQ_GT, pmk_partition_scheduler);
