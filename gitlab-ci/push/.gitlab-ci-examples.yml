@@ -17,7 +17,7 @@ ARM-QEMU:
         - *build-executable
         - ($UTILS/arm-ci.bash | tee testresult.txt) || true
         - make distclean -i
-        - $UTILS/testcheck.py 
+        - $UTILS/example_check.py 
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/'
         - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
@@ -39,7 +39,7 @@ SPARC-LAYSIM:
         - *build-executable
         - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - make distclean -i
-        - $UTILS/testcheck.py
+        - $UTILS/example_check.py
     rules:
         - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' 
     timeout: 5 minutes

@@ -18,15 +18,15 @@ if os.stat("testresult.txt").st_size == 0 : # empty file
 with open("testresult.txt",'r') as f:
     text = f.read()
 
-error_list = ["FAILURES DETECTED", "Killed", "| FAILED" , "giving up on", "could not load", "not found", "failed","FAILED"]
-
+# False by default
 test_ok = False
 
+# Exit if test suceeds and prints PASS 
 for item in text.split("\n"):
     if "END OF TEST ALL PASS" in item:
-        test_ok = True  
-        
-if(test_ok == False):
-    sys.exit(-1);
-else:
-    sys.exit(0);
+        sys.exit(0)  
+
+# Error if it was not printed
+sys.exit(-1)
+
+    
