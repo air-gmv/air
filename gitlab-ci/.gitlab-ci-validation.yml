@@ -118,10 +118,10 @@ SPARC-LAYSIM-validation-test:
         - make distclean -i # Ignore distclean errors
         - *check-and-publish
   rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request" && $RUNNER == "SPARC"'
+        - if: '$CI_PIPELINE_SOURCE == "merge_request" && $CI_RUNNER_TAGS =~ "SPARC"'
         - if: '$CI_PIPELINE_SOURCE == "schedule" && $RUNNER == "sparc-taste-debian1"'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ALL\].*/ && $RUNNER == "SPARC"'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[SPARC\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/ && $RUNNER == "SPARC"'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ALL\].*/ && $CI_RUNNER_TAGS =~ "SPARC"'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[SPARC\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/ && $CI_RUNNER_TAGS =~ "SPARC"'
   timeout: 5 minutes
   parallel:
       matrix:
