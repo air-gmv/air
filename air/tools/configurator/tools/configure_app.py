@@ -196,7 +196,7 @@ def Run(args, os_configuration, logger):
         logger, template_includes)
 
     #check hardcoded files to replace generated
-    fileutils.setHardcodedFiles()
+    fileutils.setHardcodedFiles(app=1)
 
     # load previous cleaning record (if it exists)
     record = fileutils.loadFileRecord(os.path.join(air.WORKING_DIRECTORY, '.config'))
