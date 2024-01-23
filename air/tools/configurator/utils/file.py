@@ -347,11 +347,21 @@ def runCleaningRecord(record, logger, followDefault = False):
     if res: safeRemoveFile(record)
 
 
-## @brief search hardcoded files, they have extension .hc and remove that extension
-def setHardcodedFiles():
+## @brief Search hardcoded files (extension .hc), replace the generated file (.c) with it. 
+# Also replaces the file in .temp folder so the file signature is correctly stored in .config.
+def setHardcodedFiles(app=0):
     for root, dirnames, filenames in os.walk('.'):
         for filename in fnmatch.filter(filenames, '*.hc'):
             #matches.append(os.path.join(root, filename))
+            print("TRIGGER")
+            print(app)
+
+            # Replace the file in the partition folder
             old_name = os.path.join(root, filename)
             new_name = old_name[:-3]
             shutil.copy(old_name, new_name)
+                
+            # Replace in .temp
+            if app : 
+                temp_folder_path = ".temp/" + new_name
+                shutil.copy(new_name,temp_folder_path )
