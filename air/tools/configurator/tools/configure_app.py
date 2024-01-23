@@ -54,10 +54,6 @@ def Run(args, os_configuration, logger):
     # show info
     if args.keep_files_silent: fileutils.keep_files = True
 
-  
-    #check hardcoded files to replace generated
-    fileutils.setHardcodedFiles()
-
     # clean previous configuration files
     if args.xml_file == 'clean' or args.xml_file == 'clear': clearConfiguration(logger)
 
@@ -198,6 +194,9 @@ def Run(args, os_configuration, logger):
         os.path.join(temp_directory, 'Makefile'),
         dict(app_configuration=app_configuration),
         logger, template_includes)
+
+    #check hardcoded files to replace generated
+    fileutils.setHardcodedFiles()
 
     # load previous cleaning record (if it exists)
     record = fileutils.loadFileRecord(os.path.join(air.WORKING_DIRECTORY, '.config'))
