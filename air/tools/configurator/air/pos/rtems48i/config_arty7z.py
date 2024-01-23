@@ -44,8 +44,8 @@ makefile = os.path.join(POS_DIRECTORY, 'rtems48i', 'rtems48i_makefile.mako')
 # @brief List of lines to be add to Makefile.inc
 makefile_inc = [
     "RTEMS_IMPR_DIRECTORY=rtems48i",
-    "RTEMS_IMPR_TARGET=sparc-rtems5",
-    "RTEMS_IMPR_BSP=leon3",
+    "RTEMS_IMPR_TARGET=arm-rtems5",
+    "RTEMS_IMPR_BSP=xilinx_zynq_artyz7",
 ]
 
 # @brief List of application partition templates
