@@ -353,8 +353,6 @@ def setHardcodedFiles(app=0):
     for root, dirnames, filenames in os.walk('.'):
         for filename in fnmatch.filter(filenames, '*.hc'):
             #matches.append(os.path.join(root, filename))
-            print("TRIGGER")
-            print(app)
 
             # Replace the file in the partition folder
             old_name = os.path.join(root, filename)
