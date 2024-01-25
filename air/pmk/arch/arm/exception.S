@@ -423,25 +423,27 @@ c_handler:
     mov     r0, sp
     cpsid   aif, #ARM_PSR_SVC
 
+    // Store SVC SP in CORE CONTEXT (R1 points to pmk_core_ctrl_t)
+    ldr     r2, [r1, #offsetof_pmk_core_ctrl_t_context]
+    str     sp, [r2, #152]
+
+    // Branch into C exception Handler
     BL2C    arm_exception_handler
 
+    // Restore SVC SP from CORE CONTEXT:
+    mrc     p15, 0, r1, c13, c0, 4          // get Per_CPU core
+    ldr     r1, [r1, #offsetof_pmk_core_ctrl_t_context]
+    ldr     r1, [r1, #152]                  // get svc sp
+    mov     sp, r1
+
+    //Go into IRQ mode to restore the context
     cpsid   aif, #ARM_PSR_IRQ
 
-    cmp     r0, 0
-    bne     virtual
+    cmp     r0, 0 // check if there is a virtual tbr installed
+    bne     virtual // if there is a virtual tbr, handle as a virtual exception
 
 
 restore:
-    mrc     p15, 0, r1, c13, c0, 4          // get Per_CPU core
-    ldr     r1, [r1, #offsetof_pmk_core_ctrl_t_context]
-    ldr     r0, [r1, #152]                  //NEW: get svc sp
-    cmp     r0, #0
-    cpsid   aif, #ARM_PSR_SVC
-    movne   sp, r0
-    cpsid   aif, #ARM_PSR_IRQ
-    movne   r0, #0
-    strne   r0, [r1, #152]                  //NEW: set svc sp
-
     add     sp, #56                         // usr_sp
 #if PMK_FPU_SUPPORT
     add     sp, #ARM_VFP_CONTEXT_SIZE
