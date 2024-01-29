@@ -22,7 +22,7 @@ rtems_task Test_task(rtems_task_argument task_index)
 
     /* Get the task name */
     p = rtems_object_get_name(RTEMS_SELF, 5, name);
-    (void)(void)(void)(void)(void)rtems_test_assert(p != NULL);
+    rtems_test_assert(p != NULL);
 
     /* Get the CPU Number */
     cpu_num = rtems_get_current_processor();

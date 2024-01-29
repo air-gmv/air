@@ -9,7 +9,7 @@ include:
 
     - local: "gitlab-ci/merge_request/*.yml"
       rules:
-        - if: $CI_PIPELINE_SOURCE == "merge_request"
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
     - local: "gitlab-ci/schedule/*.yml"
       rules:
@@ -87,19 +87,4 @@ placeholder:
     rules:
         - when: never
 
-.changes_job_1:
-    stage: .pre
-    script:
-        - echo "This job does not execute when the push folder has changed"
-    except:
-        changes:
-            - "gitlab-ci/push/*"
-
-.changes_job_2:
-    stage: .pre
-    script:
-        - echo "This job does not execute when the merge folder has changed"
-    except:
-        changes:
-            - "gitlab-ci/merge_request/*"
 
