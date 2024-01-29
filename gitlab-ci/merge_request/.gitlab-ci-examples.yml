@@ -20,7 +20,6 @@ ARM-QEMU:
         - cd $AIR/examples/$EXAMPLE
         - *build-executable
         - ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true 
-        - make distclean -i
         - *check-and-publish
     timeout: 5 minutes
     parallel:
@@ -40,7 +39,6 @@ SPARC-LAYSIM:
         - cd $TEST_DIR
         - *build-executable
         - laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean -i
         - *check-and-publish
     timeout: 5 minutes
     parallel:
