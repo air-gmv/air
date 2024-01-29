@@ -66,12 +66,12 @@ void entry_point(void)
 
             status = rtems_task_create(rtems_build_name('T', 'A', ch, ' '), 1, RTEMS_MINIMUM_STACK_SIZE,
                                        RTEMS_DEFAULT_MODES, RTEMS_DEFAULT_ATTRIBUTES, &id);
-            (void)(void)(void)(void)(void)directive_failed(status, "task create");
+            directive_failed(status, "task create");
 
             (void)locked_printf(" CPU %" PRIu32 " start task TA%c\n", cpu_self, ch);
 
             status = rtems_task_start(id, Test_task, i + 1);
-            (void)(void)(void)(void)(void)directive_failed(status, "task start");
+            directive_failed(status, "task start");
 
             Loop();
         }
