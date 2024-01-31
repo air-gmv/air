@@ -17,8 +17,8 @@
  * TODO probably need to add timer handlers later
  */
 
-#include <cpu.h>
 #include <gic.h>
+#include <cpu.h>
 
 #ifdef PMK_DEBUG
 #include <printk.h>
