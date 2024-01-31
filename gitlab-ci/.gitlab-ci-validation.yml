@@ -31,7 +31,7 @@ ARM-QEMU-validation-test:
         - *check-and-publish
     rules:
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
-        - if: '($CI_PIPELINE_SOURCE == "merge_request_event") && ($CI_MERGE_REQUEST_TITLE !~ /Draft/)'
+        - if: '($CI_PIPELINE_SOURCE == "merge_request") && ($CI_MERGE_REQUEST_TITLE !~ /Draft/)'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ALL\].*/'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ARM\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
@@ -104,7 +104,7 @@ SPARC-LAYSIM-validation-test:
           fi
         - *check-and-publish
   rules:
-        - if: '($CI_PIPELINE_SOURCE == "merge_request_event") && ($CI_MERGE_REQUEST_TITLE !~ /Draft/)'
+        - if: '($CI_PIPELINE_SOURCE == "merge_request") && ($CI_MERGE_REQUEST_TITLE !~ /Draft/)'
         - if: '$CI_PIPELINE_SOURCE == "schedule" && $RUNNER == "sparc-taste-debian1"'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ALL\].*/ && $RUNNER =~ "SPARC"'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[SPARC\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/ && $RUNNER =~ "SPARC"'

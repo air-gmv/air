@@ -53,7 +53,7 @@ static inline void bsp_wait_for_event(void) {
 }
 
 static inline void bsp_send_event(void) {
-    __asm__ volatile ("sev" : : : "memory");
+    __asm__ volatile ("sev");
 }
 
 static inline void bsp_clear_bss(void) {

@@ -17,7 +17,8 @@
 #include <a9mpcore.h>
 #include <parameters.h>
 
-typedef struct {
+typedef struct
+{
     air_u32_t ddrc_ctrl;
     air_u32_t Two_rank_cfg;
     air_u32_t HPR_reg;
@@ -135,30 +136,40 @@ typedef struct {
 
 #define DDRC ((ddrc_t *)XPAR_PS7_DDRC_0_S_AXI_BASEADDR)
 
-
 #define DDR_CLK_CTRL (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x124)
 #define DCI_CLK_CTRL (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x128)
 
-__FORCE_INLINE static void arm_ddr_self_refresh(void) {
+__FORCE_INLINE static void arm_ddr_self_refresh(void)
+{
 
     air_u32_t timeout = 0;
 
     DDRC->ctrl_reg1 |= (1 << 12);
     DDRC->DRAM_param_reg3 |= (1 << 23);
 
-    while((DDRC->mode_sts_reg & 0x7) != 3) {
-        if (++timeout > 1000) return;
+    while ((DDRC->mode_sts_reg & 0x7) != 3)
+    {
+        if (++timeout > 1000)
+        {
+            return;
+        }
     };
 
     timeout = 0;
-    while((DDRC->mode_sts_reg & (0x1f << 16)) ||
-        (DDRC->mode_sts_reg & (0x3f << 10)) ||
-        (DDRC->mode_sts_reg & (0x3f << 4))) {
-        if (++timeout > 1000) return;
+    while ((DDRC->mode_sts_reg & (0x1f << 16)) || (DDRC->mode_sts_reg & (0x3f << 10)) ||
+           (DDRC->mode_sts_reg & (0x3f << 4)))
+    {
+        if (++timeout > 1000)
+        {
+            return;
+        }
     };
 
     timeout = 0;
-    while(++timeout < 1000);
+    while (++timeout < 1000)
+    {
+        ;
+    }
 
     *DDR_CLK_CTRL &= ~3;
     *DCI_CLK_CTRL &= ~1;
