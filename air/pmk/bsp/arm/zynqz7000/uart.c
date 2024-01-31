@@ -13,10 +13,10 @@
 
 #if DEBUG_MONITOR != 2
 
-#include <bsp_console.h>
-#include <parameters.h>
-#include <slcr.h>
 #include <uart.h>
+#include <parameters.h>
+#include <bsp_console.h>
+#include <slcr.h>
 
 #define UART(port) ((uart_t *)(XPAR_PS7_UART_0_BASEADDR + port * 0x1000))
 air_u32_t arm_uart_debug_port = 0;
