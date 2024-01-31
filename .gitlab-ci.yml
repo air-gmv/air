@@ -9,7 +9,7 @@ include:
 
     - local: "gitlab-ci/merge_request/*.yml"
       rules:
-        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+        - if: $CI_PIPELINE_SOURCE == "merge_request"
 
     - local: "gitlab-ci/schedule/*.yml"
       rules:

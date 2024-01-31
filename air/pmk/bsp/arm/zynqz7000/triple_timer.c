@@ -24,37 +24,41 @@
 
 #define PRESCALER_N 7
 #define PRESCALER (1U << (PRESCALER_N + 1))
-#define CLK_FREQ 133    // TODO get correct freq value for prescaler op.
+#define CLK_FREQ 133 // TODO get correct freq value for prescaler op.
 
-void arm_init_ttc(air_u32_t timer_id) {
+void arm_init_ttc(air_u32_t timer_id)
+{
 #ifdef PMK_DEBUG
     printk("\n :: Triple Timer #%d setup\n", timer_id);
 #endif
 
-    if(timer_id < 0 || timer_id > 3) {
+    if (timer_id < 0 || timer_id > 3)
+    {
         return;
     }
 
-//  volatile air_uptr clk_621_true = (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x1c4);
-//  reset value 621
+    //  volatile air_uptr clk_621_true = (air_uptr_t *)(XPAR_PS7_SLCR_0_S_AXI_BASEADDR + 0x1c4);
+    //  reset value 621
 
     air_u32_t us_per_tick = pmk_get_usr_us_per_tick();
 
-    air_u32_t counter = pmk_get_usr_us_per_tick() * CLK_FREQ/PRESCALER;
+    air_u32_t counter = pmk_get_usr_us_per_tick() * CLK_FREQ / PRESCALER;
 
-    if (counter >= (1 << 16)) {//16-bit counter
+    if (counter >= (1 << 16))
+    { // 16-bit counter
 #ifdef PMK_DEBUG
         printk("    ! timer excedes 16bit counter\n"
-                "    set to 0xffff\n");
+               "    set to 0xffff\n");
 #endif
         counter = (1 << 16) - 1;
     }
 #ifdef PMK_DEBUG
     printk("    us_per_tick = %d\n"
-            "    counter = %d\n\n",
-            us_per_tick, counter);
+           "    counter = %d\n\n",
+           us_per_tick, counter);
 #endif
-    if (timer_id == 1) {
+    if (timer_id == 1)
+    {
 
         TTC_0->clk_ctrl_1 = ARM_TTC_CLK_CTRL_PS_EN | ARM_TTC_CLK_CTRL_PS(PRESCALER_N);
         TTC_0->cnt_ctrl_1 = ARM_TTC_CNT_CTRL_DIS;
@@ -65,37 +69,41 @@ void arm_init_ttc(air_u32_t timer_id) {
 
 #ifdef PMK_DEBUG_TIMER
     printk(" :: triple_timer_cnt_t\n"
-            "    TTC_0 = 0x%x\n"
-            "    TTC_0->clk_ctrl_1 = 0x%x\n"
-            "    TTC_0->cnt_ctrl_1 = 0x%x\n"
-            "    TTC_0->intv_cnt_1 = 0x%x\n"
-            "    TTC_0->int_en_1   = 0x%x\n\n",
-            TTC_0, TTC_0->clk_ctrl_1, TTC_0->cnt_ctrl_1, TTC_0->intv_cnt_1, TTC_0->int_en_1);
+           "    TTC_0 = 0x%x\n"
+           "    TTC_0->clk_ctrl_1 = 0x%x\n"
+           "    TTC_0->cnt_ctrl_1 = 0x%x\n"
+           "    TTC_0->intv_cnt_1 = 0x%x\n"
+           "    TTC_0->int_en_1   = 0x%x\n\n",
+           TTC_0, TTC_0->clk_ctrl_1, TTC_0->cnt_ctrl_1, TTC_0->intv_cnt_1, TTC_0->int_en_1);
 #endif
 }
 
 #define arm_read_ttc TTC_0->cnt_val_1
 
-void arm_start_ttc(air_u32_t timer_id) {
-    if(timer_id < 0 || timer_id > 3) {
+void arm_start_ttc(air_u32_t timer_id)
+{
+    if (timer_id < 0 || timer_id > 3)
+    {
         return;
     }
 
-    if (timer_id == 1) {
-        TTC_0->cnt_ctrl_1 = ARM_TTC_CNT_CTRL_INTV; //since no 1 in dis, it is en
+    if (timer_id == 1)
+    {
+        TTC_0->cnt_ctrl_1 = ARM_TTC_CNT_CTRL_INTV; // since no 1 in dis, it is en
     }
 
 #ifdef PMK_DEBUG_TIMER
     printk(" :: triple_timer_cnt_t\n"
-            "    TTC_0 = 0x%x\n"
-            "    TTC_0->clk_ctrl_1 = 0x%x\n"
-            "    TTC_0->cnt_ctrl_1 = 0x%x\n"
-            "    TTC_0->intv_cnt_1 = 0x%x\n"
-            "    TTC_0->int_en_1   = 0x%x\n\n",
-            TTC_0, TTC_0->clk_ctrl_1, TTC_0->cnt_ctrl_1, TTC_0->intv_cnt_1, TTC_0->int_en_1);
+           "    TTC_0 = 0x%x\n"
+           "    TTC_0->clk_ctrl_1 = 0x%x\n"
+           "    TTC_0->cnt_ctrl_1 = 0x%x\n"
+           "    TTC_0->intv_cnt_1 = 0x%x\n"
+           "    TTC_0->int_en_1   = 0x%x\n\n",
+           TTC_0, TTC_0->clk_ctrl_1, TTC_0->cnt_ctrl_1, TTC_0->intv_cnt_1, TTC_0->int_en_1);
 #endif
 }
 
-air_u32_t arm_acknowledge_ttc(void) {
+air_u32_t arm_acknowledge_ttc(void)
+{
     return (TTC_0->int_cnt_1 & 0x3f);
 }
