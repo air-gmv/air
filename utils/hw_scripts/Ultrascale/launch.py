@@ -2,6 +2,7 @@
 import argparse
 import subprocess
 import os
+    
 
 def list_tests(folder_path):
     """List available tests (subfolders) in the specified folder."""
@@ -11,6 +12,7 @@ def list_tests(folder_path):
 def run_test(test_name, recompile_air=False):
     """Run the bash script for the selected test."""
 
+    ## Recompile AIR
     if recompile_air:
         r = subprocess.run(['make', 'clean'], cwd=os.environ['AIR'], capture_output=True)
         if r.returncode != 0:
@@ -21,16 +23,42 @@ def run_test(test_name, recompile_air=False):
         if r.returncode != 0:
             print("make failed")
             return r.returncode
-
-    r = subprocess.run(['./build.sh', test_name], cwd=os.environ['AIR'] + "../../", capture_output=True)
+    
+    ## Build the example
+    r = subprocess.run(['configure'], cwd=os.environ['AIR'] + "examples/private-example/" + test_name, capture_output=False)
     if r.returncode != 0:
-        print("build.sh failed")
+        print("Configure example failed")
+        return r.returncode
+
+    r = subprocess.run(['make', 'clean'], cwd=os.environ['AIR'] + "examples/private-example/" + test_name, capture_output=False)
+
+    r = subprocess.run(['make'], cwd=os.environ['AIR'] + "examples/private-example/" + test_name, capture_output=False)
+    if r.returncode != 0:
+        print("Example build failed ")
         return r.returncode
             
-    os.system(f"{os.environ['AIR']}/../utils/hw_scripts/Ultrascale/launch_a53.sh {os.environ['AIR']}/examples/private-example/{test_name}/executable/AIRAPP.exe")
+    # Lock the board file
+    if os.system(f"lockfile -r 0 /var/lock/ultrascale.lock || exit 1") != 0:
+        print("Board's lockfile is locked. Exiting...")
+        return
+    
+    #Start putty
+    putty = subprocess.Popen(["putty", f"/dev/UltraScale_uart", "-serial", "-sercfg", "115200,8,n,1,N"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    os.environ['APP'] = os.environ['AIR'] + "examples/private-example/" + test_name + "/executable/AIRAPP.exe"
+
+    os.system(f"xsct -interactive {os.environ['AIR']}../utils/hw_scripts/Ultrascale/launch_a53.tcl {'1' if test_name == 'T0020_dual' else '0'}")
     if r.returncode != 0:
         print("Example failed")
         return r.returncode
+
+    os.system("pkill putty")
+
+    # Unlock the board file
+    try:
+        os.remove(f"/var/lock/ultrascale.lock")
+    except FileNotFoundError:
+        pass
 
     return 0
 
