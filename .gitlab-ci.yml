@@ -87,19 +87,4 @@ placeholder:
     rules:
         - when: never
 
-.changes_job_1:
-    stage: .pre
-    script:
-        - echo "This job does not execute when the push folder has changed"
-    except:
-        changes:
-            - "gitlab-ci/push/*"
-
-.changes_job_2:
-    stage: .pre
-    script:
-        - echo "This job does not execute when the merge folder has changed"
-    except:
-        changes:
-            - "gitlab-ci/merge_request/*"
 

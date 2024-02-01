@@ -42,7 +42,7 @@ void locked_print_initialize(void)
     sc = rtems_semaphore_create(rtems_build_name('S', 'E', 'M', '1'), 1,
                                 RTEMS_LOCAL | RTEMS_BINARY_SEMAPHORE | RTEMS_PRIORITY_CEILING | RTEMS_PRIORITY, 1,
                                 &locked_print_semaphore);
-    (void)(void)(void)(void)(void)directive_failed(sc, "rtems_semaphore_create");
+    directive_failed(sc, "rtems_semaphore_create");
 
     /*
      * Set up the printer to use the locked printf printer.

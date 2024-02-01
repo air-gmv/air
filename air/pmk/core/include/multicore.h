@@ -17,7 +17,6 @@
 #include <pmk.h>
 #include <workspace.h>
 
-
 /**
  * @defgroup pmk_multicore PMK - Multicore
  * @brief Definitions, structures and functions to provide multicore awareness

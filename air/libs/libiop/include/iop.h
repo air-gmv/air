@@ -12,7 +12,6 @@
  * @brief Defines the internal memory structures used by the IOP.
  */
 
-
 #ifndef __IOP_H__
 #define __IOP_H__
 
@@ -25,7 +24,7 @@
  * This the maximum size of a packet of IO that can be transmitted via IOP
  * (including the overhead of any required header)
  */
-#define IOP_BUFFER_SIZE                             (1520)
+#define IOP_BUFFER_SIZE (1520)
 
 /**
  * @brief Convert to Network order
@@ -34,9 +33,9 @@
  *         Value in big endian notation for SPARC (big endian) architectures.
  */
 #ifdef CPU_LITTLE_ENDIAN
-#define HTONS(val)      ((((val) >> 8) & 0x00FF) | (((val) << 8) & 0xFF00))
+#define HTONS(val) ((((val) >> 8) & 0x00FF) | (((val) << 8) & 0xFF00))
 #else
-#define HTONS(val)      (val)
+#define HTONS(val) (val)
 #endif
 
 /**
@@ -55,10 +54,11 @@ typedef struct __iop_physical_device_t iop_physical_device_t;
 /**
  * @brief IOP buffer
  */
-typedef struct {
+typedef struct
+{
 
-    void *v_addr;                   /**< virtual buffer address     */
-    void *p_addr;                   /**< physical buffer address    */
+    void *v_addr; /**< virtual buffer address     */
+    void *p_addr; /**< physical buffer address    */
 
     uint32_t header_off;
     uint32_t header_size;
@@ -69,22 +69,23 @@ typedef struct {
 
 } iop_buffer_t;
 
+typedef struct
+{
 
-typedef struct {
+    iop_chain_node node; /**< RTEMS Chain Node */
 
-    iop_chain_node node;            /**< RTEMS Chain Node */
+    uint32_t timer;       /**< Number of periods after which this request will be discarded*/
+    iop_buffer_t *buffer; /**< reply header   */
 
-    uint32_t timer;                 /**< Number of periods after which this request will be discarded*/
-    iop_buffer_t *buffer;           /**< reply header   */
-
-    iop_chain_control fragment_queue;   /** Chain of fragments for this packet **/
+    iop_chain_control fragment_queue; /** Chain of fragments for this packet **/
 
 } iop_wrapper_t;
 
 /**
  * @brief Packet fragment
  */
-typedef struct{
+typedef struct
+{
     iop_chain_node node;
 
     iop_header_t header;
@@ -98,10 +99,11 @@ typedef struct{
 /**
  * @brief List of elements
  */
-typedef struct {
+typedef struct
+{
 
-    uint32_t length;                    /**< length of the list             */
-    void *elements;                     /**< elements in list               */
+    uint32_t length; /**< length of the list             */
+    void *elements;  /**< elements in list               */
 
 } iop_list_t;
 
@@ -112,10 +114,7 @@ typedef struct {
  * @param index index of the element to get
  * @param pointer to the element
  */
-#define iop_get_from_list(t, list, index)    ((t*)(list)->elements)[index]
-
-
-
+#define iop_get_from_list(t, list, index) ((t *)(list)->elements)[index]
 
 /**
  * @brief Device Task
@@ -124,13 +123,11 @@ typedef struct {
  */
 typedef void (*iop_device_driver_task)(air_uptr_t arg);
 
-
 typedef void (*iop_header_prebuild_f)(iop_header_t *header);
 
 typedef uint32_t (*iop_header_compare_f)(iop_wrapper_t *, iop_header_t *);
 
-typedef void (*iop_header_copy_f)(
-        iop_physical_device_t *, iop_wrapper_t *, iop_header_t *);
+typedef void (*iop_header_copy_f)(iop_physical_device_t *, iop_wrapper_t *, iop_header_t *);
 
 /**
  * @brief Device operation function
@@ -142,23 +139,25 @@ typedef uint32_t (*iop_device_operation)(iop_device_driver_t *dev, void *args);
 /**
  * @brief Device configuration
  */
-struct __iop_device_driver_t {
+struct __iop_device_driver_t
+{
 
     /* driver configuration */
-    void *driver;                   /**< driver pointer */
+    void *driver; /**< driver pointer */
 
     /* device functions */
-    iop_device_operation init;      /**< device initialization          */
-    iop_device_operation open;      /**< device open                    */
-    iop_device_operation read;      /**< device read                    */
-    iop_device_operation write;     /**< device write                   */
-    iop_device_operation close;     /**< device close                   */
+    iop_device_operation init;  /**< device initialization          */
+    iop_device_operation open;  /**< device open                    */
+    iop_device_operation read;  /**< device read                    */
+    iop_device_operation write; /**< device write                   */
+    iop_device_operation close; /**< device close                   */
 };
 
 /**
  * @brief Port configuration
  */
-typedef struct {
+typedef struct
+{
 
     air_port_type_e type;
     air_identifier_t id;
@@ -171,7 +170,8 @@ typedef struct {
 /**
  * @brief IOP main configuration
  */
-typedef struct {
+typedef struct
+{
 
     /* storages */
     iop_wrapper_t *wrappers;
@@ -191,14 +191,10 @@ typedef struct {
     uint32_t time_to_live;
 
     /* requests chains */
-    iop_chain_control free_wrappers;        /**< Chain of empty requests */
+    iop_chain_control free_wrappers; /**< Chain of empty requests */
     iop_chain_control free_fragments;
 
 } iop_configuration_t;
-
-
-
-
 
 /**
  * @brief Defines a physical device and its routing information
@@ -207,27 +203,25 @@ typedef struct {
  * and by the chains of requests and replies. Data that is specific to a driver
  * is also be contained in this structure.
  */
-struct __iop_physical_device_t {
+struct __iop_physical_device_t
+{
 
-    iop_device_driver_t *driver;            /**< device driver              */
+    iop_device_driver_t *driver; /**< device driver              */
 
-
-
-    iop_list_t routes;                      /**< list of physical routes    */
+    iop_list_t routes; /**< list of physical routes    */
     uint32_t *reads_per_period;
 
-
-    iop_chain_control rcvqueue;             /**< type: service_reply_t      */
-    iop_chain_control sendqueue;            /**< type: service_request_t    */
+    iop_chain_control rcvqueue;  /**< type: service_reply_t      */
+    iop_chain_control sendqueue; /**< type: service_request_t    */
 
     /* device tasks */
     air_u32_t reader_id;
     air_u32_t writer_id;
-    iop_device_driver_task reader_task;     /**< device reader task         */
-    iop_device_driver_task writer_task;     /**< device writer task         */
+    iop_device_driver_task reader_task; /**< device reader task         */
+    iop_device_driver_task writer_task; /**< device writer task         */
 
     /*  */
-    iop_header_prebuild_f header_prebuild;  /**< header pre-build           */
+    iop_header_prebuild_f header_prebuild; /**< header pre-build           */
     iop_header_compare_f header_compare;
     iop_header_copy_f header_copy;
 };
@@ -238,13 +232,13 @@ struct __iop_physical_device_t {
  * A logical device is composed by the routes that are applicable to itself,
  * and by the chains of requests and replies.
  */
-struct __iop_logical_device_t {
+struct __iop_logical_device_t
+{
 
-    iop_list_t routes;                  /**< list of logical routes     */
-    iop_chain_control rcvqueue;         /**< type: service_reply_t      */
+    iop_list_t routes;          /**< list of logical routes     */
+    iop_chain_control rcvqueue; /**< type: service_reply_t      */
     iop_chain_control pending_rcvqueue;
-    iop_chain_control sendqueue;        /**< type: service_request_t    */
-
+    iop_chain_control sendqueue; /**< type: service_request_t    */
 };
 
 /**
@@ -253,7 +247,8 @@ struct __iop_logical_device_t {
  * A logical route specifies how to transform from a logical device into a
  * physical one.
  */
-typedef struct {
+typedef struct
+{
 
     uint32_t *schedule;
     iop_header_t *header;
@@ -267,7 +262,8 @@ typedef struct {
  * A physical route specifies how to route data received on a physical bus
  * to a logical device.
  */
-typedef struct {
+typedef struct
+{
 
     uint32_t *schedule;
     iop_header_t *header;
@@ -278,10 +274,11 @@ typedef struct {
 /**
  * @brief structure used as an ioctl interface with the drivers
  */
-typedef struct {
-    unsigned int command;         /**< ioctl command */
-    void *buffer;                  /**< data needed for the ioctl command*/
-    unsigned int ioctl_return;     /**< ioctl return code */
+typedef struct
+{
+    unsigned int command;      /**< ioctl command */
+    void *buffer;              /**< data needed for the ioctl command*/
+    unsigned int ioctl_return; /**< ioctl return code */
 } libio_ioctl_args_t;
 
 /**
@@ -299,9 +296,9 @@ void iop_main_loop(void);
 //#define IOP_NEEDS_DEBUG
 #ifdef IOP_NEEDS_DEBUG
 #include <pprintf.h>
-#define iop_debug(fmt ...)              pprintf(fmt)
+#define iop_debug(fmt...) pprintf(fmt)
 #else
-#define iop_debug(fmt ...)
+#define iop_debug(fmt...)
 #endif
 
-#endif  /* __IOP_H__ */
+#endif /* __IOP_H__ */

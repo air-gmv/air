@@ -85,7 +85,7 @@ static void printf_init()
     }
 
     /* print color change string */
-    (void)air_syscall_print(partition_colors[partition_idx % 6], 6);
+    air_syscall_print(partition_colors[partition_idx % 6], 6);
 }
 
 /**
@@ -102,8 +102,7 @@ static void print_byte(char *print_buffer, int *buffer_idx, char ch)
     if (*buffer_idx >= BUFFER_SIZE)
     {
 
-        (void)air_syscall_print(print_buffer, BUFFER_SIZE);
-
+        air_syscall_print(print_buffer, BUFFER_SIZE);
         *buffer_idx = 0;
     }
 }
@@ -320,7 +319,7 @@ static void vpprintf(const char *fmt, va_list ap)
     {
 
         buffer[buffer_idx] = '\0';
-        (void)air_syscall_print(buffer, buffer_idx + 1);
+        air_syscall_print(buffer, buffer_idx + 1);
     }
 }
 

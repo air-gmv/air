@@ -48,11 +48,11 @@ int entry_point(rtems_task_argument argument)
     /* Create/verify synchronisation semaphore */
     status = rtems_semaphore_create(rtems_build_name('S', 'E', 'M', '1'), 1,
                                     RTEMS_LOCAL | RTEMS_SIMPLE_BINARY_SEMAPHORE | RTEMS_PRIORITY, 1, &Semaphore);
-    (void)(void)(void)(void)(void)directive_failed(status, "rtems_semaphore_create");
+    directive_failed(status, "rtems_semaphore_create");
 
     /* Lock semaphore */
     status = rtems_semaphore_obtain(Semaphore, RTEMS_WAIT, 0);
-    (void)(void)(void)(void)(void)directive_failed(status, "rtems_semaphore_obtain of SEM1\n");
+    directive_failed(status, "rtems_semaphore_obtain of SEM1\n");
 
     for (i = 1; i < rtems_get_processor_count(); i++)
     {
@@ -67,14 +67,14 @@ int entry_point(rtems_task_argument argument)
         (void)locked_printf(" CPU %" PRIu32 " start task TA%c\n", cpu_num, ch);
 
         status = rtems_task_start(id, Test_task, i + 1);
-        (void)(void)(void)(void)(void)directive_failed(status, str);
+        directive_failed(status, str);
     }
 
     /*
      * Release the semaphore, allowing the blocked tasks to start.
      */
     status = rtems_semaphore_release(Semaphore);
-    (void)(void)(void)(void)(void)directive_failed(status, "rtems_semaphore_release of SEM1\n");
+    directive_failed(status, "rtems_semaphore_release of SEM1\n");
 
     /*
      * Wait for log full. print the log and end the program.

@@ -194,7 +194,7 @@ __FORCE_INLINE static air_u32_t arm_is_hivecs(void)
 __FORCE_INLINE static void arm_disable_hivecs(void)
 {
     air_u32_t sctlr = arm_cp15_get_system_control();
-    if ((sctlr & ARM_SCTLR_V) != 0)
+    if (sctlr & ARM_SCTLR_V)
     {
         sctlr &= ~(ARM_SCTLR_V);
         arm_cp15_set_system_control(sctlr);
@@ -248,9 +248,10 @@ __FORCE_INLINE static void arm_cp15_setup_Per_CPU(air_u32_t cpu_id)
     __asm__ volatile("ldr %[rx], =air_shared_area\n"
                      "ldr %[rx], [%[rx], %[offset]]\n"
                      "add %[rx], %[rx], %[id], lsl #5\n"
+                     "add %[rx], %[rx], %[id], lsl #3\n"
                      "mcr p15, 0, %[rx], c13, c0, 4\n"
-                     : [ rx ] "=&r"(val)
-                     : [ id ] "r"(cpu_id), [ offset ] "r"(offset)
+                     : [rx] "=&r" (val)
+                     : [id] "r" (cpu_id), [offset] "r" (offset)
                      : "memory");
 }
 
