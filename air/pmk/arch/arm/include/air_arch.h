@@ -15,9 +15,8 @@
 #define AIR_ARCH_H_
 
 #ifndef ASM
-#ifdef __cplusplus
-extern "C"
-{
+#ifdef  __cplusplus
+extern "C" {
 #endif
 
 /**
@@ -30,10 +29,10 @@ extern "C"
  */
 #define NULL ((void *)0)
 
-    /**
-     * \brief Base Size
-     */
-    typedef unsigned long air_sz_t;
+/**
+ * \brief Base Size
+ */
+typedef unsigned long air_sz_t;
 
 /**
  * \brief Struct member offset
@@ -206,15 +205,17 @@ extern "C"
  * \brief Disable Interrupts
  * \param level Interrupt level
  */
-#define air_syscall_disable_interrupts(level) level = air_syscall_disable_interrupts();
+#define air_syscall_disable_interrupts(level) \
+        level = air_syscall_disable_interrupts();
 
 /**
  * \brief Enable Interrupts
  * \param level Interrupt level
  */
-#define air_syscall_enable_interrupts(level) air_syscall_enable_interrupts(level);
+#define air_syscall_enable_interrupts(level) \
+        air_syscall_enable_interrupts(level);
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 }
 #endif /* C++ */
 #endif /* !ASM */

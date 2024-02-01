@@ -25,18 +25,20 @@
 #include <iop_error.h>
 #include <iop_support.h>
 
-void setup_iop_buffers(
-        iop_buffer_t *buffers, air_u8_t *storage, air_u32_t count) {
+void setup_iop_buffers(iop_buffer_t *buffers, air_u8_t *storage, air_u32_t count)
+{
 
     uint32_t i;
-    for (i = 0; i < count; ++i) {
+    for (i = 0; i < count; ++i)
+    {
         /* get virtual and physical addresses for this buffer */
         buffers[i].v_addr = &storage[i * IOP_BUFFER_SIZE];
         buffers[i].p_addr = (void *)air_syscall_get_physical_addr((uintptr_t)buffers[i].v_addr);
     }
 }
 
-void copy_iop_buffer(iop_buffer_t *dst, iop_buffer_t *src) {
+void copy_iop_buffer(iop_buffer_t *dst, iop_buffer_t *src)
+{
 
     /* copy sizes and offsets */
     dst->header_off = src->header_off;
@@ -45,87 +47,97 @@ void copy_iop_buffer(iop_buffer_t *dst, iop_buffer_t *src) {
     dst->payload_size = src->payload_size;
 
     /* copy payload */
-    memcpy((void *)((uintptr_t)dst->v_addr + dst->payload_off),
-           (void *)((uintptr_t)src->v_addr + src->payload_off),
+    memcpy((void *)((uintptr_t)dst->v_addr + dst->payload_off), (void *)((uintptr_t)src->v_addr + src->payload_off),
            dst->payload_size);
 }
 
-void release_wrapper(iop_wrapper_t *wrapper) {
+void release_wrapper(iop_wrapper_t *wrapper)
+{
 
     wrapper->timer = 0;
     iop_buffer_t *buf = wrapper->buffer;
-    memset(buf->v_addr, 0, get_buffer_size(buf));
+    (void)memset(buf->v_addr, 0, get_buffer_size(buf));
+
     buf->header_off = 0;
     buf->header_size = 0;
     buf->payload_off = 0;
     buf->payload_size = 0;
     buf->size = 0;
 
-    while(!iop_chain_is_empty(&wrapper->fragment_queue)){
+    while (!iop_chain_is_empty(&wrapper->fragment_queue))
+    {
         release_fragment(obtain_fragment(&wrapper->fragment_queue));
     }
 
     iop_chain_append(&usr_configuration.free_wrappers, &wrapper->node);
 }
 
-void release_fragment(iop_fragment_t *fragment) {
+void release_fragment(iop_fragment_t *fragment)
+{
 
     fragment->payload = NULL;
-    fragment->header_size=0;
-    fragment->payload_size=0;
-    memset( &fragment->header, 0, sizeof(iop_header_t));
+    fragment->header_size = 0;
+    fragment->payload_size = 0;
+    (void)memset(&fragment->header, 0, sizeof(iop_header_t));
 
     iop_chain_append(&usr_configuration.free_fragments, &fragment->node);
 }
 
-
-static inline iop_chain_node * obtain_node(iop_chain_control *ctl){
+static inline iop_chain_node *obtain_node(iop_chain_control *ctl)
+{
 
     iop_chain_node *node = NULL;
-    if (ctl != NULL) {
+    if (ctl != NULL)
+    {
         /* get the node from the chain*/
         node = iop_chain_get(ctl);
     }
     /* Return the node*/
     return node;
-
 }
 
-iop_wrapper_t *obtain_wrapper(iop_chain_control *ctl) {
+iop_wrapper_t *obtain_wrapper(iop_chain_control *ctl)
+{
 
     /* Return the empty wrapper*/
     return (iop_wrapper_t *)obtain_node(ctl);
 }
 
-iop_fragment_t *obtain_fragment(iop_chain_control *ctl){
+iop_fragment_t *obtain_fragment(iop_chain_control *ctl)
+{
 
     /* Return the empty fragment*/
     return (iop_fragment_t *)obtain_node(ctl);
 }
 
-void update_queue_timers(iop_chain_control *queue, air_u32_t timeout) {
+void update_queue_timers(iop_chain_control *queue, air_u32_t timeout)
+{
 
     /* pointer to the next request wrapper */
     iop_wrapper_t *curr_wrapper, *next_wrapper;
 
     /* sanity check */
-    if (queue == NULL){
+    if (queue == NULL)
+    {
         return;
     }
 
     /* verify if the chain is empty */
-    if (!iop_chain_is_empty(queue)) {
+    if (!iop_chain_is_empty(queue))
+    {
 
         /* get first wrapper on the chain */
         curr_wrapper = (iop_wrapper_t *)(iop_chain_head(queue)->next);
 
-        do {
+        do
+        {
 
             /* increment timer*/
             ++curr_wrapper->timer;
 
             /* check if the request or reply has timed out */
-            if (curr_wrapper->timer > timeout) {
+            if ((curr_wrapper->timer > timeout) != 0)
+            {
 
                 /* extract the reply from its chain */
                 iop_chain_extract(&curr_wrapper->node);
@@ -138,14 +150,15 @@ void update_queue_timers(iop_chain_control *queue, air_u32_t timeout) {
 
                 /* continue processing the new wrapper */
                 curr_wrapper = next_wrapper;
-
-            } else {
+            }
+            else
+            {
 
                 /* go for next wrapper on the chain*/
                 curr_wrapper = (iop_wrapper_t *)curr_wrapper->node.next;
             }
 
-        /* verify if we reached the end of the Chain */
+            /* verify if we reached the end of the Chain */
         } while (curr_wrapper != (iop_wrapper_t *)iop_chain_tail(queue));
     }
 }
@@ -158,14 +171,16 @@ void update_queue_timers(iop_chain_control *queue, air_u32_t timeout) {
  * hovering in the IOPartition forever. If we allowed this to happen it could
  * lead to resource exhaustion (request/replys).
  */
-void update_timers() {
+void update_timers()
+{
 
     uint32_t i;
 
-//    iop_debug("    updating logical devices timers (%i)\n",
-//              usr_configuration.logical_devices.length);
+    //    iop_debug("    updating logical devices timers (%i)\n",
+    //              usr_configuration.logical_devices.length);
 
-    for (i = 0; i < usr_configuration.logical_devices.length; ++i) {
+    for (i = 0; i < usr_configuration.logical_devices.length; ++i)
+    {
 
         /* get logical device */
         iop_logical_device_t *ldev = get_logical_device(i);
@@ -173,14 +188,15 @@ void update_timers() {
         /* update timers */
         update_queue_timers(&ldev->sendqueue, usr_configuration.time_to_live);
         update_queue_timers(&ldev->rcvqueue, usr_configuration.time_to_live);
-        //update_request_timers(&ldev->pending_rcvqueue, usr_configuration.time_to_live);
+        // update_request_timers(&ldev->pending_rcvqueue, usr_configuration.time_to_live);
     }
 
- //   iop_debug("    updating physical devices timers (%i)\n",
-//            usr_configuration.physical_devices.length);
+    //   iop_debug("    updating physical devices timers (%i)\n",
+    //            usr_configuration.physical_devices.length);
 
     /* iterate over all physical devices */
-    for (i = 0; i < usr_configuration.physical_devices.length; ++i) {
+    for (i = 0; i < usr_configuration.physical_devices.length; ++i)
+    {
 
         /* get physical device */
         iop_physical_device_t *pdev = get_physical_device(i);
@@ -189,5 +205,5 @@ void update_timers() {
         update_queue_timers(&pdev->sendqueue, usr_configuration.time_to_live);
         update_queue_timers(&pdev->rcvqueue, usr_configuration.time_to_live);
     }
-  //  iop_debug("     leaving update_timers\n");
+    //  iop_debug("     leaving update_timers\n");
 }

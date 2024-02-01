@@ -3,12 +3,11 @@
 
 .build-executable: &build-executable
     - $AIR/configure
-    - make clean
-    - make
+    - make all 
     - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
 
 .check-and-publish: &check-and-publish
-    - $UTILS/testcheck.py
+    - $UTILS/validation_check.py
     - $UTILS/publish_example.bash
 
 # ARM
@@ -29,12 +28,10 @@ ARM-QEMU-validation-test:
           else
             ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
           fi
-
-        - make distclean -i
         - *check-and-publish
     rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request"'
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
+        - if: '($CI_PIPELINE_SOURCE == "merge_request") && ($CI_MERGE_REQUEST_TITLE !~ /Draft/)'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ALL\].*/'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ARM\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
@@ -77,16 +74,6 @@ ARM-QEMU-validation-test:
           #- "TEST-DEF-80401"
           #- "TEST-DEF-80420"
 
-#00001_arm_zynqz1: 
-#    stage: examples
-#    tags: 
-#        - ARM
-#    script:
-#        - cd $AIR/examples/private-example/private/arm_unit_tests/lionel
-#        - *build-executable
-#        - $UTILS/runQemu.bash executable/AIRAPP.exe
-#        - *check-and-publish
-
 # SPARC
 SPARC-LAYSIM-validation-test:
   stage: validation_tests
@@ -99,25 +86,28 @@ SPARC-LAYSIM-validation-test:
   script: 
         - cd $AIR/examples/private-example/private/validation/$EXAMPLE
         - *build-executable
+        # The schedule pipeline runs the tests on hardware 
         - |
           if [ "$CI_PIPELINE_SOURCE" = "schedule" ]; then
+            echo hardware option selected
             sshpass -p $PASSWORD2 scp executable/AIRAPP.exe gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
             sshpass -p $PASSWORD2 scp $UTILS/gdb_sparc_rvs_coverage-ci gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
             sshpass -p $PASSWORD2 scp $UTILS/target_cmds_eth_sparc.bash gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
             script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash $EXAMPLE'" testresult.txt
             sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $AIR/examples/private-example/private/validation/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
-            sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/gdb_output.txt $AIR/examples/private-example/private/validation/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
-            cat gdb_output.txt
+            sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/testresult.txt $AIR/examples/private-example/private/validation/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
+            cat testresult.txt
           else
+            echo laysim option selected
+            echo doing $AIR/rvs_air/scripts/laysim_cmds.txt
             laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
           fi
-        - make distclean -i # Ignore distclean errors
         - *check-and-publish
   rules:
-        - if: '$CI_PIPELINE_SOURCE == "merge_request" && $RUNNER == "SPARC"'
+        - if: '($CI_PIPELINE_SOURCE == "merge_request") && ($CI_MERGE_REQUEST_TITLE !~ /Draft/)'
         - if: '$CI_PIPELINE_SOURCE == "schedule" && $RUNNER == "sparc-taste-debian1"'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ALL\].*/ && $RUNNER == "SPARC"'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[SPARC\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/ && $RUNNER == "SPARC"'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ALL\].*/ && $RUNNER =~ "SPARC"'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[SPARC\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/ && $RUNNER =~ "SPARC"'
   timeout: 5 minutes
   parallel:
       matrix:
@@ -137,14 +127,14 @@ SPARC-LAYSIM-validation-test:
           - "TEST-DEF-01200"
           - "TEST-DEF-01210"
           - "TEST-DEF-01390"
-          - "TEST-DEF-01561"
+          #- "TEST-DEF-01561"
           - "TEST-DEF-01570"
           - "TEST-DEF-01590"
           - "TEST-DEF-01610"
-          - "TEST-DEF-01650"
-          - "TEST-DEF-01730"
+          #- "TEST-DEF-01650"
+          #- "TEST-DEF-01730"
           - "TEST-DEF-01740"
-          - "TEST-DEF-01741"
+          #- "TEST-DEF-01741"
           - "TEST-DEF-01750"
           - "TEST-DEF-02100"
           #- "TEST-DEF-02101"

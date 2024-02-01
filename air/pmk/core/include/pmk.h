@@ -15,8 +15,8 @@
 #define __PMK_H__
 
 #include <air.h>
-#include <cpu.h>
 #include <libc.h>
+#include <cpu.h>
 
 #ifndef ASM
 
