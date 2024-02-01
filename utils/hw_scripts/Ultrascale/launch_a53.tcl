@@ -63,22 +63,14 @@ targets -set -filter {name =~ "*A53*0" && jtag_cable_name =~ "Avnet USB-to-JTAG/
 rst -proc -isa A32
 configparams force-mem-access 0
 
-#Load app 
-targets -set -filter {name =~ "*A53*0" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
-rst -proc
-configparams force-mem-access 0
 dow $env(APP)
+# con 
 
 if {$multicore == 1} {
     targets -set -filter {name =~ "*A53*1" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
     rst -proc -isa A32
     configparams force-mem-access 0
 
-    targets -set -filter {name =~ "*A53*1" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
-    rst -proc
-    configparams force-mem-access 0
     dow $env(APP)
+    # con
 }
-
-targets -set -filter {name =~"APU*" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
-con 
