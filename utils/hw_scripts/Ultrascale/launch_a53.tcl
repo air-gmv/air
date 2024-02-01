@@ -2,6 +2,15 @@ puts "Starting"
 
 set fsbl 0
 
+if { $argc == 1 } {
+    set multicore [lindex $argv 0]
+    if {$multicore == 1} {
+        puts "Multicore example!"
+    }
+} else {
+    set multicore 0
+}
+
 connect -symbols
 
 source /tools/Xilinx/Vitis/2022.1/scripts/vitis/util/zynqmp_utils.tcl
@@ -13,6 +22,9 @@ rst -system
 #Reset A53, load and run FSBL
 targets -set -filter {name =~"APU*" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
 enable_a32_mode 0
+if {$multicore == 1} {
+    enable_a32_mode 1
+}
 
 if {$fsbl == 1 } {
     puts "Initializing with FSBL"
@@ -36,25 +48,37 @@ if {$fsbl == 1 } {
     catch {psu_protection}
 }
 
-#set halt on debug on system counter
+# set halt on debug on system counter
 mwr 0xFF260000 0x00000003 
 
 # Enable Cross Triggering to halt system counter when cpu halts
 set bp_10_4_0 [bpadd -target-id all -ct-input {16} -ct-output {63} -skip-on-step 0]
 
+if {$multicore==1} {
+    # Cross trigger to stop CPU1 when CPU0 is stopped
+    bpadd -ct-input 16 -ct-output 24
+}
+
+targets -set -filter {name =~ "*A53*0" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
+rst -proc -isa A32
+configparams force-mem-access 0
+
 #Load app 
 targets -set -filter {name =~ "*A53*0" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
 rst -proc
 configparams force-mem-access 0
-
-# set bp_end [bpadd -addr &bsp_shutdown_core]
-
 dow $env(APP)
 
-after 500
-con
-# con -block
-# puts "Test ended"
-# con
-# after 500
-# exit
+if {$multicore == 1} {
+    targets -set -filter {name =~ "*A53*1" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
+    rst -proc -isa A32
+    configparams force-mem-access 0
+
+    targets -set -filter {name =~ "*A53*1" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
+    rst -proc
+    configparams force-mem-access 0
+    dow $env(APP)
+}
+
+targets -set -filter {name =~"APU*" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
+con 
