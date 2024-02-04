@@ -70,7 +70,7 @@ def main():
     group.add_argument('-a', '--all_tests', action='store_true', help='Run all tests')
     parser.add_argument('-l', '--list_tests', action='store_true', help='List available tests')
 
-    test_folder = "/home/ansi/AIR_ULTRASCALE/2peruair/air/examples/private-example"  # Update with the actual path to your test folder
+    test_folder = "/home/ansi/AIR_ULTRASCALE/2peruair/air/examples/private-example/AIR_testsuite"  # Update with the actual path to your test folder
     
     # List available tests (subfolders)
     available_tests = list_tests(test_folder)
