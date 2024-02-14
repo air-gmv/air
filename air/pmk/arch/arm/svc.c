@@ -251,6 +251,9 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
         // Acknowledge an interrupt for the current core
         frame->r0 = arm_syscall_acknowledge_int(core);
         break;
+    case AIR_SYSCALL_ARM_RETT:
+        arm_syscall_return(core);
+        //don't break!
     case AIR_SYSCALL_ARM_END_INT:
         // End the interrupt for the current core and return from the handler
         arm_syscall_rett(core);

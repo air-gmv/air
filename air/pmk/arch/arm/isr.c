@@ -83,12 +83,13 @@ air_uptr_t * arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t
 
         frame = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
         core->partition_switch = 0;
-#ifdef PMK_DEBUG_ISR
+
         if (core->partition != NULL) {
             printk("       ISR :: Switching to Partition %d \n\n", core->partition->id);
         } else {
             printk("       ISR :: Switching to Partition IDLE\n\n");
         }
+#ifdef PMK_DEBUG_ISR
         arm_isr_handler_print_frame(frame, "EXIT ");
 #endif
     }
@@ -191,6 +192,7 @@ air_uptr_t * arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core) {
                          vcpu->psr &= ~(ARM_PSR_MODE_MASK);
                          vcpu->psr |= ARM_PSR_IRQ;
                          core->context->sp_svc = frame->usr_sp;
+                         core->context->usr_lr = frame->usr_lr;
                      }
                 }
 
