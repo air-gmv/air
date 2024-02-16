@@ -109,6 +109,18 @@ void arm_syscall_set_psr(pmk_core_ctrl_t *core, air_u32_t val) {
     core->context->vcpu.psr = val;
 }
 
+air_u32_t arm_syscall_get_spsr(pmk_core_ctrl_t *core) {
+
+    air_u32_t spsr = core->context->usr_svc_psr;
+    return spsr;
+}
+
+void arm_syscall_set_spsr(pmk_core_ctrl_t *core, air_u32_t val) {
+
+    core->context->usr_svc_psr = val;
+
+}
+
 void arm_syscall_return(pmk_core_ctrl_t *core) {
 
     arm_interrupt_stack_frame_t *current_isf_pointer = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
@@ -122,7 +134,7 @@ void arm_syscall_return(pmk_core_ctrl_t *core) {
 
     core->context->sp_irq = current_isf_pointer->usr_sp;
     current_isf_pointer->usr_sp = core->context->sp_svc;
-    current_isf_pointer->ret_psr = core->context->usr_psr;
+    current_isf_pointer->ret_psr = core->context->usr_svc_psr;
 }
 
 
