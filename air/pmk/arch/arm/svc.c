@@ -89,6 +89,14 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core) 
         // Set the value of the Program Status Register (PSR)
         arm_syscall_set_psr(core, frame->r0);
         break;
+    case AIR_SYSCALL_ARM_GET_SPSR:
+        // Get the value of the Saved Program Status Register (SPSR)
+        frame->r5 = arm_syscall_get_spsr(core);
+        break;
+    case AIR_SYSCALL_ARM_SET_SPSR:
+        // Set the value of the Saved Program Status Register (SPSR)
+        arm_syscall_set_spsr(core, frame->r5);
+        break;
     case AIR_SYSCALL_ARM_SET_IRQ_MASK_REGISTER:
         // Set the value of the IRQ mask register
         arm_syscall_set_irq_mask_register(core, frame->r0);
