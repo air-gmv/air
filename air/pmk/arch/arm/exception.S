@@ -503,7 +503,7 @@ virtual:
 #endif
 
     mrs     r0, spsr
-    str     r0, [r1, #160]
+    str     r0, [r1, #164]
 
     pop     {r0-r3}                         // usr_sp, usr_lr, ret_addr, ret_psr
 
@@ -553,7 +553,7 @@ virtual_return:
     dmb
     //sub     sp, #52
 
-        add     sp, #60
+        add     sp, #20
 
 #if PMK_FPU_SUPPORT
     add     sp, #264
