@@ -214,9 +214,9 @@ typedef struct
     air_u32_t sp_svc;            /* < virtual svc stack pointer      */
     air_u32_t sp_irq;            /* < virtual irq stack pointer      */
     air_u32_t svc_sp;            /* < virtual irq stack pointer      */
-    air_u32_t usr_lr;
+    air_u32_t usr_svc_lr;
+    air_u32_t usr_irq_lr;
     air_u32_t usr_psr;
-    air_u32_t reserved;
 } arm_core_context_t;
 
 /**
