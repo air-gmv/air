@@ -63,56 +63,13 @@ global(exception_undef)
     b       save_previous
 
 global(exception_svc)
-/*
-    push    {r0, r1}
-    mrs     r1, cpsr
-    bic     r0, r1, #ARM_PSR_MODE_MASK
-    orr     r0, #ARM_PSR_IRQ
-    msr     cpsr, r0     // change into IRQ mode to check the contexts in the IRQ stack
-
-
-svc_is_empty:
-// check if the sp is pointing to a vacant space (if not, search for one)
-// to avoid corrupting contexts that have yet to be restored
-    sub     r0, sp, #72
-#if PMK_FPU_SUPPORT
-    sub     r0, #264
-#endif
-    ldr     r0, [r0, #52]                   //exception name
-    cmp     r0, #0
-    //beq     svc_cont //(easier to debug)
-    subne   sp, #72
-#if PMK_FPU_SUPPORT
-    subne   sp, #264
-#endif
-    bne     svc_is_empty
-
-//svc_cont: //(easier to debug)
-    msr     cpsr, r1     //restore the svc cpsr
-
-    pop     {r0, r1}    //restore original registers
-
- */   /*--Now we can save the svc context--*/
 
     srsdb   sp, #ARM_PSR_IRQ  // save return state (lr and spsr) in the IRQ stack
-/*
-    push    {r0,r1}
-    mrs     r1, spsr
-    tst     r1, #ARM_PSR_T
-    ldrneh  r0, [lr, #-2]           //thumb
-    bicne   r0, r0, #0xff00
-    ldreq   r0, [lr, #-4]           //arm
-    biceq   r0, r0, #0xff000000
-
-    cmp     r0, #(AIR_SYSCALL_ARM_RETT)  /* Checks if svc is air_syscall_rett
-    pop     {r0,r1}*/
 
     mov     r14, #AIR_ARM_EXCEPTION_SWI
     stmdb   sp, {r12, r14}
     sub     r12, sp, #8
     cpsid   aif, #ARM_PSR_IRQ
-
-    //beq     arm_rett    // if svc is the return syscall, we can skip storing the context
 
     sub     sp, #24
 #if PMK_FPU_SUPPORT
@@ -130,86 +87,6 @@ svc_is_empty:
 #endif
 
     ldr     r0, [r7, #12]                   // spsr
-
-    b       save_previous
-
-arm_rett:
-    mov     r2, sp
-#if PMK_FPU_SUPPORT
-    add     r2, 264
-#endif
-    ldr     r0, [r2, #68]
-    and     r0, #(ARM_PSR_MODE_MASK)
-    cmp     r0, #(ARM_PSR_USR)      //context switch happens in user or system mode
-    cmpne   r0, #(ARM_PSR_SYS)
-    add     r4, sp, #0
-/*    bne     arm_return
-
-    // if we use virtual ARM modes:
-    mrc     p15, 0, r1, c13, c0, 4          // get Per_CPU core
-    ldr     r1, [r1, #offsetof_pmk_core_ctrl_t_context]
-    ldr     r1, [r1, #144]                  //get virtual svc sp
-
-/* //if we don't use virtual ARM modes:
-    mrs     r0, cpsr
-    mov     r1, r0
-    orr     r1, #(ARM_PSR_SYS) //change to system mode
-    msr     cpsr, r1
-    mov     r1, sp             //get user sp
-    msr     cpsr, r0
-
-    ldr     r0, [r2, #56]       //get return sp (svc) TODO: what if previous virtual mode is not svc?
-    cmp     r1, r0              //if return sp is different from usr sp then we know
-    beq     arm_return          //that a context switch took place in the POS IRQ handler
-
-search_context_above:
-    add     r4, #72
-#if PMK_FPU_SUPPORT
-    add     r4, #264
-    ldr     r0, [r4, #320]
-#else
-    ldr     r0, [r4, #56]
-#endif
-    cmp     r0, #0
-    addeq   r4, sp, #0
-    beq     search_context_below
-    ldr     r2, [r4, #52]
-    cmp     r2, #AIR_ARM_EXCEPTION_IRQ
-    bne     search_context_above
-    cmp     r0, r1
-    bne     search_context_above
-    b       arm_return
-
-search_context_below:
-    sub     r4, #72
-#if PMK_FPU_SUPPORT
-    sub     r4, #264
-    ldr     r0, [r4, #320]
-#else
-    ldr     r0, [r4, #56]
-#endif
-    cmp     r0, #0
-    moveq   r4, sp
-    beq     arm_return   // No context found. Restore previous.
-    ldr     r2, [r4, #52]
-    cmp     r2, #AIR_ARM_EXCEPTION_IRQ
-    bne     search_context_below
-    cmp     r0, r1
-    bne     search_context_below
-
-*/
-arm_return:
-    mrc     p15, 0, r0, c13, c0, 4  // get Per_CPU core
-    BL2C    arm_syscall_rett
-    mov     sp, r4
-    b       restore
-    //TODO: check if there are pending interrupts before returning to the partition!
-
-/*no_context:                       //for debugging
-    mov     r0, r1
-    mov     r1, sp
-    BL2C    print_nocontext
-    b       arm_return*/
 
 global(exception_pref_abort)
 
@@ -303,61 +180,6 @@ global(exception_fiq)
 global(exception_irq)
 
     sub     lr, #4
-/*
-    cpsid   aif, #ARM_PSR_FIQ //since the FIQ stack is not being used,
-    push    {r0-r3}          //store these values there so as to not corrupt the IRQ stack
-    cpsid   aif, #ARM_PSR_IRQ
-
-// check if the previous mode is USR or SYS.
-    mrs     r0, spsr
-    and     r0, #(ARM_PSR_MODE_MASK)
-    cmp     r0, #(ARM_PSR_USR)
-    cmpne   r0, #(ARM_PSR_SYS)
-    bne     irq_cont //if not, continue without changing SP
-
-// if it is, check if this context has already been stored. If so, replace it
-    mrs     r0, cpsr
-    mov     r1, r0
-    orr     r1, #(ARM_PSR_SYS) //change to system mode
-    msr     cpsr, r1
-    mov     r1, sp             //get user sp
-    msr     cpsr, r0
-
-    mov     r3, sp
-
-    add     r3, #72
-#if PMK_FPU_SUPPORT
-    add     r3, #264
-#endif
-
-find_context:
-    ldr     r0, [r3, #52]       //get exception name
-    cmp     r0, #AIR_ARM_EXCEPTION_IRQ  // is IRQ?
-    bgt     irq_cont
-    cmpne   r0, 0               // is context empty?
-    addne   r3, 72              // if neither, keep looking in the contexts above
-
-#if PMK_FPU_SUPPORT
-    add     r3, #264
-#endif
-
-    bne     find_context
-
-    ldr     r0, [r3, #56]
-    cmp     r0, 0              //if we've reached an empty context, stop looking
-    beq     irq_cont           //continue without changing the SP
-    cmp     r1, r0
-    add     r3, 72
-    bne     find_context
-    mov     sp, r3            //context found! move the SP to the new position
-
-
-irq_cont:
-    cpsid   aif, #ARM_PSR_FIQ
-    pop     {r0-r3}
-    cpsid   aif, #ARM_PSR_IRQ
-
- */  /*--Now we can save the irq context--*/
 
     srsdb   sp, #ARM_PSR_IRQ
     mov     r14, #AIR_ARM_EXCEPTION_IRQ
