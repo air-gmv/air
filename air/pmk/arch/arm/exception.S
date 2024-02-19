@@ -243,7 +243,7 @@ c_handler:
 
     // Store SVC SP in CORE CONTEXT (R1 points to pmk_core_ctrl_t)
     ldr     r2, [r1, #offsetof_pmk_core_ctrl_t_context]
-    str     sp, [r2, #152]
+    str     sp, [r2, #offsetof_arm_core_context_t_svc_sp]
 
     // Branch into C exception Handler
     BL2C    arm_exception_handler
@@ -251,7 +251,7 @@ c_handler:
     // Restore SVC SP from CORE CONTEXT:
     mrc     p15, 0, r1, c13, c0, 4          // get Per_CPU core
     ldr     r1, [r1, #offsetof_pmk_core_ctrl_t_context]
-    ldr     r2, [r1, #152]                  // get svc sp
+    ldr     r2, [r1, #offsetof_arm_core_context_t_svc_sp]                  // get svc sp
     mov     sp, r2
 
     //Go into IRQ mode to restore the context
@@ -327,7 +327,7 @@ virtual:
 #endif
 
     mrs     r0, spsr
-    str     r0, [r1, #164]
+    str     r0, [r1, #offsetof_arm_core_context_t_usr_svc_psr]
 
     pop     {r0-r3}                         // usr_sp, usr_lr, ret_addr, ret_psr
 
@@ -351,7 +351,7 @@ virtual:
     //if we use virtual ARM modes:
     mrc     p15, 0, r0, c13, c0, 4          // get Per_CPU core
     ldr     r0, [r0, #offsetof_pmk_core_ctrl_t_context]
-    ldr     sp, [r0, #148]                  // use virtual irq sp
+    ldr     sp, [r0, offsetof_arm_core_context_t_sp_irq]                  // use virtual irq sp
     add     lr, r2, #0
 
     msr     cpsr, r5
@@ -377,7 +377,7 @@ virtual_return:
     dmb
     //sub     sp, #52
 
-        add     sp, #20
+    add     sp, #20
 
 #if PMK_FPU_SUPPORT
     add     sp, #264
