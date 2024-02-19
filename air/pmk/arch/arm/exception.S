@@ -87,6 +87,8 @@ global(exception_svc)
 #endif
 
     ldr     r0, [r7, #12]                   // spsr
+    
+	b       save_previous
 
 global(exception_pref_abort)
 
