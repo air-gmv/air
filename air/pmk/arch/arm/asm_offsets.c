@@ -36,6 +36,13 @@ int main(void) {
     OFFSETOF(arm_core_context_t, isr_nesting_level);
     OFFSETOF(arm_core_context_t, state);
 
+    OFFSETOF(arm_core_context_t, sp_svc);
+    OFFSETOF(arm_core_context_t, sp_irq);
+    OFFSETOF(arm_core_context_t, svc_sp);
+    OFFSETOF(arm_core_context_t, usr_svc_lr);
+    OFFSETOF(arm_core_context_t, usr_irq_lr);
+    OFFSETOF(arm_core_context_t, usr_svc_psr);
+
     OFFSETOF(arm_interrupt_stack_frame_t, usr_sp);
     OFFSETOF(arm_interrupt_stack_frame_t, ret_addr);
     SIZEOF(arm_interrupt_stack_frame_t);
