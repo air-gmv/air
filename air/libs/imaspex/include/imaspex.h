@@ -17,8 +17,8 @@
 #ifndef _IMASPEX_H
 #define _IMASPEX_H
 
-#include <a653.h>
 #include <air.h>
+#include <a653.h>
 
 /**
  * @brief The imaspex entry point

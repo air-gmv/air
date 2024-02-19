@@ -22,8 +22,8 @@
  * @brief Implements SPARC atomic operations
  */
 
-#include <atomic.h>
 #include <sparc.h>
+#include <atomic.h>
 
 /**
  * @brief Number of spin locks to be used by the atomic operations

@@ -16,15 +16,13 @@
 #include <printk.h>
 #include <multicore.h>
 
-void pmk_fatal_error(
-        pmk_error_e code, const char *func, const char *file, int line) {
+void pmk_fatal_error(pmk_error_e code, const char *func, const char *file, int line)
+{
 
     /* print error message */
-    printk(" :: error %i, function '%s' in file '%s' at line %i\n",
-            code, func, file, line);
+    printk(" :: error %i, function '%s' in file '%s' at line %i\n", code, func, file, line);
 
     /* shutdown module */
     pmk_core_ctrl_t *core = pmk_get_current_core_ctrl();
     pmk_module_shutdown(core);
 }
-
