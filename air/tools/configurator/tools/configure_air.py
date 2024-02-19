@@ -212,12 +212,14 @@ def prompt_configuration(logger):
                  if os.path.isdir(os.path.join(air.POS_DIRECTORY, x)) and x != 'shared' and x!= '__pycache__']
     for pos_name in pos_names:
         try:
-            i = 0
-            if all_rtos == 0:
-                promptx = 'Install '  + pos_name + '?'
-                i = terminalutils.promptActions(promptx, opts)
-            if i == 1 or all_rtos == 1:
-                pos.append(pos_name)
+            i = 0  
+            # Removes ARM unsupported POS from configurator prompt. Assumes everything is supported for sparc.  
+            if ("arm" == arch and pos_name not in ["posixrtems5","rtems48i"]) or "sparc" == arch : 
+                if all_rtos == 0:
+                    promptx = 'Install '  + pos_name + '?'
+                    i = terminalutils.promptActions(promptx, opts)
+                if i == 1 or all_rtos == 1:
+                    pos.append(pos_name)
         except IOError:
             logging.warning ('Missing AIR POS : %s, name: %s', pos_path, pos_name)
             pass

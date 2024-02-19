@@ -122,10 +122,7 @@ kernel_headers = set(utils.flatten([
 
 # Lib AIR sources
 libair_sources = set(utils.flatten([
-    file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'core'), ['.c']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'arch', 'arm'), ['.c', '.S']),
-    file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'zynqz7000'), ['.c', '.S']),
-    file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'shared'), ['.c', '.S']),
 ]))
 
 # Lib AIR headers
@@ -143,7 +140,7 @@ mmap = MMAP(kernel_space=[0x00100000, 0x0ff00000],
             default_unit=1 << 20)
 
 # specific defines
-defines = ['PMK_FPU_SUPPORT=0','PMK_DEBUG']
+defines = ['PMK_FPU_SUPPORT=0','PMK_DEBUG','PMK_SMP=1','DEBUG_UART_ID=0']
 
 # Architecture dependent configuration
 arch_configure = air_arm.get_arm_configuration

@@ -5,13 +5,45 @@
 #       In the event of both scripts failing for whatever reason, revert to "make -j4"
 
 # Build ARM ZYNQZ1 
-ARM-ZYNQZ1-build:
+ARM-ZYNQ_ZEDBOARD-build:
+    stage: prepare-build
+    tags: ["ARM"]
+    needs : ["ARM-ARTY7Z-build"]
+    script:
+        - cp $UTILS/.arm_zynq_zedboard_config .
+        - ./configure -f .arm_zynq_zedboard_config   
+        - make clean
+        - make -j4
+        #- . $STATE_FOLDER/gitlab-ci/push/make.sh 
+        #- . $STATE_FOLDER/gitlab-ci/push/make_test.sh
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message contains [ALL] or [ARM]
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'       # message does not contain any [...]
+
+# Build ARM SPACE INVENTOR 
+ARM-SPACE_INVENTOR-build:
+    stage: prepare-build
+    tags: ["ARM"]
+    needs : ["ARM-ARTY7Z-build"]
+    script:
+        - cp $UTILS/.arm_space_inventor_config .
+        - ./configure -f .arm_space_inventor_config   
+        - make clean
+        - make -j4
+        #- . $STATE_FOLDER/gitlab-ci/push/make.sh 
+        #- . $STATE_FOLDER/gitlab-ci/push/make_test.sh
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message contains [ALL] or [ARM]
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'       # message does not contain any [...]
+
+# Build ARM SPACE INVENTOR 
+ARM-ARTY7Z-build:
     stage: prepare-build
     tags: ["ARM1"]
     needs: ["ARM1_init"]
     script:
-        - cp $UTILS/.arm_zynqz1_config .
-        - ./configure -f .arm_zynqz1_config   
+        - cp $UTILS/.arm_arty7z_config .
+        - ./configure -f .arm_arty7z_config   
         - make clean
         - make -j4
         #- . $STATE_FOLDER/gitlab-ci/push/make.sh 
