@@ -289,57 +289,34 @@ restore:
     ldr     r0, [r0, #offsetof_pmk_core_ctrl_t_context]
     str     sp, [r0, #offsetof_arm_core_context_t_isf_pointer]
 
-    sub     sp, #72
-
-#if PMK_FPU_SUPPORT
-    vmrs    r4, fpexc
-    orr     r4, #(ARM_VFP_FPEXC_ENABLE)
-    vmsr    fpexc, r4
-    sub     sp,  #264
-    add     r6,  sp, #56
-    ldmia   r6!, {r4, r5}
-    vldmia  r6!, {d0-d15}
-    vldmia  r6,  {d16-d31}
-    vmsr    fpscr, r5
-    orr     r4, #(ARM_VFP_FPEXC_ENABLE)
-    vmsr    fpexc, r4
-#endif
-
-    mov   r0, 0
-    str   r0, [sp, #52]
-
-    pop     {r0-r12}
-    dmb
-    add     sp, #12
-
-#if PMK_FPU_SUPPORT
-    add     sp, #264
-#endif
-
-    rfe     sp!
+    b       exc_return
 
 virtual:
     mov     lr, r0                          //puts return address in lr
+
+    mrs     r0, spsr
+    str     r0, [r1, #offsetof_arm_core_context_t_usr_svc_psr]
 
     add     sp, #56
 #if PMK_FPU_SUPPORT
     add     sp, #264
 #endif
 
-    mrs     r0, spsr
-    str     r0, [r1, #offsetof_arm_core_context_t_usr_svc_psr]
-
     pop     {r0-r3}                         // usr_sp, usr_lr, ret_addr, ret_psr
+
+    sub     r0, sp, #16
+    str     lr, [r0, #8]
 
     bic     r3, #(ARM_PSR_T)
     orr     r4, r3, #(ARM_PSR_EXC_MASK)
     bic     r3, #(0xF)                      // return to the virtual trap table in user mode
+    str     r3, [r0, #12]
     msr     spsr, r3                        // return psr
 
     and     r5, r4, #(ARM_PSR_MODE_MASK)
     cmp     r5, #(ARM_PSR_USR)              // check if previous is USR mode
     cmpne   r5, #(ARM_PSR_SYS)
-    bne     virtual_return
+    bne     exc_return
     orr     r4, #(ARM_PSR_SYS)              // if true, change to SYS
 
     mrs     r5, cpsr
@@ -356,7 +333,7 @@ virtual:
 
     msr     cpsr, r5
 
-virtual_return:
+exc_return:
     sub     sp, #72
 
 #if PMK_FPU_SUPPORT
@@ -377,10 +354,10 @@ virtual_return:
     dmb
     //sub     sp, #52
 
-    add     sp, #20
+    add     sp, #12
 
 #if PMK_FPU_SUPPORT
     add     sp, #264
 #endif
 
-    subs    pc, lr, #0
+    rfe     sp!
