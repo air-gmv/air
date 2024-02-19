@@ -2,7 +2,7 @@
 # Author huca@GMV 2023
 
 # ARM RVS PMK Instrumentation
-RVS-ARM-ZYNQZ1-build:
+RVS-ARM-ARTY7Z-build:
     stage: prepare-build
     tags: ["ARM", "RVS"]
     needs: ["ARM1_init"]
