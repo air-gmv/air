@@ -25,17 +25,17 @@ git_id = ""
 
 # @brief POS Source files
 source_files = {
-    'sparc': [],             # empty, the magic happens in the makefile template
+    'arm': [],             # empty, the magic happens in the makefile template
 }
 
 # @brief POS Private Header files
 private_header_files = {
-    'sparc': [],             # empty, the magic happens in the makefile template
+    'arm': [],             # empty, the magic happens in the makefile template
 }
 
 # @brief POS Public Header files
 public_header_files = {
-    'sparc':  [],            # empty, the magic happens in the makefile template
+    'arm':  [],            # empty, the magic happens in the makefile template
 }
 
 # @brief Custom Makefile

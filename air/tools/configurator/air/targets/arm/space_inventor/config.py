@@ -4,7 +4,7 @@
 # @brief AIR OS for ARM Zynq Z1
 
 __author__ = 'lumm'
-__modified__ = 'ttao'
+__modified__ = 'huca'
 
 
 from air import *
@@ -19,7 +19,7 @@ def iop_arch(config, partition):
     pass
 
 # Target Description
-description = "AIR OS for ARM-ZYNQ Z7000"
+description = "AIR OS for ARM-ZYNQ Z7030"
 
 # Target Number of cores
 cores = 2
@@ -109,7 +109,7 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     'core/ports_queuing.c',
     'core/ports_sampling.c',
     'core/configurations.c'
-]] 
+]]
 
 # kernel headers
 kernel_headers = set(utils.flatten([
@@ -140,16 +140,16 @@ mmap = MMAP(kernel_space=[0x00100000, 0x0ff00000],
             default_unit=1 << 20)
 
 # specific defines
-defines = ['PMK_FPU_SUPPORT=0','PMK_DEBUG','PMK_SMP=1','DEBUG_UART_ID=0']
+defines = ['PMK_FPU_SUPPORT=0','PMK_DEBUG','PMK_SMP=1','DEBUG_UART_ID=1']
 
 # Architecture dependent configuration
 arch_configure = air_arm.get_arm_configuration
 
 # IOP devices and definitions
 iop = IOP(defines=[],
-          devices=['xeth0', 'xeth1', 'xuart0','xuart1', 'xcan0', 'xsd0', 'xsd1', 'xadc0'],
+          devices=['xeth0', 'xeth1', 'xuart0','xuart1', 'xcan0','xcan1', 'xsd0', 'xsd1', 'xadc0'],
           drivers=['xeth', 'xuart', 'xcan', 'xsd', 'xadc'],
-          alias=dict(eth0='xeth0', eth1='xeth1', uart0='xuart0', uart1='xuart1', can0 = 'xcan0', sd0='xsd0', sd1='xsd1', adc0='xadc0'),
+          alias=dict(eth0='xeth0', eth1='xeth1', uart0='xuart0', uart1='xuart1', can0 = 'xcan0', can1 = 'xcan1', sd0='xsd0', sd1='xsd1', adc0='xadc0'),
           arch=iop_arch)
 
 # AIR application arch config

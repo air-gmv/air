@@ -28,9 +28,6 @@ source_files = {
         file_tools.getFilesByExtensions(os.path.join(SOURCE_POS_DIRECTORY, 'bare', 'arm'), ['.c', '.S']),
         file_tools.getFilesByExtensions(os.path.join(SOURCE_LIBS_DIRECTORY, 'libprintf'), ['.c', '.S'])
     ])),
-    'sparc': set(utils.flatten([
-        file_tools.getFilesByExtensions(os.path.join(SOURCE_POS_DIRECTORY, 'bare', 'sparc'), ['.c', '.S'])
-    ])),
 }
 
 # @brief POS Private Header files
@@ -39,16 +36,11 @@ private_header_files = {
         file_tools.getFilesByExtensions(os.path.join(SOURCE_POS_DIRECTORY, 'bare', 'arm'), ['.h', '.ld']),
         file_tools.getFilesByExtensions(os.path.join(SOURCE_LIBS_DIRECTORY, 'libprintf'), ['.h', '.ld'])
     ])),
-    'sparc': set(utils.flatten([
-        file_tools.getFilesByExtensions(os.path.join(SOURCE_POS_DIRECTORY, 'bare', 'sparc'), ['.h', '.ld'])
-    ])),
 }
 
 # @brief POS Public Header files
 public_header_files = {
     'arm': [h for h in private_header_files['arm']
-              if h.endswith('bare.h') or h.endswith('linkcmds.ld')],
-    'sparc': [h for h in private_header_files['sparc']
               if h.endswith('bare.h') or h.endswith('linkcmds.ld')],
 }
 
