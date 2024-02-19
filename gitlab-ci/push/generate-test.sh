@@ -38,7 +38,7 @@ default:
 .build-executable: &build-executable
     - \$AIR/configure
     - make clean
-    - make
+    - make all
     - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
 
 .check-and-publish: &check-and-publish
@@ -51,7 +51,6 @@ ARM-QEMU-TEST-DEF-$TEST_NUMBER:
       - cd \$AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
       - *build-executable
       - (\$UTILS/arm-ci.bash | tee testresult.txt) || true
-      - make distclean -i
       - *check-and-publish
   rules:
       - if: '\$CI_COMMIT_MESSAGE =~ /.*\[ARM\].*/'
@@ -63,7 +62,6 @@ SPARC-LAYSIM-TEST-DEF-$TEST_NUMBER:
         - cd \$AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
         - *build-executable
         - laysim-gr740-mmu-cli -batch \$AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
-        - make distclean -i # Ignore distclean errors
         - *check-and-publish
   rules:
         - if: '\$CI_COMMIT_MESSAGE =~ /.*\[SPARC\].*/'

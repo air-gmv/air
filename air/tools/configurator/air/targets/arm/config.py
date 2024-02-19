@@ -132,10 +132,8 @@ def get_arm_configuration(a653configuration):
         arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, CPU_CORE_CONTEXT_STACK)
         #arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, CPU_CORE_CONTEXT_FPU)
         arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, CPU_CORE_CONTEXT_HM)
-
-    # space for the core control structures
-    core_control = [ CPU_CORE_CONTROL[0], a653configuration.core_count * CPU_CORE_CONTROL[1]]
-    arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, core_control)
+        # space for the core control structures
+        arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, CPU_CORE_CONTROL)
 
     # space for the partitions
     for partition in a653configuration.partitions:

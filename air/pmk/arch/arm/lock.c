@@ -33,7 +33,7 @@ air_u32_t arm_lock(air_uptr_t *hash)
                      "it ne\n"
                      "bne try\n"
                      : "=&r"(lock), "=&r"(token)
-                     : [ hash ] "r"(hash)
+                     : [hash] "r"(hash)
                      : "memory");
     arm_data_memory_barrier();
 

@@ -18,7 +18,8 @@
 #include <iop.h>
 #include <gpio_support.h>
 
-typedef enum {
+typedef enum
+{
     DEVICE_NONE = -1,
     DEVICE_ZYNQ,
     DEVICE_ULTRASCALE

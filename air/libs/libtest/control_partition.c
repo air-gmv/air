@@ -79,7 +79,7 @@ void control_partition_init(air_u32_t id, air_name_ptr_t shm_name)
     test_control = NULL;
     air_sharedmemory_t sharedmemory;
     /* get partition configuration */
-    (void)air_syscall_get_partition_status(-1, &partition);
+    air_syscall_get_partition_status(-1, &partition);
 
     /* get shared memory area */
     if (air_syscall_get_sharedmemory(shm_name, &sharedmemory) == AIR_NO_ERROR)

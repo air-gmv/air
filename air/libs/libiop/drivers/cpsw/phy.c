@@ -39,9 +39,9 @@
  *
  */
 
-#include "phy.h"
 #include "hw_types.h"
 #include "mdio.h"
+#include "phy.h"
 
 #define PHY_ADV_VAL_MASK (0x01e0)
 #define PHY_GIG_ADV_VAL_MASK (0x0300)
@@ -380,7 +380,7 @@ unsigned int PhyLinkStatusGet(unsigned int mdioBaseAddr, unsigned int phyAddr, v
         /* First read the BSR of the PHY */
         (void)MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_BSR, &linkStatus);
 
-        if ((linkStatus & PHY_LINK_STATUS) != 0)
+        if (linkStatus & PHY_LINK_STATUS)
         {
             return TRUE;
         }

@@ -16,12 +16,13 @@
 #include <armv7.h>
 #include <workspace.h>
 
-#define DEFINE(s, v)            asm volatile("\n-> " #s " %0 " #v :: "i" (v))
-#define OFFSETOF(s, v)          DEFINE(offsetof_##s##_##v, air_offsetof(s, v))
-#define SIZEOF(s)               DEFINE(sizeof_##s, sizeof(s))
-#define LOG2(s, v)              DEFINE(log2_##s, v)
+#define DEFINE(s, v) asm volatile("\n-> " #s " %0 " #v ::"i"(v))
+#define OFFSETOF(s, v) DEFINE(offsetof_##s##_##v, air_offsetof(s, v))
+#define SIZEOF(s) DEFINE(sizeof_##s, sizeof(s))
+#define LOG2(s, v) DEFINE(log2_##s, v)
 
-int main(void) {
+int main(void)
+{
 
     OFFSETOF(pmk_sharedarea_t, core);
 
@@ -32,7 +33,7 @@ int main(void) {
     OFFSETOF(arm_core_context_t, trash);
     OFFSETOF(arm_core_context_t, isf_pointer);
     OFFSETOF(arm_core_context_t, idle_isf_pointer);
-    //OFFSETOF(arm_core_context_t, vfp_context);
+    // OFFSETOF(arm_core_context_t, vfp_context);
     OFFSETOF(arm_core_context_t, isr_nesting_level);
     OFFSETOF(arm_core_context_t, state);
 

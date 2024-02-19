@@ -16,12 +16,11 @@
 #include <segregation.h>
 #include <health_monitor.h>
 
+air_status_code_e pmk_syscall_set_system_state(pmk_core_ctrl_t *core, air_state_e state)
+{
 
-air_status_code_e pmk_syscall_set_system_state(
-        pmk_core_ctrl_t *core, air_state_e state) {
-
-    if (core->context->state != state &&
-        state > AIR_STATE_MODULE_EXEC &&  state < AIR_STATE_PARTITION_HM) {
+    if (core->context->state != state && state > AIR_STATE_MODULE_EXEC && state < AIR_STATE_PARTITION_HM)
+    {
 
         core->context->state = state;
         return AIR_SUCCESSFUL;
@@ -30,9 +29,8 @@ air_status_code_e pmk_syscall_set_system_state(
     return AIR_NO_ACTION;
 }
 
-air_status_code_e pmk_syscall_get_hm_event(
-        pmk_core_ctrl_t *core,
-        air_hm_event_t *event) {
+air_status_code_e pmk_syscall_get_hm_event(pmk_core_ctrl_t *core, air_hm_event_t *event)
+{
 
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
@@ -50,7 +48,8 @@ air_status_code_e pmk_syscall_get_hm_event(
     core_context_remove_hm_event(context);
 
     /* copy event to partition space */
-    if (pmk_segregation_put_user(context, l_event, event) != 0) {
+    if (pmk_segregation_put_user(context, l_event, event) != 0)
+    {
         return AIR_INVALID_POINTER;
     }
 

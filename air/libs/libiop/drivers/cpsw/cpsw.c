@@ -39,8 +39,8 @@
  *
  */
 
-#include "cpsw.h"
 #include "hw_types.h"
+#include "cpsw.h"
 
 /*******************************************************************************
  *                       INTERNAL MACRO DEFINITIONS
@@ -1365,7 +1365,9 @@ void CPSWContextSave(CPSWCONTEXT *contextPtr)
 
     contextPtr->aleCtrl = HWREG(contextPtr->aleBase + CPSW_ALE_CONTROL);
     contextPtr->alePortCtl[0] = HWREG(contextPtr->aleBase + CPSW_ALE_PORTCTL(0));
+
     contextPtr->alePortCtl[1] = HWREG(contextPtr->aleBase + CPSW_ALE_PORTCTL(1));
+
     contextPtr->alePortCtl[2] = HWREG(contextPtr->aleBase + CPSW_ALE_PORTCTL(2));
 
     for (idx = 0; idx < CPSW_MAX_NUM_ALE_ENTRY; idx++)
@@ -1417,7 +1419,9 @@ void CPSWContextRestore(CPSWCONTEXT *contextPtr)
 
     HWREG(contextPtr->aleBase + CPSW_ALE_CONTROL) = contextPtr->aleCtrl;
     HWREG(contextPtr->aleBase + CPSW_ALE_PORTCTL(0)) = contextPtr->alePortCtl[0];
+
     HWREG(contextPtr->aleBase + CPSW_ALE_PORTCTL(1)) = contextPtr->alePortCtl[1];
+
     HWREG(contextPtr->aleBase + CPSW_ALE_PORTCTL(2)) = contextPtr->alePortCtl[2];
 
     for (idx = 0; idx < CPSW_MAX_NUM_ALE_ENTRY; idx++)
