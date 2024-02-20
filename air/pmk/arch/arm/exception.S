@@ -294,9 +294,6 @@ restore:
 virtual:
     mov     lr, r0                          //puts return address in lr
 
-    mrs     r0, spsr
-    str     r0, [r1, #offsetof_arm_core_context_t_usr_svc_psr]
-
     add     sp, #56
 #if PMK_FPU_SUPPORT
     add     sp, #264
@@ -307,6 +304,7 @@ virtual:
     sub     r0, sp, #16
     str     lr, [r0, #8]
 
+    mov     r6, r3
     bic     r3, #(ARM_PSR_T)
     orr     r4, r3, #(ARM_PSR_EXC_MASK)
     bic     r3, #(0xF)                      // return to the virtual trap table in user mode
@@ -330,6 +328,7 @@ virtual:
     ldr     r0, [r0, #offsetof_pmk_core_ctrl_t_context]
     ldr     sp, [r0, offsetof_arm_core_context_t_sp_irq]                  // use virtual irq sp
     add     lr, r2, #0
+    str     r6, [r0, #offsetof_arm_core_context_t_usr_svc_psr]
 
     msr     cpsr, r5
 
