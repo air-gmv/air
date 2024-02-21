@@ -127,16 +127,25 @@ void bsp_core_ready(void) {
 }
 
 void bsp_boot_core(air_u32_t cpu_id, void *entry_point) {
-
+    /*
+    * Booting the secondary cores the way it is described in the documentation does not work.
+    * For the AArch32 mode the documentation is very ambiguous and it doesnt work.
+    * 
+    * So as a QUICK FIX - NOT THE THEORETICALLY CORRECT WAY - core 0 doesnt boot the other cores.
+    * Other cores must be started by the client that launches the multicore application. 
+    * 
+    * The .tcl launch script for the Cortex A53 in the Ultrascale does this. 
+    */
+    return;/*
     if (cpu_id != 0) {
-        volatile air_uptr_t *start_addr = (air_uptr_t *)0xfffffff0;
+        volatile air_uptr_t *start_addr = (air_uptr_t *)0xfffffff0; //0xffff0000
         arm_data_synchronization_barrier();
         arm_instruction_synchronization_barrier();
         *start_addr = (air_u32_t)entry_point;
         arm_data_synchronization_barrier();
         arm_instruction_synchronization_barrier();
         bsp_send_event();
-    }
+    }*/
 }
 
 /* Resets all cores */

@@ -60,17 +60,21 @@ if {$multicore==1} {
 }
 
 targets -set -filter {name =~ "*A53*0" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
-rst -proc -isa A32
+rst -proc -isa A32 -clear-registers
 configparams force-mem-access 0
 
 dow $env(APP)
-# con 
+con 
 
 if {$multicore == 1} {
     targets -set -filter {name =~ "*A53*1" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
-    rst -proc -isa A32
+    rst -proc -isa A32 -clear-registers
     configparams force-mem-access 0
 
-    dow $env(APP)
-    # con
+    after 1000
+
+    # Also start core 1 at the program entrypoint.
+    con -addr 0x100000
 }
+
+targets -set -filter {name =~ "*A53*0" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
