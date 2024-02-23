@@ -76,6 +76,11 @@ air_uptr_t *arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t 
         return ret;
     }
 
+    if ((id == 15) && (core->idx==0)) //BSP_IPC_PCS -> core 0 should not receive these interrupts
+    {
+        return ret;
+    }
+
     if (arm_isr_handler_table[id] != (air_uptr_t *)NULL)
     {
         ((isr)arm_isr_handler_table[id])(frame, core);
