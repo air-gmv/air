@@ -31,7 +31,7 @@ kernel_compiler = dict(
     RANLIB="arm-rtems5-ranlib",
     CFLAGS="",
     CPPFLAGS="-g -c -fno-builtin -nodefaultlibs -Wall -march=armv7-a -mthumb \
--mfpu=neon -mfloat-abi=hard -mtune=cortex-a53",
+-mfpu=vfpv4 -mfloat-abi=hard -mtune=cortex-a53",
     CXXFLAGS="",
     LDFLAGS="--gc-sections --wrap=printf --wrap=puts --wrap=putchar",
     ARFLAGS="ruv"
