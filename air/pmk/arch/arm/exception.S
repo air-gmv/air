@@ -243,8 +243,7 @@ c_handler:
 
     // Store SVC SP in CORE CONTEXT (R1 points to pmk_core_ctrl_t)
     ldr     r2, [r1, #offsetof_pmk_core_ctrl_t_context]
-    add     r2, r2, #offsetof_arm_core_context_t_virt
-    str     sp, [r2, #offsetof_arm_core_pos_virt_t_svc_sp]
+    str     sp, [r2, #offsetof_arm_core_context_t_virt] // store svc_sp (first element of virt struct)
 
     // Branch into C exception Handler
     BL2C    arm_exception_handler
@@ -252,8 +251,7 @@ c_handler:
     // Restore SVC SP from CORE CONTEXT:
     mrc     p15, 0, r1, c13, c0, 4          // get Per_CPU core
     ldr     r1, [r1, #offsetof_pmk_core_ctrl_t_context]
-    add     r2, r1, #offsetof_arm_core_context_t_virt
-    ldr     r2, [r2, #offsetof_arm_core_pos_virt_t_svc_sp]                  // get svc sp
+    ldr     r2, [r1, #offsetof_arm_core_context_t_virt]                  // get svc sp (first element of virt struct)
     mov     sp, r2
 
     //Go into IRQ mode to restore the context

@@ -201,9 +201,9 @@ typedef struct
  */
 typedef struct
 {
+    air_u32_t svc_sp;            /* < partition SVC pointer          */
     air_u32_t sp_svc;            /* < virtual SVC stack pointer      */
     air_u32_t sp_irq;            /* < virtual IRQ stack pointer      */
-    air_u32_t svc_sp;            /* < partition SVC pointer          */
     air_u32_t usr_svc_lr;        /* < virtual SVC link register      */
     air_u32_t usr_irq_lr;        /* < virtual IRQ link register      */
     air_u32_t usr_spsr;          /* < virtual SPSR                   */
