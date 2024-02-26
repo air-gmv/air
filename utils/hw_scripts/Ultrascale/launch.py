@@ -3,6 +3,8 @@ import argparse
 import subprocess
 import os
     
+# Relative to $AIR
+TESTS_FOLDER = "examples/private-example/AIR_testsuite/" 
 
 def list_tests(folder_path):
     """List available tests (subfolders) in the specified folder."""
@@ -25,14 +27,14 @@ def run_test(test_name, recompile_air=False):
             return r.returncode
     
     ## Build the example
-    r = subprocess.run(['configure'], cwd=os.environ['AIR'] + "examples/private-example/" + test_name, capture_output=False)
+    r = subprocess.run(['configure'], cwd=os.environ['AIR'] + TESTS_FOLDER + test_name, capture_output=False)
     if r.returncode != 0:
         print("Configure example failed")
         return r.returncode
 
-    r = subprocess.run(['make', 'clean'], cwd=os.environ['AIR'] + "examples/private-example/" + test_name, capture_output=False)
+    r = subprocess.run(['make', 'clean'], cwd=os.environ['AIR'] + TESTS_FOLDER + test_name, capture_output=False)
 
-    r = subprocess.run(['make'], cwd=os.environ['AIR'] + "examples/private-example/" + test_name, capture_output=False)
+    r = subprocess.run(['make'], cwd=os.environ['AIR'] + TESTS_FOLDER + test_name, capture_output=False)
     if r.returncode != 0:
         print("Example build failed ")
         return r.returncode
@@ -45,7 +47,7 @@ def run_test(test_name, recompile_air=False):
     #Start putty
     putty = subprocess.Popen(["putty", f"/dev/UltraScale_uart", "-serial", "-sercfg", "115200,8,n,1,N"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    os.environ['APP'] = os.environ['AIR'] + "examples/private-example/" + test_name + "/executable/AIRAPP.exe"
+    os.environ['APP'] = os.environ['AIR'] + TESTS_FOLDER + test_name + "/executable/AIRAPP.exe"
 
     os.system(f"xsct -interactive {os.environ['AIR']}../utils/hw_scripts/Ultrascale/launch_a53.tcl {'1' if test_name == 'T0020_dual' else '0'}")
     if r.returncode != 0:
