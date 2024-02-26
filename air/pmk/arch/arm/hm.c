@@ -169,9 +169,9 @@ static air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core)
         {
             vcpu->psr &= ~(ARM_PSR_MODE_MASK);
             vcpu->psr |= ARM_PSR_IRQ;
-            core->context->sp_svc = frame->usr_sp;
-            core->context->usr_svc_lr = frame->usr_lr;
-            core->context->usr_irq_lr = frame->ret_addr;
+            core->context->virt.sp_svc = frame->usr_sp;
+            core->context->virt.usr_svc_lr = frame->usr_lr;
+            core->context->virt.usr_irq_lr = frame->ret_addr;
         }
     }
 

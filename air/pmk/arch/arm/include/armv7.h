@@ -197,6 +197,19 @@ typedef struct
 } arm_virtual_gic_t;
 
 /**
+ * \brief Structure to hold auxiliary variables for POS virtualization
+ */
+typedef struct
+{
+    air_u32_t sp_svc;            /* < virtual SVC stack pointer      */
+    air_u32_t sp_irq;            /* < virtual IRQ stack pointer      */
+    air_u32_t svc_sp;            /* < partition SVC pointer          */
+    air_u32_t usr_svc_lr;        /* < virtual SVC link register      */
+    air_u32_t usr_irq_lr;        /* < virtual IRQ link register      */
+    air_u32_t usr_spsr;          /* < virtual SPSR                   */
+} arm_core_pos_virt_t;
+
+/**
  * \brief Structure to hold a CPU partition context
  */
 typedef struct
@@ -211,12 +224,8 @@ typedef struct
     air_u32_t ipc_event;         /**< IPC event                      */
     air_u32_t state;             /**< system state                   */
     void *hm_event;              /**< health-monitor event           */
-    air_u32_t sp_svc;            /* < virtual svc stack pointer      */
-    air_u32_t sp_irq;            /* < virtual irq stack pointer      */
-    air_u32_t svc_sp;            /* < virtual irq stack pointer      */
-    air_u32_t usr_svc_lr;
-    air_u32_t usr_irq_lr;
-    air_u32_t usr_svc_psr;
+    arm_core_pos_virt_t virt;        /**< auxiliary virtualization vars  */
+
 } arm_core_context_t;
 
 /**
