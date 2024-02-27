@@ -179,12 +179,12 @@ save_previous: /* requires the SPSR in r0 */
     str     sp, [r2, #offsetof_arm_core_context_t_isf_pointer]
     ldr     r3, [r2, #offsetof_arm_core_context_t_trash]
     teq     r3, #1
-    beq     c_handler
 
 #if PMK_FPU_SUPPORT
     vmrs    r4, fpexc
     orr     r5, r4, #(ARM_VFP_FPEXC_ENABLE)
     vmsr    fpexc, r5
+    beq     c_handler
     vmrs    r5, fpscr
     ldr     r6, [r2, #offsetof_arm_core_context_t_vfp_context]
     stm     r6!, {r4, r5}
