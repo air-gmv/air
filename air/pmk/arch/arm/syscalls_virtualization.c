@@ -46,8 +46,10 @@ air_u32_t arm_syscall_disable_fpu(pmk_core_ctrl_t *core)
 #if PMK_FPU_SUPPORT
     if (core->partition->permissions & AIR_PERMISSION_FPU_CONTROL == AIR_PERMISSION_FPU_CONTROL)
     {
-        ((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->vfp_context.fpexc &= 0x00000000;
-        ((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->vfp_context.fpscr |= 0x00000F80;
+         core->context->vfp_context->fpexc &= ~ARM_VFP_FPEXC_ENABLE;
+         core->context->vfp_context->fpexc |= 0x00000F80;
+        //((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->vfp_context.fpexc &= 0x00000000;
+        //((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->vfp_context.fpscr |= 0x00000F80;
         return AIR_NO_ERROR;
     }
     else
@@ -56,17 +58,17 @@ air_u32_t arm_syscall_disable_fpu(pmk_core_ctrl_t *core)
     }
 #endif
     return AIR_INVALID_CONFIG;
-    //((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->vfp_context.fpexc &= ~ARM_VFP_FPEXC_ENABLE;
-    // core->context->vfp_context->fpexc &= ~ARM_VFP_FPEXC_ENABLE;
+
 }
 
 void arm_syscall_enable_fpu(pmk_core_ctrl_t *core)
 {
 #if PMK_FPU_SUPPORT
-    ((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->vfp_context.fpexc |= ARM_VFP_FPEXC_ENABLE;
+    //((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->vfp_context.fpexc |= ARM_VFP_FPEXC_ENABLE;
+     core->context->vfp_context->fpexc |= ARM_VFP_FPEXC_ENABLE;
+     core->context->vfp_context->fpscr &=0xFFF8FFFF;
 #endif
-    // core->context->vfp_context->fpexc |= ARM_VFP_FPEXC_ENABLE;
-    // core->context->vfp_context->fpscr &=0xFFF8FFFF;
+
 }
 
 air_u32_t arm_syscall_get_tbr(pmk_core_ctrl_t *core)

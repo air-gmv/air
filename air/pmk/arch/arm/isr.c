@@ -145,6 +145,8 @@ air_uptr_t *arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core)
 
     air_uptr_t *ret = NULL;
 
+    int idx = (id==27); // only global timer is implemented!
+
     arm_virtual_cpu_t *vcpu = &core->context->vcpu;
     arm_virtual_gic_t *vgic = &core->context->vgic;
     arm_interrupt_stack_frame_t *frame = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
@@ -196,7 +198,7 @@ air_uptr_t *arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core)
 
         if (ret != NULL)
         {
-            vgic->ilist[id] |= (1U << 28);
+            vgic->ilist[idx] |= (1U << 28);
             return ret;
         }
     }
@@ -207,17 +209,17 @@ air_uptr_t *arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core)
         if ((vgic->vm_ctrl & 0x1))
         {
             // the current interrupt priority is higher than the priority mask:
-            if ((((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) != 0)
+            if ((((vgic->ilist[idx] >> 23) & 0x1f) < vgic->pmr) != 0)
             {
 
-                vgic->pmr = ((vgic->ilist[id] >> 23) & 0x1f); // updates priority mask
+                vgic->pmr = ((vgic->ilist[idx] >> 23) & 0x1f); // updates priority mask
 
                 vgic->hppir = vgic->rpr;
-                vgic->ilist[(vgic->iar & 0x3ff)] &= ~(1U << 29);
-                vgic->ilist[(vgic->iar & 0x3ff)] |= (1U << 28);
+                //vgic->ilist[(vgic->iar & 0x3ff)] &= ~(1U << 29);
+                //vgic->ilist[(vgic->iar & 0x3ff)] |= (1U << 28);
 
                 vgic->iar = id; //((core->idx << 10) & id);
-                vgic->rpr = ((vgic->ilist[id] >> 23) & 0x1f);
+                vgic->rpr = ((vgic->ilist[idx] >> 23) & 0x1f);
 
                 vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
 
@@ -239,22 +241,22 @@ air_uptr_t *arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core)
             else
             {
                 // set the state of the interrupt to pending
-                vgic->ilist[id] |= (1U << 28);
+                vgic->ilist[idx] |= (1U << 28);
                 // change the highest priority pending if the current interrupt priority is higher
-                if ((((vgic->ilist[id] >> 23) & 0x1f) < ((vgic->ilist[(vgic->hppir & 0x3ff)] >> 23) & 0x1f)) != 0)
+                /*if ((((vgic->ilist[idx] >> 23) & 0x1f) < ((vgic->ilist[(vgic->hppir & 0x3ff)] >> 23) & 0x1f)) != 0)
                 {
-                    vgic->hppir = ((vgic->ilist[id] >> 23) & 0x1f);
-                }
+                    vgic->hppir = ((vgic->ilist[idx] >> 23) & 0x1f);
+                }*/
             }
         }
     }
     else
     {
 
-        vgic->ilist[id] |= (1U << 28);
-        if ((((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) != 0)
+        vgic->ilist[idx] |= (1U << 28);
+        if ((((vgic->ilist[idx] >> 23) & 0x1f) < vgic->pmr) != 0)
         {
-            vgic->hppir = ((vgic->ilist[id] >> 23) & 0x1f);
+            vgic->hppir = ((vgic->ilist[idx] >> 23) & 0x1f);
         }
     }
 
