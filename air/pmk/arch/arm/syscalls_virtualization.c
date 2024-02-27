@@ -204,6 +204,6 @@ air_u64_t arm_syscall_get_elapsed_ticks(pmk_core_ctrl_t *core)
 
 air_u32_t arm_syscall_acknowledge_int(pmk_core_ctrl_t *core)
 {
-    air_u32_t id = core->context->vgic.iar;
+    air_u32_t id = (core->context->vgic.iar) & 0x3ff; //Interrupt ID Mask
     return id;
 }
