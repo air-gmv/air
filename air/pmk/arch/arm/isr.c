@@ -218,7 +218,7 @@ air_uptr_t *arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core)
                 //vgic->ilist[(vgic->iar & 0x3ff)] &= ~(1U << 29);
                 //vgic->ilist[(vgic->iar & 0x3ff)] |= (1U << 28);
 
-                vgic->iar = id; //((core->idx << 10) & id);
+                vgic->iar = ((core->idx << 10) | id);
                 vgic->rpr = ((vgic->ilist[idx] >> 23) & 0x1f);
 
                 vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
