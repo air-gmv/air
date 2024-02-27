@@ -33,7 +33,7 @@ int main(void)
     OFFSETOF(arm_core_context_t, trash);
     OFFSETOF(arm_core_context_t, isf_pointer);
     OFFSETOF(arm_core_context_t, idle_isf_pointer);
-    // OFFSETOF(arm_core_context_t, vfp_context);
+    OFFSETOF(arm_core_context_t, vfp_context);
     OFFSETOF(arm_core_context_t, isr_nesting_level);
     OFFSETOF(arm_core_context_t, state);
     OFFSETOF(arm_core_context_t, virt);

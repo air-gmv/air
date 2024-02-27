@@ -45,18 +45,12 @@ global(exception_undef)
     cpsid   aif, #ARM_PSR_IRQ
 
     sub     sp, #24
-#if PMK_FPU_SUPPORT
-    sub     sp, #264
-#endif
+
     push    {r0-r11}
     add     r7, sp, #48
 
     ldm     r12, {r5, r6}
     stmia   r7!, {r5, r6}
-
-#if PMK_FPU_SUPPORT
-    add     r7, #264
-#endif
 
     ldr     r0, [r7, #12]                   // spsr
 
@@ -72,19 +66,12 @@ global(exception_svc)
     cpsid   aif, #ARM_PSR_IRQ
 
     sub     sp, #24
-#if PMK_FPU_SUPPORT
-    sub     sp, #264
-#endif
 
     push    {r0-r11}
     add     r7, sp, #48
 
     ldm     r12, {r5, r6}
     stmia   r7!, {r5, r6}
-
-#if PMK_FPU_SUPPORT
-    add     r7, #264
-#endif
 
     ldr     r0, [r7, #12]                   // spsr
     
@@ -101,19 +88,12 @@ global(exception_pref_abort)
     cpsid   aif, #ARM_PSR_IRQ
 
     sub     sp, #24
-#if PMK_FPU_SUPPORT
-    sub     sp, #264
-#endif
 
     push    {r0-r11}
     add     r7, sp, #48
 
     ldm     r12, {r5, r6}
     stmia   r7!, {r5, r6}
-
-#if PMK_FPU_SUPPORT
-    add     r7, #264
-#endif
 
     ldr     r0, [r7, #12]                   // spsr
 
@@ -130,19 +110,12 @@ global(exception_data_abort)
     cpsid   aif, #ARM_PSR_IRQ
 
     sub     sp, #24
-#if PMK_FPU_SUPPORT
-    sub     sp, #264
-#endif
 
     push    {r0-r11}
     add     r7, sp, #48
 
     ldm     r12, {r5, r6}
     stmia   r7!, {r5, r6}
-
-#if PMK_FPU_SUPPORT
-    add     r7, #264
-#endif
 
     ldr     r0, [r7, #12]                   // spsr
 
@@ -160,19 +133,12 @@ global(exception_fiq)
     cpsid   aif, #ARM_PSR_IRQ
 
     sub     sp, #16
-#if PMK_FPU_SUPPORT
-    sub     sp, #264
-#endif
 
     push    {r0-r11}
     add     r7, sp, #48
 
     ldr     r11, [r12]
     stmia   r7!, {r11, r14}
-
-#if PMK_FPU_SUPPORT
-    add     r7, #264
-#endif
 
     ldr     r0, [r7, #12]                   // spsr
 
@@ -187,14 +153,8 @@ global(exception_irq)
     mov     r14, #AIR_ARM_EXCEPTION_IRQ
 
     sub     sp, #16
-#if PMK_FPU_SUPPORT
-    sub     sp, #264
-#endif
     push    {r0-r12, r14}
     add     r7, sp, #56
-#if PMK_FPU_SUPPORT
-    add     r7, #264
-#endif
     mrs     r0, spsr
 
 save_previous: /* requires the SPSR in r0 */
@@ -223,11 +183,10 @@ save_previous: /* requires the SPSR in r0 */
 
 #if PMK_FPU_SUPPORT
     vmrs    r4, fpexc
-    orr     r4, #(ARM_VFP_FPEXC_ENABLE)
-    vmsr    fpexc, r4
-    beq     c_handler
+    orr     r5, r4, #(ARM_VFP_FPEXC_ENABLE)
+    vmsr    fpexc, r5
     vmrs    r5, fpscr
-    add     r6, sp, #56
+    ldr     r6, [r2, #offsetof_arm_core_context_t_vfp_context]
     stm     r6!, {r4, r5}
     vstmia  r6!, {d0-d15}
     vstmia  r6, {d16-d31}
@@ -263,9 +222,6 @@ c_handler:
 
 restore:
     add     sp, #56                         // usr_sp
-#if PMK_FPU_SUPPORT
-    add     sp, #264
-#endif
 
     pop     {r0-r3}
 
@@ -295,9 +251,6 @@ virtual:
     mov     lr, r0                          //puts return address in lr
 
     add     sp, #56
-#if PMK_FPU_SUPPORT
-    add     sp, #264
-#endif
 
     pop     {r0-r3}                         // usr_sp, usr_lr, ret_addr, ret_psr
 
@@ -326,10 +279,10 @@ virtual:
     //if we use virtual ARM modes:
     mrc     p15, 0, r0, c13, c0, 4          // get Per_CPU core
     ldr     r0, [r0, #offsetof_pmk_core_ctrl_t_context]
-    add     r0, r0, #offsetof_arm_core_context_t_virt
-    ldr     sp, [r0, #offsetof_arm_core_pos_virt_t_sp_irq]                  // use virtual irq sp
+    add     r1, r0, #offsetof_arm_core_context_t_virt
+    ldr     sp, [r1, #offsetof_arm_core_pos_virt_t_sp_irq]                  // use virtual irq sp
     add     lr, r2, #0
-    str     r6, [r0, #offsetof_arm_core_pos_virt_t_usr_spsr]
+    str     r6, [r1, #offsetof_arm_core_pos_virt_t_usr_spsr]
 
     msr     cpsr, r5
 
@@ -340,13 +293,11 @@ exc_return:
     vmrs    r4, fpexc
     orr     r4, #(ARM_VFP_FPEXC_ENABLE)
     vmsr    fpexc, r4
-    sub     sp,  #264
-    add     r6,  sp, #56
+    ldr     r6, [r0, #offsetof_arm_core_context_t_vfp_context]
     ldmia   r6!, {r4, r5}
     vldmia  r6!, {d0-d15}
     vldmia  r6,  {d16-d31}
     vmsr    fpscr, r5
-    orr     r4, #(ARM_VFP_FPEXC_ENABLE)
     vmsr    fpexc, r4
 #endif
 
@@ -355,9 +306,5 @@ exc_return:
     //sub     sp, #52
 
     add     sp, #12
-
-#if PMK_FPU_SUPPORT
-    add     sp, #264
-#endif
 
     rfe     sp!
