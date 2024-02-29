@@ -237,11 +237,18 @@ air_uptr_t *arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core)
                  core->context->virt.sp_svc = frame->usr_sp;
                  core->context->virt.usr_svc_lr = frame->usr_lr;
                  core->context->virt.usr_irq_lr = frame->ret_addr;
+                 core->context->virt.usr_spsr = frame->ret_psr;
+                 frame->usr_sp = core->context->virt.sp_irq;
+                 frame->usr_lr = core->context->virt.usr_irq_lr;
+                 frame->ret_psr &= ~(ARM_PSR_T | 0xF);
+
              }
         }
 
         //return to IRQ in virtual trap table
         ret = vbar + 6;
+        frame->ret_addr = ret;
+
     }
     else
     {
