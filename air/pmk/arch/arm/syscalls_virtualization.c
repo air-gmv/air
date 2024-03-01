@@ -131,7 +131,7 @@ void arm_syscall_set_psr(pmk_core_ctrl_t *core, air_u32_t val)
 void arm_syscall_rett(pmk_core_ctrl_t *core)
 {
 
-    core->context->vcpu.psr &= ~(ARM_PSR_A | ARM_PSR_I);
+    // core->context->vcpu.psr &= ~(ARM_PSR_A | ARM_PSR_I); //The POS itself will do this
     core->context->vgic.pmr = 255; // return the priority mask to initial state
 
     // if previous virtual mode is IRQ, switch to SVC
