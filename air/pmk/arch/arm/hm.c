@@ -172,7 +172,6 @@ air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
         {
             vcpu->psr &= ~(ARM_PSR_MODE_MASK);
             vcpu->psr |= ARM_PSR_IRQ;
-            core->context->sp_svc = frame->usr_sp;
         }
     }
 
@@ -224,11 +223,11 @@ air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
 
             case AIR_FLOAT_ERROR:
 #if PMK_FPU_SUPPORT
-                // core->context->vfp_context->fpexc|=ARM_VFP_FPEXC_ENABLE;
-                frame->vfp_context.fpexc |= ARM_VFP_FPEXC_ENABLE;
+                core->context->vfp_context->fpexc|=ARM_VFP_FPEXC_ENABLE;
+                //frame->vfp_context.fpexc |= ARM_VFP_FPEXC_ENABLE;
 #endif
-                // arm_restore_fpu(core->context->vfp_context);
-                arm_restore_fpu(frame);
+                arm_restore_fpu(core->context->vfp_context);
+                //arm_restore_fpu(frame);
                 arm_syscall_rett(core);
                 ret_addr = vbar + 1;
                 frame->ret_addr += ret_offset;
@@ -241,8 +240,20 @@ air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
 				frame->ret_addr+=ret_offset;
                 break;
             }
+
+            // store user context in virtual registers
+            core->context->virt.sp_svc = frame->usr_sp;
+            core->context->virt.usr_svc_lr = frame->usr_lr;
+            core->context->virt.usr_irq_lr = frame->ret_addr;
+            core->context->virt.usr_spsr = frame->ret_psr;
+            frame->usr_sp = core->context->virt.sp_irq;
+            frame->usr_lr = core->context->virt.usr_irq_lr;
+            frame->ret_psr &= ~(ARM_PSR_T);
         }
     }
+
+    if (ret_addr != NULL)
+        frame->ret_addr = ret_addr;
 
     return ret_addr;
 }

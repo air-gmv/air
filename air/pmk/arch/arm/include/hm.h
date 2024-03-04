@@ -31,7 +31,7 @@ air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core);
  * \brief Restores the FPU with the current context values
  * \param vfp_context Current context fpu registers
  */
-//void arm_restore_fpu(arm_vfp_context_t *vfp_context);
-void arm_restore_fpu(arm_interrupt_stack_frame_t *frame);
+void arm_restore_fpu(arm_vfp_context_t *vfp_context);
+//void arm_restore_fpu(arm_interrupt_stack_frame_t *frame);
 #endif /* HM_H_ */
 

@@ -57,9 +57,9 @@ void core_context_init(core_context_t *context, air_u32_t id)
 #if PMK_FPU_SUPPORT
     arm_enable_fpu();
     /* allocate space to hold an FPU context */
-    // context->vfp_context = (arm_vfp_context_t *)pmk_workspace_alloc(sizeof(arm_vfp_context_t));
+    context->vfp_context = (arm_vfp_context_t *)pmk_workspace_alloc(sizeof(arm_vfp_context_t));
 #else
-    // context->vfp_context = (arm_vfp_context_t *)NULL;
+   context->vfp_context = (arm_vfp_context_t *)NULL;
 #endif
 
     /* initialize the IPC event */
@@ -76,9 +76,9 @@ void core_context_init(core_context_t *context, air_u32_t id)
     printk("\n    :: context %02i at           0x%08x\n", id, context);
     printk("       idle_isf_pointer at    0x%08x to 0x%08x\n", context->idle_isf_pointer,
            context->idle_isf_pointer + sizeof(arm_interrupt_stack_frame_t));
-    // printk("       fpu_context at         0x%08x to 0x%08x\n",
-    //         context->vfp_context,
-    //         context->vfp_context + sizeof(arm_vfp_context_t));
+     printk("       fpu_context at         0x%08x to 0x%08x\n",
+             context->vfp_context,
+             context->vfp_context + sizeof(arm_vfp_context_t));
     printk("       hm_event at            0x%08x to 0x%08x\n", context->hm_event,
            context->hm_event + sizeof(pmk_hm_event_t));
 #endif
@@ -155,13 +155,14 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
         }
 #if PMK_FPU_SUPPORT
         if ((partition->permissions & AIR_PERMISSION_FPU_CONTROL) != 0) {
-            //context->vfp_context->fpscr &=0xFFF8FFFF;
-            isf->vfp_context.fpexc = (ARM_VFP_FPEXC_ENABLE);
+            context->vfp_context->fpexc = (ARM_VFP_FPEXC_ENABLE);
+            context->vfp_context->fpscr &=0xFFF8FFFF;
+            //isf->vfp_context.fpexc = (ARM_VFP_FPEXC_ENABLE);
         }
         else
         {
-            // context->vfp_context->fpexc = 0;
-            isf->vfp_context.fpexc = 0;
+            context->vfp_context->fpexc = 0;
+            //isf->vfp_context.fpexc = 0;
         }
 #endif
         /* setup the partition entry point */
@@ -179,14 +180,14 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
         stack = (stack & ~(32 - 1));
         isf->usr_sp = stack;
         /*initialize virtual stack pointers*/
-        context->sp_svc = stack;
-        context->sp_irq = stack - ((partition->mmap->size)/2);
+        context->virt.sp_svc = stack;
+
+        context->virt.sp_irq = stack - ((partition->mmap->size) / 2);
 
         //get original SP (from before exception handler)
         int sp_original = arm_get_sp() + 0xA8;  // 0xA8 seems to be the stack that is pushed by the C handler and is popped until we get back to exception.S
         //store SVC SP, adding space for each partition, in core context
-        context->svc_sp = sp_original - partition->id * (0x600); //TODO: magic number, to review
-
+        context->virt.svc_sp = sp_original - partition->id * (0x600); //TODO: magic number, to review
 
         /*Enable virtual interrupts*/
         context->vgic.vm_ctrl = 1;
