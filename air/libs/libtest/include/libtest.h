@@ -38,8 +38,8 @@ typedef enum
 {
 
     NONE = 0x00,
-    SILENT = 0x01,
-    FINISH = 0x02
+    SILENT = 0x01, // Indicates that the current step is silent, aka doesnt count to the test control, the step_id in the control will not be updated
+    FINISH = 0x02 // Indicates that a partition finished all its steps
 
 } announce_flags;
 
@@ -110,7 +110,7 @@ void control_partition_init(air_u32_t id, air_name_ptr_t shm_name);
  *
  * @note This function blocks until the global test step allows it to run
  */
-air_u32_t test_step_announce(air_u32_t id, announce_flags flags);
+air_u32_t test_step_announce(air_u32_t id, announce_flags flags, char* description);
 
 /**
  * @brief Finish test partition

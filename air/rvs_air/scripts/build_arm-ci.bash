@@ -1,5 +1,5 @@
 #!/bin/bash
-./configure -f ../utils/gitlab-runner/.arm_zynqz1_config
+./configure -f ../utils/gitlab-runner/.arm_arty7z_config
 make pmk
 make libs
 make pos

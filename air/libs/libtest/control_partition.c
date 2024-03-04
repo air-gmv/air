@@ -118,7 +118,7 @@ void control_partition_init(air_u32_t id, air_name_ptr_t shm_name)
     }
     else
     {
-
+        pprintf("LIBTEST ERROR: Shared memory not available\n");
         /* shutdown module */
         air_syscall_shutdown_module();
         for (;;)

@@ -62,6 +62,7 @@ void pmk_multicore_init(void)
 
 #ifdef PMK_DEBUG
     printk("    Configured cores: %i\n", configured_cores);
+    printk("    Available cores: %i\n", available_cores);
 #endif
 
     /* setup configured cores */
