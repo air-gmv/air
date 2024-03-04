@@ -223,10 +223,6 @@ typedef unsigned long air_sz_t;
 /**
  * \brief This define contains the emulated HM event passed to the application
  *  It is coded as the 14th SGI */
-
-
-#define AIR_SYSCALL_ARM_COUNT 18
-
 #define AIR_SYSCALL_HM_TRAP                             14
 #define AIR_IRQ_HM_EVENT                                AIR_SYSCALL_HM_TRAP
 
