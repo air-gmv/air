@@ -48,7 +48,7 @@ default:
 ARM-QEMU-TEST-DEF-$TEST_NUMBER:
   tags: ["ARM"]
   script: 
-      - cd \$AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
+      - cd \$AIR/examples/private-example/old/validation/TEST-DEF-$TEST_NUMBER
       - *build-executable
       - (\$UTILS/arm-ci.bash | tee testresult.txt) || true
       - *check-and-publish
@@ -59,7 +59,7 @@ ARM-QEMU-TEST-DEF-$TEST_NUMBER:
 SPARC-LAYSIM-TEST-DEF-$TEST_NUMBER:
   tags: ["SPARC","LAYSIM"]
   script: 
-        - cd \$AIR/examples/private-example/private/validation/TEST-DEF-$TEST_NUMBER
+        - cd \$AIR/examples/private-example/old/validation/TEST-DEF-$TEST_NUMBER
         - *build-executable
         - laysim-gr740-mmu-cli -batch \$AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - *check-and-publish
