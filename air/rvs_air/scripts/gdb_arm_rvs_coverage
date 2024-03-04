@@ -4,8 +4,9 @@ set confirm off
 set print elements 0
 
 target remote localhost:1234
-tbreak RVS_Output
-continue 
+thread apply 2 tbreak bsp_boot_core
+thread apply 1 tbreak RVS_Output
+thread apply 1 continue
 dump memory memdump.bin &rvs_all_data32_array &rvs_all_data32_array+1
 kill
 quit

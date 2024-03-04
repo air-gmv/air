@@ -69,8 +69,18 @@ air_u32_t bsp_core_init(void)
 
     air_u32_t cpu_id = arm_cp15_get_multiprocessor_cpu_id();
 
- //   if(cpu_id != 0)
- //       bsp_wait_for_event();
+    // This is supposed to stop CPU > 0 to start until CPU 0  reaches pmk_multicore_init
+    // and enters bsp_boot_core which calls  bsp_send_event() 
+    // if(cpu_id != 0)
+    // {
+    //     #ifdef PMK_DEBUG
+    //     printk(" bsp_core_init::cpu_id = %d wait for event \n", cpu_id);
+    //     #endif
+    //         bsp_wait_for_event();
+    //     #ifdef PMK_DEBUG
+    //     printk(" bsp_core_init::cpu_id = %d received event \n", cpu_id);
+    //     #endif
+    // }
 
     arm_a9mpcore_start_hook(cpu_id);
     arm_set_vector_base();
@@ -78,14 +88,16 @@ air_u32_t bsp_core_init(void)
     if (cpu_id == 0)
     {
 #if DEBUG_MONITOR != 2
-        arm_select_debug_uart(0);
-#endif /* DEBUG_MONITOR != 2	*/
-        arm_isr_table_init();
-        arm_hm_init();
+    arm_select_debug_uart(DEBUG_UART_ID);
+#endif 
+
+/* DEBUG_MONITOR != 2	*/
+    arm_isr_table_init();
+    arm_hm_init();
 #if DEBUG_MONITOR != 2
-        arm_setup_uart(0, 115200);
-#endif /* DEBUG_MONITOR != 2	*/
-    
+    arm_setup_uart(DEBUG_UART_ID, 115200); 
+#endif 
+    /* DEBUG_MONITOR != 2	*/
     arm_peripheral_soft_reset();
 
    }
@@ -132,7 +144,6 @@ void bsp_core_ready(void)
 
 void bsp_boot_core(air_u32_t cpu_id, void *entry_point)
 {
-
     if (cpu_id != 0)
     {
         volatile air_uptr_t *start_addr = (air_uptr_t *)0xfffffff0;

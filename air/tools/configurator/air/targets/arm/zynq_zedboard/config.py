@@ -28,16 +28,14 @@ cores = 2
 kernel_compiler = dict(
     CC="arm-rtems5-gcc --pipe",
     CXX="arm-rtems5-g++ --pipe",
-    LD="arm-rtems5-gcc --pipe",
+    LD="arm-rtems5-ld",
     AR="arm-rtems5-ar",
     RANLIB="arm-rtems5-ranlib",
     CFLAGS="",
     CPPFLAGS="-g -c -fno-builtin -nodefaultlibs -Wall -march=armv7-a -mthumb \
 -mfpu=neon -mfloat-abi=hard -mtune=cortex-a9",
     CXXFLAGS="",
-    LDFLAGS="-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts \
--Wl,--wrap=putchar -march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard \
--mtune=cortex-a9",
+    LDFLAGS="--gc-sections --wrap=printf --wrap=puts --wrap=putchar",
     ARFLAGS="ruv"
 )
 
@@ -45,15 +43,14 @@ kernel_compiler = dict(
 kernel_compiler_no_fpu = dict(
     CC="arm-rtems5-gcc --pipe",
     CXX="arm-rtems5-g++ --pipe",
-    LD="arm-rtems5-gcc --pipe",
+    LD="arm-rtems5-ld",
     AR="arm-rtems5-ar",
     RANLIB="arm-rtems5-ranlib",
     CFLAGS="",
     CPPFLAGS="-g -c -fno-builtin -nodefaultlibs -Wall -march=armv7-a -mthumb \
 -mtune=cortex-a9",
     CXXFLAGS="",
-    LDFLAGS="-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts \
--Wl,--wrap=putchar -march=armv7-a -mthumb -mtune=cortex-a9",
+    LDFLAGS="--gc-sections --wrap=printf --wrap=puts --wrap=putchar",
     ARFLAGS="ruv"
 )
 
@@ -125,10 +122,7 @@ kernel_headers = set(utils.flatten([
 
 # Lib AIR sources
 libair_sources = set(utils.flatten([
-    file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'core'), ['.c']),
     file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'arch', 'arm'), ['.c', '.S']),
-    file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'zynqz7000'), ['.c', '.S']),
-    file_tools.getFilesByExtensions(path.join(SOURCE_PAL_DIRECTORY, 'bsp', 'arm', 'shared'), ['.c', '.S']),
 ]))
 
 # Lib AIR headers
@@ -146,16 +140,16 @@ mmap = MMAP(kernel_space=[0x00100000, 0x0ff00000],
             default_unit=1 << 20)
 
 # specific defines
-defines = ['PMK_FPU_SUPPORT=0','PMK_DEBUG']
+defines = ['PMK_FPU_SUPPORT=0','PMK_DEBUG','PMK_SMP=1','DEBUG_UART_ID=1']
 
 # Architecture dependent configuration
 arch_configure = air_arm.get_arm_configuration
 
 # IOP devices and definitions
 iop = IOP(defines=[],
-          devices=['xeth0', 'xeth1', 'xuart0','xuart1', 'xcan0', 'xsd0', 'xsd1', 'xadc0'],
+          devices=['xeth0', 'xeth1', 'xuart0','xuart1', 'xcan0','xcan1', 'xsd0', 'xsd1', 'xadc0'],
           drivers=['xeth', 'xuart', 'xcan', 'xsd', 'xadc'],
-          alias=dict(eth0='xeth0', eth1='xeth1', uart0='xuart0', uart1='xuart1', can0 = 'xcan0', sd0='xsd0', sd1='xsd1', adc0='xadc0'),
+          alias=dict(eth0='xeth0', eth1='xeth1', uart0='xuart0', uart1='xuart1', can0 = 'xcan0', can1 = 'xcan1', sd0='xsd0', sd1='xsd1', adc0='xadc0'),
           arch=iop_arch)
 
 # AIR application arch config
