@@ -223,38 +223,44 @@ typedef unsigned long air_sz_t;
 /**
  * \brief This define contains the emulated HM event passed to the application
  *  It is coded as the 14th SGI */
-#define AIR_SYSCALL_HM_TRAP 14
-#define AIR_IRQ_HM_EVENT AIR_SYSCALL_HM_TRAP
 
-#define AIR_SYSCALL_ARM_DISABLE_INTERRUPTS 0
-#define AIR_SYSCALL_ARM_ENABLE_INTERRUPTS 1
-#define AIR_SYSCALL_ARM_DISABLE_TRAPS 2
-#define AIR_SYSCALL_ARM_ENABLE_TRAPS 3
-#define AIR_SYSCALL_ARM_DISABLE_FPU 4
-#define AIR_SYSCALL_ARM_ENABLE_FPU 5
-#define AIR_SYSCALL_ARM_GET_TBR 6
-#define AIR_SYSCALL_ARM_SET_TBR 7
-#define AIR_SYSCALL_ARM_GET_PSR 8
-#define AIR_SYSCALL_ARM_SET_PSR 9
-#define AIR_SYSCALL_ARM_RETT 10
-#define AIR_SYSCALL_ARM_GET_CACHE_REGISTER 11
-#define AIR_SYSCALL_ARM_SET_CACHE_REGISTER 12
-#define AIR_SYSCALL_ARM_RESTORE_CACHE_REGISTER 13
-#define AIR_SYSCALL_ARM_GET_IRQ_MASK_REGISTER 14
-#define AIR_SYSCALL_ARM_SET_IRQ_MASK_REGISTER 15
-#define AIR_SYSCALL_ARM_SET_IRQ_FORCE_REGISTER 16
-#define AIR_SYSCALL_ARM_DISABLE_ABORTS 17
-#define AIR_SYSCALL_ARM_ENABLE_ABORTS 18
+
 #define AIR_SYSCALL_ARM_COUNT 18
+
+#define AIR_SYSCALL_HM_TRAP                             14
+#define AIR_IRQ_HM_EVENT                                AIR_SYSCALL_HM_TRAP
+
+#define AIR_SYSCALL_ARM_DISABLE_INTERRUPTS              0
+#define AIR_SYSCALL_ARM_ENABLE_INTERRUPTS               1
+#define AIR_SYSCALL_ARM_DISABLE_TRAPS                   2
+#define AIR_SYSCALL_ARM_ENABLE_TRAPS                    3
+#define AIR_SYSCALL_ARM_DISABLE_FPU                     4
+#define AIR_SYSCALL_ARM_ENABLE_FPU                      5
+#define AIR_SYSCALL_ARM_GET_TBR                         6
+#define AIR_SYSCALL_ARM_SET_TBR                         7
+#define AIR_SYSCALL_ARM_GET_PSR                         8
+#define AIR_SYSCALL_ARM_SET_PSR                         9
+#define AIR_SYSCALL_ARM_RETT                            10
+#define AIR_SYSCALL_ARM_GET_CACHE_REGISTER              11
+#define AIR_SYSCALL_ARM_SET_CACHE_REGISTER              12
+#define AIR_SYSCALL_ARM_RESTORE_CACHE_REGISTER          13
+#define AIR_SYSCALL_ARM_GET_IRQ_MASK_REGISTER           14
+#define AIR_SYSCALL_ARM_SET_IRQ_MASK_REGISTER           15
+#define AIR_SYSCALL_ARM_SET_IRQ_FORCE_REGISTER          16
+#define AIR_SYSCALL_ARM_ACK_INT                         17
+#define AIR_SYSCALL_ARM_END_INT                         18
+#define AIR_SYSCALL_ARM_GET_SPSR                        19
+#define AIR_SYSCALL_ARM_SET_SPSR                        20
+#define AIR_SYSCALL_ARM_DISABLE_ABORTS                  21
+#define AIR_SYSCALL_ARM_ENABLE_ABORTS                   22
+#define AIR_SYSCALL_ARM_COUNT                           22
 
 /**
  * \brief Defined as the number of ARM paravirtualization system calls,
  *  as ARM uses only one virtual syscall table, the syscalls ids defined in
  *  air.h are a continuation of these
  */
-#define AIR_SYSCALL_ARCH_COUNT 19
 
-#define AIR_SYSCALL_ARM_ACK_INT 20
-#define AIR_SYSCALL_ARM_END_INT 21
+#define AIR_SYSCALL_ARCH_COUNT                          22
 
 #endif /* AIR_ARCH_H_ */

@@ -81,6 +81,11 @@ air_uptr_t *arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t 
         return ret;
     }
 
+    if ((id == 15) && (core->idx==0)) //BSP_IPC_PCS -> core 0 should not receive these interrupts
+    {
+        return ret;
+    }
+
     if (arm_isr_handler_table[id] != (air_uptr_t *)NULL)
     {
         ((isr)arm_isr_handler_table[id])(frame, core);
@@ -98,6 +103,7 @@ air_uptr_t *arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t 
 
         frame = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
         core->partition_switch = 0;
+
 #ifdef PMK_DEBUG_ISR
         if (core->partition != NULL)
         {
@@ -144,6 +150,8 @@ air_uptr_t *arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core)
 
     air_uptr_t *ret = NULL;
 
+    int idx = (id==27 || id==29); // only global timer is implemented!
+
     arm_virtual_cpu_t *vcpu = &core->context->vcpu;
     arm_virtual_gic_t *vgic = &core->context->vgic;
     arm_interrupt_stack_frame_t *frame = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
@@ -157,6 +165,8 @@ air_uptr_t *arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core)
     {
         return ret;
     }
+
+    air_u32_t int_priority = ((vgic->ilist[idx] >> 23) & 0x1f);
 
     /* abort have higher priority than IRQ, soo if any pending and cpu is accepting they go 1st */
     if (!psr_a)
@@ -195,60 +205,65 @@ air_uptr_t *arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core)
 
         if (ret != NULL)
         {
-            vgic->ilist[id] |= (1U << 28);
+            vgic->ilist[idx] |= (1U << 28);
             return ret;
         }
     }
-    /*the IRQ exception can only be taken if the IRQ mask bit is 0*/
-    if (!psr_i)
+
+    // if virtual interrupts are disabled, do nothing
+    if (!(vgic->vm_ctrl & 0x1))
+        return ret;
+
+    /*the IRQ exception can only be taken if the IRQ mask bit is 0 (psr_i)
+     *  and if the priority is higher than priority mask (vgic_pmr)*/
+    if ((!psr_i) && (int_priority < vgic->pmr))
     {
-        // virtual interrupts are enabled:
-        if ((vgic->vm_ctrl & 0x1))
+        vgic->rpr = int_priority; //updates running priority
+        vgic->pmr = vgic->rpr; // updates priority mask
+
+        //update state to active
+        vgic->ilist[idx] |= (1U << 29);
+
+        //update interrupt acknowledge register
+        vgic->iar = ((core->idx << 10) | id);
+
+        //if exception occured inside the partition, update the needed virtual registers
+        if (((frame->ret_psr & ARM_PSR_MODE_MASK) == ARM_PSR_USR) ||
+            ((frame->ret_psr & ARM_PSR_MODE_MASK) == ARM_PSR_SYS))
         {
-            // the current interrupt priority is higher than the priority mask:
-            if ((((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) != 0)
-            {
+            //if exception does not occur inside virtual IRQ mode (preemption)
+             if ((vcpu->psr & ARM_PSR_MODE_MASK) != ARM_PSR_IRQ)
+             {
+                 // go into virtual IRQ mode
+                 vcpu->psr &= ~(ARM_PSR_MODE_MASK);
+                 vcpu->psr |= ARM_PSR_IRQ;
 
-                vgic->pmr = ((vgic->ilist[id] >> 23) & 0x1f); // updates priority mask
+                 // store user context in virtual registers
+                 core->context->virt.sp_svc = frame->usr_sp;
+                 core->context->virt.usr_svc_lr = frame->usr_lr;
+                 core->context->virt.usr_irq_lr = frame->ret_addr;
+                 core->context->virt.usr_spsr = frame->ret_psr;
+                 frame->usr_sp = core->context->virt.sp_irq;
+                 frame->usr_lr = core->context->virt.usr_irq_lr;
+                 frame->ret_psr &= ~(ARM_PSR_T | 0xF);
 
-                vgic->hppir = vgic->rpr;
-                vgic->ilist[(vgic->iar & 0x3ff)] &= ~(1U << 29);
-                vgic->ilist[(vgic->iar & 0x3ff)] |= (1U << 28);
-
-                vgic->iar = id; //((core->idx << 10) & id);
-                vgic->rpr = ((vgic->ilist[id] >> 23) & 0x1f);
-
-                vcpu->psr |= (ARM_PSR_A | ARM_PSR_I);
-                if (((frame->ret_psr & ARM_PSR_MODE_MASK) == ARM_PSR_USR) ||
-                    ((frame->ret_psr & ARM_PSR_MODE_MASK) == ARM_PSR_SYS))
-                {
-                    if ((vcpu->psr & ARM_PSR_MODE_MASK) != ARM_PSR_IRQ)
-                    {
-                        vcpu->psr &= ~(ARM_PSR_MODE_MASK);
-                        vcpu->psr |= ARM_PSR_IRQ;
-                        core->context->sp_svc = frame->usr_sp;
-                    }
-                }
-
-                ret = vbar + 6;
-            }
-            else
-            {
-                // set the state of the interrupt to pending
-                vgic->ilist[id] |= (1U << 28);
-                // change the highest priority pending if the current interrupt priority is higher
-                if ((((vgic->ilist[id] >> 23) & 0x1f) < ((vgic->ilist[(vgic->hppir & 0x3ff)] >> 23) & 0x1f)) != 0)
-                {
-                    vgic->hppir = ((vgic->ilist[id] >> 23) & 0x1f);
-                }
-            }
+             }
         }
-    } else {
-        // TODO: CHECK THIS INTERRUPT HANDLING, COMMENTING IT OUT FOR NOW (NOT NEEDED IN BARE)
-        // vgic->ilist[id] |= (1U << 28); //Set the interrupt as pending
-        // if (((vgic->ilist[id] >> 23) & 0x1f) < vgic->pmr) { //then checks for priority
-        //     vgic->hppir = ((vgic->ilist[id] >> 23) & 0x1f);
-        // }
+
+        //return to IRQ in virtual trap table
+        ret = vbar + 6;
+        frame->ret_addr = ret;
+
+    }
+    else
+    {
+        // set the state of the interrupt to pending
+        vgic->ilist[idx] |= (1U << 28);
+        // change the highest priority pending if the current interrupt priority is higher
+        if ( int_priority < vgic->hppir )
+        {
+            vgic->hppir = int_priority;
+        }
     }
 
     return ret;
