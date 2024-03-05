@@ -20,7 +20,7 @@ ARM-QEMU-validation-test:
       - job: ARM-ARTY7Z-build
         optional: true
     script: 
-        - cd $AIR/examples/private-example/private/validation/$EXAMPLE
+        - cd $AIR/examples/private-example/old/validation/$EXAMPLE
         - *build-executable
         - |
           if [ "$CI_PIPELINE_SOURCE" = "push" ]; then
