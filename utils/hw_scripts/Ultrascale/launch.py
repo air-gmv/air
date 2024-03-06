@@ -49,7 +49,7 @@ def run_test(test_name, recompile_air=False):
 
     os.environ['APP'] = os.environ['AIR'] + TESTS_FOLDER + test_name + "/executable/AIRAPP.exe"
 
-    os.system(f"xsct -interactive {os.environ['AIR']}../utils/hw_scripts/Ultrascale/launch_a53.tcl {'1' if test_name == 'T0020_dual' else '0'}")
+    os.system(f"xsct -interactive {os.environ['AIR']}../utils/hw_scripts/Ultrascale/launch_a53.tcl {'1' if test_name.startswith('T002') else '0'}")
     if r.returncode != 0:
         print("Example failed")
         return r.returncode
