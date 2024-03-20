@@ -117,7 +117,11 @@ setup_stack:
     /* Calculate stack offset */
     ldr     r1, =air_stack
     mov     r2, #stack_size
-    add     r7, r1, r2, lsl r7
+    
+    //add     r7, r1, r2, lsl r7 // r7 = &air_stack + stack_size * 2^cpu_number
+    add     r3, r7, #1 // r3 = cpu_number + 1
+    mul     r2, r2, r3 // r2 = stack_size * (cpu_number + 1)
+    add     r7, r1, r2 // r7 = &air_stack + stack_size * (cpu_number + 1)
 
     mrs     r4, cpsr /* save original processor status value */
 
