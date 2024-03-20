@@ -49,7 +49,15 @@ def run_test(test_name, recompile_air=False):
 
     os.environ['APP'] = os.environ['AIR'] + TESTS_FOLDER + test_name + "/executable/AIRAPP.exe"
 
-    os.system(f"xsct -interactive {os.environ['AIR']}../utils/hw_scripts/Ultrascale/launch_a53.tcl {'1' if test_name.startswith('T002') else '0'}")
+    # Core number for this test
+    core_number = 1
+    if test_name.startswith("T002"):
+        if "quad_core" in test_name:
+            core_number = 4
+        else:
+            core_number = 2
+
+    os.system(f"xsct -interactive {os.environ['AIR']}../utils/hw_scripts/Ultrascale/launch_a53.tcl {core_number}")
     if r.returncode != 0:
         print("Example failed")
         return r.returncode

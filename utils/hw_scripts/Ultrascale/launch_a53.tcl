@@ -4,11 +4,11 @@ set fsbl 0
 
 if { $argc == 1 } {
     set multicore [lindex $argv 0]
-    if {$multicore == 1} {
+    if {$multicore > 1} {
         puts "Multicore example!"
     }
 } else {
-    set multicore 0
+    set multicore 1
 }
 
 connect -symbols
@@ -22,8 +22,19 @@ rst -system
 #Reset A53, load and run FSBL
 targets -set -filter {name =~"APU*" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
 enable_a32_mode 0
-if {$multicore == 1} {
+
+if {$multicore == 2} {
     enable_a32_mode 1
+} elseif {$multicore == 4} {
+    enable_a32_mode 1
+    enable_a32_mode 2
+    enable_a32_mode 3
+} else {
+    if {$multicore != 1} { # multicore is not 1, 2 or 4
+        puts "Invalid multicore value"
+        puts $multicore
+        exit   
+    }
 }
 
 if {$fsbl == 1 } {
@@ -51,14 +62,15 @@ if {$fsbl == 1 } {
 # set halt on debug on system counter
 mwr 0xFF260000 0x00000003 
 
-# Enable Cross Triggering to halt system counter when cpu halts
+# Enable Cross Triggering to halt system counter when cpu 0 halts
 set bp_10_4_0 [bpadd -target-id all -ct-input {16} -ct-output {63} -skip-on-step 0]
 
-if {$multicore==1} {
-    # Cross trigger to stop CPU1 when CPU0 is stopped
-    bpadd -ct-input 16 -ct-output 24
-}
+# if {$multicore > 1} {
+#     # Cross trigger to stop CPU1 when CPU0 is stopped
+#     bpadd -ct-input 16 -ct-output 24
+#}
 
+# Always start core 0
 targets -set -filter {name =~ "*A53*0" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
 rst -proc -isa A32 -clear-registers
 configparams force-mem-access 0
@@ -66,15 +78,35 @@ configparams force-mem-access 0
 dow $env(APP)
 con 
 
-if {$multicore == 1} {
+if {$multicore >= 2} {
     targets -set -filter {name =~ "*A53*1" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
     rst -proc -isa A32 -clear-registers
     configparams force-mem-access 0
 
     after 1000
 
-    # Also start core 1 at the program entrypoint.
+    # Also start core 1 at the program entry point.
     con -addr 0x100000
+
+    if {$multicore == 4} {
+        targets -set -filter {name =~ "*A53*2" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
+        rst -proc -isa A32 -clear-registers
+        configparams force-mem-access 0
+
+        after 500
+
+        # Also start core 2 at the program entry point.
+        con -addr 0x100000
+
+        targets -set -filter {name =~ "*A53*3" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
+        rst -proc -isa A32 -clear-registers
+        configparams force-mem-access 0
+
+        after 500
+
+        # Also start core 3 at the program entry point.
+        con -addr 0x100000
+    }
 }
 
 targets -set -filter {name =~ "*A53*0" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
