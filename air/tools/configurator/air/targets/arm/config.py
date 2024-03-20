@@ -20,7 +20,7 @@ class ARMConfiguration(object):
         self.mmu_l2_tables_entries = 0
         self.workspace_size = 0
 
-MAX_CORES                  = 2
+MAX_CORES                  = 4
 
 CPU_CORE_CONTROL            = [       0x8,      0x24]
 CPU_CORE_CONTEXT            = [       0x8,      0xB0]

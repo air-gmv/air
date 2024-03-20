@@ -20,7 +20,7 @@ def iop_arch(config, partition):
 description = "AIR OS for UltraScale 96 V2 - A53"
 
 # Target Number of cores
-cores = 2
+cores = 4
 
 # Kernel Compiler with FPU
 kernel_compiler = dict(
