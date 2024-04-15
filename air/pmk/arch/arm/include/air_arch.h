@@ -237,18 +237,18 @@ air_u32_t air_syscall_acknowledge_int(void);
 #define AIR_SYSCALL_ARM_GET_IRQ_MASK_REGISTER           14
 #define AIR_SYSCALL_ARM_SET_IRQ_MASK_REGISTER           15
 #define AIR_SYSCALL_ARM_SET_IRQ_FORCE_REGISTER          16
-#define AIR_SYSCALL_ARM_COUNT                           16
+#define AIR_SYSCALL_ARM_ACK_INT                         17
+#define AIR_SYSCALL_ARM_END_INT                         18
+#define AIR_SYSCALL_ARM_GET_SPSR                        19
+#define AIR_SYSCALL_ARM_SET_SPSR                        20
+#define AIR_SYSCALL_ARM_COUNT                           20
 
 /**
  * \brief Defined as the number of ARM paravirtualization system calls,
  *  as ARM uses only one virtual syscall table, the syscalls ids defined in
  *  air.h are a continuation of these
  */
-#define AIR_SYSCALL_ARCH_COUNT                          17
 
-
-#define AIR_SYSCALL_ARM_ACK_INT                         18
-#define AIR_SYSCALL_ARM_END_INT                         19
-
+#define AIR_SYSCALL_ARCH_COUNT                          20
 
 #endif /* AIR_ARCH_H_ */
