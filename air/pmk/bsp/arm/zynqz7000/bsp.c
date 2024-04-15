@@ -71,16 +71,16 @@ air_u32_t bsp_core_init(void)
 
     // This is supposed to stop CPU > 0 to start until CPU 0  reaches pmk_multicore_init
     // and enters bsp_boot_core which calls  bsp_send_event() 
-    // if(cpu_id != 0)
-    // {
-    //     #ifdef PMK_DEBUG
-    //     printk(" bsp_core_init::cpu_id = %d wait for event \n", cpu_id);
-    //     #endif
-    //         bsp_wait_for_event();
-    //     #ifdef PMK_DEBUG
-    //     printk(" bsp_core_init::cpu_id = %d received event \n", cpu_id);
-    //     #endif
-    // }
+     if(cpu_id != 0)
+     {
+         #ifdef PMK_DEBUG
+         printk(" bsp_core_init::cpu_id = %d wait for event \n", cpu_id);
+         #endif
+             bsp_wait_for_event();
+         #ifdef PMK_DEBUG
+         printk(" bsp_core_init::cpu_id = %d received event \n", cpu_id);
+         #endif
+     }
 
     arm_a9mpcore_start_hook(cpu_id);
     arm_set_vector_base();
@@ -103,7 +103,8 @@ air_u32_t bsp_core_init(void)
    }
 
 #ifdef PMK_DEBUG
-    printk("start! bsp_core_init::cpu_id = %d\n", cpu_id);
+    if (cpu_id != 0)
+        printk("start! bsp_core_init::cpu_id = %d\n", cpu_id);
 #endif
 
     gic_init(cpu_id);

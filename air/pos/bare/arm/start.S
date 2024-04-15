@@ -73,9 +73,13 @@ global(arm_pos_exceptions)
     nop
     b       pos_pref_abort
     b       pos_data_abort
+    b       pos_irq
     nop
     nop
-    nop
+
+pos_irq:
+
+    svc     #(AIR_SYSCALL_ARM_RETT)
 
 pos_undef:
     push    {r0-r4, lr}
