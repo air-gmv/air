@@ -46,8 +46,10 @@ air_u32_t arm_syscall_disable_fpu(pmk_core_ctrl_t *core)
 #if PMK_FPU_SUPPORT
     if (core->partition->permissions & AIR_PERMISSION_FPU_CONTROL == AIR_PERMISSION_FPU_CONTROL)
     {
-        ((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->vfp_context.fpexc &= 0x00000000;
-        ((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->vfp_context.fpscr |= 0x00000F80;
+         core->context->vfp_context->fpexc &= ~ARM_VFP_FPEXC_ENABLE;
+         core->context->vfp_context->fpexc |= 0x00000F80;
+        //((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->vfp_context.fpexc &= 0x00000000;
+        //((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->vfp_context.fpscr |= 0x00000F80;
         return AIR_NO_ERROR;
     }
     else
@@ -56,17 +58,17 @@ air_u32_t arm_syscall_disable_fpu(pmk_core_ctrl_t *core)
     }
 #endif
     return AIR_INVALID_CONFIG;
-    //((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->vfp_context.fpexc &= ~ARM_VFP_FPEXC_ENABLE;
-    // core->context->vfp_context->fpexc &= ~ARM_VFP_FPEXC_ENABLE;
+
 }
 
 void arm_syscall_enable_fpu(pmk_core_ctrl_t *core)
 {
 #if PMK_FPU_SUPPORT
-    ((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->vfp_context.fpexc |= ARM_VFP_FPEXC_ENABLE;
+    //((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->vfp_context.fpexc |= ARM_VFP_FPEXC_ENABLE;
+     core->context->vfp_context->fpexc |= ARM_VFP_FPEXC_ENABLE;
+     core->context->vfp_context->fpscr &=0xFFF8FFFF;
 #endif
-    // core->context->vfp_context->fpexc |= ARM_VFP_FPEXC_ENABLE;
-    // core->context->vfp_context->fpscr &=0xFFF8FFFF;
+
 }
 
 air_u32_t arm_syscall_get_tbr(pmk_core_ctrl_t *core)
@@ -92,36 +94,70 @@ air_u32_t arm_syscall_get_psr(pmk_core_ctrl_t *core)
 void arm_syscall_set_psr(pmk_core_ctrl_t *core, air_u32_t val)
 {
 
+    arm_interrupt_stack_frame_t *isf_pointer = ((arm_interrupt_stack_frame_t *)core->context->isf_pointer);
+
+    switch ((core->context->vcpu.psr) & ARM_PSR_MODE_MASK)
+    {
+        case ARM_PSR_SVC:
+            core->context->virt.sp_svc = isf_pointer->usr_sp;
+            core->context->virt.usr_svc_lr = isf_pointer->usr_lr;
+            break;
+        case ARM_PSR_IRQ:
+            core->context->virt.sp_irq = isf_pointer->usr_sp;
+            core->context->virt.usr_irq_lr = isf_pointer->usr_lr;
+            break;
+    }
+
+
     if (((core->context->vcpu.psr) & ARM_PSR_MODE_MASK) != (val & ARM_PSR_MODE_MASK))
     {
-
-        switch ((core->context->vcpu.psr) & ARM_PSR_MODE_MASK)
-        {
-        case ARM_PSR_SVC:
-            core->context->sp_svc = ((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->usr_sp;
-            break;
-        case ARM_PSR_IRQ:
-            core->context->sp_irq = ((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->usr_sp;
-            break;
-        }
-
-        switch (val & ARM_PSR_MODE_MASK)
-        {
-        case ARM_PSR_SVC:
-            ((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->usr_sp = core->context->sp_svc;
-            break;
-        case ARM_PSR_IRQ:
-            ((arm_interrupt_stack_frame_t *)core->context->isf_pointer)->usr_sp = core->context->sp_irq;
-            break;
+        switch (val & ARM_PSR_MODE_MASK){
+            case ARM_PSR_SVC:
+                isf_pointer->usr_sp = core->context->virt.sp_svc;
+                isf_pointer->usr_lr = core->context->virt.usr_svc_lr;
+                break;
+            case ARM_PSR_IRQ:
+                isf_pointer->usr_sp = core->context->virt.sp_irq;
+                isf_pointer->usr_lr = core->context->virt.usr_irq_lr;
+                break;
         }
     }
 
     core->context->vcpu.psr = val;
 }
 
-void arm_syscall_rett(pmk_core_ctrl_t *core)
+
+air_u32_t arm_syscall_get_spsr(pmk_core_ctrl_t *core) 
 {
 
+    air_u32_t spsr = core->context->virt.usr_spsr;
+    return spsr;
+}
+
+void arm_syscall_set_spsr(pmk_core_ctrl_t *core, air_u32_t val) {
+
+    core->context->virt.usr_spsr = val;
+
+}
+
+void arm_syscall_return(pmk_core_ctrl_t *core) 
+{
+
+    arm_interrupt_stack_frame_t *isf_pointer = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
+
+    air_u32_t handler_lr = isf_pointer->usr_lr;
+
+    isf_pointer->usr_lr = core->context->virt.usr_svc_lr;
+    isf_pointer->ret_addr = handler_lr;
+
+    core->context->virt.sp_irq = isf_pointer->usr_sp;
+    isf_pointer->usr_sp = core->context->virt.sp_svc;
+    isf_pointer->ret_psr = core->context->virt.usr_spsr;
+}
+
+
+void arm_syscall_rett(pmk_core_ctrl_t *core) 
+{
     core->context->vcpu.psr &= ~(ARM_PSR_A | ARM_PSR_I);
     core->context->vgic.pmr = 255; // return the priority mask to initial state
 
@@ -168,6 +204,6 @@ air_u64_t arm_syscall_get_elapsed_ticks(pmk_core_ctrl_t *core)
 
 air_u32_t arm_syscall_acknowledge_int(pmk_core_ctrl_t *core)
 {
-    air_u32_t id = core->context->vgic.iar;
+    air_u32_t id = (core->context->vgic.iar) & 0x3ff; //Interrupt ID Mask
     return id;
 }
