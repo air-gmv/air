@@ -87,7 +87,7 @@ typedef enum
 } arm_exception_e;
 
 /**
- * \brief Floating Point Unit (FPU) registers context
+ * \brief Floating Point Unit (FPU) registers context 2x4x32 (264)
  */
 typedef struct
 {
@@ -128,7 +128,7 @@ typedef struct
 } arm_vfp_context_t;
 
 /**
- * \brief Context saved on stack for an interrupt.
+ * \brief Context saved on stack for an interrupt 18x4 (72)
  */
 typedef struct
 {
@@ -146,9 +146,6 @@ typedef struct
     air_u32_t r11;
     air_u32_t r12;
     arm_exception_e exception_name; /**< here due to ISF faster save    */
-#if PMK_FPU_SUPPORT
-    arm_vfp_context_t vfp_context;
-#endif
     air_u32_t usr_sp;   /**< pre-exception sp               */
     air_u32_t usr_lr;   /**< pre-exception lr               */
     air_u32_t ret_addr; /**< return addr after the exception*/
@@ -197,22 +194,36 @@ typedef struct
 } arm_virtual_gic_t;
 
 /**
+ * \brief Structure to hold auxiliary variables for POS virtualization
+ */
+typedef struct
+{
+    air_u32_t svc_sp;            /* < partition SVC pointer          */
+    air_u32_t sp_svc;            /* < virtual SVC stack pointer      */
+    air_u32_t sp_irq;            /* < virtual IRQ stack pointer      */
+    air_u32_t usr_svc_lr;        /* < virtual SVC link register      */
+    air_u32_t usr_irq_lr;        /* < virtual IRQ link register      */
+    air_u32_t usr_spsr;          /* < virtual SPSR                   */
+} arm_core_pos_virt_t;
+
+/**
  * \brief Structure to hold a CPU partition context
  */
 typedef struct
 {
-    arm_virtual_cpu_t vcpu;      /**< virtual CPU control            */
-    arm_virtual_gic_t vgic;      /**< virtual GIC CPU control        */
-    air_u32_t trash;             /**< trash flag                     */
-    void *entry_point;           /**< core entry point               */
-    void *isf_pointer;           /**< core stack pointer             */
-    void *idle_isf_pointer;      /**< core ISF stack                 */
-    air_u32_t isr_nesting_level; /**< core interrupt nesting level   */
-    air_u32_t ipc_event;         /**< IPC event                      */
-    air_u32_t state;             /**< system state                   */
-    void *hm_event;              /**< health-monitor event           */
-    air_u32_t sp_svc;            /* < virtual svc stack pointer      */
-    air_u32_t sp_irq;            /* < virtual irq stack pointer      */
+    arm_virtual_cpu_t vcpu;             /**< virtual CPU control           4x4      */
+    arm_virtual_gic_t vgic;             /**< virtual GIC CPU control       4x24     */
+    air_u32_t trash;                    /**< trash flag                             */
+    void *entry_point;                  /**< core entry point                       */
+    void *isf_pointer;                  /**< core stack pointer                     */
+    void *idle_isf_pointer;             /**< core ISF stack                         */
+    arm_vfp_context_t *vfp_context;     /**< core fpu context                       */
+    air_u32_t isr_nesting_level;        /**< core interrupt nesting level           */
+    air_u32_t ipc_event;                /**< IPC event                              */
+    air_u32_t state;                    /**< system state                           */
+    void *hm_event;                     /**< health-monitor event                   */
+    arm_core_pos_virt_t virt;           /**< auxiliary virtualization vars 4x6      */
+    air_u32_t reserved;
 } arm_core_context_t;
 
 /**
@@ -379,6 +390,18 @@ __FORCE_INLINE static air_u32_t arm_get_cpsr(void)
 __FORCE_INLINE static void arm_set_cpsr(air_u32_t val)
 {
     __asm__ volatile("msr cpsr, %0\n" ::"r"(val));
+}
+
+__FORCE_INLINE static air_u32_t arm_get_sp(void)
+{
+    air_u32_t reg;
+    __asm__ volatile("mov %0, sp\n" : "=r"(reg));
+    return reg;
+}
+
+__FORCE_INLINE static void arm_set_sp(air_u32_t val)
+{
+    __asm__ volatile("mov sp, %0\n" : "=r"(val));
 }
 
 __FORCE_INLINE static void arm_disable_interrupts()

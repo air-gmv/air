@@ -35,6 +35,7 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core)
     air_u64_t elapsed = 0;              // Elapsed time
     int psri = core->context->vcpu.psr; // Processor Status Register(PSR) value
     air_clocktick_t us_per_tick = 0;    // Get the number of microseconds per tick
+    air_u32_t error, mode, pid;
 
     // Determine the SVC ID based on the instruction
     if (frame->ret_psr & ARM_PSR_T)
@@ -94,6 +95,14 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core)
         // Set the value of the Program Status Register (PSR)
         arm_syscall_set_psr(core, frame->r0);
         break;
+    case AIR_SYSCALL_ARM_GET_SPSR:
+        // Get the value of the Saved Program Status Register (SPSR)
+        frame->r5 = arm_syscall_get_spsr(core);
+        break;
+    case AIR_SYSCALL_ARM_SET_SPSR:
+        // Set the value of the Saved Program Status Register (SPSR)
+        arm_syscall_set_spsr(core, frame->r5);
+        break;
     case AIR_SYSCALL_ARM_SET_IRQ_MASK_REGISTER:
         // Set the value of the IRQ mask register
         arm_syscall_set_irq_mask_register(core, frame->r0);
@@ -134,10 +143,12 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core)
                                                                 (air_partition_status_t *)frame->r1);
         break;
     case AIR_SYSCALL_SET_PARTITION_MODE:
-
         // Set the operating mode of a partition based on its identifier
-        frame->r0 = (air_u32_t)pmk_syscall_set_partition_mode(core, (air_identifier_t)frame->r0,
-                                                              (air_operating_mode_e)frame->r1);
+        mode = (air_operating_mode_e) frame->r1;
+        pid = (air_identifier_t)frame->r0;
+        error = (air_u32_t)pmk_syscall_set_partition_mode(core, pid, mode);
+        if ( (error != AIR_NO_ERROR) ||  ((core->partition->id != pid) && (pid != -1)) || ((mode != AIR_MODE_COLD_START) && (mode != AIR_MODE_WARM_START)) )
+            frame->r0 = error;
         break;
     case AIR_SYSCALL_GET_SCHEDULE_ID:
 
@@ -246,6 +257,9 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core)
         // Acknowledge an interrupt for the current core
         frame->r0 = arm_syscall_acknowledge_int(core);
         break;
+    case AIR_SYSCALL_ARM_RETT:
+        arm_syscall_return(core);
+        //don't break!
     case AIR_SYSCALL_ARM_END_INT:
         // End the interrupt for the current core and return from the handler
         arm_syscall_rett(core);
