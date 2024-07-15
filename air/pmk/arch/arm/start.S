@@ -102,7 +102,7 @@ reset:
 #ifdef QEMU_TARGET
     bne     qemu_reset_state
 #else 
-    bne setup_stack
+    bne     setup_stack
 #endif
 
 clear_bss:
