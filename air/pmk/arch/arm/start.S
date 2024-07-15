@@ -99,7 +99,7 @@ reset:
 #endif /* PMK_SMP */
 
     cmp     r7, #0
-    bne     setup_stack
+    bne     qemu_reset_state
 
 clear_bss:
     ldr     r1, =air_kernel_bss_start
@@ -211,5 +211,16 @@ twiddle:
     bl      bsp_restart_core
     b       twiddle
 
-
+qemu_reset_state: 
+    isb sy
+    dsb sy
+    dmb sy
+    mov r0, #0xfffffff0
+    ldr r1,[r0]
+    isb sy
+    dsb sy
+    dmb sy
+    cmp r1, #0
+    bne setup_stack
+    b  qemu_reset_state
 #endif /* __ARM_ARCH >= 7 */
