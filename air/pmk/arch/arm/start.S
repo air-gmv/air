@@ -99,7 +99,11 @@ reset:
 #endif /* PMK_SMP */
 
     cmp     r7, #0
+#ifdef QEMU_TARGET
     bne     qemu_reset_state
+#else 
+    bne setup_stack
+#endif
 
 clear_bss:
     ldr     r1, =air_kernel_bss_start
