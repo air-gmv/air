@@ -99,7 +99,7 @@ reset:
 #endif /* PMK_SMP */
 
     cmp     r7, #0
-#ifdef QEMU_TARGET
+#ifdef PMK_ARM_QEMU
     bne     qemu_reset_state
 #else 
     bne     setup_stack
