@@ -85,22 +85,11 @@ air_u32_t test_partition_init(air_name_ptr_t shm_name)
  *
  * @note This function blocks until the global test step allows it to run
  */
-air_u32_t test_step_announce(air_u32_t id, announce_flags flags, ...)
+air_u32_t test_step_announce(air_u32_t id, announce_flags flags, char* description)
 {
-    va_list vaList;
-    va_start(vaList, flags);
-    char *description = va_arg(vaList, char *);
-
-    if (description != NULL) {
-        if ((int) description[0] <= 127) { 
-            printf("LIBTEST: STEP %d: %s\n", id, description);
-        } else
-        {
-            printf("LIBTEST: STEP %d\n", id);
-        }
-        
+    if (description != NULL) { 
+        printf("LIBTEST: STEP %d: %s\n", id, description);
     }
-    va_end(vaList);
     
     if ((libtest_debug) != 0)
     {
