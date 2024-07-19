@@ -107,11 +107,10 @@ void control_partition_init(air_u32_t id, air_name_ptr_t shm_name);
  * @brief Announces a test step
  * @param id id of the current step
  * @param flags step announcement flags
- * @param ... additional test step description argument
  *
  * @note This function blocks until the global test step allows it to run
  */
-air_u32_t test_step_announce(air_u32_t id, announce_flags flags, ...);
+air_u32_t test_step_announce(air_u32_t id, announce_flags flags, char* description);
 
 /**
  * @brief Finish test partition
