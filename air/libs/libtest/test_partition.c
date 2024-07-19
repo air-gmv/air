@@ -85,12 +85,10 @@ air_u32_t test_partition_init(air_name_ptr_t shm_name)
  *
  * @note This function blocks until the global test step allows it to run
  */
-air_u32_t test_step_announce(air_u32_t id, announce_flags flags, char* description)
+air_u32_t test_step_announce(air_u32_t id, announce_flags flags)
 {
-    if (description != NULL) { 
-        printf("LIBTEST: STEP %d: %s\n", id, description);
-    }
-    
+    // air_partition_status_t status;
+
     if ((libtest_debug) != 0)
     {
         printf("libtest: step_announce id = %d, control step id = %d\n", id, test_control->step_id);
@@ -149,7 +147,7 @@ void test_step_report(char *cond, int tvalue, char *file, int line, test_result 
     /* print error line */
     if (TEST_FAILURE == res)
     {
-        printf("LIBTEST | STEP ID %04x ITERATION %03x | FAILED\n", partition_buffer->step_id, partition_buffer->iterations);
+        printf("TEST| STEP ID %04x ITERATION %03x| FAILED\n", partition_buffer->step_id, partition_buffer->iterations);
 
         if (file != NULL)
         {
