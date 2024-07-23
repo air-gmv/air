@@ -2,9 +2,10 @@
 import argparse
 import subprocess
 import os
-    
+import time 
+
 # Relative to $AIR
-TESTS_FOLDER = "examples/private-example/AIR_testsuite/" 
+TESTS_FOLDER = "examples/private-example/AIR_testsuite/Validation_tests/BARE/" 
 
 def list_tests(folder_path):
     """List available tests (subfolders) in the specified folder."""
@@ -45,7 +46,13 @@ def run_test(test_name, recompile_air=False):
         return
     
     #Start putty
-    putty = subprocess.Popen(["putty", f"/dev/UltraScale_uart", "-serial", "-sercfg", "115200,8,n,1,N"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    #remove putty log before starting
+    try:
+        os.remove(f"putty_{test_name}.log")
+    except FileNotFoundError:
+        pass
+
+    putty = subprocess.Popen(["putty", f"/dev/UltraScale_uart", "-serial", "-sercfg", "115200,8,n,1,N", "-sessionlog", f"putty_{test_name}.log"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     os.environ['APP'] = os.environ['AIR'] + TESTS_FOLDER + test_name + "/executable/AIRAPP.exe"
 
@@ -58,9 +65,14 @@ def run_test(test_name, recompile_air=False):
             core_number = 2
 
     os.system(f"xsct -interactive {os.environ['AIR']}../utils/hw_scripts/Ultrascale/launch_a53.tcl {core_number}")
-    if r.returncode != 0:
-        print("Example failed")
-        return r.returncode
+    
+    rc = -1
+    with open(f"putty_{test_name}.log", "r") as f:
+        log = f.read()
+        if "END OF TEST ALL PASS" in log:
+            rc = 0
+        else:
+            rc = 1
 
     os.system("pkill putty")
 
@@ -70,7 +82,7 @@ def run_test(test_name, recompile_air=False):
     except FileNotFoundError:
         pass
 
-    return 0
+    return rc
 
 def main():
     parser = argparse.ArgumentParser()
@@ -98,10 +110,21 @@ def main():
         exit()
 
     if args.all_tests:
+        success = []
+        failed = []
+        start = time.time() 
         for t in available_tests:
             print(f"----------Running test {t}----------")
-            if run_test(t) != 0:
-                print(f"Test {t} failed")
+
+            rc = run_test(t)
+
+            if rc != 0:
+                failed.append(t)
+            else:
+                success.append(t)
+        print(f"Took {time.time() - start} seconds")
+        print(f"Tests passed ({len(success)}): {success}")
+        print(f"Tests failed ({len(failed)}): {failed}")
     elif args.test:
         try:
             run_test(available_tests[int(args.test)-1])
