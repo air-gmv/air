@@ -1,26 +1,22 @@
-set print pretty on
-set pagination off
-set confirm off
-set print elements 0
-
 # Multiple cores are handled by gdb as threads such as 
 #   Id   Target Id                                  Frame 
 # * 1    Thread 1.1 (arm.cortex-a9 cpu@0 [running]) bsp_shutdown_core (core_ctx=0x2d00a8) at bsp/arm/zynqz7000/bsp.c:174
 #   2    Thread 1.2 (arm.cortex-a9 cpu@1 [running]) 0x2c3fc098 in ?? ()
 # Use command info threads in gdb to have information about them 
-# Use thread apply [ID] [OPTION] [COMMAND] to send a command to specific thread
+# Use thread apply [ID] [OPTION] [COMMAND] to send a command to specific thread/core
+
+set print pretty on
+set pagination off
+set confirm off
+set print elements 0
 
 # Connect to the gdb server that is QEMU 
 target remote localhost:1234
 
-# Stop core 2 at boot stage 
-thread apply 2 tbreak bsp_boot_core
+# Stop before AIR terminates application, this is the last function called
+tbreak bsp_shutdown_core
 
-# Put a breakpoint for core 1 at the end of the test
-thread apply 1 tbreak bsp_shutdown_core
-
-# Start core 0 
-thread apply 1 continue
+continue
 
 kill
 quit

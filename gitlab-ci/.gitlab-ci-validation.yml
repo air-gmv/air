@@ -15,9 +15,9 @@ ARM-QEMU-validation-test:
     stage: validation_tests
     tags: ["ARM"]
     needs:
-      - job: RVS-ARM-ARTY7Z-build
+      - job: RVS-ARM-QEMU-build
         optional: true
-      - job: ARM-ARTY7Z-build
+      - job: ARM-QEMU-build
         optional: true
     script: 
         - cd $AIR/examples/private-example/old/validation/$EXAMPLE
