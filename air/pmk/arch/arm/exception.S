@@ -80,8 +80,8 @@ global(exception_svc)
     
 	b       save_previous
 
-global(exception_pref_abort) //This is the exact same as exception_data_abort, can we make it a "function"?
-    // When there is a prefetch abort LR points to the instruction at the address following the one that caused the abort, so we need to subtract 4 to get the one that caused the abort
+global(exception_pref_abort)
+
     sub     lr, #4
     srsdb   sp, #ARM_PSR_IRQ
 

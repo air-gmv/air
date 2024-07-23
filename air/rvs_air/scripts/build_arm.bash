@@ -1,6 +1,6 @@
 #!/bin/bash
 # This script is used to build AIR and build one simple example, this allows to generate the files rvs.o and rvs_map.o that are then included in the archive pmk.a using the script build_arm_example.bash
-./configure -f ../utils/gitlab-runner/.arm_arty7z_config
+./configure -f ../utils/gitlab-runner/.arm_qemu_config
 make tools
 make libs 
 make pmk
