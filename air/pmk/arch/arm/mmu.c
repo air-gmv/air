@@ -286,7 +286,7 @@ void arm_mmu_init(void)
     air_arm_cp15_set_domain_access_control(dac);
 
     air_u32_t sctlr = arm_cp15_get_system_control();
-    sctlr &= ~(ARM_SCTLR_TRE | ARM_SCTLR_A);
+    sctlr &= ~(ARM_SCTLR_TRE);
     sctlr |= (ARM_SCTLR_AFE | ARM_SCTLR_Z);
     arm_cp15_set_system_control(sctlr);
 
