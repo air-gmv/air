@@ -76,7 +76,11 @@ rst -proc -isa A32 -clear-registers
 configparams force-mem-access 0
 
 dow $env(APP)
-con 
+
+#Set breakpoint to the last action before powering down AIR
+set bp_end [bpadd arm_set_cpu_clock_divisor]
+
+con -block
 
 if {$multicore >= 2} {
     targets -set -filter {name =~ "*A53*1" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
@@ -110,3 +114,7 @@ if {$multicore >= 2} {
 }
 
 targets -set -filter {name =~ "*A53*0" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
+stpout
+puts "Exiting in 3 seconds"
+after 3000
+exit
