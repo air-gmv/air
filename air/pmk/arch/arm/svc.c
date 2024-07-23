@@ -40,7 +40,9 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core)
     // Determine the SVC ID based on the instruction
     if (frame->ret_psr & ARM_PSR_T)
     {
+        arm_cp15_disable_alignment_checking();
         svc_id = (*((air_uptr_t *)(frame->ret_addr - 2)) & 0xff);
+        arm_cp15_enable_alignment_checking();        
     }
     else
     {
