@@ -28,18 +28,21 @@ ENTRY(bare_start)
 SECTIONS {
     .text : {
         CREATE_OBJECT_SYMBOLS
+        _text_start = .;
         *(.text)
         . = ALIGN(4);
         etext = .;
     } >ram
     
     .data : {
+        _data_start = .;
         *(.data)
         . = ALIGN(4);
         edata = .;
     } >ram
     
     .bss : {
+        _bss_start = .;
         bss_start = .;
         *(.bss)
         *(COMMON)
