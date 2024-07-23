@@ -57,9 +57,9 @@ ARM-QEMU-validation-test:
           - AIR-TEST-MODE-00050
           - AIR-TEST-SPACE-00010
           - AIR-TEST-SPACE-00020
-          - AIR-TEST-SPACE-00030
-          - AIR-TEST-SPACE-00040
-          - AIR-TEST-SPACE-00050
+          #- AIR-TEST-SPACE-00030 #Tests not applicable to ARM
+          #- AIR-TEST-SPACE-00040
+          #- AIR-TEST-SPACE-00050
           - AIR-TEST-TIME-00010
           - AIR-TEST-TIME-00020
           - AIR-TEST-TIME-00030
