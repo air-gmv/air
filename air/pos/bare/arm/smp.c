@@ -37,7 +37,7 @@ void delay(float delay_seconds){
 	// Time constants
 	int tps = 1000000 / air_syscall_get_us_per_tick(); // 1 sec
     air_u64_t ticks_to_wait = (air_u64_t) (delay_seconds *tps)   ;
-    app_wake_after(ticks_to_wait); 
+    wake_after(ticks_to_wait); 
 }
 
 void arm_pos_smp_init(void) {
