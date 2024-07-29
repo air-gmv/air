@@ -35,6 +35,7 @@ void arm_pos_smp_init(void);
  * @param ticks Number of ticks of sleep
  */
 void wake_after(air_clocktick_t ticks);
+void delay(float delay_seconds); 
 
 #endif /* ASM */
 #endif /* ARM_POS_BARE_H */
