@@ -21,14 +21,23 @@
 volatile air_uptr_t *isr_table[PMK_MAX_CORES];
 volatile air_u32_t __isr_table[PMK_MAX_CORES * ARM_IRQ_COUNT];
 
-void wake_after(air_clocktick_t ticks) {
-    if (ticks <= 0) return;
-
-    air_clocktick_t it = air_syscall_get_elapsed_ticks();
-    while (1) {
-        air_clocktick_t ft = air_syscall_get_elapsed_ticks();
-        if ((ft - it) >= ticks) break;
+/// @brief Wait for @param clock ticks 
+/// @param ticks_to_wait 
+void wake_after(air_clocktick_t ticks_to_wait) {
+    air_clocktick_t now = air_syscall_get_elapsed_ticks();
+    air_clocktick_t deadline = now + ticks_to_wait ;
+    while (now < deadline) {
+        now = air_syscall_get_elapsed_ticks();
     }
+}
+
+/// @brief Active wait time. 
+/// @param delay_seconds 
+void delay(float delay_seconds){
+	// Time constants
+	int tps = 1000000 / air_syscall_get_us_per_tick(); // 1 sec
+    air_u64_t ticks_to_wait = (air_u64_t) (delay_seconds *tps)   ;
+    app_wake_after(ticks_to_wait); 
 }
 
 void arm_pos_smp_init(void) {
