@@ -7,7 +7,7 @@
  */
 /**
  * \file bsp.h
- * \author lumm
+ * \author ansi
  * \brief bsp headers and inline assembly functions.
  */
 
@@ -17,10 +17,6 @@
 #ifndef ASM
 
 #include <air_arch.h>
-// #include <a9mpcore.h>
-// #include <workspace.h>
-// #include <gic.h>
-// #include <uart.h>
 #include <cp15.h>
 #include <bsp_console.h>
 #include <bsp_ipc.h>            // for AIR core to use ipc.c
@@ -65,25 +61,12 @@ static inline void bsp_clear_bss(void) {
     return;
 }
 
-
-//static inline void copy_vector_table() {
-//  memcpy(bsp_vector_table_begin, vector_table_begin, 8);
-//  if (vector_table_begin != vector_table_start) {
-//      air_i8_t *dst = (air_i8_t *) bsp_vector_table_begin;
-//      air_i8_t *src = (air_i8_t *) vector_table_begin;
-//
-//      for(air_u32_t i = 0; i < 8*4; i++) {
-//          *dst++ = *src++;
-//      }
-//  }
-//}
-
 static inline void arm_set_vector_base(void) {
 
     if ((air_u32_t)pmk_trap_table != 0) {
         air_u32_t ctrl;
 
-        /* TODO Assumes every core has Security Extensions */
+        /* WARNING: Assumes every core has Security Extensions */
         air_arm_cp15_set_vector_base_address((void *)pmk_trap_table);
 
         ctrl = arm_cp15_get_system_control();

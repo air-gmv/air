@@ -25,6 +25,8 @@
 #define ARM_GT_CTRL_AUTOINC_EN (1U << 3)
 #define ARM_GT_CTRL_PRESCALER(value) ((value < 256) ? value << 8 : (255U << 8))
 
+#define ARM_TIMER_ID 27
+
 typedef struct
 {
     volatile air_u32_t cnt_lower;

@@ -20,14 +20,6 @@
 void arm_peripheral_soft_reset(void) {
 
     return;
-
-    // if (arm_slcr_is_locked()) arm_slcr_unlock();
-
-    // *A9_CPU_RST_CTRL |= PERI_RST;
-    // arm_instruction_synchronization_barrier();
-    // *A9_CPU_RST_CTRL &= ~PERI_RST;
-
-    // if (!arm_slcr_is_locked()) arm_slcr_lock();
 }
 
 void arm_ps_reset(void) {

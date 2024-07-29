@@ -14,9 +14,7 @@
 #ifndef GICV1_H_
 #define GICV1_H_
 
-#ifndef PMK_ARM_ULTRASCALE96V2_A53
 #include <a9mpcore.h>
-#endif /* PMK_ARM_ULTRASCALE96V2_A53 */
 
                                         /* OFFSETS */
 typedef struct {                        /* 0xf8f0 0100 */
@@ -81,14 +79,12 @@ typedef struct
 #define ARM_SGI_TARGET_SELF 0x2
 #define ARM_SGI_TARGET_MASK(mask) (mask << 16)
 
-#ifndef PMK_ARM_ULTRASCALE96V2_A53
 /* Private CPU Interrupts (PPI) (for A9MPCORE) */
 #define ARM_A9MPCORE_IRQ_GT         27
 #define ARM_A9MPCORE_IRQ_NFIQ       28
 #define ARM_A9MPCORE_IRQ_PT         29
 #define ARM_A9MPCORE_IRQ_PW         30
 #define ARM_A9MPCORE_IRQ_NIRQ       31
-#endif /* PMK_ARM_ULTRASCALE96V2_A53 */
 
 /* Shared Peripheral Interrupts (SPI)*/
 #define ZYNQ_IRQ_CPU_0 32

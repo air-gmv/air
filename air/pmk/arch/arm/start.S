@@ -99,6 +99,7 @@ reset:
 #endif /* PMK_SMP */
 
     cmp     r7, #0
+
 #ifdef PMK_ARM_QEMU
     bne     qemu_reset_state
 #else 
@@ -219,16 +220,16 @@ twiddle:
     bl      bsp_restart_core
     b       twiddle
 
-qemu_reset_state: 
-    isb sy
+qemu_reset_state:           // Emulate secondary cores behavior 
+    isb sy                  // Memory barriers to ensure data is good
     dsb sy
     dmb sy
-    mov r0, #0xfffffff0
-    ldr r1,[r0]
-    isb sy
+    mov r0, #0xfffffff0     // r0 -> 0xfffffff0
+    ldr r1,[r0]             // Read addr #0xfffffff0 to r1
+    isb sy                  // Memory barriers to ensure data is good
     dsb sy
     dmb sy
-    cmp r1, #0
-    bne setup_stack
-    b  qemu_reset_state
+    cmp r1, #0              // Check if value in memory is still 0
+    bne setup_stack         // If not 0 then continue booting process
+    b  qemu_reset_state     // If it is still 0 continue loop
 #endif /* __ARM_ARCH >= 7 */

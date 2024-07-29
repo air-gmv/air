@@ -16,6 +16,7 @@
 #include <svc.h>
 #include <gic.h>
 #include <timer.h>
+#include <bsp_ipc.h>
 
 #ifdef PMK_DEBUG_ISR
 #include <cp15.h>
@@ -49,13 +50,7 @@ air_uptr_t *arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t 
 #endif
 
     /* GT Interrupt*/
-    #ifdef PMK_ARM_ULTRASCALE96V2_A53
-    if (id == ARM_A53_IRQ_SPT) { //Ultrascale timer generates interrupt with id 29 instead of 27
-        arm_acknowledge_gt();
-    }
-    #endif
-    if (id == 27) {
-
+    if (id == ARM_TIMER_ID) {
         arm_acknowledge_gt();
 
 #ifdef PMK_DEBUG_ISR
@@ -81,7 +76,7 @@ air_uptr_t *arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t 
         return ret;
     }
 
-    if ((id == 15) && (core->idx==0)) //BSP_IPC_PCS -> core 0 should not receive these interrupts
+    if ((id == BSP_IPC_PCS) && (core->idx==0)) //BSP_IPC_PCS -> core 0 should not receive these interrupts
     {
         return ret;
     }
@@ -150,7 +145,7 @@ air_uptr_t *arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core)
 
     air_uptr_t *ret = NULL;
 
-    int idx = (id==27 || id==29); // only global timer is implemented!
+    int idx = (id == ARM_TIMER_ID); // only global timer is implemented!
 
     arm_virtual_cpu_t *vcpu = &core->context->vcpu;
     arm_virtual_gic_t *vgic = &core->context->vgic;
