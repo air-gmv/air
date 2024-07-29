@@ -70,17 +70,14 @@ kernel_sources = [path.join(SOURCE_PMK_DIRECTORY, f) for f in [
     'arch/arm/svc.c',
     'arch/arm/syscalls_virtualization.c',
     # BSP files
-    # 'bsp/arm/shared/a9mpcore.c',
     'bsp/arm/ultrascale96v2_a53/bsp.c',
     'bsp/arm/ultrascale96v2_a53/gic.c',
     'bsp/arm/ultrascale96v2_a53/global_timer.c',
     'bsp/arm/ultrascale96v2_a53/ipc.c',
     'bsp/arm/ultrascale96v2_a53/segregation.c',
-    # 'bsp/arm/ultrascale96v2_a53/triple_timer.c',
     'bsp/arm/ultrascale96v2_a53/uart.c',
     'bsp/arm/ultrascale96v2_a53/slcr.c',
     'bsp/arm/ultrascale96v2_a53/xilinx/xil_assert.c',
-    # 'bsp/arm/ultrascale96v2_a53/xilinx/xil_io.c',
     # Core files
     'core/error.c',
     'core/barrier.c',

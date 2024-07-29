@@ -5,15 +5,15 @@ import os
 import time 
 
 # Relative to $AIR
-TESTS_FOLDER = "examples/private-example/AIR_testsuite/Validation_tests/BARE/" 
+EXAMPLES_FOLDER = "/examples/private-example/AIR_testsuite/Validation_tests/BARE/" 
 
-def list_tests(folder_path):
-    """List available tests (subfolders) in the specified folder."""
-    tests = [test for test in os.listdir(folder_path) if (os.path.isdir(os.path.join(folder_path, test)) and not "old" in test)]
-    return tests
+def list_examples(folder_path):
+    """List available examples (subfolders) in the specified folder."""
+    examples = [example for example in os.listdir(folder_path) if (os.path.isdir(os.path.join(folder_path, example)) and not "old" in example)]
+    return examples
 
-def run_test(test_name, recompile_air=False):
-    """Run the bash script for the selected test."""
+def run_test(example_name, recompile_air=False):
+    """Run the bash script for the selected example."""
 
     ## Recompile AIR
     if recompile_air:
@@ -28,14 +28,14 @@ def run_test(test_name, recompile_air=False):
             return r.returncode
     
     ## Build the example
-    r = subprocess.run(['configure'], cwd=os.environ['AIR'] + TESTS_FOLDER + test_name, capture_output=False)
+    r = subprocess.run(['configure'], cwd=os.environ['AIR'] + EXAMPLES_FOLDER + example_name, capture_output=False)
     if r.returncode != 0:
         print("Configure example failed")
         return r.returncode
 
-    r = subprocess.run(['make', 'clean'], cwd=os.environ['AIR'] + TESTS_FOLDER + test_name, capture_output=False)
+    r = subprocess.run(['make', 'clean'], cwd=os.environ['AIR'] + EXAMPLES_FOLDER + example_name, capture_output=False)
 
-    r = subprocess.run(['make'], cwd=os.environ['AIR'] + TESTS_FOLDER + test_name, capture_output=False)
+    r = subprocess.run(['make'], cwd=os.environ['AIR'] + EXAMPLES_FOLDER + example_name, capture_output=False)
     if r.returncode != 0:
         print("Example build failed ")
         return r.returncode
@@ -48,18 +48,18 @@ def run_test(test_name, recompile_air=False):
     #Start putty
     #remove putty log before starting
     try:
-        os.remove(f"putty_{test_name}.log")
+        os.remove(f"putty_{example_name}.log")
     except FileNotFoundError:
         pass
 
-    putty = subprocess.Popen(["putty", f"/dev/UltraScale_uart", "-serial", "-sercfg", "115200,8,n,1,N", "-sessionlog", f"putty_{test_name}.log"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    putty = subprocess.Popen(["putty", f"/dev/UltraScale_uart", "-serial", "-sercfg", "115200,8,n,1,N", "-sessionlog", f"putty_{example_name}.log"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    os.environ['APP'] = os.environ['AIR'] + TESTS_FOLDER + test_name + "/executable/AIRAPP.exe"
+    os.environ['APP'] = os.environ['AIR'] + EXAMPLES_FOLDER + example_name + "/executable/AIRAPP.exe"
 
     # Core number for this test
     core_number = 1
-    if test_name.startswith("T002"):
-        if "quad_core" in test_name:
+    if example_name.startswith("T002"):
+        if "quad_core" in example_name:
             core_number = 4
         else:
             core_number = 2
@@ -67,9 +67,9 @@ def run_test(test_name, recompile_air=False):
     os.system(f"xsct -interactive {os.environ['AIR']}../utils/hw_scripts/Ultrascale/launch_a53.tcl {core_number}")
     
     rc = -1
-    with open(f"putty_{test_name}.log", "r") as f:
+    with open(f"putty_{example_name}.log", "r") as f:
         log = f.read()
-        if "END OF TEST ALL PASS" in log:
+        if "END OF EXAMPLE ALL PASS" in log:
             rc = 0
         else:
             rc = 1
@@ -88,33 +88,33 @@ def main():
     parser = argparse.ArgumentParser()
 
     group = parser.add_mutually_exclusive_group(required=False)
-    group.add_argument('-t', '--test', help='Run the specified test')
-    group.add_argument('-a', '--all_tests', action='store_true', help='Run all tests')
-    parser.add_argument('-l', '--list_tests', action='store_true', help='List available tests')
+    group.add_argument('-e', '--example', help='Run the specified test')
+    group.add_argument('-a', '--all_examples', action='store_true', help='Run all examples')
+    parser.add_argument('-l', '--list_examples', action='store_true', help='List available examples')
 
-    test_folder = f"{os.environ['AIR']}{TESTS_FOLDER}"
+    test_folder = f"{os.environ['AIR']}{EXAMPLES_FOLDER}"
     
-    # List available tests (subfolders)
-    available_tests = list_tests(test_folder)
-    available_tests.sort()
+    # List available examples (subfolders)
+    available_examples= list_examples(test_folder)
+    available_examples.sort()
 
-    if not available_tests:
+    if not available_examples:
         print("No tests found in the specified folder.")
         return
 
     args = parser.parse_args()
 
-    if args.list_tests:
-        for i, test in enumerate(available_tests, start=1):
+    if args.list_examples:
+        for i, test in enumerate(available_examples, start=1):
             print(f"{i}: {test}")
         exit()
 
-    if args.all_tests:
+    if args.all_examples:
         success = []
         failed = []
         start = time.time() 
-        for t in available_tests:
-            print(f"----------Running test {t}----------")
+        for t in available_examples:
+            print(f"----------Running example {t}----------")
 
             rc = run_test(t)
 
@@ -123,26 +123,25 @@ def main():
             else:
                 success.append(t)
         print(f"Took {time.time() - start} seconds")
-        print(f"Tests passed ({len(success)}): {success}")
-        print(f"Tests failed ({len(failed)}): {failed}")
-    elif args.test:
+        print(f"Passed ({len(success)}): {success}")
+        print(f"Failed ({len(failed)}): {failed}")
+    elif args.example:
         try:
-            run_test(available_tests[int(args.test)-1])
+            run_test(available_examples[int(args.test)-1])
         except IndexError:
             print("Invalid test")
     else:
         # Prompt user to choose a test
         print("Available tests:")
-        for i, test in enumerate(available_tests, start=1):
+        for i, test in enumerate(available_examples, start=1):
             print(f"{i}: {test}")
 
         while True:
             try:
                 selected_index = int(input("Enter the number of the test to run: ")) - 1
-                selected_test = available_tests[selected_index]
+                selected_example = available_examples[selected_index]
 
-                # Run the selected test
-                run_test(selected_test)
+                run_test(selected_example)
 
                 exit()
 
