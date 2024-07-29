@@ -44,8 +44,8 @@ ARM-QEMU-validation-test:
           - AIR-TEST-HM-00030
           - AIR-TEST-HM-00040
           - AIR-TEST-HM-00050
-          - AIR-TEST-HM-00060
-          - AIR-TEST-HM-00070
+          #- AIR-TEST-HM-00060 #Not applicable to QEMU
+          #- AIR-TEST-HM-00070
           - AIR-TEST-HM-00080
           - AIR-TEST-IPC-00010
           - AIR-TEST-IPC-00020
