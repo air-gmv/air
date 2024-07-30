@@ -12,7 +12,7 @@ def list_examples(folder_path):
     examples = [example for example in os.listdir(folder_path) if (os.path.isdir(os.path.join(folder_path, example)) and not "old" in example)]
     return examples
 
-def run_test(example_name, recompile_air=False):
+def run_example(example_name, recompile_air=False):
     """Run the bash script for the selected example."""
 
     ## Recompile AIR
@@ -67,13 +67,18 @@ def run_test(example_name, recompile_air=False):
     os.system(f"xsct -interactive {os.environ['AIR']}../utils/hw_scripts/Ultrascale/launch_a53.tcl {core_number}")
     
     rc = -1
-    with open(f"putty_{example_name}.log", "r") as f:
-        log = f.read()
-        if "END OF EXAMPLE ALL PASS" in log:
-            rc = 0
-        else:
-            rc = 1
+    try:
+        with open(f"putty_{example_name}.log", "r") as f:
+            log = f.read()
+            if "END OF TEST ALL PASS" in log:
+                rc = 0
+            else:
+                rc = 1
 
+    except FileNotFoundError:
+        while(1):
+            pass
+        pass
     os.system("pkill putty")
 
     # Unlock the board file
@@ -116,7 +121,7 @@ def main():
         for t in available_examples:
             print(f"----------Running example {t}----------")
 
-            rc = run_test(t)
+            rc = run_example(t)
 
             if rc != 0:
                 failed.append(t)
@@ -127,21 +132,21 @@ def main():
         print(f"Failed ({len(failed)}): {failed}")
     elif args.example:
         try:
-            run_test(available_examples[int(args.test)-1])
+            run_example(available_examples[int(args.example)-1])
         except IndexError:
             print("Invalid test")
     else:
         # Prompt user to choose a test
         print("Available tests:")
-        for i, test in enumerate(available_examples, start=1):
-            print(f"{i}: {test}")
+        for i, ex in enumerate(available_examples, start=1):
+            print(f"{i}: {ex}")
 
         while True:
             try:
                 selected_index = int(input("Enter the number of the test to run: ")) - 1
                 selected_example = available_examples[selected_index]
 
-                run_test(selected_example)
+                run_example(selected_example)
 
                 exit()
 
