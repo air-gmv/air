@@ -15,19 +15,19 @@
 #define GICV1_H_
 
 #include <a9mpcore.h>
-/* OFFSETS */
-typedef struct
-{                               /* 0xf8f0 0100 */
-    air_u32_t iccicr;           /* 0x000 */
-    air_u32_t iccpmr;           /* 0x004 */
-    air_u32_t iccbpr;           /* 0x008 */
-    volatile air_u32_t icciar;  /* 0x00c */
-    volatile air_u32_t icceoir; /* 0x010 */
-    volatile air_u32_t iccrpr;  /* 0x014 */
-    volatile air_u32_t icchpir; /* 0x018 */
-    air_u32_t iccabpr;          /* 0x01c */
-    air_u32_t reserved[55];     /* 0x020 - 0x0f8 */
-    air_u32_t icciidr;          /* 0x0fc */
+
+                                        /* OFFSETS */
+typedef struct {                        /* 0xf8f0 0100 */
+    air_u32_t iccicr;                   /* 0x000 */
+    air_u32_t iccpmr;                   /* 0x004 */
+    air_u32_t iccbpr;                   /* 0x008 */
+    volatile air_u32_t icciar;          /* 0x00c */
+    volatile air_u32_t icceoir;         /* 0x010 */
+    volatile air_u32_t iccrpr;          /* 0x014 */
+    volatile air_u32_t icchpir;         /* 0x018 */
+    air_u32_t iccabpr;                  /* 0x01c */
+    air_u32_t reserved[55];             /* 0x020 - 0x0f8 */
+    air_u32_t icciidr;                  /* 0x0fc */
 } ic_cpu_t;
 
 typedef struct
@@ -80,11 +80,11 @@ typedef struct
 #define ARM_SGI_TARGET_MASK(mask) (mask << 16)
 
 /* Private CPU Interrupts (PPI) (for A9MPCORE) */
-#define ARM_A9MPCORE_IRQ_GT 27
-#define ARM_A9MPCORE_IRQ_NFIQ 28
-#define ARM_A9MPCORE_IRQ_PT 29
-#define ARM_A9MPCORE_IRQ_PW 30
-#define ARM_A9MPCORE_IRQ_NIRQ 31
+#define ARM_A9MPCORE_IRQ_GT         27
+#define ARM_A9MPCORE_IRQ_NFIQ       28
+#define ARM_A9MPCORE_IRQ_PT         29
+#define ARM_A9MPCORE_IRQ_PW         30
+#define ARM_A9MPCORE_IRQ_NIRQ       31
 
 /* Shared Peripheral Interrupts (SPI)*/
 #define ZYNQ_IRQ_CPU_0 32

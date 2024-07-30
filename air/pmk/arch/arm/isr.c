@@ -16,8 +16,10 @@
 #include <svc.h>
 #include <gic.h>
 #include <timer.h>
+#include <bsp_ipc.h>
 
 #ifdef PMK_DEBUG_ISR
+#include <cp15.h>
 #include <printk.h>
 air_u32_t counter = 0;
 void arm_isr_handler_print_frame(arm_interrupt_stack_frame_t *frame, const char txt[5]);
@@ -48,9 +50,7 @@ air_uptr_t *arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t 
 #endif
 
     /* GT Interrupt*/
-    if (id == 27)
-    {
-
+    if (id == ARM_TIMER_ID) {
         arm_acknowledge_gt();
 
 #ifdef PMK_DEBUG_ISR
@@ -76,7 +76,7 @@ air_uptr_t *arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t 
         return ret;
     }
 
-    if ((id == 15) && (core->idx==0)) //BSP_IPC_PCS -> core 0 should not receive these interrupts
+    if ((id == BSP_IPC_PCS) && (core->idx==0)) //BSP_IPC_PCS -> core 0 should not receive these interrupts
     {
         return ret;
     }
@@ -145,7 +145,7 @@ air_uptr_t *arm_partition_isr_handler(air_u32_t id, pmk_core_ctrl_t *core)
 
     air_uptr_t *ret = NULL;
 
-    int idx = (id==27); // only global timer is implemented!
+    int idx = (id == ARM_TIMER_ID); // only global timer is implemented!
 
     arm_virtual_cpu_t *vcpu = &core->context->vcpu;
     arm_virtual_gic_t *vgic = &core->context->vgic;

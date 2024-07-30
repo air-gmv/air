@@ -13,6 +13,9 @@
  * saves return status and global registers in the IRQ stack and branches to hm routines in SVC mode
  * the IRQ stack is used exclusively as the ISF.
  *
+ * More information about exception handling in ARM Compiler Software Development Guide, chapter 5
+ *
+ *
  */
 
 #ifndef ASM
@@ -28,29 +31,29 @@
 
     .arm
     .syntax unified
-
+                                            // -> means "points to"
 global(exception_undef)
 
-    push    {r12, r14}
-    mrs     r12, spsr
-    tst     r12, #ARM_PSR_T
-    subne   lr, #2                          //thumb
-    subeq   lr, #4                          //arm
-    srsdb   sp, #ARM_PSR_IRQ
-    pop     {r12, r14}
+    push    {r12, r14}                      // Save r12 and r14 in the stack of current mode
+    mrs     r12, spsr                       // Get spsr to r12
+    tst     r12, #ARM_PSR_T                 // Test for thumb execution state
+    subne   lr, #2                          // thumb
+    subeq   lr, #4                          // arm
+    srsdb   sp, #ARM_PSR_IRQ                // Save LR and SPSR in IRQ stack 
+    pop     {r12, r14}                      // Restore back r12 and r14
 
-    mov     r14, #AIR_ARM_EXCEPTION_UNDEF
-    stmdb   sp, {r12, r14}
-    sub     r12, sp, #8
-    cpsid   aif, #ARM_PSR_IRQ
+    mov     r14, #AIR_ARM_EXCEPTION_UNDEF   // Save in r14 exception name
+    stmdb   sp, {r12, r14}                  // Save in the stack r12 and 14 (decrease the stack pointer before)
+    sub     r12, sp, #8                     // r12 -> ( r12, r14(exception name)) in the abort stack
+    cpsid   aif, #ARM_PSR_IRQ               // Change processor state to IRQ mode and disable all interrupts
 
     sub     sp, #24
 
     push    {r0-r11}
     add     r7, sp, #48
 
-    ldm     r12, {r5, r6}
-    stmia   r7!, {r5, r6}
+    ldm     r12, {r5, r6}                   // Load what was pointed by r12 (r12, exception name) into r5 and r6
+    stmia   r7!, {r5, r6}                   // Store r5 and r6 (r12, exception name) into addr pointed by r7 (IRQ stack) and r7 -> just after exception name 
 
     ldr     r0, [r7, #12]                   // spsr
 
@@ -67,11 +70,11 @@ global(exception_svc)
 
     sub     sp, #24
 
-    push    {r0-r11}
-    add     r7, sp, #48
+    push    {r0-r11}                        // Save r0 to r11 into the stack
+    add     r7, sp, #48                     // r7 -> r11, sp -> next context, r12 -> (r12, exception name)
 
-    ldm     r12, {r5, r6}
-    stmia   r7!, {r5, r6}
+    ldm     r12, {r5, r6}                   // Load what was pointed by r12 (r12, exception name) into r5 and r6
+    stmia   r7!, {r5, r6}                   // Store r5 and r6 (r12, exception name) into addr pointed by r7 (IRQ stack) and r7 -> just after exception name
 
     ldr     r0, [r7, #12]                   // spsr
     
@@ -100,22 +103,22 @@ global(exception_pref_abort)
     b       save_previous
 
 global(exception_data_abort)
+    // When there is a data abort LR points points two instructions beyond the instruction that caused the abort, so we need to subtract 8 instead of 4 to get the one that caused the abort
+    sub     lr, #8                          // Save instruction that led to data abort in LR of current supervisor mode
+    srsdb   sp, #ARM_PSR_IRQ                // Save LR and PSR in IRQ stack
 
-    sub     lr, #8
-    srsdb   sp, #ARM_PSR_IRQ
-
-    mov     r14, #AIR_ARM_EXCEPTION_DATA_ABORT
-    stmdb   sp, {r12, r14}
-    sub     r12, sp, #8
-    cpsid   aif, #ARM_PSR_IRQ
+    mov     r14, #AIR_ARM_EXCEPTION_DATA_ABORT // Save in r14 exception name 
+    stmdb   sp, {r12, r14}                  // Save in the stack r12 and 14 (decrease the stack pointer before) 
+    sub     r12, sp, #8                     // r12 -> ( r12, r14(exception name)) in the abort stack
+    cpsid   aif, #ARM_PSR_IRQ               // Change to IRQ mode and disable ALL interrupts
 
     sub     sp, #24
 
-    push    {r0-r11}
-    add     r7, sp, #48
+    push    {r0-r11}                        // Now push the gen purpose regs into the IRQ stack
+    add     r7, sp, #48                     // r7 -> r11, sp -> next context, r12 ->(r12, exception name)
 
-    ldm     r12, {r5, r6}
-    stmia   r7!, {r5, r6}
+    ldm     r12, {r5, r6}                   // Load what was pointed by r12 (r12, exception name) into r5 and r6
+    stmia   r7!, {r5, r6}                   // Store r5 and r6 (r12, exception name) into addr pointed by r7 (IRQ stack) and r7 -> just after exception name 
 
     ldr     r0, [r7, #12]                   // spsr
 

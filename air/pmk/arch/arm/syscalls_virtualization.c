@@ -29,8 +29,17 @@ void arm_syscall_enable_interrupts(pmk_core_ctrl_t *core)
     core->context->vcpu.psr &= ~ARM_PSR_I;
 }
 
-void arm_syscall_disable_traps(pmk_core_ctrl_t *core)
-{
+void arm_syscall_disable_aborts(pmk_core_ctrl_t *core) {
+    
+    core->context->vcpu.psr |= ARM_PSR_A;
+}
+
+void arm_syscall_enable_aborts(pmk_core_ctrl_t *core) {
+
+    core->context->vcpu.psr &= ~ARM_PSR_A;
+}
+
+void arm_syscall_disable_traps(pmk_core_ctrl_t *core) {
 
     core->context->vcpu.psr |= (ARM_PSR_A | ARM_PSR_I);
 }

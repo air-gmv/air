@@ -38,6 +38,9 @@ TARGET_CPPFLAGS+=${'\\'}
 %if os_configuration.arch == "arm":
 -DCPU_LITTLE_ENDIAN${'\\'}
 %endif
+%if os_configuration.bsp == "ultrascale96v2_a53":
+-DPMK_ARM_ULTRASCALE96V2_A53${'\\'}
+%endif
 ${template.get_headers_directories(target_headers)}\
 
 LIBRARY_HEADERS=${'\\'}
