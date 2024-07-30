@@ -15,7 +15,7 @@
 ARM-QEMU:
     stage: examples
     tags: ["ARM"]
-    needs: ["RVS-ARM-ZYNQ_ZEDBOARD-build"]
+    needs: ["RVS-ARM-QEMU-build"]
     script: 
         - cd $AIR/examples/$EXAMPLE
         - *build-executable

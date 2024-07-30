@@ -15,12 +15,12 @@ ARM-QEMU-validation-test:
     stage: validation_tests
     tags: ["ARM"]
     needs:
-      - job: RVS-ARM-ARTY7Z-build
+      - job: RVS-ARM-QEMU-build
         optional: true
-      - job: ARM-ARTY7Z-build
+      - job: ARM-QEMU-build
         optional: true
     script: 
-        - cd $AIR/examples/private-example/private/validation/$EXAMPLE
+        - cd $AIR/examples/private-example/AIR_testsuite/Validation_tests/BARE/$EXAMPLE
         - *build-executable
         - |
           if [ "$CI_PIPELINE_SOURCE" = "push" ]; then
@@ -39,40 +39,33 @@ ARM-QEMU-validation-test:
     parallel:
       matrix:
         - EXAMPLE:
-          #- "TEST-DEF-00009"
-          #- "TEST-DEF-00010"
-          #- "TEST-DEF-00012"
-          #- "TEST-DEF-00021"
-          #- "TEST-DEF-00022"
-          - "TEST-DEF-00023"
-          - "TEST-DEF-00500"
-          - "TEST-DEF-00510"
-          #- "TEST-DEF-00540"
-          #- "TEST-DEF-00560"
-          - "TEST-DEF-00600"
-          - "TEST-DEF-01200"
-          - "TEST-DEF-01210"
-          - "TEST-DEF-01390"
-          #- "TEST-DEF-01570"
-          #- "TEST-DEF-01590"
-          #- "TEST-DEF-01610"
-          - "TEST-DEF-01620"
-          - "TEST-DEF-01630"
-          - "TEST-DEF-01650"
-          - "TEST-DEF-01730"
-          - "TEST-DEF-01740"
-          #- "TEST-DEF-01741"
-          - "TEST-DEF-01742"
-          - "TEST-DEF-01750"
-          #- "TEST-DEF-02100"
-          #- "TEST-DEF-80000"
-          #- "TEST-DEF-80010"
-          - "TEST-DEF-80060"
-          #- "TEST-DEF-80080"
-          #- "TEST-DEF-80300"
-          #- "TEST-DEF-80400"
-          #- "TEST-DEF-80401"
-          #- "TEST-DEF-80420"
+          - AIR-TEST-CONF-00010
+          - AIR-TEST-HM-00020
+          - AIR-TEST-HM-00030
+          - AIR-TEST-HM-00040
+          - AIR-TEST-HM-00050
+          #- AIR-TEST-HM-00060 #Not applicable to QEMU
+          #- AIR-TEST-HM-00070
+          - AIR-TEST-HM-00080
+          - AIR-TEST-IPC-00010
+          - AIR-TEST-IPC-00020
+          - AIR-TEST-IPC-00030
+          - AIR-TEST-MODE-00010
+          - AIR-TEST-MODE-00020
+          - AIR-TEST-MODE-00030
+          - AIR-TEST-MODE-00040
+          - AIR-TEST-MODE-00050
+          - AIR-TEST-SPACE-00010
+          - AIR-TEST-SPACE-00020
+          #- AIR-TEST-SPACE-00030 #Tests not applicable to ARM
+          #- AIR-TEST-SPACE-00040
+          #- AIR-TEST-SPACE-00050
+          - AIR-TEST-TIME-00010
+          - AIR-TEST-TIME-00020
+          - AIR-TEST-TIME-00030
+          - AIR-TEST-TIME-00040
+          - AIR-TEST-TRAP-00010
+
 
 # SPARC
 SPARC-LAYSIM-validation-test:

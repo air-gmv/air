@@ -14,7 +14,10 @@
 #ifndef BSP_IPC_H_
 #define BSP_IPC_H_
 
+#ifndef PMK_ARM_ULTRASCALE96V2_A53
 #include <a9mpcore.h>
+#endif /* PMK_ARM_ULTRASCALE96V2_A53 */
+
 #include <gic.h>
 
 #define BSP_IPC_IRQ     ARM_GIC_IRQ_SGI_14

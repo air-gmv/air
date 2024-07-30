@@ -143,5 +143,7 @@ air/air.rvsprj.data
 air/rvsdriver.log
 air/air.rvsprj.data
 
+#VS Code
+.vscode/
 # Dump files
 *.dump

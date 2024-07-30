@@ -61,6 +61,22 @@ __FORCE_INLINE static void arm_cp15_set_system_control(air_u32_t val)
     arm_instruction_synchronization_barrier();
 }
 
+__FORCE_INLINE static void arm_cp15_enable_alignment_checking()
+{
+    air_u32_t sctlr;
+    sctlr = arm_cp15_get_system_control();
+    sctlr |= (ARM_SCTLR_A);
+    arm_cp15_set_system_control(sctlr);
+}
+
+__FORCE_INLINE static void arm_cp15_disable_alignment_checking()
+{
+    air_u32_t sctlr;
+    sctlr = arm_cp15_get_system_control();
+    sctlr &= ~(ARM_SCTLR_A);
+    arm_cp15_set_system_control(sctlr);
+}
+
 __FORCE_INLINE static air_u32_t arm_cp15_get_level_of_coherency(air_u32_t clidr)
 {
     return (clidr >> 24) & 0x7;

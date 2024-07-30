@@ -38,9 +38,13 @@ air_uptr_t *arm_exception_handler(arm_interrupt_stack_frame_t *frame, pmk_core_c
         ret = arm_hm_handler(frame, core);
         break;
 
-    case AIR_ARM_EXCEPTION_SWI:
-        arm_svc_handler(frame, core);
-        break;
+        case AIR_ARM_EXCEPTION_SWI:
+            arm_svc_handler(frame, core);
+
+            if (!core->context->trash) {
+				ret = arm_partition_hm_handler(0, core);
+            }
+            break;
 
     case AIR_ARM_EXCEPTION_IRQ:
         ret = arm_isr_handler(frame, core);

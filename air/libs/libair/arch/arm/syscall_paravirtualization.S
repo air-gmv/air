@@ -37,6 +37,14 @@ global(air_syscall_enable_traps)
     svc     #(AIR_SYSCALL_ARM_ENABLE_TRAPS)
     bx      lr
 
+global(air_syscall_disable_aborts)
+    svc     #(AIR_SYSCALL_ARM_DISABLE_ABORTS)
+    bx      lr
+
+global(air_syscall_enable_aborts)
+    svc     #(AIR_SYSCALL_ARM_ENABLE_ABORTS)
+    bx      lr
+
 global(air_syscall_disable_fpu)
     svc     #(AIR_SYSCALL_ARM_DISABLE_FPU)
     bx      lr

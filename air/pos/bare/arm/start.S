@@ -50,8 +50,10 @@ global(bare_start)
 
     /* exception vector table ?*/
 
-    /* enable irqs */
-    svc     #(AIR_SYSCALL_ARM_ENABLE_TRAPS)
+    /* Only enable Aborts, IRQs must be disabled in BARE */
+    svc 	#(AIR_SYSCALL_ARM_DISABLE_INTERRUPTS)
+
+    svc     #(AIR_SYSCALL_ARM_ENABLE_ABORTS)
 
     /* enable fpu */
     svc     #(AIR_SYSCALL_ARM_ENABLE_FPU)
