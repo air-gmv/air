@@ -63,7 +63,21 @@ if {$fsbl == 1 } {
 mwr 0xFF260000 0x00000003 
 
 # Enable Cross Triggering to halt system counter when cpu 0 halts
-set bp_10_4_0 [bpadd -target-id all -ct-input {16} -ct-output {63} -skip-on-step 0]
+set big_string [targets -target-properties -filter {name =~ "*A53*0" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}]
+regexp {target_id ([0-9]+)} $big_string match cpu0
+set bp_10_4_0 [bpadd -target-id $cpu0 -ct-input {16} -ct-output {63} -skip-on-step 0]
+
+set big_string [targets -target-properties -filter {name =~ "*A53*1" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}]
+regexp {target_id ([0-9]+)} $big_string match cpu1
+set bp_10_4_1 [bpadd -target-id $cpu1 -ct-input {16} -ct-output {63} -skip-on-step 0]
+
+set big_string [targets -target-properties -filter {name =~ "*A53*2" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}]
+regexp {target_id ([0-9]+)} $big_string match cpu2
+set bp_10_4_2 [bpadd -target-id $cpu2 -ct-input {16} -ct-output {63} -skip-on-step 0]
+
+set big_string [targets -target-properties -filter {name =~ "*A53*3" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}]
+regexp {target_id ([0-9]+)} $big_string match cpu3
+set bp_10_4_3 [bpadd -target-id $cpu3 -ct-input {16} -ct-output {63} -skip-on-step 0]
 
 # if {$multicore > 1} {
 #     # Cross trigger to stop CPU1 when CPU0 is stopped
@@ -78,6 +92,7 @@ configparams force-mem-access 0
 dow $env(APP)
 
 #Set breakpoint to the last action before powering down AIR
+targets -set -filter {name =~ "*A53*0" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
 set bp_end [bpadd arm_set_cpu_clock_divisor]
 
 con -block
