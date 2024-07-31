@@ -11,7 +11,7 @@ if { $argc == 1 } {
     set multicore 1
 }
 
-connect -symbols
+connect -symbols -port 3123
 
 source /tools/Xilinx/Vitis/2022.1/scripts/vitis/util/zynqmp_utils.tcl
 
@@ -95,7 +95,11 @@ dow $env(APP)
 targets -set -filter {name =~ "*A53*0" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
 set bp_end [bpadd arm_set_cpu_clock_divisor]
 
-con -block
+if {$multicore == 1} {
+    con -block
+} else {
+    con
+}
 
 if {$multicore >= 2} {
     targets -set -filter {name =~ "*A53*1" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
@@ -126,6 +130,11 @@ if {$multicore >= 2} {
         # Also start core 3 at the program entry point.
         con -addr 0x100000
     }
+
+    targets -set -filter {name =~ "*A53*0" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
+    stop
+
+    con -block
 }
 
 targets -set -filter {name =~ "*A53*0" && jtag_cable_name =~ "Avnet USB-to-JTAG/UART Pod V1 1234-oj1A"}
