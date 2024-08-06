@@ -16,12 +16,14 @@ include:
         - if: $CI_PIPELINE_SOURCE == "schedule"
 
     - local: "gitlab-ci/.gitlab-ci-validation.yml"
+    - local: "gitlab-ci/.gitlab-ci-integration.yml"
 
 stages:
     - .pre
     - prepare-build
     - examples
     - validation_tests
+    - integration_tests
     - solo_test # push pipeline only
     - report
 
