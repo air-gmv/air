@@ -8,7 +8,7 @@
 ARM-ZYNQ_ZEDBOARD-build:
     stage: prepare-build
     tags: ["ARM"]
-    needs : ["ARM-QEMU-build"]
+    needs : ["ARM1_init"]
     script:
         - cp $UTILS/.arm_zynq_zedboard_config .
         - ./configure -f .arm_zynq_zedboard_config   
@@ -24,7 +24,7 @@ ARM-ZYNQ_ZEDBOARD-build:
 ARM-SPACE_INVENTOR-build:
     stage: prepare-build
     tags: ["ARM"]
-    needs : ["ARM-QEMU-build"]
+    needs : ["ARM1_init"]
     script:
         - cp $UTILS/.arm_space_inventor_config .
         - ./configure -f .arm_space_inventor_config   
@@ -40,7 +40,7 @@ ARM-SPACE_INVENTOR-build:
 ARM-ARTY7Z-build:
     stage: prepare-build
     tags: ["ARM"]
-    needs: ["ARM-QEMU-build"]
+    needs: ["ARM1_init"]
     script:
         - cp $UTILS/.arm_arty7z_config .
         - ./configure -f .arm_arty7z_config   
@@ -56,7 +56,7 @@ ARM-ARTY7Z-build:
 ARM-QEMU-build:
     stage: prepare-build
     tags: ["ARM1"]
-    needs: ["ARM1_init"]
+    needs: ["ARM-ZYNQ_ZEDBOARD-build", "ARM-SPACE_INVENTOR-build", "ARM-ARTY7Z-build"]
     script:
         - cp $UTILS/.arm_qemu_config .
         - ./configure -f .arm_qemu_config   
