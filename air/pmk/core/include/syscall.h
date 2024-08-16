@@ -135,6 +135,18 @@ air_status_code_e pmk_syscall_create_port(pmk_core_ctrl_t *core, air_port_type_e
 air_status_code_e pmk_syscall_get_port_status(pmk_core_ctrl_t *core, air_port_type_e type, air_identifier_t pid,
                                               void *status);
 /**
+ * @brief System call get port name
+ * @param core current controlling core
+ * @param type type of port
+ * @param pid port identifier
+ * @param[out] name port name
+ * @return INVALID_POINTER - if the partition pointers aren't valid,
+ *         INVALID_PARAM   - if port not found or wrong type
+ *         NO_ERROR        - otherwise
+ */
+air_status_code_e pmk_syscall_get_port_name(pmk_core_ctrl_t *core, air_port_type_e type, air_identifier_t pid,
+                                              air_name_ptr_t name);
+/**
  * @brief System call read from port
  * @param core current controlling core
  * @param type type of port to read from
