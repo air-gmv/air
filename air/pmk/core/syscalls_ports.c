@@ -217,7 +217,7 @@ air_status_code_e pmk_syscall_get_port_status(pmk_core_ctrl_t *core, air_port_ty
     return rc;
 }
 
-air_status_code_e pmk_syscall_get_port_name(pmk_core_ctrl_t *core, air_port_type_e type, air_identifier_t id,
+air_status_code_e pmk_syscall_get_port_name(pmk_core_ctrl_t *core, air_port_type_e type, 
                                               air_identifier_t pid, air_name_ptr_t name)
 {
 
@@ -229,7 +229,7 @@ air_status_code_e pmk_syscall_get_port_name(pmk_core_ctrl_t *core, air_port_type
     cpu_enable_preemption(flags);
 
     /* get the current port */
-    pmk_port_t *port = pmk_port_get_from_partition_by_id(partition, id, type);
+    pmk_port_t *port = pmk_port_get_from_partition_by_id(partition, pid, type);
 
     /* check if port exists */
     if (port == NULL || atomic_fetch(&port->created) == 0)
@@ -247,7 +247,7 @@ air_status_code_e pmk_syscall_get_port_name(pmk_core_ctrl_t *core, air_port_type
         
         /* disable preemption and return */
         cpu_disable_preemption(flags);
-        rc = AIR_INVALID_POINTER
+        rc = AIR_INVALID_POINTER;
         return rc;
     }
 
