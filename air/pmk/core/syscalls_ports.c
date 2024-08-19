@@ -217,8 +217,8 @@ air_status_code_e pmk_syscall_get_port_status(pmk_core_ctrl_t *core, air_port_ty
     return rc;
 }
 
-air_status_code_e pmk_syscall_get_port_name(pmk_core_ctrl_t *core, air_port_type_e type, 
-                                              air_identifier_t pid, air_name_ptr_t name)
+air_status_code_e pmk_syscall_get_port_name(pmk_core_ctrl_t *core, air_port_type_e type, air_identifier_t pid,
+                                              air_identifier_t id, air_name_ptr_t name)
 {
 
     cpu_preemption_flags_t flags;
@@ -228,8 +228,30 @@ air_status_code_e pmk_syscall_get_port_name(pmk_core_ctrl_t *core, air_port_type
     /* allow partition to be preempted */
     cpu_enable_preemption(flags);
 
+    /* if port from other partition, get other partition (supervisor only) */
+    if (pid >= 0 && partition->id != pid)
+    {
+
+        /* check partition permissions */
+        if ((partition->permissions != AIR_PERMISSION_SUPERVISOR))
+        {
+
+            /* disable preemption and return */
+            cpu_disable_preemption(flags);
+            return AIR_INVALID_CONFIG;
+        }
+
+        partition = pmk_get_partition_by_id(pid);
+    }
+
+    /* check if partition exists */
+    if (partition == NULL){
+        cpu_disable_preemption(flags);
+        return AIR_INVALID_PARAM;
+    }
+    
     /* get the current port */
-    pmk_port_t *port = pmk_port_get_from_partition_by_id(partition, pid, type);
+    pmk_port_t *port = pmk_port_get_from_partition_by_id(partition, id, type);
 
     /* check if port exists */
     if (port == NULL || atomic_fetch(&port->created) == 0)

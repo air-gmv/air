@@ -555,14 +555,15 @@ air_status_code_e air_syscall_get_port_status(air_port_type_e type, air_identifi
  * @brief System call get port name
  * @param core current controlling core
  * @param type type of port
- * @param pid port identifier
+ * @param pid port's partition owner identifier
+ * @param id port identifier
  * @param[out] name port name
  * @return INVALID_POINTER - if the partition pointers aren't valid,
  *         INVALID_PARAM   - if port not found
  *         INVALID_CONFIG  - if wrong port type 
  *         NO_ERROR        - otherwise
  */
-air_status_code_e air_syscall_get_port_name(air_port_type_e type, air_identifier_t pid, air_name_ptr_t name);
+air_status_code_e air_syscall_get_port_name(air_port_type_e type, air_identifier_t pid, air_identifier_t id, air_name_ptr_t name);
 
 /**
  * @brief Read a message from a port
