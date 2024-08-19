@@ -213,6 +213,11 @@ extern void GET_QUEUING_PORT_STATUS (
 	/*out*/ QUEUING_PORT_STATUS_TYPE *QUEUING_PORT_STATUS,
 	/*out*/ RETURN_CODE_TYPE *RETURN_CODE );
 
+extern void GET_QUEUING_PORT_NAME(
+    /*in*/  QUEUING_PORT_ID_TYPE QUEUING_PORT_ID, 
+    /*out*/ QUEUING_PORT_NAME_TYPE QUEUING_PORT_NAME, 
+    /*out*/ RETURN_CODE_TYPE *RETURN_CODE);
+
 
 /* HM types and definitions ------------------------------- */
 
