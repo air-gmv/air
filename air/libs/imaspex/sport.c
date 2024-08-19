@@ -137,6 +137,19 @@ void GET_SAMPLING_PORT_STATUS(
     }
 }
 
+void GET_SAMPLING_PORT_NAME(SAMPLING_PORT_ID_TYPE SAMPLING_PORT_ID, SAMPLING_PORT_NAME_TYPE SAMPLING_PORT_NAME, RETURN_CODE_TYPE *RETURN_CODE)
+{
+    /* check TSAL init */
+    if (imaspex_tsal_init == 0)
+    {
+        *RETURN_CODE = INVALID_MODE;
+        return;
+    }
+
+    /* get port name via system call */
+    *RETURN_CODE = air_syscall_get_port_name(AIR_SAMPLING_PORT,(air_identifier_t) SAMPLING_PORT_ID, (air_name_ptr_t)SAMPLING_PORT_NAME);
+}
+
 /* ARINC 653 (PART 2) SAMPLING PORT EXTENSION SERVICES */
 /* -------------------------------------------------------------------------- */
 void READ_UPDATED_SAMPLING_MESSAGE(
