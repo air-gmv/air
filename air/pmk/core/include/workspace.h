@@ -57,6 +57,21 @@ typedef struct
 
 } pmk_core_ctrl_t;
 
+typedef struct
+{
+    air_clocktick_t absolute_date;
+    air_error_e error_type;
+    pmk_hm_level_id level;
+    air_identifier_t partition_id;
+} pmk_hm_log_event_t;
+
+
+typedef struct
+{
+    air_u32_t n_events;
+    pmk_hm_log_event_t events[HM_LOGG_MAX_EVENT_NB];
+} pmk_hm_log_t;
+
 /**
  *  @brief Share area structure
  *
@@ -78,6 +93,7 @@ typedef struct
     /** Module Health-Monitor table                                         */
     pmk_hm_action_list_t **hm_module_table;
 
+    pmk_hm_log_t hm_log;
 } pmk_sharedarea_t;
 
 /**
