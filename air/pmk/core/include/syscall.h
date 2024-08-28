@@ -135,7 +135,7 @@ air_status_code_e pmk_syscall_create_port(pmk_core_ctrl_t *core, air_port_type_e
 air_status_code_e pmk_syscall_get_port_status(pmk_core_ctrl_t *core, air_port_type_e type, air_identifier_t pid,
                                               void *status);
 /**
- * @brief System call get port name
+ * @brief System call get port name [AIR-IPC-00230]
  * @param core current controlling core
  * @param type type of port
  * @param pid port's partition owner identifier
