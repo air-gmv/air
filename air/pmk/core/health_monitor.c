@@ -91,6 +91,8 @@ void pmk_hm_init()
     air_shared_area.hm_system_table = pmk_get_usr_hm_system_table();
     air_shared_area.hm_module_table = pmk_get_usr_hm_module_table();
 
+    air_shared_area.hm_log.n_events = 0;
+
 #ifdef PMK_DEBUG
     pmk_workspace_debug();
 #endif
@@ -221,6 +223,20 @@ void pmk_hm_isr_handler_partition_level(pmk_core_ctrl_t *core, air_state_e state
     }
 }
 
+void pmk_print_hm_log(){
+    printk("------------------------------\n");
+    for (int i = 0; i < air_shared_area.hm_log.n_events; i++)
+    {
+        printk("HM Event %d:\n", i);
+        printk("  Absolute Date: Tick %d\n", (air_u32_t) air_shared_area.hm_log.events[i].absolute_date);
+        printk("  Error Type: %d\n", (air_u32_t) air_shared_area.hm_log.events[i].error_type);
+        printk("  Level: %d\n", (air_u32_t) air_shared_area.hm_log.events[i].level);
+        printk("  Partition ID: %d\n", (air_u32_t) air_shared_area.hm_log.events[i].partition_id);
+        printk("\n");
+    }
+    printk("------------------------------\n");
+}
+
 /**
  * @brief Health-Monitor ISR handler
  * @param error_id current error id to be handled
@@ -234,6 +250,16 @@ void pmk_hm_isr_handler(air_error_e error_id)
     /* get current state and handling level */
     air_state_e state = core_context_get_system_state(core_ctrl->context);
     pmk_hm_level_id level = air_shared_area.hm_system_table[state][error_id];
+
+    //Add this hm event to the log
+    pmk_hm_log_event_t * log_empty_event = &air_shared_area.hm_log.events[air_shared_area.hm_log.n_events];
+
+    air_shared_area.hm_log.n_events++;
+    
+    log_empty_event->absolute_date = air_shared_area.schedule_ctrl->total_ticks;
+    log_empty_event->error_type = error_id;
+    log_empty_event->level = level;
+    log_empty_event->partition_id = core_ctrl->partition->id;
 
     /* perform the HM action according to the handling level */
     switch (level)

@@ -26,6 +26,8 @@
 #define PMK_HM_STATES_COUNT (7)
 #define PMK_HM_ERRORS_COUNT (16)
 
+#define HM_LOGG_MAX_EVENT_NB 48
+
 /**
  * @brief PMK Error Levels
  */
@@ -123,6 +125,8 @@ pmk_hm_level_list_t *pmk_hm_get_system_state_table(void);
  * @returns Module Health-Monitor System State table pointer
  */
 pmk_hm_action_list_t **pmk_hm_get_module_hm_table(void);
+
+void pmk_print_hm_log();
 
 #else /* ASM */
 
