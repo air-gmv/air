@@ -102,7 +102,7 @@ void core_context_setup_idle(core_context_t *context)
     /* initialize idle stack */
     /* setup the isf used in restoring context */
 
-    /* TODO: Setting the isf pointer this way will not allow to restore this context ever */
+    /* WARNING: Setting the isf pointer this way will not allow to restore this context ever */
     arm_interrupt_stack_frame_t *isf = (arm_interrupt_stack_frame_t *)context->isf_pointer;
 
     /* setup the context return PSR */
