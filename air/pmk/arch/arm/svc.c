@@ -212,6 +212,11 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core)
         frame->r0 = (air_u32_t)pmk_syscall_get_port_status(core, (air_port_type_e)frame->r0,
                                                            (air_identifier_t)frame->r1, (void *)frame->r2);
         break;
+    case AIR_SYSCALL_GET_PORT_NAME:
+        // Get the name of a port based on its identifier
+        frame->r0 = (air_u32_t)pmk_syscall_get_port_name(core, (air_port_type_e)frame->r0, (air_identifier_t)frame->r1,
+                                                           (air_identifier_t)frame->r2, (air_name_ptr_t)frame->r3);
+        break;
     case AIR_SYSCALL_READ_PORT:
 
         // Read from a port based on the port type, identifier, buffer, buffer size, and user stack pointer
