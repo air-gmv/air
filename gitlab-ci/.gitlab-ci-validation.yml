@@ -40,21 +40,32 @@ ARM-QEMU-validation-test:
       matrix:
         - EXAMPLE:
           - AIR-TEST-CONF-00010
+          - AIR-TEST-HM-00010
           - AIR-TEST-HM-00020
           - AIR-TEST-HM-00030
           - AIR-TEST-HM-00040
           - AIR-TEST-HM-00050
           #- AIR-TEST-HM-00060 #Not applicable to QEMU
-          #- AIR-TEST-HM-00070
+          #- AIR-TEST-HM-00070 
           - AIR-TEST-HM-00080
+          - AIR-TEST-HM-00090
+          - AIR-TEST-HM-00100
           - AIR-TEST-IPC-00010
           - AIR-TEST-IPC-00020
           - AIR-TEST-IPC-00030
+          - AIR-TEST-IPC-00040
+          - AIR-TEST-IPC-00060
+          - AIR-TEST-IPC-00070
+          - AIR-TEST-IPC-00080
+          - AIR-TEST-IPC-00090
           - AIR-TEST-MODE-00010
           - AIR-TEST-MODE-00020
           - AIR-TEST-MODE-00030
           - AIR-TEST-MODE-00040
           - AIR-TEST-MODE-00050
+          - AIR-TEST-MODE-00080
+          - AIR-TEST-MODE-00083
+          - AIR-TEST-MODE-00086
           - AIR-TEST-SPACE-00010
           - AIR-TEST-SPACE-00020
           #- AIR-TEST-SPACE-00030 #Tests not applicable to ARM
@@ -64,6 +75,8 @@ ARM-QEMU-validation-test:
           - AIR-TEST-TIME-00020
           - AIR-TEST-TIME-00030
           - AIR-TEST-TIME-00040
+          - AIR-TEST-TIME-00050
+          - AIR-TEST-TIME-00060
           - AIR-TEST-TRAP-00010
 
 
