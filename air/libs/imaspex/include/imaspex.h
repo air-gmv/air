@@ -168,6 +168,16 @@ void GET_PARTITION_STATUS(PARTITION_STATUS_TYPE *PARTITION_STATUS, RETURN_CODE_T
 void SET_PARTITION_MODE(OPERATING_MODE_TYPE OPERATING_MODE, RETURN_CODE_TYPE *RETURN_CODE);
 
 /**
+ * \brief an application in a Partition shall be able to get the identifier of the
+ * current window.
+ * \note AIR-TIME-00070
+ *
+ * \param [out] WINDOW_ID               the current window ID
+ * \param [out] RETURN_CODE             ARINC 653 return code
+ */
+void GET_CURRENT_WINDOW_ID(WINDOW_ID_TYPE  *WINDOW_ID, RETURN_CODE_TYPE *RETURN_CODE);
+
+/**
  * @brief Obtain the current local node time
  * @note obtained time is monotonic since boot.
  * @param [out] SYSTEM_TIME current time with nanosecond precision

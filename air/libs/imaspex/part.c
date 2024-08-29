@@ -54,6 +54,29 @@ void SET_PARTITION_MODE(OPERATING_MODE_TYPE OPERATING_MODE, RETURN_CODE_TYPE *RE
     *RETURN_CODE = air_syscall_set_partition_mode(-1, OPERATING_MODE);
 }
 
+void GET_CURRENT_WINDOW_ID(
+    /*out*/ WINDOW_ID_TYPE   *WINDOW_ID,
+    /*out*/ RETURN_CODE_TYPE *RETURN_CODE)
+{
+    /* check TSAL init */
+    if (imaspex_tsal_init == 0)
+    {
+        *RETURN_CODE = INVALID_MODE;
+        return;
+    }
+
+    /* get partition status via system call */
+    air_partition_status_t status;
+    *RETURN_CODE = air_syscall_get_partition_status(-1, &status);
+
+    /* get current window ID from fetched status */
+    if (*RETURN_CODE == NO_ERROR)
+    {
+        *WINDOW_ID = status.window_id;
+    }
+
+}
+
 void GET_TIME(SYSTEM_TIME_TYPE *SYSTEM_TIME, RETURN_CODE_TYPE *RETURN_CODE)
 {
 
