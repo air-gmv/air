@@ -186,6 +186,14 @@ void GET_CURRENT_WINDOW_ID(WINDOW_ID_TYPE  *WINDOW_ID, RETURN_CODE_TYPE *RETURN_
 void GET_TIME(SYSTEM_TIME_TYPE *SYSTEM_TIME, RETURN_CODE_TYPE *RETURN_CODE);
 
 /**
+ * @brief Obtain the current MTF time
+ * @note obtained time is monotonic since beginning of current MTF.
+ * @param [out] SYSTEM_TIME current MTF time with nanosecond precision
+ * @param [out] RETURN_CODE ARINC 653 return code
+ */
+void GET_MTF_TIME(SYSTEM_TIME_TYPE *SYSTEM_TIME, RETURN_CODE_TYPE *RETURN_CODE);
+
+/**
  * @param [in]  PARTITION_IDENTIFIER    the target partition ID
  * @param [in]  OPERATING_MODE          the new operating mode
  * @param [out] RETURN_CODE             ARINC 653 return code

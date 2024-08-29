@@ -141,6 +141,13 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core)
         frame->r0 = (air_u32_t)(elapsed & 0xffffffff);
         frame->r1 = (air_u32_t)((elapsed & 0xffffffff00000000) >> 32);
         break;
+    case AIR_SYSCALL_GET_ELAPSED_MTF_TICKS:
+
+        // Get the elapsed ticks since start of current MTF
+        elapsed = pmk_syscall_get_elapsed_mtf_ticks();
+        frame->r0 = (air_u32_t)(elapsed & 0xffffffff);
+        frame->r1 = (air_u32_t)((elapsed & 0xffffffff00000000) >> 32);
+        break;
     case AIR_SYSCALL_GET_PARTITION_ID:
 
         // Get the partition ID based on the name and identifier
