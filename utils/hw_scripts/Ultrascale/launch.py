@@ -5,11 +5,12 @@ import os
 import time 
 
 # Relative to $AIR
-EXAMPLES_FOLDER = "/examples/private-example/AIR_testsuite/Validation_tests/BARE/" 
+# EXAMPLES_FOLDER = "/examples/private-example/AIR_testsuite/Validation_tests/BARE/"
+EXAMPLES_FOLDER = "/examples/private-example/AIR_testsuite/Unit_tests/" 
 
 def list_examples(folder_path):
     """List available examples (subfolders) in the specified folder."""
-    examples = [example for example in os.listdir(folder_path) if (os.path.isdir(os.path.join(folder_path, example)) and not "old" in example)]
+    examples = [example for example in os.listdir(folder_path) if (os.path.isdir(os.path.join(folder_path, example)) and not "old" in example and not example.startswith("T1"))]
     return examples
 
 def run_example(example_name, recompile_air=False):

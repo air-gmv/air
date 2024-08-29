@@ -1,5 +1,5 @@
-# Gitlab CICD script for validation stage
-# Author huca@GMV 2023 
+# Gitlab CICD script for integration stage
+# Author huca@GMV 2023, ansi@GMV 2024 
 
 .build-executable: &build-executable
     - $AIR/configure
@@ -11,8 +11,8 @@
     - $UTILS/publish_example.bash
 
 # ARM
-ARM-QEMU-validation-test:
-    stage: validation_tests
+ARM-QEMU-integration-test:
+    stage: integration_tests
     tags: ["ARM"]
     needs:
       - job: RVS-ARM-QEMU-build
@@ -20,7 +20,7 @@ ARM-QEMU-validation-test:
       - job: ARM-QEMU-build
         optional: true
     script: 
-        - cd $AIR/examples/private-example/AIR_testsuite/Validation_tests/BARE/$EXAMPLE
+        - cd $AIR/examples/private-example/AIR_testsuite/Integration_tests/$EXAMPLE
         - *build-executable
         - |
           if [ "$CI_PIPELINE_SOURCE" = "push" ]; then
@@ -39,45 +39,22 @@ ARM-QEMU-validation-test:
     parallel:
       matrix:
         - EXAMPLE:
-          - AIR-TEST-CONF-00010
-          # - AIR-TEST-HM-00010
-          - AIR-TEST-HM-00020
-          - AIR-TEST-HM-00030
-          - AIR-TEST-HM-00040
-          - AIR-TEST-HM-00050
-          #- AIR-TEST-HM-00060 #Not applicable to QEMU
-          #- AIR-TEST-HM-00070 
-          - AIR-TEST-HM-00080
-          # - AIR-TEST-HM-00090
-          - AIR-TEST-HM-00100
-          - AIR-TEST-IPC-00010
-          - AIR-TEST-IPC-00020
-          - AIR-TEST-IPC-00030
-          - AIR-TEST-IPC-00040
-          - AIR-TEST-IPC-00060
-          - AIR-TEST-IPC-00070
-          # - AIR-TEST-IPC-00080
-          # - AIR-TEST-IPC-00090
-          - AIR-TEST-MODE-00010
-          - AIR-TEST-MODE-00020
-          - AIR-TEST-MODE-00030
-          - AIR-TEST-MODE-00040
-          - AIR-TEST-MODE-00050
-          - AIR-TEST-MODE-00080
-          - AIR-TEST-MODE-00083
-          - AIR-TEST-MODE-00086
-          - AIR-TEST-SPACE-00010
-          - AIR-TEST-SPACE-00020
-          #- AIR-TEST-SPACE-00030 #Tests not applicable to ARM
-          #- AIR-TEST-SPACE-00040
-          #- AIR-TEST-SPACE-00050
-          - AIR-TEST-TIME-00010
-          - AIR-TEST-TIME-00020
-          - AIR-TEST-TIME-00030
-          - AIR-TEST-TIME-00040
-          # - AIR-TEST-TIME-00050
-          # - AIR-TEST-TIME-00060
-          - AIR-TEST-TRAP-00010
+          - ITEST-0001-LIONEL
+          - ITEST-0002-SINGLE
+          - ITEST-0003-DUAL
+          - ITEST-0004-DIV_0
+          - ITEST-0005-HM
+          - ITEST-0006-QPORT
+          - ITEST-0007-QPORT1
+          - ITEST-0008-SPORT
+          - ITEST-0010_SCHEDULES
+          # - ITEST-0011-TOD
+          # - ITEST-0012-PARANOIA #Gives compile error
+          - ITEST-0020-DUAL
+          # - ITEST-0021-QUAD_CORE #Not applicable to qemu, only has 2 cores
+          - ITEST-0022-QPORT
+          - ITEST-0023-MATRIX
+
 
 
 # SPARC
