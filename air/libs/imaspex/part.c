@@ -92,6 +92,21 @@ void GET_TIME(SYSTEM_TIME_TYPE *SYSTEM_TIME, RETURN_CODE_TYPE *RETURN_CODE)
     *RETURN_CODE = NO_ERROR;
 }
 
+void GET_MTF_TIME(SYSTEM_TIME_TYPE *SYSTEM_TIME, RETURN_CODE_TYPE *RETURN_CODE)
+{
+
+    /* check TSAL init */
+    if (imaspex_tsal_init == 0)
+    {
+        *RETURN_CODE = INVALID_MODE;
+        return;
+    }
+
+    air_clocktick_t ticks = air_syscall_get_elapsed_mtf_ticks();
+    *SYSTEM_TIME = ticks * imaspex_ns_per_tick;
+    *RETURN_CODE = NO_ERROR;
+}
+
 void SET_A_PARTITION_MODE(
     /*in */ PARTITION_ID_TYPE PARTITION_IDENTIFIER,
     /*in */ OPERATING_MODE_TYPE OPERATING_MODE,

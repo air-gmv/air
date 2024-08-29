@@ -79,6 +79,12 @@ air_status_code_e pmk_syscall_get_schedule_status(pmk_core_ctrl_t *core, air_sch
  */
 air_status_code_e pmk_syscall_set_schedule(pmk_core_ctrl_t *core, air_identifier_t sid);
 /**
+ * @brief Get elapsed ticks since beginning of current MTF [AIR-TIME-00170]
+ * @return Number of elapsed ticks
+ *         
+ */
+air_clocktick_t pmk_syscall_get_elapsed_mtf_ticks(void);
+/**
  * @brief Gets the system time of day
  * @param core executing core information
  * @param[out] tod time of day of system

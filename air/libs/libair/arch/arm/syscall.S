@@ -41,6 +41,10 @@ global(air_syscall_get_elapsed_ticks)
     svc     #(AIR_SYSCALL_GET_ELAPSED_TICKS)
     bx      lr
 
+global(air_syscall_get_elapsed_mtf_ticks)
+    svc     #(AIR_SYSCALL_GET_ELAPSED_MTF_TICKS)
+    bx      lr
+
 global(air_syscall_get_partition_id)
     svc     #(AIR_SYSCALL_GET_PARTITION_ID)
     bx      lr
