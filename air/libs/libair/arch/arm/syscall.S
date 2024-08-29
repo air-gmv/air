@@ -89,6 +89,10 @@ global(air_syscall_get_port_status)
     svc     #(AIR_SYSCALL_GET_PORT_STATUS)
     bx      lr
 
+global(air_syscall_get_port_name)
+    svc     #(AIR_SYSCALL_GET_PORT_NAME)
+    bx      lr
+    
 global(air_syscall_read_port)
     svc     #(AIR_SYSCALL_READ_PORT)
     bx      lr

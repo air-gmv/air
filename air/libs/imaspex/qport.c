@@ -132,3 +132,30 @@ void GET_QUEUING_PORT_STATUS(QUEUING_PORT_ID_TYPE QUEUING_PORT_ID, QUEUING_PORT_
         QUEUING_PORT_STATUS->NB_MESSAGE = status.nb_message;
     }
 }
+
+void GET_QUEUING_PORT_NAME(QUEUING_PORT_ID_TYPE QUEUING_PORT_ID, QUEUING_PORT_NAME_TYPE QUEUING_PORT_NAME, RETURN_CODE_TYPE *RETURN_CODE)
+{
+    /* check TSAL init */
+    if (imaspex_tsal_init == 0)
+    {
+        *RETURN_CODE = INVALID_MODE;
+        return;
+    }
+
+    /* get port name via system call */
+    *RETURN_CODE = air_syscall_get_port_name(AIR_QUEUING_PORT, -1, (air_identifier_t) QUEUING_PORT_ID, (air_name_ptr_t)QUEUING_PORT_NAME);
+}
+
+void GET_A_QUEUING_PORT_NAME(QUEUING_PORT_ID_TYPE QUEUING_PORT_ID, PARTITION_ID_TYPE PARTITION_ID,
+                                 QUEUING_PORT_NAME_TYPE QUEUING_PORT_NAME, RETURN_CODE_TYPE *RETURN_CODE)
+{
+    /* check TSAL init */
+    if (imaspex_tsal_init == 0)
+    {
+        *RETURN_CODE = INVALID_MODE;
+        return;
+    }
+
+    /* get port name via system call */
+    *RETURN_CODE = air_syscall_get_port_name(AIR_QUEUING_PORT, PARTITION_ID, (air_identifier_t) QUEUING_PORT_ID, (air_name_ptr_t)QUEUING_PORT_NAME);
+}
