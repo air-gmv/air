@@ -30,8 +30,7 @@ ${makoutils.cfileHeader("rtems_config.h", "RTEMS configuration")}
 #define CONFIGURE_MAXIMUM_TIMERS 4
 
 #ifdef IS_TASTE_APP
-    #define CONFIGURE_UNLIMITED_OBJECTS
-    #define CONFIGURE_UNIFIED_WORK_AREAS
+    #include "rtems_taste_user_config.h"
 #endif
 
 #define CONFIGURE_RTEMS_INIT_TASKS_TABLE
