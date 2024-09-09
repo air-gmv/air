@@ -107,8 +107,8 @@ void GET_QUEUING_PORT_ID(
                                            (air_identifier_t *)QUEUING_PORT_ID);
 }
 
-void GET_QUEUING_PORT_STATUS(QUEUING_PORT_ID_TYPE QUEUING_PORT_ID, QUEUING_PORT_STATUS_TYPE *QUEUING_PORT_STATUS,
-                             RETURN_CODE_TYPE *RETURN_CODE)
+void GET_QUEUING_PORT_STATUS(QUEUING_PORT_ID_TYPE QUEUING_PORT_ID,
+                             QUEUING_PORT_STATUS_TYPE *QUEUING_PORT_STATUS, RETURN_CODE_TYPE *RETURN_CODE)
 {
 
     /* check TSAL init */
@@ -120,7 +120,7 @@ void GET_QUEUING_PORT_STATUS(QUEUING_PORT_ID_TYPE QUEUING_PORT_ID, QUEUING_PORT_
 
     /* get port status via system call */
     air_queuing_port_status_t status;
-    *RETURN_CODE = air_syscall_get_port_status(AIR_QUEUING_PORT, (air_identifier_t)QUEUING_PORT_ID, (void *)&status);
+    *RETURN_CODE = air_syscall_get_port_status(AIR_QUEUING_PORT, -1, (air_identifier_t)QUEUING_PORT_ID, (void *)&status);
 
     /* convert status back to the ARINC format */
     if (*RETURN_CODE == NO_ERROR)
@@ -133,6 +133,31 @@ void GET_QUEUING_PORT_STATUS(QUEUING_PORT_ID_TYPE QUEUING_PORT_ID, QUEUING_PORT_
     }
 }
 
+void GET_A_QUEUING_PORT_STATUS(QUEUING_PORT_ID_TYPE QUEUING_PORT_ID, PARTITION_ID_TYPE PARTITION_ID, 
+                             QUEUING_PORT_STATUS_TYPE *QUEUING_PORT_STATUS, RETURN_CODE_TYPE *RETURN_CODE)
+{
+
+    /* check TSAL init */
+    if (imaspex_tsal_init == 0)
+    {
+        *RETURN_CODE = INVALID_MODE;
+        return;
+    }
+
+    /* get port status via system call */
+    air_queuing_port_status_t status;
+    *RETURN_CODE = air_syscall_get_port_status(AIR_QUEUING_PORT, PARTITION_ID, (air_identifier_t)QUEUING_PORT_ID, (void *)&status);
+
+    /* convert status back to the ARINC format */
+    if (*RETURN_CODE == NO_ERROR)
+    {
+
+        QUEUING_PORT_STATUS->MAX_MESSAGE_SIZE = status.max_message_size;
+        QUEUING_PORT_STATUS->MAX_NB_MESSAGE = status.max_nb_message;
+        QUEUING_PORT_STATUS->PORT_DIRECTION = status.port_direction;
+        QUEUING_PORT_STATUS->NB_MESSAGE = status.nb_message;
+    }
+}
 void GET_QUEUING_PORT_NAME(QUEUING_PORT_ID_TYPE QUEUING_PORT_ID, QUEUING_PORT_NAME_TYPE QUEUING_PORT_NAME, RETURN_CODE_TYPE *RETURN_CODE)
 {
     /* check TSAL init */
