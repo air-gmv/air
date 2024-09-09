@@ -209,8 +209,8 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core)
     case AIR_SYSCALL_GET_PORT_STATUS:
 
         // Get the status of a port based on its identifier
-        frame->r0 = (air_u32_t)pmk_syscall_get_port_status(core, (air_port_type_e)frame->r0,
-                                                           (air_identifier_t)frame->r1, (void *)frame->r2);
+        frame->r0 = (air_u32_t)pmk_syscall_get_port_status(core, (air_port_type_e)frame->r0, (air_identifier_t)frame->r1,
+                                                           (air_identifier_t)frame->r2, (void *)frame->r3);
         break;
     case AIR_SYSCALL_GET_PORT_NAME:
         // Get the name of a port based on its identifier
