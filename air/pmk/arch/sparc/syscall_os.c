@@ -121,7 +121,7 @@ static void sparc_syscall_os_handler(sparc_interrupt_stack_frame_t *isf, pmk_cor
     case AIR_SYSCALL_GET_PORT_STATUS:
 
         isf->i0 = (air_u32_t)pmk_syscall_get_port_status(core, (air_port_type_e)isf->i0, (air_identifier_t)isf->i1,
-                                                         (void *)isf->i2);
+                                                         (air_identifier_t)isf->i2, (void *)isf->i3);
         break;
 
         /* get port name*/

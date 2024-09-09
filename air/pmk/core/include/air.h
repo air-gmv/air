@@ -549,13 +549,15 @@ air_status_code_e air_syscall_create_port(air_port_type_e type, air_name_ptr_t n
 /**
  * @brief Get port status
  * @param type Type of the port
- * @param pid Port identifier to get the status
+ * @param pid identifier of the partition that owns the port
+ * @param id Port identifier to get the status
  * @param status Pointer to store the port status
  * @return INVALID_POINTER - if the partition pointers aren't valid,
- *         INVALID_CONFIG  - if configuration mismatch or port not created
+ *         INVALID_PARAM   - if port or partition not found
+ *         INVALID_CONFIG  - if trying to access other partition's ports without permission 
  *         NO_ERROR        - otherwise
  */
-air_status_code_e air_syscall_get_port_status(air_port_type_e type, air_identifier_t pid, void *status);
+air_status_code_e air_syscall_get_port_status(air_port_type_e type, air_identifier_t pid, air_identifier_t id, void *status);
 
 /**
  * @brief System call get port name

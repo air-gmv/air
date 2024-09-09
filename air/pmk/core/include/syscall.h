@@ -132,14 +132,16 @@ air_status_code_e pmk_syscall_create_port(pmk_core_ctrl_t *core, air_port_type_e
  * @brief System call get port status
  * @param core current controlling core
  * @param type type of port to get status
+ * @param pid identifier of the partition that owns the port
  * @param pid port identifier
- * @param[in/out] status port status
+ * @param status[in/out] status port status
  * @return INVALID_POINTER - if the partition pointers aren't valid,
- *         INVALID_PARAM   - if port not found
+ *         INVALID_PARAM   - if port or partition not found
+ *         INVALID_CONFIG  - if trying to access other partition's ports without permission 
  *         NO_ERROR        - otherwise
  */
 air_status_code_e pmk_syscall_get_port_status(pmk_core_ctrl_t *core, air_port_type_e type, air_identifier_t pid,
-                                              void *status);
+                                              air_identifier_t id, void *status);
 /**
  * @brief System call get port name [AIR-IPC-00230]
  * @param core current controlling core
