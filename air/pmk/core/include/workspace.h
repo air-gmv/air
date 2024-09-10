@@ -68,7 +68,9 @@ typedef struct
 
 typedef struct
 {
-    air_u32_t n_events;
+    air_u32_t head;  // Points to the next write position
+    air_u32_t tail;  // Points to the oldest log
+    air_u32_t n_events;  
     pmk_hm_log_event_t events[HM_LOGG_MAX_EVENT_NB];
 } pmk_hm_log_t;
 

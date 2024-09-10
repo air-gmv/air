@@ -92,7 +92,10 @@ void pmk_hm_init()
     air_shared_area.hm_system_table = pmk_get_usr_hm_system_table();
     air_shared_area.hm_module_table = pmk_get_usr_hm_module_table();
 
+    /* setup the health monitoring log */
     air_shared_area.hm_log.n_events = 0;
+    air_shared_area.hm_log.head = 0;
+    air_shared_area.hm_log.tail = 0;
 
 #ifdef PMK_DEBUG
     pmk_workspace_debug();
@@ -228,6 +231,11 @@ air_status_code_e pmk_print_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log){
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
 
+    if (air_shared_area.hm_log.n_events == 0) {
+        printk("HM Log is empty.\n");
+        return;
+    }
+
     /* allow partition to be preempted */
     cpu_enable_preemption(flags);
 
@@ -236,36 +244,65 @@ air_status_code_e pmk_print_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log){
     local.n_events = air_shared_area.hm_log.n_events;
 
     printk("------------------------------\n");
+    air_u32_t current = air_shared_area.hm_log.tail;
     for (int i = 0; i < air_shared_area.hm_log.n_events; i++)
     {
         printk("HM Event %d:\n", i);
-        printk("  Absolute Date: Tick %d\n", (air_u32_t) air_shared_area.hm_log.events[i].absolute_date);
-        printk("  Error Type: %d\n", (air_u32_t) air_shared_area.hm_log.events[i].error_type);
-        printk("  Level: %d\n", (air_u32_t) air_shared_area.hm_log.events[i].level);
-        printk("  Partition ID: %d\n", (air_u32_t) air_shared_area.hm_log.events[i].partition_id);
+        printk("  Absolute Date: Tick %d\n", (air_u32_t) air_shared_area.hm_log.events[current].absolute_date);
+        printk("  Error Type: %d\n", (air_u32_t) air_shared_area.hm_log.events[current].error_type);
+        printk("  Level: %d\n", (air_u32_t) air_shared_area.hm_log.events[current].level);
+        printk("  Partition ID: %d\n", (air_u32_t) air_shared_area.hm_log.events[current].partition_id);
         printk("\n");
 
-        // Copy to the partition
-        
-        local.events[i].absolute_date = air_shared_area.hm_log.events[i].absolute_date;
-        local.events[i].error_type = air_shared_area.hm_log.events[i].error_type;
-        local.events[i].level = air_shared_area.hm_log.events[i].level;
-        local.events[i].partition_id = air_shared_area.hm_log.events[i].partition_id;
-        
-        /* copy to user land */
-        if (pmk_segregation_put_user(context, local, log) != 0)
-        {
+        // Increment the current pointer to the next element, circularly
+        current = (current + 1) % air_shared_area.hm_log.n_events;
 
-            /* disable preemption and return */
-            cpu_disable_preemption(flags);
-            return AIR_INVALID_POINTER;
-        }
+        // // Copy to the partition
+        
+        // local.events[i].absolute_date = air_shared_area.hm_log.events[i].absolute_date;
+        // local.events[i].error_type = air_shared_area.hm_log.events[i].error_type;
+        // local.events[i].level = air_shared_area.hm_log.events[i].level;
+        // local.events[i].partition_id = air_shared_area.hm_log.events[i].partition_id;
+        
+        // /* copy to user land */
+        // if (pmk_segregation_put_user(context, local, log) != 0)
+        // {
+
+        //     /* disable preemption and return */
+        //     cpu_disable_preemption(flags);
+        //     return AIR_INVALID_POINTER;
+        // }
     }
     printk("------------------------------\n");
 
     /* disable preemption and return */
     cpu_disable_preemption(flags);
     return AIR_NO_ERROR;
+}
+
+void pmk_add_hm_log_entry(air_error_e error_id, pmk_hm_level_id level, air_identifier_t pid){
+
+    // Check if it is full
+    if (air_shared_area.hm_log.n_events == HM_LOGG_MAX_EVENT_NB) {
+        // Overwrite policy, increment the tail
+        // Means we are overwriting the oldest event
+        air_shared_area.hm_log.tail = (air_shared_area.hm_log.tail + 1) % HM_LOGG_MAX_EVENT_NB;
+    } else {
+        // Its not full, increment the count
+        air_shared_area.hm_log.n_events++;
+    }
+
+    // Get the next writing position
+    pmk_hm_log_event_t * log_empty_event = &air_shared_area.hm_log.events[air_shared_area.hm_log.head];
+    
+    // Add the new event
+    log_empty_event->absolute_date = air_shared_area.schedule_ctrl->total_ticks;
+    log_empty_event->error_type = error_id;
+    log_empty_event->level = level;
+    log_empty_event->partition_id = pid;
+
+    // Increment the head, circularly
+    air_shared_area.hm_log.head = (air_shared_area.hm_log.head + 1) % HM_LOGG_MAX_EVENT_NB;
 }
 
 /**
@@ -282,15 +319,8 @@ void pmk_hm_isr_handler(air_error_e error_id)
     air_state_e state = core_context_get_system_state(core_ctrl->context);
     pmk_hm_level_id level = air_shared_area.hm_system_table[state][error_id];
 
-    //Add this hm event to the log
-    pmk_hm_log_event_t * log_empty_event = &air_shared_area.hm_log.events[air_shared_area.hm_log.n_events];
-
-    air_shared_area.hm_log.n_events++;
-    
-    log_empty_event->absolute_date = air_shared_area.schedule_ctrl->total_ticks;
-    log_empty_event->error_type = error_id;
-    log_empty_event->level = level;
-    log_empty_event->partition_id = core_ctrl->partition->id;
+    /* Add this hm event to the log */
+    pmk_add_hm_log_entry(error_id, level, core_ctrl->partition->id);
 
     /* perform the HM action according to the handling level */
     switch (level)
