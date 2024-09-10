@@ -238,9 +238,15 @@ air_status_code_e pmk_print_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log){
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
 
+    /* Check if partition has supervisor permission*/
+    if (core->partition->permissions != AIR_PERMISSION_SUPERVISOR)
+    {
+        return AIR_INVALID_CONFIG;
+    }
+
     if (air_shared_area.hm_log.n_events == 0) {
         printk("HM Log is empty.\n");
-        return;
+        return AIR_NO_ERROR;
     }
 
     /* allow partition to be preempted */

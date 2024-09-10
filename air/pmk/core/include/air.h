@@ -718,7 +718,7 @@ air_state_e air_syscall_get_system_state(void);
  */
 air_status_code_e air_syscall_set_system_state(air_state_e state);
 
-void air_syscall_get_hm_log(air_hm_log_t *log);
+air_status_code_e air_syscall_get_hm_log(air_hm_log_t *log);
 
 /**
  * @brief Get the last health-monitor event
