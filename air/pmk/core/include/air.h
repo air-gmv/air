@@ -698,10 +698,12 @@ typedef struct
     air_identifier_t partition_id;
 } air_hm_log_event_t;
 
+#define HM_LOGG_MAX_EVENT_NB 32
+
 typedef struct
 {
     air_u32_t n_events; /**< Number of events */
-    air_hm_log_event_t events[48]; //TODO: CHANGE THIS LATER
+    air_hm_log_event_t events[HM_LOGG_MAX_EVENT_NB];
 } air_hm_log_t;
 
 /**

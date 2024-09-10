@@ -249,7 +249,7 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core)
         break;
     
     case AIR_SYSCALL_GET_HM_LOG:
-        frame->r0 = (air_u32_t) pmk_print_hm_log(core, (air_hm_log_t *)frame->r0);
+        frame->r0 = (air_u32_t) pmk_get_hm_log(core, (air_hm_log_t *)frame->r0);
         break;
 
     case AIR_SYSCALL_GET_HM_EVENT:

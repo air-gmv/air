@@ -26,8 +26,6 @@
 #define PMK_HM_STATES_COUNT (7)
 #define PMK_HM_ERRORS_COUNT (16)
 
-#define HM_LOGG_MAX_EVENT_NB 4
-
 /**
  * @brief PMK Health-Monitor Log policy
  */
