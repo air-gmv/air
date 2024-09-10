@@ -125,6 +125,10 @@ global(air_syscall_get_hm_log)
     svc     #(AIR_SYSCALL_GET_HM_LOG)
     bx      lr
 
+global(air_syscall_pop_from_hm_log)
+    svc     #(AIR_SYSCALL_POP_FROM_HM_LOG)
+    bx      lr
+
 global(air_syscall_get_hm_event)
     svc     #(AIR_SYSCALL_GET_HM_EVENT)
     bx      lr

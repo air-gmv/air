@@ -202,6 +202,8 @@ air_status_code_e pmk_syscall_set_system_state(pmk_core_ctrl_t *core, air_state_
 
 air_status_code_e pmk_get_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log);
 
+air_status_code_e pmk_pop_from_hm_log(pmk_core_ctrl_t *core, air_hm_log_event_t *log);
+
 /**
  * @brief Gets the last HM event
  * @param core executing core information
