@@ -247,6 +247,11 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core)
         // Set the system state based on the state
         frame->r0 = (air_u32_t)pmk_syscall_set_system_state(core, (air_state_e)frame->r0);
         break;
+    
+    case AIR_SYSCALL_GET_HM_LOG:
+        pmk_print_hm_log(core, (air_hm_log_t *)frame->r0);
+        break;
+
     case AIR_SYSCALL_GET_HM_EVENT:
 
         // Get the health monitor event for the current core

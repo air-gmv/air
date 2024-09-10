@@ -18,6 +18,7 @@
  */
 
 #include <pmk.h>
+#include <segregation.h>
 #include <bsp.h>
 #include <ipc.h>
 #include <printk.h>
@@ -223,7 +224,17 @@ void pmk_hm_isr_handler_partition_level(pmk_core_ctrl_t *core, air_state_e state
     }
 }
 
-void pmk_print_hm_log(){
+air_status_code_e pmk_print_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log){
+    cpu_preemption_flags_t flags;
+    core_context_t *context = core->context;
+
+    /* allow partition to be preempted */
+    cpu_enable_preemption(flags);
+
+    /* fill local structure */
+    air_hm_log_t local;
+    local.n_events = air_shared_area.hm_log.n_events;
+
     printk("------------------------------\n");
     for (int i = 0; i < air_shared_area.hm_log.n_events; i++)
     {
@@ -233,8 +244,28 @@ void pmk_print_hm_log(){
         printk("  Level: %d\n", (air_u32_t) air_shared_area.hm_log.events[i].level);
         printk("  Partition ID: %d\n", (air_u32_t) air_shared_area.hm_log.events[i].partition_id);
         printk("\n");
+
+        // Copy to the partition
+        
+        local.events[i].absolute_date = air_shared_area.hm_log.events[i].absolute_date;
+        local.events[i].error_type = air_shared_area.hm_log.events[i].error_type;
+        local.events[i].level = air_shared_area.hm_log.events[i].level;
+        local.events[i].partition_id = air_shared_area.hm_log.events[i].partition_id;
+        
+        /* copy to user land */
+        if (pmk_segregation_put_user(context, local, log) != 0)
+        {
+
+            /* disable preemption and return */
+            cpu_disable_preemption(flags);
+            return AIR_INVALID_POINTER;
+        }
     }
     printk("------------------------------\n");
+
+    /* disable preemption and return */
+    cpu_disable_preemption(flags);
+    return AIR_NO_ERROR;
 }
 
 /**

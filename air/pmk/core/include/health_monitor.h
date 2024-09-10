@@ -126,8 +126,6 @@ pmk_hm_level_list_t *pmk_hm_get_system_state_table(void);
  */
 pmk_hm_action_list_t **pmk_hm_get_module_hm_table(void);
 
-void pmk_print_hm_log();
-
 #else /* ASM */
 
 #define AIR_STATE_MODULE_INIT 0x00
