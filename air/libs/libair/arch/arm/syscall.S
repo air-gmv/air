@@ -121,6 +121,10 @@ global(air_syscall_set_system_state)
     svc     #(AIR_SYSCALL_SET_SYSTEM_STATE)
     bx      lr
 
+global(air_syscall_get_hm_log)
+    svc     #(AIR_SYSCALL_GET_HM_LOG)
+    bx      lr
+
 global(air_syscall_get_hm_event)
     svc     #(AIR_SYSCALL_GET_HM_EVENT)
     bx      lr

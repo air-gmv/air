@@ -682,6 +682,28 @@ typedef struct
 
 } air_hm_event_t;
 
+typedef enum
+{
+    ERROR_LEVEL_UNDEFINED = 0x01, /**< Undefined/default level         */
+    ERROR_LEVEL_MODULE = 0x01,    /**< Error at Module level           */
+    ERROR_LEVEL_PARTITION = 0x02, /**< Error at Partition level        */
+    ERROR_LEVEL_PROCESS = 0x03,   /**< Error at Process level          */
+} air_hm_event_level_t;
+
+typedef struct
+{
+    air_clocktick_t absolute_date;
+    air_error_e error_type;
+    air_hm_event_level_t level;
+    air_identifier_t partition_id;
+} air_hm_log_event_t;
+
+typedef struct
+{
+    air_u32_t n_events; /**< Number of events */
+    air_hm_log_event_t events[48]; //TODO: CHANGE THIS LATER
+} air_hm_log_t;
+
 /**
  * @brief Get the current system state
  * @return Current system state
@@ -695,6 +717,8 @@ air_state_e air_syscall_get_system_state(void);
  *         NO_ACTION otherwise
  */
 air_status_code_e air_syscall_set_system_state(air_state_e state);
+
+void air_syscall_get_hm_log(air_hm_log_t *log);
 
 /**
  * @brief Get the last health-monitor event
@@ -914,17 +938,18 @@ air_uptr_t air_syscall_get_ambaconf(void);
 #define AIR_SYSCALL_GET_EVENT (AIR_SYSCALL_ARCH_COUNT + 28)
 #define AIR_SYSCALL_GET_SYSTEM_STATE (AIR_SYSCALL_ARCH_COUNT + 29)
 #define AIR_SYSCALL_SET_SYSTEM_STATE (AIR_SYSCALL_ARCH_COUNT + 30)
-#define AIR_SYSCALL_GET_HM_EVENT (AIR_SYSCALL_ARCH_COUNT + 31)
-#define AIR_SYSCALL_RAISE_HM_EVENT (AIR_SYSCALL_ARCH_COUNT + 32)
-#define AIR_SYSCALL_PUTCHAR (AIR_SYSCALL_ARCH_COUNT + 33)
-#define AIR_SYSCALL_PRINT (AIR_SYSCALL_ARCH_COUNT + 34)
-#define AIR_SYSCALL_ENABLE_CACHE (AIR_SYSCALL_ARCH_COUNT + 35)
-#define AIR_SYSCALL_DISABLE_CACHE (AIR_SYSCALL_ARCH_COUNT + 36)
-#define AIR_SYSCALL_FREEZE_CACHE (AIR_SYSCALL_ARCH_COUNT + 37)
-#define AIR_SYSCALL_FLUSH_CACHE (AIR_SYSCALL_ARCH_COUNT + 38)
-#define AIR_SYSCALL_GET_AMBACONF (AIR_SYSCALL_ARCH_COUNT + 39)
-#define AIR_SYSCALL_END_WINDOW (AIR_SYSCALL_ARCH_COUNT + 40)
-#define AIR_SYSCALL_COUNT (AIR_SYSCALL_ARCH_COUNT + 41)
+#define AIR_SYSCALL_GET_HM_LOG (AIR_SYSCALL_ARCH_COUNT + 31)
+#define AIR_SYSCALL_GET_HM_EVENT (AIR_SYSCALL_ARCH_COUNT + 32)
+#define AIR_SYSCALL_RAISE_HM_EVENT (AIR_SYSCALL_ARCH_COUNT + 33)
+#define AIR_SYSCALL_PUTCHAR (AIR_SYSCALL_ARCH_COUNT + 34)
+#define AIR_SYSCALL_PRINT (AIR_SYSCALL_ARCH_COUNT + 35)
+#define AIR_SYSCALL_ENABLE_CACHE (AIR_SYSCALL_ARCH_COUNT + 36)
+#define AIR_SYSCALL_DISABLE_CACHE (AIR_SYSCALL_ARCH_COUNT + 37)
+#define AIR_SYSCALL_FREEZE_CACHE (AIR_SYSCALL_ARCH_COUNT + 38)
+#define AIR_SYSCALL_FLUSH_CACHE (AIR_SYSCALL_ARCH_COUNT + 39)
+#define AIR_SYSCALL_GET_AMBACONF (AIR_SYSCALL_ARCH_COUNT + 40)
+#define AIR_SYSCALL_END_WINDOW (AIR_SYSCALL_ARCH_COUNT + 41)
+#define AIR_SYSCALL_COUNT (AIR_SYSCALL_ARCH_COUNT + 42)
 
 
 #endif /* __AIR_H__ */
