@@ -282,6 +282,58 @@ air_status_code_e pmk_get_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log){
     return AIR_NO_ERROR;
 }
 
+//WARNING: DO I NEED A LOCK HERE BECAUSE OF RACE CONDITIONS?
+air_status_code_e pmk_pop_from_hm_log(pmk_core_ctrl_t *core, air_hm_log_event_t *log){
+
+    cpu_preemption_flags_t flags;
+    core_context_t *context = core->context;
+    air_hm_log_event_t local;
+    air_u32_t new_head;
+
+    /* Check if partition has supervisor permission*/
+    if (core->partition->permissions != AIR_PERMISSION_SUPERVISOR)
+    {
+        return AIR_INVALID_CONFIG;
+    }
+    
+    /* allow partition to be preempted */
+    cpu_enable_preemption(flags);
+
+    /* Check if the log is empty */
+    if (air_shared_area.hm_log.n_events == 0) {
+        /* disable preemption and return */
+        cpu_disable_preemption(flags);
+        return AIR_NO_ERROR;
+    }
+
+    // Get the new head
+    new_head = (air_shared_area.hm_log.head - 1 + HM_LOGG_MAX_EVENT_NB) % HM_LOGG_MAX_EVENT_NB;
+    
+    // Copy the most the most recent log event to the user land
+    local.absolute_date = air_shared_area.hm_log.events[new_head].absolute_date;  
+    local.error_type = air_shared_area.hm_log.events[new_head].error_type;  
+    local.level = air_shared_area.hm_log.events[new_head].level;  
+    local.partition_id = air_shared_area.hm_log.events[new_head].partition_id;  
+    
+
+    /* copy the local struct to the user land */
+    if (pmk_segregation_put_user(context, local, log) != 0)
+    {
+        /* disable preemption and return */
+        cpu_disable_preemption(flags);
+        return AIR_INVALID_POINTER;
+    }
+    
+    // If the copy was successfull update the head, efectively removing the last event
+    air_shared_area.hm_log.n_events--;  // Decrement count
+    air_shared_area.hm_log.head = new_head; // Update head
+   
+    /* disable preemption and return */
+    cpu_disable_preemption(flags);
+    
+    return AIR_NO_ERROR;
+}
+
 void pmk_add_hm_log_entry(air_error_e error_id, pmk_hm_level_id level, pmk_core_ctrl_t *core){
 
     // Check if it is full
