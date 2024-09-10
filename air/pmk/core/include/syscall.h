@@ -200,7 +200,7 @@ air_status_code_e pmk_syscall_get_sharedmemory(pmk_core_ctrl_t *core, air_name_p
  */
 air_status_code_e pmk_syscall_set_system_state(pmk_core_ctrl_t *core, air_state_e state);
 
-air_status_code_e pmk_print_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log);
+air_status_code_e pmk_get_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log);
 
 /**
  * @brief Gets the last HM event

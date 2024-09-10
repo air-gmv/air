@@ -234,7 +234,7 @@ void pmk_hm_isr_handler_partition_level(pmk_core_ctrl_t *core, air_state_e state
     }
 }
 
-air_status_code_e pmk_print_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log){
+air_status_code_e pmk_get_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log){
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
 
@@ -245,7 +245,6 @@ air_status_code_e pmk_print_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log){
     }
 
     if (air_shared_area.hm_log.n_events == 0) {
-        printk("HM Log is empty.\n");
         return AIR_NO_ERROR;
     }
 
@@ -256,37 +255,27 @@ air_status_code_e pmk_print_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log){
     air_hm_log_t local;
     local.n_events = air_shared_area.hm_log.n_events;
 
-    printk("------------------------------\n");
     air_u32_t current = air_shared_area.hm_log.tail;
+
     for (int i = 0; i < air_shared_area.hm_log.n_events; i++)
     {
-        printk("HM Event %d:\n", i);
-        printk("  Absolute Date: Tick %d\n", (air_u32_t) air_shared_area.hm_log.events[current].absolute_date);
-        printk("  Error Type: %d\n", (air_u32_t) air_shared_area.hm_log.events[current].error_type);
-        printk("  Level: %d\n", (air_u32_t) air_shared_area.hm_log.events[current].level);
-        printk("  Partition ID: %d\n", (air_u32_t) air_shared_area.hm_log.events[current].partition_id);
-        printk("\n");
-
+        // Copy to the local structure
+        local.events[i].absolute_date = air_shared_area.hm_log.events[current].absolute_date;
+        local.events[i].error_type = air_shared_area.hm_log.events[current].error_type;
+        local.events[i].level = air_shared_area.hm_log.events[current].level;
+        local.events[i].partition_id = air_shared_area.hm_log.events[current].partition_id;
+        
         // Increment the current pointer to the next element, circularly
         current = (current + 1) % air_shared_area.hm_log.n_events;
-
-        // // Copy to the partition
-        
-        // local.events[i].absolute_date = air_shared_area.hm_log.events[i].absolute_date;
-        // local.events[i].error_type = air_shared_area.hm_log.events[i].error_type;
-        // local.events[i].level = air_shared_area.hm_log.events[i].level;
-        // local.events[i].partition_id = air_shared_area.hm_log.events[i].partition_id;
-        
-        // /* copy to user land */
-        // if (pmk_segregation_put_user(context, local, log) != 0)
-        // {
-
-        //     /* disable preemption and return */
-        //     cpu_disable_preemption(flags);
-        //     return AIR_INVALID_POINTER;
-        // }
     }
-    printk("------------------------------\n");
+
+     /* copy the local struct to the user land */
+    if (pmk_segregation_put_user(context, local, log) != 0)
+    {
+        /* disable preemption and return */
+        cpu_disable_preemption(flags);
+        return AIR_INVALID_POINTER;
+    }
 
     /* disable preemption and return */
     cpu_disable_preemption(flags);
