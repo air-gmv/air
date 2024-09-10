@@ -93,7 +93,12 @@ void pmk_hm_init()
     air_shared_area.hm_module_table = pmk_get_usr_hm_module_table();
 
     /* setup the health monitoring log */
-    air_shared_area.hm_log.policy = PMK_HM_LOG_OVERWRITE; //TODO: For now leave as default overwrite policy
+    #ifdef PMK_HM_LOG_OVERWRITE
+    air_shared_area.hm_log.policy = PMK_HM_LOG_NO_OVERWRITE; 
+    #else
+    air_shared_area.hm_log.policy = PMK_HM_LOG_OVERWRITE; 
+    #endif
+    
     air_shared_area.hm_log.n_events = 0;
     air_shared_area.hm_log.head = 0;
     air_shared_area.hm_log.tail = 0;
