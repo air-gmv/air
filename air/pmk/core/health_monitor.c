@@ -93,11 +93,13 @@ void pmk_hm_init()
     air_shared_area.hm_module_table = pmk_get_usr_hm_module_table();
 
     /* setup the health monitoring log */
+    air_shared_area.hm_log.policy = PMK_HM_LOG_OVERWRITE; //TODO: For now leave as default overwrite policy
     air_shared_area.hm_log.n_events = 0;
     air_shared_area.hm_log.head = 0;
     air_shared_area.hm_log.tail = 0;
 
 #ifdef PMK_DEBUG
+    printk(" :: Health-Monitor log policy %d\n", air_shared_area.hm_log.policy);
     pmk_workspace_debug();
 #endif
 }
@@ -280,13 +282,23 @@ air_status_code_e pmk_print_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log){
     return AIR_NO_ERROR;
 }
 
-void pmk_add_hm_log_entry(air_error_e error_id, pmk_hm_level_id level, air_identifier_t pid){
+void pmk_add_hm_log_entry(air_error_e error_id, pmk_hm_level_id level, pmk_core_ctrl_t *core){
 
     // Check if it is full
     if (air_shared_area.hm_log.n_events == HM_LOGG_MAX_EVENT_NB) {
-        // Overwrite policy, increment the tail
-        // Means we are overwriting the oldest event
-        air_shared_area.hm_log.tail = (air_shared_area.hm_log.tail + 1) % HM_LOGG_MAX_EVENT_NB;
+        if (air_shared_area.hm_log.policy == PMK_HM_LOG_OVERWRITE)
+        {
+            // Overwrite policy, increment the tail
+            // Means we are overwriting the oldest event
+            air_shared_area.hm_log.tail = (air_shared_area.hm_log.tail + 1) % HM_LOGG_MAX_EVENT_NB;
+        } else if (air_shared_area.hm_log.policy == PMK_HM_LOG_NO_OVERWRITE)
+        {
+            // No overwrite policy, return
+            return;
+        } else {
+            printk("Invalid HM Log policy\n");
+            pmk_module_shutdown(core);
+        }        
     } else {
         // Its not full, increment the count
         air_shared_area.hm_log.n_events++;
@@ -299,7 +311,7 @@ void pmk_add_hm_log_entry(air_error_e error_id, pmk_hm_level_id level, air_ident
     log_empty_event->absolute_date = air_shared_area.schedule_ctrl->total_ticks;
     log_empty_event->error_type = error_id;
     log_empty_event->level = level;
-    log_empty_event->partition_id = pid;
+    log_empty_event->partition_id = core->partition->id;
 
     // Increment the head, circularly
     air_shared_area.hm_log.head = (air_shared_area.hm_log.head + 1) % HM_LOGG_MAX_EVENT_NB;
@@ -320,7 +332,7 @@ void pmk_hm_isr_handler(air_error_e error_id)
     pmk_hm_level_id level = air_shared_area.hm_system_table[state][error_id];
 
     /* Add this hm event to the log */
-    pmk_add_hm_log_entry(error_id, level, core_ctrl->partition->id);
+    pmk_add_hm_log_entry(error_id, level, core_ctrl);
 
     /* perform the HM action according to the handling level */
     switch (level)
