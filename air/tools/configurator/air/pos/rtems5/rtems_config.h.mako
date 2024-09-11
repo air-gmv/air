@@ -29,8 +29,8 @@ ${makoutils.cfileHeader("rtems_config.h", "RTEMS configuration")}
 #define CONFIGURE_MAXIMUM_TASKS 20
 #define CONFIGURE_MAXIMUM_TIMERS 4
 
-#ifdef IS_TASTE_APP
-    #include "rtems_taste_user_config.h"
+#ifdef RTEMS_CUSTOM_CONFIG
+    #include "rtems_custom_config.h"
 #endif
 
 #define CONFIGURE_RTEMS_INIT_TASKS_TABLE
