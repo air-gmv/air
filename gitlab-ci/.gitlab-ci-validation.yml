@@ -40,7 +40,7 @@ ARM-QEMU-validation-test:
       matrix:
         - EXAMPLE:
           - AIR-TEST-CONF-00010
-          # - AIR-TEST-HM-00010
+          - AIR-TEST-HM-00010
           - AIR-TEST-HM-00020
           - AIR-TEST-HM-00030
           - AIR-TEST-HM-00040
@@ -48,7 +48,7 @@ ARM-QEMU-validation-test:
           #- AIR-TEST-HM-00060 #Not applicable to QEMU
           #- AIR-TEST-HM-00070 
           - AIR-TEST-HM-00080
-          # - AIR-TEST-HM-00090
+          - AIR-TEST-HM-00090
           - AIR-TEST-HM-00100
           - AIR-TEST-IPC-00010
           - AIR-TEST-IPC-00020
