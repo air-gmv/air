@@ -26,6 +26,7 @@
 #include <multicore.h>
 #include <configurations.h>
 #include <health_monitor.h>
+#include <error.h>
 
 void pmk_module_shutdown(pmk_core_ctrl_t *core)
 {
@@ -234,6 +235,17 @@ void pmk_hm_isr_handler_partition_level(pmk_core_ctrl_t *core, air_state_e state
     }
 }
 
+/**
+ * @brief Retrieves the Health Monitor log. Partitions must have SUPERVISOR permissions.
+ *        Returns the log data to the user space, with the most recent events first.
+ * @param[in] core pointer to current core control structure
+ * @param[out] log pointer to the `air_hm_log_t` structure where the HM log data 
+ *                 will be copied.
+ *
+ * @return `AIR_NO_ERROR` if the operation is successful.
+ * @return `AIR_INVALID_CONFIG` if the partition does not have supervisor permissions.
+ * @return `AIR_INVALID_POINTER` if there is an issue copying the log data to user space.
+ */
 air_status_code_e pmk_get_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log){
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
@@ -282,7 +294,21 @@ air_status_code_e pmk_get_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log){
     return AIR_NO_ERROR;
 }
 
-//WARNING: DO I NEED A LOCK HERE BECAUSE OF RACE CONDITIONS?
+/**
+ * @brief Pops the most recent event from the Health Monitor log.
+ *
+ * Retrieves the most recent event from the Health Monitor log removes it from the log, 
+ * and copies it to the user-provided `log` structure.
+ * Partitions must have SUPERVISOR permission.
+ *
+ * @param[in] core pointer to the core control structure
+ * @param[out] log pointer to the `air_hm_log_event_t` structure where the most recent HM log event will be copied.
+ *
+ * @warning Some kind of lock may need to be implemented
+ * @return `AIR_NO_ERROR` if the operation is successful or if the log is empty.
+ * @return `AIR_INVALID_CONFIG` if the partition does not have supervisor permissions.
+ * @return `AIR_INVALID_POINTER` if there is an issue copying the log event to user space.
+ */
 air_status_code_e pmk_pop_from_hm_log(pmk_core_ctrl_t *core, air_hm_log_event_t *log){
 
     cpu_preemption_flags_t flags;
@@ -334,6 +360,27 @@ air_status_code_e pmk_pop_from_hm_log(pmk_core_ctrl_t *core, air_hm_log_event_t 
     return AIR_NO_ERROR;
 }
 
+/**
+ * @brief Adds a new entry to the Health Monitor log.
+ * 
+ * Adds a new entry to the log. Takes into account the log policy when the log is full.
+ * Implemented as a circular buffer with lenght `HM_LOGG_MAX_EVENT_NB`.
+ * 
+ * If policy is set to `PMK_HM_LOG_OVERWRITE`, the oldest entry will be overwritten.
+ * 
+ * If policy is set to `PMK_HM_LOG_NO_OVERWRITE`, the function will return without adding a new entry. 
+ * The new entry is lost.
+ * 
+ * @param[in] error_id The error identifier (`air_error_e`) to be logged.
+ * @param[in] level The severity level (`pmk_hm_level_id`) of the log entry.
+ * @param[in] core A pointer to the core control structure (`pmk_core_ctrl_t`) 
+ *                 containing the context and partition information.
+ *
+ * @warning Some kind of lock may need to be implemented
+ * @note If the log is full and the policy is set to `PMK_HM_LOG_NO_OVERWRITE`, the function will return without adding a new entry.
+ * @note If the log is full and the policy is set to `PMK_HM_LOG_OVERWRITE`, the oldest log entry will be overwritten.
+ * @note If an invalid log policy is set, the function will print an error message and shut down the module.
+ */
 void pmk_add_hm_log_entry(air_error_e error_id, pmk_hm_level_id level, pmk_core_ctrl_t *core){
 
     // Check if it is full
@@ -348,7 +395,7 @@ void pmk_add_hm_log_entry(air_error_e error_id, pmk_hm_level_id level, pmk_core_
             // No overwrite policy, return
             return;
         } else {
-            printk("Invalid HM Log policy\n");
+            pmk_fatal_error(PMK_INTERNAL_ERROR_CONFIG, __func__, __FILE__, __LINE__);
             pmk_module_shutdown(core);
         }        
     } else {

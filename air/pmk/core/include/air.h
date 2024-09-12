@@ -682,6 +682,9 @@ typedef struct
 
 } air_hm_event_t;
 
+/**
+ * @brief Health-Monitor event level
+ */
 typedef enum
 {
     ERROR_LEVEL_UNDEFINED = 0x01, /**< Undefined/default level         */
@@ -690,6 +693,9 @@ typedef enum
     ERROR_LEVEL_PROCESS = 0x03,   /**< Error at Process level          */
 } air_hm_event_level_t;
 
+/**
+ * @brief Health-Monitor log event
+ */
 typedef struct
 {
     air_clocktick_t absolute_date;
@@ -698,11 +704,17 @@ typedef struct
     air_identifier_t partition_id;
 } air_hm_log_event_t;
 
+/**
+ * @brief Health-Monitor log maximum number of saved events
+ */
 #define HM_LOGG_MAX_EVENT_NB 32
 
+/**
+ * @brief Health-Monitor log
+ */
 typedef struct
 {
-    air_u32_t n_events; /**< Number of events */
+    air_u32_t n_events; /**< Number of events on the log */
     air_hm_log_event_t events[HM_LOGG_MAX_EVENT_NB];
 } air_hm_log_t;
 
@@ -720,8 +732,33 @@ air_state_e air_syscall_get_system_state(void);
  */
 air_status_code_e air_syscall_set_system_state(air_state_e state);
 
+/**
+ * @brief Retrieves the Health Monitor log. Partitions must have SUPERVISOR permissions.
+ *        Returns the log data to the user space, with the most recent events first.
+ * @param[in] core pointer to current core control structure
+ * @param[out] log pointer to the `air_hm_log_t` structure where the HM log data 
+ *                 will be copied.
+ *
+ * @return `AIR_NO_ERROR` if the operation is successful.
+ * @return `AIR_INVALID_CONFIG` if the partition does not have supervisor permissions.
+ * @return `AIR_INVALID_POINTER` if there is an issue copying the log data to user space.
+ */
 air_status_code_e air_syscall_get_hm_log(air_hm_log_t *log);
 
+/**
+ * @brief Pops the most recent event from the Health Monitor log.
+ *
+ * Retrieves the most recent event from the Health Monitor log removes it from the log, 
+ * and copies it to the user-provided `log` structure.
+ * Partitions must have SUPERVISOR permission.
+ *
+ * @param[in] core pointer to the core control structure
+ * @param[out] log pointer to the `air_hm_log_event_t` structure where the most recent HM log event will be copied.
+ *
+ * @return `AIR_NO_ERROR` if the operation is successful or if the log is empty.
+ * @return `AIR_INVALID_CONFIG` if the partition does not have supervisor permissions.
+ * @return `AIR_INVALID_POINTER` if there is an issue copying the log event to user space.
+ */
 air_status_code_e air_syscall_pop_from_hm_log(air_hm_log_event_t *log);
 
 /**
