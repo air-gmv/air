@@ -28,6 +28,11 @@
 #include <health_monitor.h>
 #include <error.h>
 
+/**
+ * @brief Lock for accessing the Health-Monitor log
+ */
+atomic_t hm_log_lock;
+
 void pmk_module_shutdown(pmk_core_ctrl_t *core)
 {
 
@@ -332,6 +337,12 @@ air_status_code_e pmk_pop_from_hm_log(pmk_core_ctrl_t *core, air_hm_log_event_t 
         return AIR_NO_ERROR;
     }
 
+    //Lock access to the LOG
+    while (atomic_swap(1, &hm_log_lock) == 1)
+    {
+        //Wait for lock to be released
+    }	
+
     // Get the new head
     new_head = (air_shared_area.hm_log.head - 1 + HM_LOGG_MAX_EVENT_NB) % HM_LOGG_MAX_EVENT_NB;
     
@@ -353,6 +364,9 @@ air_status_code_e pmk_pop_from_hm_log(pmk_core_ctrl_t *core, air_hm_log_event_t 
     // If the copy was successfull update the head, efectively removing the last event
     air_shared_area.hm_log.n_events--;  // Decrement count
     air_shared_area.hm_log.head = new_head; // Update head
+
+    //unlock after use
+    atomic_set(0, &hm_log_lock);
    
     /* disable preemption and return */
     cpu_disable_preemption(flags);
@@ -431,7 +445,17 @@ void pmk_hm_isr_handler(air_error_e error_id)
     pmk_hm_level_id level = air_shared_area.hm_system_table[state][error_id];
 
     /* Add this hm event to the log */
+    
+    // Lock access to the log
+    while (atomic_swap(1, &hm_log_lock) == 1)
+    {
+        //Wait for lock to be released
+    }
+    
     pmk_add_hm_log_entry(error_id, level, core_ctrl);
+    
+    //unlock after use
+    atomic_set(0, &hm_log_lock);
 
     /* perform the HM action according to the handling level */
     switch (level)
