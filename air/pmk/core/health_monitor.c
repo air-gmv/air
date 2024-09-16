@@ -254,6 +254,10 @@ void pmk_hm_isr_handler_partition_level(pmk_core_ctrl_t *core, air_state_e state
 air_status_code_e pmk_get_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log){
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
+    air_u32_t current = 0;
+
+    //Local structure to hold the log
+    air_hm_log_t local;
 
     /* Check if partition has supervisor permission*/
     if (core->partition->permissions != AIR_PERMISSION_SUPERVISOR)
@@ -269,10 +273,9 @@ air_status_code_e pmk_get_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log){
     cpu_enable_preemption(flags);
 
     /* fill local structure */
-    air_hm_log_t local;
     local.n_events = air_shared_area.hm_log.n_events;
 
-    air_u32_t current = air_shared_area.hm_log.tail;
+    current = air_shared_area.hm_log.tail;
 
     for (int i = 0; i < air_shared_area.hm_log.n_events; i++)
     {
@@ -319,7 +322,7 @@ air_status_code_e pmk_pop_from_hm_log(pmk_core_ctrl_t *core, air_hm_log_event_t 
     cpu_preemption_flags_t flags;
     core_context_t *context = core->context;
     air_hm_log_event_t local;
-    air_u32_t new_head;
+    air_u32_t new_head = 0;
 
     /* Check if partition has supervisor permission*/
     if (core->partition->permissions != AIR_PERMISSION_SUPERVISOR)
@@ -396,6 +399,7 @@ air_status_code_e pmk_pop_from_hm_log(pmk_core_ctrl_t *core, air_hm_log_event_t 
  * @note If an invalid log policy is set, the function will print an error message and shut down the module.
  */
 void pmk_add_hm_log_entry(air_error_e error_id, pmk_hm_level_id level, pmk_core_ctrl_t *core){
+    pmk_hm_log_event_t * log_empty_event = NULL;
 
     // Check if it is full
     if (air_shared_area.hm_log.n_events == HM_LOGG_MAX_EVENT_NB) {
@@ -418,7 +422,13 @@ void pmk_add_hm_log_entry(air_error_e error_id, pmk_hm_level_id level, pmk_core_
     }
 
     // Get the next writing position
-    pmk_hm_log_event_t * log_empty_event = &air_shared_area.hm_log.events[air_shared_area.hm_log.head];
+    log_empty_event = &air_shared_area.hm_log.events[air_shared_area.hm_log.head];
+    
+    if (log_empty_event == NULL)
+    {
+        pmk_fatal_error(PMK_INTERNAL_ERROR_CONFIG, __func__, __FILE__, __LINE__);
+        pmk_module_shutdown(core);
+    }
     
     // Add the new event
     log_empty_event->absolute_date = air_shared_area.schedule_ctrl->total_ticks;
