@@ -55,7 +55,6 @@ void core_context_init(core_context_t *context, air_u32_t id)
     context->isf_pointer = context->idle_isf_pointer;
 
 #if PMK_FPU_SUPPORT
-    arm_enable_fpu();
     /* allocate space to hold an FPU context */
     context->vfp_context = (arm_vfp_context_t *)pmk_workspace_alloc(sizeof(arm_vfp_context_t));
 #else
