@@ -33,7 +33,7 @@ kernel_compiler = dict(
     RANLIB="arm-rtems5-ranlib",
     CFLAGS="",
     CPPFLAGS="-g -c -fno-builtin -nodefaultlibs -Wall -march=armv7-a -mthumb \
--mfpu=neon -mfloat-abi=hard -mtune=cortex-a9", #Using the softfp float abi gives more compatibility but can decrease performance
+-mfpu=vfpv3 -mfloat-abi=softfp -mtune=cortex-a9", #Using the softfp float abi gives more compatibility but can decrease performance
             # Change to -mfloat-abi=hard for extra performance
     CXXFLAGS="",
     LDFLAGS="--gc-sections --wrap=printf --wrap=puts --wrap=putchar",
