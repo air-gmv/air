@@ -168,12 +168,30 @@ void GET_PARTITION_STATUS(PARTITION_STATUS_TYPE *PARTITION_STATUS, RETURN_CODE_T
 void SET_PARTITION_MODE(OPERATING_MODE_TYPE OPERATING_MODE, RETURN_CODE_TYPE *RETURN_CODE);
 
 /**
+ * \brief an application in a Partition shall be able to get the identifier of the
+ * current window.
+ * \note AIR-TIME-00070
+ *
+ * \param [out] WINDOW_ID               the current window ID
+ * \param [out] RETURN_CODE             ARINC 653 return code
+ */
+void GET_CURRENT_WINDOW_ID(WINDOW_ID_TYPE  *WINDOW_ID, RETURN_CODE_TYPE *RETURN_CODE);
+
+/**
  * @brief Obtain the current local node time
  * @note obtained time is monotonic since boot.
  * @param [out] SYSTEM_TIME current time with nanosecond precision
  * @param [out] RETURN_CODE ARINC 653 return code
  */
 void GET_TIME(SYSTEM_TIME_TYPE *SYSTEM_TIME, RETURN_CODE_TYPE *RETURN_CODE);
+
+/**
+ * @brief Obtain the current MTF time
+ * @note obtained time is monotonic since beginning of current MTF.
+ * @param [out] SYSTEM_TIME current MTF time with nanosecond precision
+ * @param [out] RETURN_CODE ARINC 653 return code
+ */
+void GET_MTF_TIME(SYSTEM_TIME_TYPE *SYSTEM_TIME, RETURN_CODE_TYPE *RETURN_CODE);
 
 /**
  * @param [in]  PARTITION_IDENTIFIER    the target partition ID
@@ -265,6 +283,23 @@ void GET_SAMPLING_PORT_STATUS(
     /*out*/ SAMPLING_PORT_STATUS_TYPE *SAMPLING_PORT_STATUS,
     /*out*/ RETURN_CODE_TYPE *RETURN_CODE);
 
+void GET_A_SAMPLING_PORT_STATUS(
+    /*in */ SAMPLING_PORT_ID_TYPE SAMPLING_PORT_ID,
+    /*in */ PARTITION_ID_TYPE PARTITION_ID,
+    /*out*/ SAMPLING_PORT_STATUS_TYPE *SAMPLING_PORT_STATUS,
+    /*out*/ RETURN_CODE_TYPE *RETURN_CODE);
+
+void GET_SAMPLING_PORT_NAME(
+    /*in*/  SAMPLING_PORT_ID_TYPE SAMPLING_PORT_ID, 
+    /*out*/ SAMPLING_PORT_NAME_TYPE SAMMPLING_PORT_NAME, 
+    /*out*/ RETURN_CODE_TYPE *RETURN_CODE);
+
+void GET_A_SAMPLING_PORT_NAME(
+    /*in*/  SAMPLING_PORT_ID_TYPE SAMPLING_PORT_ID,
+    /*in*/  PARTITION_ID_TYPE PARTITION_ID, 
+    /*out*/ SAMPLING_PORT_NAME_TYPE SAMMPLING_PORT_NAME, 
+    /*out*/ RETURN_CODE_TYPE *RETURN_CODE);
+
 /* ARINC 653 (PART 2) SAMPLING PORT SERVICES */
 /* -------------------------------------------------------------------------- */
 void READ_UPDATED_SAMPLING_MESSAGE(
@@ -276,6 +311,7 @@ void READ_UPDATED_SAMPLING_MESSAGE(
 
 void GET_SAMPLING_PORT_CURRENT_STATUS(
     /*in */ SAMPLING_PORT_ID_TYPE SAMPLING_PORT_ID,
+    /*in */ PARTITION_ID_TYPE PARTITION_ID,
     /*out*/ SAMPLING_PORT_CURRENT_STATUS_TYPE *SAMPLING_PORT_CURRENT_STATUS,
     /*out*/ RETURN_CODE_TYPE *RETURN_CODE);
 
@@ -318,6 +354,23 @@ void GET_QUEUING_PORT_ID(
 void GET_QUEUING_PORT_STATUS(
     /*in */ QUEUING_PORT_ID_TYPE QUEUING_PORT_ID,
     /*out*/ QUEUING_PORT_STATUS_TYPE *QUEUING_PORT_STATUS,
+    /*out*/ RETURN_CODE_TYPE *RETURN_CODE);
+
+void GET_A_QUEUING_PORT_STATUS(
+    /*in */ QUEUING_PORT_ID_TYPE QUEUING_PORT_ID,
+    /*in */ PARTITION_ID_TYPE PARTITION_ID,
+    /*out*/ QUEUING_PORT_STATUS_TYPE *QUEUING_PORT_STATUS,
+    /*out*/ RETURN_CODE_TYPE *RETURN_CODE);
+
+void GET_QUEUING_PORT_NAME(
+    /*in*/  QUEUING_PORT_ID_TYPE QUEUING_PORT_ID, 
+    /*out*/ QUEUING_PORT_NAME_TYPE QUEUING_PORT_NAME, 
+    /*out*/ RETURN_CODE_TYPE *RETURN_CODE);
+
+void GET_A_QUEUING_PORT_NAME(
+    /*in*/  QUEUING_PORT_ID_TYPE QUEUING_PORT_ID, 
+    /*in*/  PARTITION_ID_TYPE PARTITION_ID,
+    /*out*/ QUEUING_PORT_NAME_TYPE QUEUING_PORT_NAME, 
     /*out*/ RETURN_CODE_TYPE *RETURN_CODE);
 
 #endif /* _IMASPEX_H */

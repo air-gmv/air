@@ -79,6 +79,12 @@ air_status_code_e pmk_syscall_get_schedule_status(pmk_core_ctrl_t *core, air_sch
  */
 air_status_code_e pmk_syscall_set_schedule(pmk_core_ctrl_t *core, air_identifier_t sid);
 /**
+ * @brief Get elapsed ticks since beginning of current MTF [AIR-TIME-00170]
+ * @return Number of elapsed ticks
+ *         
+ */
+air_clocktick_t pmk_syscall_get_elapsed_mtf_ticks(void);
+/**
  * @brief Gets the system time of day
  * @param core executing core information
  * @param[out] tod time of day of system
@@ -126,14 +132,29 @@ air_status_code_e pmk_syscall_create_port(pmk_core_ctrl_t *core, air_port_type_e
  * @brief System call get port status
  * @param core current controlling core
  * @param type type of port to get status
+ * @param pid identifier of the partition that owns the port
  * @param pid port identifier
- * @param[in/out] status port status
+ * @param status[in/out] status port status
  * @return INVALID_POINTER - if the partition pointers aren't valid,
- *         INVALID_PARAM   - if port not found
+ *         INVALID_PARAM   - if port or partition not found
+ *         INVALID_CONFIG  - if trying to access other partition's ports without permission 
  *         NO_ERROR        - otherwise
  */
 air_status_code_e pmk_syscall_get_port_status(pmk_core_ctrl_t *core, air_port_type_e type, air_identifier_t pid,
-                                              void *status);
+                                              air_identifier_t id, void *status);
+/**
+ * @brief System call get port name [AIR-IPC-00230]
+ * @param core current controlling core
+ * @param type type of port
+ * @param pid port's partition owner identifier
+ * @param id port identifier
+ * @param[out] name port name
+ * @return INVALID_POINTER - if the partition pointers aren't valid,
+ *         INVALID_PARAM   - if port not found or wrong type
+ *         NO_ERROR        - otherwise
+ */
+air_status_code_e pmk_syscall_get_port_name(pmk_core_ctrl_t *core, air_port_type_e type, air_identifier_t pid,
+                                              air_identifier_t id, air_name_ptr_t name);
 /**
  * @brief System call read from port
  * @param core current controlling core
