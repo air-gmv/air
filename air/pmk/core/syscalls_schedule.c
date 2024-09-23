@@ -166,3 +166,8 @@ air_status_code_e pmk_syscall_set_schedule(pmk_core_ctrl_t *core, air_identifier
     air_shared_area.schedule_ctrl->next_schedule = schedule;
     return AIR_NO_ERROR;
 }
+
+air_clocktick_t pmk_syscall_get_elapsed_mtf_ticks(void){
+
+    return air_shared_area.schedule_ctrl->mtf_ticks;
+}

@@ -174,7 +174,14 @@ SYM(air_syscall_get_port_status):
     retl
     nop; nop
 
+    GLOBAL(air_syscall_get_port_name)
+SYM(air_syscall_get_port_name):
 
+    set     AIR_SYSCALL_GET_PORT_NAME, %o5
+    ta      AIR_SYSCALL_OS_TRAP
+    retl
+    nop, nop
+    
     GLOBAL(air_syscall_read_port)
 SYM(air_syscall_read_port):
 

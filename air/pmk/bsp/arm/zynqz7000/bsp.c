@@ -141,6 +141,10 @@ void bsp_core_ready(void)
 
         arm_start_global_timer();
     }
+
+#if PMK_FPU_SUPPORT
+    arm_enable_fpu();
+#endif
 }
 
 void bsp_boot_core(air_u32_t cpu_id, void *entry_point)

@@ -124,7 +124,7 @@ void GET_SAMPLING_PORT_STATUS(
 
     /* get port status via system call */
     air_sampling_port_status_t status;
-    *RETURN_CODE = air_syscall_get_port_status(AIR_SAMPLING_PORT, (air_identifier_t)SAMPLING_PORT_ID, (void *)&status);
+    *RETURN_CODE = air_syscall_get_port_status(AIR_SAMPLING_PORT, (air_identifier_t) -1, (air_identifier_t)SAMPLING_PORT_ID, (void *)&status);
 
     /* convert status back to the ARINC format */
     if (*RETURN_CODE == NO_ERROR)
@@ -135,6 +135,62 @@ void GET_SAMPLING_PORT_STATUS(
         SAMPLING_PORT_STATUS->PORT_DIRECTION = status.port_direction;
         SAMPLING_PORT_STATUS->LAST_MSG_VALIDITY = status.last_msg_validity;
     }
+}
+
+void GET_A_SAMPLING_PORT_STATUS(
+    /*in */ SAMPLING_PORT_ID_TYPE SAMPLING_PORT_ID,
+    /*in */ PARTITION_ID_TYPE PARTITION_ID,
+    /*out*/ SAMPLING_PORT_STATUS_TYPE *SAMPLING_PORT_STATUS,
+    /*out*/ RETURN_CODE_TYPE *RETURN_CODE)
+{
+
+    /* check TSAL init */
+    if (imaspex_tsal_init == 0)
+    {
+        *RETURN_CODE = INVALID_MODE;
+        return;
+    }
+
+    /* get port status via system call */
+    air_sampling_port_status_t status;
+    *RETURN_CODE = air_syscall_get_port_status(AIR_SAMPLING_PORT, (air_identifier_t)PARTITION_ID, (air_identifier_t)SAMPLING_PORT_ID, (void *)&status);
+
+    /* convert status back to the ARINC format */
+    if (*RETURN_CODE == NO_ERROR)
+    {
+
+        SAMPLING_PORT_STATUS->MAX_MESSAGE_SIZE = status.max_message_size;
+        SAMPLING_PORT_STATUS->REFRESH_PERIOD = status.refresh_period * imaspex_ns_per_tick;
+        SAMPLING_PORT_STATUS->PORT_DIRECTION = status.port_direction;
+        SAMPLING_PORT_STATUS->LAST_MSG_VALIDITY = status.last_msg_validity;
+    }
+}
+
+void GET_SAMPLING_PORT_NAME(SAMPLING_PORT_ID_TYPE SAMPLING_PORT_ID, SAMPLING_PORT_NAME_TYPE SAMPLING_PORT_NAME, RETURN_CODE_TYPE *RETURN_CODE)
+{
+    /* check TSAL init */
+    if (imaspex_tsal_init == 0)
+    {
+        *RETURN_CODE = INVALID_MODE;
+        return;
+    }
+
+    /* get port name via system call */
+    *RETURN_CODE = air_syscall_get_port_name(AIR_SAMPLING_PORT, -1, (air_identifier_t) SAMPLING_PORT_ID, (air_name_ptr_t)SAMPLING_PORT_NAME);
+}
+
+void GET_A_SAMPLING_PORT_NAME(SAMPLING_PORT_ID_TYPE SAMPLING_PORT_ID, PARTITION_ID_TYPE PARTITION_ID,
+                                SAMPLING_PORT_NAME_TYPE SAMPLING_PORT_NAME, RETURN_CODE_TYPE *RETURN_CODE)
+{
+    /* check TSAL init */
+    if (imaspex_tsal_init == 0)
+    {
+        *RETURN_CODE = INVALID_MODE;
+        return;
+    }
+
+    /* get port name via system call */
+    *RETURN_CODE = air_syscall_get_port_name(AIR_SAMPLING_PORT, PARTITION_ID, (air_identifier_t) SAMPLING_PORT_ID, (air_name_ptr_t)SAMPLING_PORT_NAME);
 }
 
 /* ARINC 653 (PART 2) SAMPLING PORT EXTENSION SERVICES */
@@ -168,6 +224,7 @@ void READ_UPDATED_SAMPLING_MESSAGE(
 
 void GET_SAMPLING_PORT_CURRENT_STATUS(
     /*in */ SAMPLING_PORT_ID_TYPE SAMPLING_PORT_ID,
+    /*in */ PARTITION_ID_TYPE PARTITION_ID,
     /*out*/ SAMPLING_PORT_CURRENT_STATUS_TYPE *SAMPLING_PORT_CURRENT_STATUS,
     /*out*/ RETURN_CODE_TYPE *RETURN_CODE)
 {
@@ -188,7 +245,7 @@ void GET_SAMPLING_PORT_CURRENT_STATUS(
 
     /* get port status via system call */
     air_sampling_port_status_t status;
-    *RETURN_CODE = air_syscall_get_port_status(AIR_SAMPLING_PORT, (air_identifier_t)SAMPLING_PORT_ID, (void *)&status);
+    *RETURN_CODE = air_syscall_get_port_status(AIR_SAMPLING_PORT, (air_identifier_t)PARTITION_ID, (air_identifier_t)SAMPLING_PORT_ID, (void *)&status);
 
     /* convert status back to the ARINC format */
     if (*RETURN_CODE == NO_ERROR)
