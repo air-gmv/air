@@ -40,7 +40,7 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
 
     air_error_e error_id;
     air_u32_t fsr = 0, far = 0;
-    air_u32_t psr;
+    air_u32_t psr, old;
 
     /**
      * \note After taking a Data Abort exception, the state of the exclusive monitors is UNKNOWN.
@@ -59,6 +59,10 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
      * ret_addr: return addr
      */
     case AIR_ARM_EXCEPTION_UNDEF:
+        
+        // Get The current value of the SCTLR register
+        old = arm_cp15_get_system_control();
+
         arm_cp15_disable_alignment_checking();    
         /* FPU Lazy Switching */
         if ((arm_hm_undef_is_fpu(*(air_uptr_t *)frame->ret_addr, (frame->ret_psr & ARM_PSR_T))) != 0)
@@ -69,7 +73,12 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
         {
             error_id = AIR_UNIMPLEMENTED_ERROR;
         }
-        arm_cp15_enable_alignment_checking();
+        // Now set the alignment checking back to its original state
+        if (old & (ARM_SCTLR_A) ) { //it was enabled
+            arm_cp15_enable_alignment_checking();
+        } else { //it was disabled
+            arm_cp15_disable_alignment_checking();
+        }
 #ifdef PMK_DEBUG
         fsr = frame->ret_psr;
         far = frame->ret_addr;
@@ -158,6 +167,7 @@ air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
         return NULL;
     }
 
+    air_u32_t old;
     air_u32_t psr = vcpu->psr;
     air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
 
@@ -177,12 +187,20 @@ air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
 
     // determine whether faulty instruction is 16 or 32bit in order to define the offset
     air_u32_t ret_offset;
+
+     // Get The current value of the SCTLR register
+    old = arm_cp15_get_system_control();
     
     arm_cp15_disable_alignment_checking();
 
     air_u32_t instr = *(air_uptr_t *)frame->ret_addr;
     
-    arm_cp15_enable_alignment_checking();
+    // Now set the alignment checking back to its original state
+    if (old & (ARM_SCTLR_A) ) { //it was enabled
+        arm_cp15_enable_alignment_checking();
+    } else { //it was disabled
+        arm_cp15_disable_alignment_checking();
+    }
 
     if ((((frame->ret_psr) & ARM_PSR_T) != 0) && ((instr & 0xF800) < 0xE800)) // see armv7 reference manual, A6.1
     {

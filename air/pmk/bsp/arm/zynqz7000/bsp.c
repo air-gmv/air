@@ -53,7 +53,8 @@ void bsp_start_hook(void)
     }
 
     /* Low interrupt latency configuration & Alignment fault enable*/
-    sctlr |= (ARM_SCTLR_FI & ARM_SCTLR_A);
+    sctlr |= (ARM_SCTLR_FI);
+    sctlr |= (ARM_SCTLR_A);
     arm_cp15_set_system_control(sctlr);
 
     arm_tlb_invalidate();
