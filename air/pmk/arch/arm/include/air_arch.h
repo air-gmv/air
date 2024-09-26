@@ -201,7 +201,14 @@ typedef unsigned long air_sz_t;
      */
     air_u32_t air_syscall_acknowledge_int(void);
 
+    /**
+     * \brief ARM system call: Disables alignment checking
+     */
     void air_syscall_disable_alignment_checking(void);
+
+    /**
+     * \brief ARM system call: Enables alignment checking
+     */
     void air_syscall_enable_alignment_checking(void);
 
 /**
