@@ -37,12 +37,10 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core)
     air_clocktick_t us_per_tick = 0;    // Get the number of microseconds per tick
     air_u32_t error, mode, pid;
     air_u32_t old; //to store the old value of the SCTLR register
-    cpu_preemption_flags_t flags;
 
     // Determine the SVC ID based on the instruction
     if (frame->ret_psr & ARM_PSR_T)
     {
-        cpu_disable_preemption(flags);
         // Get The current value of the SCTLR register
         old = arm_cp15_get_system_control();
 
@@ -56,7 +54,6 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core)
         } else { //it was disabled
             arm_cp15_disable_alignment_checking();
         }
-        cpu_enable_preemption(flags);
     }
     else
     {
