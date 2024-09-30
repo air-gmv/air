@@ -66,7 +66,7 @@ __FORCE_INLINE static void arm_cp15_enable_alignment_checking()
     air_u32_t sctlr;
     sctlr = arm_cp15_get_system_control();
     sctlr |= (ARM_SCTLR_A);
-    arm_cp15_set_system_control(sctlr);
+    //arm_cp15_set_system_control(sctlr);
 }
 
 __FORCE_INLINE static void arm_cp15_disable_alignment_checking()
