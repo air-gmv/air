@@ -26,8 +26,12 @@ ${makoutils.cfileHeader("rtems_config.h", "RTEMS configuration")}
 
 #define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
 
-#define CONFIGURE_MAXIMUM_TASKS  20
+#define CONFIGURE_MAXIMUM_TASKS 20
 #define CONFIGURE_MAXIMUM_TIMERS 4
+
+#ifdef RTEMS_CUSTOM_CONFIG
+    #include "rtems_custom_config.h"
+#endif
 
 #define CONFIGURE_RTEMS_INIT_TASKS_TABLE
 
