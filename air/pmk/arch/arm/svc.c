@@ -36,20 +36,20 @@ void arm_svc_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *core)
     int psri = core->context->vcpu.psr; // Processor Status Register(PSR) value
     air_clocktick_t us_per_tick = 0;    // Get the number of microseconds per tick
     air_u32_t error, mode, pid;
-    air_u32_t old; //to store the old value of the SCTLR register
+    air_u32_t scltr_prev_value; //to store the old value of the SCTLR register
 
     // Determine the SVC ID based on the instruction
     if (frame->ret_psr & ARM_PSR_T)
     {
         // Get The current value of the SCTLR register
-        old = arm_cp15_get_system_control();
+        scltr_prev_value = arm_cp15_get_system_control();
 
         //Disable alignment checking just to be sure
         arm_cp15_disable_alignment_checking();
         svc_id = (*((air_uptr_t *)(frame->ret_addr - 2)) & 0xff);
         
         // Now set the alignment checking back to its original state
-        if (old & (ARM_SCTLR_A) ) { //it was enabled
+        if (scltr_prev_value & (ARM_SCTLR_A) ) { //it was enabled
             arm_cp15_enable_alignment_checking();
         } else { //it was disabled
             arm_cp15_disable_alignment_checking();
