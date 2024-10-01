@@ -40,7 +40,7 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
 
     air_error_e error_id;
     air_u32_t fsr = 0, far = 0;
-    air_u32_t psr, old;
+    air_u32_t psr, scltr_prev_value;
 
     /**
      * \note After taking a Data Abort exception, the state of the exclusive monitors is UNKNOWN.
@@ -61,7 +61,7 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
     case AIR_ARM_EXCEPTION_UNDEF:
         
         // Get The current value of the SCTLR register
-        old = arm_cp15_get_system_control();
+        scltr_prev_value = arm_cp15_get_system_control();
 
         //Disable alignment checking just to be sure
         arm_cp15_disable_alignment_checking();    
@@ -76,7 +76,7 @@ air_uptr_t *arm_hm_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t *
         }
         
         // Now set the alignment checking back to its original state
-        if (old & (ARM_SCTLR_A) ) { //it was enabled
+        if (scltr_prev_value & (ARM_SCTLR_A) ) { //it was enabled
             arm_cp15_enable_alignment_checking();
         } else { //it was disabled
             arm_cp15_disable_alignment_checking();
@@ -169,7 +169,7 @@ air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
         return NULL;
     }
 
-    air_u32_t old;
+    air_u32_t scltr_prev_value;
     air_u32_t psr = vcpu->psr;
     air_u32_t psr_a = ((psr & ARM_PSR_A) >> 8);
 
@@ -191,7 +191,7 @@ air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
     air_u32_t ret_offset;
 
     // Get The current value of the SCTLR register
-    old = arm_cp15_get_system_control();
+    scltr_prev_value = arm_cp15_get_system_control();
     
     //Disable alignment checking, just to be sure
     arm_cp15_disable_alignment_checking();
@@ -199,7 +199,7 @@ air_uptr_t *arm_partition_hm_handler(air_u32_t id, pmk_core_ctrl_t *core) {
     air_u32_t instr = *(air_uptr_t *)frame->ret_addr;
     
     // Now set the alignment checking back to its original state
-    if (old & (ARM_SCTLR_A) ) { //it was enabled
+    if (scltr_prev_value & (ARM_SCTLR_A) ) { //it was enabled
         arm_cp15_enable_alignment_checking();
     } else { //it was disabled
         arm_cp15_disable_alignment_checking();
