@@ -201,6 +201,16 @@ typedef unsigned long air_sz_t;
      */
     air_u32_t air_syscall_acknowledge_int(void);
 
+    /**
+     * \brief ARM system call: Disables alignment checking
+     */
+    void air_syscall_disable_alignment_checking(void);
+
+    /**
+     * \brief ARM system call: Enables alignment checking
+     */
+    void air_syscall_enable_alignment_checking(void);
+
 /**
  * \brief Disable Interrupts
  * \param level Interrupt level
@@ -249,7 +259,9 @@ typedef unsigned long air_sz_t;
 #define AIR_SYSCALL_ARM_SET_SPSR                        20
 #define AIR_SYSCALL_ARM_DISABLE_ABORTS                  21
 #define AIR_SYSCALL_ARM_ENABLE_ABORTS                   22
-#define AIR_SYSCALL_ARM_COUNT                           22
+#define AIR_SYSCALL_ARM_DISABLE_ALIGNMENT_CHECKING      23
+#define AIR_SYSCALL_ARM_ENABLE_ALIGNMENT_CHECKING       24
+#define AIR_SYSCALL_ARM_COUNT                           24
 
 /**
  * \brief Defined as the number of ARM paravirtualization system calls,
@@ -257,6 +269,6 @@ typedef unsigned long air_sz_t;
  *  air.h are a continuation of these
  */
 
-#define AIR_SYSCALL_ARCH_COUNT                          22
+#define AIR_SYSCALL_ARCH_COUNT                          23
 
 #endif /* AIR_ARCH_H_ */

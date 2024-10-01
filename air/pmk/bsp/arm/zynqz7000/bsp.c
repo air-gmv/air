@@ -53,7 +53,8 @@ void bsp_start_hook(void)
     }
 
     /* Low interrupt latency configuration & Alignment fault enable*/
-    sctlr |= (ARM_SCTLR_FI & ARM_SCTLR_A);
+    sctlr |= (ARM_SCTLR_FI);
+    sctlr |= (ARM_SCTLR_A);
     arm_cp15_set_system_control(sctlr);
 
     arm_tlb_invalidate();
@@ -141,6 +142,10 @@ void bsp_core_ready(void)
 
         arm_start_global_timer();
     }
+
+#if PMK_FPU_SUPPORT
+    arm_enable_fpu();
+#endif
 }
 
 void bsp_boot_core(air_u32_t cpu_id, void *entry_point)
