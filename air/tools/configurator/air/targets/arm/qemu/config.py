@@ -141,7 +141,7 @@ mmap = MMAP(kernel_space=[0x00100000, 0x0ff00000],
             default_unit=1 << 20)
 
 # specific defines
-defines = ['PMK_FPU_SUPPORT=0','PMK_DEBUG','PMK_SMP=1','DEBUG_UART_ID=0']
+defines = ['PMK_FPU_SUPPORT=0','PMK_DEBUG','PMK_SMP=1','DEBUG_UART_ID=0', 'HM_LOG_OVERWRITE=1']
 
 # Architecture dependent configuration
 arch_configure = air_arm.get_arm_configuration

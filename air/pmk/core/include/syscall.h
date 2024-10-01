@@ -201,6 +201,35 @@ air_status_code_e pmk_syscall_get_sharedmemory(pmk_core_ctrl_t *core, air_name_p
 air_status_code_e pmk_syscall_set_system_state(pmk_core_ctrl_t *core, air_state_e state);
 
 /**
+ * @brief Retrieves the Health Monitor log. Partitions must have SUPERVISOR permissions.
+ *        Returns the log data to the user space, with the most recent events first.
+ * @param[in] core pointer to current core control structure
+ * @param[out] log pointer to the `air_hm_log_t` structure where the HM log data 
+ *                 will be copied.
+ *
+ * @return `AIR_NO_ERROR` if the operation is successful.
+ * @return `AIR_INVALID_CONFIG` if the partition does not have supervisor permissions.
+ * @return `AIR_INVALID_POINTER` if there is an issue copying the log data to user space.
+ */
+air_status_code_e pmk_get_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log);
+
+/**
+ * @brief Pops the most recent event from the Health Monitor log.
+ *
+ * Retrieves the most recent event from the Health Monitor log removes it from the log, 
+ * and copies it to the user-provided `log` structure.
+ * Partitions must have SUPERVISOR permission.
+ *
+ * @param[in] core pointer to the core control structure
+ * @param[out] log pointer to the `air_hm_log_event_t` structure where the most recent HM log event will be copied.
+ *
+ * @return `AIR_NO_ERROR` if the operation is successful or if the log is empty.
+ * @return `AIR_INVALID_CONFIG` if the partition does not have supervisor permissions.
+ * @return `AIR_INVALID_POINTER` if there is an issue copying the log event to user space.
+ */
+air_status_code_e pmk_pop_from_hm_log(pmk_core_ctrl_t *core, air_hm_log_event_t *log);
+
+/**
  * @brief Gets the last HM event
  * @param core executing core information
  * @param[out] event HM event

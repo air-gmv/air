@@ -58,6 +58,30 @@ typedef struct
 } pmk_core_ctrl_t;
 
 /**
+ * @brief Health-Monitor log event
+ */
+typedef struct
+{
+    air_clocktick_t absolute_date;
+    air_error_e error_type;
+    pmk_hm_level_id level;
+    air_identifier_t partition_id;
+} pmk_hm_log_event_t;
+
+/**
+ * @brief Health-Monitor log structure
+ * Implemented as a circular buffer with length `HM_LOGG_MAX_EVENT_NB`.
+ */
+typedef struct
+{
+    pmk_hm_log_policy policy;
+    air_u32_t head;  // Points to the next write position
+    air_u32_t tail;  // Points to the oldest log
+    air_u32_t n_events;  
+    pmk_hm_log_event_t events[HM_LOGG_MAX_EVENT_NB];
+} pmk_hm_log_t;
+
+/**
  *  @brief Share area structure
  *
  *  This area is accessible to all system cores and provides access to each
@@ -77,7 +101,8 @@ typedef struct
     pmk_hm_level_list_t *hm_system_table;
     /** Module Health-Monitor table                                         */
     pmk_hm_action_list_t **hm_module_table;
-
+    /** Health-Monitor log                                                  */
+    pmk_hm_log_t hm_log;
 } pmk_sharedarea_t;
 
 /**
