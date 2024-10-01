@@ -27,6 +27,16 @@
 #define PMK_HM_ERRORS_COUNT (16)
 
 /**
+ * @brief PMK Health-Monitor Log policy
+ */
+typedef enum
+{
+    PMK_HM_LOG_OVERWRITE = 0x00, /**< Overwrite oldest event - oldest entry is lost           */
+    PMK_HM_LOG_NO_OVERWRITE = 0x01, /**< Do not overwrite - new entries are lost                  */
+} pmk_hm_log_policy;
+
+
+/**
  * @brief PMK Error Levels
  */
 typedef enum
