@@ -411,10 +411,6 @@ void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core)
 
                 if ((partition->permissions & AIR_PERMISSION_GLOBAL_TIME) != 0)
                 {
-
-                    // air_u64_t dt = scheduler_ctrl.total_ticks - partition->last_clock_tick;
-                    // partition->elapsed_ticks += dt;
-
                     // If partition has GLOBAL_TIME permission, it has access to time since the 
                     // start of the kernel execution.
                     partition->elapsed_ticks = scheduler_ctrl.total_ticks;
