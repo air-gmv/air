@@ -343,12 +343,25 @@ class Configuration(object):
     # @brief Get target defines
     # @return Target configuration defines
     def get_target_defines(self):
+
+        # In order to work with the usage in AIR code PMK_DEBUG must be defined or not
+        # If it is defined as 0 or 1, it will be considered as enabled by the code.
+        # So we need to just define it or not.
+        if self.debug_enabled:
+            if ("PMK_DEBUG" not in supported_architectures[self.arch][self.bsp].defines):
+                supported_architectures[self.arch][self.bsp].defines.append("PMK_DEBUG")
+        elif not self.debug_enabled:
+            if ("PMK_DEBUG" in supported_architectures[self.arch][self.bsp].defines):
+                supported_architectures[self.arch][self.bsp].defines.remove("PMK_DEBUG")
+
         for i,define in enumerate(supported_architectures[self.arch][self.bsp].defines):
             if define.startswith("PMK_FPU_SUPPORT"):
                 print()
                 supported_architectures[self.arch][self.bsp].defines[i] = "PMK_FPU_SUPPORT={flag}".format(flag=self.fpu_enabled*1)
-            elif define.startswith("PMK_DEBUG"):
-                supported_architectures[self.arch][self.bsp].defines[i] = "PMK_DEBUG={flag}".format(flag=self.debug_enabled*1)
+            elif define.startswith("PMK_DEBUG="):
+                #Remove it 
+                supported_architectures[self.arch][self.bsp].defines.pop(i)
+
         return supported_architectures[self.arch][self.bsp].defines
 
     ##
