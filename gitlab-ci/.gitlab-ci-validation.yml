@@ -78,6 +78,7 @@ ARM-QEMU-validation-test:
           - AIR-TEST-TIME-00040
           # - AIR-TEST-TIME-00050
           # - AIR-TEST-TIME-00060
+          - AIR-TEST-TIMEM-00010
           - AIR-TEST-TRAP-00010
 
 
