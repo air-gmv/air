@@ -210,14 +210,24 @@ c_handler:
 
     // Restore SVC SP from CORE CONTEXT:
     mrc     p15, 0, r1, c13, c0, 4                                       // get Per_CPU core
+
+    // Check if partition switch to restore SVC SP
+    ldr     r2, [r1, #offsetof_pmk_core_ctrl_t_partition_switch]        // get partition_switch variable
+    cmp     r2, 0                                                       // if 0, no partition switch
+    beq     restore                                                     // no partition switch => we dont have to change SP
+    mov     r2, 0                                                       // partition switch complete, set it 0
+    str     r2, [r1, #offsetof_pmk_core_ctrl_t_partition_switch]        
+
+    // Restore SVC SP
     ldr     r1, [r1, #offsetof_pmk_core_ctrl_t_context]                  // get core context
     ldr     r2, [r1, #offsetof_arm_core_context_t_virt]                  // get svc sp (first element of virt struct)
     mov     sp, r2                                                       // change to this SVC SP
 
-    //Go into IRQ mode to restore the context
-    cpsid   aif, #ARM_PSR_IRQ
 
 restore:
+//Go into IRQ mode to restore the context
+    cpsid   aif, #ARM_PSR_IRQ
+
     add     sp, #56
     pop     {r0-r3}
 
