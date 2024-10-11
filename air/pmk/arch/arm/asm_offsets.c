@@ -28,7 +28,6 @@ int main(void)
 
     OFFSETOF(pmk_core_ctrl_t, context);
     OFFSETOF(pmk_core_ctrl_t, partition);
-    OFFSETOF(pmk_core_ctrl_t, partition_switch);
     SIZEOF(pmk_core_ctrl_t);
 
     OFFSETOF(arm_core_context_t, trash);
