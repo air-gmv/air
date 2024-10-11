@@ -97,7 +97,7 @@ air_uptr_t *arm_isr_handler(arm_interrupt_stack_frame_t *frame, pmk_core_ctrl_t 
 #endif
 
         frame = (arm_interrupt_stack_frame_t *)core->context->isf_pointer;
-        //core->partition_switch = 0; // moved to exception.S
+        core->partition_switch = 0;
 
 #ifdef PMK_DEBUG_ISR
         if (core->partition != NULL)
