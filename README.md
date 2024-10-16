@@ -15,7 +15,7 @@ To install AIR after cloning it from git, follow these steps:
 Execute the following commands:
 
 ```
-git clone git://git.rtems.org/rtems-source-builder.git rsb
+git clone https://gitlab.rtems.org/rtems/tools/rtems-source-builder.git rsb
 cd rsb
 git checkout 5
 ./source-builder/sb-check
