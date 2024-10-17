@@ -24,11 +24,20 @@ cd rtems
 ```
 Currently supported toolchain version : rtems-5.1-2019.07.25
 
+
+>**NOTE:**
+>The previous example installs rtems5 for SPARC. Substitute _sparc_ on the last line with your desired target. 
+>```
+># e.g. for arm :
+>../source-builder/sb-set-builder --prefix=/opt/rtems/5 5/rtems-arm
+>```
+
+
 ### Troubleshooting installation problems:
 
  - You may need the texinfo package, which can be installed by executing sudo apt-get install texinfo or a similar command.
 
- - If the environment is not correctly set up, there might be missing Ubuntu dependencies. Run the following command to install the packages: `sudo apt install build-essential g++ gdb unzip pax bison flex texinfo python3-dev python-is-python3 libpython2-dev libncurses5-dev zlib1g-dev ninja-build pkg-config`
+ - If the environment is not correctly set up, there might be missing Ubuntu dependencies. Run the following command to install the packages: `sudo apt install build-essential g++ gdb unzip pax bison flex texinfo python3-dev python-is-python3 libpython2-dev libncurses5-dev zlib1g-dev ninja-build pkg-config libgmp-dev libmpfr-dev`
 
 - If build fails with the message 
 	>*prefix is not writable: /opt/rtems/5*
