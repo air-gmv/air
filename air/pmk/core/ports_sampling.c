@@ -168,8 +168,8 @@ air_status_code_e pmk_sampling_port_read(core_context_t *context, pmk_port_t *po
             break;
 
         /* updated mode */
-        case AIR_SAMPLING_MODE_UPDATED:
-            if (updated == AIR_NEW_MESSAGE)
+        case AIR_SAMPLING_MODE_UPDATED: 
+            if (updated == AIR_NEW_MESSAGE ) 
             {
                 rc = AIR_NO_ERROR;
             }
@@ -223,7 +223,8 @@ air_status_code_e pmk_sampling_port_read(core_context_t *context, pmk_port_t *po
     }
 
     /* clear updated flag */
-    atomic_set(0, &port->updated);
+   // atomic_set(0, &port->updated);
+    pmk_channel_update_ports(port->channel, AIR_CONSUMED_MESSAGE);
 
     /* save message validity */
     port->last_msg_validity = validity;
