@@ -28,6 +28,11 @@
 #define mon_stack_size      DEFAULT_STACK_SIZE
 #define stack_size          STACK_SIZE
 
+#define MAX_NUMBER_OF_PARTITIONS 16
+#define IDLE_STACKSIZE 0xE0
+#define PARTITION_SVC_STACKSIZE (( svc_stack_size - IDLE_STACKSIZE) / MAX_NUMBER_OF_PARTITIONS)
+
+
 #ifndef ASM
 
 #include <armv7.h>
