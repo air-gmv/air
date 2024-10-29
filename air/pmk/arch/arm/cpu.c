@@ -119,6 +119,11 @@ void core_context_setup_idle(core_context_t *context)
 void core_context_setup_partition(core_context_t *context, pmk_partition_t *partition)
 {
 
+    int svc_stack_start, core_id;
+
+    /* get physical core id */
+    core_id = bsp_get_core_id();
+
     /* initialize the virtual core */
     context->vcpu.psr = (ARM_PSR_SVC);
     context->vcpu.vbar = NULL;
@@ -185,10 +190,10 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
 
         context->virt.sp_irq = stack - ((partition->mmap->size) / 2);
 
-        //get original SP (from before exception handler)
-        int sp_original = arm_get_sp() + 0xA8;  // 0xA8 seems to be the stack that is pushed by the C handler and is popped until we get back to exception.S
+        //get SVC stack start (from before exception handler)
+        svc_stack_start = air_stack + stack_size * (core_id + 1)  - IDLE_STACKSIZE;;
         //store SVC SP, adding space for each partition, in core context
-        context->virt.svc_sp = sp_original - partition->id * (0x600); //TODO: magic number, to review
+        context->virt.svc_sp = svc_stack_start - partition->id * (PARTITION_SVC_STACKSIZE);
 
         /*Enable virtual interrupts*/
         context->vgic.vm_ctrl = 1;
