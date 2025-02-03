@@ -191,7 +191,7 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
         context->virt.sp_irq = stack - ((partition->mmap->size) / 2);
 
         //get SVC stack start (from before exception handler)
-        svc_stack_start = air_stack + stack_size * (core_id + 1)  - IDLE_STACKSIZE;;
+        svc_stack_start = air_stack + stack_size * (core_id + 1)  - IDLE_STACKSIZE;
         //store SVC SP, adding space for each partition, in core context
         context->virt.svc_sp = svc_stack_start - partition->id * (PARTITION_SVC_STACKSIZE);
 

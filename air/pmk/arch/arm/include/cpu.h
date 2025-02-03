@@ -30,7 +30,8 @@
 
 #define MAX_NUMBER_OF_PARTITIONS 16
 #define IDLE_STACKSIZE 0xE0
-#define PARTITION_SVC_STACKSIZE (( svc_stack_size - IDLE_STACKSIZE) / MAX_NUMBER_OF_PARTITIONS)
+#define ALIGN_DOWN(value, alignment) ((value) & ~((alignment) - 1))
+#define PARTITION_SVC_STACKSIZE ALIGN_DOWN((( svc_stack_size - IDLE_STACKSIZE) / MAX_NUMBER_OF_PARTITIONS),4)
 
 
 #ifndef ASM
