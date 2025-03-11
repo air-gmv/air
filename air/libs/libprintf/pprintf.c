@@ -7,7 +7,7 @@
  */
 /**
  * @file
- * @author pfnf
+ * @author pfnf, bmmd
  * @brief Simplified partition printf
  */
 #include <air.h>
@@ -164,6 +164,123 @@ static void print_number(char *print_buffer, int *buffer_idx, unsigned long numb
 }
 
 /**
+ * @brief Print a float/double number
+ * @param value float/double number to print
+ * @param width Width of the number to print
+ * @param precision Precision of the number to print (in other words, number of decimal digits)
+ * @param flags Formation flags for the number
+ * @ingroup pmk_printk
+ */
+static void print_float(char *print_buffer, int *buffer_idx, double value, int width, int precision,
+                         format_flags_e flags)
+{   
+    air_i64_t int_part = (air_i64_t)value; // integer part of a double can be as big as 53 bit (which translates to 16 digits max)
+    char reversed_int_buffer[20];
+    char buffer[36];
+    double frac_part = value - int_part;
+    int count = 0; // count number of digits to be printed
+    int i = 0; // auxiliary variable used for iteration in both integer and decimal parts of the value
+    //air_i64_t i = 0;
+    air_i64_t aux_digit = 0;
+    air_i64_t frac_as_int;
+    double rounding_factor = 1;
+
+    /* define padding */
+    char lead = ' ';
+    if ((flags & ZEROPAD) != 0)
+    {
+        lead = '0';
+    }
+
+    // handle sign
+    if (value < 0)
+    {
+        if(lead == '0') // minus sign appears before the leading zeros
+        {
+            print_byte(print_buffer, buffer_idx, '-');
+            width--;
+        }
+        else // minus sign appears after the leading spaces, so should be included in the buffer
+        {
+            buffer[count++] = '-';
+        }
+        
+        int_part = -int_part;
+        frac_part = -frac_part;
+    }
+
+    // Convert fractional part to integer for rounding
+    // *** rounding_factor = pow(10, precision); ***
+    // Changed to avoid using math.h, so it's compatible 
+    // with both BARE and RTMES5 personalities
+    for (i=0; i<precision; i++)
+    {
+        rounding_factor *= 10;
+    }
+    frac_as_int = (air_i64_t)(frac_part * rounding_factor + 0.5);
+
+    // Check if rounding affects the integer part
+    if (frac_as_int >= rounding_factor) 
+    {
+        // move value from fractional part
+        // to the integer part
+        frac_as_int -= rounding_factor;
+        int_part += 1;
+    }
+
+    // handle integer part
+    // case zero, can't be handled by the "normal" routine for getting the integer digits
+    if (int_part == 0) 
+    {
+        buffer[count++] = '0';
+    } 
+    else
+    {
+        // get integer digits (reversed) and count
+        while (int_part > 0) 
+        {
+            reversed_int_buffer[count++] = (int_part % 10) + '0';
+            int_part /= 10;
+        }
+        // fill the main buffer with digits in the correct order
+        for ( i = 0 ; i < count ; i++ )
+        {
+            buffer[i] = reversed_int_buffer[count - i - 1];
+        }
+
+    }
+
+    // handle decimal part
+    if (precision > 0)
+    {
+        buffer[count++] = '.';
+        count += precision; // update count with number of decimal digits (precision)
+        // fill the buffer backwards, from least significant digit to most significant digit
+        for (i = 0; i < precision; i++)
+        {
+            aux_digit = frac_as_int % 10;
+            buffer[count - 1 - i] = aux_digit + '0';
+            frac_as_int /= 10;
+        }
+        
+
+    }
+
+    // handle width
+    for (i = width; i > count; --i)
+    {
+        print_byte(print_buffer, buffer_idx, lead);
+    }
+
+    // print buffer
+    for (i = 0; i < count; i++)
+    {
+        print_byte(print_buffer, buffer_idx, buffer[i]);
+    }
+
+}
+
+/**
  * @brief Prints a message base on its formation string and input arguments
  * @param fmt Formation string
  * @param args Input arguments
@@ -176,6 +293,7 @@ static void vpprintf(const char *fmt, va_list ap)
     int width, base;
     unsigned long number;
     format_flags_e flags;
+    int float_precision = 6; // default for floats
 
     /* internal pprintf buffer */
     int buffer_idx = 0;
@@ -208,6 +326,16 @@ static void vpprintf(const char *fmt, va_list ap)
                 ++fmt;
             }
 
+            // decimal places format (supported by floats and doubles)
+            if (*fmt == '.') {
+                fmt++;
+                float_precision = 0;
+                while (*fmt >= '0' && *fmt <= '9') {
+                    float_precision = float_precision * 10 + (*fmt - '0');
+                    fmt++;
+                }
+            }
+
             /* check for short modifier */
             if (*fmt == 'h')
             {
@@ -234,7 +362,10 @@ static void vpprintf(const char *fmt, va_list ap)
                 flags |= SIGNED;
                 base = 10;
                 break;
-
+            case 'f':
+                flags |= SIGNED;
+                print_float(buffer, &buffer_idx, va_arg(ap, double), width, float_precision, flags);
+                break;
             /* pointer */
             case 'p':
             case 'P':
