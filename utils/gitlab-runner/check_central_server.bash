@@ -31,7 +31,7 @@ else
 fi
 
 case $CI_RUNNER_TAGS in
-	*SPARC* )
+	*SPARC* | *sparc* )
 		write "TASTE-VM-9-1-beta2-64bit-1" $(AIR_SPARC_1_IP)
 		;;
 	*ARM* )

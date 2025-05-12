@@ -43,6 +43,8 @@ void *sparc_get_physical_addr(mmu_context_t *context, void *v_addr);
 static void sparc_syscall_os_handler(sparc_interrupt_stack_frame_t *isf, pmk_core_ctrl_t *core)
 {
 
+    air_u64_t elapsed = 0;              // Elapsed time
+
     /* call the system call handling function */
     switch (isf->i5)
     {
@@ -53,6 +55,14 @@ static void sparc_syscall_os_handler(sparc_interrupt_stack_frame_t *isf, pmk_cor
         isf->i0 = (air_u32_t)sparc_get_physical_addr(core->partition->mmu_ctrl, (void *)isf->i0);
         break;
 
+        /* get the elapsed ticks since start of current MTF */
+    case AIR_SYSCALL_GET_ELAPSED_MTF_TICKS:
+
+        elapsed = pmk_syscall_get_elapsed_mtf_ticks();
+        isf->i0 = (air_u32_t)(elapsed & 0xffffffff);
+        isf->i1 = (air_u32_t)((elapsed & 0xffffffff00000000) >> 32);
+        break;
+        
         /* get partition id */
     case AIR_SYSCALL_GET_PARTITION_ID:
 
@@ -155,6 +165,16 @@ static void sparc_syscall_os_handler(sparc_interrupt_stack_frame_t *isf, pmk_cor
     case AIR_SYSCALL_SET_SYSTEM_STATE:
 
         isf->i0 = (air_u32_t)pmk_syscall_set_system_state(core, (air_state_e)isf->i0);
+        break;
+
+    case AIR_SYSCALL_GET_HM_LOG:
+
+        isf->i0 = (air_u32_t)pmk_get_hm_log(core, (air_hm_log_t *)isf->i0);
+        break;
+
+    case AIR_SYSCALL_POP_FROM_HM_LOG:
+
+        isf->i0 = (air_u32_t)pmk_pop_from_hm_log(core, (air_hm_log_event_t *)isf->i0);
         break;
 
         /* get health-monitor event */
