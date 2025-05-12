@@ -60,14 +60,40 @@
       "miDebuggerPath": "/opt/rtems/5/bin/arm-rtems5-gdb",
       //"miDebuggerServerAddress": "localhost:1234"
       //"preLaunchTask": "configureMakeAndQEMU"
+    },
+    {
+      "name": "Debug SPARC",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/${input:projectPath}/executable/AIRAPP.exe",
+      "miDebuggerServerAddress": "$(AIR_RUNNER_IP):1234",
+      "miDebuggerPath": "/opt/rtems-5.1-2019.07.25/bin/sparc-rtems5-gdb",
+      "cwd": "${workspaceFolder}",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Load additional binaries",
+          "text": "${workspaceFolder}/${input:projectPath}/p0/p0.exe",
+          "ignoreFailures": true
+        },
+      ],
+        "externalConsole": false,
+        "stopAtEntry": false
     }
   ],
   "inputs": [
     {
       "id": "projectPath",
       "type": "command",
-      "command": "extension.commandvariable.remember",
-      "args": { "key": "project" }
+      "command": "extension.commandvariable.promptStringRemember",
+      "args": {
+      "key": "project",
+      "description": "Enter the path to the project folder (currently on ~/air-dev/):"
+      }
     }
   ]
   // "inputs": [
