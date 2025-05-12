@@ -76,6 +76,14 @@ SYM(air_syscall_get_elapsed_ticks):
     retl
     nop; nop;
 
+    GLOBAL(air_syscall_get_elapsed_mtf_ticks)
+SYM(air_syscall_get_elapsed_mtf_ticks):
+
+    set     AIR_SYSCALL_GET_ELAPSED_MTF_TICKS, %o5
+    ta      AIR_SYSCALL_OS_TRAP
+    retl
+    nop; nop;
+
     GLOBAL(air_syscall_get_partition_id)
 SYM(air_syscall_get_partition_id):
 

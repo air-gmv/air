@@ -58,8 +58,8 @@ ARM-QEMU-integration-test:
 
 
 # SPARC
-SPARC-LAYSIM-validation-test:
-  stage: validation_tests
+SPARC-LAYSIM-integration-test:
+  stage: integration_tests
   tags: [$RUNNER]
   needs: 
     - job: RVS-SPARC-LAYSIM-build
@@ -67,7 +67,7 @@ SPARC-LAYSIM-validation-test:
     - job: SPARC-GR740-build
       optional: true
   script: 
-        - cd $AIR/examples/private-example/private/validation/$EXAMPLE
+        - cd $AIR/examples/private-example/AIR_testsuite/Integration_tests/$EXAMPLE
         - *build-executable
         # The schedule pipeline runs the tests on hardware 
         - |
@@ -96,40 +96,18 @@ SPARC-LAYSIM-validation-test:
       matrix:
         - RUNNER: ["sparc-taste-debian1", "SPARC"]
           EXAMPLE:
-          - "TEST-DEF-00009"
-          - "TEST-DEF-00010"
-          - "TEST-DEF-00012"
-          - "TEST-DEF-00021"
-          - "TEST-DEF-00022"
-          - "TEST-DEF-00023"
-          - "TEST-DEF-00500"
-          - "TEST-DEF-00510"
-          - "TEST-DEF-00540"
-          - "TEST-DEF-00560"
-          - "TEST-DEF-00600"
-          - "TEST-DEF-01200"
-          - "TEST-DEF-01210"
-          - "TEST-DEF-01390"
-          #- "TEST-DEF-01561"
-          - "TEST-DEF-01570"
-          - "TEST-DEF-01590"
-          - "TEST-DEF-01610"
-          #- "TEST-DEF-01650"
-          #- "TEST-DEF-01730"
-          - "TEST-DEF-01740"
-          #- "TEST-DEF-01741"
-          - "TEST-DEF-01750"
-          - "TEST-DEF-02100"
-          #- "TEST-DEF-02101"
-          #- "TEST-DEF-02102"
-          #- "TEST-DEF-02105"
-          #- "TEST-DEF-02107"
-          #- "TEST-DEF-02108"
-          - "TEST-DEF-80000"
-          - "TEST-DEF-80010"
-          - "TEST-DEF-80060"
-          - "TEST-DEF-80080"
-          - "TEST-DEF-80300"
-          - "TEST-DEF-80400"
-          - "TEST-DEF-80401"
-          - "TEST-DEF-80420"
+          - ITEST-0001-LIONEL
+          - ITEST-0002-SINGLE
+          - ITEST-0003-DUAL
+          - ITEST-0004-DIV_0
+          - ITEST-0005-HM
+          - ITEST-0006-QPORT
+          - ITEST-0007-QPORT1
+          - ITEST-0008-SPORT
+          - ITEST-0010_SCHEDULES
+          # - ITEST-0011-TOD
+          # - ITEST-0012-PARANOIA #Gives compile error
+          - ITEST-0020-DUAL
+          # - ITEST-0021-QUAD_CORE #Not applicable to qemu, only has 2 cores
+          # - ITEST-0022-QPORT
+          - ITEST-0023-MATRIX
