@@ -83,7 +83,7 @@ SPARC-LAYSIM-integration-test:
           else
             echo laysim option selected
             echo doing $AIR/rvs_air/scripts/laysim_cmds.txt
-            laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+            (laysim-gr740-mmu-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt) || true
           fi
         - *check-and-publish
   rules:
