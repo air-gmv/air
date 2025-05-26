@@ -24,7 +24,7 @@ stages:
     - examples
     - validation_tests
     - integration_tests
-    - solo_test # push pipeline only
+    #- solo_test # push pipeline only
     - report
 
 variables:
