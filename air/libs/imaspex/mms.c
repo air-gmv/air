@@ -51,7 +51,7 @@ void GET_MODULE_SCHEDULE_STATUS(
     /* convert status to ARINC status format */
     if (*RETURN_CODE == NO_ERROR)
     {
-        SCHEDULE_STATUS->TIME_OF_LAST_SCHEDULE_SWITCH = status.time_of_last_schedule_change * imaspex_ns_per_tick;
+        SCHEDULE_STATUS->TIME_OF_LAST_SCHEDULE_SWITCH = status.time_of_last_schedule_change;
         SCHEDULE_STATUS->CURRENT_SCHEDULE = status.current_schedule_id;
         SCHEDULE_STATUS->NEXT_SCHEDULE = status.next_schedule_id;
     }

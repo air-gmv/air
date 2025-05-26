@@ -68,21 +68,46 @@
       "program": "${workspaceFolder}/${input:projectPath}/executable/AIRAPP.exe",
       "miDebuggerServerAddress": "$(AIR_RUNNER_IP):1234",
       "miDebuggerPath": "/opt/rtems-5.1-2019.07.25/bin/sparc-rtems5-gdb",
+      "MIMode": "gdb",
       "cwd": "${workspaceFolder}",
       "setupCommands": [
+        // { 
+        //   "text": "monitor reset", 
+        //   "description": "Reset target", 
+        //   "ignoreFailures": true
+        // },
+        // {
+        //   "description": "Specify target remote",
+        //   "text": "target extended-remote $(AIR_RUNNER_IP):1234"
+        // },
+        {
+          "description": "Add symbol file",
+          "text": "symbol-file ${workspaceFolder}/${input:projectPath}/executable/AIRAPP.exe",
+          "ignoreFailures": false
+        },
+        {
+          "description": "Load additional symbol file (partition)",
+          "text": "add-symbol-file ${workspaceFolder}/${input:projectPath}/p2/p2.exe", //0x00A40000",
+          "ignoreFailures": false
+        },
+        // {
+        //   "description": "Breakpoint on entry",
+        //   "text": "hbreak ${workspaceFolder}/arch/sparc/start.S:26",
+        //   "ignoreFailures": false
+        // },
+        // {
+        //   "description": "Optional: Set hbreak manually",
+        //   "text": "hbreak ${workspaceFolder}/${input:projectPath}/p2/init.c:45",
+        //   "ignoreFailures": false
+        // },
         {
           "description": "Enable pretty-printing for gdb",
           "text": "-enable-pretty-printing",
           "ignoreFailures": true
-        },
-        {
-          "description": "Load additional binaries",
-          "text": "${workspaceFolder}/${input:projectPath}/p0/p0.exe",
-          "ignoreFailures": true
-        },
+        }
       ],
-        "externalConsole": false,
-        "stopAtEntry": false
+      "externalConsole": false,
+      "stopAtEntry": true
     }
   ],
   "inputs": [
