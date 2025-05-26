@@ -154,7 +154,7 @@ SPARC-LAYSIM-validation-test:
           #- BARE/AIR-TEST-SPACE-00030 #Tests not applicable to ARM
           #- BARE/AIR-TEST-SPACE-00040
           #- BARE/AIR-TEST-SPACE-00050
-          #- BARE/AIR-TEST-TIME-00010
+          - BARE/AIR-TEST-TIME-00010
           - BARE/AIR-TEST-TIME-00020
           - BARE/AIR-TEST-TIME-00030
           - BARE/AIR-TEST-TIME-00040
