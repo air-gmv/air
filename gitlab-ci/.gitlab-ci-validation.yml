@@ -182,7 +182,7 @@ SPARC-LAYSIM-validation-test:
           - "RTEMS/TEST-DEF-01610"
           #- "RTEMS/TEST-DEF-01650"
           #- "RTEMS/TEST-DEF-01730"
-          #- "RTEMS/TEST-DEF-01740"
+          - "RTEMS/TEST-DEF-01740"
           #- "RTEMS/TEST-DEF-01741"
           - "RTEMS/TEST-DEF-01750"
           - "RTEMS/TEST-DEF-02100"
