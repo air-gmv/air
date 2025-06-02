@@ -33,8 +33,8 @@ ARM-QEMU-integration-test:
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
         - if: '($CI_PIPELINE_SOURCE == "merge_request") && ($CI_MERGE_REQUEST_TITLE !~ /Draft/)'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ALL\].*/'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ARM\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ARM\].*/'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
     timeout: 5 minutes
     parallel:
       matrix:
@@ -90,7 +90,7 @@ SPARC-LAYSIM-integration-test:
         - if: '($CI_PIPELINE_SOURCE == "merge_request") && ($CI_MERGE_REQUEST_TITLE !~ /Draft/)'
         - if: '$CI_PIPELINE_SOURCE == "schedule" && $RUNNER == "sparc-taste-debian1"'
         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ALL\].*/ && $RUNNER =~ "SPARC"'
-        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[SPARC\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/ && $RUNNER =~ "SPARC"'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[SPARC\].*/ && $RUNNER =~ "SPARC"'
   timeout: 5 minutes
   parallel:
       matrix:
