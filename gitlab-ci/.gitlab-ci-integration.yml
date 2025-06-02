@@ -109,5 +109,5 @@ SPARC-LAYSIM-integration-test:
           # - ITEST-0012-PARANOIA #Gives compile error
           - ITEST-0020-DUAL
           # - ITEST-0021-QUAD_CORE #Not applicable to qemu, only has 2 cores
-          # - ITEST-0022-QPORT
+          - ITEST-0022-QPORT
           - ITEST-0023-MATRIX
