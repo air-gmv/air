@@ -54,6 +54,12 @@ AIR configuration requires python-mako. If it is not installed, execute the foll
 
 Clone AIR repo for example in */home/taste/work/*
 
+>**NOTE:**
+>Current templates used by the Configurator do not support most recent versions of mako.
+>In case any templating issues are encountered, it's suggested to install a specific supported version. This can be achieved by running the following command:
+>```
+>python3 -m pip install Mako==1.1.3
+>```
 
 Add the air_repo/air to the PATH environment variable. 
 We recommend doing it the following way in the .bashrc file:
