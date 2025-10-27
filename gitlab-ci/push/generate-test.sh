@@ -33,7 +33,7 @@ default:
         - export DISPLAY=:99
         - export PATH=/opt/rtems/5/bin:\$PATH
         - export PATH=/opt/rtems-5.1-2019.07.25/bin:\$PATH
-        - export PATH=/opt/laysim-gr740:\$PATH
+        - export PATH=/opt/laysim-gr740-v3:\$PATH
     
 .build-executable: &build-executable
     - \$AIR/configure
@@ -61,7 +61,7 @@ SPARC-LAYSIM-TEST-DEF-$TEST_NUMBER:
   script: 
         - cd \$AIR/examples/private-example/old/validation/TEST-DEF-$TEST_NUMBER
         - *build-executable
-        - laysim-gr740-mmu-cli -batch \$AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+        - laysim-gr740-cli -batch \$AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
         - *check-and-publish
   rules:
         - if: '\$CI_COMMIT_MESSAGE =~ /.*\[SPARC\].*/'
