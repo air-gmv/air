@@ -80,7 +80,7 @@ default:
         - export PATH=$PATH:/opt/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
         - export PATH=/opt/rtems/5/bin:$PATH
         - export PATH=/opt/rtems-5.1-2019.07.25/bin:$PATH
-        - export PATH=/opt/laysim-gr740:$PATH
+        - export PATH=/opt/laysim-gr740-v3:$PATH
 
 placeholder:
     stage: .pre
