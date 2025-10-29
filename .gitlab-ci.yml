@@ -1,138 +1,92 @@
 # First version for AIR main source code
 # Executed in TASTE VM centralized in 192.19.13.167
-# author: $(AIR_RUNNER_USER) @GMV 2020
+# author: $(AIR_RUNNER_USER) @GMV 2020, edited by huca@GMV 2023
 
 include:
-    - '.gitlab-ci-tests.yml'
-    - '.gitlab-ci-tests-arm.yml'
+    - local: "gitlab-ci/push/*.yml"
+      rules:
+        - if: $CI_PIPELINE_SOURCE == "push"
+
+    - local: "gitlab-ci/merge_request/*.yml"
+      rules:
+        - if: $CI_PIPELINE_SOURCE == "merge_request"
+
+    - local: "gitlab-ci/schedule/*.yml"
+      rules:
+        - if: $CI_PIPELINE_SOURCE == "schedule"
+
+    - local: "gitlab-ci/.gitlab-ci-validation.yml"
+    - local: "gitlab-ci/.gitlab-ci-integration.yml"
 
 stages:
+    - .pre
     - prepare-build
     - examples
     - validation_tests
+    - integration_tests
+    #- solo_test # push pipeline only
     - report
+
+variables:
+    GIT_STRATEGY: fetch
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_ASKPASS: /bin/echo
+    GIT_HTTP_PASSWORD: $CI_JOB_TOKEN
+    GIT_SSL_NO_VERIFY: 1
+
+    STATE_FOLDER: /home/gitlab-runner/state/$CI_COMMIT_SHA
+    AIR: $STATE_FOLDER/air/
+    AIR_INSTALL: $AIR/install
+    AIR_PMK: $AIR_INSTALL/pmk
+    AIR_POS: $AIR_INSTALL/pos
+    RTEMS410: /opt/rtems-4.10/bin
+    UTILS: $STATE_FOLDER/utils/gitlab-runner
+    RTEMS_MAKEFILE_PATH: $AIR_POS/rtems5/rtems5-install/sparc-rtems5/gr740
 
 default:
     retry: 1
     before_script:
         - sleep $(($RANDOM % 2)).$RANDOM
 
-        - export STATE_FOLDER=$HOME/state/$CI_COMMIT_SHA
-        - export GIT_SSL_NO_VERIFY=1
+        - git config --global credential.helper store
+        - echo "https://${GIT_HTTP_USERNAME}:${CI_JOB_TOKEN}@$(AIR_GIT_REMOTE_HOSTNAME)" > ~/.git-credentials
 
-        - if ! test -f git-clean.lock; 
-            then 
-                touch git-clean.lock; 
-            fi
-        - if ! $(grep -Fxq $CI_COMMIT_SHORT_SHA git-clean.lock); 
-            then 
-                git clean -ffdx && git submodule foreach --recursive git clean -ffdx && echo $CI_COMMIT_SHORT_SHA > git-clean.lock; 
-                git submodule update --init --recursive; 
-                git submodule sync --recursive; 
-            fi
-        - if ! test -d $STATE_FOLDER ; 
-            then 
-                (mkdir -p $STATE_FOLDER || true) && ./utils/gitlab-runner/check_central_server.bash ; 
-            else 
-                ./utils/gitlab-runner/check_central_server.bash ;
-            fi;
+        #- if ! test -f git-clean.lock;
+        #    then 
+        #        touch git-clean.lock;
+        #    fi
+
+        #- if ! $(grep -Fxq $CI_COMMIT_SHORT_SHA git-clean.lock); 
+        #    then 
+        #        git clean -ffdx && git submodule foreach --recursive git clean -ffdx && echo $CI_COMMIT_SHORT_SHA > git-clean.lock; 
+        #        git submodule update --init --recursive; 
+        #        git submodule sync --recursive; 
+        #    fi
+            
+        - if ! test -d $STATE_FOLDER; then 
+            (mkdir -p $STATE_FOLDER || true)
+          fi;
+        - ./utils/gitlab-runner/check_central_server.bash;
 
         - while test -e /tmp/rsync-"$CI_COMMIT_SHORT_SHA".lock; 
             do sleep 1; 
-            done;        
+            done;    
 
-        - cd $STATE_FOLDER
-        - cd air
-        
-        - export AIR=$STATE_FOLDER/air/
-        - export PATH=$PATH:$AIR
-        - export AIR_INSTALL=$AIR/install
-        - export AIR_PMK=$AIR_INSTALL/pmk
-        - export AIR_POS=$AIR_INSTALL/pos
-
-        - export RTEMS410=/opt/rtems-4.10/bin
-        - export PATH=$PATH:$RTEMS410
-        - export RTEMS_MAKEFILE_PATH=$AIR_POS/rtems5/rtems5-install/sparc-rtems5/gr740
-        - export PATH=$PATH:/opt/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
+        - cd $AIR
 
         - export DISPLAY=:99
+        - export PATH=$PATH:$AIR
+        - export PATH=$PATH:$RTEMS410
+        - export PATH=$PATH:/opt/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin
         - export PATH=/opt/rtems/5/bin:$PATH
         - export PATH=/opt/rtems-5.1-2019.07.25/bin:$PATH
-        - export PATH=/opt/laysim-gr740:$PATH
+        - export PATH=/opt/laysim-gr740-v3:$PATH
 
-        - export UTILS=$AIR/../utils/gitlab-runner
-
-RVS-prepare-build:
-    stage: prepare-build
-    tags:
-        - SPARC
-        - RVS
+placeholder:
+    stage: .pre
     script:
-        - sed -i 's/\.\/rvs_air\/scripts\/build.bash/\.\/rvs_air\/scripts\/build-ci.bash/g' air.rvsprj
-        - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --prepare --build;
-        - rm -rf $AIR/install/pos/rtems5/rtems5-build
-        - rm -rf $AIR/install/pos/rtems48i/rtems48i-build
-        - $UTILS/publish_to_central_server.bash;
+        - echo "This job's only purpose is to be the only visible job in the pipeline editor to avoid erroneous syntax errors."
+    rules:
+        - when: never
 
-#Build SPARC LEON4
-build_sparc_leon4:
-    stage: prepare-build
-    tags: 
-        - OTHER
-    script:
-        - cd $CI_PROJECT_DIR/air
-        - cp ./../utils/gitlab-runner/.sparc_leon4_config .
-        - ./configure -f .sparc_leon4_config
-        - make clean
-        - make -j4
 
-#Build SPARC LEON3
-build_sparc_leon3:
-    stage: prepare-build
-    tags: 
-        - OTHER
-    script:
-        - cd $CI_PROJECT_DIR/air
-        - cp ./../utils/gitlab-runner/.sparc_leon3_config .
-        - ./configure -f .sparc_leon3_config
-        - make clean
-        - make -j4
-
-#Build SPARC TSIM
-build_sparc_tsim:
-    stage: prepare-build
-    tags: 
-        - OTHER
-    script:
-        - cd $CI_PROJECT_DIR/air
-        - cp ./../utils/gitlab-runner/.sparc_tsim_config .
-        - ./configure -f .sparc_tsim_config
-        - make clean
-        - make -j4
-
-prepare-build-arm:
-    stage: prepare-build
-    tags:
-        - ARM
-    script:
-        - ./rvs_air/scripts/build-tools-arm.bash
-        - $UTILS/publish_to_central_server.bash
-
-report-export:
-    stage: report
-    tags:
-        - SPARC
-        - RVS
-        - sparc-taste-debian1
-    script:
-        - $UTILS/check_central_server.bash;
-        - rvsdriver --project $AIR/air.rvsprj --integration sparc-gr740-pmk-coverage --report --export
-        - rsync -avrh ../* $CI_PROJECT_DIR/
-        - rm -rf $STATE_FOLDER
-    artifacts:
-        name: "$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
-        paths:
-            - $(pwd)/air/rvs_air/results/air-coverage-unmanaged-coverage-coverage.txt
-            - $(pwd)/air/rvs_air/results/pmk_coverage.htm
-            - $(pwd)/air/rvs_air/results/pmk_coverage_files/*
-        expire_in: 1 week

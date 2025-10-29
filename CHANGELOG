@@ -1,6 +1,32 @@
 # Changelog
 All notable changes to AIR will be documented in this file.
 
+## [V5.6.2] - 2025-10-27
+### Added
+- Support for Ultra96-V2 and Zync 7000 family (Zedboard, Arty Z7, Z7000-P3) boards
+- Support for floating point numbers in pprintf library
+- Extended new integration and validation tests to SPARC
+
+### Changed
+- Improvements to exception handling
+- Improvements to ARM FPU
+- Reviewed sampling port logic to more closely follow ARINC 653 Standard
+- General CI/CD pipeline improvements
+
+## [V5.6.1b] - 2023-03-1
+### Added
+- GPIO driver for ARM
+- Support to zynq 7020, using "zynq_main_board".
+- Several improments in CI/CD pipeline towards automatic software develoment kit
+
+## [V5.6.1] - 2023-03-1
+### Added
+- AIR major requirements are auto validated in both ARM and SPARC platforms through CI/CD
+
+## [V5.6.0] - 2022-08-1
+- CAN device driver has been improved
+- IOP supports multiple interfaces for a single device
+- AIR GUI alpha version
 
 ## [V5.5.1] - 2020-06-20
 ### Added

@@ -16,14 +16,22 @@ ${makoutils.cfileHeader("rtems_config.h", "RTEMS configuration")}
 /**
  * @brief Standard RTEMS configuration
  */
-#define CONFIGURE_INIT_TASK_ATTRIBUTES RTEMS_FLOATING_POINT
+
+%if air.PERMISSION_FPU in partition.permissions:
+    #define CONFIGURE_INIT_TASK_ATTRIBUTES                  RTEMS_FLOATING_POINT
+%endif
+
 
 #define CONFIGURE_MICROSECONDS_PER_TICK ${tps_to_mpt()}
 
 #define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
 
-#define CONFIGURE_MAXIMUM_TASKS  20
+#define CONFIGURE_MAXIMUM_TASKS 20
 #define CONFIGURE_MAXIMUM_TIMERS 4
+
+#ifdef RTEMS_CUSTOM_CONFIG
+    #include "rtems_custom_config.h"
+#endif
 
 #define CONFIGURE_RTEMS_INIT_TASKS_TABLE
 

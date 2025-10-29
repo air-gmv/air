@@ -41,6 +41,10 @@ global(air_syscall_get_elapsed_ticks)
     svc     #(AIR_SYSCALL_GET_ELAPSED_TICKS)
     bx      lr
 
+global(air_syscall_get_elapsed_mtf_ticks)
+    svc     #(AIR_SYSCALL_GET_ELAPSED_MTF_TICKS)
+    bx      lr
+
 global(air_syscall_get_partition_id)
     svc     #(AIR_SYSCALL_GET_PARTITION_ID)
     bx      lr
@@ -85,6 +89,10 @@ global(air_syscall_get_port_status)
     svc     #(AIR_SYSCALL_GET_PORT_STATUS)
     bx      lr
 
+global(air_syscall_get_port_name)
+    svc     #(AIR_SYSCALL_GET_PORT_NAME)
+    bx      lr
+    
 global(air_syscall_read_port)
     svc     #(AIR_SYSCALL_READ_PORT)
     bx      lr
@@ -111,6 +119,14 @@ global(air_syscall_get_system_state)
 
 global(air_syscall_set_system_state)
     svc     #(AIR_SYSCALL_SET_SYSTEM_STATE)
+    bx      lr
+
+global(air_syscall_get_hm_log)
+    svc     #(AIR_SYSCALL_GET_HM_LOG)
+    bx      lr
+
+global(air_syscall_pop_from_hm_log)
+    svc     #(AIR_SYSCALL_POP_FROM_HM_LOG)
     bx      lr
 
 global(air_syscall_get_hm_event)

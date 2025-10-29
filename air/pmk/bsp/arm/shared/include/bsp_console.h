@@ -14,7 +14,9 @@
 #ifndef BSP_CONSOLE_H_
 #define BSP_CONSOLE_H_
 #if DEBUG_MONITOR != 2
+#ifndef PMK_ARM_ULTRASCALE96V2_A53
 #include <a9mpcore.h>
+#endif /* PMK_ARM_ULTRASCALE96V2_A53 */
 
 void arm_uart_transmit(char ch);
 

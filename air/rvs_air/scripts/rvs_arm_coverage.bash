@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Go through all examples and perform coverage if it is built correctly (AIRAPP.exe exists)
+# Iterate examples directories and perform coverage if the build is successful (AIRAPP.exe exists)
 for d in $AIR_ROOT/examples/* $AIR_ROOT/examples/private-example/private/validation/*; do
 	echo $d
 	if [[ -f "$d/executable/AIRAPP.exe" ]] # If the example was built

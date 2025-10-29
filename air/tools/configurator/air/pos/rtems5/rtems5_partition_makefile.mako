@@ -65,6 +65,7 @@ include $(PROJECT_ROOT)/make/leaf.cfg
 
 # built in libraries include files
 CPPFLAGS+=${'\\'}
+-DPMK_${os_configuration.arch.upper()}${'\\'}
 -DPMK_${os_configuration.arch.upper()}_${os_configuration.bsp.upper()}${'\\'}
 % if partition.is_system:
 -DPMK_MAX_CORES=${os_configuration.get_available_cores()}${'\\'}

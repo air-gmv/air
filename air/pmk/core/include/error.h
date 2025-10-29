@@ -23,11 +23,12 @@
 /**
  * @brief PMK internal error enumeration
  */
-typedef enum {
+typedef enum
+{
 
-    PMK_INTERNAL_ERROR_BSP       = 0x00, /**< Error in BSP                    */
-    PMK_INTERNAL_ERROR_CONFIG    = 0x01, /**< Error in Configuration          */
-    PMK_INTERNAL_ERROR_MEMORY    = 0x02, /**< Error in Memory (out of memory) */
+    PMK_INTERNAL_ERROR_BSP = 0x00,    /**< Error in BSP                    */
+    PMK_INTERNAL_ERROR_CONFIG = 0x01, /**< Error in Configuration          */
+    PMK_INTERNAL_ERROR_MEMORY = 0x02, /**< Error in Memory (out of memory) */
 
 } pmk_error_e;
 
@@ -38,8 +39,7 @@ typedef enum {
  * @param file File containing the faulty function
  * @param line Line of the error
  */
-void pmk_fatal_error(
-        pmk_error_e code, const char *func, const char *file, int line);
+void pmk_fatal_error(pmk_error_e code, const char *func, const char *file, int line);
 
 /** @} */
 

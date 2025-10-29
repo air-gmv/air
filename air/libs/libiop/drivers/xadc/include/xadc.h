@@ -11,12 +11,8 @@
  * @brief XADC Driver - Macros and Definitions
  */
 
-
 #ifndef __XADC_H__
 #define __XADC_H__
-
-
-
 
 #include <air.h>
 #include <iop.h>
@@ -25,13 +21,9 @@
 #include <iop_support.h>
 #include <xadc_support.h>
 
-
-
-
 air_u32_t iop_xadc_init(iop_device_driver_t *iop_dev, void *arg);
 air_u32_t iop_xadc_open(iop_device_driver_t *iop_dev, void *arg);
 air_u32_t iop_xadc_read(iop_device_driver_t *iop_dev, void *arg);
 air_u32_t iop_xadc_close(iop_device_driver_t *iop_dev, void *arg);
-
 
 #endif /* __XADC_H__ */

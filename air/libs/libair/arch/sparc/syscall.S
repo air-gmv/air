@@ -76,6 +76,14 @@ SYM(air_syscall_get_elapsed_ticks):
     retl
     nop; nop;
 
+    GLOBAL(air_syscall_get_elapsed_mtf_ticks)
+SYM(air_syscall_get_elapsed_mtf_ticks):
+
+    set     AIR_SYSCALL_GET_ELAPSED_MTF_TICKS, %o5
+    ta      AIR_SYSCALL_OS_TRAP
+    retl
+    nop; nop;
+
     GLOBAL(air_syscall_get_partition_id)
 SYM(air_syscall_get_partition_id):
 
@@ -174,7 +182,14 @@ SYM(air_syscall_get_port_status):
     retl
     nop; nop
 
+    GLOBAL(air_syscall_get_port_name)
+SYM(air_syscall_get_port_name):
 
+    set     AIR_SYSCALL_GET_PORT_NAME, %o5
+    ta      AIR_SYSCALL_OS_TRAP
+    retl
+    nop; nop
+    
     GLOBAL(air_syscall_read_port)
 SYM(air_syscall_read_port):
 
@@ -233,6 +248,19 @@ SYM(air_syscall_set_system_state):
     retl
     nop; nop
 
+    GLOBAL(air_syscall_get_hm_log)
+SYM(air_syscall_get_hm_log):
+    set     AIR_SYSCALL_GET_HM_LOG, %o5
+    ta      AIR_SYSCALL_OS_TRAP
+    retl
+    nop; nop
+
+    GLOBAL(air_syscall_pop_from_hm_log)
+SYM(air_syscall_pop_from_hm_log):
+    set     AIR_SYSCALL_POP_FROM_HM_LOG, %o5
+    ta      AIR_SYSCALL_OS_TRAP
+    retl
+    nop; nop
 
     GLOBAL(air_syscall_get_hm_event)
 SYM(air_syscall_get_hm_event):

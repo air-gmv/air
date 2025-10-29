@@ -1,7 +1,6 @@
 #ifndef __GCOV_PUBLIC_H__
 #define __GCOV_PUBLIC_H__
 
-
 struct gcov_info;
 typedef long long gcov_type;
 

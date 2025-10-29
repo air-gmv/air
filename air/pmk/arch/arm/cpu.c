@@ -17,7 +17,6 @@
 #include <workspace.h>
 #include <air.h>
 #include <ipc.h>
-
 #ifdef PMK_DEBUG
 #include <printk.h>
 #endif
@@ -33,13 +32,14 @@ air_u8_t air_stack[STACK_SIZE * PMK_MAX_CORES];
 /**
  * \brief Interrupt stack size for each core context
  */
-#define SIZEOF_ISF (MAX_NESTING_LEVEL + 1)*sizeof(arm_interrupt_stack_frame_t)
+#define SIZEOF_ISF (MAX_NESTING_LEVEL + 1) * sizeof(arm_interrupt_stack_frame_t)
 
 /**
  * This function initializes the architecture dependent part of the core
  * context
  */
-void core_context_init(core_context_t *context, air_u32_t id) {
+void core_context_init(core_context_t *context, air_u32_t id)
+{
 
     /* core id */
     context->vcpu.id = id;
@@ -55,11 +55,10 @@ void core_context_init(core_context_t *context, air_u32_t id) {
     context->isf_pointer = context->idle_isf_pointer;
 
 #if PMK_FPU_SUPPORT
-    arm_enable_fpu();
     /* allocate space to hold an FPU context */
-    //context->vfp_context = (arm_vfp_context_t *)pmk_workspace_alloc(sizeof(arm_vfp_context_t));
+    context->vfp_context = (arm_vfp_context_t *)pmk_workspace_alloc(sizeof(arm_vfp_context_t));
 #else
-    //context->vfp_context = (arm_vfp_context_t *)NULL;
+   context->vfp_context = (arm_vfp_context_t *)NULL;
 #endif
 
     /* initialize the IPC event */
@@ -74,24 +73,22 @@ void core_context_init(core_context_t *context, air_u32_t id) {
 
 #ifdef PMK_DEBUG
     printk("\n    :: context %02i at           0x%08x\n", id, context);
-    printk("       idle_isf_pointer at    0x%08x to 0x%08x\n",
-            context->idle_isf_pointer,
-            context->idle_isf_pointer + sizeof(arm_interrupt_stack_frame_t));
-    //printk("       fpu_context at         0x%08x to 0x%08x\n",
-    //        context->vfp_context,
-    //        context->vfp_context + sizeof(arm_vfp_context_t));
-    printk("       hm_event at            0x%08x to 0x%08x\n",
-            context->hm_event,
-            context->hm_event + sizeof(pmk_hm_event_t));
+    printk("       idle_isf_pointer at    0x%08x to 0x%08x\n", context->idle_isf_pointer,
+           context->idle_isf_pointer + sizeof(arm_interrupt_stack_frame_t));
+     printk("       fpu_context at         0x%08x to 0x%08x\n",
+             context->vfp_context,
+             context->vfp_context + sizeof(arm_vfp_context_t));
+    printk("       hm_event at            0x%08x to 0x%08x\n", context->hm_event,
+           context->hm_event + sizeof(pmk_hm_event_t));
 #endif
-
 }
 
 /**
  * This function setups a core context the architecture dependent part of
  * an idle context
  */
-void core_context_setup_idle(core_context_t *context) {
+void core_context_setup_idle(core_context_t *context)
+{
 
     /* initialize the virtual core */
     context->vcpu.psr = 0;
@@ -102,8 +99,10 @@ void core_context_setup_idle(core_context_t *context) {
     context->isr_nesting_level = 0;
 
     /* initialize idle stack */
-    /* setup the isf used in restoring context equal to the idle context */
-    arm_interrupt_stack_frame_t *isf = (arm_interrupt_stack_frame_t *)context->idle_isf_pointer;
+    /* setup the isf used in restoring context */
+
+    /* WARNING: Setting the isf pointer this way will not allow to restore this context ever */
+    arm_interrupt_stack_frame_t *isf = (arm_interrupt_stack_frame_t *)context->isf_pointer;
 
     /* setup the context return PSR */
     isf->ret_psr = (ARM_PSR_T | ARM_PSR_SYS);
@@ -117,9 +116,15 @@ void core_context_setup_idle(core_context_t *context) {
  * This function setups a core context with the architecture dependent
  * configuration for a partition
  */
-void core_context_setup_partition(core_context_t *context, pmk_partition_t *partition) {
+void core_context_setup_partition(core_context_t *context, pmk_partition_t *partition)
+{
 
-       /* initialize the virtual core */
+    int svc_stack_start, core_id;
+
+    /* get physical core id */
+    core_id = bsp_get_core_id();
+
+    /* initialize the virtual core */
     context->vcpu.psr = (ARM_PSR_SVC);
     context->vcpu.vbar = NULL;
 
@@ -129,11 +134,11 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
     pmk_hm_event_t *hm_event = (pmk_hm_event_t *)context->hm_event;
     hm_event->nesting = 0;
 
-    if (context->entry_point != NULL) {
+    if (context->entry_point != NULL)
+    {
 
         arm_interrupt_stack_frame_t *isf =
-                (arm_interrupt_stack_frame_t *)
-                ((air_u32_t)context->idle_isf_pointer - sizeof(arm_interrupt_stack_frame_t));
+            (arm_interrupt_stack_frame_t *)((air_u32_t)context->idle_isf_pointer - sizeof(arm_interrupt_stack_frame_t));
 
         /* initial stack frame */
         context->isf_pointer = (void *)isf;
@@ -149,18 +154,23 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
 
             isf->ret_psr = (ARM_PSR_SYS);
             context->vcpu.psr = (ARM_PSR_SYS);
-        } else {
+        }
+        else
+        {
             isf->ret_psr = (ARM_PSR_USR);
         }
-
+#if PMK_FPU_SUPPORT
         if ((partition->permissions & AIR_PERMISSION_FPU_CONTROL) != 0) {
-           //context->vfp_context->fpscr &=0xFFF8FFFF;
-            isf->vfp_context.fpexc = (ARM_VFP_FPEXC_ENABLE);
-        } else {
-            //context->vfp_context->fpexc = 0;
-            isf->vfp_context.fpexc = 0;
+            context->vfp_context->fpexc = (ARM_VFP_FPEXC_ENABLE);
+            context->vfp_context->fpscr &=0xFFF8FFFF;
+            //isf->vfp_context.fpexc = (ARM_VFP_FPEXC_ENABLE);
         }
-
+        else
+        {
+            context->vfp_context->fpexc = 0;
+            //isf->vfp_context.fpexc = 0;
+        }
+#endif
         /* setup the partition entry point */
         isf->ret_addr = (air_u32_t)context->entry_point;
 
@@ -168,7 +178,7 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
         printk("       cpu::setup::context->entry_point   = 0x%x\n"
                "       cpu::setup::isf->ret_addr          = 0x%x\n"
                "       cpu::setup::isf->ret_psr           = 0x%x\n",
-               context->entry_point, isf->ret_addr,isf->ret_psr);
+               context->entry_point, isf->ret_addr, isf->ret_psr);
 #endif
 
         /* setup the stack pointer of the partition */
@@ -176,9 +186,14 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
         stack = (stack & ~(32 - 1));
         isf->usr_sp = stack;
         /*initialize virtual stack pointers*/
-        context->sp_svc = stack;
-        context->sp_irq = stack - ((partition->mmap->size)/2);
+        context->virt.sp_svc = stack;
 
+        context->virt.sp_irq = stack - ((partition->mmap->size) / 2);
+
+        //get SVC stack start (from before exception handler)
+        svc_stack_start = air_stack + stack_size * (core_id + 1)  - IDLE_STACKSIZE;
+        //store SVC SP, adding space for each partition, in core context
+        context->virt.svc_sp = svc_stack_start - partition->id * (PARTITION_SVC_STACKSIZE);
 
         /*Enable virtual interrupts*/
         context->vgic.vm_ctrl = 1;
@@ -192,7 +207,9 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
 #endif
 
         // TODO something about cache permissions
-    } else {
+    }
+    else
+    {
 
         core_context_setup_idle(context);
     }
@@ -202,7 +219,8 @@ void core_context_setup_partition(core_context_t *context, pmk_partition_t *part
  * TODO This function setups a core context the architecture dependent part of
  * an reload context
  */
-void core_context_setup_reload_partition(core_context_t *context, pmk_partition_t *partition) {
+void core_context_setup_reload_partition(core_context_t *context, pmk_partition_t *partition)
+{
 
     /* initialize the virtual core */
     context->vcpu.psr = 0;
@@ -210,8 +228,7 @@ void core_context_setup_reload_partition(core_context_t *context, pmk_partition_
 
     /* setup the isf used in restoring context equal to the idle context */
     arm_interrupt_stack_frame_t *isf =
-                (arm_interrupt_stack_frame_t *)
-                ((air_u32_t)context->idle_isf_pointer - sizeof(arm_interrupt_stack_frame_t));
+        (arm_interrupt_stack_frame_t *)((air_u32_t)context->idle_isf_pointer - sizeof(arm_interrupt_stack_frame_t));
 
     context->isf_pointer = (void *)isf;
 
@@ -225,13 +242,15 @@ void core_context_setup_reload_partition(core_context_t *context, pmk_partition_
     isf->r0 = (air_u32_t)partition;
 }
 
-void core_context_add_hm_event(core_context_t *context, air_state_e state_id, air_error_e error_id) {
+void core_context_add_hm_event(core_context_t *context, air_state_e state_id, air_error_e error_id)
+{
 
     /* get the current core HM event */
     pmk_hm_event_t *hm_event = (pmk_hm_event_t *)context->hm_event;
 
     /* save the current state if the HM event isn't nested */
-    if (0 == hm_event->nesting) {
+    if (0 == hm_event->nesting)
+    {
 
         hm_event->previous_state_id = context->state;
         context->state = AIR_STATE_PARTITION_HM;
@@ -243,13 +262,15 @@ void core_context_add_hm_event(core_context_t *context, air_state_e state_id, ai
     hm_event->state_id = state_id;
 }
 
-void core_context_remove_hm_event(core_context_t *context) {
+void core_context_remove_hm_event(core_context_t *context)
+{
 
     /* get the current core HM event */
     pmk_hm_event_t *hm_event = (pmk_hm_event_t *)context->hm_event;
 
     /* consume current HM event */
-    if (--(hm_event->nesting) == 0) {
+    if (--(hm_event->nesting) == 0)
+    {
         hm_event->state_id = hm_event->previous_state_id;
         context->state = hm_event->state_id;
     }

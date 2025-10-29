@@ -20,12 +20,12 @@ class ARMConfiguration(object):
         self.mmu_l2_tables_entries = 0
         self.workspace_size = 0
 
-MAX_CORES                  = 2
+MAX_CORES                  = 4
 
 CPU_CORE_CONTROL            = [       0x8,      0x24]
-CPU_CORE_CONTEXT            = [       0x8,      0x98]
-CPU_CORE_CONTEXT_STACK      = [       0x8,    0x13B0] # 15x isf (0x336 each)
-#CPU_CORE_CONTEXT_FPU        = [       0x8,     0x108]
+CPU_CORE_CONTEXT            = [       0x8,      0xB0]
+CPU_CORE_CONTEXT_STACK      = [       0x8,     0x438] # 15x isf (0x72 each)
+CPU_CORE_CONTEXT_FPU        = [       0x8,     0x108]
 CPU_CORE_CONTEXT_HM         = [       0x8,      0x10]
 
 CPU_MMU_CONTEXT             = [       0x8,      0x10]
@@ -130,12 +130,10 @@ def get_arm_configuration(a653configuration):
     arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, core_context)
     for i in range(0, a653configuration.core_count):
         arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, CPU_CORE_CONTEXT_STACK)
-        #arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, CPU_CORE_CONTEXT_FPU)
+        arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, CPU_CORE_CONTEXT_FPU)
         arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, CPU_CORE_CONTEXT_HM)
-
-    # space for the core control structures
-    core_control = [ CPU_CORE_CONTROL[0], a653configuration.core_count * CPU_CORE_CONTROL[1]]
-    arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, core_control)
+        # space for the core control structures
+        arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, CPU_CORE_CONTROL)
 
     # space for the partitions
     for partition in a653configuration.partitions:
@@ -147,7 +145,7 @@ def get_arm_configuration(a653configuration):
         # space for the partition cores context internals
         for i in range(0, partition.core_count):
             arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, CPU_CORE_CONTEXT_STACK)
-            #arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, CPU_CORE_CONTEXT_FPU)
+            arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, CPU_CORE_CONTEXT_FPU)
             arm_configuration.workspace_size = align_space(arm_configuration.workspace_size, CPU_CORE_CONTEXT_HM)
 
         # partition core mapping

@@ -1,0 +1,22 @@
+#!/bin/bash
+echo "Starting post-commit hook..."
+
+
+MESSAGE=$(git log -1 HEAD --pretty=format:%s)
+
+CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r HEAD)
+
+#move to misraivoso folder to relative paths are are always correct
+cd "$AIR"
+cd ../utils/misraivoso
+
+
+# Loop through the list of changed files and apply MISRAivoso.py to each one
+for FILE in $CHANGED_FILES; do
+  python3 MISRAivoso.py --correction --src ../../air/ --src-file ../../"$FILE"
+done
+
+git add .
+git commit -m "$MESSAGE (MISRA)"
+
+echo "Terminating post-commit hook..."

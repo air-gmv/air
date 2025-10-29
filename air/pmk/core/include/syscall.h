@@ -27,10 +27,7 @@
  *         INVALID_PARAM   - if invalid partition name,
  *         NO_ERROR        - otherwise
  */
-air_status_code_e pmk_syscall_get_partition_id(
-        pmk_core_ctrl_t *core,
-        air_name_ptr_t name,
-        air_identifier_t *pid);
+air_status_code_e pmk_syscall_get_partition_id(pmk_core_ctrl_t *core, air_name_ptr_t name, air_identifier_t *pid);
 /**
  * @brief Get Partition Status
  * @param core executing core information
@@ -40,10 +37,8 @@ air_status_code_e pmk_syscall_get_partition_id(
  *         INVALID_PARAM   - if invalid partition id,
  *         NO_ERROR        - no error otherwise
  */
-air_status_code_e pmk_syscall_get_partition_status(
-        pmk_core_ctrl_t *core,
-        air_identifier_t pid,
-        air_partition_status_t *status);
+air_status_code_e pmk_syscall_get_partition_status(pmk_core_ctrl_t *core, air_identifier_t pid,
+                                                   air_partition_status_t *status);
 /**
  * @brief Set partition mode
  * @param idx partition index
@@ -53,10 +48,8 @@ air_status_code_e pmk_syscall_get_partition_status(
  *         NO_ACTION       - if transition from normal to normal
  *         NO_ERROR        - no error otherwise
  */
-air_status_code_e pmk_syscall_set_partition_mode(
-        pmk_core_ctrl_t *core_ctrl,
-        air_identifier_t pid,
-        air_operating_mode_e mode);
+air_status_code_e pmk_syscall_set_partition_mode(pmk_core_ctrl_t *core_ctrl, air_identifier_t pid,
+                                                 air_operating_mode_e mode);
 /**
  * @brief Get Schedule Id
  * @param core executing core information
@@ -66,10 +59,7 @@ air_status_code_e pmk_syscall_set_partition_mode(
  *         INVALID_PARAM   - if invalid schedule name,
  *         NO_ERROR        - otherwise
  */
-air_status_code_e pmk_syscall_get_schedule_id(
-        pmk_core_ctrl_t *core,
-        air_name_ptr_t name,
-        air_identifier_t *sid);
+air_status_code_e pmk_syscall_get_schedule_id(pmk_core_ctrl_t *core, air_name_ptr_t name, air_identifier_t *sid);
 /**
  * @brief Get Schedule Status
  * @param core executing core information
@@ -77,9 +67,7 @@ air_status_code_e pmk_syscall_get_schedule_id(
  * @return INVALID_POINTER - if the partition pointers aren't valid,
  *         NO_ERROR        - otherwise
  */
-air_status_code_e pmk_syscall_get_schedule_status(
-        pmk_core_ctrl_t *core,
-        air_schedule_status_t *status);
+air_status_code_e pmk_syscall_get_schedule_status(pmk_core_ctrl_t *core, air_schedule_status_t *status);
 /**
  * @brief Set Module schedule
  * @param core executing core information
@@ -89,9 +77,13 @@ air_status_code_e pmk_syscall_get_schedule_status(
  *         NO_ACTION       - if the current id is the schedule id
  *         NO_ERROR        - otherwise
  */
-air_status_code_e pmk_syscall_set_schedule(
-        pmk_core_ctrl_t *core,
-        air_identifier_t sid);
+air_status_code_e pmk_syscall_set_schedule(pmk_core_ctrl_t *core, air_identifier_t sid);
+/**
+ * @brief Get elapsed ticks since beginning of current MTF [AIR-TIME-00170]
+ * @return Number of elapsed ticks
+ *         
+ */
+air_clocktick_t pmk_syscall_get_elapsed_mtf_ticks(void);
 /**
  * @brief Gets the system time of day
  * @param core executing core information
@@ -120,11 +112,8 @@ air_status_code_e pmk_syscall_set_tod(pmk_core_ctrl_t *core, air_time_t *tod);
  *         INVALID_CONFIG if port not found
  *         NO_ERROR otherwise
  */
-air_status_code_e pmk_syscall_get_port_id(
-    pmk_core_ctrl_t *core,
-    air_port_type_e type,
-    air_name_ptr_t name,
-    air_identifier_t *pid);
+air_status_code_e pmk_syscall_get_port_id(pmk_core_ctrl_t *core, air_port_type_e type, air_name_ptr_t name,
+                                          air_identifier_t *pid);
 /**
  * @brief System call create port
  * @param core current controlling core
@@ -137,27 +126,35 @@ air_status_code_e pmk_syscall_get_port_id(
  *         NO_ACTION       - if port already created
  *         NO_ERROR        - otherwise
  */
-air_status_code_e pmk_syscall_create_port(
-        pmk_core_ctrl_t *core,
-        air_port_type_e type,
-        air_name_ptr_t name,
-        void *config,
-        air_identifier_t *pid);
+air_status_code_e pmk_syscall_create_port(pmk_core_ctrl_t *core, air_port_type_e type, air_name_ptr_t name,
+                                          void *config, air_identifier_t *pid);
 /**
  * @brief System call get port status
  * @param core current controlling core
  * @param type type of port to get status
+ * @param pid identifier of the partition that owns the port
  * @param pid port identifier
- * @param[in/out] status port status
+ * @param status[in/out] status port status
  * @return INVALID_POINTER - if the partition pointers aren't valid,
- *         INVALID_PARAM   - if port not found
+ *         INVALID_PARAM   - if port or partition not found
+ *         INVALID_CONFIG  - if trying to access other partition's ports without permission 
  *         NO_ERROR        - otherwise
  */
-air_status_code_e pmk_syscall_get_port_status(
-        pmk_core_ctrl_t *core,
-        air_port_type_e type,
-        air_identifier_t pid,
-        void *status);
+air_status_code_e pmk_syscall_get_port_status(pmk_core_ctrl_t *core, air_port_type_e type, air_identifier_t pid,
+                                              air_identifier_t id, void *status);
+/**
+ * @brief System call get port name [AIR-IPC-00230]
+ * @param core current controlling core
+ * @param type type of port
+ * @param pid port's partition owner identifier
+ * @param id port identifier
+ * @param[out] name port name
+ * @return INVALID_POINTER - if the partition pointers aren't valid,
+ *         INVALID_PARAM   - if port not found or wrong type
+ *         NO_ERROR        - otherwise
+ */
+air_status_code_e pmk_syscall_get_port_name(pmk_core_ctrl_t *core, air_port_type_e type, air_identifier_t pid,
+                                              air_identifier_t id, air_name_ptr_t name);
 /**
  * @brief System call read from port
  * @param core current controlling core
@@ -167,13 +164,8 @@ air_status_code_e pmk_syscall_get_port_status(
  * @param[out] length length of the message
  * @param[in/out] status port status/configuration
  */
-air_status_code_e pmk_syscall_read_port(
-        pmk_core_ctrl_t *core,
-        air_port_type_e type,
-        air_identifier_t id,
-        air_message_ptr_t msg,
-        air_sz_t *length,
-        void *status);
+air_status_code_e pmk_syscall_read_port(pmk_core_ctrl_t *core, air_port_type_e type, air_identifier_t id,
+                                        air_message_ptr_t msg, air_sz_t *length, void *status);
 /**
  * @brief System call write to port
  * @param core current controlling core
@@ -183,13 +175,8 @@ air_status_code_e pmk_syscall_read_port(
  * @param length length of the message
  * @param[in/out] status port status/configuration
  */
-air_status_code_e pmk_syscall_write_port(
-        pmk_core_ctrl_t *core,
-        air_port_type_e type,
-        air_identifier_t id,
-        air_message_ptr_t msg,
-        air_sz_t length,
-        void *status);
+air_status_code_e pmk_syscall_write_port(pmk_core_ctrl_t *core, air_port_type_e type, air_identifier_t id,
+                                         air_message_ptr_t msg, air_sz_t length, void *status);
 /**
  * @brief Gets the information of a shared memory area
  * @param core executing core information
@@ -200,10 +187,8 @@ air_status_code_e pmk_syscall_write_port(
  *                           partition doesn't have access to it
  *         NO_ERROR        - otherwise
  */
-air_status_code_e pmk_syscall_get_sharedmemory(
-        pmk_core_ctrl_t *core,
-        air_name_ptr_t name,
-        air_sharedmemory_t *sharedmemory);
+air_status_code_e pmk_syscall_get_sharedmemory(pmk_core_ctrl_t *core, air_name_ptr_t name,
+                                               air_sharedmemory_t *sharedmemory);
 
 /**
  * @brief Sets the system state
@@ -213,8 +198,36 @@ air_status_code_e pmk_syscall_get_sharedmemory(
  *                     state
  *         NO_ERROR  - otherwise
  */
-air_status_code_e pmk_syscall_set_system_state(
-        pmk_core_ctrl_t *core, air_state_e state);
+air_status_code_e pmk_syscall_set_system_state(pmk_core_ctrl_t *core, air_state_e state);
+
+/**
+ * @brief Retrieves the Health Monitor log. Partitions must have SUPERVISOR permissions.
+ *        Returns the log data to the user space, with the most recent events first.
+ * @param[in] core pointer to current core control structure
+ * @param[out] log pointer to the `air_hm_log_t` structure where the HM log data 
+ *                 will be copied.
+ *
+ * @return `AIR_NO_ERROR` if the operation is successful.
+ * @return `AIR_INVALID_CONFIG` if the partition does not have supervisor permissions.
+ * @return `AIR_INVALID_POINTER` if there is an issue copying the log data to user space.
+ */
+air_status_code_e pmk_get_hm_log(pmk_core_ctrl_t *core, air_hm_log_t *log);
+
+/**
+ * @brief Pops the most recent event from the Health Monitor log.
+ *
+ * Retrieves the most recent event from the Health Monitor log removes it from the log, 
+ * and copies it to the user-provided `log` structure.
+ * Partitions must have SUPERVISOR permission.
+ *
+ * @param[in] core pointer to the core control structure
+ * @param[out] log pointer to the `air_hm_log_event_t` structure where the most recent HM log event will be copied.
+ *
+ * @return `AIR_NO_ERROR` if the operation is successful or if the log is empty.
+ * @return `AIR_INVALID_CONFIG` if the partition does not have supervisor permissions.
+ * @return `AIR_INVALID_POINTER` if there is an issue copying the log event to user space.
+ */
+air_status_code_e pmk_pop_from_hm_log(pmk_core_ctrl_t *core, air_hm_log_event_t *log);
 
 /**
  * @brief Gets the last HM event
@@ -223,9 +236,7 @@ air_status_code_e pmk_syscall_set_system_state(
  * @return INVALID_POINTER - if the partition pointers aren't valid,
  *         NO_ERROR        - otherwise
  */
-air_status_code_e pmk_syscall_get_hm_event(
-        pmk_core_ctrl_t *core,
-        air_hm_event_t *event);
+air_status_code_e pmk_syscall_get_hm_event(pmk_core_ctrl_t *core, air_hm_event_t *event);
 
 /**
  * @brief Prints a partition character
@@ -253,4 +264,3 @@ air_u32_t pmk_syscall_print(pmk_core_ctrl_t *core, char *buffer, air_sz_t len);
 void pmk_syscall_end_window(pmk_core_ctrl_t *core);
 
 #endif /* __SYSCALL_H__ */
-

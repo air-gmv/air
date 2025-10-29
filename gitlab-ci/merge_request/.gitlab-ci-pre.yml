@@ -1,0 +1,40 @@
+# Gitlab CICD script for .pre stage
+# Author huca@GMV 2023
+
+# .pre are jobs ran before any other job in the pipeline
+# These jobs are used to check the state of VMs and to performn any specific VM action such as a cleanup and a clone.
+# ARM and TASTE 1 are not allowed to fail since they are the only one with RVS license.
+.pre-job-template:
+    stage: .pre
+    variables:
+        GIT_STRATEGY: fetch
+    before_script: 
+        - '' # Prevents the before_script from running
+    script:
+        - echo "Cloning repository into runner"
+
+# ARM
+ARM1_init:
+    extends: .pre-job-template
+    tags: ["ARM1"]
+
+ARM2_init:
+    extends: .pre-job-template
+    tags: ["ARM2"]
+
+ARM3_init:
+    extends: .pre-job-template
+    tags: ["ARM3"]
+
+# TASTE
+TASTE1_init:
+    extends: .pre-job-template
+    tags: ["sparc-taste-debian1"]
+
+TASTE2_init:
+    extends: .pre-job-template
+    tags: ["sparc-taste-debian2"]
+
+TASTE3_init:
+    extends: .pre-job-template
+    tags: ["sparc-taste-debian3"]
