@@ -99,7 +99,12 @@ reset:
 #endif /* PMK_SMP */
 
     cmp     r7, #0
+
+#ifdef PMK_ARM_QEMU
+    bne     qemu_reset_state
+#else 
     bne     setup_stack
+#endif
 
 clear_bss:
     ldr     r1, =air_kernel_bss_start
@@ -117,7 +122,11 @@ setup_stack:
     /* Calculate stack offset */
     ldr     r1, =air_stack
     mov     r2, #stack_size
-    add     r7, r1, r2, lsl r7
+    
+    //add     r7, r1, r2, lsl r7 // r7 = &air_stack + stack_size * 2^cpu_number
+    add     r3, r7, #1 // r3 = cpu_number + 1
+    mul     r2, r2, r3 // r2 = stack_size * (cpu_number + 1)
+    add     r7, r1, r2 // r7 = &air_stack + stack_size * (cpu_number + 1)
 
     mrs     r4, cpsr /* save original processor status value */
 
@@ -211,5 +220,16 @@ twiddle:
     bl      bsp_restart_core
     b       twiddle
 
-
+qemu_reset_state:           // Emulate secondary cores behavior 
+    isb sy                  // Memory barriers to ensure data is good
+    dsb sy
+    dmb sy
+    mov r0, #0xfffffff0     // r0 -> 0xfffffff0
+    ldr r1,[r0]             // Read addr #0xfffffff0 to r1
+    isb sy                  // Memory barriers to ensure data is good
+    dsb sy
+    dmb sy
+    cmp r1, #0              // Check if value in memory is still 0
+    bne setup_stack         // If not 0 then continue booting process
+    b  qemu_reset_state     // If it is still 0 continue loop
 #endif /* __ARM_ARCH >= 7 */

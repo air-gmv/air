@@ -16,25 +16,35 @@
 #include <armv7.h>
 #include <workspace.h>
 
-#define DEFINE(s, v)            asm volatile("\n-> " #s " %0 " #v :: "i" (v))
-#define OFFSETOF(s, v)          DEFINE(offsetof_##s##_##v, air_offsetof(s, v))
-#define SIZEOF(s)               DEFINE(sizeof_##s, sizeof(s))
-#define LOG2(s, v)              DEFINE(log2_##s, v)
+#define DEFINE(s, v) asm volatile("\n-> " #s " %0 " #v ::"i"(v))
+#define OFFSETOF(s, v) DEFINE(offsetof_##s##_##v, air_offsetof(s, v))
+#define SIZEOF(s) DEFINE(sizeof_##s, sizeof(s))
+#define LOG2(s, v) DEFINE(log2_##s, v)
 
-int main(void) {
+int main(void)
+{
 
     OFFSETOF(pmk_sharedarea_t, core);
 
     OFFSETOF(pmk_core_ctrl_t, context);
     OFFSETOF(pmk_core_ctrl_t, partition);
+    OFFSETOF(pmk_core_ctrl_t, partition_switch);
     SIZEOF(pmk_core_ctrl_t);
 
     OFFSETOF(arm_core_context_t, trash);
     OFFSETOF(arm_core_context_t, isf_pointer);
     OFFSETOF(arm_core_context_t, idle_isf_pointer);
-    //OFFSETOF(arm_core_context_t, vfp_context);
+    OFFSETOF(arm_core_context_t, vfp_context);
     OFFSETOF(arm_core_context_t, isr_nesting_level);
     OFFSETOF(arm_core_context_t, state);
+    OFFSETOF(arm_core_context_t, virt);
+
+    OFFSETOF(arm_core_pos_virt_t, sp_svc);
+    OFFSETOF(arm_core_pos_virt_t, sp_irq);
+    OFFSETOF(arm_core_pos_virt_t, svc_sp);
+    OFFSETOF(arm_core_pos_virt_t, usr_svc_lr);
+    OFFSETOF(arm_core_pos_virt_t, usr_irq_lr);
+    OFFSETOF(arm_core_pos_virt_t, usr_spsr);
 
     OFFSETOF(arm_interrupt_stack_frame_t, usr_sp);
     OFFSETOF(arm_interrupt_stack_frame_t, ret_addr);

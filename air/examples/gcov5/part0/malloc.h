@@ -11,11 +11,9 @@
 #ifndef DECOMPR_MM_H
 #define DECOMPR_MM_H
 
-
 /* A trivial malloc implementation, adapted from
  *  *  malloc by Hannu Savolainen 1993 and Matthias Urlichs 1994
  *   */
-
 
 #ifndef STATIC_RW_DATA
 
@@ -25,39 +23,47 @@
 
 static char aux[2048];
 
-unsigned long free_mem_ptr=&aux[0];
-unsigned long free_mem_end_ptr=&aux[2047];
+unsigned long free_mem_ptr = &aux[0];
+unsigned long free_mem_end_ptr = &aux[2047];
 
 STATIC_RW_DATA unsigned long malloc_ptr;
 STATIC_RW_DATA int malloc_count;
 
 static void *malloc(int size)
 {
-        void *p;
+    void *p;
 
-        if (size < 0)
-            return NULL;
-        if (!malloc_ptr)
-            malloc_ptr = free_mem_ptr;
+    if (size < 0)
+    {
+        return NULL;
+    }
 
-        malloc_ptr = (malloc_ptr + 3) & ~3;     /* Align */
+    if (!malloc_ptr)
+    {
+        malloc_ptr = free_mem_ptr;
+    }
 
-        p = (void *)malloc_ptr;
-        malloc_ptr += size;
+    malloc_ptr = (malloc_ptr + 3) & ~3; /* Align */
 
-        if (free_mem_end_ptr && malloc_ptr >= free_mem_end_ptr)
-            return NULL;
+    p = (void *)malloc_ptr;
+    malloc_ptr += size;
 
-        malloc_count++;
-        return p;
+    if (free_mem_end_ptr && malloc_ptr >= free_mem_end_ptr)
+    {
+        return NULL;
+    }
+
+    malloc_count++;
+    return p;
 }
 
 static void free(void *where)
 {
-        malloc_count--;
-            if (!malloc_count)
-                        malloc_ptr = free_mem_ptr;
+    malloc_count--;
+    if (!malloc_count)
+    {
+        malloc_ptr = free_mem_ptr;
+    }
 }
-
 
 #endif /* DECOMPR_MM_H */

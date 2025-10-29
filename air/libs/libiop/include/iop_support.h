@@ -5,9 +5,9 @@
  * found in the file LICENSE in this distribution or at
  * air/LICENSE
  */
-/** 
+/**
  * @file
- * 
+ *
  * @author cdcs
  * @brief Declares several support functions
  */
@@ -17,26 +17,19 @@
 
 #include <iop.h>
 
-#define get_header(buf) \
-    ((iop_buffer_t *)((uintptr_t)(buf)->v_addr + (buf)->header_off))
+#define get_header(buf) ((iop_buffer_t *)((uintptr_t)(buf)->v_addr + (buf)->header_off))
 
-#define get_payload(buf) \
-    ((uint8_t *)((uintptr_t)(buf)->v_addr + (buf)->payload_off))
+#define get_payload(buf) ((uint8_t *)((uintptr_t)(buf)->v_addr + (buf)->payload_off))
 
-#define get_buffer(buf) \
-    ((uint8_t *)((uintptr_t)(buf)->v_addr + (buf)->header_off))
+#define get_buffer(buf) ((uint8_t *)((uintptr_t)(buf)->v_addr + (buf)->header_off))
 
-#define get_header_size(buf) \
-    ((uint32_t)((buf)->header_size))
+#define get_header_size(buf) ((uint32_t)((buf)->header_size))
 
-#define get_payload_size(buf) \
-    ((uint32_t)((buf)->payload_size))
+#define get_payload_size(buf) ((uint32_t)((buf)->payload_size))
 
-#define get_buffer_size(buf) \
-    ((uint32_t)(get_header_size((buf)) + get_payload_size((buf))))
+#define get_buffer_size(buf) ((uint32_t)(get_header_size((buf)) + get_payload_size((buf))))
 
-void setup_iop_buffers(
-        iop_buffer_t *buffers, air_u8_t *storage, air_u32_t count);
+void setup_iop_buffers(iop_buffer_t *buffers, air_u8_t *storage, air_u32_t count);
 
 /**
  * @brief Copies an IOP buffer
@@ -57,7 +50,6 @@ void release_wrapper(iop_wrapper_t *wrapper);
  *    */
 void release_fragment(iop_fragment_t *frag);
 
-
 /**
  * @brief Gets a IOP wrapper from a given queue
  * @param ctl Queue of IOP wrappers
@@ -76,16 +68,13 @@ iop_fragment_t *obtain_fragment(iop_chain_control *ctl);
  * @brief Gets a free IOP wrapper
  * @return NULL if no wrapper available in queue, IOP wrapper pointer otherwise
  */
-#define obtain_free_wrapper() \
-    obtain_wrapper(&usr_configuration.free_wrappers)
+#define obtain_free_wrapper() obtain_wrapper(&usr_configuration.free_wrappers)
 
 /**
  * @brief Gets a free IOP fragment
  * @return NULL if no fragment available in queue, IOP fragment pointer otherwise
  */
-#define obtain_free_fragment() \
-    obtain_fragment(&usr_configuration.free_fragments)
-
+#define obtain_free_fragment() obtain_fragment(&usr_configuration.free_fragments)
 
 /**
  * @brief Updates the timers on the wrappers
@@ -99,20 +88,14 @@ void update_queue_timers(iop_chain_control *queue, air_u32_t timeout);
  */
 void update_timers();
 
-#define get_physical_device(i) \
-    ((iop_physical_device_t **)usr_configuration.physical_devices.elements)[(i)]
+#define get_physical_device(i) ((iop_physical_device_t **)usr_configuration.physical_devices.elements)[(i)]
 
-#define get_logical_device(i) \
-    ((iop_logical_device_t **)usr_configuration.logical_devices.elements)[(i)]
+#define get_logical_device(i) ((iop_logical_device_t **)usr_configuration.logical_devices.elements)[(i)]
 
-#define get_physical_route(pdev, i) \
-    &((iop_physical_route_t *)(pdev)->routes.elements)[(i)]
+#define get_physical_route(pdev, i) &((iop_physical_route_t *)(pdev)->routes.elements)[(i)]
 
-#define get_logical_route(ldev, i) \
-    &((iop_logical_route_t *)(ldev)->routes.elements)[(i)]
+#define get_logical_route(ldev, i) &((iop_logical_route_t *)(ldev)->routes.elements)[(i)]
 
-#define get_remote_port(i) \
-    &((iop_port_t *)usr_configuration.remote_ports.elements)[(i)]
-
+#define get_remote_port(i) &((iop_port_t *)usr_configuration.remote_ports.elements)[(i)]
 
 #endif /* __IOP_SUPPORT_H__ */

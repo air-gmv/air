@@ -11,28 +11,22 @@
  * @brief XADC support structures and function definitions
  */
 
-
 #ifndef __XADC_SUPPORT_H__
 #define __XADC_SUPPORT_H__
-
-
 
 #include <iop.h>
 #include <iop_support.h>
 
-
-
 /**
  * @brief ADC Device.
  */
-typedef struct {
+typedef struct
+{
 
     iop_device_driver_t dev;
     unsigned short id;
 
 } iop_adc_device_t;
-
-
 
 /**
  *
@@ -40,15 +34,11 @@ typedef struct {
  */
 void xadc_writer(air_uptr_t arg);
 
-
-
 /**
  *
  * @param arg: Pointer to the Physical device struct.
  */
 void xadc_reader(air_uptr_t arg);
-
-
 
 /**
  * Copies an ADC header to a wrapper.
@@ -58,8 +48,6 @@ void xadc_reader(air_uptr_t arg);
  */
 void xadc_copy_header(iop_physical_device_t *iop_dev, iop_wrapper_t *wrapper, iop_header_t *header);
 
-
-
 /**
  * Compares two ADC headers.
  * @param wrapper: IOP wrapper with an ADC header.
@@ -67,6 +55,5 @@ void xadc_copy_header(iop_physical_device_t *iop_dev, iop_wrapper_t *wrapper, io
  * @return 1 if the ADC headers match, 0 otherwise.
  */
 uint32_t xadc_compare_header(iop_wrapper_t *wrapper, iop_header_t *header);
-
 
 #endif /* __XADC_SUPPORT_H__ */

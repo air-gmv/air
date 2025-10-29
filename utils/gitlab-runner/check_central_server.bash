@@ -3,15 +3,15 @@
 PC=$(uname -n)
 
 function write() {
-	
 	if test $PC = "$1" && ! test -e $STATE_FOLDER; then
-		rsync -avzrh . $STATE_FOLDER/
+		rsync -avzrhq --stats . $STATE_FOLDER/
+		echo "Copied files locally."
 	else
 		if $(ssh gitlab-runner@$2 -- "test -d $STATE_FOLDER") ; then
-			rsync -avzrh gitlab-runner@$2:$STATE_FOLDER ~/state/
+			rsync -avzrhq gitlab-runner@$2:$STATE_FOLDER ~/state/
 			echo "Fetched files from main server."
 		else
-			rsync -azvrh . $STATE_FOLDER/
+			rsync -azvrhq --stats . $STATE_FOLDER/
 			echo "Copied files locally."
 		fi
 	fi
@@ -31,7 +31,7 @@ else
 fi
 
 case $CI_RUNNER_TAGS in
-	*SPARC* )
+	*SPARC* | *sparc* )
 		write "TASTE-VM-9-1-beta2-64bit-1" $(AIR_SPARC_1_IP)
 		;;
 	*ARM* )

@@ -17,89 +17,87 @@
 #define __AIR_H__
 
 #ifndef ASM
-#ifdef  __cplusplus
-extern "C" {
+#ifdef __cplusplus
+extern "C"
+{
 #endif
 
-/**
- * @brief boolean value
- */
+    /**
+     * @brief boolean value
+     */
 
 #define air_boolean_t _Bool
 #define false 0
 #define true 1
 
-/**
- * @brief Identifier type
- */
-typedef air_i32_t air_identifier_t;
-/**
- * @brief Name type
- */
+    /**
+     * @brief Identifier type
+     */
+    typedef air_i32_t air_identifier_t;
+    /**
+     * @brief Name type
+     */
 
-typedef char air_name_t[256];
+    typedef char air_name_t[256];
 
-/**
- * @brief Name type pointer
- */
-typedef char* air_name_ptr_t;
-/**
- * @brief Clock tick types
- */
-typedef air_u64_t air_clocktick_t;
+    /**
+     * @brief Name type pointer
+     */
+    typedef char *air_name_ptr_t;
+    /**
+     * @brief Clock tick types
+     */
+    typedef air_u64_t air_clocktick_t;
 
-/**
- * @brief AIR Message type
- */
-typedef char* air_message_ptr_t;
+    /**
+     * @brief AIR Message type
+     */
+    typedef char *air_message_ptr_t;
 
-/**
- *  @brief AIR error codes
- */
-typedef enum {
+    /**
+     *  @brief AIR error codes
+     */
+    typedef enum
+    {
 
-    AIR_NO_ERROR                = 0x00,
-    AIR_SUCCESSFUL              = 0x00, /**<  Request valid and operation performed     */
-    AIR_NO_ACTION               = 0x01, /**<  Status of system unaffected by request    */
-    AIR_NOT_AVAILABLE           = 0x02, /**<  Resource required by request unavailable  */
-    AIR_INVALID_PARAM           = 0x03, /**<  Invalid parameter specified in request    */
-    AIR_INVALID_CONFIG          = 0x04, /**<  Parameter incompatible with configuration */
-    AIR_INVALID_MODE            = 0x05, /**<  Request incompatible with current mode    */
-    AIR_TIMED_OUT               = 0x06, /**<  Time-out tied up with request has expired */
-    AIR_INVALID_POINTER         = 0x07, /**<  Invalid Memory Pointer                    */
-    AIR_ERROR_MSGQUEUE_FULL     = 0x08, /**<  Queueing port full                        */
-    AIR_ERROR_MSGQUEUE_EMPTY    = 0x09, /**<  Queueing port empty                       */
-    AIR_ERROR_MAX_PORT_NUM      = 0x0A, /**<  Maximum number of ports exceeded          */
-    AIR_INVALID_PORT_TYPE       = 0x0B, /**<  Port has the wrong type                   */
-    AIR_INVALID_SIZE            = 0x0C, /**< Invalid Size                               */
-    AIR_OUT_OF_MEMORY           = 0x0D, /**< Memory Could not be allocated              */
-    AIR_DEVICE_NOT_FOUND        = 0x0E, /**< Device not found                           */
-    AIR_DEVICE_ERROR            = 0x0F  /**< Device Specific Error Found                */
+        AIR_NO_ERROR = 0x00,
+        AIR_SUCCESSFUL = 0x00,           /**<  Request valid and operation performed     */
+        AIR_NO_ACTION = 0x01,            /**<  Status of system unaffected by request    */
+        AIR_NOT_AVAILABLE = 0x02,        /**<  Resource required by request unavailable  */
+        AIR_INVALID_PARAM = 0x03,        /**<  Invalid parameter specified in request    */
+        AIR_INVALID_CONFIG = 0x04,       /**<  Parameter incompatible with configuration */
+        AIR_INVALID_MODE = 0x05,         /**<  Request incompatible with current mode    */
+        AIR_TIMED_OUT = 0x06,            /**<  Time-out tied up with request has expired */
+        AIR_INVALID_POINTER = 0x07,      /**<  Invalid Memory Pointer                    */
+        AIR_ERROR_MSGQUEUE_FULL = 0x08,  /**<  Queueing port full                        */
+        AIR_ERROR_MSGQUEUE_EMPTY = 0x09, /**<  Queueing port empty                       */
+        AIR_ERROR_MAX_PORT_NUM = 0x0A,   /**<  Maximum number of ports exceeded          */
+        AIR_INVALID_PORT_TYPE = 0x0B,    /**<  Port has the wrong type                   */
+        AIR_INVALID_SIZE = 0x0C,         /**< Invalid Size                               */
+        AIR_OUT_OF_MEMORY = 0x0D,        /**< Memory Could not be allocated              */
+        AIR_DEVICE_NOT_FOUND = 0x0E,     /**< Device not found                           */
+        AIR_DEVICE_ERROR = 0x0F          /**< Device Specific Error Found                */
 
-} air_status_code_e;
-
-
+    } air_status_code_e;
 
 #endif
 #ifdef ASM
 
-#define AIR_MODE_IDLE                                0
-#define AIR_MODE_COLD_START                          1
-#define AIR_MODE_WARM_START                          2
-#define AIR_MODE_NORMAL                              3
+#define AIR_MODE_IDLE 0
+#define AIR_MODE_COLD_START 1
+#define AIR_MODE_WARM_START 2
+#define AIR_MODE_NORMAL 3
 
-#define AIR_PERMISSION_FPU_CONTROL          0x00000001
-#define AIR_PERMISSION_CACHE_CONTROL        0x00000002
-#define AIR_PERMISSION_GLOBAL_TIME          0x00000004
-#define AIR_PERMISSION_SET_TOD              0x00000008
-#define AIR_PERMISSION_SET_PARTITION_MODE   0x00000010
-#define AIR_PERMISSION_SET_SCHEDULE         0x00000020
-#define AIR_PERMISSION_MODULE_CONTROL       0x00000040
-#define AIR_PERMISSION_SUPERVISOR           0x0000007F
+#define AIR_PERMISSION_FPU_CONTROL 0x00000001
+#define AIR_PERMISSION_CACHE_CONTROL 0x00000002
+#define AIR_PERMISSION_GLOBAL_TIME 0x00000004
+#define AIR_PERMISSION_SET_TOD 0x00000008
+#define AIR_PERMISSION_SET_PARTITION_MODE 0x00000010
+#define AIR_PERMISSION_SET_SCHEDULE 0x00000020
+#define AIR_PERMISSION_MODULE_CONTROL 0x00000040
+#define AIR_PERMISSION_SUPERVISOR 0x0000007F
 
 #else
-
-
 
 /**
  * @defgroup air_partition AIR - Partition Management Services
@@ -117,77 +115,82 @@ typedef enum {
 /**
  * @brief Partition operating mode enumeration
  */
-typedef enum {
+typedef enum
+{
 
-    AIR_MODE_IDLE         = 0x0,    /**< Partition is Idle                  */
-    AIR_MODE_COLD_START   = 0x1,    /**< Partition is Cold Starting         */
-    AIR_MODE_WARM_START   = 0x2,    /**< Partition is Warm Starting         */
-    AIR_MODE_NORMAL       = 0x3     /**< Partition is running Normal        */
+    AIR_MODE_IDLE = 0x0,       /**< Partition is Idle                  */
+    AIR_MODE_COLD_START = 0x1, /**< Partition is Cold Starting         */
+    AIR_MODE_WARM_START = 0x2, /**< Partition is Warm Starting         */
+    AIR_MODE_NORMAL = 0x3      /**< Partition is running Normal        */
 
 } air_operating_mode_e;
 
 /**
  * @brief Partition start condition enumeration
  */
-typedef enum {
+typedef enum
+{
 
     /** Start condition normal                                              */
-    AIR_START_CONDITION_NORMAL                  = 0x0,
+    AIR_START_CONDITION_NORMAL = 0x0,
     /** Start condition partition restart                                   */
-    AIR_START_CONDITION_PARTITION_RESTART       = 0x1,
+    AIR_START_CONDITION_PARTITION_RESTART = 0x1,
     /** Start condition health-monitor module restart                       */
-    AIR_START_CONDITION_HM_MODULE_RESTART       = 0x2,
+    AIR_START_CONDITION_HM_MODULE_RESTART = 0x2,
     /** Start condition health-monitor partition restart                    */
-    AIR_START_CONDITION_HM_PARTITION_RESTART    = 0x3
+    AIR_START_CONDITION_HM_PARTITION_RESTART = 0x3
 
 } air_start_condition_e;
 
 /**
  * @brief Partition state enumeration
  */
-typedef enum {
+typedef enum
+{
 
     /** Partition hasn't run yet                                            */
-    AIR_PARTITION_STATE_NOT_RUN                 = 0x0,
+    AIR_PARTITION_STATE_NOT_RUN = 0x0,
     /** Partition is initializing                                           */
-    AIR_PARTITION_STATE_INIT                    = 0x1,
+    AIR_PARTITION_STATE_INIT = 0x1,
     /** Partition executing and enters STATE_READY at end of timeslot       */
-    AIR_PARTITION_STATE_RUNNING                 = 0x2,
+    AIR_PARTITION_STATE_RUNNING = 0x2,
     /** Partition execution halted                                          */
-    AIR_PARTITION_STATE_HALTED                  = 0x3,
+    AIR_PARTITION_STATE_HALTED = 0x3,
     /** Partition will go to STATE_RUNNING at start of its next timeslot    */
-    AIR_PARTITION_STATE_READY                   = 0x4
+    AIR_PARTITION_STATE_READY = 0x4
 
 } pmk_partition_state_e;
 
 /**
  * @brief Partition system permissions flags
  */
-typedef enum {
+typedef enum
+{
 
     /** Floating Point unit control                                         */
-    AIR_PERMISSION_FPU_CONTROL            = 1,
+    AIR_PERMISSION_FPU_CONTROL = 1,
     /** Cache control                                                       */
-    AIR_PERMISSION_CACHE_CONTROL          = 1 << 1,
+    AIR_PERMISSION_CACHE_CONTROL = 1 << 1,
     /** Global monotonic timer                                              */
-    AIR_PERMISSION_GLOBAL_TIME            = 1 << 2,
+    AIR_PERMISSION_GLOBAL_TIME = 1 << 2,
     /** Can set system time of Day                                          */
-    AIR_PERMISSION_SET_TOD                = 1 << 3,
+    AIR_PERMISSION_SET_TOD = 1 << 3,
     /** Can set other partitions operation mode                             */
-    AIR_PERMISSION_SET_PARTITION_MODE     = 1 << 4,
+    AIR_PERMISSION_SET_PARTITION_MODE = 1 << 4,
     /** Can set change the module schedule                                  */
-    AIR_PERMISSION_SET_SCHEDULE           = 1 << 5,
+    AIR_PERMISSION_SET_SCHEDULE = 1 << 5,
     /** Can control the module (without supervisor)                         */
-    AIR_PERMISSION_MODULE_CONTROL         = 1 << 6,
+    AIR_PERMISSION_MODULE_CONTROL = 1 << 6,
     /** Supervisor access                                                   */
-    AIR_PERMISSION_SUPERVISOR             = (1 << 7) - 1
+    AIR_PERMISSION_SUPERVISOR = (1 << 7) - 1
 
 } air_permissions_e;
 
 /**
  * @brief Partition Status structure
  */
-typedef struct {
+typedef struct
+{
     /** Partition index                                                     */
     air_u32_t index;
     /** Partition schedule window id (-1 if currently not executing window) */
@@ -220,8 +223,7 @@ typedef struct {
  *         INVALID_PARAM   - if invalid partition name,
  *         NO_ERROR        - otherwise
  */
-air_status_code_e air_syscall_get_partition_id(
-        air_name_ptr_t name, air_identifier_t *pid);
+air_status_code_e air_syscall_get_partition_id(air_name_ptr_t name, air_identifier_t *pid);
 /**
  * @brief Get Partition Status
  * @param pid Partition Identifier
@@ -231,8 +233,7 @@ air_status_code_e air_syscall_get_partition_id(
  *         INVALID_PARAM   - if invalid partition id,
  *         NO_ERROR        - no error otherwise
  */
-air_status_code_e air_syscall_get_partition_status(
-        air_identifier_t pid, air_partition_status_t *status);
+air_status_code_e air_syscall_get_partition_status(air_identifier_t pid, air_partition_status_t *status);
 
 /**
  * @brief Set Partition Operating Mode
@@ -245,8 +246,7 @@ air_status_code_e air_syscall_get_partition_status(
  *         NOT_AVAILABLE   - if partition is initializing
  *         NO_ERROR        - no error otherwise
  */
-air_status_code_e air_syscall_set_partition_mode(
-        air_identifier_t pid, air_operating_mode_e mode);
+air_status_code_e air_syscall_set_partition_mode(air_identifier_t pid, air_operating_mode_e mode);
 
 /**
  * @brief Get physical address
@@ -276,7 +276,8 @@ void air_syscall_end_window(void);
 /**
  * @brief Time structure
  */
-typedef struct {
+typedef struct
+{
 
     air_i32_t tv_sec;
     air_i32_t tv_nsec;
@@ -294,6 +295,12 @@ air_clocktick_t air_syscall_get_us_per_tick(void);
  * @return Number of elapsed ticks
  */
 air_clocktick_t air_syscall_get_elapsed_ticks(void);
+
+/**
+ * @brief Get elapsed ticks since beginning of current MTF
+ * @return Number of elapsed ticks
+ */
+air_clocktick_t air_syscall_get_elapsed_mtf_ticks(void);
 
 /**
  * @brief Gets the system time of day
@@ -329,7 +336,8 @@ air_status_code_e air_syscall_set_tod(air_time_t *tod);
 /**
  * @brief Schedule Status structure
  */
-typedef struct {
+typedef struct
+{
 
     /** Time of the last schedule change                                    */
     air_clocktick_t time_of_last_schedule_change;
@@ -352,8 +360,7 @@ typedef struct {
  *         INVALID_PARAM   - if invalid schedule name,
  *         NO_ERROR        - otherwise
  */
-air_status_code_e air_syscall_get_schedule_id(
-        air_name_ptr_t name, air_identifier_t *sid);
+air_status_code_e air_syscall_get_schedule_id(air_name_ptr_t name, air_identifier_t *sid);
 
 /**
  * @brief Get Schedule Status
@@ -363,8 +370,7 @@ air_status_code_e air_syscall_get_schedule_id(
  *         INVALID_PARAM   - if invalid partition id,
  *         NO_ERROR        - no error otherwise
  */
-air_status_code_e air_syscall_get_schedule_status(
-        air_schedule_status_t *status);
+air_status_code_e air_syscall_get_schedule_status(air_schedule_status_t *status);
 
 /**
  * @brief Set Module schedule
@@ -393,115 +399,125 @@ air_status_code_e air_syscall_set_schedule(air_identifier_t sid);
 /**
  * @brief Port type enumeration
  */
-typedef enum {
+typedef enum
+{
 
-    AIR_QUEUING_PORT                = 0x01,  /**< Queuing port type         */
-    AIR_SAMPLING_PORT               = 0x02   /**< Sampling port type        */
+    AIR_QUEUING_PORT = 0x01, /**< Queuing port type         */
+    AIR_SAMPLING_PORT = 0x02 /**< Sampling port type        */
 
 } air_port_type_e;
 
 /**
  * @brief Port direction enumeration
  */
-typedef enum {
+typedef enum
+{
 
-    AIR_SOURCE_PORT                 = 0x00,  /**< Port is source            */
-    AIR_DESTINATION_PORT            = 0x01   /**< Port is destination       */
+    AIR_SOURCE_PORT = 0x00,     /**< Port is source            */
+    AIR_DESTINATION_PORT = 0x01 /**< Port is destination       */
 
 } air_port_direction_e;
 
 /**
  * @brief Port message validity enumeration
  */
-typedef enum {
+typedef enum
+{
 
-    AIR_MESSAGE_INVALID             = 0x00,  /**< Message is invalid        */
-    AIR_MESSAGE_VALID               = 0x01   /**< Message is valid          */
+    AIR_MESSAGE_INVALID = 0x00, /**< Message is invalid        */
+    AIR_MESSAGE_VALID = 0x01    /**< Message is valid          */
 
 } air_message_validity_e;
 
 /**
  * @brief Port message age enumeration
  */
-typedef enum {
+typedef enum
+{
 
-    AIR_MESSAGE_STALE               = 0x00,  /**< Message is stale          */
-    AIR_MESSAGE_FRESH               = 0x01   /**< Message is fresh          */
+    AIR_MESSAGE_STALE = 0x00, /**< Message is stale          */
+    AIR_MESSAGE_FRESH = 0x01  /**< Message is fresh          */
 
 } air_message_age_e;
 
 /**
  * @brief Port updated state enumeration
  */
-typedef enum {
+typedef enum
+{
 
-    AIR_EMPTY_PORT                  = 0x00,  /**< Port is empty             */
-    AIR_CONSUMED_MESSAGE            = 0x01,  /**< Port message consumed     */
-    AIR_NEW_MESSAGE                 = 0x02   /**< Port message is new       */
+    AIR_EMPTY_PORT = 0x00,       /**< Port is empty             */
+    AIR_CONSUMED_MESSAGE = 0x01, /**< Port message consumed     */
+    AIR_NEW_MESSAGE = 0x02       /**< Port message is new       */
 
 } air_port_updated_e;
 
 /**
  * @brief Sampling port mode enumeration
  */
-typedef enum {
+typedef enum
+{
 
-    AIR_SAMPLING_MODE_REGULAR       = 0x0,   /**< Sampling port regular     */
-    AIR_SAMPLING_MODE_UPDATED       = 0x1,   /**< Sampling port updated     */
-    AIR_SAMPLING_MODE_CONDITIONAL   = 0x2    /**< Sampling port conditional */
+    AIR_SAMPLING_MODE_REGULAR = 0x0,    /**< Sampling port regular     */
+    AIR_SAMPLING_MODE_UPDATED = 0x1,    /**< Sampling port updated     */
+    AIR_SAMPLING_MODE_CONDITIONAL = 0x2 /**< Sampling port conditional */
 
 } air_sampling_port_mode_e;
 
 /**
  * @brief Queuing Port Status and Configuration structure
  */
-typedef struct {
+typedef struct
+{
 
-    air_u32_t nb_message;                        /**< Current message number  */
-    air_u32_t max_nb_message;                    /**< Max number of messages  */
-    air_u32_t max_message_size;                  /**< Max message size        */
-    air_u32_t port_direction;                    /**< Port direction          */
-    air_u32_t port_discipline;                   /**< Port discipline         */
+    air_u32_t nb_message;       /**< Current message number  */
+    air_u32_t max_nb_message;   /**< Max number of messages  */
+    air_u32_t max_message_size; /**< Max message size        */
+    air_u32_t port_direction;   /**< Port direction          */
+    air_u32_t port_discipline;  /**< Port discipline         */
 
 } air_queuing_port_status_t, air_queuing_port_configuration_t;
 
 /**
  * @brief Sampling Port Status and Configuration structure
  */
-typedef struct {
+typedef struct
+{
 
-    air_clocktick_t refresh_period;             /**< Port refresh period     */
-    air_clocktick_t time_stamp;                 /**< Message time stamp      */
-    air_u32_t max_message_size;                 /**< Max number of messages  */
-    air_port_direction_e port_direction;        /**< Port direction          */
-    air_u32_t port_discipline;                  /**< Port discipline         */
-    air_message_age_e message_age;              /**< Message age             */
-    air_port_updated_e updated;                 /**< Message updated state   */
-    air_message_validity_e last_msg_validity;   /**< Message validity        */
-    air_sampling_port_mode_e operation;         /**< Port mode               */
+    air_clocktick_t refresh_period;           /**< Port refresh period     */
+    air_clocktick_t time_stamp;               /**< Message time stamp      */
+    air_u32_t max_message_size;               /**< Max number of messages  */
+    air_port_direction_e port_direction;      /**< Port direction          */
+    air_u32_t port_discipline;                /**< Port discipline         */
+    air_message_age_e message_age;            /**< Message age             */
+    air_port_updated_e updated;               /**< Message updated state   */
+    air_message_validity_e last_msg_validity; /**< Message validity        */
+    air_sampling_port_mode_e operation;       /**< Port mode               */
 
 } air_sampling_port_status_t, air_sampling_port_configuration_t;
 
 /**
  * @brief Memory attributes flags
  */
-typedef enum {
+typedef enum
+{
 
-    AIR_MEMORY_ATTRIBUTE_READ       = 0x01, /**< Memory can be read         */
-    AIR_MEMORY_ATTRIBUTE_WRITE      = 0x02, /**< Memory can be written      */
-    AIR_MEMORY_ATTRIBUTE_EXECUTE    = 0x04, /**< Memory can be executed     */
+    AIR_MEMORY_ATTRIBUTE_READ = 0x01,    /**< Memory can be read         */
+    AIR_MEMORY_ATTRIBUTE_WRITE = 0x02,   /**< Memory can be written      */
+    AIR_MEMORY_ATTRIBUTE_EXECUTE = 0x04, /**< Memory can be executed     */
 
 } air_memory_attributes_e;
 
 /**
  * @brief Shared Memory structure
  */
-typedef struct {
+typedef struct
+{
 
-    air_identifier_t id;                    /**< Shared Memory identifier   */
-    air_memory_attributes_e permissions;    /**< Shared Memory attributes   */
-    void *address;                          /**< Shared Memory bloc address */
-    air_sz_t size;                          /**< Shared Memory block size   */
+    air_identifier_t id;                 /**< Shared Memory identifier   */
+    air_memory_attributes_e permissions; /**< Shared Memory attributes   */
+    void *address;                       /**< Shared Memory bloc address */
+    air_sz_t size;                       /**< Shared Memory block size   */
 
 } air_sharedmemory_t;
 
@@ -514,8 +530,7 @@ typedef struct {
  *         INVALID_CONFIG  - if port not found
  *         NO_ERROR        - otherwise
  */
-air_status_code_e air_syscall_get_port_id(
-        air_port_type_e type, air_name_ptr_t name, air_identifier_t *pid);
+air_status_code_e air_syscall_get_port_id(air_port_type_e type, air_name_ptr_t name, air_identifier_t *pid);
 
 /**
  * @brief Create and initializes a communication port
@@ -528,21 +543,35 @@ air_status_code_e air_syscall_get_port_id(
  *         NO_ACTION       - if port already created
  *         NO_ERROR        - otherwise
  */
-air_status_code_e air_syscall_create_port(
-        air_port_type_e type, air_name_ptr_t name,
-        void *config, air_identifier_t *pid);
+air_status_code_e air_syscall_create_port(air_port_type_e type, air_name_ptr_t name, void *config,
+                                          air_identifier_t *pid);
 
 /**
  * @brief Get port status
  * @param type Type of the port
- * @param pid Port identifier to get the status
+ * @param pid identifier of the partition that owns the port
+ * @param id Port identifier to get the status
  * @param status Pointer to store the port status
  * @return INVALID_POINTER - if the partition pointers aren't valid,
- *         INVALID_CONFIG  - if configuration mismatch or port not created
+ *         INVALID_PARAM   - if port or partition not found
+ *         INVALID_CONFIG  - if trying to access other partition's ports without permission 
  *         NO_ERROR        - otherwise
  */
-air_status_code_e air_syscall_get_port_status(
-        air_port_type_e type, air_identifier_t pid, void *status);
+air_status_code_e air_syscall_get_port_status(air_port_type_e type, air_identifier_t pid, air_identifier_t id, void *status);
+
+/**
+ * @brief System call get port name
+ * @param core current controlling core
+ * @param type type of port
+ * @param pid port's partition owner identifier
+ * @param id port identifier
+ * @param[out] name port name
+ * @return INVALID_POINTER - if the partition pointers aren't valid,
+ *         INVALID_PARAM   - if port not found
+ *         INVALID_CONFIG  - if wrong port type 
+ *         NO_ERROR        - otherwise
+ */
+air_status_code_e air_syscall_get_port_name(air_port_type_e type, air_identifier_t pid, air_identifier_t id, air_name_ptr_t name);
 
 /**
  * @brief Read a message from a port
@@ -558,9 +587,8 @@ air_status_code_e air_syscall_get_port_status(
  *
  * @note Refer to ARINC 653 specification for type dependent return codes
  */
-air_status_code_e air_syscall_read_port(
-        air_port_type_e type, air_identifier_t pid,
-        air_message_ptr_t msg, air_sz_t *length, void *config);
+air_status_code_e air_syscall_read_port(air_port_type_e type, air_identifier_t pid, air_message_ptr_t msg,
+                                        air_sz_t *length, void *config);
 
 /**
  * @brief Write message in a port
@@ -576,9 +604,8 @@ air_status_code_e air_syscall_read_port(
  *
  * @note Refer to ARINC 653 specification for type dependent return codes
  */
-air_status_code_e air_syscall_write_port(
-        air_port_type_e type, air_identifier_t pid,
-        air_message_ptr_t msg, air_sz_t length, void *config);
+air_status_code_e air_syscall_write_port(air_port_type_e type, air_identifier_t pid, air_message_ptr_t msg,
+                                         air_sz_t length, void *config);
 
 /**
  * @brief Get shared memory area
@@ -588,8 +615,7 @@ air_status_code_e air_syscall_write_port(
  *         INVALID_CONFIG  - if shared area not found
  *         NO_ERROR        - otherwise
  */
-air_status_code_e air_syscall_get_sharedmemory(
-        air_name_ptr_t name, air_sharedmemory_t *shm);
+air_status_code_e air_syscall_get_sharedmemory(air_name_ptr_t name, air_sharedmemory_t *shm);
 
 /** @} */
 
@@ -600,58 +626,97 @@ air_status_code_e air_syscall_get_sharedmemory(
  * Health-Monitoring services allows the partition to attempt recovering actions
  * or to report errors during its execution. The recovery actions are defined at
  * the configuration time.
-  *
+ *
  * @{
  */
 
 /**
  * @brief System state enumeration
  */
-typedef enum {
+typedef enum
+{
 
-    AIR_STATE_MODULE_INIT       = 0x00,     /**< Module Initialization      */
-    AIR_STATE_MODULE_EXEC       = 0x01,     /**< Module Execution           */
-    AIR_STATE_PARTITION_INIT    = 0x02,     /**< Partition Initialization   */
-    AIR_STATE_PARTITION_EXEC    = 0x03,     /**< Partition Execution        */
-    AIR_STATE_PARTITION_PROC    = 0x04,     /**< Partition Process          */
-    AIR_STATE_PARTITION_HM      = 0x05,     /**< Partition Health-Monitor   */
-    AIR_STATE_MODULE_HM         = 0x06,     /**< Module Heath-Monitor       */
+    AIR_STATE_MODULE_INIT = 0x00,    /**< Module Initialization      */
+    AIR_STATE_MODULE_EXEC = 0x01,    /**< Module Execution           */
+    AIR_STATE_PARTITION_INIT = 0x02, /**< Partition Initialization   */
+    AIR_STATE_PARTITION_EXEC = 0x03, /**< Partition Execution        */
+    AIR_STATE_PARTITION_PROC = 0x04, /**< Partition Process          */
+    AIR_STATE_PARTITION_HM = 0x05,   /**< Partition Health-Monitor   */
+    AIR_STATE_MODULE_HM = 0x06,      /**< Module Heath-Monitor       */
 
 } air_state_e;
 
 /**
  * @brief Errors enumeration
  */
-typedef enum {
+typedef enum
+{
 
-    AIR_POWER_ERROR             = 0x00,     /**< power error                */
-    AIR_VIOLATION_ERROR         = 0x01,     /**< violation error            */
-    AIR_SEGMENTATION_ERROR      = 0x02,     /**< segmentation error         */
-    AIR_UNIMPLEMENTED_ERROR     = 0x03,     /**< unimplemented error        */
-    AIR_FLOAT_ERROR             = 0x04,     /**< floating point error       */
-    AIR_ARITHMETIC_ERROR        = 0x05,     /**< arithmetic error           */
-    AIR_DIVISION_BY_0_ERROR     = 0x06,     /**< division by zero error     */
-    AIR_IO_ERROR                = 0x07,     /**< I/O error                  */
-    AIR_USR0_ERROR              = 0x08,     /**< user defined error 0       */
-    AIR_USR1_ERROR              = 0x09,     /**< user defined error 1       */
-    AIR_USR2_ERROR              = 0x0A,     /**< user defined error 2       */
-    AIR_USR3_ERROR              = 0x0B,     /**< user defined error 3       */
-    AIR_USR4_ERROR              = 0x0C,     /**< user defined error 4       */
-    AIR_USR5_ERROR              = 0x0D,     /**< user defined error 5       */
-    AIR_USR6_ERROR              = 0x0E,     /**< user defined error 6       */
-    AIR_USR7_ERROR              = 0x0F,     /**< user defined error 7       */
+    AIR_POWER_ERROR = 0x00,         /**< power error                */
+    AIR_VIOLATION_ERROR = 0x01,     /**< violation error            */
+    AIR_SEGMENTATION_ERROR = 0x02,  /**< segmentation error         */
+    AIR_UNIMPLEMENTED_ERROR = 0x03, /**< unimplemented error        */
+    AIR_FLOAT_ERROR = 0x04,         /**< floating point error       */
+    AIR_ARITHMETIC_ERROR = 0x05,    /**< arithmetic error           */
+    AIR_DIVISION_BY_0_ERROR = 0x06, /**< division by zero error     */
+    AIR_IO_ERROR = 0x07,            /**< I/O error                  */
+    AIR_USR0_ERROR = 0x08,          /**< user defined error 0       */
+    AIR_USR1_ERROR = 0x09,          /**< user defined error 1       */
+    AIR_USR2_ERROR = 0x0A,          /**< user defined error 2       */
+    AIR_USR3_ERROR = 0x0B,          /**< user defined error 3       */
+    AIR_USR4_ERROR = 0x0C,          /**< user defined error 4       */
+    AIR_USR5_ERROR = 0x0D,          /**< user defined error 5       */
+    AIR_USR6_ERROR = 0x0E,          /**< user defined error 6       */
+    AIR_USR7_ERROR = 0x0F,          /**< user defined error 7       */
 
 } air_error_e;
 
 /**
  * @brief Health-Monitor event
  */
-typedef struct {
+typedef struct
+{
 
-    air_state_e state_id;                   /**< State identifier           */
-    air_error_e error_id;                   /**< Error identifier           */
+    air_state_e state_id; /**< State identifier           */
+    air_error_e error_id; /**< Error identifier           */
 
 } air_hm_event_t;
+
+/**
+ * @brief Health-Monitor event level
+ */
+typedef enum
+{
+    ERROR_LEVEL_UNDEFINED = 0x01, /**< Undefined/default level         */
+    ERROR_LEVEL_MODULE = 0x01,    /**< Error at Module level           */
+    ERROR_LEVEL_PARTITION = 0x02, /**< Error at Partition level        */
+    ERROR_LEVEL_PROCESS = 0x03,   /**< Error at Process level          */
+} air_hm_event_level_t;
+
+/**
+ * @brief Health-Monitor log event
+ */
+typedef struct
+{
+    air_clocktick_t absolute_date;
+    air_error_e error_type;
+    air_hm_event_level_t level;
+    air_identifier_t partition_id;
+} air_hm_log_event_t;
+
+/**
+ * @brief Health-Monitor log maximum number of saved events
+ */
+#define HM_LOGG_MAX_EVENT_NB 32
+
+/**
+ * @brief Health-Monitor log
+ */
+typedef struct
+{
+    air_u32_t n_events; /**< Number of events on the log */
+    air_hm_log_event_t events[HM_LOGG_MAX_EVENT_NB];
+} air_hm_log_t;
 
 /**
  * @brief Get the current system state
@@ -666,6 +731,35 @@ air_state_e air_syscall_get_system_state(void);
  *         NO_ACTION otherwise
  */
 air_status_code_e air_syscall_set_system_state(air_state_e state);
+
+/**
+ * @brief Retrieves the Health Monitor log. Partitions must have SUPERVISOR permissions.
+ *        Returns the log data to the user space, with the most recent events first.
+ * @param[in] core pointer to current core control structure
+ * @param[out] log pointer to the `air_hm_log_t` structure where the HM log data 
+ *                 will be copied.
+ *
+ * @return `AIR_NO_ERROR` if the operation is successful.
+ * @return `AIR_INVALID_CONFIG` if the partition does not have supervisor permissions.
+ * @return `AIR_INVALID_POINTER` if there is an issue copying the log data to user space.
+ */
+air_status_code_e air_syscall_get_hm_log(air_hm_log_t *log);
+
+/**
+ * @brief Pops the most recent event from the Health Monitor log.
+ *
+ * Retrieves the most recent event from the Health Monitor log removes it from the log, 
+ * and copies it to the user-provided `log` structure.
+ * Partitions must have SUPERVISOR permission.
+ *
+ * @param[in] core pointer to the core control structure
+ * @param[out] log pointer to the `air_hm_log_event_t` structure where the most recent HM log event will be copied.
+ *
+ * @return `AIR_NO_ERROR` if the operation is successful or if the log is empty.
+ * @return `AIR_INVALID_CONFIG` if the partition does not have supervisor permissions.
+ * @return `AIR_INVALID_POINTER` if there is an issue copying the log event to user space.
+ */
+air_status_code_e air_syscall_pop_from_hm_log(air_hm_log_event_t *log);
 
 /**
  * @brief Get the last health-monitor event
@@ -694,12 +788,13 @@ void air_syscall_raise_hm_event(air_error_e error);
 /**
  * @brief Cache type enumeration
  */
-typedef enum {
+typedef enum
+{
 
-    AIR_CACHE_ALL         = 0x00,       /**< instruction and Data cache   */
-    AIR_CACHE_DATA        = 0x01,       /**< data cache only              */
-    AIR_CACHE_INSTRUCTION = 0x02,       /**< instruction cache only       */
-    AIR_CACHE_NONE        = 0x03        /**< no cache                     */
+    AIR_CACHE_ALL = 0x00,         /**< instruction and Data cache   */
+    AIR_CACHE_DATA = 0x01,        /**< data cache only              */
+    AIR_CACHE_INSTRUCTION = 0x02, /**< instruction cache only       */
+    AIR_CACHE_NONE = 0x03         /**< no cache                     */
 
 } air_cache_e;
 
@@ -802,13 +897,13 @@ air_status_code_e air_syscall_copy_tbr(air_u32_t idx);
  * @{
  */
 
-#define AIR_EVENT_CLOCKTICK             0x00000001
-#define AIR_EVENT_HEALTH_MONITOR        0x00000002
-#define AIR_EVENT_SCHEDULE_CHANGE       0x00000004
-#define AIR_EVENT_SCHEDULE_START        0x00000008
-#define AIR_EVENT_PERIOD_START          0x00000010
-#define AIR_EVENT_WINDOW_START          0x00000020
-#define AIR_EVENT_PORT_UPDATED          0x00000040
+#define AIR_EVENT_CLOCKTICK 0x00000001
+#define AIR_EVENT_HEALTH_MONITOR 0x00000002
+#define AIR_EVENT_SCHEDULE_CHANGE 0x00000004
+#define AIR_EVENT_SCHEDULE_START 0x00000008
+#define AIR_EVENT_PERIOD_START 0x00000010
+#define AIR_EVENT_WINDOW_START 0x00000020
+#define AIR_EVENT_PORT_UPDATED 0x00000040
 
 /**
  * @brief Gets Events raised by the PMK
@@ -816,7 +911,6 @@ air_status_code_e air_syscall_copy_tbr(air_u32_t idx);
  * @note Reading the events will clear them
  */
 air_u32_t air_syscall_get_event(void);
-
 
 /**
  * @brief Prints a partition character
@@ -849,50 +943,55 @@ air_uptr_t air_syscall_get_ambaconf(void);
  * @}
  */
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 }
 #endif
-#endif  /* !ASM */
+#endif /* !ASM */
 
-#define AIR_SYSCALL_GET_IRQ                        (AIR_SYSCALL_ARCH_COUNT + 0 )
-#define AIR_SYSCALL_MASK_IRQ                       (AIR_SYSCALL_ARCH_COUNT + 1 )
-#define AIR_SYSCALL_UNMASK_IRQ                     (AIR_SYSCALL_ARCH_COUNT + 2 )
-#define AIR_SYSCALL_GET_P_ADDR                     (AIR_SYSCALL_ARCH_COUNT + 3 )
-#define AIR_SYSCALL_GET_NB_CORES                   (AIR_SYSCALL_ARCH_COUNT + 4 )
-#define AIR_SYSCALL_GET_CORE_ID                    (AIR_SYSCALL_ARCH_COUNT + 5 )
-#define AIR_SYSCALL_COPY_TBR                       (AIR_SYSCALL_ARCH_COUNT + 6 )
-#define AIR_SYSCALL_BOOT_CORE                      (AIR_SYSCALL_ARCH_COUNT + 7 )
-#define AIR_SYSCALL_GET_US_PER_TICK                (AIR_SYSCALL_ARCH_COUNT + 8 )
-#define AIR_SYSCALL_GET_ELAPSED_TICKS              (AIR_SYSCALL_ARCH_COUNT + 9 )
-#define AIR_SYSCALL_GET_PARTITION_ID               (AIR_SYSCALL_ARCH_COUNT + 10)
-#define AIR_SYSCALL_GET_PARTITION_STATUS           (AIR_SYSCALL_ARCH_COUNT + 11)
-#define AIR_SYSCALL_SET_PARTITION_MODE             (AIR_SYSCALL_ARCH_COUNT + 12)
-#define AIR_SYSCALL_GET_SCHEDULE_ID                (AIR_SYSCALL_ARCH_COUNT + 13)
-#define AIR_SYSCALL_GET_SCHEDULE_STATUS            (AIR_SYSCALL_ARCH_COUNT + 14)
-#define AIR_SYSCALL_SET_SCHEDULE                   (AIR_SYSCALL_ARCH_COUNT + 15)
-#define AIR_SYSCALL_GET_TIME_OF_DAY                (AIR_SYSCALL_ARCH_COUNT + 16)
-#define AIR_SYSCALL_SET_TIME_OF_DAY                (AIR_SYSCALL_ARCH_COUNT + 17)
-#define AIR_SYSCALL_GET_PORT_ID                    (AIR_SYSCALL_ARCH_COUNT + 18)
-#define AIR_SYSCALL_GET_PORT_STATUS                (AIR_SYSCALL_ARCH_COUNT + 19)
-#define AIR_SYSCALL_CREATE_PORT                    (AIR_SYSCALL_ARCH_COUNT + 20)
-#define AIR_SYSCALL_READ_PORT                      (AIR_SYSCALL_ARCH_COUNT + 21)
-#define AIR_SYSCALL_WRITE_PORT                     (AIR_SYSCALL_ARCH_COUNT + 22)
-#define AIR_SYSCALL_GET_SHARED_AREA                (AIR_SYSCALL_ARCH_COUNT + 23)
-#define AIR_SYSCALL_RESTART_MODULE                 (AIR_SYSCALL_ARCH_COUNT + 24)
-#define AIR_SYSCALL_SHUTDOWN_MODULE                (AIR_SYSCALL_ARCH_COUNT + 25)
-#define AIR_SYSCALL_GET_EVENT                      (AIR_SYSCALL_ARCH_COUNT + 26)
-#define AIR_SYSCALL_GET_SYSTEM_STATE               (AIR_SYSCALL_ARCH_COUNT + 27)
-#define AIR_SYSCALL_SET_SYSTEM_STATE               (AIR_SYSCALL_ARCH_COUNT + 28)
-#define AIR_SYSCALL_GET_HM_EVENT                   (AIR_SYSCALL_ARCH_COUNT + 29)
-#define AIR_SYSCALL_RAISE_HM_EVENT                 (AIR_SYSCALL_ARCH_COUNT + 30)
-#define AIR_SYSCALL_PUTCHAR                        (AIR_SYSCALL_ARCH_COUNT + 31)
-#define AIR_SYSCALL_PRINT                          (AIR_SYSCALL_ARCH_COUNT + 32)
-#define AIR_SYSCALL_ENABLE_CACHE                   (AIR_SYSCALL_ARCH_COUNT + 33)
-#define AIR_SYSCALL_DISABLE_CACHE                  (AIR_SYSCALL_ARCH_COUNT + 34)
-#define AIR_SYSCALL_FREEZE_CACHE                   (AIR_SYSCALL_ARCH_COUNT + 35)
-#define AIR_SYSCALL_FLUSH_CACHE                    (AIR_SYSCALL_ARCH_COUNT + 36)
-#define AIR_SYSCALL_GET_AMBACONF                   (AIR_SYSCALL_ARCH_COUNT + 37)
-#define AIR_SYSCALL_END_WINDOW                     (AIR_SYSCALL_ARCH_COUNT + 38)
-#define AIR_SYSCALL_COUNT                          (AIR_SYSCALL_ARCH_COUNT + 39)
+#define AIR_SYSCALL_GET_IRQ (AIR_SYSCALL_ARCH_COUNT + 0)
+#define AIR_SYSCALL_MASK_IRQ (AIR_SYSCALL_ARCH_COUNT + 1)
+#define AIR_SYSCALL_UNMASK_IRQ (AIR_SYSCALL_ARCH_COUNT + 2)
+#define AIR_SYSCALL_GET_P_ADDR (AIR_SYSCALL_ARCH_COUNT + 3)
+#define AIR_SYSCALL_GET_NB_CORES (AIR_SYSCALL_ARCH_COUNT + 4)
+#define AIR_SYSCALL_GET_CORE_ID (AIR_SYSCALL_ARCH_COUNT + 5)
+#define AIR_SYSCALL_COPY_TBR (AIR_SYSCALL_ARCH_COUNT + 6)
+#define AIR_SYSCALL_BOOT_CORE (AIR_SYSCALL_ARCH_COUNT + 7)
+#define AIR_SYSCALL_GET_US_PER_TICK (AIR_SYSCALL_ARCH_COUNT + 8)
+#define AIR_SYSCALL_GET_ELAPSED_TICKS (AIR_SYSCALL_ARCH_COUNT + 9)
+#define AIR_SYSCALL_GET_ELAPSED_MTF_TICKS (AIR_SYSCALL_ARCH_COUNT + 10)
+#define AIR_SYSCALL_GET_PARTITION_ID (AIR_SYSCALL_ARCH_COUNT + 11)
+#define AIR_SYSCALL_GET_PARTITION_STATUS (AIR_SYSCALL_ARCH_COUNT + 12)
+#define AIR_SYSCALL_SET_PARTITION_MODE (AIR_SYSCALL_ARCH_COUNT + 13)
+#define AIR_SYSCALL_GET_SCHEDULE_ID (AIR_SYSCALL_ARCH_COUNT + 14)
+#define AIR_SYSCALL_GET_SCHEDULE_STATUS (AIR_SYSCALL_ARCH_COUNT + 15)
+#define AIR_SYSCALL_SET_SCHEDULE (AIR_SYSCALL_ARCH_COUNT + 16)
+#define AIR_SYSCALL_GET_TIME_OF_DAY (AIR_SYSCALL_ARCH_COUNT + 17)
+#define AIR_SYSCALL_SET_TIME_OF_DAY (AIR_SYSCALL_ARCH_COUNT + 18)
+#define AIR_SYSCALL_GET_PORT_ID (AIR_SYSCALL_ARCH_COUNT + 19)
+#define AIR_SYSCALL_GET_PORT_STATUS (AIR_SYSCALL_ARCH_COUNT + 20)
+#define AIR_SYSCALL_GET_PORT_NAME (AIR_SYSCALL_ARCH_COUNT + 21)
+#define AIR_SYSCALL_CREATE_PORT (AIR_SYSCALL_ARCH_COUNT + 22)
+#define AIR_SYSCALL_READ_PORT (AIR_SYSCALL_ARCH_COUNT + 23)
+#define AIR_SYSCALL_WRITE_PORT (AIR_SYSCALL_ARCH_COUNT + 24)
+#define AIR_SYSCALL_GET_SHARED_AREA (AIR_SYSCALL_ARCH_COUNT + 25)
+#define AIR_SYSCALL_RESTART_MODULE (AIR_SYSCALL_ARCH_COUNT + 26)
+#define AIR_SYSCALL_SHUTDOWN_MODULE (AIR_SYSCALL_ARCH_COUNT + 27)
+#define AIR_SYSCALL_GET_EVENT (AIR_SYSCALL_ARCH_COUNT + 28)
+#define AIR_SYSCALL_GET_SYSTEM_STATE (AIR_SYSCALL_ARCH_COUNT + 29)
+#define AIR_SYSCALL_SET_SYSTEM_STATE (AIR_SYSCALL_ARCH_COUNT + 30)
+#define AIR_SYSCALL_GET_HM_LOG (AIR_SYSCALL_ARCH_COUNT + 31)
+#define AIR_SYSCALL_POP_FROM_HM_LOG (AIR_SYSCALL_ARCH_COUNT + 32)
+#define AIR_SYSCALL_GET_HM_EVENT (AIR_SYSCALL_ARCH_COUNT + 33)
+#define AIR_SYSCALL_RAISE_HM_EVENT (AIR_SYSCALL_ARCH_COUNT + 34)
+#define AIR_SYSCALL_PUTCHAR (AIR_SYSCALL_ARCH_COUNT + 35)
+#define AIR_SYSCALL_PRINT (AIR_SYSCALL_ARCH_COUNT + 36)
+#define AIR_SYSCALL_ENABLE_CACHE (AIR_SYSCALL_ARCH_COUNT + 37)
+#define AIR_SYSCALL_DISABLE_CACHE (AIR_SYSCALL_ARCH_COUNT + 38)
+#define AIR_SYSCALL_FREEZE_CACHE (AIR_SYSCALL_ARCH_COUNT + 39)
+#define AIR_SYSCALL_FLUSH_CACHE (AIR_SYSCALL_ARCH_COUNT + 40)
+#define AIR_SYSCALL_GET_AMBACONF (AIR_SYSCALL_ARCH_COUNT + 41)
+#define AIR_SYSCALL_END_WINDOW (AIR_SYSCALL_ARCH_COUNT + 42)
+#define AIR_SYSCALL_COUNT (AIR_SYSCALL_ARCH_COUNT + 43)
+
 
 #endif /* __AIR_H__ */

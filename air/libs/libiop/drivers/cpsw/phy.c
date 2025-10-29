@@ -7,48 +7,48 @@
  */
 
 /*
-* Copyright (C) 2010 Texas Instruments Incorporated - http://www.ti.com/
-*
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions
-*  are met:
-*
-*    Redistributions of source code must retain the above copyright
-*    notice, this list of conditions and the following disclaimer.
-*
-*    Redistributions in binary form must reproduce the above copyright
-*    notice, this list of conditions and the following disclaimer in the
-*    documentation and/or other materials provided with the
-*    distribution.
-*
-*    Neither the name of Texas Instruments Incorporated nor the names of
-*    its contributors may be used to endorse or promote products derived
-*    from this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-*  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-*  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-*  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-*  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-*  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-*  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-*  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-*  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ * Copyright (C) 2010 Texas Instruments Incorporated - http://www.ti.com/
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *    Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ *    Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
+ *    distribution.
+ *
+ *    Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 #include "hw_types.h"
 #include "mdio.h"
 #include "phy.h"
 
-#define PHY_ADV_VAL_MASK                 (0x01e0)
-#define PHY_GIG_ADV_VAL_MASK             (0x0300)
+#define PHY_ADV_VAL_MASK (0x01e0)
+#define PHY_GIG_ADV_VAL_MASK (0x0300)
 
 /*******************************************************************************
-*                        API FUNCTION DEFINITIONS
-*******************************************************************************/
+ *                        API FUNCTION DEFINITIONS
+ *******************************************************************************/
 /**
  * \brief   Reads the PHY ID.
  *
@@ -64,16 +64,16 @@ unsigned int PhyIDGet(unsigned int mdioBaseAddr, unsigned int phyAddr)
     unsigned short data;
 
     /* read the ID1 register */
-    MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_ID1, &data);
+    (void)MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_ID1, &data);
 
     /* update the ID1 value */
     id = data << PHY_ID_SHIFT;
- 
+
     /* read the ID2 register */
-    MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_ID2, &data);
+    (void)MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_ID2, &data);
 
     /* update the ID2 value */
-    id |= data; 
+    id |= data;
 
     /* return the ID in ID1:ID2 format */
     return id;
@@ -90,8 +90,7 @@ unsigned int PhyIDGet(unsigned int mdioBaseAddr, unsigned int phyAddr)
  * \return  status of the read
  *
  **/
-unsigned int PhyRegRead(unsigned int mdioBaseAddr, unsigned int phyAddr,
-                        unsigned int regIdx, unsigned short *regValAdr)
+unsigned int PhyRegRead(unsigned int mdioBaseAddr, unsigned int phyAddr, unsigned int regIdx, unsigned short *regValAdr)
 {
     return (MDIOPhyRegRead(mdioBaseAddr, phyAddr, regIdx, regValAdr));
 }
@@ -107,8 +106,7 @@ unsigned int PhyRegRead(unsigned int mdioBaseAddr, unsigned int phyAddr,
  * \return  None
  *
  **/
-void PhyRegWrite(unsigned int mdioBaseAddr, unsigned int phyAddr,
-                 unsigned int regIdx, unsigned short regVal)
+void PhyRegWrite(unsigned int mdioBaseAddr, unsigned int phyAddr, unsigned int regIdx, unsigned short regVal)
 {
     MDIOPhyRegWrite(mdioBaseAddr, phyAddr, regIdx, regVal);
 }
@@ -128,7 +126,7 @@ unsigned int PhyLoopBackEnable(unsigned int mdioBaseAddr, unsigned int phyAddr)
 {
     unsigned short data;
 
-    if(MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_BCR, &data) != TRUE )
+    if (MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_BCR, &data) != TRUE)
     {
         return FALSE;
     }
@@ -156,7 +154,7 @@ unsigned int PhyLoopBackDisable(unsigned int mdioBaseAddr, unsigned int phyAddr)
 {
     unsigned short data;
 
-    if(MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_BCR, &data) != TRUE )
+    if (MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_BCR, &data) != TRUE)
     {
         return FALSE;
     }
@@ -192,10 +190,10 @@ unsigned int PhyReset(unsigned int mdioBaseAddr, unsigned int phyAddr)
     MDIOPhyRegWrite(mdioBaseAddr, phyAddr, PHY_BCR, data);
 
     /* wait till the reset bit is auto cleared */
-    while(data & PHY_SOFTRESET)
+    while (data & PHY_SOFTRESET)
     {
         /* Read the reset */
-        if(MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_BCR, &data) != TRUE)
+        if (MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_BCR, &data) != TRUE)
         {
             return FALSE;
         }
@@ -217,8 +215,8 @@ unsigned int PhyReset(unsigned int mdioBaseAddr, unsigned int phyAddr)
  *          FALSE if configuration failed
  *
  **/
-unsigned int PhyConfigure(unsigned int mdioBaseAddr, unsigned int phyAddr,
-                          unsigned short speed, unsigned short duplexMode)
+unsigned int PhyConfigure(unsigned int mdioBaseAddr, unsigned int phyAddr, unsigned short speed,
+                          unsigned short duplexMode)
 {
     /* Set the configurations */
     MDIOPhyRegWrite(mdioBaseAddr, phyAddr, PHY_BCR, (speed | duplexMode));
@@ -228,7 +226,7 @@ unsigned int PhyConfigure(unsigned int mdioBaseAddr, unsigned int phyAddr,
 
 /**
  * \brief   This function ask the phy device to start auto negotiation.
- *          
+ *
  *
  * \param   mdioBaseAddr  Base Address of the MDIO Module Registers.
  * \param   phyAddr       PHY Adress.
@@ -244,24 +242,24 @@ unsigned int PhyConfigure(unsigned int mdioBaseAddr, unsigned int phyAddr,
  *               PHY_1000BT_FD - Full duplex capabilty for 1000 Base-T \n
  *               PHY_1000BT_HD - Half duplex capabilty for 1000 Base-T \n
  *               FALSE - It is passed as an argument if phy dosen't support
- *                       Giga bit capability 
+ *                       Giga bit capability
  *
  * \return  status after autonegotiation \n
  *          TRUE if autonegotiation started
  *          FALSE if autonegotiation not started
  *
  **/
-unsigned int PhyAutoNegotiate(unsigned int mdioBaseAddr, unsigned int phyAddr,
-                              unsigned short *advPtr, unsigned short *gigAdvPtr)
+unsigned int PhyAutoNegotiate(unsigned int mdioBaseAddr, unsigned int phyAddr, unsigned short *advPtr,
+                              unsigned short *gigAdvPtr)
 {
     volatile unsigned short data;
     volatile unsigned short anar;
 
-    if(MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_BCR, &data) != TRUE )
+    if (MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_BCR, &data) != TRUE)
     {
         return FALSE;
     }
-   
+
     data |= PHY_AUTONEG_ENABLE;
 
     if (*gigAdvPtr != 0)
@@ -270,26 +268,27 @@ unsigned int PhyAutoNegotiate(unsigned int mdioBaseAddr, unsigned int phyAddr,
         data &= PHY_SPEED_MASK;
         data |= PHY_SPEED_1000MBPS;
     }
-   
+
     /* Enable Auto Negotiation */
     MDIOPhyRegWrite(mdioBaseAddr, phyAddr, PHY_BCR, data);
 
-    if(MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_BCR, &data) != TRUE )
+    if (MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_BCR, &data) != TRUE)
     {
         return FALSE;
     }
 
     /* Write Auto Negotiation capabilities */
-    MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_AUTONEG_ADV, &anar);
+    (void)MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_AUTONEG_ADV, &anar);
+
     anar &= ~PHY_ADV_VAL_MASK;
-    MDIOPhyRegWrite(mdioBaseAddr, phyAddr, PHY_AUTONEG_ADV, (anar |(*advPtr)));
+    MDIOPhyRegWrite(mdioBaseAddr, phyAddr, PHY_AUTONEG_ADV, (anar | (*advPtr)));
 
     /* Write Auto Negotiation Gigabyte capabilities */
     anar = 0;
-    MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_1000BT_CONTROL, &anar);
+    (void)MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_1000BT_CONTROL, &anar);
+
     anar &= ~PHY_GIG_ADV_VAL_MASK;
-    MDIOPhyRegWrite(mdioBaseAddr, phyAddr, PHY_1000BT_CONTROL,
-                    (anar |(*gigAdvPtr)));
+    MDIOPhyRegWrite(mdioBaseAddr, phyAddr, PHY_1000BT_CONTROL, (anar | (*gigAdvPtr)));
 
     data |= PHY_AUTONEG_RESTART;
 
@@ -313,14 +312,14 @@ unsigned int PhyAutoNegStatusGet(unsigned int mdioBaseAddr, unsigned int phyAddr
 {
     volatile unsigned short data;
 
-    MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_BSR, &data);
+    (void)MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_BSR, &data);
 
     /* Auto negotiation completion status */
-    if(PHY_AUTONEG_COMPLETE == (data & (PHY_AUTONEG_STATUS)))
+    if (PHY_AUTONEG_COMPLETE == (data & (PHY_AUTONEG_STATUS)))
     {
         return TRUE;
     }
-  
+
     return FALSE;
 }
 
@@ -342,20 +341,16 @@ unsigned int PhyAutoNegStatusGet(unsigned int mdioBaseAddr, unsigned int phyAddr
  *          TRUE if reading successful
  *          FALSE if reading failed
  **/
-unsigned int PhyPartnerAbilityGet(unsigned int mdioBaseAddr, 
-                                  unsigned int phyAddr,
-                                  unsigned short *ptnerAblty,
+unsigned int PhyPartnerAbilityGet(unsigned int mdioBaseAddr, unsigned int phyAddr, unsigned short *ptnerAblty,
                                   unsigned short *gbpsPtnerAblty)
 {
     unsigned int status;
 
-    status = MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_LINK_PARTNER_ABLTY,
-                           ptnerAblty);
+    status = MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_LINK_PARTNER_ABLTY, ptnerAblty);
 
     if (*gbpsPtnerAblty != 0)
     {
-        status = status | MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_1000BT_STATUS,
-                                         gbpsPtnerAblty);
+        status = status | MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_1000BT_STATUS, gbpsPtnerAblty);
     }
 
     return status;
@@ -375,23 +370,21 @@ unsigned int PhyPartnerAbilityGet(unsigned int mdioBaseAddr,
  * \note    This reads both the basic status register of the PHY and the
  *          link register of MDIO for double check
  **/
-unsigned int PhyLinkStatusGet(unsigned int mdioBaseAddr,
-                              unsigned int phyAddr,
-                              volatile unsigned int retries)
+unsigned int PhyLinkStatusGet(unsigned int mdioBaseAddr, unsigned int phyAddr, volatile unsigned int retries)
 {
     volatile unsigned short linkStatus;
- 
-    retries++;   
+
+    retries++;
     while (retries)
     {
         /* First read the BSR of the PHY */
-        MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_BSR, &linkStatus);
+        (void)MDIOPhyRegRead(mdioBaseAddr, phyAddr, PHY_BSR, &linkStatus);
 
-        if(linkStatus & PHY_LINK_STATUS)
+        if (linkStatus & PHY_LINK_STATUS)
         {
             return TRUE;
         }
-   
+
         retries--;
     }
 

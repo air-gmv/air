@@ -28,6 +28,12 @@
 #define mon_stack_size      DEFAULT_STACK_SIZE
 #define stack_size          STACK_SIZE
 
+#define MAX_NUMBER_OF_PARTITIONS 16
+#define IDLE_STACKSIZE 0xE0
+#define ALIGN_DOWN(value, alignment) ((value) & ~((alignment) - 1))
+#define PARTITION_SVC_STACKSIZE ALIGN_DOWN((( svc_stack_size - IDLE_STACKSIZE) / MAX_NUMBER_OF_PARTITIONS),4)
+
+
 #ifndef ASM
 
 #include <armv7.h>

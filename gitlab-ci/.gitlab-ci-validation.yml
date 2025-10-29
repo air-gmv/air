@@ -1,0 +1,277 @@
+# Gitlab CICD script for validation stage
+# Author huca@GMV 2023 
+
+.build-executable: &build-executable
+    - $AIR/configure
+    - make all 
+    - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
+
+.check-and-publish: &check-and-publish
+    - $UTILS/validation_check.py
+    - $UTILS/publish_example.bash
+
+# ARM
+ARM-QEMU-validation-test:
+    stage: validation_tests
+    tags: ["ARM"]
+    needs:
+      - job: RVS-ARM-QEMU-build
+        optional: true
+      - job: ARM-QEMU-build
+        optional: true
+    script: 
+        - cd $AIR/examples/private-example/AIR_testsuite/Validation_tests/BARE/$EXAMPLE
+        - *build-executable
+        - |
+          if [ "$CI_PIPELINE_SOURCE" = "push" ]; then
+            ($UTILS/arm-ci.bash | tee testresult.txt) || true
+          else
+            ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
+          fi
+        - *check-and-publish
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "schedule"'
+        - if: '($CI_PIPELINE_SOURCE == "merge_request") && ($CI_MERGE_REQUEST_TITLE !~ /Draft/)'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ALL\].*/'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ARM\].*/'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
+    timeout: 5 minutes
+    parallel:
+      matrix:
+        - EXAMPLE:
+          - AIR-TEST-CONF-00010
+          - AIR-TEST-HM-00010
+          - AIR-TEST-HM-00020
+          - AIR-TEST-HM-00030
+          - AIR-TEST-HM-00040
+          - AIR-TEST-HM-00050
+          #- AIR-TEST-HM-00060 #Not applicable to QEMU
+          #- AIR-TEST-HM-00070 
+          - AIR-TEST-HM-00080
+          - AIR-TEST-HM-00090
+          - AIR-TEST-HM-00100
+          - AIR-TEST-HM-00101
+          - AIR-TEST-IPC-00010
+          - AIR-TEST-IPC-00020
+          - AIR-TEST-IPC-00030
+          - AIR-TEST-IPC-00040
+          - AIR-TEST-IPC-00060
+          - AIR-TEST-IPC-00070
+          # - AIR-TEST-IPC-00080
+          # - AIR-TEST-IPC-00090
+          - AIR-TEST-MODE-00010
+          - AIR-TEST-MODE-00020
+          - AIR-TEST-MODE-00030
+          - AIR-TEST-MODE-00040
+          - AIR-TEST-MODE-00050
+          - AIR-TEST-MODE-00080
+          - AIR-TEST-MODE-00083
+          - AIR-TEST-MODE-00086
+          - AIR-TEST-SPACE-00010
+          - AIR-TEST-SPACE-00020
+          #- AIR-TEST-SPACE-00030 #Tests not applicable to ARM
+          #- AIR-TEST-SPACE-00040
+          #- AIR-TEST-SPACE-00050
+          - AIR-TEST-TIME-00010
+          - AIR-TEST-TIME-00020
+          - AIR-TEST-TIME-00030
+          - AIR-TEST-TIME-00040
+          # - AIR-TEST-TIME-00050
+          # - AIR-TEST-TIME-00060
+          - AIR-TEST-TIMEM-00010
+          - AIR-TEST-TRAP-00010
+
+
+# SPARC
+SPARC-LAYSIM-validation-test:
+  stage: validation_tests
+  tags: [$RUNNER]
+  needs: 
+    - job: RVS-SPARC-LAYSIM-build
+      optional: true
+    - job: SPARC-GR740-build
+      optional: true
+  script: 
+        - cd $AIR/examples/private-example/AIR_testsuite/Validation_tests/$EXAMPLE
+        - *build-executable
+        # The schedule pipeline runs the tests on hardware 
+        - |
+          if [ "$CI_PIPELINE_SOURCE" = "schedule" ]; then
+            echo hardware option selected
+            sshpass -p $PASSWORD2 scp executable/AIRAPP.exe gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+            sshpass -p $PASSWORD2 scp $UTILS/gdb_sparc_rvs_coverage-ci gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+            sshpass -p $PASSWORD2 scp $UTILS/target_cmds_eth_sparc.bash gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+            script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash $EXAMPLE'" testresult.txt
+            sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $AIR/examples/private-example/AIR_testsuite/Validation_tests/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
+            sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/testresult.txt $AIR/examples/private-example/AIR_testsuite/Validation_tests/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
+            cat testresult.txt
+          else
+            echo laysim option selected
+            echo doing $AIR/rvs_air/scripts/laysim_cmds.txt
+            (laysim-gr740-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt) || true
+          fi
+        - *check-and-publish
+  rules:
+        - if: '($CI_PIPELINE_SOURCE == "merge_request") && ($CI_MERGE_REQUEST_TITLE !~ /Draft/)'
+        - if: '$CI_PIPELINE_SOURCE == "schedule" && $RUNNER == "sparc-taste-debian1"'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ALL\].*/ && $RUNNER =~ "SPARC"'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[SPARC\].*/ && $RUNNER =~ "SPARC"'
+  timeout: 5 minutes
+  parallel:
+      matrix:
+        - RUNNER: ["sparc-taste-debian1", "SPARC"]
+          EXAMPLE:
+          - BARE/AIR-TEST-CONF-00010
+          - BARE/AIR-TEST-HM-00010
+          - BARE/AIR-TEST-HM-00020
+          - BARE/AIR-TEST-HM-00030
+          #- BARE/AIR-TEST-HM-00040
+          #- BARE/AIR-TEST-HM-00050
+          #- BARE/AIR-TEST-HM-00060 #Not applicable to QEMU
+          #- BARE/AIR-TEST-HM-00070 
+          - BARE/AIR-TEST-HM-00080
+          - BARE/AIR-TEST-HM-00090
+          - BARE/AIR-TEST-HM-00100
+          - BARE/AIR-TEST-HM-00101
+          - BARE/AIR-TEST-IPC-00010
+          - BARE/AIR-TEST-IPC-00020
+          - BARE/AIR-TEST-IPC-00030
+          - BARE/AIR-TEST-IPC-00040
+          - BARE/AIR-TEST-IPC-00060
+          - BARE/AIR-TEST-IPC-00070
+          # - BARE/AIR-TEST-IPC-00080
+          # - BARE/AIR-TEST-IPC-00090
+          - BARE/AIR-TEST-MODE-00010
+          - BARE/AIR-TEST-MODE-00020
+          - BARE/AIR-TEST-MODE-00030
+          - BARE/AIR-TEST-MODE-00040
+          - BARE/AIR-TEST-MODE-00050
+          - BARE/AIR-TEST-MODE-00080
+          - BARE/AIR-TEST-MODE-00083
+          - BARE/AIR-TEST-MODE-00086
+          - BARE/AIR-TEST-SPACE-00010
+          - BARE/AIR-TEST-SPACE-00020
+          #- BARE/AIR-TEST-SPACE-00030 #Tests not applicable to ARM
+          #- BARE/AIR-TEST-SPACE-00040
+          #- BARE/AIR-TEST-SPACE-00050
+          - BARE/AIR-TEST-TIME-00010
+          - BARE/AIR-TEST-TIME-00020
+          - BARE/AIR-TEST-TIME-00030
+          - BARE/AIR-TEST-TIME-00040
+          # - BARE/AIR-TEST-TIME-00050
+          # - BARE/AIR-TEST-TIME-00060
+          - BARE/AIR-TEST-TIMEM-00010
+          - BARE/AIR-TEST-TRAP-00010
+          - "RTEMS/TEST-DEF-00009"
+          - "RTEMS/TEST-DEF-00010"
+          - "RTEMS/TEST-DEF-00012"
+          - "RTEMS/TEST-DEF-00021"
+          - "RTEMS/TEST-DEF-00022"
+          - "RTEMS/TEST-DEF-00023"
+          - "RTEMS/TEST-DEF-00500"
+          - "RTEMS/TEST-DEF-00510"
+          - "RTEMS/TEST-DEF-00540"
+          - "RTEMS/TEST-DEF-00560"
+          - "RTEMS/TEST-DEF-00600"
+          - "RTEMS/TEST-DEF-01200"
+          - "RTEMS/TEST-DEF-01210"
+          - "RTEMS/TEST-DEF-01390"
+          #- "RTEMS/TEST-DEF-01561"
+          - "RTEMS/TEST-DEF-01570"
+          - "RTEMS/TEST-DEF-01590"
+          - "RTEMS/TEST-DEF-01610"
+          #- "RTEMS/TEST-DEF-01650"
+          #- "RTEMS/TEST-DEF-01730"
+          - "RTEMS/TEST-DEF-01740"
+          #- "RTEMS/TEST-DEF-01741"
+          - "RTEMS/TEST-DEF-01750"
+          - "RTEMS/TEST-DEF-02100"
+          #- "RTEMS/TEST-DEF-02101"
+          #- "RTEMS/TEST-DEF-02102"
+          #- "RTEMS/TEST-DEF-02105"
+          #- "RTEMS/TEST-DEF-02107"
+          #- "RTEMS/TEST-DEF-02108"
+          - "RTEMS/TEST-DEF-80000"
+          - "RTEMS/TEST-DEF-80010"
+          - "RTEMS/TEST-DEF-80060"
+          - "RTEMS/TEST-DEF-80080"
+          - "RTEMS/TEST-DEF-80300"
+          - "RTEMS/TEST-DEF-80400"
+          - "RTEMS/TEST-DEF-80401"
+          - "RTEMS/TEST-DEF-80420"
+
+# SPARC-LAYSIM-validation-test:
+#   stage: validation_tests
+#   tags: [$RUNNER]
+#   needs: 
+#     - job: RVS-SPARC-LAYSIM-build
+#       optional: true
+#     - job: SPARC-GR740-build
+#       optional: true
+#   script: 
+#         - cd $AIR/examples/private-example/AIR_testsuite/Validation_tests/RTEMS/$EXAMPLE
+#         - *build-executable
+#         # The schedule pipeline runs the tests on hardware 
+#         - |
+#           if [ "$CI_PIPELINE_SOURCE" = "schedule" ]; then
+#             echo hardware option selected
+#             sshpass -p $PASSWORD2 scp executable/AIRAPP.exe gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+#             sshpass -p $PASSWORD2 scp $UTILS/gdb_sparc_rvs_coverage-ci gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+#             sshpass -p $PASSWORD2 scp $UTILS/target_cmds_eth_sparc.bash gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+#             script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash $EXAMPLE'" testresult.txt
+#             sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $AIR/examples/private-example/AIR_testsuite/Validation_tests/RTEMS/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
+#             sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/testresult.txt $AIR/examples/private-example/AIR_testsuite/Validation_tests/RTEMS/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
+#             cat testresult.txt
+#           else
+#             echo laysim option selected
+#             echo doing $AIR/rvs_air/scripts/laysim_cmds.txt
+#             laysim-gr740-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt
+#           fi
+#         - *check-and-publish
+#   rules:
+#         - if: '($CI_PIPELINE_SOURCE == "merge_request") && ($CI_MERGE_REQUEST_TITLE !~ /Draft/)'
+#         - if: '$CI_PIPELINE_SOURCE == "schedule" && $RUNNER == "sparc-taste-debian1"'
+#         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ALL\].*/ && $RUNNER =~ "SPARC"'
+#         - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[SPARC\].*/ && $CI_COMMIT_MESSAGE !~ /(\d{5})/ && $RUNNER =~ "SPARC"'
+#   timeout: 5 minutes
+#   parallel:
+#       matrix:
+#         - RUNNER: ["sparc-taste-debian1", "SPARC"]
+#           EXAMPLE:
+#           - "TEST-DEF-00009"
+#           - "TEST-DEF-00010"
+#           - "TEST-DEF-00012"
+#           - "TEST-DEF-00021"
+#           - "TEST-DEF-00022"
+#           - "TEST-DEF-00023"
+#           - "TEST-DEF-00500"
+#           - "TEST-DEF-00510"
+#           - "TEST-DEF-00540"
+#           - "TEST-DEF-00560"
+#           - "TEST-DEF-00600"
+#           - "TEST-DEF-01200"
+#           - "TEST-DEF-01210"
+#           - "TEST-DEF-01390"
+#           #- "TEST-DEF-01561"
+#           - "TEST-DEF-01570"
+#           - "TEST-DEF-01590"
+#           - "TEST-DEF-01610"
+#           #- "TEST-DEF-01650"
+#           #- "TEST-DEF-01730"
+#           #- "TEST-DEF-01740"
+#           #- "TEST-DEF-01741"
+#           - "TEST-DEF-01750"
+#           - "TEST-DEF-02100"
+#           #- "TEST-DEF-02101"
+#           #- "TEST-DEF-02102"
+#           #- "TEST-DEF-02105"
+#           #- "TEST-DEF-02107"
+#           #- "TEST-DEF-02108"
+#           - "TEST-DEF-80000"
+#           - "TEST-DEF-80010"
+#           - "TEST-DEF-80060"
+#           - "TEST-DEF-80080"
+#           - "TEST-DEF-80300"
+#           - "TEST-DEF-80400"
+#           - "TEST-DEF-80401"
+#           - "TEST-DEF-80420"

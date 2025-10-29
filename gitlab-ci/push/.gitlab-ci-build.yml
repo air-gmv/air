@@ -1,0 +1,120 @@
+# Gitlab CICD script for build stage
+# Author huca@GMV 2023
+
+# Note: make.sh and make_test.sh might not cover some edge cases.
+#       In the event of both scripts failing for whatever reason, revert to "make -j4"
+
+# Build ARM ZYNQZ1 
+ARM-ZYNQ_ZEDBOARD-build:
+    stage: prepare-build
+    tags: ["ARM"]
+    needs : ["ARM1_init"]
+    script:
+        - cp $UTILS/.arm_zynq_zedboard_config .
+        - ./configure -f .arm_zynq_zedboard_config   
+        - make clean
+        - make -j4
+        #- . $STATE_FOLDER/gitlab-ci/push/make.sh 
+        #- . $STATE_FOLDER/gitlab-ci/push/make_test.sh
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message contains [ALL] or [ARM]
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'       # message does not contain any [...]
+
+# Build ARM SPACE INVENTOR 
+ARM-SPACE_INVENTOR-build:
+    stage: prepare-build
+    tags: ["ARM"]
+    needs : ["ARM1_init"]
+    script:
+        - cp $UTILS/.arm_space_inventor_config .
+        - ./configure -f .arm_space_inventor_config   
+        - make clean
+        - make -j4
+        #- . $STATE_FOLDER/gitlab-ci/push/make.sh 
+        #- . $STATE_FOLDER/gitlab-ci/push/make_test.sh
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message contains [ALL] or [ARM]
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'       # message does not contain any [...]
+
+# Build ARM SPACE INVENTOR 
+ARM-ARTY7Z-build:
+    stage: prepare-build
+    tags: ["ARM"]
+    needs: ["ARM1_init"]
+    script:
+        - cp $UTILS/.arm_arty7z_config .
+        - ./configure -f .arm_arty7z_config   
+        - make clean
+        - make -j4
+        #- . $STATE_FOLDER/gitlab-ci/push/make.sh 
+        #- . $STATE_FOLDER/gitlab-ci/push/make_test.sh
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message contains [ALL] or [ARM]
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'       # message does not contain any [...]
+
+# Build QEMU ARM  
+ARM-QEMU-build:
+    stage: prepare-build
+    tags: ["ARM1"]
+    needs: ["ARM-ZYNQ_ZEDBOARD-build", "ARM-SPACE_INVENTOR-build", "ARM-ARTY7Z-build"]
+    script:
+        - cp $UTILS/.arm_qemu_config .
+        - ./configure -f .arm_qemu_config   
+        - make clean
+        - make -j4
+        #- . $STATE_FOLDER/gitlab-ci/push/make.sh 
+        #- . $STATE_FOLDER/gitlab-ci/push/make_test.sh
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|ARM)\].*/' # message contains [ALL] or [ARM]
+        - if: '$CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'       # message does not contain any [...]
+
+# Build SPARC GR740
+SPARC-GR740-build:
+    stage: prepare-build
+    tags: ["sparc-taste-debian1"]
+    needs: ["TASTE1_init"]
+    script:
+        - cp $UTILS/.sparc_gr740_config .
+        - ./configure -f .sparc_gr740_config
+        - make clean
+        - make -j4
+        #- . $STATE_FOLDER/gitlab-ci/push/make.sh 
+        #- . $STATE_FOLDER/gitlab-ci/push/make_test.sh
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message contains [ALL] or [SPARC]
+
+# Build SPARC LEON4 
+.SPARC-LEON4-build:
+    stage: prepare-build
+    tags: ["sparc-taste-debian1"]
+    script:
+        - cp $UTILS/.sparc_leon4_config .
+        - ./configure -f .sparc_leon4_config
+        - make clean
+        - make -j4
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message contains [ALL] or [SPARC] 
+
+# Build SPARC LEON3
+.SPARC-LEON3-build:
+    stage: prepare-build
+    tags: ["OTHER"]
+    script:
+        - cp $UTILS/.sparc_leon3_config .
+        - ./configure -f .sparc_leon3_config
+        - make clean
+        - make -j4
+    rules:
+        - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message contains [ALL] or [SPARC]
+
+# Build SPARC TSIM 
+.SPARC-TSIM-build:
+    stage: prepare-build
+    tags: ["OTHER"]
+    script:
+        - cp $UTILS/.sparc_tsim_config .
+        - ./configure -f .sparc_tsim_config
+        - make clean
+        - make -j4
+    rules:
+       - if: '$CI_COMMIT_MESSAGE =~ /.*\[(ALL|SPARC)\].*/' # message contains [ALL] or [SPARC]

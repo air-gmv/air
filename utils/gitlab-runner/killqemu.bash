@@ -1,3 +1,3 @@
 #!/bin/bash
-sleep 30
+sleep 5
 killall qemu-system-arm

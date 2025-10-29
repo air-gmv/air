@@ -1,16 +1,20 @@
 #!/bin/bash
 
 # Manually including rvs object files with pmk and libs archives since the RVSLink is not triggered due to Rtems forcing the use of gcc for linking
-cd /home/hugo/air-dev/air/install/
-arm-rtems5-ar -q pmk/pmk.a /home/hugo/air-dev/air/rvs_air/intermediate/instr/rvs.o /home/hugo/air-dev/air/rvs_air/intermediate/instr/rvs_map.o
-arm-rtems5-ar -q libs/imaspex/imaspex.a /home/hugo/air-dev/air/rvs_air/intermediate/instr/rvs.o /home/hugo/air-dev/air/rvs_air/intermediate/instr/rvs_map.o
-arm-rtems5-ar -q libs/libair/libair.a /home/hugo/air-dev/air/rvs_air/intermediate/instr/rvs.o /home/hugo/air-dev/air/rvs_air/intermediate/instr/rvs_map.o
-arm-rtems5-ar -q libs/libcov/libcov.a /home/hugo/air-dev/air/rvs_air/intermediate/instr/rvs.o /home/hugo/air-dev/air/rvs_air/intermediate/instr/rvs_map.o
-arm-rtems5-ar -q libs/libiop/libiop.a /home/hugo/air-dev/air/rvs_air/intermediate/instr/rvs.o /home/hugo/air-dev/air/rvs_air/intermediate/instr/rvs_map.o
-arm-rtems5-ar -q libs/libprintf/libprintf.a /home/hugo/air-dev/air/rvs_air/intermediate/instr/rvs.o /home/hugo/air-dev/air/rvs_air/intermediate/instr/rvs_map.o
-arm-rtems5-ar -q libs/libtest/libtest.a /home/hugo/air-dev/air/rvs_air/intermediate/instr/rvs.o /home/hugo/air-dev/air/rvs_air/intermediate/instr/rvs_map.o
+cd $AIR/air-dev/air/install/
+arm-rtems5-ar -q pmk/pmk.a $AIR/air-dev/air/rvs_air/intermediate/instr/rvs.o $AIR/air-dev/air/rvs_air/intermediate/instr/rvs_map.o
+arm-rtems5-ar -q libs/imaspex/imaspex.a $AIR/air-dev/air/rvs_air/intermediate/instr/rvs.o $AIR/air-dev/air/rvs_air/intermediate/instr/rvs_map.o
+arm-rtems5-ar -q libs/libair/libair.a $AIR/air-dev/air/rvs_air/intermediate/instr/rvs.o $AIR/air-dev/air/rvs_air/intermediate/instr/rvs_map.o
+arm-rtems5-ar -q libs/libcov/libcov.a $AIR/air-dev/air/rvs_air/intermediate/instr/rvs.o $AIR/air-dev/air/rvs_air/intermediate/instr/rvs_map.o
+arm-rtems5-ar -q libs/libiop/libiop.a $AIR/air-dev/air/rvs_air/intermediate/instr/rvs.o $AIR/air-dev/air/rvs_air/intermediate/instr/rvs_map.o
+arm-rtems5-ar -q libs/libprintf/libprintf.a $AIR/air-dev/air/rvs_air/intermediate/instr/rvs.o $AIR/air-dev/air/rvs_air/intermediate/instr/rvs_map.o
+arm-rtems5-ar -q libs/libtest/libtest.a $AIR/air-dev/air/rvs_air/intermediate/instr/rvs.o $AIR/air-dev/air/rvs_air/intermediate/instr/rvs_map.o
 
-cd /home/hugo/air-dev/air/examples/private-example/private/validation/
+cd $AIR/examples/hello_world
+configure
+make
+
+cd $AIR/examples/private-example/private/validation/
 
 cd TEST-DEF-00009
 configure

@@ -61,6 +61,7 @@ syscall_branch_table:
     ba,a    syscall_boot_core                ! boot virtual core
     ba,a    syscall_get_us_per_tick          ! get us per tick
     ba,a    syscall_get_elapsed_ticks        ! get elapsed ticks
+    ba,a    sparc_isr_handler_entry          ! get MTF elapsed ticks    (in C)
     ba,a    sparc_isr_handler_entry          ! get partition id         (in C)
     ba,a    sparc_isr_handler_entry          ! get partition status     (in C)
     ba,a    sparc_isr_handler_entry          ! set partition mode       (in C)
@@ -71,6 +72,7 @@ syscall_branch_table:
     ba,a    sparc_isr_handler_entry          ! set time of day          (in C)
     ba,a    sparc_isr_handler_entry          ! get port id              (in C)
     ba,a    sparc_isr_handler_entry          ! get port status          (in C)
+    ba,a    sparc_isr_handler_entry          ! get port name            (in C)
     ba,a    sparc_isr_handler_entry          ! create port              (in C)
     ba,a    sparc_isr_handler_entry          ! read port                (in C)
     ba,a    sparc_isr_handler_entry          ! write port               (in C)
@@ -80,6 +82,8 @@ syscall_branch_table:
     ba,a    syscall_get_event                ! get event
     ba,a    syscall_get_system_state         ! get system state
     ba,a    sparc_isr_handler_entry          ! set system state         (in C)
+    ba,a    sparc_isr_handler_entry          ! get HM log               (in C)
+    ba,a    sparc_isr_handler_entry          ! pop from HM log          (in C)
     ba,a    sparc_isr_handler_entry          ! get HM event             (in C)
     ba,a    sparc_isr_handler_entry          ! raise HM event           (in C)
     ba,a    sparc_isr_handler_entry          ! partition putchar        (in C)

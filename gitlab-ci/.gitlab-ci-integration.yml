@@ -1,0 +1,113 @@
+# Gitlab CICD script for integration stage
+# Author huca@GMV 2023, ansi@GMV 2024 
+
+.build-executable: &build-executable
+    - $AIR/configure
+    - make all 
+    - if ! test -f ./executable/AIRAPP.exe; then echo "Executable does not exist." && exit 1; fi
+
+.check-and-publish: &check-and-publish
+    - $UTILS/validation_check.py
+    - $UTILS/publish_example.bash
+
+# ARM
+ARM-QEMU-integration-test:
+    stage: integration_tests
+    tags: ["ARM"]
+    needs:
+      - job: RVS-ARM-QEMU-build
+        optional: true
+      - job: ARM-QEMU-build
+        optional: true
+    script: 
+        - cd $AIR/examples/private-example/AIR_testsuite/Integration_tests/$EXAMPLE
+        - *build-executable
+        - |
+          if [ "$CI_PIPELINE_SOURCE" = "push" ]; then
+            ($UTILS/arm-ci.bash | tee testresult.txt) || true
+          else
+            ($UTILS/rvs_arm_coverage-ci.bash | tee testresult.txt) || true
+          fi
+        - *check-and-publish
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "schedule"'
+        - if: '($CI_PIPELINE_SOURCE == "merge_request") && ($CI_MERGE_REQUEST_TITLE !~ /Draft/)'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ALL\].*/'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ARM\].*/'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE !~ /.*\[.*?\].*/'
+    timeout: 5 minutes
+    parallel:
+      matrix:
+        - EXAMPLE:
+          - ITEST-0001-LIONEL
+          - ITEST-0002-SINGLE
+          - ITEST-0003-DUAL
+          - ITEST-0004-DIV_0
+          - ITEST-0005-HM
+          - ITEST-0006-QPORT
+          - ITEST-0007-QPORT1
+          - ITEST-0008-SPORT
+          - ITEST-0010_SCHEDULES
+          # - ITEST-0011-TOD
+          # - ITEST-0012-PARANOIA #Gives compile error
+          - ITEST-0020-DUAL
+          # - ITEST-0021-QUAD_CORE #Not applicable to qemu, only has 2 cores
+          - ITEST-0022-QPORT
+          - ITEST-0023-MATRIX
+
+
+
+# SPARC
+SPARC-LAYSIM-integration-test:
+  stage: integration_tests
+  tags: [$RUNNER]
+  needs: 
+    - job: RVS-SPARC-LAYSIM-build
+      optional: true
+    - job: SPARC-GR740-build
+      optional: true
+  script: 
+        - cd $AIR/examples/private-example/AIR_testsuite/Integration_tests/$EXAMPLE
+        - *build-executable
+        # The schedule pipeline runs the tests on hardware 
+        - |
+          if [ "$CI_PIPELINE_SOURCE" = "schedule" ]; then
+            echo hardware option selected
+            sshpass -p $PASSWORD2 scp executable/AIRAPP.exe gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+            sshpass -p $PASSWORD2 scp $UTILS/gdb_sparc_rvs_coverage-ci gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+            sshpass -p $PASSWORD2 scp $UTILS/target_cmds_eth_sparc.bash gitlabrunner@$KNOWLI:/home/gitlabrunner && echo "File transfer successful." || echo "File transfer failed."
+            script -c "sshpass -p $PASSWORD2 ssh -tt gitlabrunner@$KNOWLI 'bash -s < target_cmds_eth_sparc.bash $EXAMPLE'" testresult.txt
+            sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/memdump.bin $AIR/examples/private-example/private/validation/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
+            sshpass -p $PASSWORD2 scp gitlabrunner@$KNOWLI:/home/gitlabrunner/testresult.txt $AIR/examples/private-example/private/validation/$EXAMPLE && echo "File transfer successful." || echo "File transfer failed."
+            cat testresult.txt
+          else
+            echo laysim option selected
+            echo doing $AIR/rvs_air/scripts/laysim_cmds.txt
+            (laysim-gr740-cli -batch $AIR/rvs_air/scripts/laysim_cmds.txt | tee testresult.txt) || true
+          fi
+        - *check-and-publish
+  rules:
+        - if: '($CI_PIPELINE_SOURCE == "merge_request") && ($CI_MERGE_REQUEST_TITLE !~ /Draft/)'
+        - if: '$CI_PIPELINE_SOURCE == "schedule" && $RUNNER == "sparc-taste-debian1"'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[ALL\].*/ && $RUNNER =~ "SPARC"'
+        - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_MESSAGE =~ /.*\[SPARC\].*/ && $RUNNER =~ "SPARC"'
+  timeout: 5 minutes
+  parallel:
+      matrix:
+        - RUNNER: ["sparc-taste-debian1", "SPARC"]
+          EXAMPLE:
+          - ITEST-0001-LIONEL
+          - ITEST-0002-SINGLE
+          - ITEST-0003-DUAL
+          - ITEST-0004-DIV_0
+          - ITEST-0005-HM
+          - ITEST-0006-QPORT
+          - ITEST-0007-QPORT1
+          - ITEST-0008-SPORT
+          - ITEST-0010_SCHEDULES
+          # - ITEST-0011-TOD
+          # - ITEST-0012-PARANOIA #Gives compile error
+          - ITEST-0020-DUAL
+          # - ITEST-0021-QUAD_CORE #Not applicable to qemu, only has 2 cores
+          - ITEST-0022-QPORT
+          - ITEST-0023-MATRIX

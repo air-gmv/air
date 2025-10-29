@@ -35,7 +35,8 @@
  * such as the owner partition and the core schedule for the current module
  * schedule
  */
-typedef struct {
+typedef struct
+{
 
     /**< core index                                                         */
     air_u32_t idx;
@@ -57,13 +58,38 @@ typedef struct {
 } pmk_core_ctrl_t;
 
 /**
+ * @brief Health-Monitor log event
+ */
+typedef struct
+{
+    air_clocktick_t absolute_date;
+    air_error_e error_type;
+    pmk_hm_level_id level;
+    air_identifier_t partition_id;
+} pmk_hm_log_event_t;
+
+/**
+ * @brief Health-Monitor log structure
+ * Implemented as a circular buffer with length `HM_LOGG_MAX_EVENT_NB`.
+ */
+typedef struct
+{
+    pmk_hm_log_policy policy;
+    air_u32_t head;  // Points to the next write position
+    air_u32_t tail;  // Points to the oldest log
+    air_u32_t n_events;  
+    pmk_hm_log_event_t events[HM_LOGG_MAX_EVENT_NB];
+} pmk_hm_log_t;
+
+/**
  *  @brief Share area structure
  *
  *  This area is accessible to all system cores and provides access to each
  *  core control structure as well to the current schedule and system/module
  *  health-monitor tables
  */
-typedef struct {
+typedef struct
+{
 
     /** Numner of configured cores */
     air_u32_t configured_cores;
@@ -75,7 +101,8 @@ typedef struct {
     pmk_hm_level_list_t *hm_system_table;
     /** Module Health-Monitor table                                         */
     pmk_hm_action_list_t **hm_module_table;
-
+    /** Health-Monitor log                                                  */
+    pmk_hm_log_t hm_log;
 } pmk_sharedarea_t;
 
 /**
@@ -114,7 +141,6 @@ extern pmk_sharedarea_t air_shared_area;
 
 /** @} */
 
-
 /**
  * @brief Partition scheduler
  * @param isf Interrupt Stack Frame
@@ -122,7 +148,6 @@ extern pmk_sharedarea_t air_shared_area;
  * @ingroup pmk_scheduler
  */
 void pmk_partition_scheduler(void *isf, pmk_core_ctrl_t *core);
-
 
 /**
  * @brief IPC trap handler

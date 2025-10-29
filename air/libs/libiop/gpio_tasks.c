@@ -24,10 +24,10 @@
 #include <iop_mms.h>
 #include <iop_support.h>
 
+void gpio_writer(air_uptr_t arg)
+{
 
-void gpio_writer(air_uptr_t arg) {
-
-    iop_physical_device_t *pdev = (iop_physical_device_t *) arg;
+    iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
 
     air_u32_t status = AIR_SUCCESSFUL;
 
@@ -36,11 +36,12 @@ void gpio_writer(air_uptr_t arg) {
     iop_chain_initialize_empty(&error);
 
     /* Get the underlying driver */
-    iop_gpio_device_t *gpio_driver = (iop_gpio_device_t *) pdev->driver;
+    iop_gpio_device_t *gpio_driver = (iop_gpio_device_t *)pdev->driver;
 
     iop_debug("  :: gpio-write running!\n");
 
-    while(!iop_chain_is_empty(&pdev->sendqueue)) {
+    while (!iop_chain_is_empty(&pdev->sendqueue))
+    {
 
         iop_debug("  :: gpio-write chain not empty!\n");
 
@@ -49,26 +50,31 @@ void gpio_writer(air_uptr_t arg) {
         /* Write to the device */
         status = gpio_driver->dev.write((iop_device_driver_t *)gpio_driver, wrapper);
 
-        if (status == AIR_SUCCESSFUL) {
+        if (status == AIR_SUCCESSFUL)
+        {
 
             release_wrapper(wrapper);
-        } else {
+        }
+        else
+        {
 
             iop_chain_append(&error, &wrapper->node);
             iop_raise_error(HW_WRITE_ERROR);
         }
     }
     /* Failed transmissions */
-    while(!iop_chain_is_empty(&error)) {
+    while (!iop_chain_is_empty(&error))
+    {
 
         iop_wrapper_t *wrapper = obtain_wrapper(&error);
         iop_chain_append(&pdev->sendqueue, &wrapper->node);
     }
 }
 
-void gpio_reader(air_uptr_t arg) {
+void gpio_reader(air_uptr_t arg)
+{
 
-    iop_physical_device_t *pdev = (iop_physical_device_t *) arg;
+    iop_physical_device_t *pdev = (iop_physical_device_t *)arg;
 
     air_i32_t status = AIR_SUCCESSFUL;
 
@@ -77,25 +83,28 @@ void gpio_reader(air_uptr_t arg) {
     iop_chain_initialize_empty(&error);
 
     /* Get underlying driver */
-    iop_gpio_device_t *driver = (iop_gpio_device_t *) pdev->driver;
+    iop_gpio_device_t *driver = (iop_gpio_device_t *)pdev->driver;
 
     iop_debug("  :: gpio-read running!\n");
 
     air_u32_t i;
     air_u32_t reads = pdev->reads_per_period[air_schedule.current_schedule_index];
 
-    for(i = 0; i < reads; i++){
+    for (i = 0; i < reads; i++)
+    {
 
         iop_wrapper_t *wrapper = obtain_free_wrapper();
 
-        if(wrapper == NULL){
+        if (wrapper == NULL)
+        {
 
             iop_raise_error(OUT_OF_MEMORY);
             break;
         }
 
-        status = driver->dev.read((iop_device_driver_t *) driver, wrapper);
-        if(status == AIR_SUCCESSFUL){
+        status = driver->dev.read((iop_device_driver_t *)driver, wrapper);
+        if (status == AIR_SUCCESSFUL)
+        {
 
             /* We received something lets make it
              * available to higher level */
@@ -104,7 +113,8 @@ void gpio_reader(air_uptr_t arg) {
             wrapper = NULL;
         }
 
-        if(wrapper != NULL){
+        if (wrapper != NULL)
+        {
 
             release_wrapper(wrapper);
         }

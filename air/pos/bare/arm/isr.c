@@ -30,11 +30,17 @@ void isr_install_handler(air_u32_t id, void *new, void **old) {
     /* get current core id */
     air_u32_t core_id = air_syscall_get_core_id();
 
+    // In bare we currently want to have interrupts disabled
+    // And only have aborts enabled
+    air_u32_t level;
+    air_syscall_disable_interrupts(level);
+    air_syscall_disable_aborts();
+
     /* get old vector handle */
-    air_syscall_disable_traps();
     *old = (void *)isr_table[core_id][id];
     isr_table[core_id][id] = (air_u32_t)new;
-    air_syscall_enable_traps();
+    
+    air_syscall_enable_aborts();
 }
 
 void pos_hm_undef(pos_hm_stack *hm_stack){

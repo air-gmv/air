@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2011  GMVIS Skysoft S.A.
+The license and distribution terms for this file may be
+found in the file LICENSE in this distribution or at
+air/LICENSE
+-->
+<ARINC_653_Module ModuleName="bare" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- Partition 0 -->
+	<Partition Criticality="LEVEL_A" EntryPoint="entry_point" PartitionIdentifier="1" PartitionName="p0" SystemPartition="true">
+		<PartitionConfiguration Cores="1" Personality="RTEMS5">
+			<Libs>LIBAIR; LIBPRINTF</Libs>
+			<Devices/>
+			<Cache>CODE; DATA</Cache>
+			<Memory Size="0xa00000"/>
+			<Permissions>SET_TOD; SET_PARTITION_MODE; CACHE_CONTROL; GLOBAL_TIME; FPU_CONTROL; MODULE_CONTROL</Permissions>
+		</PartitionConfiguration>
+	</Partition>
+	<!-- Schedule 0 -->
+	<Module_Schedule InitialModuleSchedule="true" MajorFrameSeconds="1.0" ScheduleIdentifier="1" ScheduleName="test_sched">
+		<Partition_Schedule PartitionIdentifier="1" PartitionName="p0" PeriodDurationSeconds="1" PeriodSeconds="1" ScheduleChangeAction="IGNORE" SetModuleSchedule="false">
+			<Window_Schedule PartitionPeriodStart="true" WindowDurationSeconds="1" WindowIdentifier="1" WindowStartSeconds="0.0"/>
+			<WindowConfiguration Cores="0" WindowIdentifier="1"/>
+		</Partition_Schedule>
+	</Module_Schedule>
+	<Connection_Table/>
+	<!-- Module configuration -->
+	<AIR_Configuration RequiredCores="1" TicksPerSecond="100"/>
+</ARINC_653_Module>
